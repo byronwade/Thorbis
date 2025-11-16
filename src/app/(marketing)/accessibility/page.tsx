@@ -5,8 +5,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 604_800;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis Accessibility Statement",
   description:

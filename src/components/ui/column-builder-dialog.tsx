@@ -103,12 +103,12 @@ export function ColumnBuilderDialog({
     onOpenChange(false);
   };
 
-  // Preview data
+  // Preview data - use a fixed date to avoid PPR issues
   const previewData = {
     // Sample data for preview
     string: "Sample Text",
     number: 12_345,
-    date: new Date().toISOString(),
+    date: "2024-01-15T10:30:00.000Z", // Fixed date for preview
     boolean: true,
     relation: "Related Value",
   };

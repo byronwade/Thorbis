@@ -30,8 +30,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 86_400; // Revalidate daily
-
 export default function GoogleBusinessProfilePage() {
   return (
     <div className="space-y-8">

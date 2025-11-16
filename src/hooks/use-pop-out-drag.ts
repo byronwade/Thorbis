@@ -27,9 +27,6 @@ type UsePopOutDragOptions = {
   onPopOutClosed?: () => void;
 };
 
-const POP_OUT_WIDTH = 900;
-const POP_OUT_HEIGHT = 800;
-
 export function usePopOutDrag(options: UsePopOutDragOptions) {
   const { callId, onPopOutCreated, onPopOutClosed } = options;
 
@@ -52,26 +49,24 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
     }));
   }, []);
 
-  // Create pop-out window
+  // Create call window in new tab
   const createPopOut = useCallback(() => {
     if (state.isPopOutActive || popOutWindowRef.current) {
-      console.warn("Pop-out already active");
+      console.warn("Call window already active");
       return;
     }
 
-    // Calculate center position
-    const left = window.screen.width / 2 - POP_OUT_WIDTH / 2;
-    const top = window.screen.height / 2 - POP_OUT_HEIGHT / 2;
-
-    // Open pop-out window
+    // Open in new tab (much simpler and more reliable)
     const popOut = window.open(
       `/call-window?callId=${callId}`,
-      `call-${callId}`,
-      `width=${POP_OUT_WIDTH},height=${POP_OUT_HEIGHT},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`
+      "_blank",
+      "noopener,noreferrer"
     );
 
     if (!popOut) {
-      console.error("Failed to open pop-out window. Check popup blocker.");
+      console.error(
+        "Failed to open call window. Please check browser settings."
+      );
       return;
     }
 

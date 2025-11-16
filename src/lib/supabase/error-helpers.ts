@@ -15,10 +15,7 @@ export const hasReportableError = (error: QueryError) =>
       (error.message || error.details || error.hint || error.code)
   );
 
-export const isMissingColumnError = (
-  error: QueryError,
-  columnName: string
-) => {
+export const isMissingColumnError = (error: QueryError, columnName: string) => {
   if (!error) {
     return false;
   }
@@ -34,4 +31,3 @@ export const isMissingColumnError = (
 
   return haystack.includes(columnName.toLowerCase());
 };
-

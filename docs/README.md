@@ -1,35 +1,100 @@
-# Documentation Archive
+# Documentation Index
 
-This directory contains historical documentation and implementation notes.
+Welcome to the Stratos documentation! All project documentation is organized into the following categories:
 
-## Contents
+## 📁 Directory Structure
 
-### Authentication & Setup
-- [AUTHENTICATION_SETUP_GUIDE.md](./AUTHENTICATION_SETUP_GUIDE.md) - Guide for setting up authentication
-- [AUTH_IMPLEMENTATION_SUMMARY.md](./AUTH_IMPLEMENTATION_SUMMARY.md) - Summary of auth implementation
-- [CHECK_EMAIL_CONFIRMATION.md](./CHECK_EMAIL_CONFIRMATION.md) - Email confirmation instructions
-- [TEST_AUTH.md](./TEST_AUTH.md) - Authentication testing guide
+### `/migrations/` - Migration & Upgrade Documentation
+Migration guides, PPR conversion documentation, and Next.js 16 upgrade notes.
 
-### Supabase
-- [SUPABASE_ASSESSMENT.md](./SUPABASE_ASSESSMENT.md) - Supabase setup assessment
-- [SUPABASE_QUICK_START.md](./SUPABASE_QUICK_START.md) - Quick start guide for Supabase
+**Key Files:**
+- `COMPLETE_MIGRATION_GUIDE.md` - Comprehensive migration guide
+- `NEXT16_MIGRATION_COMPLETE.md` - Next.js 16 upgrade documentation
+- `PPR_MIGRATION_GUIDE.md` - Partial Prerendering migration guide
+- `PPR_QUICK_REFERENCE.md` - Quick reference for PPR patterns
 
-### Implementation Notes
-- [ASSESSMENT_README.md](./ASSESSMENT_README.md) - Project assessment
-- [IMPLEMENTATION_CHECKLIST.md](./IMPLEMENTATION_CHECKLIST.md) - Implementation checklist
-- [IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md) - Implementation summary
-- [SETUP_COMPLETE.md](./SETUP_COMPLETE.md) - Setup completion notes
-- [QUICK_START.md](./QUICK_START.md) - Quick start guide
+### `/performance/` - Performance Optimization
+Performance analysis, optimization strategies, and benchmarking results.
 
-### Feature Documentation
-- [LOADING_STATE_EXPLANATION.md](./LOADING_STATE_EXPLANATION.md) - Loading state patterns
-- [NEW_WIDGETS_SUMMARY.md](./NEW_WIDGETS_SUMMARY.md) - TV leaderboard widgets summary
-- [TV_MODE_FINAL_IMPROVEMENTS.md](./TV_MODE_FINAL_IMPROVEMENTS.md) - TV mode improvements
-- [TV_MODE_HEADER_FIX.md](./TV_MODE_HEADER_FIX.md) - TV mode header fixes
-- [UNIFIED_USER_MENU.md](./UNIFIED_USER_MENU.md) - User menu implementation
+**Key Files:**
+- `PERFORMANCE_OPTIMIZATION.md` - Performance optimization strategies
+- `DASHBOARD_OPTIMIZATION_COMPLETE.md` - Dashboard-specific optimizations
+- `SPEED_IMPROVEMENTS_SUMMARY.md` - Summary of speed improvements
 
-## Active Documentation
+### `/architecture/` - Architecture & Design
+System architecture documentation, layout systems, and design patterns.
 
-For current project guidelines and rules, see:
-- [../AGENTS.md](../AGENTS.md) - Comprehensive linting and coding rules
-- [../.claude/CLAUDE.md](../.claude/CLAUDE.md) - Project-specific guidelines for AI assistance
+**Key Files:**
+- `ARCHITECTURE_IMPROVEMENT.md` - Architecture improvement plans
+- `LAYOUT_SYSTEM_V2.md` - Layout system documentation
+- `NESTED_LAYOUTS_IMPLEMENTATION.md` - Nested layouts implementation
+
+### `/status/` - Implementation Status
+Project status reports, completion summaries, and setup documentation.
+
+**Key Files:**
+- `FINAL_IMPLEMENTATION_STATUS.md` - Current implementation status
+- `SUPABASE_SETUP_COMPLETE.md` - Supabase setup documentation
+
+### `/troubleshooting/` - Troubleshooting & Error Resolution
+Error documentation, debugging guides, and resolution steps.
+
+**Key Files:**
+- `RUNTIME_ERROR_RESOLUTION.md` - Runtime error troubleshooting
+- `ERROR_VERIFICATION_REPORT.md` - Error verification reports
+
+## 🔍 Finding Documentation
+
+### By Topic
+
+**Authentication & Security:**
+- See main docs for authentication setup
+- Check `/troubleshooting/` for auth-related errors
+
+**Database & Supabase:**
+- `/status/SUPABASE_SETUP_COMPLETE.md`
+- See `supabase/` directory for migrations and seeds
+
+**Performance:**
+- `/performance/` directory for all optimization docs
+- `/migrations/` for PPR-related performance improvements
+
+**Next.js & React:**
+- `/migrations/` for Next.js 16 upgrade guide
+- `/architecture/` for layout and routing patterns
+
+**Telnyx & Communications:**
+- `/notes/` directory for Telnyx implementation notes
+- Check `/troubleshooting/` for WebRTC issues
+
+## 📝 Contributing Documentation
+
+When adding new documentation:
+
+1. **Choose the right directory:**
+   - Migration/upgrade docs → `/migrations/`
+   - Performance-related → `/performance/`
+   - Architecture/design → `/architecture/`
+   - Status updates → `/status/`
+   - Bug fixes/errors → `/troubleshooting/`
+
+2. **Use descriptive filenames:**
+   - Include topic and status: `FEATURE_IMPLEMENTATION_COMPLETE.md`
+   - Use uppercase with underscores: `MY_NEW_FEATURE.md`
+
+3. **Update this index:**
+   - Add important docs to the "Key Files" section above
+   - Keep the index organized and up-to-date
+
+## 📚 Additional Resources
+
+- **Main README:** `/README.md` - Project overview and getting started
+- **Development Notes:** `/notes/` - Implementation notes and quick guides
+- **Scripts:** `/scripts/README.md` - Available scripts and tools
+- **API Documentation:** `/content/kb/` - Knowledge base articles
+
+---
+
+**Last Updated:** 2025-01-16  
+**Organized By:** AI Assistant  
+**Total Docs:** 363 markdown files

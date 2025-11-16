@@ -22,9 +22,6 @@ import {
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { TELNYX_CONFIG, telnyxClient } from "@/lib/telnyx/client";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
 function getWebhookUrl() {
   const base =
     process.env.NEXT_PUBLIC_SITE_URL ||

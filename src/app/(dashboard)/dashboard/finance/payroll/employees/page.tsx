@@ -37,8 +37,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 import {
   Table,
   TableBody,

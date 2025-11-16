@@ -82,7 +82,7 @@ export default function ContractTemplatesPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto">
-        <div className="mx-auto max-w-6xl space-y-6 p-6">
+        <div className="mx-auto max-w-7xl space-y-6 p-6">
           {/* Stats */}
           <div className="grid gap-4 md:grid-cols-3">
             <Card>

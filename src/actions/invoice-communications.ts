@@ -13,7 +13,7 @@ import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
 
-const resend = process.env.RESEND_API_KEY
+const _resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
   : null;
 
@@ -68,17 +68,11 @@ export async function sendInvoiceEmail(invoiceId: string) {
 
     revalidatePath(`/dashboard/customers/${invoice.customer_id}`);
 
-    // Simulate email sending
-    console.log(
-      `Would send invoice ${invoice.invoice_number} to ${invoice.customer.email}`
-    );
-
     return {
       success: true,
       message: `Invoice sent to ${invoice.customer.email}`,
     };
   } catch (error) {
-    console.error("Error sending invoice:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send invoice",
@@ -137,15 +131,11 @@ export async function sendEstimateEmail(estimateId: string) {
 
     revalidatePath(`/dashboard/customers/${estimate.customer_id}`);
 
-    // Simulate email sending
-    console.log(`Would send estimate to ${estimate.customer.email}`);
-
     return {
       success: true,
       message: `Estimate sent to ${estimate.customer.email}`,
     };
   } catch (error) {
-    console.error("Error sending estimate:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send estimate",

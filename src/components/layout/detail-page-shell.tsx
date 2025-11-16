@@ -47,7 +47,7 @@ export function DetailPageShell({
 
   return (
     <div
-      className={cn("flex w-full flex-col gap-6", className)}
+      className={cn("flex w-full flex-col gap-4 pb-24 lg:gap-5", className)}
       data-detail-shell=""
     >
       {/* Stats bar rendered first, inside the max-w-7xl container */}
@@ -61,7 +61,7 @@ export function DetailPageShell({
       {beforeContent}
 
       {children ? (
-        <div className={cn("flex flex-col gap-6", contentGapClassName)}>
+        <div className={cn("flex flex-col gap-4", contentGapClassName)}>
           {children}
         </div>
       ) : null}

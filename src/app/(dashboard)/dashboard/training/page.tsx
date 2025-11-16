@@ -27,8 +27,6 @@ import {
   Wrench,
 } from "lucide-react";
 
-export const revalidate = 3600; // Revalidate every 1 hour
-
 export default function TrainingDashboardPage() {
   return (
     <div className="relative flex h-full items-center justify-center overflow-auto py-12">

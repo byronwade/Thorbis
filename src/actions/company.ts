@@ -36,6 +36,20 @@ import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
 
+// Constants
+const ZIP_CODE_MIN_LENGTH = 5;
+const STATE_MIN_LENGTH = 2;
+const MIN_SERVICE_RADIUS = 1;
+const MAX_SERVICE_RADIUS = 500;
+const DESCRIPTION_MAX_LENGTH = 1000;
+const HTTP_STATUS_FORBIDDEN = 403;
+const DEFAULT_SERVICE_RADIUS = 25;
+const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
+const BYTES_PER_KILOBYTE = 1024;
+const MAX_LOGO_FILE_SIZE_MB = 5;
+const MAX_LOGO_FILE_SIZE_BYTES =
+  MAX_LOGO_FILE_SIZE_MB * BYTES_PER_KILOBYTE * BYTES_PER_KILOBYTE;
+
 // Schema for company information
 const hoursEntrySchema = z.object({
   enabled: z.boolean(),
@@ -44,13 +58,16 @@ const hoursEntrySchema = z.object({
 });
 
 const hoursOfOperationSchema = z.object(
-  DAYS_OF_WEEK.reduce(
-    (acc, day) => ({
-      ...acc,
-      [day]: hoursEntrySchema,
-    }),
-    {} as Record<(typeof DAYS_OF_WEEK)[number], typeof hoursEntrySchema>
-  )
+  (() => {
+    const entries: Record<
+      (typeof DAYS_OF_WEEK)[number],
+      typeof hoursEntrySchema
+    > = {} as Record<(typeof DAYS_OF_WEEK)[number], typeof hoursEntrySchema>;
+    for (const day of DAYS_OF_WEEK) {
+      entries[day] = hoursEntrySchema;
+    }
+    return entries;
+  })()
 );
 
 const companyInfoSchema = z.object({
@@ -63,26 +80,25 @@ const companyInfoSchema = z.object({
   address: z.string().min(1, "Address is required"),
   address2: z.string().optional(),
   city: z.string().min(1, "City is required"),
-  state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "ZIP code is required"),
+  state: z.string().min(STATE_MIN_LENGTH, "State is required"),
+  zipCode: z.string().min(ZIP_CODE_MIN_LENGTH, "ZIP code is required"),
   country: z.string().min(1, "Country is required"),
   taxId: z.string().optional(),
   licenseNumber: z.string().optional(),
   serviceAreaType: z.enum(["radius", "locations"]),
-  serviceRadius: z.number().min(1).max(500),
+  serviceRadius: z.number().min(MIN_SERVICE_RADIUS).max(MAX_SERVICE_RADIUS),
   serviceAreas: z.array(z.string()),
   hoursOfOperation: hoursOfOperationSchema,
-  description: z.string().max(1000).optional(),
+  description: z.string().max(DESCRIPTION_MAX_LENGTH).optional(),
 });
 
-const cloneDefaultHours = (): HoursOfOperation =>
-  DAYS_OF_WEEK.reduce(
-    (acc, day) => ({
-      ...acc,
-      [day]: { ...DEFAULT_HOURS[day] },
-    }),
-    {} as HoursOfOperation
-  );
+const cloneDefaultHours = (): HoursOfOperation => {
+  const result: HoursOfOperation = {} as HoursOfOperation;
+  for (const day of DAYS_OF_WEEK) {
+    result[day] = { ...DEFAULT_HOURS[day] };
+  }
+  return result;
+};
 
 const parseServiceAreas = (value: FormDataEntryValue | null): string[] => {
   if (typeof value !== "string" || value.trim().length === 0) {
@@ -112,29 +128,30 @@ const parseHoursPayload = (
 
   try {
     const parsed = JSON.parse(value) as Partial<HoursOfOperation>;
-    return DAYS_OF_WEEK.reduce(
-      (acc, day) => ({
-        ...acc,
-        [day]: {
-          enabled: Boolean(parsed?.[day]?.enabled),
-          openTime:
-            typeof parsed?.[day]?.openTime === "string"
-              ? parsed[day]!.openTime
-              : DEFAULT_HOURS[day].openTime,
-          closeTime:
-            typeof parsed?.[day]?.closeTime === "string"
-              ? parsed[day]!.closeTime
-              : DEFAULT_HOURS[day].closeTime,
-        },
-      }),
-      {} as HoursOfOperation
-    );
+    const result: HoursOfOperation = {} as HoursOfOperation;
+
+    for (const day of DAYS_OF_WEEK) {
+      const dayConfig = parsed?.[day];
+      result[day] = {
+        enabled: Boolean(dayConfig?.enabled),
+        openTime:
+          typeof dayConfig?.openTime === "string"
+            ? (dayConfig.openTime ?? DEFAULT_HOURS[day].openTime)
+            : DEFAULT_HOURS[day].openTime,
+        closeTime:
+          typeof dayConfig?.closeTime === "string"
+            ? (dayConfig.closeTime ?? DEFAULT_HOURS[day].closeTime)
+            : DEFAULT_HOURS[day].closeTime,
+      };
+    }
+
+    return result;
   } catch {
     return cloneDefaultHours();
   }
 };
 
-async function getActiveTeamMember(
+async function _getActiveTeamMember(
   supabase: TypedSupabaseClient,
   userId: string
 ): Promise<Database["public"]["Tables"]["team_members"]["Row"]> {
@@ -182,7 +199,7 @@ async function getActiveTeamMember(
   throw new ActionError(
     "You must be part of a company",
     ERROR_CODES.AUTH_FORBIDDEN,
-    403
+    HTTP_STATUS_FORBIDDEN
   );
 }
 
@@ -191,8 +208,8 @@ const billingInfoSchema = z.object({
   billingEmail: z.string().email("Invalid email address"),
   billingAddress: z.string().min(1, "Billing address is required"),
   billingCity: z.string().min(1, "City is required"),
-  billingState: z.string().min(2, "State is required"),
-  billingZipCode: z.string().min(5, "ZIP code is required"),
+  billingState: z.string().min(STATE_MIN_LENGTH, "State is required"),
+  billingZipCode: z.string().min(ZIP_CODE_MIN_LENGTH, "ZIP code is required"),
   paymentMethod: z.enum(["card", "bank", "invoice"]),
 });
 
@@ -220,7 +237,7 @@ const businessHoursSchema = z.object({
  *
  * Returns company data from companies + company_settings tables
  */
-export async function getCompanyInfo(): Promise<ActionResult<any>> {
+export function getCompanyInfo(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -254,74 +271,146 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
-    // Fetch company data
-    const { data: company, error: companyError } = await supabase
-      .from("companies")
-      .select(
-        "id,name,legal_name,email,phone,website,website_url,tax_id,license_number,industry"
-      )
-      .eq("id", activeCompanyId)
-      .single();
+    const [company, settings, hoursOfOperation, portalSettings] =
+      await fetchCompanyAndSettings(supabase, activeCompanyId);
 
-    if (companyError) {
-      throw new ActionError(
-        ERROR_MESSAGES.notFound("Company"),
-        ERROR_CODES.DB_RECORD_NOT_FOUND
-      );
-    }
-
-    // Fetch company settings
-    const { data: settings } = await supabase
-      .from("company_settings")
-      .select(
-        "address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation,portal_settings"
-      )
-      .eq("company_id", activeCompanyId)
-      .single();
-
-    const hoursOfOperation = normalizeHoursFromSettings(
-      (settings?.hours_of_operation as Record<
-        string,
-        { open?: string | null; close?: string | null }
-      >) ?? null
-    );
-    const portalSettings = settings?.portal_settings as
-      | Record<string, unknown>
-      | undefined;
-
-    // Return combined data
-    return {
-      id: company.id,
-      name: company.name ?? "",
-      legalName: company.legal_name ?? "",
-      email: company.email ?? "",
-      phone: company.phone ?? "",
-      website: company.website ?? company.website_url ?? "",
-      taxId: company.tax_id ?? "",
-      licenseNumber: company.license_number ?? "",
-      industry: company.industry ?? "",
-      description:
-        (portalSettings?.profile_description as string | undefined) ?? "",
-      address: settings?.address ?? "",
-      address2: settings?.address2 ?? "",
-      city: settings?.city ?? "",
-      state: settings?.state ?? "",
-      zipCode: settings?.zip_code ?? "",
-      country: settings?.country ?? "",
+    return buildCompanyInfoResponse(
+      company,
+      settings,
       hoursOfOperation,
-      serviceAreaType: settings?.service_area_type ?? "locations",
-      serviceRadius: settings?.service_radius ?? 25,
-      serviceAreas: Array.isArray(settings?.service_areas)
-        ? (settings?.service_areas as unknown[]).filter(
-            (entry): entry is string => typeof entry === "string"
-          )
-        : [],
-    };
+      portalSettings
+    );
   });
+}
+
+type CompanyRow = Database["public"]["Tables"]["companies"]["Row"];
+type CompanySettingsRow =
+  Database["public"]["Tables"]["company_settings"]["Row"];
+type NormalizedHours = ReturnType<typeof normalizeHoursFromSettings>;
+
+async function fetchCompanyAndSettings(
+  supabase: TypedSupabaseClient,
+  companyId: string
+): Promise<
+  [
+    CompanyRow,
+    CompanySettingsRow | null,
+    NormalizedHours,
+    Record<string, unknown> | undefined,
+  ]
+> {
+  const { data: company, error: companyError } = await supabase
+    .from("companies")
+    .select(
+      "id,name,legal_name,email,phone,website,website_url,tax_id,license_number,industry"
+    )
+    .eq("id", companyId)
+    .single();
+
+  if (companyError || !company) {
+    throw new ActionError(
+      ERROR_MESSAGES.notFound("Company"),
+      ERROR_CODES.DB_RECORD_NOT_FOUND
+    );
+  }
+
+  const { data: settings } = await supabase
+    .from("company_settings")
+    .select(
+      "address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation,portal_settings"
+    )
+    .eq("company_id", companyId)
+    .single();
+
+  const hoursOfOperation = normalizeHoursFromSettings(
+    (settings?.hours_of_operation as Record<
+      string,
+      { open?: string | null; close?: string | null }
+    >) ?? null
+  );
+
+  const portalSettings = settings?.portal_settings as
+    | Record<string, unknown>
+    | undefined;
+
+  return [company, settings, hoursOfOperation, portalSettings];
+}
+
+function buildCompanyInfoResponse(
+  company: CompanyRow,
+  settings: CompanySettingsRow | null,
+  hoursOfOperation: NormalizedHours,
+  portalSettings: Record<string, unknown> | undefined
+) {
+  const description = getCompanyDescription(portalSettings);
+  const website = company.website ?? company.website_url ?? "";
+  const addressInfo = buildAddressInfo(settings);
+  const { serviceAreaType, serviceRadius, serviceAreas } =
+    buildServiceAreaInfo(settings);
+
+  return {
+    id: company.id,
+    name: company.name ?? "",
+    legalName: company.legal_name ?? "",
+    email: company.email ?? "",
+    phone: company.phone ?? "",
+    website,
+    taxId: company.tax_id ?? "",
+    licenseNumber: company.license_number ?? "",
+    industry: company.industry ?? "",
+    description,
+    ...addressInfo,
+    hoursOfOperation,
+    serviceAreaType,
+    serviceRadius,
+    serviceAreas,
+  };
+}
+
+function buildAddressInfo(settings: CompanySettingsRow | null) {
+  return {
+    address: settings?.address ?? "",
+    address2: settings?.address2 ?? "",
+    city: settings?.city ?? "",
+    state: settings?.state ?? "",
+    zipCode: settings?.zip_code ?? "",
+    country: settings?.country ?? "",
+  };
+}
+
+function buildServiceAreaInfo(settings: CompanySettingsRow | null) {
+  const serviceAreas = getServiceAreasFromSettings(settings);
+  const serviceAreaType = settings?.service_area_type ?? "locations";
+  const serviceRadius = settings?.service_radius ?? DEFAULT_SERVICE_RADIUS;
+
+  return {
+    serviceAreas,
+    serviceAreaType,
+    serviceRadius,
+  };
+}
+
+function getServiceAreasFromSettings(
+  settings: CompanySettingsRow | null
+): string[] {
+  if (!(settings?.service_areas && Array.isArray(settings.service_areas))) {
+    return [];
+  }
+
+  return (settings.service_areas as unknown[]).filter(
+    (entry): entry is string => typeof entry === "string"
+  );
+}
+
+function getCompanyDescription(
+  portalSettings: Record<string, unknown> | undefined
+): string {
+  const raw = portalSettings?.profile_description;
+  return typeof raw === "string" ? raw : "";
 }
 
 /**
@@ -333,7 +422,7 @@ export async function getCompanyInfo(): Promise<ActionResult<any>> {
  * - Missing fields in schema: email, phone, website, legalName, taxId, licenseNumber
  * These fields would need to be added to companies or companySettings table
  */
-export async function updateCompanyInfo(
+export function updateCompanyInfo(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -345,142 +434,164 @@ export async function updateCompanyInfo(
       );
     }
 
-    // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdForSettingsOrThrow(supabase);
+    const parsed = parseCompanyInfoFormData(formData);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const serviceAreas = parseServiceAreas(formData.get("serviceAreas"));
-    const hoursOfOperation = parseHoursPayload(
-      formData.get("hoursOfOperation")
-    );
-
-    const data = companyInfoSchema.parse({
-      name: formData.get("name"),
-      legalName: formData.get("legalName") || undefined,
-      industry: formData.get("industry"),
-      email: formData.get("email"),
-      phone: formData.get("phone"),
-      website: formData.get("website") || undefined,
-      address: formData.get("address"),
-      address2: formData.get("address2") || undefined,
-      city: formData.get("city"),
-      state: formData.get("state"),
-      zipCode: formData.get("zipCode"),
-      country: formData.get("country"),
-      taxId: formData.get("taxId") || undefined,
-      licenseNumber: formData.get("licenseNumber") || undefined,
-      serviceAreaType: formData.get("serviceAreaType"),
-      serviceRadius: Number(formData.get("serviceRadius")),
-      serviceAreas,
-      hoursOfOperation,
-      description: formData.get("description") || "",
-    });
-
-    // Update companies table (only name is available in current schema)
-    const { error: companyError } = await supabase
-      .from("companies")
-      .update({
-        name: data.name,
-        legal_name: data.legalName ?? null,
-        industry: data.industry,
-        email: data.email,
-        phone: data.phone,
-        website: data.website || null,
-        website_url: data.website || null,
-        tax_id: data.taxId ?? null,
-        license_number: data.licenseNumber ?? null,
-      })
-      .eq("id", teamMember.company_id);
-
-    if (companyError) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("update company"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
-
-    // Update or create companySettings (address fields are available)
-    const { data: existingSettings } = await supabase
-      .from("company_settings")
-      .select("id, portal_settings")
-      .eq("company_id", teamMember.company_id)
-      .single();
-
-    const portalSettingsPayload = {
-      ...((existingSettings?.portal_settings as Record<string, unknown>) ?? {}),
-      profile_description: data.description ?? "",
-    };
-
-    if (existingSettings) {
-      // Update existing settings
-      const { error: settingsError } = await supabase
-        .from("company_settings")
-        .update({
-          address: data.address,
-          address2: data.address2 ?? null,
-          city: data.city,
-          state: data.state,
-          zip_code: data.zipCode,
-          country: data.country,
-          service_area_type: data.serviceAreaType,
-          service_radius: data.serviceRadius,
-          service_areas: data.serviceAreas,
-          hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
-          portal_settings: portalSettingsPayload,
-        })
-        .eq("company_id", teamMember.company_id);
-
-      if (settingsError) {
-        throw new ActionError(
-          ERROR_MESSAGES.operationFailed("update company settings"),
-          ERROR_CODES.DB_QUERY_ERROR
-        );
-      }
-    } else {
-      const { error: createError } = await supabase
-        .from("company_settings")
-        .insert({
-          company_id: teamMember.company_id,
-          address: data.address,
-          address2: data.address2 ?? null,
-          city: data.city,
-          state: data.state,
-          zip_code: data.zipCode,
-          country: data.country,
-          service_area_type: data.serviceAreaType,
-          service_radius: data.serviceRadius,
-          service_areas: data.serviceAreas,
-          hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
-          portal_settings: portalSettingsPayload,
-        });
-
-      if (createError) {
-        throw new ActionError(
-          ERROR_MESSAGES.operationFailed("create company settings"),
-          ERROR_CODES.DB_QUERY_ERROR
-        );
-      }
-    }
+    await updateCompanyCoreRecord(supabase, companyId, parsed);
+    await upsertCompanySettingsRecord(supabase, companyId, parsed);
 
     revalidatePath("/dashboard/settings/company");
   });
+}
+
+async function getUserCompanyIdForSettingsOrThrow(
+  supabase: TypedSupabaseClient
+): Promise<string> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  assertAuthenticated(user?.id);
+
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!teamMember?.company_id) {
+    throw new ActionError(
+      "You must be part of a company",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return teamMember.company_id;
+}
+
+type ParsedCompanyInfo = z.infer<typeof companyInfoSchema>;
+
+function parseCompanyInfoFormData(formData: FormData): ParsedCompanyInfo {
+  const serviceAreas = parseServiceAreas(formData.get("serviceAreas"));
+  const hoursOfOperation = parseHoursPayload(formData.get("hoursOfOperation"));
+
+  return companyInfoSchema.parse({
+    name: formData.get("name"),
+    legalName: formData.get("legalName") || undefined,
+    industry: formData.get("industry"),
+    email: formData.get("email"),
+    phone: formData.get("phone"),
+    website: formData.get("website") || undefined,
+    address: formData.get("address"),
+    address2: formData.get("address2") || undefined,
+    city: formData.get("city"),
+    state: formData.get("state"),
+    zipCode: formData.get("zipCode"),
+    country: formData.get("country"),
+    taxId: formData.get("taxId") || undefined,
+    licenseNumber: formData.get("licenseNumber") || undefined,
+    serviceAreaType: formData.get("serviceAreaType"),
+    serviceRadius: Number(formData.get("serviceRadius")),
+    serviceAreas,
+    hoursOfOperation,
+    description: formData.get("description") || "",
+  });
+}
+
+async function updateCompanyCoreRecord(
+  supabase: TypedSupabaseClient,
+  companyId: string,
+  data: ParsedCompanyInfo
+) {
+  const { error: companyError } = await supabase
+    .from("companies")
+    .update({
+      name: data.name,
+      legal_name: data.legalName ?? null,
+      industry: data.industry,
+      email: data.email,
+      phone: data.phone,
+      website: data.website || null,
+      website_url: data.website || null,
+      tax_id: data.taxId ?? null,
+      license_number: data.licenseNumber ?? null,
+    })
+    .eq("id", companyId);
+
+  if (companyError) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("update company"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+}
+
+async function upsertCompanySettingsRecord(
+  supabase: TypedSupabaseClient,
+  companyId: string,
+  data: ParsedCompanyInfo
+) {
+  const { data: existingSettings } = await supabase
+    .from("company_settings")
+    .select("id, portal_settings")
+    .eq("company_id", companyId)
+    .single();
+
+  const portalSettingsPayload = {
+    ...((existingSettings?.portal_settings as Record<string, unknown>) ?? {}),
+    profile_description: data.description ?? "",
+  };
+
+  if (existingSettings) {
+    const { error: settingsError } = await supabase
+      .from("company_settings")
+      .update({
+        address: data.address,
+        address2: data.address2 ?? null,
+        city: data.city,
+        state: data.state,
+        zip_code: data.zipCode,
+        country: data.country,
+        service_area_type: data.serviceAreaType,
+        service_radius: data.serviceRadius,
+        service_areas: data.serviceAreas,
+        hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
+        portal_settings: portalSettingsPayload,
+      })
+      .eq("company_id", companyId);
+
+    if (settingsError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update company settings"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+    return;
+  }
+
+  const { error: createError } = await supabase
+    .from("company_settings")
+    .insert({
+      company_id: companyId,
+      address: data.address,
+      address2: data.address2 ?? null,
+      city: data.city,
+      state: data.state,
+      zip_code: data.zipCode,
+      country: data.country,
+      service_area_type: data.serviceAreaType,
+      service_radius: data.serviceRadius,
+      service_areas: data.serviceAreas,
+      hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
+      portal_settings: portalSettingsPayload,
+    });
+
+  if (createError) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("create company settings"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
 }
 
 /**
@@ -493,7 +604,7 @@ export async function updateCompanyInfo(
  *   - billing_email, billing_address, billing_city, billing_state, billing_zip_code
  *   - payment_method, stripe_customer_id, etc.
  */
-export async function updateBillingInfo(
+export function updateBillingInfo(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -522,11 +633,11 @@ export async function updateBillingInfo(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
-    const data = billingInfoSchema.parse({
+    const _data = billingInfoSchema.parse({
       billingEmail: formData.get("billingEmail"),
       billingAddress: formData.get("billingAddress"),
       billingCity: formData.get("billingCity"),
@@ -551,11 +662,6 @@ export async function updateBillingInfo(
     // TODO: Update payment processor (Stripe, etc.) with new billing info
     // await updateStripeCustomer(...)
 
-    console.warn(
-      "Billing table not yet implemented in schema. Data validated but not saved:",
-      data
-    );
-
     revalidatePath("/dashboard/settings/billing");
   });
 }
@@ -563,7 +669,7 @@ export async function updateBillingInfo(
 /**
  * Update business hours
  */
-export async function updateBusinessHours(
+export function updateBusinessHours(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -576,107 +682,102 @@ export async function updateBusinessHours(
     }
 
     // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdForSettingsOrThrow(supabase);
+    const data = parseBusinessHoursFormData(formData);
+    const hoursOfOperation = buildHoursOfOperationPayload(data);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const data = businessHoursSchema.parse({
-      mondayOpen: formData.get("mondayOpen") as string,
-      mondayClose: formData.get("mondayClose") as string,
-      tuesdayOpen: formData.get("tuesdayOpen") as string,
-      tuesdayClose: formData.get("tuesdayClose") as string,
-      wednesdayOpen: formData.get("wednesdayOpen") as string,
-      wednesdayClose: formData.get("wednesdayClose") as string,
-      thursdayOpen: formData.get("thursdayOpen") as string,
-      thursdayClose: formData.get("thursdayClose") as string,
-      fridayOpen: formData.get("fridayOpen") as string,
-      fridayClose: formData.get("fridayClose") as string,
-      saturdayOpen: (formData.get("saturdayOpen") as string) || undefined,
-      saturdayClose: (formData.get("saturdayClose") as string) || undefined,
-      sundayOpen: (formData.get("sundayOpen") as string) || undefined,
-      sundayClose: (formData.get("sundayClose") as string) || undefined,
-      timezone: formData.get("timezone") as string,
-    });
-
-    // Build hoursOfOperation JSON object
-    const hoursOfOperation = {
-      monday: { open: data.mondayOpen, close: data.mondayClose },
-      tuesday: { open: data.tuesdayOpen, close: data.tuesdayClose },
-      wednesday: { open: data.wednesdayOpen, close: data.wednesdayClose },
-      thursday: { open: data.thursdayOpen, close: data.thursdayClose },
-      friday: { open: data.fridayOpen, close: data.fridayClose },
-      saturday: {
-        open: data.saturdayOpen || null,
-        close: data.saturdayClose || null,
-      },
-      sunday: {
-        open: data.sundayOpen || null,
-        close: data.sundayClose || null,
-      },
-      timezone: data.timezone,
-    };
-
-    // Update or create companySettings
-    const { data: existingSettings } = await supabase
-      .from("company_settings")
-      .select("id")
-      .eq("company_id", teamMember.company_id)
-      .single();
-
-    if (existingSettings) {
-      // Update existing settings
-      const { error: updateError } = await supabase
-        .from("company_settings")
-        .update({ hours_of_operation: hoursOfOperation })
-        .eq("company_id", teamMember.company_id);
-
-      if (updateError) {
-        throw new ActionError(
-          ERROR_MESSAGES.operationFailed("update business hours"),
-          ERROR_CODES.DB_QUERY_ERROR
-        );
-      }
-    } else {
-      // Create new settings
-      const { error: createError } = await supabase
-        .from("company_settings")
-        .insert({
-          company_id: teamMember.company_id,
-          hours_of_operation: hoursOfOperation,
-        });
-
-      if (createError) {
-        throw new ActionError(
-          ERROR_MESSAGES.operationFailed("create company settings"),
-          ERROR_CODES.DB_QUERY_ERROR
-        );
-      }
-    }
+    await upsertBusinessHours(supabase, companyId, hoursOfOperation);
 
     revalidatePath("/dashboard/settings/company");
   });
 }
 
+type ParsedBusinessHours = z.infer<typeof businessHoursSchema>;
+
+function parseBusinessHoursFormData(formData: FormData): ParsedBusinessHours {
+  return businessHoursSchema.parse({
+    mondayOpen: formData.get("mondayOpen") as string,
+    mondayClose: formData.get("mondayClose") as string,
+    tuesdayOpen: formData.get("tuesdayOpen") as string,
+    tuesdayClose: formData.get("tuesdayClose") as string,
+    wednesdayOpen: formData.get("wednesdayOpen") as string,
+    wednesdayClose: formData.get("wednesdayClose") as string,
+    thursdayOpen: formData.get("thursdayOpen") as string,
+    thursdayClose: formData.get("thursdayClose") as string,
+    fridayOpen: formData.get("fridayOpen") as string,
+    fridayClose: formData.get("fridayClose") as string,
+    saturdayOpen: (formData.get("saturdayOpen") as string) || undefined,
+    saturdayClose: (formData.get("saturdayClose") as string) || undefined,
+    sundayOpen: (formData.get("sundayOpen") as string) || undefined,
+    sundayClose: (formData.get("sundayClose") as string) || undefined,
+    timezone: formData.get("timezone") as string,
+  });
+}
+
+function buildHoursOfOperationPayload(data: ParsedBusinessHours) {
+  return {
+    monday: { open: data.mondayOpen, close: data.mondayClose },
+    tuesday: { open: data.tuesdayOpen, close: data.tuesdayClose },
+    wednesday: { open: data.wednesdayOpen, close: data.wednesdayClose },
+    thursday: { open: data.thursdayOpen, close: data.thursdayClose },
+    friday: { open: data.fridayOpen, close: data.fridayClose },
+    saturday: {
+      open: data.saturdayOpen || null,
+      close: data.saturdayClose || null,
+    },
+    sunday: {
+      open: data.sundayOpen || null,
+      close: data.sundayClose || null,
+    },
+    timezone: data.timezone,
+  };
+}
+
+async function upsertBusinessHours(
+  supabase: TypedSupabaseClient,
+  companyId: string,
+  hoursOfOperation: Record<string, unknown>
+) {
+  const { data: existingSettings } = await supabase
+    .from("company_settings")
+    .select("id")
+    .eq("company_id", companyId)
+    .single();
+
+  if (existingSettings) {
+    const { error: updateError } = await supabase
+      .from("company_settings")
+      .update({ hours_of_operation: hoursOfOperation })
+      .eq("company_id", companyId);
+
+    if (updateError) {
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("update business hours"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+    return;
+  }
+
+  const { error: createError } = await supabase
+    .from("company_settings")
+    .insert({
+      company_id: companyId,
+      hours_of_operation: hoursOfOperation,
+    });
+
+  if (createError) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("create company settings"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+}
+
 /**
  * Upload company logo
  */
-export async function uploadCompanyLogo(
+export function uploadCompanyLogo(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -688,111 +789,127 @@ export async function uploadCompanyLogo(
       );
     }
 
-    // Get current user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdForSettingsOrThrow(supabase);
+    const file = validateLogoFile(formData.get("logo"));
+    const company = await getCompanyLogoRecord(supabase, companyId);
 
-    // Get user's company
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const { publicUrl, filePath } = await uploadLogoToStorage(
+      supabase,
+      companyId,
+      file
+    );
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    const file = formData.get("logo") as File;
-
-    if (!file || file.size === 0) {
-      throw new ActionError("No file provided", ERROR_CODES.VALIDATION_FAILED);
-    }
-
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      throw new ActionError(
-        "File must be an image",
-        ERROR_CODES.FILE_INVALID_TYPE
-      );
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      throw new ActionError(
-        "File size must be less than 5MB",
-        ERROR_CODES.FILE_TOO_LARGE
-      );
-    }
-
-    // Get existing logo to delete later
-    const { data: company } = await supabase
-      .from("companies")
-      .select("logo")
-      .eq("id", teamMember.company_id)
-      .single();
-
-    // Generate unique filename
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${teamMember.company_id}-${Date.now()}.${fileExt}`;
-    const filePath = `logos/${fileName}`;
-
-    // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from("company-assets")
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: false,
-      });
-
-    if (uploadError) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("upload logo"),
-        ERROR_CODES.FILE_UPLOAD_FAILED
-      );
-    }
-
-    // Get public URL
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("company-assets").getPublicUrl(filePath);
-
-    // Update company record with new logo URL
-    const { error: updateError } = await supabase
-      .from("companies")
-      .update({ logo: publicUrl })
-      .eq("id", teamMember.company_id);
-
-    if (updateError) {
-      // Clean up uploaded file if database update fails
-      await supabase.storage.from("company-assets").remove([filePath]);
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("update company logo"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
-
-    // Delete old logo if it exists
-    if (company?.logo) {
-      const oldPath = company.logo.split("/").slice(-2).join("/");
-      await supabase.storage.from("company-assets").remove([oldPath]);
-    }
+    await updateCompanyLogoUrl(supabase, companyId, publicUrl, filePath);
+    await deleteOldCompanyLogoIfExists(supabase, company);
 
     revalidatePath("/dashboard/settings/company");
     return publicUrl;
   });
 }
 
+function validateLogoFile(fileEntry: FormDataEntryValue | null): File {
+  const file = fileEntry as File;
+
+  if (!file || file.size === 0) {
+    throw new ActionError("No file provided", ERROR_CODES.VALIDATION_FAILED);
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new ActionError(
+      "File must be an image",
+      ERROR_CODES.FILE_INVALID_TYPE
+    );
+  }
+
+  if (file.size > MAX_LOGO_FILE_SIZE_BYTES) {
+    throw new ActionError(
+      "File size must be less than 5MB",
+      ERROR_CODES.FILE_TOO_LARGE
+    );
+  }
+
+  return file;
+}
+
+async function getCompanyLogoRecord(
+  supabase: TypedSupabaseClient,
+  companyId: string
+) {
+  const { data: company } = await supabase
+    .from("companies")
+    .select("logo")
+    .eq("id", companyId)
+    .single();
+
+  return company;
+}
+
+async function uploadLogoToStorage(
+  supabase: TypedSupabaseClient,
+  companyId: string,
+  file: File
+): Promise<{ publicUrl: string; filePath: string }> {
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${companyId}-${Date.now()}.${fileExt}`;
+  const filePath = `logos/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("company-assets")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("upload logo"),
+      ERROR_CODES.FILE_UPLOAD_FAILED
+    );
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from("company-assets").getPublicUrl(filePath);
+
+  return { publicUrl, filePath };
+}
+
+async function updateCompanyLogoUrl(
+  supabase: TypedSupabaseClient,
+  companyId: string,
+  publicUrl: string,
+  filePath: string
+) {
+  const { error: updateError } = await supabase
+    .from("companies")
+    .update({ logo: publicUrl })
+    .eq("id", companyId);
+
+  if (updateError) {
+    await supabase.storage.from("company-assets").remove([filePath]);
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("update company logo"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+}
+
+async function deleteOldCompanyLogoIfExists(
+  supabase: TypedSupabaseClient,
+  company: { logo?: string | null } | null
+) {
+  if (!company?.logo) {
+    return;
+  }
+
+  const oldPath = company.logo.split("/").slice(-2).join("/");
+  await supabase.storage.from("company-assets").remove([oldPath]);
+}
+
 /**
  * Delete company logo
  */
-export async function deleteCompanyLogo(): Promise<ActionResult<void>> {
+export function deleteCompanyLogo(): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -819,7 +936,7 @@ export async function deleteCompanyLogo(): Promise<ActionResult<void>> {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -905,7 +1022,7 @@ const createOrganizationSchema = z.object({
  *
  * @returns The new company ID
  */
-export async function createOrganization(
+export function createOrganization(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -923,288 +1040,324 @@ export async function createOrganization(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    // Validate input - include better error details
-    const nameValue = formData.get("name");
-    const industryValue = formData.get("industry");
-    const phoneValue = formData.get("phone");
-    const emailValue = formData.get("email");
-    const websiteValue = formData.get("website");
-    const addressValue = formData.get("address");
-    const address2Value = formData.get("address2");
-    const cityValue = formData.get("city");
-    const stateValue = formData.get("state");
-    const zipCodeValue = formData.get("zipCode");
-    const countryValue = formData.get("country");
-    const confirmPricingValue = formData.get("confirmPricing");
-    const logoFile = formData.get("logo") as File | null;
-    const paymentMethodId = formData.get("paymentMethodId") as string | null;
+    const { data, logoFile, paymentMethodId } =
+      parseCreateOrganizationFormData(formData);
+    const serviceSupabase = await createServiceSupabaseClientOrThrow();
 
-    // Debug logging in development
-    if (process.env.NODE_ENV === "development") {
-      console.log("[createOrganization] FormData:", {
-        name: nameValue,
-        industry: industryValue,
-        phone: phoneValue,
-        email: emailValue,
-        website: websiteValue,
-        address: addressValue,
-        city: cityValue,
-        state: stateValue,
-        zipCode: zipCodeValue,
-        country: countryValue,
-        confirmPricing: confirmPricingValue,
-        hasLogo: !!logoFile,
-      });
-    }
-
-    const data = createOrganizationSchema.parse({
-      name: nameValue,
-      industry: industryValue,
-      phone: phoneValue || undefined,
-      email: emailValue || undefined,
-      website: websiteValue || "",
-      address: addressValue,
-      address2: address2Value || "",
-      city: cityValue,
-      state: stateValue,
-      zipCode: zipCodeValue,
-      country: countryValue,
-      confirmPricing: confirmPricingValue === "true",
-    });
-
-    // Check how many companies the user already belongs to
-    const { data: existingMemberships, error: membershipError } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .eq("status", "active");
-
-    if (membershipError) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("check existing memberships"),
-        ERROR_CODES.DB_QUERY_ERROR,
-        500,
-        { membershipError: membershipError.message }
-      );
-    }
-
-    // If user already has 1+ companies, they've acknowledged the additional charge
-    const hasExistingCompanies = (existingMemberships?.length || 0) > 0;
-
-    // Generate slug from company name
-    const baseSlug = data.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-    // Create the company using service role to bypass RLS
-    // We need service role because regular users don't have INSERT permission on companies table
-    const { createClient: createServiceClient } = await import(
-      "@supabase/supabase-js"
-    );
-    const serviceSupabase = createServiceClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    const slug = await generateUniqueCompanySlug(serviceSupabase, data.name);
+    const logoUrl = await uploadOrganizationLogoIfProvided(
+      serviceSupabase,
+      slug,
+      logoFile
     );
 
-    // Check if slug already exists and make it unique if needed
-    let slug = baseSlug;
-    let slugExists = true;
-    let counter = 1;
-
-    while (slugExists) {
-      const { data: existingCompany } = await serviceSupabase
-        .from("companies")
-        .select("id")
-        .eq("slug", slug)
-        .single();
-
-      if (existingCompany) {
-        slug = `${baseSlug}-${counter}`;
-        counter++;
-      } else {
-        slugExists = false;
-      }
-    }
-
-    // Handle logo upload if provided
-    let logoUrl: string | null = null;
-    if (logoFile && logoFile.size > 0) {
-      try {
-        // Create unique filename
-        const fileExt = logoFile.name.split(".").pop();
-        const fileName = `${slug}-${Date.now()}.${fileExt}`;
-        const filePath = `company-logos/${fileName}`;
-
-        // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } =
-          await serviceSupabase.storage
-            .from("company-assets")
-            .upload(filePath, logoFile, {
-              cacheControl: "3600",
-              upsert: false,
-            });
-
-        if (uploadError) {
-          console.warn("Failed to upload logo:", uploadError.message);
-        } else {
-          // Get public URL
-          const {
-            data: { publicUrl },
-          } = serviceSupabase.storage
-            .from("company-assets")
-            .getPublicUrl(filePath);
-          logoUrl = publicUrl;
-        }
-      } catch (uploadErr) {
-        console.warn("Error uploading logo:", uploadErr);
-        // Continue with organization creation even if logo upload fails
-      }
-    }
-
-    const { data: newCompany, error: companyError } = await serviceSupabase
-      .from("companies")
-      .insert({
-        name: data.name,
-        slug,
-        owner_id: user.id,
-        logo: logoUrl,
-        industry: data.industry,
-        phone: data.phone || null,
-        email: data.email || null,
-        website: data.website || null,
-        created_by: user.id,
-      })
-      .select("id")
-      .single();
-
-    if (companyError || !newCompany) {
-      const errorMessage = companyError
-        ? `Failed to create organization: ${companyError.message}`
-        : ERROR_MESSAGES.operationFailed("create organization");
-      throw new ActionError(errorMessage, ERROR_CODES.DB_QUERY_ERROR, 500, {
-        organizationName: data.name,
-        slug,
-        dbError: companyError?.message || "No company returned",
-        code: companyError?.code,
-      });
-    }
-
-    // Get the owner role ID
-    const { data: ownerRole, error: roleError } = await serviceSupabase
-      .from("custom_roles")
-      .select("id")
-      .eq("name", "Owner")
-      .single();
-
-    if (roleError || !ownerRole) {
-      // If Owner role doesn't exist, we still proceed but log warning
-      console.warn("Owner role not found, creating team member without role");
-    }
-
-    // Add current user as owner of the new company using service role to bypass RLS
-    const { error: memberError } = await serviceSupabase
-      .from("team_members")
-      .insert({
-        company_id: newCompany.id,
-        user_id: user.id,
-        role_id: ownerRole?.id || null,
-        status: "active",
-      });
-
-    if (memberError) {
-      // Clean up: delete the company we just created since we couldn't add the owner
-      await serviceSupabase.from("companies").delete().eq("id", newCompany.id);
-
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("add user to organization"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
-
-    // Create default company settings using service role to bypass RLS
-    const defaultHours = {
-      monday: { open: "09:00", close: "17:00" },
-      tuesday: { open: "09:00", close: "17:00" },
-      wednesday: { open: "09:00", close: "17:00" },
-      thursday: { open: "09:00", close: "17:00" },
-      friday: { open: "09:00", close: "17:00" },
-      saturday: { open: null, close: null },
-      sunday: { open: null, close: null },
-    };
-
-    await serviceSupabase.from("company_settings").insert({
-      company_id: newCompany.id,
-      hours_of_operation: defaultHours,
-      address: data.address,
-      address2: data.address2 || null,
-      city: data.city,
-      state: data.state,
-      zip_code: data.zipCode,
-      country: data.country,
+    const newCompanyId = await insertOrganizationCompanyRecord({
+      serviceSupabase,
+      data,
+      userId: user.id,
+      slug,
+      logoUrl,
     });
 
-    // Handle payment method if provided
+    await addOwnerMembership(serviceSupabase, newCompanyId, user.id);
+    await createDefaultCompanySettingsForOrganization(
+      serviceSupabase,
+      newCompanyId,
+      data
+    );
+
     if (paymentMethodId) {
-      try {
-        // Get user data for Stripe customer creation
-        const { data: userData } = await serviceSupabase
-          .from("users")
-          .select("email, name, stripe_customer_id")
-          .eq("id", user.id)
-          .single();
-
-        if (userData) {
-          // Get or create Stripe customer
-          let customerId = userData.stripe_customer_id;
-          if (!customerId) {
-            customerId = await getOrCreateStripeCustomer(
-              user.id,
-              userData.email,
-              userData.name || undefined
-            );
-
-            if (customerId) {
-              // Save customer ID to database
-              await serviceSupabase
-                .from("users")
-                .update({ stripe_customer_id: customerId })
-                .eq("id", user.id);
-            }
-          }
-
-          // Attach payment method to customer
-          if (customerId) {
-            const attached = await attachPaymentMethodToCustomer(
-              paymentMethodId,
-              customerId
-            );
-
-            if (!attached) {
-              console.warn("Failed to attach payment method to customer");
-              // Don't fail the organization creation if payment method attachment fails
-              // The user can add payment method later via billing portal
-            }
-          }
-        }
-      } catch (stripeError) {
-        console.error("Error handling payment method:", stripeError);
-        // Don't fail organization creation if Stripe operations fail
-        // The user can add payment method later via billing portal
-      }
+      await attachInitialPaymentMethodIfProvided(
+        serviceSupabase,
+        user.id,
+        paymentMethodId
+      );
     }
 
     revalidatePath("/dashboard/settings");
     revalidatePath("/dashboard");
 
-    return newCompany.id;
+    return newCompanyId;
   });
+}
+
+type ParsedCreateOrganization = z.infer<typeof createOrganizationSchema>;
+
+type ParsedCreateOrganizationForm = {
+  data: ParsedCreateOrganization;
+  logoFile: File | null;
+  paymentMethodId: string | null;
+};
+
+function parseCreateOrganizationFormData(
+  formData: FormData
+): ParsedCreateOrganizationForm {
+  const nameValue = formData.get("name");
+  const industryValue = formData.get("industry");
+  const phoneValue = formData.get("phone");
+  const emailValue = formData.get("email");
+  const websiteValue = formData.get("website");
+  const addressValue = formData.get("address");
+  const address2Value = formData.get("address2");
+  const cityValue = formData.get("city");
+  const stateValue = formData.get("state");
+  const zipCodeValue = formData.get("zipCode");
+  const countryValue = formData.get("country");
+  const confirmPricingValue = formData.get("confirmPricing");
+  const logoFile = formData.get("logo") as File | null;
+  const paymentMethodId = formData.get("paymentMethodId") as string | null;
+
+  const data = createOrganizationSchema.parse({
+    name: nameValue,
+    industry: industryValue,
+    phone: phoneValue || undefined,
+    email: emailValue || undefined,
+    website: websiteValue || "",
+    address: addressValue,
+    address2: address2Value || "",
+    city: cityValue,
+    state: stateValue,
+    zipCode: zipCodeValue,
+    country: countryValue,
+    confirmPricing: confirmPricingValue === "true",
+  });
+
+  return { data, logoFile, paymentMethodId };
+}
+
+async function createServiceSupabaseClientOrThrow() {
+  const { createClient: createServiceClient } = await import(
+    "@supabase/supabase-js"
+  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!(supabaseUrl && serviceRoleKey)) {
+    throw new ActionError(
+      "Supabase service role configuration is missing",
+      ERROR_CODES.DB_CONNECTION_ERROR,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR
+    );
+  }
+
+  return createServiceClient(supabaseUrl, serviceRoleKey);
+}
+
+async function generateUniqueCompanySlug(
+  serviceSupabase: SupabaseClient,
+  name: string
+): Promise<string> {
+  const baseSlug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+  let slug = baseSlug;
+  let slugExists = true;
+  let counter = 1;
+
+  while (slugExists) {
+    const { data: existingCompany } = await serviceSupabase
+      .from("companies")
+      .select("id")
+      .eq("slug", slug)
+      .single();
+
+    if (existingCompany) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    } else {
+      slugExists = false;
+    }
+  }
+
+  return slug;
+}
+
+async function uploadOrganizationLogoIfProvided(
+  serviceSupabase: SupabaseClient,
+  slug: string,
+  logoFile: File | null
+): Promise<string | null> {
+  if (!logoFile || logoFile.size === 0) {
+    return null;
+  }
+
+  try {
+    const fileExt = logoFile.name.split(".").pop();
+    const fileName = `${slug}-${Date.now()}.${fileExt}`;
+    const filePath = `company-logos/${fileName}`;
+
+    const { error: uploadError } = await serviceSupabase.storage
+      .from("company-assets")
+      .upload(filePath, logoFile, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      return null;
+    }
+
+    const {
+      data: { publicUrl },
+    } = serviceSupabase.storage.from("company-assets").getPublicUrl(filePath);
+
+    return publicUrl;
+  } catch {
+    return null;
+  }
+}
+
+type InsertOrganizationCompanyParams = {
+  serviceSupabase: SupabaseClient;
+  data: ParsedCreateOrganization;
+  userId: string;
+  slug: string;
+  logoUrl: string | null;
+};
+
+async function insertOrganizationCompanyRecord(
+  params: InsertOrganizationCompanyParams
+): Promise<string> {
+  const { serviceSupabase, data, userId, slug, logoUrl } = params;
+  const { data: newCompany, error: companyError } = await serviceSupabase
+    .from("companies")
+    .insert({
+      name: data.name,
+      slug,
+      owner_id: userId,
+      logo: logoUrl,
+      industry: data.industry,
+      phone: data.phone || null,
+      email: data.email || null,
+      website: data.website || null,
+      created_by: userId,
+    })
+    .select("id")
+    .single();
+
+  if (companyError || !newCompany) {
+    const errorMessage = companyError
+      ? `Failed to create organization: ${companyError.message}`
+      : ERROR_MESSAGES.operationFailed("create organization");
+    throw new ActionError(
+      errorMessage,
+      ERROR_CODES.DB_QUERY_ERROR,
+      HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      {
+        organizationName: data.name,
+        slug,
+        dbError: companyError?.message || "No company returned",
+        code: companyError?.code,
+      }
+    );
+  }
+
+  return newCompany.id;
+}
+
+async function addOwnerMembership(
+  serviceSupabase: SupabaseClient,
+  companyId: string,
+  userId: string
+) {
+  const { data: ownerRole } = await serviceSupabase
+    .from("custom_roles")
+    .select("id")
+    .eq("name", "Owner")
+    .single();
+
+  const { error: memberError } = await serviceSupabase
+    .from("team_members")
+    .insert({
+      company_id: companyId,
+      user_id: userId,
+      role_id: ownerRole?.id || null,
+      status: "active",
+    });
+
+  if (memberError) {
+    await serviceSupabase.from("companies").delete().eq("id", companyId);
+
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("add user to organization"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+}
+
+async function createDefaultCompanySettingsForOrganization(
+  serviceSupabase: SupabaseClient,
+  companyId: string,
+  data: ParsedCreateOrganization
+) {
+  const defaultHours = {
+    monday: { open: "09:00", close: "17:00" },
+    tuesday: { open: "09:00", close: "17:00" },
+    wednesday: { open: "09:00", close: "17:00" },
+    thursday: { open: "09:00", close: "17:00" },
+    friday: { open: "09:00", close: "17:00" },
+    saturday: { open: null, close: null },
+    sunday: { open: null, close: null },
+  };
+
+  await serviceSupabase.from("company_settings").insert({
+    company_id: companyId,
+    hours_of_operation: defaultHours,
+    address: data.address,
+    address2: data.address2 || null,
+    city: data.city,
+    state: data.state,
+    zip_code: data.zipCode,
+    country: data.country,
+  });
+}
+
+async function attachInitialPaymentMethodIfProvided(
+  serviceSupabase: SupabaseClient,
+  userId: string,
+  paymentMethodId: string
+) {
+  try {
+    const { data: userData } = await serviceSupabase
+      .from("users")
+      .select("email, name, stripe_customer_id")
+      .eq("id", userId)
+      .single();
+
+    if (!userData) {
+      return;
+    }
+
+    let customerId = userData.stripe_customer_id;
+    if (!customerId) {
+      customerId = await getOrCreateStripeCustomer(
+        userId,
+        userData.email,
+        userData.name || undefined
+      );
+
+      if (customerId) {
+        await serviceSupabase
+          .from("users")
+          .update({ stripe_customer_id: customerId })
+          .eq("id", userId);
+      }
+    }
+
+    if (customerId) {
+      await attachPaymentMethodToCustomer(paymentMethodId, customerId);
+    }
+  } catch {
+    // Ignore Stripe failures during initial organization creation
+  }
 }
 
 /**
  * Update Company Feed Settings
  */
-export async function updateCompanyFeedSettings(
+export function updateCompanyFeedSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1231,7 +1384,7 @@ export async function updateCompanyFeedSettings(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -1257,7 +1410,7 @@ export async function updateCompanyFeedSettings(
   });
 }
 
-export async function getCompanyFeedSettings(): Promise<ActionResult<any>> {
+export function getCompanyFeedSettings(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1282,7 +1435,7 @@ export async function getCompanyFeedSettings(): Promise<ActionResult<any>> {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 

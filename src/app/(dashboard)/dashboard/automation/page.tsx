@@ -34,7 +34,6 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
-export const revalidate = 900; // Revalidate every 15 minutes
 
 export default function AutomationPage() {
   return (

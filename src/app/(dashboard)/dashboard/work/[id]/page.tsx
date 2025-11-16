@@ -10,11 +10,11 @@ import { JobPageContentUnified } from "@/components/work/job-details/job-page-co
 import { isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { getUserRole } from "@/lib/auth/permissions";
 import { generateJobStats } from "@/lib/stats/utils";
-import { createClient } from "@/lib/supabase/server";
 import {
   hasReportableError,
   isMissingColumnError,
 } from "@/lib/supabase/error-helpers";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function JobDetailsPage({
   params,
@@ -466,19 +466,15 @@ export default async function JobDetailsPage({
     ? [...communicationFiltersWithoutProperty, propertyFilter]
     : communicationFiltersWithoutProperty;
 
-  let {
-    data: jobCommunications,
-    error: jobCommunicationsError,
-  } = await buildJobCommunicationsQuery(filtersWithProperty);
+  let { data: jobCommunications, error: jobCommunicationsError } =
+    await buildJobCommunicationsQuery(filtersWithProperty);
 
   if (
     propertyFilter &&
     isMissingColumnError(jobCommunicationsError, "property_id")
   ) {
-    ({
-      data: jobCommunications,
-      error: jobCommunicationsError,
-    } = await buildJobCommunicationsQuery(communicationFiltersWithoutProperty));
+    ({ data: jobCommunications, error: jobCommunicationsError } =
+      await buildJobCommunicationsQuery(communicationFiltersWithoutProperty));
   }
 
   if (hasReportableError(jobCommunicationsError)) {

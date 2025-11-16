@@ -16,7 +16,15 @@ import { USER_ROLES } from "@/types/roles";
  * Uses Zustand for state management (no Context Provider needed)
  */
 
-export function RoleBasedDashboard({ dashboardData }: { dashboardData?: any }) {
+interface RoleBasedDashboardProps {
+  dashboardData?: any;
+  renderedAt?: number;
+}
+
+export function RoleBasedDashboard({
+  dashboardData,
+  renderedAt,
+}: RoleBasedDashboardProps) {
   const role = useRoleStore((state) => state.role);
   const isLoading = useRoleStore((state) => state.isLoading);
 
@@ -38,7 +46,7 @@ export function RoleBasedDashboard({ dashboardData }: { dashboardData?: any }) {
   switch (role) {
     case USER_ROLES.OWNER:
     case USER_ROLES.ADMIN:
-      return <OwnerDashboard data={dashboardData} />;
+      return <OwnerDashboard data={dashboardData} renderedAt={renderedAt} />;
 
     case USER_ROLES.DISPATCHER:
       return <DispatcherDashboard />;
@@ -53,6 +61,6 @@ export function RoleBasedDashboard({ dashboardData }: { dashboardData?: any }) {
       return <CSRDashboard />;
 
     default:
-      return <OwnerDashboard data={dashboardData} />;
+      return <OwnerDashboard data={dashboardData} renderedAt={renderedAt} />;
   }
 }

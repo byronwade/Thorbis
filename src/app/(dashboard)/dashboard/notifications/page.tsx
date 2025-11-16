@@ -22,6 +22,8 @@ export default function NotificationsPage() {
           title: "Notifications",
           subtitle: "View and manage all your notifications",
         }}
+        pathname="/dashboard/notifications"
+        showLeftSidebar={false}
       />
       <div className="container mx-auto px-4 py-6">
         <Suspense fallback={<NotificationsListSkeleton />}>

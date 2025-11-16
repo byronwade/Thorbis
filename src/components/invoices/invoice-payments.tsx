@@ -11,7 +11,7 @@ import { DollarSign, ExternalLink, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { removePaymentFromInvoice } from "@/actions/invoice-payments-v2";
+import { removePaymentFromInvoice } from "@/actions/invoice-payments";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

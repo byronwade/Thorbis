@@ -58,7 +58,7 @@ export function StatusIndicator({
             sizeClass
           )}
         />
-        <span className="text-sm text-muted-foreground">{config.label}</span>
+        <span className="text-muted-foreground text-sm">{config.label}</span>
       </div>
     );
   }
@@ -76,4 +76,3 @@ export function StatusIndicator({
     />
   );
 }
-

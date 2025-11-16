@@ -9,13 +9,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { start as startWorkflow } from "workflow/api";
 import { getCurrentUser } from "@/lib/auth/session";
 import {
-  ensureCompanyTrialStatus,
   DEFAULT_TRIAL_LENGTH_DAYS,
+  ensureCompanyTrialStatus,
 } from "@/lib/billing/trial-management";
 import { createClient } from "@/lib/supabase/server";
 import { companyTrialWorkflow } from "@/workflows/company-trial";
-
-export const dynamic = "force-dynamic";
 
 interface SaveCompanyRequest {
   id?: string | null;

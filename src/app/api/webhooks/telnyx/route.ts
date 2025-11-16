@@ -225,6 +225,11 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       }
 
       console.log("✅ Call saved to database");
+
+      // Broadcast call initiated event to UI (for real-time notifications)
+      // This would typically use WebSocket or Server-Sent Events
+      // For now, the UI will poll or use Supabase realtime subscriptions
+
       break;
     }
 

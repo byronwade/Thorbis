@@ -1,5 +1,5 @@
-import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { ServiceSupabaseClient } from "@/lib/supabase/service-client";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
@@ -27,8 +27,7 @@ export async function ensureCompanyTrialStatus({
   trialEndsAt: string;
   statusChanged: boolean;
 }> {
-  const client =
-    serviceClient ?? (await createServiceSupabaseClient());
+  const client = serviceClient ?? (await createServiceSupabaseClient());
 
   const { data: company, error } = await client
     .from("companies")
@@ -85,8 +84,7 @@ export async function expireCompanyTrialIfEligible({
   now = new Date(),
   serviceClient,
 }: ExpireOptions): Promise<{ expired: boolean }> {
-  const client =
-    serviceClient ?? (await createServiceSupabaseClient());
+  const client = serviceClient ?? (await createServiceSupabaseClient());
 
   const { data: company, error } = await client
     .from("companies")
@@ -121,4 +119,3 @@ export async function expireCompanyTrialIfEligible({
 
   return { expired: true };
 }
-

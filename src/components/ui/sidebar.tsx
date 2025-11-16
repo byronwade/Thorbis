@@ -322,7 +322,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       className={cn(
         "relative flex w-full flex-col overflow-hidden rounded-tl-xl bg-background",
-        "h-full md:h-[calc(100%-1rem)]",
+        "h-full",
         // Base inset styles (removed left margin classes)
         "md:peer-data-[variant=inset]:mb-4 md:peer-data-[variant=inset]:rounded-2xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-border/50 md:peer-data-[variant=inset]:shadow-sm",
         // Right margin only

@@ -9,7 +9,6 @@ import {
 } from "@/lib/seo/structured-data";
 
 // ISR: Revalidate every hour (pricing rarely changes)
-export const revalidate = 3600;
 
 export const metadata = generateSEOMetadata({
   title: "Pricing",

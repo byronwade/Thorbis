@@ -14,7 +14,8 @@ export type WorkSection =
   | "serviceAgreements"
   | "equipment"
   | "teams"
-  | "customers";
+  | "customers"
+  | "vendors";
 
 export type WorkViewMode = "table" | "kanban";
 
@@ -39,6 +40,7 @@ const defaultViews: Record<WorkSection, WorkViewMode> = {
   equipment: "table",
   teams: "table",
   customers: "table",
+  vendors: "table",
 };
 
 function createInitialState(): WorkViewState {

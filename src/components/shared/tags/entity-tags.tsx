@@ -54,7 +54,8 @@ type EntityTagsProps = {
     | "estimate"
     | "equipment"
     | "appointment"
-    | "material";
+    | "material"
+    | "vendor";
   tags: EntityTag[];
   onUpdateTags: (
     entityId: string,

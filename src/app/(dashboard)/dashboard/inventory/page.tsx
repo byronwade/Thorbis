@@ -9,8 +9,6 @@
  * - ISR revalidation every 1 hour
  */
 
-export const revalidate = 3600; // Revalidate every 1 hour
-
 export default function InventoryDashboardPage() {
   return (
     <div className="space-y-6">

@@ -17,8 +17,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 3600; // Revalidate every hour
-
 export default function AnalyticsPage() {
   return (
     <div className="space-y-6">

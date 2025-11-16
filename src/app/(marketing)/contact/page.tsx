@@ -16,8 +16,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 900;
-
 export const metadata = generateSEOMetadata({
   title: "Contact Thorbis",
   description:

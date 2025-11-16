@@ -12,8 +12,6 @@ import {
 } from "@/actions/customer-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
-
 /**
  * GET - Retrieve cached enrichment data
  */

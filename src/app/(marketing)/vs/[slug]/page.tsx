@@ -14,8 +14,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 3600;
-
 type CompetitorPageProps = {
   params: Promise<{ slug: string }>;
 };

@@ -1740,72 +1740,30 @@ export function IncomingCallNotification() {
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
 
-  // Simulated call state for development/testing
-  const [simulatedCall, setSimulatedCall] = useState<{
-    status: "incoming" | "active";
-    caller: { name?: string; number: string; avatar?: string };
-    direction?: "inbound" | "outbound";
-  } | null>(null);
-  const [simulatedCallMuted, setSimulatedCallMuted] = useState(false);
-  const [simulatedCallOnHold, setSimulatedCallOnHold] = useState(false);
-
-  // Listen for simulated call events (development mode)
-  useEffect(() => {
-    const handleSimulateIncomingCall = (event: CustomEvent) => {
-      const { name, number, avatar } = event.detail;
-      setSimulatedCall({
-        status: "incoming",
-        caller: { name, number, avatar },
-        direction: "inbound",
-      });
-      setSimulatedCallMuted(false);
-      setSimulatedCallOnHold(false);
-    };
-
-    const handleSimulateOutgoingCall = (event: CustomEvent) => {
-      const { name, number, avatar } = event.detail;
-      setSimulatedCall({
-        status: "active",
-        caller: { name, number, avatar },
-        direction: "outbound",
-      });
-      setSimulatedCallMuted(false);
-      setSimulatedCallOnHold(false);
-    };
-
-    window.addEventListener(
-      "simulate-incoming-call",
-      handleSimulateIncomingCall as EventListener
-    );
-    window.addEventListener(
-      "simulate-outgoing-call",
-      handleSimulateOutgoingCall as EventListener
-    );
-
-    return () => {
-      window.removeEventListener(
-        "simulate-incoming-call",
-        handleSimulateIncomingCall as EventListener
-      );
-      window.removeEventListener(
-        "simulate-outgoing-call",
-        handleSimulateOutgoingCall as EventListener
-      );
-    };
-  }, []);
-
-  // Map WebRTC call state to UI format, or use simulated call if present
-  const call = simulatedCall
+  // Map WebRTC call state to UI format (real Telnyx calls only)
+  const call = webrtc.currentCall
     ? {
-        status: simulatedCall.status,
-        caller: simulatedCall.caller,
-        isMuted: simulatedCallMuted,
-        isOnHold: simulatedCallOnHold,
-        isRecording: false,
-        startTime: simulatedCall.status === "active" ? Date.now() : undefined,
-        videoStatus: "off" as const,
-        isLocalVideoEnabled: false,
-        isRemoteVideoEnabled: false,
+        status:
+          webrtc.currentCall.state === "ringing"
+            ? webrtc.currentCall.direction === "inbound"
+              ? ("incoming" as const)
+              : ("active" as const)
+            : webrtc.currentCall.state === "active"
+              ? ("active" as const)
+              : webrtc.currentCall.state === "ended"
+                ? ("ended" as const)
+                : ("idle" as const),
+        caller: {
+          name: webrtc.currentCall.remoteName || "Unknown Caller",
+          number: webrtc.currentCall.remoteNumber,
+        },
+        isMuted: webrtc.currentCall.isMuted,
+        isOnHold: webrtc.currentCall.isHeld,
+        isRecording, // Use server-side recording state
+        startTime: webrtc.currentCall.startTime?.getTime(),
+        videoStatus: uiCall.videoStatus || "off",
+        isLocalVideoEnabled: uiCall.isLocalVideoEnabled,
+        isRemoteVideoEnabled: uiCall.isRemoteVideoEnabled,
         isScreenSharing: false,
         connectionQuality: "excellent" as const,
         hasVirtualBackground: false,
@@ -1814,48 +1772,17 @@ export function IncomingCallNotification() {
         participants: [],
         meetingLink: "",
       }
-    : webrtc.currentCall
-      ? {
-          status:
-            webrtc.currentCall.state === "ringing"
-              ? webrtc.currentCall.direction === "inbound"
-                ? ("incoming" as const)
-                : ("active" as const)
-              : webrtc.currentCall.state === "active"
-                ? ("active" as const)
-                : webrtc.currentCall.state === "ended"
-                  ? ("ended" as const)
-                  : ("idle" as const),
-          caller: {
-            name: webrtc.currentCall.remoteName || "Unknown Caller",
-            number: webrtc.currentCall.remoteNumber,
-          },
-          isMuted: webrtc.currentCall.isMuted,
-          isOnHold: webrtc.currentCall.isHeld,
-          isRecording, // Use server-side recording state
-          startTime: webrtc.currentCall.startTime?.getTime(),
-          videoStatus: uiCall.videoStatus || "off",
-          isLocalVideoEnabled: uiCall.isLocalVideoEnabled,
-          isRemoteVideoEnabled: uiCall.isRemoteVideoEnabled,
-          isScreenSharing: false,
-          connectionQuality: "excellent" as const,
-          hasVirtualBackground: false,
-          reactions: [],
-          chatMessages: [],
-          participants: [],
-          meetingLink: "",
-        }
-      : {
-          status: "idle" as const,
-          caller: null,
-          isMuted: false,
-          isOnHold: false,
-          isRecording: false,
-          startTime: undefined,
-          videoStatus: "off" as const,
-          isLocalVideoEnabled: false,
-          isRemoteVideoEnabled: false,
-        };
+    : {
+        status: "idle" as const,
+        caller: null,
+        isMuted: false,
+        isOnHold: false,
+        isRecording: false,
+        startTime: undefined,
+        videoStatus: "off" as const,
+        isLocalVideoEnabled: false,
+        isRemoteVideoEnabled: false,
+      };
 
   // Cross-tab synchronization
   const sync = useCrossTabSync();
@@ -2069,26 +1996,40 @@ export function IncomingCallNotification() {
 
   // Wrapped handlers that use WebRTC and broadcast to other tabs
   const handleAnswerCall = async () => {
-    if (simulatedCall) {
-      // For simulated calls, just update the status
-      setSimulatedCall((prev) => (prev ? { ...prev, status: "active" } : null));
-      sync.broadcastCallAnswered();
-      return;
-    }
+    // Real Telnyx call handling only
     try {
       await webrtc.answerCall();
       sync.broadcastCallAnswered();
+
+      // Open call window in new tab when user accepts the call
+      if (callId) {
+        console.log("📞 Opening call window with:", {
+          callId,
+          companyId,
+          from: call.caller?.number,
+          direction: "inbound",
+        });
+
+        const params = new URLSearchParams({
+          callId,
+          ...(companyId && { companyId }),
+          ...(call.caller?.number && { from: call.caller.number }),
+          direction: "inbound",
+        });
+
+        const url = `/call-window?${params.toString()}`;
+        console.log("📞 Call window URL:", url);
+
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
     } catch (error) {
       console.error("Failed to answer call:", error);
     }
   };
 
   const handleEndCall = async () => {
-    if (simulatedCall) {
-      // Clear simulated call state
-      setSimulatedCall(null);
-      setSimulatedCallMuted(false);
-      setSimulatedCallOnHold(false);
+    // Real Telnyx call handling only
+    if (!webrtc.currentCall) {
       clearTranscript();
       setIsRecording(false);
       sync.broadcastCallEnded();
@@ -2106,9 +2047,7 @@ export function IncomingCallNotification() {
 
   const handleVoicemail = async () => {
     setDisposition("voicemail");
-    if (simulatedCall) {
-      // Clear simulated call state
-      setSimulatedCall(null);
+    if (!webrtc.currentCall) {
       clearTranscript();
       sync.broadcastCallEnded();
       return;
@@ -2122,14 +2061,7 @@ export function IncomingCallNotification() {
   };
 
   const handleToggleMute = async () => {
-    if (simulatedCall) {
-      // For simulated calls, toggle local state
-      setSimulatedCallMuted((prev) => {
-        sync.broadcastCallAction(prev ? "unmute" : "mute");
-        return !prev;
-      });
-      return;
-    }
+    // Real Telnyx call handling only
     try {
       if (call.isMuted) {
         await webrtc.unmuteCall();
@@ -2144,14 +2076,7 @@ export function IncomingCallNotification() {
   };
 
   const handleToggleHold = async () => {
-    if (simulatedCall) {
-      // For simulated calls, toggle local state
-      setSimulatedCallOnHold((prev) => {
-        sync.broadcastCallAction(prev ? "unhold" : "hold");
-        return !prev;
-      });
-      return;
-    }
+    // Real Telnyx call handling only
     try {
       if (call.isOnHold) {
         await webrtc.unholdCall();

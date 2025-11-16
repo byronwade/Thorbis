@@ -19,8 +19,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 3600; // Revalidate every hour
-
 type SearchParams = Promise<{ category?: string }>;
 
 type ShopPageProps = {

@@ -13,8 +13,9 @@
  * - Standard info banner at bottom
  */
 
-import { ArrowLeft, Clock, HelpCircle, type LucideIcon } from "lucide-react";
+import { ArrowLeft, Clock, HelpCircle } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -25,7 +26,7 @@ import {
 
 interface SettingsComingSoonProps {
   /** Icon to display in the coming soon card */
-  icon: LucideIcon;
+  icon: ReactNode;
 
   /** Page title (displayed as text-4xl to match standard) */
   title: string;
@@ -44,7 +45,7 @@ interface SettingsComingSoonProps {
 }
 
 export function SettingsComingSoon({
-  icon: Icon,
+  icon,
   title,
   description,
   helpText,
@@ -84,7 +85,7 @@ export function SettingsComingSoon({
             <div className="relative mb-6">
               <div className="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-xl" />
               <div className="relative flex size-20 items-center justify-center rounded-full border border-primary/20 bg-primary/5">
-                <Icon className="size-10 text-primary" strokeWidth={1.5} />
+                {icon}
               </div>
             </div>
 

@@ -44,4 +44,3 @@ export function isOnboardingComplete(options: {
     isStepCompleted(progressRecord[stepKey])
   );
 }
-

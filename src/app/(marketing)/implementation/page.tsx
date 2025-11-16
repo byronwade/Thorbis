@@ -13,8 +13,6 @@ import {
 } from "@/lib/seo/metadata";
 import { createHowToSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 1800;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis Implementation & Customer Success",
   section: "Implementation",

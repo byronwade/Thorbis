@@ -1,8 +1,5 @@
-"use client";
-
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -31,8 +28,13 @@ type NavGroup = {
   items: NavItem[];
 };
 
-export function NavGrouped({ groups }: { groups: NavGroup[] }) {
-  const pathname = usePathname();
+export function NavGrouped({
+  groups,
+  pathname = "/dashboard",
+}: {
+  groups: NavGroup[];
+  pathname?: string;
+}) {
   const safePathname = pathname || "/dashboard";
 
   // Guard against undefined or null groups
@@ -103,7 +105,7 @@ export function NavGrouped({ groups }: { groups: NavGroup[] }) {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         asChild
-                        isActive={isActive && pathname === item.url}
+                        isActive={isActive && safePathname === item.url}
                         tooltip={item.title}
                       >
                         <Link href={item.url}>

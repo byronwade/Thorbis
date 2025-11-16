@@ -9,8 +9,8 @@
  */
 
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
+import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "./session";
 
 export type UserStatus = "online" | "available" | "busy";

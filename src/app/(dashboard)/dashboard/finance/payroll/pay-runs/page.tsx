@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Finance > Payroll > Pay Runs Page - Client Component
  *
@@ -26,7 +28,6 @@ import {
 } from "@/components/ui/card";
 import { DataTable, type DataTableColumn } from "@/components/ui/data-table";
 
-export const revalidate = 900; // Revalidate every 15 minutes
 interface PayRun extends Record<string, unknown> {
   id: string;
   period: string;

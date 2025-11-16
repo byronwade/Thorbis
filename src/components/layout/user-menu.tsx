@@ -20,7 +20,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { signOut } from "@/actions/auth";
 import { switchCompany } from "@/actions/company-context";
-import { updateUserStatus, type UserStatus } from "@/actions/user-status";
+import { type UserStatus, updateUserStatus } from "@/actions/user-status";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -144,8 +144,8 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
                   .join("")}
               </AvatarFallback>
             </Avatar>
-            <div className="absolute -bottom-0.5 -right-0.5">
-              <StatusIndicator status={userStatus} size="sm" />
+            <div className="-bottom-0.5 -right-0.5 absolute">
+              <StatusIndicator size="sm" status={userStatus} />
             </div>
           </div>
           <span className="hidden font-medium text-sm md:inline-block">
@@ -167,8 +167,8 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute -bottom-0.5 -right-0.5">
-                <StatusIndicator status={userStatus} size="md" />
+              <div className="-bottom-0.5 -right-0.5 absolute">
+                <StatusIndicator size="md" status={userStatus} />
               </div>
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -193,7 +193,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
               onClick={() => handleStatusChange("online")}
               type="button"
             >
-              <StatusIndicator status="online" size="md" />
+              <StatusIndicator size="md" status="online" />
               <span>Online</span>
               {userStatus === "online" && (
                 <div className="ml-auto size-2 rounded-full bg-primary" />
@@ -207,7 +207,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
               onClick={() => handleStatusChange("available")}
               type="button"
             >
-              <StatusIndicator status="available" size="md" />
+              <StatusIndicator size="md" status="available" />
               <span>Available</span>
               {userStatus === "available" && (
                 <div className="ml-auto size-2 rounded-full bg-primary" />
@@ -221,7 +221,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
               onClick={() => handleStatusChange("busy")}
               type="button"
             >
-              <StatusIndicator status="busy" size="md" />
+              <StatusIndicator size="md" status="busy" />
               <span>Busy</span>
               {userStatus === "busy" && (
                 <div className="ml-auto size-2 rounded-full bg-primary" />

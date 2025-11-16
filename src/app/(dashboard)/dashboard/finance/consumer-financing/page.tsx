@@ -28,8 +28,6 @@ import {
 } from "@/components/ui/card";
 import { ComingSoon } from "@/components/ui/coming-soon";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 export default function ConsumerFinancingPage() {
   // Show Coming Soon in production, normal page in development
   const isProduction = process.env.NEXT_PUBLIC_APP_ENV === "production";

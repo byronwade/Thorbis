@@ -10,8 +10,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 1800;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis Integrations Directory",
   section: "Integrations",

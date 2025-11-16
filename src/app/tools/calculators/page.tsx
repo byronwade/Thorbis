@@ -24,8 +24,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 3600; // Revalidate every hour
-
 type CalculatorTool = {
   title: string;
   description: string;

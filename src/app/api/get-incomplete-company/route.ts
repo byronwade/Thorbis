@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/server";
  * Get incomplete company data for onboarding
  * Returns company details if active company has incomplete onboarding
  */
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

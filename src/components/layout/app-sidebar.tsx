@@ -12,14 +12,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { EmailDetailSidebar } from "@/components/communication/email-detail-sidebar";
 import { NavChatHistory } from "@/components/layout/nav-chat-history";
 import { NavFlexible } from "@/components/layout/nav-flexible";
 import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
 import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
-import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav-v2";
+import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav";
 import {
   Sidebar,
   SidebarContent,
@@ -90,7 +89,6 @@ import {
   X,
   Zap,
 } from "@/lib/icons/icon-registry";
-import { useChatStore } from "@/lib/stores/chat-store";
 
 // Navigation sections for each route
 const navigationSections = {
@@ -271,6 +269,11 @@ const navigationSections = {
           title: "Price Book",
           url: "/dashboard/work/pricebook",
           icon: BookOpen,
+        },
+        {
+          title: "Vendors",
+          url: "/dashboard/work/vendors",
+          icon: Building2,
         },
         {
           title: "Materials Inventory",
@@ -2217,7 +2220,7 @@ const navigationSections = {
 // Match only job detail pages with numeric/UUID IDs, not page names like "invoices", "schedule", etc.
 // This prevents the job details sidebar from showing on other work pages
 const JOB_DETAILS_PATTERN =
-  /^\/dashboard\/work\/(?!invoices|schedule|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team)[^/]+$/;
+  /^\/dashboard\/work\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
 
 // Match communication detail pages (e.g., /dashboard/communication/123)
 // Exclude special routes like unread, starred, archive, trash, spam, teams, feed
@@ -2279,19 +2282,18 @@ function getCurrentSection(pathname: string): keyof typeof navigationSections {
   return "today";
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
-  const currentSection = getCurrentSection(pathname || "/dashboard");
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  pathname?: string;
+};
+
+export function AppSidebar({
+  pathname: externalPathname,
+  ...props
+}: AppSidebarProps) {
+  const clientPathname = usePathname();
+  const pathname = clientPathname || externalPathname || "/dashboard";
+  const currentSection = getCurrentSection(pathname);
   const navItems = navigationSections[currentSection];
-  const [showWhatsNew, setShowWhatsNew] = useState(true);
-
-  // Chat store for AI section
-  const { cleanupDuplicateChats } = useChatStore();
-
-  // Clean up any duplicate chats on mount
-  useEffect(() => {
-    cleanupDuplicateChats();
-  }, [cleanupDuplicateChats]);
 
   const isAISection = currentSection === "ai";
   const isReportingSection = currentSection === "reporting";
@@ -2346,49 +2348,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           />
         ) : useGroupedNav ? (
           // Use default grouped navigation
-          <NavGrouped groups={navItems as any} />
+          <NavGrouped groups={navItems as any} pathname={pathname} />
         ) : (
           // Use default main navigation
-          <NavMain items={navItems as any} />
+          <NavMain items={navItems as any} pathname={pathname} />
         )}
 
         {/* Chat History for AI section */}
         {isAISection && !hasCustomConfig && <NavChatHistory />}
       </SidebarContent>
       <SidebarFooter>
-        {showWhatsNew && (
-          <div className="group relative flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 p-4 transition-all hover:border-primary/30 hover:shadow-md">
-            <Link className="absolute inset-0 z-0" href="/changelog" />
-            <div className="relative z-10 flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm">What's New</span>
-                  <span className="text-muted-foreground text-xs">
-                    Version 2.1.0
-                  </span>
-                </div>
-              </div>
-              <button
-                aria-label="Dismiss"
-                className="relative z-20 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background/50 hover:text-foreground"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowWhatsNew(false);
-                }}
-                type="button"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
+        <div className="group relative flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 p-4 transition-all hover:border-primary/30 hover:shadow-md">
+          <Link className="absolute inset-0 z-0" href="/changelog" />
+          <div className="relative z-10 flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
+              <Sparkles className="h-4 w-4 text-primary" />
             </div>
-            <p className="relative z-10 text-muted-foreground text-xs leading-relaxed">
-              Check out the latest features, improvements, and bug fixes.
-            </p>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="flex flex-col">
+              <span className="font-semibold text-sm">What's New</span>
+              <span className="text-muted-foreground text-xs">
+                Version 2.1.0
+              </span>
+            </div>
           </div>
-        )}
+          <p className="relative z-10 text-muted-foreground text-xs leading-relaxed">
+            Check out the latest features, improvements, and bug fixes.
+          </p>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -18,11 +18,11 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { start as startWorkflow } from "workflow/api";
+import { z } from "zod";
 import {
-  ensureCompanyTrialStatus,
   DEFAULT_TRIAL_LENGTH_DAYS,
+  ensureCompanyTrialStatus,
 } from "@/lib/billing/trial-management";
 import {
   createResendDomain,

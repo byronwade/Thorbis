@@ -1,8 +1,20 @@
 # Thorbis Project Guidelines
 
+These guidelines describe how to work effectively and safely in the Thorbis codebase.  
+They complement the main project `README.md` and the docs index at `docs/README.md`.
+
+- For **high-level overview / onboarding**, start with `README.md`.
+- For **feature- or system-level docs**, see the organized docs under:
+  - `docs/migrations/`, `docs/performance/`, `docs/architecture/`, `docs/status/`, `docs/troubleshooting/`.
+- For **day-to-day implementation notes**, see `notes/`.
+
+This file (`.claude/CLAUDE.md`) is the **authoritative ruleset** for how the AI should reason about and modify this project.
+
+---
+
 ## 🚀 NEXT.JS 16+ REQUIREMENTS
 
-**This project uses Next.js 16.0.0 with React 19. ALL code must follow Next.js 16+ patterns.**
+**This project uses Next.js 16.0.1 with React 19. ALL code must follow Next.js 16+ patterns.**
 
 ### Breaking Changes from Next.js 14/15
 1. **Async Request APIs** - `cookies()`, `headers()`, `params`, `searchParams` are now async

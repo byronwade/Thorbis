@@ -28,8 +28,6 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-export const revalidate = 3600; // Revalidate every hour
-
 type Params = Promise<{ id: string }>;
 
 type ProductDetailPageProps = {

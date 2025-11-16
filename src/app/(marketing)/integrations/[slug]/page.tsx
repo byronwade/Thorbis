@@ -15,8 +15,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 1800;
-
 type IntegrationPageProps = {
   params: Promise<{ slug: string }>;
 };

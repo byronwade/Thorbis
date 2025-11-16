@@ -1,11 +1,9 @@
 "use client";
 
 import { Activity, FileText, Link as LinkIcon, Paperclip } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
-import {
-  UnifiedAccordion,
-  type UnifiedAccordionSection,
-} from "@/components/ui/unified-accordion";
+import type { UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import { cn } from "@/lib/utils";
 import {
   type DetailPageHeaderConfig,
@@ -18,6 +16,14 @@ import { NotesSection } from "./standard-sections/notes-section";
 import { RelatedItemsSection } from "./standard-sections/related-items-section";
 
 export type { DetailPageHeaderConfig };
+
+const UnifiedAccordion = dynamic(
+  () =>
+    import("@/components/ui/unified-accordion").then(
+      (mod) => mod.UnifiedAccordion
+    ),
+  { ssr: false }
+);
 
 interface DetailPageContentLayoutProps {
   /** Header configuration */
@@ -154,7 +160,7 @@ export function DetailPageContentLayout({
       afterContent={afterContent}
       beforeContent={beforeContent}
       className={cn("w-full", className)}
-      contentGapClassName={contentGapClassName ?? "gap-6"}
+      contentGapClassName={contentGapClassName ?? "gap-4"}
       customHeader={customHeader}
       header={header}
       statsBar={statsBar}

@@ -5,7 +5,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { deserializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { DispatchTimeline } from "./dispatch-timeline";
+import { KanbanView } from "./kanban-view";
+import { MonthlyView } from "./monthly-view";
 
 type SchedulePageClientProps = {
   initialData?: ScheduleBootstrapSerialized;
@@ -19,6 +22,7 @@ export function SchedulePageClient({
   const hydrateFromServer = useScheduleStore(
     (state) => state.hydrateFromServer
   );
+  const { viewMode } = useScheduleViewStore();
   const payload = useMemo(
     () => (initialData ? deserializeScheduleBootstrap(initialData) : null),
     [initialData]
@@ -31,7 +35,7 @@ export function SchedulePageClient({
   }, [hydrateFromServer, payload]);
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden p-0 m-0">
+    <div className="m-0 flex h-full w-full flex-1 flex-col overflow-hidden p-0">
       {bootstrapError && (
         <Alert
           className="mx-4 mt-2 mb-4 max-w-2xl self-center"
@@ -45,7 +49,13 @@ export function SchedulePageClient({
         </Alert>
       )}
 
-      <DispatchTimeline />
+      {viewMode === "month" ? (
+        <MonthlyView />
+      ) : viewMode === "week" ? (
+        <KanbanView />
+      ) : (
+        <DispatchTimeline />
+      )}
     </div>
   );
 }

@@ -1,6 +1,25 @@
 # Thorbis - Field Service Management Platform
 
-Enterprise-grade field service management platform built with Next.js 16, React 19, and Supabase.
+Enterprise-grade field service management platform for field and home services teams, built with Next.js 16, React 19, and Supabase.
+
+Thorbis is designed for:
+- **Operational reliability**: strong data model, RLS-by-default, safe server-side mutations
+- **Performance**: App Router, Partial Prerendering (PPR), streaming, and aggressive caching
+- **Real-world workflows**: scheduling, communications, billing, and mobile-first UX
+
+## 🧭 Table of Contents
+
+- [🚀 Quick Start](#-quick-start)
+- [📋 Tech Stack](#-tech-stack)
+- [🏗️ Project Structure](#-project-structure)
+- [📦 Key Features](#-key-features)
+- [🛠️ Development](#-development)
+- [🔑 API Configuration](#-api-configuration)
+- [📚 Documentation](#-documentation)
+- [🔒 Security](#-security)
+- [🎨 Code Standards](#-code-standards)
+- [📄 License](#-license)
+- [🤝 Contributing](#-contributing)
 
 ## 🚀 Quick Start
 
@@ -21,6 +40,8 @@ pnpm dev
 
 Visit [http://localhost:3000](http://localhost:3000) to see the application.
 
+> **Tip:** After big branch switches or dependency changes, run **`pnpm dev:clean`** once to reset build artifacts.
+
 ## 📋 Tech Stack
 
 - **Framework**: Next.js 16 (App Router)
@@ -38,33 +59,33 @@ Visit [http://localhost:3000](http://localhost:3000) to see the application.
 ```
 thorbis/
 ├── src/
-│   ├── app/              # Next.js App Router pages
-│   │   ├── (dashboard)/  # Protected dashboard routes
-│   │   ├── (marketing)/  # Public marketing pages
-│   │   └── api/          # API routes
-│   ├── components/       # React components
-│   │   ├── ui/           # shadcn/ui primitives
-│   │   └── features/     # Feature components
-│   ├── lib/              # Utilities and configurations
-│   ├── actions/          # Server Actions
-│   ├── hooks/            # Custom React hooks
-│   └── types/            # TypeScript types
+│   ├── app/                  # Next.js App Router (routes/layouts/api)
+│   │   ├── (dashboard)/      # Protected dashboard routes
+│   │   ├── (marketing)/      # Public marketing pages
+│   │   └── api/              # Route handlers (webhooks, APIs)
+│   ├── components/           # React components
+│   │   ├── ui/               # shadcn/ui primitives
+│   │   └── features/         # Feature components
+│   ├── lib/                  # Utilities, clients, configuration
+│   ├── actions/              # Server Actions (mutations, workflows)
+│   ├── hooks/                # Custom React hooks (client-only)
+│   └── types/                # Shared TypeScript types
 ├── supabase/
-│   ├── migrations/       # Database migrations
-│   └── seeds/            # Seed data
-├── docs/                 # Project documentation
-│   └── archive/root-updates/  # Historical reports previously stored in the repo root
-├── scripts/              # Build and utility scripts
-│   ├── database/manual/       # One-off migration helpers (apply-owner-fix, test-migration, etc.)
-│   └── maintenance/           # Local environment tooling (PowerShell/Bash fix scripts)
-└── public/               # Static assets
+│   ├── migrations/           # Database migrations
+│   ├── seeds/                # Seed data
+│   └── manual/               # One-off SQL helpers
+├── docs/                     # 📚 Organized documentation
+│   ├── README.md             # Documentation index
+│   ├── migrations/           # Migration & upgrade guides
+│   ├── performance/          # Performance optimization
+│   ├── architecture/         # System architecture
+│   ├── status/               # Implementation status
+│   └── troubleshooting/      # Error resolution guides
+├── notes/                    # Implementation notes
+├── scripts/                  # Build and utility scripts
+├── emails/                   # React Email templates & layouts
+└── public/                   # Static assets
 ```
-
-## 🧹 Root Housekeeping
-
-- All legacy Markdown/TXT status reports now live under `docs/archive/root-updates` to keep `/` focused on source.
-- Manual Supabase helpers (`apply-migrations.js`, `apply-owner-fix.js`, `test-migration.js`) moved to `scripts/database/manual`.
-- The Windows installation helpers (`fix-install*.ps1/.bat`) are consolidated under `scripts/maintenance/`.
 
 ## 📦 Key Features
 
@@ -101,6 +122,22 @@ pnpm db:push      # Push schema changes
 pnpm db:studio    # Open Drizzle Studio
 pnpm db:seed      # Seed database
 ```
+
+**Recommended workflow**
+
+- **Feature work**
+  - Run `pnpm dev`
+  - Use Server Components by default; add `"use client"` only for interactive islands
+  - Prefer Server Actions over ad-hoc API routes for authenticated mutations
+
+- **Schema changes**
+  - Evolve the Supabase schema via migrations
+  - Run `pnpm db:generate` then `pnpm db:push`
+  - Keep RLS policies up-to-date with schema changes
+
+- **Performance tuning**
+  - Use `pnpm build:analyze` to inspect bundle size
+  - Prefer server data fetching, PPR, and streaming where possible
 
 ### Troubleshooting
 
@@ -244,14 +281,28 @@ If you also add an Attom API key, the system will use it as a fallback if RentCa
 
 ## 📚 Documentation
 
-Comprehensive documentation is available in the `/docs` directory:
+Comprehensive documentation is available in the `/docs` directory, organized by category:
 
-- [Quick Start Guide](docs/QUICK_START.md)
-- [Authentication Setup](docs/AUTHENTICATION_SETUP_GUIDE.md)
-- [Stripe Integration](docs/STRIPE_QUICK_START.md)
-- [Telnyx Communications](docs/TELNYX_QUICK_REFERENCE.md)
-- [Settings System](docs/SETTINGS_README.md)
-- [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)
+- **📖 Getting Started**
+  - [Documentation Index](docs/README.md) - Complete guide to all documentation
+  - [Quick Start Guide](docs/QUICK_START.md)
+  - [Authentication Setup](docs/AUTHENTICATION_SETUP_GUIDE.md)
+  - [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)
+
+- **🔧 Integration Guides**
+  - [Stripe Integration](docs/STRIPE_QUICK_START.md)
+  - [Telnyx Communications](docs/TELNYX_QUICK_REFERENCE.md)
+  - [Settings System](docs/SETTINGS_README.md)
+
+- **📁 Organized Topics**
+  - [**Migrations**](docs/migrations/) - Next.js 16 upgrade, PPR conversion, PPR architecture
+  - [**Performance**](docs/performance/) - Optimization strategies, dashboards, audits
+  - [**Architecture**](docs/architecture/) - Layout system, routing, offline architecture
+  - [**Status**](docs/status/) - Implementation status, rollout notes, setup completion
+  - [**Troubleshooting**](docs/troubleshooting/) - Runtime errors, webhooks, WebRTC issues
+
+- **💡 Development Notes**
+  - [Implementation Notes](notes/) - Working notes and deep dives for specific features
 
 ## 🔒 Security
 

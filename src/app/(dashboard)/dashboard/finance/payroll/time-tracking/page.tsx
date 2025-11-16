@@ -11,8 +11,6 @@ import { Check, Clock, Filter, MoreHorizontal, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 import {
   Card,
   CardContent,

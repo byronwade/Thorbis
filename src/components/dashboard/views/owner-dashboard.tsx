@@ -18,7 +18,10 @@ import {
   formatTime,
 } from "@/lib/formatters";
 
-function formatRelative(iso: string | null | undefined) {
+function formatRelative(
+  iso: string | null | undefined,
+  referenceTime = Date.now()
+) {
   if (!iso) {
     return "";
   }
@@ -27,7 +30,7 @@ function formatRelative(iso: string | null | undefined) {
     const relativeFormatter = new Intl.RelativeTimeFormat("en-US", {
       numeric: "auto",
     });
-    const now = Date.now();
+    const now = referenceTime;
     const then = new Date(iso).getTime();
     const diffMinutes = Math.round((then - now) / (1000 * 60));
 
@@ -39,7 +42,7 @@ function formatRelative(iso: string | null | undefined) {
     return relativeFormatter.format(diffHours, "hour");
   } catch (error) {
     // Fallback if Intl.RelativeTimeFormat is not available
-    const now = Date.now();
+    const now = referenceTime;
     const then = new Date(iso).getTime();
     const diffMinutes = Math.round((then - now) / (1000 * 60));
 
@@ -98,8 +101,10 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
 
 export default function OwnerDashboard({
   data,
+  renderedAt,
 }: {
   data?: MissionControlData;
+  renderedAt?: number;
 }) {
   if (!data) {
     return (
@@ -110,6 +115,7 @@ export default function OwnerDashboard({
   }
 
   const stats = buildSummaryStats(data);
+  const relativeNow = renderedAt ?? Date.now();
 
   return (
     <div className="space-y-8">
@@ -134,7 +140,7 @@ export default function OwnerDashboard({
           <Separator className="h-4" orientation="vertical" />
           <span>
             {formatDateTime(data.lastUpdated)} (
-            {formatRelative(data.lastUpdated)})
+            {formatRelative(data.lastUpdated, relativeNow)})
           </span>
         </div>
       </header>
@@ -152,8 +158,8 @@ export default function OwnerDashboard({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <CommunicationsCard data={data} />
-        <ActivityCard data={data} />
+        <CommunicationsCard data={data} relativeNow={relativeNow} />
+        <ActivityCard data={data} relativeNow={relativeNow} />
       </div>
     </div>
   );
@@ -296,7 +302,13 @@ function FinancialCard({ data }: { data: MissionControlData }) {
   );
 }
 
-function CommunicationsCard({ data }: { data: MissionControlData }) {
+function CommunicationsCard({
+  data,
+  relativeNow,
+}: {
+  data: MissionControlData;
+  relativeNow: number;
+}) {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -310,7 +322,11 @@ function CommunicationsCard({ data }: { data: MissionControlData }) {
           <EmptyRow message="No communications logged today." />
         ) : (
           data.communications.map((item) => (
-            <CommunicationRow item={item} key={item.id} />
+            <CommunicationRow
+              item={item}
+              key={item.id}
+              relativeNow={relativeNow}
+            />
           ))
         )}
       </CardContent>
@@ -318,7 +334,13 @@ function CommunicationsCard({ data }: { data: MissionControlData }) {
   );
 }
 
-function ActivityCard({ data }: { data: MissionControlData }) {
+function ActivityCard({
+  data,
+  relativeNow,
+}: {
+  data: MissionControlData;
+  relativeNow: number;
+}) {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -332,7 +354,11 @@ function ActivityCard({ data }: { data: MissionControlData }) {
           <EmptyRow message="No new activity yet today." />
         ) : (
           data.activity.map((item) => (
-            <ActivityRow activity={item} key={item.id} />
+            <ActivityRow
+              activity={item}
+              key={item.id}
+              relativeNow={relativeNow}
+            />
           ))
         )}
       </CardContent>
@@ -492,8 +518,10 @@ function InvoiceRow({
 
 function CommunicationRow({
   item,
+  relativeNow,
 }: {
   item: MissionControlData["communications"][number];
+  relativeNow: number;
 }) {
   const isInbound = item.direction === "inbound";
   const Icon = item.type === "phone" ? Phone : Mail;
@@ -525,7 +553,7 @@ function CommunicationRow({
         </div>
       </div>
       <span className="text-muted-foreground text-xs">
-        {formatRelative(item.createdAt)}
+        {formatRelative(item.createdAt, relativeNow)}
       </span>
     </div>
   );
@@ -533,8 +561,10 @@ function CommunicationRow({
 
 function ActivityRow({
   activity,
+  relativeNow,
 }: {
   activity: MissionControlData["activity"][number];
+  relativeNow: number;
 }) {
   return (
     <div className="flex items-start justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
@@ -549,7 +579,7 @@ function ActivityRow({
         </div>
         <p className="text-muted-foreground text-xs">
           {activity.actorName || "System"} ·{" "}
-          {formatRelative(activity.createdAt)}
+          {formatRelative(activity.createdAt, relativeNow)}
         </p>
       </div>
       <Activity className="size-4 text-muted-foreground" />

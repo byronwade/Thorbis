@@ -578,8 +578,10 @@ export function WelcomePageClientAdvanced({
               <Sparkles className="size-4" />
             </div>
             <div className="space-y-1">
-              <AlertTitle className="font-semibold">{trialBannerTitle}</AlertTitle>
-              <AlertDescription className="text-sm text-muted-foreground">
+              <AlertTitle className="font-semibold">
+                {trialBannerTitle}
+              </AlertTitle>
+              <AlertDescription className="text-muted-foreground text-sm">
                 {trialBannerDescription}
               </AlertDescription>
             </div>

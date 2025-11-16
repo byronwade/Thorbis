@@ -16,8 +16,6 @@ import {
 } from "@/lib/seo/metadata";
 import { createArticleSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 3600;
-
 type BlogArticlePageProps = {
   params: Promise<{ slug: string }>;
 };

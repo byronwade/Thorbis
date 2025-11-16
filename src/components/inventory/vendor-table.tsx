@@ -9,6 +9,7 @@ import {
   Phone,
 } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,7 +79,7 @@ const categoryConfig: Record<string, { label: string; className: string }> = {
   },
 };
 
-const columns: ColumnDef<Vendor>[] = [
+const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
   {
     key: "vendor_number",
     header: "Vendor #",
@@ -87,7 +88,7 @@ const columns: ColumnDef<Vendor>[] = [
     render: (vendor) => (
       <Link
         className="font-medium text-foreground text-sm leading-tight hover:underline"
-        href={`/dashboard/inventory/vendors/${vendor.id}`}
+        href={`${basePath}/${vendor.id}`}
         onClick={(e) => e.stopPropagation()}
       >
         {vendor.vendor_number}
@@ -102,7 +103,7 @@ const columns: ColumnDef<Vendor>[] = [
       <div className="flex flex-col">
         <Link
           className="font-medium text-foreground text-sm leading-tight hover:underline"
-          href={`/dashboard/inventory/vendors/${vendor.id}`}
+          href={`${basePath}/${vendor.id}`}
           onClick={(e) => e.stopPropagation()}
         >
           {vendor.display_name || vendor.name}
@@ -187,14 +188,10 @@ const columns: ColumnDef<Vendor>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/inventory/vendors/${vendor.id}`}>
-              View Details
-            </Link>
+            <Link href={`${basePath}/${vendor.id}`}>View Details</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/inventory/vendors/${vendor.id}/edit`}>
-              Edit Vendor
-            </Link>
+            <Link href={`${basePath}/${vendor.id}/edit`}>Edit Vendor</Link>
           </DropdownMenuItem>
           {vendor.email && (
             <>
@@ -239,10 +236,16 @@ const bulkActions: BulkAction[] = [
 export function VendorTable({
   vendors,
   itemsPerPage = 50,
+  basePath = "/dashboard/inventory/vendors",
+  toolbarActions,
 }: {
   vendors: Vendor[];
   itemsPerPage?: number;
+  basePath?: string;
+  toolbarActions?: ReactNode;
 }) {
+  const columns = getColumns(basePath);
+
   return (
     <FullWidthDataTable
       bulkActions={bulkActions}
@@ -250,7 +253,7 @@ export function VendorTable({
       data={vendors}
       emptyAction={
         <Button asChild>
-          <Link href="/dashboard/inventory/vendors/new">
+          <Link href={`${basePath}/new`}>
             <Building2 className="mr-2 size-4" />
             Add Vendor
           </Link>
@@ -261,7 +264,7 @@ export function VendorTable({
       getItemId={(vendor) => vendor.id}
       itemsPerPage={itemsPerPage}
       onRowClick={(vendor) => {
-        window.location.href = `/dashboard/inventory/vendors/${vendor.id}`;
+        window.location.href = `${basePath}/${vendor.id}`;
       }}
       searchFilter={(vendor, query) => {
         const searchable = [
@@ -278,6 +281,7 @@ export function VendorTable({
         return searchable.includes(query);
       }}
       searchPlaceholder="Search vendors by name, number, email..."
+      toolbarActions={toolbarActions}
     />
   );
 }

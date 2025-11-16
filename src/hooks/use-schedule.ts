@@ -258,6 +258,12 @@ export function useSchedule() {
     });
   }, [filteredJobs, visibleTimeRange]);
 
+  // Get all jobs (unfiltered)
+  const getAllJobs = useCallback(
+    (): Job[] => Array.from(jobs.values()),
+    [jobs]
+  );
+
   return {
     // State
     isLoading,
@@ -276,6 +282,7 @@ export function useSchedule() {
 
     // Actions
     getJobsForTechnician,
+    getAllJobs,
     selectJob,
     selectTechnician,
     getUnassignedJobs: getUnassignedJobsFromStore,

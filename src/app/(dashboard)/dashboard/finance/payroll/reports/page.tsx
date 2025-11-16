@@ -16,8 +16,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 import {
   Card,
   CardContent,

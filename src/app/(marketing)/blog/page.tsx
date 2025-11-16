@@ -15,8 +15,6 @@ import {
 } from "@/lib/seo/metadata";
 import { cn } from "@/lib/utils";
 
-export const revalidate = 1800;
-
 const PAGE_SIZE = 9;
 
 export const metadata = generateSEOMetadata({

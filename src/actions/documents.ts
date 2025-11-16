@@ -32,19 +32,19 @@ import { createClient } from "@/lib/supabase/server";
 // TYPES
 // ============================================================================
 
-export interface ActionResult<T = void> {
+export type ActionResult<T = void> = {
   success: boolean;
   data?: T;
   error?: string;
   warnings?: string[];
-}
+};
 
-export interface UploadDocumentResult {
+export type UploadDocumentResult = {
   attachmentId: string;
   fileName: string;
   fileSize: number;
   storageUrl: string;
-}
+};
 
 // ============================================================================
 // HELPER FUNCTIONS
@@ -67,16 +67,8 @@ async function verifyCompanyAccess(
     error: authError,
   } = await supabase.auth.getUser();
   if (authError || !user) {
-    console.error("❌ verifyCompanyAccess: Auth failed", {
-      authError: authError?.message,
-    });
     return null;
   }
-
-  console.log("👤 verifyCompanyAccess: User authenticated", {
-    userId: user.id,
-    companyId,
-  });
 
   const { data: membership, error } = await supabase
     .from("team_members")
@@ -87,26 +79,10 @@ async function verifyCompanyAccess(
     .single();
 
   if (error || !membership) {
-    console.error("❌ verifyCompanyAccess: No membership found", {
-      userId: user.id,
-      companyId,
-      error: error?.message,
-      hasMembership: !!membership,
-    });
     return null;
   }
 
-  console.log("✅ verifyCompanyAccess: Membership found", {
-    userId: user.id,
-    companyId,
-    role: membership.role,
-  });
-
   if (requiredRole && !requiredRole.includes(membership.role)) {
-    console.error("❌ verifyCompanyAccess: Insufficient role", {
-      role: membership.role,
-      requiredRole,
-    });
     return null;
   }
 
@@ -148,286 +124,332 @@ export async function uploadDocument(
   formData: FormData
 ): Promise<ActionResult<UploadDocumentResult>> {
   try {
-    const file = formData.get("file") as File;
-    const companyId = formData.get("companyId") as string;
-    const contextType = formData.get("contextType") as DocumentContext["type"];
-    const contextId = formData.get("contextId") as string | undefined;
-    const folder = formData.get("folder") as string | undefined;
-    const description = formData.get("description") as string | undefined;
-    const tags = formData.get("tags") as string | undefined;
-
-    console.log("📤 Upload request received:", {
-      fileName: file?.name,
+    const {
+      file,
       companyId,
       contextType,
       contextId,
       folder,
-      hasFile: !!file,
-    });
+      description,
+      tagsRaw,
+    } = extractUploadFormData(formData);
 
-    // Validate inputs
-    if (!(file && contextType)) {
-      console.error("❌ Missing required fields:", {
-        hasFile: !!file,
-        contextType,
-      });
-      return {
-        success: false,
-        error: "Missing required fields",
-      };
+    const validateResult = await validateUploadInputs(file, contextType);
+    if (validateResult) {
+      return validateResult;
     }
 
-    // Get user's active company
     const activeCompanyId = await getActiveCompanyId();
     if (!activeCompanyId) {
-      console.error("❌ No active company found");
       return {
         success: false,
         error: "No active company found. Please select a company.",
       };
     }
 
-    // Use active company ID, but verify the passed companyId matches (if provided)
     const targetCompanyId = companyId || activeCompanyId;
 
-    // For job context, verify the job belongs to the user's active company
     if (contextType === "job" && contextId) {
-      const supabase = await createClient();
-      if (!supabase) {
-        return {
-          success: false,
-          error: "Server configuration error",
-        };
-      }
-
-      const { data: job, error: jobError } = await supabase
-        .from("jobs")
-        .select("company_id")
-        .eq("id", contextId)
-        .single();
-
-      if (jobError || !job) {
-        console.error("❌ Job not found:", {
-          jobId: contextId,
-          error: jobError,
-        });
-        return {
-          success: false,
-          error: "Job not found",
-        };
-      }
-
-      // Verify job belongs to user's active company
-      if (job.company_id !== activeCompanyId) {
-        console.error("❌ Job company mismatch:", {
-          jobCompanyId: job.company_id,
-          activeCompanyId,
-          passedCompanyId: companyId,
-        });
-        return {
-          success: false,
-          error: "Access denied - This job belongs to a different company",
-        };
-      }
-
-      // Use the job's company_id to ensure consistency
-      const finalCompanyId = job.company_id;
-
-      // Verify access
-      const access = await verifyCompanyAccess(finalCompanyId);
-      if (!access) {
-        console.error("❌ Upload access denied:", {
-          companyId: finalCompanyId,
-          fileName: file?.name,
-          contextType,
-          contextId,
-        });
-        return {
-          success: false,
-          error:
-            "Access denied - You must be an active member of this company to upload files",
-        };
-      }
-
-      // Parse tags safely
-      let parsedTags: string[] | undefined;
-      if (tags) {
-        try {
-          parsedTags = JSON.parse(tags);
-        } catch (parseError) {
-          console.error("❌ Failed to parse tags:", parseError);
-          return {
-            success: false,
-            error: "Invalid tags format",
-          };
-        }
-      }
-
-      // Continue with upload using job's company_id
-      const context: DocumentContext = {
-        type: contextType,
-        id: contextId,
-        folder,
-      };
-
-      const options: UploadOptions = {
-        companyId: finalCompanyId,
-        context,
-        description,
-        tags: parsedTags,
-      };
-
-      const result = await uploadDocumentService(file, options);
-
-      if (!result.success) {
-        return {
-          success: false,
-          error: result.error || "Upload failed",
-          warnings: result.warnings,
-        };
-      }
-
-      // Log action
-      await logDocumentAction(
-        finalCompanyId,
-        access.userId,
-        "document_uploaded",
-        {
-          attachmentId: result.attachmentId,
-          fileName: file.name,
-          fileSize: file.size,
-          context,
-        }
-      );
-
-      // Revalidate relevant paths
-      revalidatePath("/dashboard/documents");
-      if (contextId) {
-        revalidatePath(`/dashboard/work/${contextId}`);
-      }
-
-      return {
-        success: true,
-        data: {
-          attachmentId: result.attachmentId!,
-          fileName: file.name,
-          fileSize: file.size,
-          storageUrl: result.storageUrl!,
-        },
-        warnings: result.warnings,
-      };
-    }
-
-    // For non-job contexts, verify access to the target company
-    const access = await verifyCompanyAccess(targetCompanyId);
-    console.log("🔐 Access check result:", access ? "granted" : "denied", {
-      targetCompanyId,
-      activeCompanyId,
-      userId: access?.userId,
-      role: access?.role,
-    });
-
-    if (!access) {
-      console.error("❌ Upload access denied:", {
-        targetCompanyId,
-        activeCompanyId,
-        fileName: file?.name,
+      return handleJobDocumentUpload({
+        file,
         contextType,
         contextId,
+        folder,
+        description,
+        tagsRaw,
+        activeCompanyId,
       });
-      return {
-        success: false,
-        error:
-          "Access denied - You must be an active member of this company to upload files",
-      };
     }
 
-    // Validate file
-    const validation = await validateFile(file);
-    if (!validation.valid) {
-      return {
-        success: false,
-        error: validation.errors.join("; "),
-        warnings: validation.warnings,
-      };
-    }
-
-    // Upload document
-    const context: DocumentContext = {
-      type: contextType,
-      id: contextId,
+    return handleNonJobDocumentUpload({
+      file,
+      contextType,
+      contextId,
       folder,
-    };
-
-    // Parse tags safely
-    let parsedTags: string[] | undefined;
-    if (tags) {
-      try {
-        parsedTags = JSON.parse(tags);
-      } catch (parseError) {
-        console.error("❌ Failed to parse tags:", parseError);
-        return {
-          success: false,
-          error: "Invalid tags format",
-        };
-      }
-    }
-
-    const options: UploadOptions = {
-      companyId: targetCompanyId,
-      context,
       description,
-      tags: parsedTags,
-    };
-
-    const result = await uploadDocumentService(file, options);
-
-    if (!result.success) {
-      return {
-        success: false,
-        error: result.error,
-        warnings: result.warnings,
-      };
-    }
-
-    // Log action
-    await logDocumentAction(
+      tagsRaw,
       targetCompanyId,
-      access.userId,
-      "document_uploaded",
-      {
-        attachmentId: result.attachmentId,
-        fileName: file.name,
-        fileSize: file.size,
-        context,
-      }
-    );
-
-    // Revalidate relevant paths
-    revalidatePath("/dashboard/documents");
-    if (contextType === "customer" && contextId) {
-      revalidatePath(`/dashboard/customers/${contextId}`);
-    } else if (contextType === "job" && contextId) {
-      revalidatePath(`/dashboard/work/${contextId}`);
-    }
-
-    return {
-      success: true,
-      data: {
-        attachmentId: result.attachmentId!,
-        fileName: file.name,
-        fileSize: file.size,
-        storageUrl: result.storageUrl!,
-      },
-      warnings: result.warnings,
-    };
+      activeCompanyId,
+    });
   } catch (error) {
-    console.error("Upload document error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Upload failed",
     };
   }
+}
+
+type UploadContextType = DocumentContext["type"];
+
+type UploadFormData = {
+  file: File;
+  companyId: string;
+  contextType: UploadContextType;
+  contextId?: string;
+  folder?: string;
+  description?: string;
+  tagsRaw?: string;
+};
+
+type UploadHandlerBaseParams = {
+  file: File;
+  contextType: UploadContextType;
+  contextId?: string;
+  folder?: string;
+  description?: string;
+  tagsRaw?: string;
+};
+
+type JobUploadParams = UploadHandlerBaseParams & {
+  contextId: string;
+  activeCompanyId: string;
+};
+
+type NonJobUploadParams = UploadHandlerBaseParams & {
+  targetCompanyId: string;
+  activeCompanyId: string;
+};
+
+function extractUploadFormData(formData: FormData): UploadFormData {
+  const file = formData.get("file") as File;
+  const companyId = (formData.get("companyId") as string) ?? "";
+  const contextType = formData.get("contextType") as UploadContextType;
+  const contextId = formData.get("contextId") as string | undefined;
+  const folder = formData.get("folder") as string | undefined;
+  const description = formData.get("description") as string | undefined;
+  const tagsRaw = formData.get("tags") as string | undefined;
+
+  return {
+    file,
+    companyId,
+    contextType,
+    contextId,
+    folder,
+    description,
+    tagsRaw,
+  };
+}
+
+function validateUploadInputs(
+  file: File | undefined,
+  contextType: UploadContextType | undefined
+): ActionResult<UploadDocumentResult> | undefined {
+  if (!(file && contextType)) {
+    return {
+      success: false,
+      error: "Missing required fields",
+    };
+  }
+
+  return;
+}
+
+function parseTags(tagsRaw?: string): string[] | undefined {
+  if (!tagsRaw) {
+    return;
+  }
+
+  try {
+    return JSON.parse(tagsRaw) as string[];
+  } catch {
+    return;
+  }
+}
+
+async function validateJobContext(
+  contextId: string,
+  activeCompanyId: string
+): Promise<{ companyId: string } | ActionResult<UploadDocumentResult>> {
+  const supabase = await createClient();
+  if (!supabase) {
+    return {
+      success: false,
+      error: "Server configuration error",
+    };
+  }
+
+  const { data: job, error: jobError } = await supabase
+    .from("jobs")
+    .select("company_id")
+    .eq("id", contextId)
+    .single();
+
+  if (jobError || !job) {
+    return {
+      success: false,
+      error: "Job not found",
+    };
+  }
+
+  if (job.company_id !== activeCompanyId) {
+    return {
+      success: false,
+      error: "Access denied - This job belongs to a different company",
+    };
+  }
+
+  return { companyId: job.company_id };
+}
+
+async function handleJobDocumentUpload(
+  params: JobUploadParams
+): Promise<ActionResult<UploadDocumentResult>> {
+  const validationResult = await validateJobContext(
+    params.contextId,
+    params.activeCompanyId
+  );
+
+  if ("success" in validationResult && !validationResult.success) {
+    return validationResult;
+  }
+
+  const { companyId } = validationResult as { companyId: string };
+
+  const access = await verifyCompanyAccess(companyId);
+  if (!access) {
+    return {
+      success: false,
+      error:
+        "Access denied - You must be an active member of this company to upload files",
+    };
+  }
+
+  const parsedTags = parseTags(params.tagsRaw);
+  if (params.tagsRaw && !parsedTags) {
+    return {
+      success: false,
+      error: "Invalid tags format",
+    };
+  }
+
+  const context: DocumentContext = {
+    type: params.contextType,
+    id: params.contextId,
+    folder: params.folder,
+  };
+
+  const options: UploadOptions = {
+    companyId,
+    context,
+    description: params.description,
+    tags: parsedTags,
+  };
+
+  const result = await uploadDocumentService(params.file, options);
+
+  if (!(result.success && result.attachmentId && result.storageUrl)) {
+    return {
+      success: false,
+      error: result.error || "Upload failed",
+      warnings: result.warnings,
+    };
+  }
+
+  await logDocumentAction(companyId, access.userId, "document_uploaded", {
+    attachmentId: result.attachmentId,
+    fileName: params.file.name,
+    fileSize: params.file.size,
+    context,
+  });
+
+  revalidatePath("/dashboard/documents");
+  if (params.contextId) {
+    revalidatePath(`/dashboard/work/${params.contextId}`);
+  }
+
+  return {
+    success: true,
+    data: {
+      attachmentId: result.attachmentId,
+      fileName: params.file.name,
+      fileSize: params.file.size,
+      storageUrl: result.storageUrl,
+    },
+    warnings: result.warnings,
+  };
+}
+
+async function handleNonJobDocumentUpload(
+  params: NonJobUploadParams
+): Promise<ActionResult<UploadDocumentResult>> {
+  const access = await verifyCompanyAccess(params.targetCompanyId);
+  if (!access) {
+    return {
+      success: false,
+      error:
+        "Access denied - You must be an active member of this company to upload files",
+    };
+  }
+
+  const validation = await validateFile(params.file);
+  if (!validation.valid) {
+    return {
+      success: false,
+      error: validation.errors.join("; "),
+      warnings: validation.warnings,
+    };
+  }
+
+  const parsedTags = parseTags(params.tagsRaw);
+  if (params.tagsRaw && !parsedTags) {
+    return {
+      success: false,
+      error: "Invalid tags format",
+    };
+  }
+
+  const context: DocumentContext = {
+    type: params.contextType,
+    id: params.contextId,
+    folder: params.folder,
+  };
+
+  const options: UploadOptions = {
+    companyId: params.targetCompanyId,
+    context,
+    description: params.description,
+    tags: parsedTags,
+  };
+
+  const result = await uploadDocumentService(params.file, options);
+
+  if (!(result.success && result.attachmentId && result.storageUrl)) {
+    return {
+      success: false,
+      error: result.error || "Upload failed",
+      warnings: result.warnings,
+    };
+  }
+
+  await logDocumentAction(
+    params.targetCompanyId,
+    access.userId,
+    "document_uploaded",
+    {
+      attachmentId: result.attachmentId,
+      fileName: params.file.name,
+      fileSize: params.file.size,
+      context,
+    }
+  );
+
+  revalidatePath("/dashboard/documents");
+  if (params.contextType === "customer" && params.contextId) {
+    revalidatePath(`/dashboard/customers/${params.contextId}`);
+  } else if (params.contextType === "job" && params.contextId) {
+    revalidatePath(`/dashboard/work/${params.contextId}`);
+  }
+
+  return {
+    success: true,
+    data: {
+      attachmentId: result.attachmentId,
+      fileName: params.file.name,
+      fileSize: params.file.size,
+      storageUrl: result.storageUrl,
+    },
+    warnings: result.warnings,
+  };
 }
 
 /**
@@ -475,12 +497,12 @@ export async function uploadDocuments(
     const errors: string[] = [];
 
     results.forEach((result, index) => {
-      if (result.success) {
+      if (result.success && result.attachmentId && result.storageUrl) {
         successfulUploads.push({
-          attachmentId: result.attachmentId!,
+          attachmentId: result.attachmentId,
           fileName: files[index].name,
           fileSize: files[index].size,
-          storageUrl: result.storageUrl!,
+          storageUrl: result.storageUrl,
         });
       } else {
         errors.push(`${files[index].name}: ${result.error}`);
@@ -514,7 +536,6 @@ export async function uploadDocuments(
       warnings: errors.length > 0 ? errors : undefined,
     };
   } catch (error) {
-    console.error("Upload documents error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Upload failed",
@@ -580,9 +601,16 @@ export async function getDocumentDownloadUrl(
       }
     );
 
+    if (!result.url) {
+      return {
+        success: false,
+        error: "Download URL not available",
+      };
+    }
+
     return {
       success: true,
-      data: result.url!,
+      data: result.url,
     };
   } catch (error) {
     return {
@@ -892,15 +920,19 @@ export async function listDocuments(
 /**
  * Create a new folder
  */
+type CreateFolderParams = {
+  companyId: string;
+  name: string;
+  parentId?: string;
+  contextType?: string;
+  contextId?: string;
+};
+
 export async function createFolder(
-  companyId: string,
-  name: string,
-  parentId?: string,
-  contextType?: string,
-  contextId?: string
+  params: CreateFolderParams
 ): Promise<ActionResult<{ folderId: string }>> {
   try {
-    const access = await verifyCompanyAccess(companyId);
+    const access = await verifyCompanyAccess(params.companyId);
     if (!access) {
       return {
         success: false,
@@ -912,6 +944,8 @@ export async function createFolder(
     if (!supabase) {
       return { success: false, error: "Server configuration error" };
     }
+
+    const { companyId, name, parentId, contextType, contextId } = params;
 
     // Generate path
     let path = "/";

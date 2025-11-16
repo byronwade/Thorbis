@@ -24,8 +24,6 @@ import {
   createWebsiteSchema,
 } from "@/lib/seo/structured-data";
 
-export const revalidate = 3600; // Revalidate every hour
-
 export const metadata = generateKBHomeMetadata();
 
 export default async function KBHomePage() {

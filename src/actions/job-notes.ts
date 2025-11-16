@@ -13,12 +13,12 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-interface GetJobNotesOptions {
+type GetJobNotesOptions = {
   jobId: string;
   noteType?: "customer" | "internal" | "all";
   limit?: number;
   offset?: number;
-}
+};
 
 /**
  * Get job notes with pagination
@@ -181,8 +181,12 @@ export async function updateJobNote({
     }
 
     const updateData: Record<string, unknown> = {};
-    if (content !== undefined) updateData.content = content;
-    if (isPinned !== undefined) updateData.is_pinned = isPinned;
+    if (content !== undefined) {
+      updateData.content = content;
+    }
+    if (isPinned !== undefined) {
+      updateData.is_pinned = isPinned;
+    }
 
     const { data, error } = await supabase
       .from("job_notes")

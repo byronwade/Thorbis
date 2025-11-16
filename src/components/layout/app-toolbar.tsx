@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * AppToolbar - Page-specific toolbar component
  *
@@ -15,28 +13,37 @@
  * Matches sidebar styling: semi-transparent background with backdrop blur
  */
 
-import { Settings } from "lucide-react";
+import { ToolbarClientActions } from "@/components/layout/toolbar-client-actions";
+import { ToolbarClientStats } from "@/components/layout/toolbar-client-stats";
 import { OfflineIndicator } from "@/components/offline/offline-indicator";
-import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ToolbarStats } from "@/components/ui/toolbar-stats";
 import type { ToolbarConfig } from "@/lib/layout/unified-layout-config";
 
 type AppToolbarProps = {
+  pathname?: string;
   config: ToolbarConfig;
   showLeftSidebar?: boolean;
   showRightSidebar?: boolean;
-  onToggleRightSidebar?: () => void;
-  isRightSidebarOpen?: boolean;
 };
 
 export function AppToolbar({
+  pathname,
   config,
   showLeftSidebar = true,
   showRightSidebar = false,
-  onToggleRightSidebar,
-  isRightSidebarOpen = false,
 }: AppToolbarProps) {
+  const safePathname = pathname || "/dashboard";
+  const actionsJustify =
+    config.actionsJustify ??
+    (config.title || config.breadcrumbs || config.back
+      ? "flex-end"
+      : "space-between");
+  const actionsClassName =
+    actionsJustify === "space-between"
+      ? "flex flex-1 items-center gap-1.5"
+      : "ml-auto flex items-center gap-1.5";
+
   return (
     <header className="sticky top-0 z-40 flex w-full shrink-0 border-border/50 border-b bg-background/90 backdrop-blur-md md:rounded-t-2xl">
       <div className="flex h-14 w-full items-center gap-2 px-4 md:px-6">
@@ -52,9 +59,12 @@ export function AppToolbar({
         ) : (
           (config.title || config.subtitle) && (
             <div className="flex shrink-0 flex-col">
-              {config.title && (
-                <h1 className="font-semibold text-lg">{config.title}</h1>
-              )}
+              {config.title &&
+                (typeof config.title === "string" ? (
+                  <h1 className="font-semibold text-lg">{config.title}</h1>
+                ) : (
+                  <div className="font-semibold text-lg">{config.title}</div>
+                ))}
               {config.subtitle && (
                 <p className="hidden text-muted-foreground text-sm md:block">
                   {config.subtitle}
@@ -66,33 +76,26 @@ export function AppToolbar({
 
         {/* Statistics - Inline in toolbar */}
         {config.stats && config.stats.length > 0 && (
-          <ToolbarStats stats={config.stats} />
+          <div data-toolbar-default-stats={safePathname}>
+            <ToolbarStats stats={config.stats} />
+          </div>
         )}
+        <ToolbarClientStats pathname={safePathname} />
 
         {/* Action Buttons and Right Sidebar Toggle */}
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className={actionsClassName}>
           {/* Offline Status Indicator */}
           <OfflineIndicator />
 
           {/* Custom Action Buttons */}
-          {config.actions}
+          {config.actions && (
+            <div data-toolbar-default-actions={safePathname}>
+              {config.actions}
+            </div>
+          )}
+          <ToolbarClientActions pathname={safePathname} />
 
           {/* Right Sidebar Toggle Button */}
-          {showRightSidebar && onToggleRightSidebar && (
-            <Button
-              className="h-8 w-8 shrink-0"
-              data-sidebar="trigger"
-              data-slot="sidebar-trigger-right"
-              onClick={onToggleRightSidebar}
-              size="icon"
-              variant="ghost"
-            >
-              <Settings />
-              <span className="sr-only">
-                {isRightSidebarOpen ? "Close settings" : "Open settings"}
-              </span>
-            </Button>
-          )}
         </div>
       </div>
     </header>

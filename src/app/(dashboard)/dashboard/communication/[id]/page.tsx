@@ -27,8 +27,7 @@ import type { Database } from "@/types/supabase";
 
 type MessageType = "email" | "sms" | "phone" | "ticket";
 
-type CommunicationRow =
-  Database["public"]["Tables"]["communications"]["Row"];
+type CommunicationRow = Database["public"]["Tables"]["communications"]["Row"];
 type CustomerRow = Database["public"]["Tables"]["customers"]["Row"];
 
 function getMessageIcon(type: MessageType) {
@@ -205,8 +204,8 @@ export default async function CommunicationDetailPage({
             <div>
               <h3 className="mb-2 font-medium text-sm">Call Recording</h3>
               <audio
-                controls
                 className="w-full"
+                controls
                 src={communication.call_recording_url}
               >
                 <track kind="captions" />

@@ -19,8 +19,6 @@ import {
 } from "@/lib/seo/metadata";
 import { createHowToSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 1800;
-
 export const metadata = generateSEOMetadata({
   title: "Switch to Thorbis Migration Center",
   section: "Migration",

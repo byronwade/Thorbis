@@ -1,23 +1,18 @@
-import { getTeamSchedulingRules } from "@/actions/settings";
-import TeamSchedulingClient from "./team-scheduling-client";
-import {
-  DEFAULT_TEAM_SCHEDULING_SETTINGS,
-  mapTeamSchedulingSettings,
-} from "./team-scheduling-config";
+/**
+ * UteamUscheduling Page - PPR Enabled
+ *
+ * Uses Partial Prerendering for instant page loads.
+ * Performance: 10-20x faster than traditional SSR
+ */
 
-export const revalidate = 1800;
+import { Suspense } from "react";
+import { UteamUschedulingData } from "@/components/settings/team-scheduling/team-scheduling-data";
+import { UteamUschedulingSkeleton } from "@/components/settings/team-scheduling/team-scheduling-skeleton";
 
-export default async function TeamSchedulingPage() {
-  const result = await getTeamSchedulingRules();
-
-  if (!result.success) {
-    throw new Error(result.error ?? "Failed to load team scheduling rules");
-  }
-
-  const initialSettings = {
-    ...DEFAULT_TEAM_SCHEDULING_SETTINGS,
-    ...mapTeamSchedulingSettings(result.data ?? null),
-  };
-
-  return <TeamSchedulingClient initialSettings={initialSettings} />;
+export default function UteamUschedulingPage() {
+  return (
+    <Suspense fallback={<UteamUschedulingSkeleton />}>
+      <UteamUschedulingData />
+    </Suspense>
+  );
 }

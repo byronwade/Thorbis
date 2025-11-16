@@ -83,20 +83,30 @@ export function AllMessagesView({
       case "email":
         return <Mail className="size-4 text-blue-600 dark:text-blue-400" />;
       case "sms":
-        return <MessageCircle className="size-4 text-green-600 dark:text-green-400" />;
+        return (
+          <MessageCircle className="size-4 text-green-600 dark:text-green-400" />
+        );
       case "phone":
         if (message.callType === "incoming") {
-          return <PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />;
+          return (
+            <PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />
+          );
         }
         if (message.callType === "outgoing") {
-          return <PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />;
+          return (
+            <PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />
+          );
         }
         if (message.callType === "missed") {
-          return <PhoneMissed className="size-4 text-red-600 dark:text-red-400" />;
+          return (
+            <PhoneMissed className="size-4 text-red-600 dark:text-red-400" />
+          );
         }
         return <Phone className="size-4 text-primary" />;
       case "ticket":
-        return <Ticket className="size-4 text-orange-600 dark:text-orange-400" />;
+        return (
+          <Ticket className="size-4 text-orange-600 dark:text-orange-400" />
+        );
       default:
         return <Mail className="size-4 text-muted-foreground" />;
     }
@@ -244,7 +254,7 @@ export function AllMessagesView({
         message.tags && message.tags.length > 0 ? (
           <div className="flex flex-wrap gap-1">
             {message.tags.map((tag) => (
-              <Badge key={tag} className="text-xs" variant="outline">
+              <Badge className="text-xs" key={tag} variant="outline">
                 {tag}
               </Badge>
             ))}
@@ -316,4 +326,3 @@ export function AllMessagesView({
     />
   );
 }
-

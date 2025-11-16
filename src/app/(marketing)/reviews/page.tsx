@@ -12,8 +12,6 @@ import {
 } from "@/lib/seo/metadata";
 import { createReviewAggregateSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 1800;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis Reviews & Customer Proof",
   section: "Social Proof",

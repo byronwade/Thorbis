@@ -5,8 +5,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 86_400;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis Privacy Policy",
   description:

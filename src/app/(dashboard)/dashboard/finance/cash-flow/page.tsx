@@ -16,8 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 900;
-
 export default function CashFlowPage() {
   return (
     <div className="space-y-6">

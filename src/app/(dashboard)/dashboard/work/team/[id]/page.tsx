@@ -1,285 +1,32 @@
 /**
- * Team Member Details Page - Single Page with Collapsible Sections
- * Matches customer and job details page pattern
+ * Work Team Member Detail Page - PPR Enabled
+ *
+ * Uses Partial Prerendering for instant page loads:
+ * - Static shell renders instantly (5-20ms)
+ * - Team member data streams in (100-400ms)
+ *
+ * This mirrors the root team member detail page but lives under
+ * `/dashboard/work/team/[id]` so links from the Work > Team table
+ * resolve correctly and use the work section detail layout.
  */
 
-import type { PostgrestError } from "@supabase/supabase-js";
-import { notFound } from "next/navigation";
-import { ToolbarActionsProvider } from "@/components/layout/toolbar-actions-provider";
-import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
-import { TeamMemberPageContent } from "@/components/team/team-member-page-content";
-import { generateTeamMemberStats } from "@/lib/stats/utils";
-import { createClient } from "@/lib/supabase/server";
+import { Suspense } from "react";
+import { TeamMemberDetailData } from "@/components/team/team-member-detail-data";
+import { TeamMemberDetailShell } from "@/components/team/team-member-detail-shell";
+import { TeamMemberDetailSkeleton } from "@/components/team/team-member-detail-skeleton";
 
-const POSTGREST_ROW_NOT_FOUND = "PGRST116";
-
-type QueryError = PostgrestError | null;
-
-const hasSupabaseErrorPayload = (error: QueryError): error is PostgrestError =>
-  Boolean(error?.code);
-
-const isRowNotFoundError = (error: QueryError) =>
-  hasSupabaseErrorPayload(error) && error.code === POSTGREST_ROW_NOT_FOUND;
-
-const ensureNoQueryFailure = (error: QueryError, message: string) => {
-  if (hasSupabaseErrorPayload(error) && !isRowNotFoundError(error)) {
-    throw new Error(message);
-  }
-};
-
-// Configure page for full width with no sidebars
-export const dynamic = "force-dynamic";
-
-// Custom metadata for this page
-export async function generateMetadata({
+export default async function WorkTeamMemberDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  return {
-    title: "Team Member Details",
-  };
-}
-
-export default async function TeamMemberDetailsPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id: memberId } = await params;
-
-  const supabase = await createClient();
-
-  if (!supabase) {
-    return notFound();
-  }
-
-  // Get authenticated user
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError) {
-    return notFound();
-  }
-
-  if (!user) {
-    return notFound();
-  }
-
-  // Get the active company ID
-  const { getActiveCompanyId } = await import("@/lib/auth/company-context");
-  const activeCompanyId = await getActiveCompanyId();
-
-  if (!activeCompanyId) {
-    return notFound();
-  }
-
-  // Get user's membership for the ACTIVE company
-  const { data: teamMember, error: teamMemberError } = await supabase
-    .from("team_members")
-    .select("company_id")
-    .eq("user_id", user.id)
-    .eq("company_id", activeCompanyId)
-    .eq("status", "active")
-    .maybeSingle();
-
-  ensureNoQueryFailure(
-    teamMemberError,
-    "Unable to verify active company membership"
-  );
-
-  if (!teamMember?.company_id) {
-    return notFound();
-  }
-
-  // Fetch the specific team member details (basic first)
-  const { data: member, error: memberError } = await supabase
-    .from("team_members")
-    .select("*")
-    .eq("id", memberId)
-    .eq("company_id", teamMember.company_id)
-    .single();
-
-  ensureNoQueryFailure(
-    memberError,
-    "Unable to load requested team member record"
-  );
-
-  const memberIsMissing = !member || isRowNotFoundError(memberError);
-
-  if (memberIsMissing) {
-    return notFound();
-  }
-
-  // Fetch role details if role_id exists
-  let roleData = null;
-  if (member.role_id) {
-    const { data } = await supabase
-      .from("custom_roles")
-      .select("id, name, color")
-      .eq("id", member.role_id)
-      .single();
-    roleData = data;
-  }
-
-  // Fetch department details if department_id exists
-  let departmentData = null;
-  if (member.department_id) {
-    const { data } = await supabase
-      .from("departments")
-      .select("id, name, color")
-      .eq("id", member.department_id)
-      .single();
-    departmentData = data;
-  }
-
-  // Fetch user details
-  const { data: userData } = await supabase
-    .from("users")
-    .select("id, name, email, avatar")
-    .eq("id", member.user_id)
-    .single();
-
-  // Fetch related data for display
-  const [
-    { data: assignedJobs },
-    { data: timeEntries },
-    { data: certifications },
-    { data: activities },
-    { data: attachments },
-    { data: permissions },
-  ] = await Promise.all([
-    // Assigned Jobs
-    supabase
-      .from("job_assignments")
-      .select(
-        `
-        *,
-        job:jobs(
-          id,
-          job_number,
-          title,
-          status,
-          scheduled_start,
-          scheduled_end,
-          customer:customers(id, first_name, last_name, display_name, company_name)
-        )
-      `
-      )
-      .eq("team_member_id", memberId)
-      .order("created_at", { ascending: false })
-      .limit(20),
-    // Time Entries
-    supabase
-      .from("time_entries")
-      .select(
-        `
-        *,
-        job:jobs(id, job_number, title)
-      `
-      )
-      .eq("team_member_id", memberId)
-      .order("clock_in", { ascending: false })
-      .limit(50),
-    // Certifications
-    supabase
-      .from("certifications")
-      .select("*")
-      .eq("team_member_id", memberId)
-      .order("issue_date", { ascending: false }),
-    // Activities
-    supabase
-      .from("audit_logs")
-      .select(
-        `
-        *,
-        user:users!user_id(name, email, avatar)
-      `
-      )
-      .eq("entity_type", "team_members")
-      .eq("entity_id", memberId)
-      .order("created_at", { ascending: false })
-      .limit(50),
-    // Attachments
-    supabase
-      .from("attachments")
-      .select("*")
-      .eq("entity_type", "team_members")
-      .eq("entity_id", memberId)
-      .is("deleted_at", null)
-      .order("uploaded_at", { ascending: false })
-      .limit(100),
-    // Permissions (if we have a permissions table)
-    supabase
-      .from("role_permissions")
-      .select("*")
-      .eq("role_id", member.role_id)
-      .order("created_at", { ascending: false }),
-  ]);
-
-  // Calculate metrics
-  const totalJobs = assignedJobs?.length || 0;
-  const totalHours =
-    timeEntries?.reduce(
-      (sum: number, entry: any) => sum + (entry.total_hours || 0),
-      0
-    ) || 0;
-  const activeCertifications =
-    certifications?.filter((cert: any) => {
-      if (!cert.expiry_date) return true;
-      return new Date(cert.expiry_date) > new Date();
-    }).length || 0;
-
-  const metrics = {
-    totalJobs,
-    totalHours,
-    activeCertifications,
-    totalCertifications: certifications?.length || 0,
-    completedJobs:
-      assignedJobs?.filter((a: any) => a.job?.status === "completed").length ||
-      0,
-    activeJobs:
-      assignedJobs?.filter(
-        (a: any) =>
-          a.job?.status === "in_progress" || a.job?.status === "scheduled"
-      ).length || 0,
-  };
-
-  // Prepare team member data object with role and department
-  const teamMemberData = {
-    teamMember: {
-      ...member,
-      role: roleData,
-      department: departmentData,
-      user: userData,
-    },
-    user: userData,
-    assignedJobs: assignedJobs || [],
-    timeEntries: timeEntries || [],
-    certifications: certifications || [],
-    activities: activities || [],
-    attachments: attachments || [],
-    permissions: permissions || [],
-  };
-
-  // Generate stats for toolbar
-  const stats = generateTeamMemberStats(metrics);
+  const { id: teamMemberId } = await params;
 
   return (
-    <ToolbarStatsProvider stats={stats}>
-      <ToolbarActionsProvider actions={null}>
-        <div className="flex h-full w-full flex-col overflow-auto">
-          <div className="mx-auto w-full max-w-7xl">
-            <TeamMemberPageContent
-              entityData={teamMemberData}
-              metrics={metrics}
-            />
-          </div>
-        </div>
-      </ToolbarActionsProvider>
-    </ToolbarStatsProvider>
+    <TeamMemberDetailShell>
+      <Suspense fallback={<TeamMemberDetailSkeleton />}>
+        <TeamMemberDetailData teamMemberId={teamMemberId} />
+      </Suspense>
+    </TeamMemberDetailShell>
   );
 }

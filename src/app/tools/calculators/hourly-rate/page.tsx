@@ -14,8 +14,6 @@
 import type { Metadata } from "next";
 import HonestHourlyRateCalculator from "./calculator-client";
 
-export const revalidate = 3600; // Revalidate every hour
-
 // SEO Metadata for programmatic SEO targeting trades companies
 export const metadata: Metadata = {
   title:

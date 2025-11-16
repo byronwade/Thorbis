@@ -93,75 +93,73 @@ export function TeamChat({
         <div className="space-y-4">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-              <div className="rounded-full bg-muted p-4 mb-4">
+              <div className="mb-4 rounded-full bg-muted p-4">
                 <Hash className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="font-semibold text-lg mb-2">
-                No messages yet
-              </h3>
+              <h3 className="mb-2 font-semibold text-lg">No messages yet</h3>
               <p className="text-muted-foreground text-sm">
                 Be the first to start the conversation in #{channelName}
               </p>
             </div>
           ) : (
             messages.map((msg, index) => {
-            const showAvatar =
-              index === 0 ||
-              messages[index - 1]?.userId !== msg.userId ||
-              msg.timestamp.getTime() -
-                messages[index - 1]?.timestamp.getTime() >
-                300_000;
+              const showAvatar =
+                index === 0 ||
+                messages[index - 1]?.userId !== msg.userId ||
+                msg.timestamp.getTime() -
+                  messages[index - 1]?.timestamp.getTime() >
+                  300_000;
 
-            return (
-              <div
-                className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`}
-                key={msg.id}
-              >
-                {showAvatar ? (
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs">
-                      {msg.userName
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <div className="w-8" />
-                )}
-
-                <div className="min-w-0 flex-1">
-                  {showAvatar && (
-                    <div className="mb-1 flex items-center gap-2">
-                      <span className="font-semibold text-sm">
-                        {msg.userName}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {formatTimestamp(msg.timestamp)}
-                      </span>
-                    </div>
+              return (
+                <div
+                  className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`}
+                  key={msg.id}
+                >
+                  {showAvatar ? (
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="text-xs">
+                        {msg.userName
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <div className="w-8" />
                   )}
-                  <div className="group relative">
-                    <p className="text-sm leading-relaxed">{msg.content}</p>
-                    {msg.reactions && msg.reactions.length > 0 && (
-                      <div className="mt-1 flex gap-1">
-                        {msg.reactions.map((reaction, idx) => (
-                          <button
-                            className="flex items-center gap-1 rounded-full border bg-muted/50 px-2 py-0.5 text-xs transition-colors hover:bg-muted"
-                            key={idx}
-                            type="button"
-                          >
-                            <span>{reaction.emoji}</span>
-                            <span>{reaction.count}</span>
-                          </button>
-                        ))}
+
+                  <div className="min-w-0 flex-1">
+                    {showAvatar && (
+                      <div className="mb-1 flex items-center gap-2">
+                        <span className="font-semibold text-sm">
+                          {msg.userName}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {formatTimestamp(msg.timestamp)}
+                        </span>
                       </div>
                     )}
+                    <div className="group relative">
+                      <p className="text-sm leading-relaxed">{msg.content}</p>
+                      {msg.reactions && msg.reactions.length > 0 && (
+                        <div className="mt-1 flex gap-1">
+                          {msg.reactions.map((reaction, idx) => (
+                            <button
+                              className="flex items-center gap-1 rounded-full border bg-muted/50 px-2 py-0.5 text-xs transition-colors hover:bg-muted"
+                              key={idx}
+                              type="button"
+                            >
+                              <span>{reaction.emoji}</span>
+                              <span>{reaction.count}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
           )}
         </div>
       </ScrollArea>

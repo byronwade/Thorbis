@@ -35,22 +35,41 @@ import PortalInvitationEmail from "../../emails/templates/customer/portal-invita
 // VALIDATION SCHEMAS
 // ============================================================================
 
+const CUSTOMER_NAME_MAX_LENGTH = 100;
+const CUSTOMER_COMPANY_MAX_LENGTH = 200;
+const CUSTOMER_PHONE_MAX_LENGTH = 20;
+const CUSTOMER_ADDRESS_MAX_LENGTH = 200;
+const CUSTOMER_ADDRESS2_MAX_LENGTH = 100;
+const CUSTOMER_CITY_MAX_LENGTH = 100;
+const CUSTOMER_STATE_MAX_LENGTH = 50;
+const CUSTOMER_ZIP_MAX_LENGTH = 20;
+const CUSTOMER_COUNTRY_MAX_LENGTH = 50;
+const CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH = 50;
+const CENTS_PER_DOLLAR = 100;
+const HTTP_STATUS_FORBIDDEN = 403;
+
 const customerSchema = z.object({
   type: z
     .enum(["residential", "commercial", "industrial"])
     .default("residential"),
-  firstName: z.string().min(1, "First name is required").max(100),
-  lastName: z.string().min(1, "Last name is required").max(100),
-  companyName: z.string().max(200).optional(),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(CUSTOMER_NAME_MAX_LENGTH),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .max(CUSTOMER_NAME_MAX_LENGTH),
+  companyName: z.string().max(CUSTOMER_COMPANY_MAX_LENGTH).optional(),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone is required").max(20),
-  secondaryPhone: z.string().max(20).optional(),
-  address: z.string().max(200).optional(),
-  address2: z.string().max(100).optional(),
-  city: z.string().max(100).optional(),
-  state: z.string().max(50).optional(),
-  zipCode: z.string().max(20).optional(),
-  country: z.string().max(50).default("USA"),
+  phone: z.string().min(1, "Phone is required").max(CUSTOMER_PHONE_MAX_LENGTH),
+  secondaryPhone: z.string().max(CUSTOMER_PHONE_MAX_LENGTH).optional(),
+  address: z.string().max(CUSTOMER_ADDRESS_MAX_LENGTH).optional(),
+  address2: z.string().max(CUSTOMER_ADDRESS2_MAX_LENGTH).optional(),
+  city: z.string().max(CUSTOMER_CITY_MAX_LENGTH).optional(),
+  state: z.string().max(CUSTOMER_STATE_MAX_LENGTH).optional(),
+  zipCode: z.string().max(CUSTOMER_ZIP_MAX_LENGTH).optional(),
+  country: z.string().max(CUSTOMER_COUNTRY_MAX_LENGTH).default("USA"),
   source: z
     .enum(["referral", "google", "facebook", "direct", "yelp", "other"])
     .optional(),
@@ -63,7 +82,10 @@ const customerSchema = z.object({
     .default("due_on_receipt"),
   creditLimit: z.number().int().min(0).default(0), // In cents
   taxExempt: z.boolean().default(false),
-  taxExemptNumber: z.string().max(50).optional(),
+  taxExemptNumber: z
+    .string()
+    .max(CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH)
+    .optional(),
   tags: z.array(z.string()).optional(),
   notes: z.string().optional(),
   internalNotes: z.string().optional(),
@@ -83,10 +105,10 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export async function createCustomer(
+export function createCustomer(
   formData: FormData
 ): Promise<ActionResult<string>> {
-  return await withErrorHandling(async () => {
+  return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
@@ -100,298 +122,464 @@ export async function createCustomer(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
+    const { contacts, properties, tags } =
+      parseCustomerContactsPropertiesAndTags(formData);
+    const primaryContact = getPrimaryContactOrThrow(contacts);
+    const primaryProperty = getPrimaryProperty(properties);
 
-    const FORBIDDEN_STATUS_CODE = 403;
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        FORBIDDEN_STATUS_CODE
-      );
-    }
+    await assertCustomerEmailNotDuplicate(
+      supabase,
+      teamMember.company_id,
+      primaryContact.email
+    );
 
-    // Parse contacts from JSON
-    const contactsString = formData.get("contacts");
-    let contacts: {
-      firstName: string;
-      lastName: string;
-      email: string;
-      phone: string;
-      role: string;
-      isPrimary: boolean;
-    }[] = [];
-
-    if (contactsString && typeof contactsString === "string") {
-      try {
-        contacts = JSON.parse(contactsString);
-      } catch {
-        throw new ActionError(
-          "Invalid contacts data",
-          ERROR_CODES.VALIDATION_FAILED
-        );
-      }
-    }
-
-    // Get primary contact
-    const primaryContact = contacts.find((c) => c.isPrimary) || contacts[0];
-    if (!primaryContact) {
-      throw new ActionError(
-        "At least one contact is required",
-        ERROR_CODES.VALIDATION_FAILED
-      );
-    }
-
-    // Parse properties from JSON
-    const propertiesString = formData.get("properties");
-    let properties: {
-      name: string;
-      address: string;
-      address2: string;
-      city: string;
-      state: string;
-      zipCode: string;
-      country: string;
-      propertyType: string;
-      isPrimary: boolean;
-      notes: string;
-    }[] = [];
-
-    if (propertiesString && typeof propertiesString === "string") {
-      try {
-        properties = JSON.parse(propertiesString);
-      } catch {
-        throw new ActionError(
-          "Invalid properties data",
-          ERROR_CODES.VALIDATION_FAILED
-        );
-      }
-    }
-
-    // Get primary property
-    const primaryProperty =
-      properties.find((p) => p.isPrimary) || properties[0];
-
-    // Parse tags if provided
-    let tags: string[] | undefined;
-    const tagsString = formData.get("tags");
-    if (tagsString && typeof tagsString === "string") {
-      try {
-        tags = JSON.parse(tagsString);
-      } catch {
-        tags = tagsString.split(",").map((t) => t.trim());
-      }
-    }
-
-    // Check if email already exists for this company
-    const { data: existingEmail } = await supabase
-      .from("customers")
-      .select("id")
-      .eq("company_id", teamMember.company_id)
-      .eq("email", primaryContact.email)
-      .is("deleted_at", null)
-      .single();
-
-    if (existingEmail) {
-      throw new ActionError(
-        "A customer with this email already exists",
-        ERROR_CODES.DB_DUPLICATE_ENTRY
-      );
-    }
-
-    // Generate display name
     const customerType = formData.get("type") || "residential";
     const companyName = formData.get("companyName");
-    const displayName =
-      customerType === "commercial" && companyName
-        ? String(companyName)
-        : `${primaryContact.firstName} ${primaryContact.lastName}`;
+    const displayName = buildCustomerDisplayName(
+      customerType,
+      companyName,
+      primaryContact
+    );
 
-    // Default communication preferences
-    const communicationPreferences = {
-      email: true,
-      sms: true,
-      phone: true,
-      marketing: false,
-    };
+    const communicationPreferences = buildDefaultCommunicationPreferences();
+    const customerMetadata = buildCustomerMetadata(contacts);
 
-    // Store all contacts in metadata
-    const customerMetadata = {
-      contacts: contacts.map((c) => ({
-        firstName: c.firstName,
-        lastName: c.lastName,
-        email: c.email,
-        phone: c.phone,
-        role: c.role,
-        isPrimary: c.isPrimary,
-      })),
-    };
+    const { lat: customerLat, lon: customerLon } =
+      await geocodePrimaryPropertyIfAvailable(primaryProperty);
 
-    // Geocode customer address if available
-    let customerLat: number | null = null;
-    let customerLon: number | null = null;
+    const customer = await insertCustomerRecord(supabase, {
+      companyId: teamMember.company_id,
+      customerType,
+      primaryContact,
+      companyName,
+      displayName,
+      primaryProperty,
+      customerLat,
+      customerLon,
+      formData,
+      tags,
+      communicationPreferences,
+      customerMetadata,
+    });
 
-    if (
-      primaryProperty?.address &&
-      primaryProperty?.city &&
-      primaryProperty?.state &&
-      primaryProperty?.zipCode
-    ) {
-      const geocodeResult = await geocodeAddressSilent(
-        primaryProperty.address,
-        primaryProperty.city,
-        primaryProperty.state,
-        primaryProperty.zipCode,
-        primaryProperty.country || "USA"
-      );
-
-      if (geocodeResult) {
-        customerLat = geocodeResult.lat;
-        customerLon = geocodeResult.lon;
-        console.log(
-          `Geocoded customer address: ${geocodeResult.lat}, ${geocodeResult.lon}`
-        );
-      } else {
-        console.warn(
-          "Failed to geocode customer address - coordinates will be null"
-        );
-      }
-    }
-
-    // Create customer
-    const { data: customer, error: createError } = await supabase
-      .from("customers")
-      .insert({
-        company_id: teamMember.company_id,
-        type: String(customerType),
-        first_name: primaryContact.firstName,
-        last_name: primaryContact.lastName,
-        company_name: companyName ? String(companyName) : null,
-        display_name: displayName,
-        email: primaryContact.email,
-        phone: primaryContact.phone,
-        secondary_phone: contacts[1]?.phone || null,
-        address: primaryProperty?.address || null,
-        address2: primaryProperty?.address2 || null,
-        city: primaryProperty?.city || null,
-        state: primaryProperty?.state || null,
-        zip_code: primaryProperty?.zipCode || null,
-        country: primaryProperty?.country || "USA",
-        lat: customerLat,
-        lon: customerLon,
-        source: formData.get("source") ? String(formData.get("source")) : null,
-        referred_by: formData.get("referredBy")
-          ? String(formData.get("referredBy"))
-          : null,
-        preferred_contact_method:
-          String(formData.get("preferredContactMethod")) || "email",
-        preferred_technician: formData.get("preferredTechnician")
-          ? String(formData.get("preferredTechnician"))
-          : null,
-        billing_email: formData.get("billingEmail")
-          ? String(formData.get("billingEmail"))
-          : null,
-        payment_terms: String(formData.get("paymentTerms")) || "due_on_receipt",
-        credit_limit: formData.get("creditLimit")
-          ? Number(formData.get("creditLimit")) * 100
-          : 0,
-        tax_exempt: formData.get("taxExempt") === "on",
-        tax_exempt_number: formData.get("taxExemptNumber")
-          ? String(formData.get("taxExemptNumber"))
-          : null,
-        tags: tags || null,
-        communication_preferences: communicationPreferences,
-        notes: formData.get("notes") ? String(formData.get("notes")) : null,
-        internal_notes: formData.get("internalNotes")
-          ? String(formData.get("internalNotes"))
-          : null,
-        metadata: customerMetadata,
-        status: "active",
-        portal_enabled: false,
-        total_revenue: 0,
-        total_jobs: 0,
-        total_invoices: 0,
-        average_job_value: 0,
-        outstanding_balance: 0,
-      })
-      .select("id")
-      .single();
-
-    if (createError) {
-      throw new ActionError(
-        ERROR_MESSAGES.operationFailed("create customer"),
-        ERROR_CODES.DB_QUERY_ERROR
-      );
-    }
-
-    // Create additional properties if any
-    const additionalProperties = properties.filter((p) => !p.isPrimary);
-    if (additionalProperties.length > 0) {
-      // Geocode each property address
-      const propertiesToInsert = await Promise.all(
-        additionalProperties.map(async (prop) => {
-          let propLat: number | null = null;
-          let propLon: number | null = null;
-
-          if (prop.address && prop.city && prop.state && prop.zipCode) {
-            const geocodeResult = await geocodeAddressSilent(
-              prop.address,
-              prop.city,
-              prop.state,
-              prop.zipCode,
-              prop.country || "USA"
-            );
-
-            if (geocodeResult) {
-              propLat = geocodeResult.lat;
-              propLon = geocodeResult.lon;
-              console.log(
-                `Geocoded property: ${geocodeResult.lat}, ${geocodeResult.lon}`
-              );
-            }
-          }
-
-          return {
-            company_id: teamMember.company_id,
-            customer_id: customer.id,
-            name: prop.name || "Additional Property",
-            address: prop.address,
-            address2: prop.address2 || null,
-            city: prop.city,
-            state: prop.state,
-            zip_code: prop.zipCode,
-            country: prop.country || "USA",
-            property_type: prop.propertyType || "residential",
-            notes: prop.notes || null,
-            lat: propLat,
-            lon: propLon,
-          };
-        })
-      );
-
-      const { error: propertiesError } = await supabase
-        .from("properties")
-        .insert(propertiesToInsert);
-
-      if (propertiesError) {
-        // Don't fail the whole operation if properties fail
-        console.error("Failed to create properties:", propertiesError);
-      }
-    }
+    await insertAdditionalPropertiesIfAny(
+      supabase,
+      teamMember.company_id,
+      customer.id,
+      properties
+    );
 
     revalidatePath("/dashboard/customers");
     return customer.id;
   });
 }
 
+type ParsedCustomerContact = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: string;
+  isPrimary: boolean;
+};
+
+type ParsedCustomerProperty = {
+  name: string;
+  address: string;
+  address2: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  propertyType: string;
+  isPrimary: boolean;
+  notes: string;
+};
+
+type ParsedCustomerFormCollections = {
+  contacts: ParsedCustomerContact[];
+  properties: ParsedCustomerProperty[];
+  tags?: string[];
+};
+
+async function requireCustomerCompanyMembership(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  userId: string
+) {
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", userId)
+    .single();
+
+  if (!teamMember?.company_id) {
+    throw new ActionError(
+      "You must be part of a company",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return teamMember;
+}
+
+function parseCustomerContactsPropertiesAndTags(
+  formData: FormData
+): ParsedCustomerFormCollections {
+  const contacts = parseContacts(formData.get("contacts"));
+  const properties = parseProperties(formData.get("properties"));
+  const tags = parseTagsField(formData.get("tags"));
+
+  return { contacts, properties, tags };
+}
+
+function parseContacts(
+  value: FormDataEntryValue | null
+): ParsedCustomerContact[] {
+  if (!value || typeof value !== "string") {
+    return [];
+  }
+
+  try {
+    return JSON.parse(value) as ParsedCustomerContact[];
+  } catch {
+    throw new ActionError(
+      "Invalid contacts data",
+      ERROR_CODES.VALIDATION_FAILED
+    );
+  }
+}
+
+function parseProperties(
+  value: FormDataEntryValue | null
+): ParsedCustomerProperty[] {
+  if (!value || typeof value !== "string") {
+    return [];
+  }
+
+  try {
+    return JSON.parse(value) as ParsedCustomerProperty[];
+  } catch {
+    throw new ActionError(
+      "Invalid properties data",
+      ERROR_CODES.VALIDATION_FAILED
+    );
+  }
+}
+
+function parseTagsField(
+  value: FormDataEntryValue | null
+): string[] | undefined {
+  if (!value || typeof value !== "string") {
+    return;
+  }
+
+  try {
+    return JSON.parse(value) as string[];
+  } catch {
+    return value.split(",").map((t) => t.trim());
+  }
+}
+
+function getPrimaryContactOrThrow(
+  contacts: ParsedCustomerContact[]
+): ParsedCustomerContact {
+  const primaryContact = contacts.find((c) => c.isPrimary) || contacts[0];
+  if (!primaryContact) {
+    throw new ActionError(
+      "At least one contact is required",
+      ERROR_CODES.VALIDATION_FAILED
+    );
+  }
+  return primaryContact;
+}
+
+function getPrimaryProperty(
+  properties: ParsedCustomerProperty[]
+): ParsedCustomerProperty | undefined {
+  return properties.find((p) => p.isPrimary) || properties[0];
+}
+
+async function assertCustomerEmailNotDuplicate(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  companyId: string,
+  email: string
+) {
+  const { data: existingEmail } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("company_id", companyId)
+    .eq("email", email)
+    .is("deleted_at", null)
+    .single();
+
+  if (existingEmail) {
+    throw new ActionError(
+      "A customer with this email already exists",
+      ERROR_CODES.DB_DUPLICATE_ENTRY
+    );
+  }
+}
+
+function buildCustomerDisplayName(
+  customerType: FormDataEntryValue | null,
+  companyNameValue: FormDataEntryValue | null,
+  primaryContact: ParsedCustomerContact
+): string {
+  const companyName = companyNameValue ? String(companyNameValue) : null;
+
+  if (customerType === "commercial" && companyName) {
+    return companyName;
+  }
+
+  return `${primaryContact.firstName} ${primaryContact.lastName}`;
+}
+
+function buildDefaultCommunicationPreferences() {
+  return {
+    email: true,
+    sms: true,
+    phone: true,
+    marketing: false,
+  };
+}
+
+function buildCustomerMetadata(contacts: ParsedCustomerContact[]) {
+  return {
+    contacts: contacts.map((c) => ({
+      firstName: c.firstName,
+      lastName: c.lastName,
+      email: c.email,
+      phone: c.phone,
+      role: c.role,
+      isPrimary: c.isPrimary,
+    })),
+  };
+}
+
+async function geocodePrimaryPropertyIfAvailable(
+  primaryProperty: ParsedCustomerProperty | undefined
+): Promise<{ lat: number | null; lon: number | null }> {
+  if (
+    !(
+      primaryProperty &&
+      primaryProperty.address &&
+      primaryProperty.city &&
+      primaryProperty.state &&
+      primaryProperty.zipCode
+    )
+  ) {
+    return { lat: null, lon: null };
+  }
+
+  const geocodeResult = await geocodeAddressSilent(
+    primaryProperty.address,
+    primaryProperty.city,
+    primaryProperty.state,
+    primaryProperty.zipCode,
+    primaryProperty.country || "USA"
+  );
+
+  if (!geocodeResult) {
+    return { lat: null, lon: null };
+  }
+
+  return { lat: geocodeResult.lat, lon: geocodeResult.lon };
+}
+
+type InsertCustomerParams = {
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
+  companyId: string;
+  customerType: FormDataEntryValue | null;
+  primaryContact: ParsedCustomerContact;
+  companyNameValue: FormDataEntryValue | null;
+  displayName: string;
+  primaryProperty?: ParsedCustomerProperty;
+  customerLat: number | null;
+  customerLon: number | null;
+  formData: FormData;
+  tags?: string[];
+  communicationPreferences: {
+    email: boolean;
+    sms: boolean;
+    phone: boolean;
+    marketing: boolean;
+  };
+  customerMetadata: Record<string, unknown>;
+};
+
+async function insertCustomerRecord(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  params: InsertCustomerParams
+) {
+  const {
+    companyId,
+    customerType,
+    primaryContact,
+    companyNameValue,
+    displayName,
+    primaryProperty,
+    customerLat,
+    customerLon,
+    formData,
+    tags,
+    communicationPreferences,
+    customerMetadata,
+  } = params;
+
+  const payload = buildCustomerInsertPayload(params);
+
+  const { data: customer, error: createError } = await supabase
+    .from("customers")
+    .insert(payload)
+    .select("id")
+    .single();
+
+  if (createError || !customer) {
+    throw new ActionError(
+      ERROR_MESSAGES.operationFailed("create customer"),
+      ERROR_CODES.DB_QUERY_ERROR
+    );
+  }
+
+  return customer;
+}
+
+function buildCustomerInsertPayload(
+  params: InsertCustomerParams
+): Record<string, unknown> {
+  const {
+    companyId,
+    customerType,
+    primaryContact,
+    companyNameValue,
+    displayName,
+    primaryProperty,
+    customerLat,
+    customerLon,
+    formData,
+    tags,
+    communicationPreferences,
+    customerMetadata,
+  } = params;
+
+  const companyName = companyNameValue ? String(companyNameValue) : null;
+
+  return {
+    company_id: companyId,
+    type: String(customerType || "residential"),
+    first_name: primaryContact.firstName,
+    last_name: primaryContact.lastName,
+    company_name: companyName,
+    display_name: displayName,
+    email: primaryContact.email,
+    phone: primaryContact.phone,
+    secondary_phone: null,
+    address: primaryProperty?.address || null,
+    address2: primaryProperty?.address2 || null,
+    city: primaryProperty?.city || null,
+    state: primaryProperty?.state || null,
+    zip_code: primaryProperty?.zipCode || null,
+    country: primaryProperty?.country || "USA",
+    lat: customerLat,
+    lon: customerLon,
+    source: formData.get("source") ? String(formData.get("source")) : null,
+    referred_by: formData.get("referredBy")
+      ? String(formData.get("referredBy"))
+      : null,
+    preferred_contact_method:
+      String(formData.get("preferredContactMethod")) || "email",
+    preferred_technician: formData.get("preferredTechnician")
+      ? String(formData.get("preferredTechnician"))
+      : null,
+    billing_email: formData.get("billingEmail")
+      ? String(formData.get("billingEmail"))
+      : null,
+    payment_terms: String(formData.get("paymentTerms")) || "due_on_receipt",
+    credit_limit: formData.get("creditLimit")
+      ? Number(formData.get("creditLimit")) * CENTS_PER_DOLLAR
+      : 0,
+    tax_exempt: formData.get("taxExempt") === "on",
+    tax_exempt_number: formData.get("taxExemptNumber")
+      ? String(formData.get("taxExemptNumber"))
+      : null,
+    tags: tags || null,
+    communication_preferences: communicationPreferences,
+    notes: formData.get("notes") ? String(formData.get("notes")) : null,
+    internal_notes: formData.get("internalNotes")
+      ? String(formData.get("internalNotes"))
+      : null,
+    metadata: customerMetadata,
+    status: "active",
+    portal_enabled: false,
+    total_revenue: 0,
+    total_jobs: 0,
+    total_invoices: 0,
+    average_job_value: 0,
+    outstanding_balance: 0,
+  };
+}
+
+async function insertAdditionalPropertiesIfAny(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  companyId: string,
+  customerId: string,
+  properties: ParsedCustomerProperty[]
+) {
+  const additionalProperties = properties.filter((p) => !p.isPrimary);
+  if (additionalProperties.length === 0) {
+    return;
+  }
+
+  const propertiesToInsert = await Promise.all(
+    additionalProperties.map(async (prop) => {
+      let propLat: number | null = null;
+      let propLon: number | null = null;
+
+      if (prop.address && prop.city && prop.state && prop.zipCode) {
+        const geocodeResult = await geocodeAddressSilent(
+          prop.address,
+          prop.city,
+          prop.state,
+          prop.zipCode,
+          prop.country || "USA"
+        );
+
+        if (geocodeResult) {
+          propLat = geocodeResult.lat;
+          propLon = geocodeResult.lon;
+        }
+      }
+
+      return {
+        company_id: companyId,
+        customer_id: customerId,
+        name: prop.name || "Additional Property",
+        address: prop.address,
+        address2: prop.address2 || null,
+        city: prop.city,
+        state: prop.state,
+        zip_code: prop.zipCode,
+        country: prop.country || "USA",
+        property_type: prop.propertyType || "residential",
+        notes: prop.notes || null,
+        lat: propLat,
+        lon: propLon,
+      };
+    })
+  );
+
+  await supabase.from("properties").insert(propertiesToInsert);
+}
+
 /**
  * Update existing customer
  */
-export async function updateCustomer(
+export function updateCustomer(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -409,19 +597,10 @@ export async function updateCustomer(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -437,7 +616,7 @@ export async function updateCustomer(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -556,7 +735,7 @@ export async function updateCustomer(
 /**
  * Delete customer (soft delete/archive)
  */
-export async function deleteCustomer(
+export function deleteCustomer(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -573,19 +752,10 @@ export async function deleteCustomer(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -601,7 +771,7 @@ export async function deleteCustomer(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -641,7 +811,7 @@ export async function deleteCustomer(
 /**
  * Update customer status
  */
-export async function updateCustomerStatus(
+export function updateCustomerStatus(
   customerId: string,
   status: "active" | "inactive" | "archived" | "blocked"
 ): Promise<ActionResult<void>> {
@@ -659,19 +829,10 @@ export async function updateCustomerStatus(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -687,7 +848,7 @@ export async function updateCustomerStatus(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -712,7 +873,7 @@ export async function updateCustomerStatus(
 /**
  * Update communication preferences
  */
-export async function updateCommunicationPreferences(
+export function updateCommunicationPreferences(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -730,19 +891,10 @@ export async function updateCommunicationPreferences(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -758,7 +910,7 @@ export async function updateCommunicationPreferences(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -795,7 +947,7 @@ export async function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export async function inviteToPortal(
+export function inviteToPortal(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -812,19 +964,10 @@ export async function inviteToPortal(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -840,7 +983,7 @@ export async function inviteToPortal(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -890,11 +1033,7 @@ export async function inviteToPortal(
     });
 
     if (!emailResult.success) {
-      console.error(
-        "Failed to send portal invitation email:",
-        emailResult.error
-      );
-      // Don't fail the whole operation if email fails - customer is still invited
+      return;
     }
 
     revalidatePath("/dashboard/customers");
@@ -905,7 +1044,7 @@ export async function inviteToPortal(
 /**
  * Revoke portal access
  */
-export async function revokePortalAccess(
+export function revokePortalAccess(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -922,19 +1061,10 @@ export async function revokePortalAccess(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const teamMember = await requireCustomerCompanyMembership(
+      supabase,
+      user.id
+    );
 
     // Verify customer exists and belongs to company
     const { data: customer } = await supabase
@@ -950,7 +1080,7 @@ export async function revokePortalAccess(
       throw new ActionError(
         "Customer not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -980,10 +1110,10 @@ export async function revokePortalAccess(
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export async function getCustomerByPhone(
+export function getCustomerByPhone(
   phoneNumber: string,
   companyId: string
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1024,10 +1154,10 @@ export async function getCustomerByPhone(
 /**
  * Search customers by name, email, phone, or company
  */
-export async function searchCustomers(
+export function searchCustomers(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1081,9 +1211,7 @@ export async function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomers(
-  limit = 10
-): Promise<ActionResult<any[]>> {
+export function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

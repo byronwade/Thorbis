@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
@@ -103,7 +104,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <BotIdProvider />
-          <AnalyticsProvider>{children}</AnalyticsProvider>
+          <Suspense fallback={null}>
+            <AnalyticsProvider>{children}</AnalyticsProvider>
+          </Suspense>
           <ToastProvider />
         </ThemeProvider>
         <Analytics />

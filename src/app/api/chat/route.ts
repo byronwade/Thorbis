@@ -2,7 +2,6 @@ import { streamText, tool } from "ai";
 import { z } from "zod";
 import { createAIProvider } from "@/lib/ai";
 
-export const runtime = "nodejs";
 export const maxDuration = 30;
 
 // Weather tool

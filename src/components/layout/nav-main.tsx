@@ -1,8 +1,5 @@
-"use client";
-
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,6 +17,7 @@ import {
 
 export function NavMain({
   items,
+  pathname = "/dashboard",
 }: {
   items: {
     title: string;
@@ -31,8 +29,8 @@ export function NavMain({
       url: string;
     }[];
   }[];
+  pathname?: string;
 }) {
-  const pathname = usePathname();
   const safePathname = pathname || "/dashboard";
 
   return (
@@ -61,7 +59,7 @@ export function NavMain({
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton
-                      isActive={isActive && pathname === item.url}
+                      isActive={isActive && safePathname === item.url}
                       tooltip={item.title}
                     >
                       {item.icon && <item.icon />}

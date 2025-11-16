@@ -18,8 +18,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
-export const dynamic = "force-dynamic"; // Search params are dynamic
-
 export const metadata = generateSEOMetadata({
   title: "Search Knowledge Base",
   section: "Knowledge Base",

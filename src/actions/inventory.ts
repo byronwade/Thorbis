@@ -28,8 +28,12 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
-// VALIDATION SCHEMAS
+// CONSTANTS & VALIDATION SCHEMAS
 // ============================================================================
+
+const LOCATION_MAX_LENGTH = 100;
+const REFERENCE_MAX_LENGTH = 200;
+const HTTP_STATUS_FORBIDDEN = 403;
 
 const inventorySchema = z.object({
   priceBookItemId: z.string().uuid("Price book item is required"),
@@ -42,8 +46,8 @@ const inventorySchema = z.object({
   maximumQuantity: z.number().int().min(0).optional(),
   reorderPoint: z.number().int().min(0).default(0),
   reorderQuantity: z.number().int().min(0).default(0),
-  warehouseLocation: z.string().max(100).optional(),
-  primaryLocation: z.string().max(100).optional(),
+  warehouseLocation: z.string().max(LOCATION_MAX_LENGTH).optional(),
+  primaryLocation: z.string().max(LOCATION_MAX_LENGTH).optional(),
   costPerUnit: z.number().int().min(0).default(0), // In cents
   notes: z.string().optional(),
 });
@@ -60,7 +64,7 @@ const stockAdjustmentSchema = z.object({
     "transfer",
     "return",
   ]),
-  reference: z.string().max(200).optional(), // PO number, job number, etc.
+  reference: z.string().max(REFERENCE_MAX_LENGTH).optional(), // PO number, job number, etc.
   notes: z.string().optional(),
 });
 
@@ -78,7 +82,7 @@ const reserveStockSchema = z.object({
 /**
  * Create new inventory record for a price book item
  */
-export async function createInventory(
+export function createInventory(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -90,115 +94,26 @@ export async function createInventory(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdOrThrow(supabase);
+    const data = parseInventoryFormData(formData);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    await getPriceBookItemForCompanyOrThrow(
+      supabase,
+      data.priceBookItemId,
+      companyId
+    );
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    await ensureNoExistingInventoryForItem(supabase, data.priceBookItemId);
 
-    // Validate input
-    const data = inventorySchema.parse({
-      priceBookItemId: formData.get("priceBookItemId"),
-      quantityOnHand: formData.get("quantityOnHand")
-        ? Number(formData.get("quantityOnHand"))
-        : 0,
-      minimumQuantity: formData.get("minimumQuantity")
-        ? Number(formData.get("minimumQuantity"))
-        : 0,
-      maximumQuantity: formData.get("maximumQuantity")
-        ? Number(formData.get("maximumQuantity"))
-        : undefined,
-      reorderPoint: formData.get("reorderPoint")
-        ? Number(formData.get("reorderPoint"))
-        : 0,
-      reorderQuantity: formData.get("reorderQuantity")
-        ? Number(formData.get("reorderQuantity"))
-        : 0,
-      warehouseLocation: formData.get("warehouseLocation") || undefined,
-      primaryLocation: formData.get("primaryLocation") || undefined,
-      costPerUnit: formData.get("costPerUnit")
-        ? Number(formData.get("costPerUnit"))
-        : 0,
-      notes: formData.get("notes") || undefined,
-    });
+    const insertPayload = buildInventoryInsertPayload(companyId, data);
 
-    // Verify price book item exists and belongs to company
-    const { data: priceBookItem } = await supabase
-      .from("price_book_items")
-      .select("id, company_id, name")
-      .eq("id", data.priceBookItemId)
-      .single();
-
-    assertExists(priceBookItem, "Price book item");
-
-    if (priceBookItem.company_id !== teamMember.company_id) {
-      throw new ActionError(
-        "Price book item not found",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Check if inventory already exists for this item
-    const { data: existingInventory } = await supabase
-      .from("inventory")
-      .select("id")
-      .eq("price_book_item_id", data.priceBookItemId)
-      .is("deleted_at", null)
-      .single();
-
-    if (existingInventory) {
-      throw new ActionError(
-        "Inventory already exists for this item. Use update instead.",
-        ERROR_CODES.DB_DUPLICATE_ENTRY
-      );
-    }
-
-    // Calculate derived values
-    const quantityAvailable = data.quantityOnHand; // Initially no reservations
-    const totalCostValue = data.quantityOnHand * data.costPerUnit;
-    const isLowStock = data.quantityOnHand <= data.minimumQuantity;
-
-    // Create inventory
     const { data: inventory, error: createError } = await supabase
       .from("inventory")
-      .insert({
-        company_id: teamMember.company_id,
-        price_book_item_id: data.priceBookItemId,
-        quantity_on_hand: data.quantityOnHand,
-        quantity_reserved: 0,
-        quantity_available: quantityAvailable,
-        minimum_quantity: data.minimumQuantity,
-        maximum_quantity: data.maximumQuantity,
-        reorder_point: data.reorderPoint,
-        reorder_quantity: data.reorderQuantity,
-        warehouse_location: data.warehouseLocation,
-        primary_location: data.primaryLocation,
-        cost_per_unit: data.costPerUnit,
-        total_cost_value: totalCostValue,
-        last_purchase_cost: data.costPerUnit,
-        is_low_stock: isLowStock,
-        low_stock_alert_sent: false,
-        status: "active",
-        notes: data.notes,
-      })
+      .insert(insertPayload)
       .select("id")
       .single();
 
-    if (createError) {
+    if (createError || !inventory) {
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create inventory"),
         ERROR_CODES.DB_QUERY_ERROR
@@ -214,7 +129,7 @@ export async function createInventory(
 /**
  * Update existing inventory settings
  */
-export async function updateInventory(
+export function updateInventory(
   inventoryId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -227,79 +142,19 @@ export async function updateInventory(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdOrThrow(supabase);
+    const inventory = await getInventoryForCompanyOrThrow(
+      supabase,
+      inventoryId,
+      companyId,
+      "id, company_id, price_book_item_id"
+    );
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const data = parseInventoryUpdateFormData(formData, inventory);
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Verify inventory exists and belongs to company
-    const { data: inventory } = await supabase
-      .from("inventory")
-      .select("id, company_id, price_book_item_id")
-      .eq("id", inventoryId)
-      .is("deleted_at", null)
-      .single();
-
-    assertExists(inventory, "Inventory");
-
-    if (inventory.company_id !== teamMember.company_id) {
-      throw new ActionError(
-        "Inventory not found",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Validate input (excluding quantity changes - use adjustStock for that)
-    const data = inventorySchema.omit({ quantityOnHand: true }).parse({
-      priceBookItemId: inventory.price_book_item_id,
-      minimumQuantity: formData.get("minimumQuantity")
-        ? Number(formData.get("minimumQuantity"))
-        : 0,
-      maximumQuantity: formData.get("maximumQuantity")
-        ? Number(formData.get("maximumQuantity"))
-        : undefined,
-      reorderPoint: formData.get("reorderPoint")
-        ? Number(formData.get("reorderPoint"))
-        : 0,
-      reorderQuantity: formData.get("reorderQuantity")
-        ? Number(formData.get("reorderQuantity"))
-        : 0,
-      warehouseLocation: formData.get("warehouseLocation") || undefined,
-      primaryLocation: formData.get("primaryLocation") || undefined,
-      costPerUnit: formData.get("costPerUnit")
-        ? Number(formData.get("costPerUnit"))
-        : 0,
-      notes: formData.get("notes") || undefined,
-    });
-
-    // Update inventory
     const { error: updateError } = await supabase
       .from("inventory")
-      .update({
-        minimum_quantity: data.minimumQuantity,
-        maximum_quantity: data.maximumQuantity,
-        reorder_point: data.reorderPoint,
-        reorder_quantity: data.reorderQuantity,
-        warehouse_location: data.warehouseLocation,
-        primary_location: data.primaryLocation,
-        cost_per_unit: data.costPerUnit,
-        notes: data.notes,
-      })
+      .update(buildInventoryUpdatePayload(data))
       .eq("id", inventoryId);
 
     if (updateError) {
@@ -316,7 +171,7 @@ export async function updateInventory(
 /**
  * Delete inventory record (soft delete)
  */
-export async function deleteInventory(
+export function deleteInventory(
   inventoryId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -343,7 +198,7 @@ export async function deleteInventory(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -361,7 +216,7 @@ export async function deleteInventory(
       throw new ActionError(
         "Inventory not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -401,9 +256,7 @@ export async function deleteInventory(
 /**
  * Adjust stock levels (add or remove inventory)
  */
-export async function adjustStock(
-  formData: FormData
-): Promise<ActionResult<void>> {
+export function adjustStock(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -413,104 +266,27 @@ export async function adjustStock(
       );
     }
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+    const companyId = await getUserCompanyIdOrThrow(supabase);
+    const adjustment = parseStockAdjustmentFormData(formData);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const inventory = await getInventoryForCompanyOrThrow(
+      supabase,
+      adjustment.inventoryId,
+      companyId,
+      "id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit, minimum_quantity, reorder_point"
+    );
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Validate input
-    const data = stockAdjustmentSchema.parse({
-      inventoryId: formData.get("inventoryId"),
-      quantityChange: Number(formData.get("quantityChange")),
-      reason: formData.get("reason"),
-      reference: formData.get("reference") || undefined,
-      notes: formData.get("notes") || undefined,
-    });
-
-    // Verify inventory exists and belongs to company
-    const { data: inventory } = await supabase
-      .from("inventory")
-      .select(
-        "id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit, minimum_quantity, reorder_point"
-      )
-      .eq("id", data.inventoryId)
-      .is("deleted_at", null)
-      .single();
-
-    assertExists(inventory, "Inventory");
-
-    if (inventory.company_id !== teamMember.company_id) {
-      throw new ActionError(
-        "Inventory not found",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Calculate new quantities
-    const newQuantityOnHand = inventory.quantity_on_hand + data.quantityChange;
-
-    // Prevent negative inventory
-    if (newQuantityOnHand < 0) {
-      throw new ActionError(
-        "Stock adjustment would result in negative inventory",
-        ERROR_CODES.BUSINESS_RULE_VIOLATION
-      );
-    }
-
-    // Prevent reducing below reserved quantity
-    if (newQuantityOnHand < inventory.quantity_reserved) {
-      throw new ActionError(
-        `Cannot reduce stock below reserved quantity (${inventory.quantity_reserved})`,
-        ERROR_CODES.BUSINESS_RULE_VIOLATION
-      );
-    }
-
-    const newQuantityAvailable =
-      newQuantityOnHand - inventory.quantity_reserved;
-    const newTotalCostValue = newQuantityOnHand * inventory.cost_per_unit;
-    const isLowStock = newQuantityOnHand <= inventory.minimum_quantity;
-
-    // Update inventory
-    const updateData: any = {
-      quantity_on_hand: newQuantityOnHand,
-      quantity_available: newQuantityAvailable,
-      total_cost_value: newTotalCostValue,
-      is_low_stock: isLowStock,
-    };
-
-    // Track last restock if this is an increase
-    if (data.quantityChange > 0 && data.reason === "restock") {
-      updateData.last_restock_date = new Date().toISOString();
-      updateData.last_restock_quantity = data.quantityChange;
-      if (data.reference) {
-        updateData.last_restock_purchase_order_id = data.reference;
-      }
-      // Reset low stock alert when restocking
-      updateData.low_stock_alert_sent = false;
-    }
-
-    // Track last stock check
-    updateData.last_stock_check_date = new Date().toISOString();
+    const derived = calculateAdjustedQuantities(inventory, adjustment);
+    const updateData = buildStockAdjustmentUpdatePayload(
+      derived,
+      adjustment,
+      inventory
+    );
 
     const { error: updateError } = await supabase
       .from("inventory")
       .update(updateData)
-      .eq("id", data.inventoryId);
+      .eq("id", adjustment.inventoryId);
 
     if (updateError) {
       throw new ActionError(
@@ -526,12 +302,298 @@ export async function adjustStock(
   });
 }
 
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+
+async function getUserCompanyIdOrThrow(
+  supabase: SupabaseClientType
+): Promise<string> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  assertAuthenticated(user?.id);
+
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!teamMember?.company_id) {
+    throw new ActionError(
+      "You must be part of a company",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return teamMember.company_id;
+}
+
+function parseInventoryFormData(formData: FormData) {
+  return inventorySchema.parse({
+    priceBookItemId: formData.get("priceBookItemId"),
+    quantityOnHand: formData.get("quantityOnHand")
+      ? Number(formData.get("quantityOnHand"))
+      : 0,
+    minimumQuantity: formData.get("minimumQuantity")
+      ? Number(formData.get("minimumQuantity"))
+      : 0,
+    maximumQuantity: formData.get("maximumQuantity")
+      ? Number(formData.get("maximumQuantity"))
+      : undefined,
+    reorderPoint: formData.get("reorderPoint")
+      ? Number(formData.get("reorderPoint"))
+      : 0,
+    reorderQuantity: formData.get("reorderQuantity")
+      ? Number(formData.get("reorderQuantity"))
+      : 0,
+    warehouseLocation: formData.get("warehouseLocation") || undefined,
+    primaryLocation: formData.get("primaryLocation") || undefined,
+    costPerUnit: formData.get("costPerUnit")
+      ? Number(formData.get("costPerUnit"))
+      : 0,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+async function getPriceBookItemForCompanyOrThrow(
+  supabase: SupabaseClientType,
+  priceBookItemId: string,
+  companyId: string
+) {
+  const { data: priceBookItem } = await supabase
+    .from("price_book_items")
+    .select("id, company_id, name")
+    .eq("id", priceBookItemId)
+    .single();
+
+  assertExists(priceBookItem, "Price book item");
+
+  if (priceBookItem.company_id !== companyId) {
+    throw new ActionError(
+      "Price book item not found",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return priceBookItem;
+}
+
+async function ensureNoExistingInventoryForItem(
+  supabase: SupabaseClientType,
+  priceBookItemId: string
+) {
+  const { data: existingInventory } = await supabase
+    .from("inventory")
+    .select("id")
+    .eq("price_book_item_id", priceBookItemId)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (existingInventory) {
+    throw new ActionError(
+      "Inventory already exists for this item. Use update instead.",
+      ERROR_CODES.DB_DUPLICATE_ENTRY
+    );
+  }
+}
+
+function buildInventoryInsertPayload(
+  companyId: string,
+  data: ReturnType<typeof parseInventoryFormData>
+) {
+  const quantityAvailable = data.quantityOnHand;
+  const totalCostValue = data.quantityOnHand * data.costPerUnit;
+  const isLowStock = data.quantityOnHand <= data.minimumQuantity;
+
+  return {
+    company_id: companyId,
+    price_book_item_id: data.priceBookItemId,
+    quantity_on_hand: data.quantityOnHand,
+    quantity_reserved: 0,
+    quantity_available: quantityAvailable,
+    minimum_quantity: data.minimumQuantity,
+    maximum_quantity: data.maximumQuantity,
+    reorder_point: data.reorderPoint,
+    reorder_quantity: data.reorderQuantity,
+    warehouse_location: data.warehouseLocation,
+    primary_location: data.primaryLocation,
+    cost_per_unit: data.costPerUnit,
+    total_cost_value: totalCostValue,
+    last_purchase_cost: data.costPerUnit,
+    is_low_stock: isLowStock,
+    low_stock_alert_sent: false,
+    status: "active",
+    notes: data.notes,
+  };
+}
+
+async function getInventoryForCompanyOrThrow<
+  T extends string = "id, company_id",
+>(
+  supabase: SupabaseClientType,
+  inventoryId: string,
+  companyId: string,
+  select: T
+): Promise<Record<string, unknown>> {
+  const { data: inventory } = await supabase
+    .from("inventory")
+    .select(select)
+    .eq("id", inventoryId)
+    .is("deleted_at", null)
+    .single();
+
+  assertExists(inventory, "Inventory");
+
+  if (inventory.company_id !== companyId) {
+    throw new ActionError(
+      "Inventory not found",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return inventory;
+}
+
+function parseInventoryUpdateFormData(
+  formData: FormData,
+  inventory: Record<string, unknown>
+) {
+  return inventorySchema.omit({ quantityOnHand: true }).parse({
+    priceBookItemId: inventory.price_book_item_id,
+    minimumQuantity: formData.get("minimumQuantity")
+      ? Number(formData.get("minimumQuantity"))
+      : 0,
+    maximumQuantity: formData.get("maximumQuantity")
+      ? Number(formData.get("maximumQuantity"))
+      : undefined,
+    reorderPoint: formData.get("reorderPoint")
+      ? Number(formData.get("reorderPoint"))
+      : 0,
+    reorderQuantity: formData.get("reorderQuantity")
+      ? Number(formData.get("reorderQuantity"))
+      : 0,
+    warehouseLocation: formData.get("warehouseLocation") || undefined,
+    primaryLocation: formData.get("primaryLocation") || undefined,
+    costPerUnit: formData.get("costPerUnit")
+      ? Number(formData.get("costPerUnit"))
+      : 0,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+function buildInventoryUpdatePayload(
+  data: ReturnType<typeof parseInventoryUpdateFormData>
+) {
+  return {
+    minimum_quantity: data.minimumQuantity,
+    maximum_quantity: data.maximumQuantity,
+    reorder_point: data.reorderPoint,
+    reorder_quantity: data.reorderQuantity,
+    warehouse_location: data.warehouseLocation,
+    primary_location: data.primaryLocation,
+    cost_per_unit: data.costPerUnit,
+    notes: data.notes,
+  };
+}
+
+function parseStockAdjustmentFormData(formData: FormData) {
+  return stockAdjustmentSchema.parse({
+    inventoryId: formData.get("inventoryId"),
+    quantityChange: Number(formData.get("quantityChange")),
+    reason: formData.get("reason"),
+    reference: formData.get("reference") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+type InventoryForAdjustment = {
+  id: string;
+  company_id: string;
+  quantity_on_hand: number;
+  quantity_reserved: number;
+  cost_per_unit: number;
+  minimum_quantity: number;
+  reorder_point: number;
+};
+
+type StockAdjustmentInput = ReturnType<typeof parseStockAdjustmentFormData>;
+
+type StockDerivedQuantities = {
+  newQuantityOnHand: number;
+  newQuantityAvailable: number;
+  newTotalCostValue: number;
+  isLowStock: boolean;
+};
+
+function calculateAdjustedQuantities(
+  inventory: InventoryForAdjustment,
+  adjustment: StockAdjustmentInput
+): StockDerivedQuantities {
+  const newQuantityOnHand =
+    inventory.quantity_on_hand + adjustment.quantityChange;
+
+  if (newQuantityOnHand < 0) {
+    throw new ActionError(
+      "Stock adjustment would result in negative inventory",
+      ERROR_CODES.BUSINESS_RULE_VIOLATION
+    );
+  }
+
+  if (newQuantityOnHand < inventory.quantity_reserved) {
+    throw new ActionError(
+      `Cannot reduce stock below reserved quantity (${inventory.quantity_reserved})`,
+      ERROR_CODES.BUSINESS_RULE_VIOLATION
+    );
+  }
+
+  const newQuantityAvailable = newQuantityOnHand - inventory.quantity_reserved;
+  const newTotalCostValue = newQuantityOnHand * inventory.cost_per_unit;
+  const isLowStock = newQuantityOnHand <= inventory.minimum_quantity;
+
+  return {
+    newQuantityOnHand,
+    newQuantityAvailable,
+    newTotalCostValue,
+    isLowStock,
+  };
+}
+
+function buildStockAdjustmentUpdatePayload(
+  derived: StockDerivedQuantities,
+  adjustment: StockAdjustmentInput
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {
+    quantity_on_hand: derived.newQuantityOnHand,
+    quantity_available: derived.newQuantityAvailable,
+    total_cost_value: derived.newTotalCostValue,
+    is_low_stock: derived.isLowStock,
+  };
+
+  if (adjustment.quantityChange > 0 && adjustment.reason === "restock") {
+    updateData.last_restock_date = new Date().toISOString();
+    updateData.last_restock_quantity = adjustment.quantityChange;
+    if (adjustment.reference) {
+      updateData.last_restock_purchase_order_id = adjustment.reference;
+    }
+    updateData.low_stock_alert_sent = false;
+  }
+
+  updateData.last_stock_check_date = new Date().toISOString();
+
+  return updateData;
+}
+
 /**
  * Reserve stock for a job
  */
-export async function reserveStock(
-  formData: FormData
-): Promise<ActionResult<void>> {
+export function reserveStock(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -556,7 +618,7 @@ export async function reserveStock(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -582,7 +644,7 @@ export async function reserveStock(
       throw new ActionError(
         "Inventory not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -629,7 +691,7 @@ export async function reserveStock(
 /**
  * Release reserved stock
  */
-export async function releaseReservedStock(
+export function releaseReservedStock(
   inventoryId: string,
   quantity: number
 ): Promise<ActionResult<void>> {
@@ -657,7 +719,7 @@ export async function releaseReservedStock(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -675,7 +737,7 @@ export async function releaseReservedStock(
       throw new ActionError(
         "Inventory not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -714,7 +776,7 @@ export async function releaseReservedStock(
 /**
  * Use reserved stock (deduct from both reserved and on-hand)
  */
-export async function useReservedStock(
+export function useReservedStock(
   inventoryId: string,
   quantity: number,
   jobId?: string
@@ -743,7 +805,7 @@ export async function useReservedStock(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -763,7 +825,7 @@ export async function useReservedStock(
       throw new ActionError(
         "Inventory not found",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -781,7 +843,7 @@ export async function useReservedStock(
     const newQuantityAvailable = newQuantityOnHand - newQuantityReserved;
     const newTotalCostValue = newQuantityOnHand * inventory.cost_per_unit;
 
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       quantity_on_hand: newQuantityOnHand,
       quantity_reserved: newQuantityReserved,
       quantity_available: newQuantityAvailable,
@@ -815,7 +877,7 @@ export async function useReservedStock(
 /**
  * Archive an inventory item (soft delete)
  */
-export async function archiveInventoryItem(
+export function archiveInventoryItem(
   inventoryId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -852,7 +914,7 @@ export async function archiveInventoryItem(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("inventory item"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -885,7 +947,7 @@ export async function archiveInventoryItem(
 /**
  * Get low stock items that need reordering
  */
-export async function getLowStockItems(): Promise<ActionResult<any[]>> {
+export function getLowStockItems(): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -910,7 +972,7 @@ export async function getLowStockItems(): Promise<ActionResult<any[]>> {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -943,9 +1005,9 @@ export async function getLowStockItems(): Promise<ActionResult<any[]>> {
 /**
  * Get inventory items that need stock check
  */
-export async function getItemsNeedingStockCheck(
+export function getItemsNeedingStockCheck(
   daysSinceLastCheck = 30
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -970,7 +1032,7 @@ export async function getItemsNeedingStockCheck(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 

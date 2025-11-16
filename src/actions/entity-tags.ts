@@ -29,7 +29,8 @@ type EntityType =
   | "estimate"
   | "equipment"
   | "appointment"
-  | "material";
+  | "material"
+  | "vendor";
 
 const ENTITY_TAG_FIELD_MAP: Record<
   EntityType,
@@ -43,12 +44,13 @@ const ENTITY_TAG_FIELD_MAP: Record<
   equipment: { table: "equipment", field: "metadata", useMetadata: true },
   appointment: { table: "appointments", field: "metadata", useMetadata: true },
   material: { table: "job_materials", field: "metadata", useMetadata: true },
+  vendor: { table: "vendors", field: "tags", useMetadata: false },
 };
 
 /**
  * Update tags for any entity type
  */
-export async function updateEntityTags(
+export function updateEntityTags(
   entityType: EntityType,
   entityId: string,
   tags: EntityTag[]
@@ -102,13 +104,12 @@ function getPathForEntity(entityType: EntityType): string | null {
     equipment: "work/equipment",
     appointment: "schedule",
     material: null,
+    vendor: "work/vendors",
   };
   return pathMap[entityType] ?? null;
 }
 
-const requireAuthenticatedUser = async (
-  supabase: SupabaseServerClient
-) => {
+const requireAuthenticatedUser = async (supabase: SupabaseServerClient) => {
   const {
     data: { user },
   } = await supabase.auth.getUser();

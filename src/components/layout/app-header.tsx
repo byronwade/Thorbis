@@ -1,7 +1,7 @@
-import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
 import { getAllCustomers } from "@/actions/customers";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
 import { AppHeaderClient } from "./app-header-client";
 
 /**
@@ -21,18 +21,31 @@ import { AppHeaderClient } from "./app-header-client";
  * - Smaller JavaScript bundle (auth logic stays on server)
  *
  * Conditional Rendering:
- * - Wrapped by AppHeaderWrapper client component which uses usePathname()
- * - AppHeaderWrapper hides header on routes like /dashboard/tv and /dashboard/welcome
+ * - Dashboard layout decides when to render the header (e.g. hides on TV/welcome routes)
  */
 
 export async function AppHeader() {
   // Fetch user profile and companies on server (cached with React cache())
   // This runs on server BEFORE sending HTML to client
-  const [userProfile, companies, activeCompanyId] = await Promise.all([
-    getUserProfile(),
-    getUserCompanies(),
-    getActiveCompanyId(),
-  ]);
+  // Handle prerender cookie access gracefully
+  let userProfile;
+  let companies;
+  let activeCompanyId;
+
+  try {
+    [userProfile, companies, activeCompanyId] = await Promise.all([
+      getUserProfile(),
+      getUserCompanies(),
+      getActiveCompanyId(),
+    ]);
+  } catch (error) {
+    // During prerendering, cookies() may reject - this is expected
+    // Return null and let the client-side handle it
+    if (error instanceof Error && error.message.includes("prerendering")) {
+      return null;
+    }
+    throw error;
+  }
 
   // If no user, this should never happen because dashboard is protected by middleware
   // But we handle it gracefully anyway
@@ -82,9 +95,9 @@ export async function AppHeader() {
     <AppHeaderClient
       activeCompanyId={activeCompanyId}
       companies={companies}
-      userProfile={userProfile}
-      customers={customers}
       companyPhones={companyPhones}
+      customers={customers}
+      userProfile={userProfile}
     />
   );
 }

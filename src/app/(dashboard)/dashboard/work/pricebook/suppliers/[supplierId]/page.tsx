@@ -103,7 +103,7 @@ export default async function SupplierDetailPage({ params }: PageProps) {
     supplierData.ferguson;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 p-6">
+    <div className="mx-auto max-w-7xl space-y-6 p-6">
       {/* Back Button */}
       <Button asChild size="sm" variant="ghost">
         <Link href="/dashboard/settings/pricebook/integrations">

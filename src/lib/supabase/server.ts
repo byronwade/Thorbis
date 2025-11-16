@@ -13,7 +13,17 @@ export async function createClient() {
     return null;
   }
 
-  const cookieStore = await cookies();
+  let cookieStore;
+  try {
+    cookieStore = await cookies();
+  } catch (error) {
+    // During prerendering, cookies() may reject - return null
+    // This allows PPR to work correctly
+    if (error instanceof Error && error.message.includes("prerendering")) {
+      return null;
+    }
+    throw error;
+  }
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {

@@ -35,6 +35,15 @@ export function AIAutofillPreview() {
     (state) => state.showAIConfidence
   );
 
+  // Check if any data exists
+  const hasData =
+    extractedData.customerInfo.name ||
+    extractedData.customerInfo.email ||
+    extractedData.customerInfo.phone ||
+    extractedData.jobDetails.title ||
+    extractedData.jobDetails.description ||
+    extractedData.appointmentNeeds.preferredDate;
+
   const [customerInfoState, setCustomerInfoState] =
     useState<ApprovalState>("pending");
   const [editedCustomerInfo, setEditedCustomerInfo] = useState(
@@ -311,7 +320,8 @@ export function AIAutofillPreview() {
               extractedData.customerInfo.name ||
               extractedData.customerInfo.email ||
               extractedData.customerInfo.phone ||
-              extractedData.customerInfo.company
+              extractedData.customerInfo.company ||
+              extractedData.customerInfo.address.full
             ) && (
               <p className="text-muted-foreground text-xs">
                 No customer information extracted yet
@@ -320,86 +330,88 @@ export function AIAutofillPreview() {
           </div>
         </div>
 
-        {/* Issue Categories */}
-        {extractedData.issueCategories.length > 0 && (
+        {/* Job Details */}
+        {(extractedData.jobDetails.title ||
+          extractedData.jobDetails.description) && (
           <div className="rounded-lg border border-border bg-foreground/50 p-4">
             <div className="mb-3 flex items-center gap-2">
-              <Tag className="size-3.5 text-warning" />
-              <h4 className="font-semibold text-sm text-white">
-                Issue Categories
-              </h4>
+              <Tag className="size-3.5 text-blue-500" />
+              <h4 className="font-semibold text-sm text-white">Job Details</h4>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {extractedData.issueCategories.map((category, index) => (
-                <div
-                  className="flex items-center gap-2 rounded-lg border border-warning bg-warning/20 px-3 py-1.5"
-                  key={index}
-                >
-                  <span className="font-medium text-warning text-xs">
-                    {category.category}
-                  </span>
-                  {showAIConfidence && (
-                    <span className="font-mono text-[10px] text-warning">
-                      {Math.round(category.confidence)}%
-                    </span>
-                  )}
+            <div className="space-y-2">
+              {extractedData.jobDetails.title && (
+                <div>
+                  <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+                    Title
+                  </label>
+                  <p className="text-muted-foreground text-sm">
+                    {extractedData.jobDetails.title}
+                  </p>
                 </div>
-              ))}
+              )}
+              {extractedData.jobDetails.description && (
+                <div>
+                  <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+                    Description
+                  </label>
+                  <p className="text-muted-foreground text-sm">
+                    {extractedData.jobDetails.description}
+                  </p>
+                </div>
+              )}
+              {extractedData.jobDetails.urgency && (
+                <div>
+                  <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+                    Urgency
+                  </label>
+                  <span
+                    className={`inline-block rounded px-2 py-1 text-xs ${
+                      extractedData.jobDetails.urgency === "emergency"
+                        ? "bg-red-500/20 text-red-600"
+                        : extractedData.jobDetails.urgency === "high"
+                          ? "bg-orange-500/20 text-orange-600"
+                          : "bg-blue-500/20 text-blue-600"
+                    }`}
+                  >
+                    {extractedData.jobDetails.urgency}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Action Items */}
-        {extractedData.actionItems.length > 0 && (
+        {/* Appointment Needs */}
+        {(extractedData.appointmentNeeds.preferredDate ||
+          extractedData.appointmentNeeds.timePreference) && (
           <div className="rounded-lg border border-border bg-foreground/50 p-4">
-            <h4 className="mb-3 font-semibold text-sm text-white">
-              Action Items
-            </h4>
+            <div className="mb-3 flex items-center gap-2">
+              <Tag className="size-3.5 text-purple-500" />
+              <h4 className="font-semibold text-sm text-white">
+                Appointment Preferences
+              </h4>
+            </div>
             <div className="space-y-2">
-              {extractedData.actionItems.map((item, index) => (
-                <div
-                  className={`flex items-start gap-2 rounded-lg border p-3 ${approvedActionItems.has(index) ? "border-success bg-success/10" : "border-border bg-foreground/50"}`}
-                  key={index}
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`rounded px-1.5 py-0.5 font-semibold text-[10px] ${
-                          item.priority === "high"
-                            ? "bg-destructive/50 text-destructive"
-                            : item.priority === "medium"
-                              ? "bg-warning/50 text-warning"
-                              : "bg-primary/50 text-primary"
-                        }`}
-                      >
-                        {item.priority.toUpperCase()}
-                      </span>
-                      {showAIConfidence && (
-                        <span className="font-mono text-[10px] text-muted-foreground">
-                          {Math.round(item.confidence)}%
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-1 text-muted-foreground text-sm">
-                      {item.text}
-                    </p>
-                  </div>
-                  {!approvedActionItems.has(index) && (
-                    <Button
-                      className="h-7 gap-1 bg-success/30 px-2 text-success hover:bg-success/50"
-                      onClick={() => handleApproveActionItem(index)}
-                      size="sm"
-                      variant="ghost"
-                    >
-                      <Check className="size-3" />
-                      Add
-                    </Button>
-                  )}
-                  {approvedActionItems.has(index) && (
-                    <Check className="size-4 text-success" />
-                  )}
+              {extractedData.appointmentNeeds.preferredDate && (
+                <div>
+                  <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+                    Preferred Date
+                  </label>
+                  <p className="text-muted-foreground text-sm">
+                    {extractedData.appointmentNeeds.preferredDate}
+                  </p>
                 </div>
-              ))}
+              )}
+              {extractedData.appointmentNeeds.timePreference && (
+                <div>
+                  <label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+                    Time Preference
+                  </label>
+                  <p className="text-muted-foreground text-sm capitalize">
+                    {extractedData.appointmentNeeds.timePreference}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -425,9 +437,7 @@ export function AIAutofillPreview() {
         )}
 
         {/* No data yet */}
-        {extractedData.issueCategories.length === 0 &&
-          extractedData.actionItems.length === 0 &&
-          !extractedData.callSummary &&
+        {!(hasData || extractedData.callSummary) &&
           extractedData.customerInfo.confidence === 0 && (
             <div className="flex h-full flex-col items-center justify-center py-12 text-center">
               <div className="rounded-full bg-foreground p-4">

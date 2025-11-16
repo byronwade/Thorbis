@@ -11,7 +11,7 @@ export default function MarketingSettingsPage() {
   return (
     <SettingsComingSoon
       description="Configure marketing campaigns, lead tracking, and customer acquisition tools."
-      icon={Megaphone}
+      icon={<Megaphone className="size-10 text-primary" strokeWidth={1.5} />}
       title="Marketing Settings"
     />
   );

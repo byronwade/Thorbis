@@ -19,8 +19,6 @@ import { generateCategoryMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
 import { createBreadcrumbSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 3600; // Revalidate every hour
-
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }

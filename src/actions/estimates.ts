@@ -24,9 +24,26 @@ import {
 import { createClient } from "@/lib/supabase/server";
 
 // Validation Schemas
+const MIN_LINE_ITEM_QUANTITY = 0.01;
+const MAX_TAX_RATE_PERCENT = 100;
+const DEFAULT_VALID_DAYS = 30;
+const ESTIMATE_NUMBER_PADDING_LENGTH = 3;
+const JOB_NUMBER_PADDING_LENGTH = 3;
+const PERCENT_DENOMINATOR = 100;
+const CENTS_PER_DOLLAR = 100;
+const HTTP_STATUS_FORBIDDEN = 403;
+const ARCHIVE_RETENTION_DAYS = 90;
+const SECONDS_PER_DAY = 24 * 60 * 60;
+const MS_PER_DAY = SECONDS_PER_DAY * 1000;
+
+const ESTIMATE_NUMBER_REGEX = /EST-\d{4}-(\d+)/;
+const JOB_NUMBER_REGEX = /JOB-\d{4}-(\d+)/;
+
 const lineItemSchema = z.object({
   description: z.string().min(1, "Description is required"),
-  quantity: z.number().min(0.01, "Quantity must be greater than 0"),
+  quantity: z
+    .number()
+    .min(MIN_LINE_ITEM_QUANTITY, "Quantity must be greater than 0"),
   unitPrice: z.number().min(0, "Price must be positive"),
   total: z.number().min(0, "Total must be positive"),
 });
@@ -39,9 +56,9 @@ const createEstimateSchema = z.object({
   lineItems: z
     .array(lineItemSchema)
     .min(1, "At least one line item is required"),
-  taxRate: z.number().min(0).max(100).default(0),
+  taxRate: z.number().min(0).max(MAX_TAX_RATE_PERCENT).default(0),
   discountAmount: z.number().min(0).default(0),
-  validDays: z.number().min(1).default(30),
+  validDays: z.number().min(1).default(DEFAULT_VALID_DAYS),
   terms: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -50,7 +67,7 @@ const updateEstimateSchema = z.object({
   title: z.string().min(1, "Estimate title is required").optional(),
   description: z.string().optional(),
   lineItems: z.array(lineItemSchema).optional(),
-  taxRate: z.number().min(0).max(100).optional(),
+  taxRate: z.number().min(0).max(MAX_TAX_RATE_PERCENT).optional(),
   discountAmount: z.number().min(0).optional(),
   validDays: z.number().min(1).optional(),
   terms: z.string().optional(),
@@ -60,8 +77,10 @@ const updateEstimateSchema = z.object({
 /**
  * Generate unique estimate number
  */
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 async function generateEstimateNumber(
-  supabase: any,
+  supabase: SupabaseClient,
   companyId: string
 ): Promise<string> {
   const { data: latestEstimate } = await supabase
@@ -76,39 +95,43 @@ async function generateEstimateNumber(
     return `EST-${new Date().getFullYear()}-001`;
   }
 
-  const match = latestEstimate.estimate_number.match(/EST-\d{4}-(\d+)/);
+  const match = latestEstimate.estimate_number.match(ESTIMATE_NUMBER_REGEX);
   if (match) {
-    const nextNumber = Number.parseInt(match[1]) + 1;
-    return `EST-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
+    const nextNumber = Number.parseInt(match[1], 10) + 1;
+    return `EST-${new Date().getFullYear()}-${nextNumber
+      .toString()
+      .padStart(ESTIMATE_NUMBER_PADDING_LENGTH, "0")}`;
   }
 
-  return `EST-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`;
+  return `EST-${new Date().getFullYear()}-${Date.now()
+    .toString()
+    .slice(-ESTIMATE_NUMBER_PADDING_LENGTH)}`;
 }
 
 /**
  * Calculate estimate totals
  */
 function calculateTotals(
-  lineItems: any[],
+  lineItems: { total: number }[],
   taxRate: number,
   discountAmount: number
 ) {
   const subtotal = lineItems.reduce((sum, item) => sum + item.total, 0);
-  const taxAmount = Math.round((subtotal * taxRate) / 100);
+  const taxAmount = Math.round((subtotal * taxRate) / PERCENT_DENOMINATOR);
   const totalAmount = subtotal + taxAmount - discountAmount;
 
   return {
-    subtotal: Math.round(subtotal * 100), // Convert to cents
-    taxAmount: Math.round(taxAmount * 100),
-    discountAmount: Math.round(discountAmount * 100),
-    totalAmount: Math.round(totalAmount * 100),
+    subtotal: Math.round(subtotal * CENTS_PER_DOLLAR), // Convert to cents
+    taxAmount: Math.round(taxAmount * CENTS_PER_DOLLAR),
+    discountAmount: Math.round(discountAmount * CENTS_PER_DOLLAR),
+    totalAmount: Math.round(totalAmount * CENTS_PER_DOLLAR),
   };
 }
 
 /**
  * Create a new estimate
  */
-export async function createEstimate(
+export function createEstimate(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -125,80 +148,30 @@ export async function createEstimate(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
+    const lineItems = parseEstimateLineItems(formData.get("lineItems"));
+    const data = parseCreateEstimateFormData(formData, lineItems);
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Parse line items from JSON
-    const lineItemsJson = formData.get("lineItems") as string;
-    const lineItems = lineItemsJson ? JSON.parse(lineItemsJson) : [];
-
-    const data = createEstimateSchema.parse({
-      customerId: formData.get("customerId"),
-      propertyId: formData.get("propertyId") || undefined,
-      title: formData.get("title"),
-      description: formData.get("description") || undefined,
-      lineItems,
-      taxRate: formData.get("taxRate")
-        ? Number.parseFloat(formData.get("taxRate") as string)
-        : 0,
-      discountAmount: formData.get("discountAmount")
-        ? Number.parseFloat(formData.get("discountAmount") as string)
-        : 0,
-      validDays: formData.get("validDays")
-        ? Number.parseInt(formData.get("validDays") as string)
-        : 30,
-      terms: formData.get("terms") || undefined,
-      notes: formData.get("notes") || undefined,
-    });
-
-    // Calculate totals
     const totals = calculateTotals(
       data.lineItems,
       data.taxRate,
       data.discountAmount
     );
 
-    // Calculate valid until date
-    const validUntil = new Date();
-    validUntil.setDate(validUntil.getDate() + data.validDays);
+    const validUntilIso = calculateValidUntilIso(data.validDays);
+    const estimateNumber = await generateEstimateNumber(supabase, companyId);
 
-    // Generate estimate number
-    const estimateNumber = await generateEstimateNumber(
-      supabase,
-      teamMember.company_id
-    );
+    const insertPayload = buildCreateEstimateInsertPayload({
+      companyId,
+      data,
+      totals,
+      validUntilIso,
+      estimateNumber,
+    });
 
-    // Create estimate
     const { data: newEstimate, error: createError } = await supabase
       .from("estimates")
-      .insert({
-        company_id: teamMember.company_id,
-        customer_id: data.customerId,
-        property_id: data.propertyId,
-        estimate_number: estimateNumber,
-        title: data.title,
-        description: data.description,
-        status: "draft",
-        subtotal: totals.subtotal,
-        tax_amount: totals.taxAmount,
-        discount_amount: totals.discountAmount,
-        total_amount: totals.totalAmount,
-        valid_until: validUntil.toISOString(),
-        line_items: data.lineItems,
-        terms: data.terms,
-        notes: data.notes,
-      })
+      .insert(insertPayload)
       .select("id")
       .single();
 
@@ -217,7 +190,7 @@ export async function createEstimate(
 /**
  * Update an estimate
  */
-export async function updateEstimate(
+export function updateEstimate(
   estimateId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -235,38 +208,13 @@ export async function updateEstimate(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
+    const existingEstimate = await getEstimateForCompanyOrThrow(
+      supabase,
+      estimateId,
+      companyId
+    );
 
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Verify estimate belongs to company
-    const { data: existingEstimate } = await supabase
-      .from("estimates")
-      .select("company_id, status")
-      .eq("id", estimateId)
-      .single();
-
-    assertExists(existingEstimate, "Estimate");
-
-    if (existingEstimate.company_id !== teamMember.company_id) {
-      throw new ActionError(
-        ERROR_MESSAGES.forbidden("estimate"),
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
-
-    // Only draft estimates can be edited
     if (existingEstimate.status !== "draft") {
       throw new ActionError(
         "Only draft estimates can be edited",
@@ -274,54 +222,10 @@ export async function updateEstimate(
       );
     }
 
-    // Parse line items if provided
-    const lineItemsJson = formData.get("lineItems") as string;
-    const lineItems = lineItemsJson ? JSON.parse(lineItemsJson) : undefined;
+    const lineItems = parseEstimateLineItems(formData.get("lineItems"), true);
+    const data = parseUpdateEstimateFormData(formData, lineItems);
 
-    const data = updateEstimateSchema.parse({
-      title: formData.get("title") || undefined,
-      description: formData.get("description") || undefined,
-      lineItems,
-      taxRate: formData.get("taxRate")
-        ? Number.parseFloat(formData.get("taxRate") as string)
-        : undefined,
-      discountAmount: formData.get("discountAmount")
-        ? Number.parseFloat(formData.get("discountAmount") as string)
-        : undefined,
-      validDays: formData.get("validDays")
-        ? Number.parseInt(formData.get("validDays") as string)
-        : undefined,
-      terms: formData.get("terms") || undefined,
-      notes: formData.get("notes") || undefined,
-    });
-
-    // Prepare update data
-    const updateData: any = {};
-    if (data.title) updateData.title = data.title;
-    if (data.description !== undefined)
-      updateData.description = data.description;
-    if (data.terms !== undefined) updateData.terms = data.terms;
-    if (data.notes !== undefined) updateData.notes = data.notes;
-
-    // Recalculate totals if line items changed
-    if (data.lineItems) {
-      const taxRate = data.taxRate ?? 0;
-      const discountAmount = data.discountAmount ?? 0;
-      const totals = calculateTotals(data.lineItems, taxRate, discountAmount);
-
-      updateData.line_items = data.lineItems;
-      updateData.subtotal = totals.subtotal;
-      updateData.tax_amount = totals.taxAmount;
-      updateData.discount_amount = totals.discountAmount;
-      updateData.total_amount = totals.totalAmount;
-    }
-
-    // Update valid until if validDays changed
-    if (data.validDays) {
-      const validUntil = new Date();
-      validUntil.setDate(validUntil.getDate() + data.validDays);
-      updateData.valid_until = validUntil.toISOString();
-    }
+    const updateData = buildUpdateEstimatePayload(data);
 
     // Update estimate
     const { error: updateError } = await supabase
@@ -341,12 +245,196 @@ export async function updateEstimate(
   });
 }
 
+type CreateEstimateParsed = z.infer<typeof createEstimateSchema>;
+type UpdateEstimateParsed = z.infer<typeof updateEstimateSchema>;
+
+async function requireEstimateCompanyId(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  userId: string
+): Promise<string> {
+  const { data: teamMember } = await supabase
+    .from("team_members")
+    .select("company_id")
+    .eq("user_id", userId)
+    .single();
+
+  if (!teamMember?.company_id) {
+    throw new ActionError(
+      "You must be part of a company",
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return teamMember.company_id;
+}
+
+function parseEstimateLineItems(
+  value: FormDataEntryValue | null,
+  optional = false
+): { total: number }[] | undefined {
+  if (!value || typeof value !== "string") {
+    return optional ? undefined : [];
+  }
+
+  try {
+    return JSON.parse(value) as { total: number }[];
+  } catch {
+    throw new ActionError(
+      "Invalid line items data",
+      ERROR_CODES.VALIDATION_FAILED
+    );
+  }
+}
+
+function parseCreateEstimateFormData(
+  formData: FormData,
+  lineItems: { total: number }[]
+): CreateEstimateParsed {
+  return createEstimateSchema.parse({
+    customerId: formData.get("customerId"),
+    propertyId: formData.get("propertyId") || undefined,
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+    lineItems,
+    taxRate: formData.get("taxRate")
+      ? Number.parseFloat(formData.get("taxRate") as string)
+      : 0,
+    discountAmount: formData.get("discountAmount")
+      ? Number.parseFloat(formData.get("discountAmount") as string)
+      : 0,
+    validDays: formData.get("validDays")
+      ? Number.parseInt(formData.get("validDays") as string, 10)
+      : DEFAULT_VALID_DAYS,
+    terms: formData.get("terms") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+function calculateValidUntilIso(validDays: number): string {
+  const validUntil = new Date();
+  validUntil.setDate(validUntil.getDate() + validDays);
+  return validUntil.toISOString();
+}
+
+type CreateEstimateInsertParams = {
+  companyId: string;
+  data: CreateEstimateParsed;
+  totals: ReturnType<typeof calculateTotals>;
+  validUntilIso: string;
+  estimateNumber: string;
+};
+
+function buildCreateEstimateInsertPayload(
+  params: CreateEstimateInsertParams
+): Record<string, unknown> {
+  const { companyId, data, totals, validUntilIso, estimateNumber } = params;
+
+  return {
+    company_id: companyId,
+    customer_id: data.customerId,
+    property_id: data.propertyId,
+    estimate_number: estimateNumber,
+    title: data.title,
+    description: data.description,
+    status: "draft",
+    subtotal: totals.subtotal,
+    tax_amount: totals.taxAmount,
+    discount_amount: totals.discountAmount,
+    total_amount: totals.totalAmount,
+    valid_until: validUntilIso,
+    line_items: data.lineItems,
+    terms: data.terms,
+    notes: data.notes,
+  };
+}
+
+async function getEstimateForCompanyOrThrow(
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+  estimateId: string,
+  companyId: string
+) {
+  const { data: existingEstimate } = await supabase
+    .from("estimates")
+    .select("company_id, status")
+    .eq("id", estimateId)
+    .single();
+
+  assertExists(existingEstimate, "Estimate");
+
+  if (existingEstimate.company_id !== companyId) {
+    throw new ActionError(
+      ERROR_MESSAGES.forbidden("estimate"),
+      ERROR_CODES.AUTH_FORBIDDEN,
+      HTTP_STATUS_FORBIDDEN
+    );
+  }
+
+  return existingEstimate;
+}
+
+function parseUpdateEstimateFormData(
+  formData: FormData,
+  lineItems: { total: number }[] | undefined
+): UpdateEstimateParsed {
+  return updateEstimateSchema.parse({
+    title: formData.get("title") || undefined,
+    description: formData.get("description") || undefined,
+    lineItems,
+    taxRate: formData.get("taxRate")
+      ? Number.parseFloat(formData.get("taxRate") as string)
+      : undefined,
+    discountAmount: formData.get("discountAmount")
+      ? Number.parseFloat(formData.get("discountAmount") as string)
+      : undefined,
+    validDays: formData.get("validDays")
+      ? Number.parseInt(formData.get("validDays") as string, 10)
+      : undefined,
+    terms: formData.get("terms") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+}
+
+function buildUpdateEstimatePayload(
+  data: UpdateEstimateParsed
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {};
+  if (data.title) {
+    updateData.title = data.title;
+  }
+  if (data.description !== undefined) {
+    updateData.description = data.description;
+  }
+  if (data.terms !== undefined) {
+    updateData.terms = data.terms;
+  }
+  if (data.notes !== undefined) {
+    updateData.notes = data.notes;
+  }
+
+  if (data.lineItems) {
+    const taxRate = data.taxRate ?? 0;
+    const discountAmount = data.discountAmount ?? 0;
+    const totals = calculateTotals(data.lineItems, taxRate, discountAmount);
+
+    updateData.line_items = data.lineItems;
+    updateData.subtotal = totals.subtotal;
+    updateData.tax_amount = totals.taxAmount;
+    updateData.discount_amount = totals.discountAmount;
+    updateData.total_amount = totals.totalAmount;
+  }
+
+  if (data.validDays) {
+    updateData.valid_until = calculateValidUntilIso(data.validDays);
+  }
+
+  return updateData;
+}
+
 /**
  * Send estimate to customer
  */
-export async function sendEstimate(
-  estimateId: string
-): Promise<ActionResult<void>> {
+export function sendEstimate(estimateId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -361,19 +449,7 @@ export async function sendEstimate(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
 
     // Verify estimate belongs to company
     const { data: existingEstimate } = await supabase
@@ -384,11 +460,11 @@ export async function sendEstimate(
 
     assertExists(existingEstimate, "Estimate");
 
-    if (existingEstimate.company_id !== teamMember.company_id) {
+    if (existingEstimate.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("estimate"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -430,7 +506,7 @@ export async function sendEstimate(
 /**
  * Mark estimate as viewed (customer opened it)
  */
-export async function markEstimateViewed(
+export function markEstimateViewed(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -478,7 +554,7 @@ export async function markEstimateViewed(
 /**
  * Accept estimate (customer approval)
  */
-export async function acceptEstimate(
+export function acceptEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -539,7 +615,7 @@ export async function acceptEstimate(
 /**
  * Reject estimate (customer rejection)
  */
-export async function rejectEstimate(
+export function rejectEstimate(
   estimateId: string,
   reason?: string
 ): Promise<ActionResult<void>> {
@@ -598,7 +674,7 @@ export async function rejectEstimate(
 /**
  * Convert estimate to job
  */
-export async function convertEstimateToJob(
+export function convertEstimateToJob(
   estimateId: string
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -615,19 +691,7 @@ export async function convertEstimateToJob(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
 
     // Get estimate
     const { data: estimate } = await supabase
@@ -640,11 +704,11 @@ export async function convertEstimateToJob(
 
     assertExists(estimate, "Estimate");
 
-    if (estimate.company_id !== teamMember.company_id) {
+    if (estimate.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("estimate"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -665,14 +729,18 @@ export async function convertEstimateToJob(
       .limit(1)
       .single();
 
-    let jobNumber;
+    let jobNumber: string;
     if (latestJob) {
-      const match = latestJob.job_number.match(/JOB-\d{4}-(\d+)/);
+      const match = latestJob.job_number.match(JOB_NUMBER_REGEX);
       if (match) {
-        const nextNumber = Number.parseInt(match[1]) + 1;
-        jobNumber = `JOB-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
+        const nextNumber = Number.parseInt(match[1], 10) + 1;
+        jobNumber = `JOB-${new Date().getFullYear()}-${nextNumber
+          .toString()
+          .padStart(JOB_NUMBER_PADDING_LENGTH, "0")}`;
       } else {
-        jobNumber = `JOB-${new Date().getFullYear()}-${Date.now().toString().slice(-3)}`;
+        jobNumber = `JOB-${new Date().getFullYear()}-${Date.now()
+          .toString()
+          .slice(-JOB_NUMBER_PADDING_LENGTH)}`;
       }
     } else {
       jobNumber = `JOB-${new Date().getFullYear()}-001`;
@@ -709,8 +777,11 @@ export async function convertEstimateToJob(
       .eq("id", estimateId);
 
     if (linkError) {
-      // Job created but linking failed - log it but don't fail
-      console.error("Failed to link estimate to job:", linkError);
+      // Job created but linking failed - return error while keeping job
+      throw new ActionError(
+        ERROR_MESSAGES.operationFailed("link estimate to job"),
+        ERROR_CODES.DB_QUERY_ERROR
+      );
     }
 
     revalidatePath("/dashboard/work/estimates");
@@ -725,7 +796,7 @@ export async function convertEstimateToJob(
  * Replaces deleteEstimate - now archives instead of permanently deleting.
  * Archived estimates can be restored within 90 days.
  */
-export async function archiveEstimate(
+export function archiveEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -742,19 +813,7 @@ export async function archiveEstimate(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
 
     // Verify estimate belongs to company
     const { data: estimate } = await supabase
@@ -765,11 +824,11 @@ export async function archiveEstimate(
 
     assertExists(estimate, "Estimate");
 
-    if (estimate.company_id !== teamMember.company_id) {
+    if (estimate.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("estimate"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -784,7 +843,7 @@ export async function archiveEstimate(
     // Archive estimate (soft delete)
     const now = new Date().toISOString();
     const scheduledDeletion = new Date(
-      Date.now() + 90 * 24 * 60 * 60 * 1000
+      Date.now() + ARCHIVE_RETENTION_DAYS * MS_PER_DAY
     ).toISOString();
 
     const { error: archiveError } = await supabase
@@ -813,7 +872,7 @@ export async function archiveEstimate(
 /**
  * Restore archived estimate
  */
-export async function restoreEstimate(
+export function restoreEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -830,19 +889,7 @@ export async function restoreEstimate(
     } = await supabase.auth.getUser();
     assertAuthenticated(user?.id);
 
-    const { data: teamMember } = await supabase
-      .from("team_members")
-      .select("company_id")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!teamMember?.company_id) {
-      throw new ActionError(
-        "You must be part of a company",
-        ERROR_CODES.AUTH_FORBIDDEN,
-        403
-      );
-    }
+    const companyId = await requireEstimateCompanyId(supabase, user.id);
 
     // Verify estimate belongs to company and is archived
     const { data: estimate } = await supabase
@@ -853,11 +900,11 @@ export async function restoreEstimate(
 
     assertExists(estimate, "Estimate");
 
-    if (estimate.company_id !== teamMember.company_id) {
+    if (estimate.company_id !== companyId) {
       throw new ActionError(
         ERROR_MESSAGES.forbidden("estimate"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -897,7 +944,7 @@ export async function restoreEstimate(
  * Removes the job association from the estimate (sets job_id to NULL)
  * This is a bidirectional operation - estimate no longer shows on job, job no longer shows on estimate
  */
-export async function unlinkEstimateFromJob(
+export function unlinkEstimateFromJob(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -952,7 +999,7 @@ export async function unlinkEstimateFromJob(
  * @param estimateId - ID of the estimate to unlink from its job
  * @returns Promise<ActionResult<void>>
  */
-export async function unlinkJobFromEstimate(
+export function unlinkJobFromEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   // Just call the main function - same implementation
@@ -963,7 +1010,7 @@ export async function unlinkJobFromEstimate(
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */
-export async function deleteEstimate(
+export function deleteEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return archiveEstimate(estimateId);

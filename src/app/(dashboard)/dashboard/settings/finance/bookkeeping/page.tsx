@@ -11,7 +11,7 @@ export default function BookkeepingSettingsPage() {
   return (
     <SettingsComingSoon
       description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
-      icon={BookOpen}
+      icon={<BookOpen className="size-10 text-primary" strokeWidth={1.5} />}
       title="Bookkeeping Settings"
     />
   );

@@ -12,7 +12,6 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-export const revalidate = 3600; // Revalidate every 1 hour
 const automationSections = [
   {
     title: "Workflow Automation",

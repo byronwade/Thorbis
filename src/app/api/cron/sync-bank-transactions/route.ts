@@ -17,9 +17,6 @@ import { NextResponse } from "next/server";
 import { syncTransactions } from "@/actions/plaid";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
 export async function GET(request: Request) {
   // Verify cron secret for security
   const authHeader = request.headers.get("authorization");

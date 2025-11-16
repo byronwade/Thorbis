@@ -23,8 +23,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 86_400;
-
 export default function LocalServicesAdsPage() {
   return (
     <div className="space-y-8">

@@ -32,8 +32,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 
-export const revalidate = 3600; // Revalidate every 1 hour
-
 import {
   Tooltip,
   TooltipContent,

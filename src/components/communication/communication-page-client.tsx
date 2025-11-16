@@ -159,12 +159,11 @@ export function CommunicationPageClient({
     if (!callControlId) {
       return;
     }
-    const CALL_WINDOW_WIDTH = 420;
-    const CALL_WINDOW_HEIGHT = 720;
+    // Open call window in new tab
     window.open(
       `/call-window?callId=${encodeURIComponent(callControlId)}`,
       "_blank",
-      `width=${CALL_WINDOW_WIDTH},height=${CALL_WINDOW_HEIGHT},noopener`
+      "noopener,noreferrer"
     );
   }, []);
 
@@ -276,9 +275,12 @@ function convertCommunicationToMessage(
   // Parse timestamp: Database stores in UTC without timezone suffix
   // Ensure we parse it as UTC by appending 'Z' if no timezone is present
   const timestampStr = record.created_at;
-  const timestamp = timestampStr.includes('Z') || timestampStr.includes('+') || timestampStr.includes('-') 
-    ? new Date(timestampStr)
-    : new Date(timestampStr + 'Z'); // Force UTC parsing
+  const timestamp =
+    timestampStr.includes("Z") ||
+    timestampStr.includes("+") ||
+    timestampStr.includes("-")
+      ? new Date(timestampStr)
+      : new Date(timestampStr + "Z"); // Force UTC parsing
 
   return {
     id: record.id,

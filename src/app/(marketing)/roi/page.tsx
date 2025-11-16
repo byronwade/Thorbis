@@ -13,8 +13,6 @@ import {
 } from "@/lib/seo/metadata";
 import { createHowToSchema } from "@/lib/seo/structured-data";
 
-export const revalidate = 1800;
-
 export const metadata = generateSEOMetadata({
   title: "ROI Calculator for Field Service Teams",
   section: "Resources",

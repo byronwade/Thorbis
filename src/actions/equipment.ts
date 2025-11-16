@@ -318,8 +318,7 @@ export async function archiveEquipment(
 
     revalidatePath("/dashboard/work/equipment");
     return { success: true };
-  } catch (error) {
-    console.error("Archive equipment error:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to archive equipment" };
   }
 }

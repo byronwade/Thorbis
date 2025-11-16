@@ -110,7 +110,7 @@ export async function initiateCall(params: {
       custom_headers: params.customHeaders,
     });
 
-    if (!result.success || !result.data) {
+    if (!(result.success && result.data)) {
       return {
         success: false,
         error: result.error || "Failed to initiate call",

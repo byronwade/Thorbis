@@ -16,8 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 export default function CustomerPortalPage() {
   return (
     <div className="space-y-6">

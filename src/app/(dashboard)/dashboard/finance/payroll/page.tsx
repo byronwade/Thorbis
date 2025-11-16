@@ -18,8 +18,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 import {
   Card,
   CardContent,

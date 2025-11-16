@@ -92,6 +92,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false, // Keep false for safety, but can set true for faster builds
   },
 
+  // Enable Partial Prerendering via cacheComponents (Next.js 16+)
+  // This provides instant page loads with streaming content
+  cacheComponents: true,
+
   // Enable experimental features for better performance
   experimental: {
     // Optimize package imports to reduce bundle size

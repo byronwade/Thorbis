@@ -13,6 +13,7 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
 import { ChevronRight, Clock, MapPin, User } from "lucide-react";
@@ -26,6 +27,7 @@ import {
   cancelJobAndAppointment,
   closeAppointment,
   dispatchAppointment,
+  unassignAppointment,
   updateAppointmentTimes,
 } from "@/actions/schedule-assignments";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -46,6 +48,7 @@ import {
 import { useSchedule } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
+import { ScheduleCommandMenu } from "./schedule-command-menu";
 import type { Job, Technician } from "./schedule-types";
 import { TeamAvatarGroup } from "./team-avatar-manager";
 import { UnassignedPanel } from "./unassigned-panel";
@@ -56,10 +59,8 @@ const SIDEBAR_WIDTH = 220;
 const JOB_HEIGHT = 48; // Narrower job cards
 const JOB_STACK_OFFSET = 6;
 const STACK_GAP = 4;
-const BASE_CENTER_OFFSET = Math.max(
-  STACK_GAP,
-  (LANE_HEIGHT - JOB_HEIGHT) / 2
-);
+const BASE_CENTER_OFFSET = Math.max(STACK_GAP, (LANE_HEIGHT - JOB_HEIGHT) / 2);
+const UNASSIGNED_DROP_ID = "unassigned-dropzone";
 const SNAP_INTERVAL_MINUTES = 15;
 const LARGE_SNAP_MINUTES = 60;
 const AUTO_SCROLL_EDGE = 160;
@@ -323,7 +324,7 @@ const JobCard = memo(function JobCard({
 
                   {/* Customer Name - Primary */}
                   <span className="flex-1 truncate font-semibold text-foreground text-xs">
-                    {job.customer.name}
+                    {job.customer?.name || "Unknown Customer"}
                   </span>
 
                   {/* Team Avatars */}
@@ -377,11 +378,12 @@ const JobCard = memo(function JobCard({
                 <ContextMenuSeparator />
 
                 <ContextMenuItem
-                  disabled={
-                    ["dispatched", "arrived", "closed", "cancelled"].includes(
-                      job.status
-                    )
-                  }
+                  disabled={[
+                    "dispatched",
+                    "arrived",
+                    "closed",
+                    "cancelled",
+                  ].includes(job.status)}
                   onClick={async () => {
                     const result = await dispatchAppointment(job.id);
                     if (result.success) {
@@ -395,9 +397,9 @@ const JobCard = memo(function JobCard({
                   Mark Dispatched
                 </ContextMenuItem>
                 <ContextMenuItem
-                  disabled={
-                    ["arrived", "closed", "cancelled"].includes(job.status)
-                  }
+                  disabled={["arrived", "closed", "cancelled"].includes(
+                    job.status
+                  )}
                   onClick={async () => {
                     const result = await arriveAppointment(job.id);
                     if (result.success) {
@@ -523,7 +525,7 @@ const JobCard = memo(function JobCard({
             <div className="border-b px-4 py-3">
               <div className="mb-1 flex items-center justify-between gap-2">
                 <h4 className="font-bold text-base text-foreground">
-                  {job.customer.name}
+                  {job.customer?.name || "Unknown Customer"}
                 </h4>
                 <Badge className="text-[10px] capitalize" variant="outline">
                   {job.status}
@@ -548,7 +550,7 @@ const JobCard = memo(function JobCard({
               </div>
 
               {/* Location */}
-              {job.location.address.street && (
+              {job.location?.address?.street && (
                 <div className="flex items-start gap-2.5">
                   <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
                   <div className="min-w-0 flex-1">
@@ -566,7 +568,7 @@ const JobCard = memo(function JobCard({
               )}
 
               {/* Contact */}
-              {job.customer.phone && (
+              {job.customer?.phone && (
                 <div className="flex items-center gap-2.5">
                   <User className="size-4 text-muted-foreground" />
                   <p className="font-medium text-foreground text-sm">
@@ -670,9 +672,9 @@ const TechnicianLane = memo(function TechnicianLane({
       )}
 
       {jobs.length === 0 && !isDragActive ? (
-        <div className="pointer-events-none flex h-full items-center">
-          <div className="sticky left-4 z-30">
-            <div className="flex h-10 items-center gap-2 rounded-md border border-muted-foreground/30 border-dashed bg-muted/30 px-4 py-2 shadow-sm">
+        <div className="pointer-events-none flex h-full items-center pl-4">
+          <div className="sticky left-16 z-20">
+            <div className="flex h-10 items-center gap-2 rounded-md border border-muted-foreground/30 border-dashed bg-muted px-4 py-2 shadow-sm">
               <span className="font-semibold text-muted-foreground text-xs tracking-wide">
                 No appointments
               </span>
@@ -711,6 +713,9 @@ export function DispatchTimeline() {
     technician: string;
   } | null>(null);
   const [unassignedPanelOpen, setUnassignedPanelOpen] = useState(false);
+  const [unassignedOrder, setUnassignedOrder] = useState<string[]>([]);
+  const [commandMenuOpen, setCommandMenuOpen] = useState(false);
+  const [commandMenuDate, setCommandMenuDate] = useState<Date | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const dragPointerRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -720,6 +725,7 @@ export function DispatchTimeline() {
     selectJob,
     selectedJobId,
     moveJob,
+    updateJob,
     jobs,
     isLoading,
     error,
@@ -732,6 +738,36 @@ export function DispatchTimeline() {
     [jobs]
   );
   const hasUnassignedJobs = unassignedJobs.length > 0;
+
+  useEffect(() => {
+    setUnassignedOrder((prev) => {
+      const ids = unassignedJobs.map((job) => job.id);
+      if (prev.length === 0) {
+        return ids;
+      }
+      const next = prev.filter((id) => ids.includes(id));
+      ids.forEach((id) => {
+        if (!next.includes(id)) {
+          next.push(id);
+        }
+      });
+      return next;
+    });
+  }, [unassignedJobs]);
+
+  const orderedUnassignedJobs = useMemo(() => {
+    if (unassignedOrder.length === 0) {
+      return unassignedJobs;
+    }
+    const lookup = new Map(unassignedJobs.map((job) => [job.id, job]));
+    const ordered = unassignedOrder
+      .map((id) => lookup.get(id))
+      .filter((job): job is Job => Boolean(job));
+    const remaining = unassignedJobs.filter(
+      (job) => !unassignedOrder.includes(job.id)
+    );
+    return [...ordered, ...remaining];
+  }, [unassignedJobs, unassignedOrder]);
 
   // Configure drag sensors
   const mouseSensor = useSensor(MouseSensor, {
@@ -987,10 +1023,12 @@ export function DispatchTimeline() {
       }
 
       const jobId = active.id as string;
-      const targetTechnicianId = over.id as string;
+      const overId = over.id as string;
+      const droppedOnUnassigned = overId === UNASSIGNED_DROP_ID;
+      const overIsUnassignedJob = unassignedJobs.some((j) => j.id === overId);
 
       console.log("[DragEnd] Job ID:", jobId);
-      console.log("[DragEnd] Target Technician ID:", targetTechnicianId);
+      console.log("[DragEnd] Drop Target ID:", overId);
       console.log("[DragEnd] Delta:", delta);
 
       // Check if this is from the unassigned panel
@@ -1019,6 +1057,58 @@ export function DispatchTimeline() {
         console.log("[DragEnd] Job not found");
         return;
       }
+      if (isFromUnassigned && overIsUnassignedJob && jobId !== overId) {
+        setUnassignedOrder((prev) => {
+          const fromIndex = prev.indexOf(jobId);
+          const toIndex = prev.indexOf(overId);
+          if (fromIndex === -1 || toIndex === -1) {
+            return prev;
+          }
+          return arrayMove(prev, fromIndex, toIndex);
+        });
+        return;
+      }
+
+      if (droppedOnUnassigned) {
+        if (isFromUnassigned) {
+          setUnassignedOrder((prev) => {
+            const fromIndex = prev.indexOf(jobId);
+            if (fromIndex === -1) {
+              return prev;
+            }
+            return arrayMove(prev, fromIndex, prev.length - 1);
+          });
+          return;
+        }
+
+        const startTime =
+          job.startTime instanceof Date
+            ? job.startTime
+            : new Date(job.startTime);
+        const endTime =
+          job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+
+        updateJob(jobId, {
+          technicianId: "",
+          assignments: [],
+          isUnassigned: true,
+          startTime,
+          endTime,
+        });
+
+        const toastId = toast.loading("Moving appointment to Unscheduled…");
+        const result = await unassignAppointment(jobId);
+        if (result.success) {
+          toast.success("Appointment moved to Unscheduled", { id: toastId });
+        } else {
+          toast.error(result.error || "Failed to unschedule appointment", {
+            id: toastId,
+          });
+        }
+        return;
+      }
+
+      const targetTechnicianId = overId;
       const targetTech = technicians.find((t) => t.id === targetTechnicianId);
 
       console.log("[DragEnd] Job:", job.title);
@@ -1139,9 +1229,11 @@ export function DispatchTimeline() {
       technicianLanes,
       technicians,
       moveJob,
+      updateJob,
       unassignedJobs,
       timeRange,
       totalWidth,
+      setUnassignedOrder,
     ]
   );
 
@@ -1425,6 +1517,30 @@ export function DispatchTimeline() {
     }
   }, [dateObj, currentTimePosition]);
 
+  // Command menu keyboard shortcut (Cmd+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setCommandMenuDate(dateObj);
+        setCommandMenuOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [dateObj]);
+
+  // Right-click handler for timeline
+  const handleTimelineContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      setCommandMenuDate(dateObj);
+      setCommandMenuOpen(true);
+    },
+    [dateObj]
+  );
+
   if (!mounted || isLoading) {
     // Conditional returns AFTER all hooks
     return (
@@ -1460,9 +1576,11 @@ export function DispatchTimeline() {
             style={{ width: unassignedPanelOpen ? "320px" : "48px" }}
           >
             <UnassignedPanel
+              activeJobId={activeJobId}
+              dropId={UNASSIGNED_DROP_ID}
               isOpen={unassignedPanelOpen}
               onToggle={() => setUnassignedPanelOpen(!unassignedPanelOpen)}
-              unassignedJobs={unassignedJobs}
+              unassignedJobs={orderedUnassignedJobs}
             />
           </div>
         )}
@@ -1584,6 +1702,7 @@ export function DispatchTimeline() {
               {/* Timeline Grid */}
               <div
                 className="relative flex-1"
+                onContextMenu={handleTimelineContextMenu}
                 onMouseLeave={handleMouseLeave}
                 onMouseMove={handleMouseMove}
                 ref={timelineRef}
@@ -1631,7 +1750,7 @@ export function DispatchTimeline() {
                     className="pointer-events-none absolute top-0 z-50"
                     style={{
                       left: hoverPosition,
-                      transform: "translateX(-50%)",
+                      transform: "translate(-50%, -50%)",
                     }}
                   >
                     <div className="whitespace-nowrap rounded-md bg-foreground px-2.5 py-1 font-semibold text-background text-xs shadow-lg">
@@ -1647,7 +1766,7 @@ export function DispatchTimeline() {
                     style={{ left: currentTimePosition }}
                   >
                     <div className="-left-1.5 -top-1.5 absolute size-3 rounded-full bg-blue-500 ring-2 ring-blue-200" />
-                    <div className="-top-7 -translate-x-1/2 absolute left-1/2 whitespace-nowrap rounded-md bg-blue-500 px-2.5 py-1 font-semibold text-white text-xs shadow-lg">
+                    <div className="-translate-x-1/2 -translate-y-1/2 absolute top-0 left-1/2 z-50 whitespace-nowrap rounded-md bg-blue-500 px-2.5 py-1 font-semibold text-white text-xs shadow-lg">
                       {format(new Date(), "EEE, MMM d • h:mm a")}
                     </div>
                   </div>
@@ -1694,6 +1813,14 @@ export function DispatchTimeline() {
           </div>
         ) : null}
       </DragOverlay>
+
+      {/* Command Menu */}
+      <ScheduleCommandMenu
+        isOpen={commandMenuOpen}
+        onClose={() => setCommandMenuOpen(false)}
+        selectedDate={commandMenuDate}
+        unassignedJobs={unassignedJobs}
+      />
     </DndContext>
   );
 }

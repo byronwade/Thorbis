@@ -8,8 +8,6 @@
  * - Reduced JavaScript bundle size
  */
 
-export const revalidate = 3600; // Revalidate every 1 hour
-
 export default function EmailManagementPage() {
   return (
     <div className="space-y-6">

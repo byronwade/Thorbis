@@ -137,10 +137,25 @@ function resolveName(
   return combined.length > 0 ? combined : undefined;
 }
 
+// Cache mission control data for 30 seconds to reduce database load
+const dataCache = new Map<
+  string,
+  { data: MissionControlData; timestamp: number }
+>();
+const CACHE_TTL = 30_000; // 30 seconds
+
 export async function getMissionControlData(
   companyId?: string
 ): Promise<MissionControlData> {
   try {
+    // Check cache first
+    if (companyId) {
+      const cached = dataCache.get(companyId);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.data;
+      }
+    }
+
     const supabase = await createClient();
 
     if (!supabase) {
@@ -544,7 +559,7 @@ export async function getMissionControlData(
       })
     );
 
-    return {
+    const data = {
       metrics,
       alerts,
       operations,
@@ -556,6 +571,13 @@ export async function getMissionControlData(
       activity: activityItems,
       lastUpdated: now.toISOString(),
     };
+
+    // Cache the result
+    if (companyId) {
+      dataCache.set(companyId, { data, timestamp: Date.now() });
+    }
+
+    return data;
   } catch {
     return EMPTY_DATA;
   }

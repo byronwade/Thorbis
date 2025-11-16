@@ -27,8 +27,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 3600;
-
 export const metadata = generateSEOMetadata({
   title: "AI Dispatch Assistant - 24/7 Call Handling | Thorbis",
   section: "Features",

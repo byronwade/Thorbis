@@ -8,8 +8,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { refreshEnrichment } from "@/actions/customer-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
-
 /**
  * POST - Force refresh enrichment data
  */

@@ -41,6 +41,20 @@ type CallState = {
   videoStatus: "off" | "requesting" | "ringing" | "connected" | "declined";
   isLocalVideoEnabled: boolean;
   isRemoteVideoEnabled: boolean;
+
+  // Customer data
+  customerId: string | null;
+  customerData: unknown;
+
+  // Call metadata
+  callControlId: string | null;
+  callSessionId: string | null;
+  direction: "inbound" | "outbound";
+
+  // Telnyx state
+  telnyxCallState: "idle" | "connecting" | "ringing" | "active" | "ended";
+  telnyxError: string | null;
+
   // Enhanced features
   isScreenSharing: boolean;
   connectionQuality: "excellent" | "good" | "poor";
@@ -110,6 +124,17 @@ type UIActions = {
   sendChatMessage: (message: string) => void;
   clearChat: () => void;
   setConnectionQuality: (quality: CallState["connectionQuality"]) => void;
+  // Customer data actions
+  setCustomerData: (data: unknown) => void;
+  clearCustomerData: () => void;
+  // Telnyx state actions
+  setTelnyxCallState: (state: CallState["telnyxCallState"]) => void;
+  setTelnyxError: (error: string | null) => void;
+  setCallMetadata: (metadata: {
+    callControlId: string;
+    callSessionId: string;
+    direction: "inbound" | "outbound";
+  }) => void;
   reset: () => void;
 };
 
@@ -135,6 +160,13 @@ const initialState: UIState = {
     videoStatus: "off",
     isLocalVideoEnabled: false,
     isRemoteVideoEnabled: false,
+    customerId: null,
+    customerData: null,
+    callControlId: null,
+    callSessionId: null,
+    direction: "inbound",
+    telnyxCallState: "idle",
+    telnyxError: null,
     isScreenSharing: false,
     connectionQuality: "excellent",
     hasVirtualBackground: false,
@@ -574,6 +606,60 @@ export const useUIStore = create<UIStore>()(
             },
             false,
             "setConnectionQuality"
+          ),
+
+        // Customer data actions
+        setCustomerData: (data) =>
+          set(
+            (state) => {
+              state.call.customerData = data;
+              const customer =
+                (data as { customer?: { id?: string | null } } | null)
+                  ?.customer ?? null;
+              state.call.customerId = customer?.id || null;
+            },
+            false,
+            "setCustomerData"
+          ),
+
+        clearCustomerData: () =>
+          set(
+            (state) => {
+              state.call.customerData = null;
+              state.call.customerId = null;
+            },
+            false,
+            "clearCustomerData"
+          ),
+
+        // Telnyx state actions
+        setTelnyxCallState: (telnyxState) =>
+          set(
+            (state) => {
+              state.call.telnyxCallState = telnyxState;
+            },
+            false,
+            "setTelnyxCallState"
+          ),
+
+        setTelnyxError: (error) =>
+          set(
+            (state) => {
+              state.call.telnyxError = error;
+            },
+            false,
+            "setTelnyxError"
+          ),
+
+        setCallMetadata: (metadata) =>
+          set(
+            (state) => {
+              state.call.callControlId = metadata.callControlId;
+              state.call.callSessionId = metadata.callSessionId;
+              state.call.direction = metadata.direction;
+            },
+            false,
+            "setCallMetadata"
           ),
 
         reset: () => set(initialState, false, "reset"),

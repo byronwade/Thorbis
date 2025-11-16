@@ -606,3 +606,96 @@ export async function searchVendors(
     return vendors || [];
   });
 }
+
+/**
+ * Link a purchase order to a vendor
+ */
+export async function linkPurchaseOrderToVendor(
+  purchaseOrderId: string,
+  vendorId: string
+): Promise<ActionResult<void>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError(
+        "Database connection failed",
+        ERROR_CODES.DB_CONNECTION_ERROR
+      );
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const { data: teamMember } = await supabase
+      .from("team_members")
+      .select("company_id")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .single();
+
+    if (!teamMember?.company_id) {
+      throw new ActionError(
+        "You must be part of a company",
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify purchase order exists and belongs to company
+    const { data: po } = await supabase
+      .from("purchase_orders")
+      .select("id, company_id")
+      .eq("id", purchaseOrderId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(po, "Purchase Order");
+
+    if (po.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("purchase order"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Verify vendor exists and belongs to company
+    const { data: vendor } = await supabase
+      .from("vendors")
+      .select("id, company_id")
+      .eq("id", vendorId)
+      .is("deleted_at", null)
+      .single();
+
+    assertExists(vendor, "Vendor");
+
+    if (vendor.company_id !== teamMember.company_id) {
+      throw new ActionError(
+        ERROR_MESSAGES.forbidden("vendor"),
+        ERROR_CODES.AUTH_FORBIDDEN,
+        403
+      );
+    }
+
+    // Link purchase order to vendor
+    const { error } = await supabase
+      .from("purchase_orders")
+      .update({ vendor_id: vendorId })
+      .eq("id", purchaseOrderId);
+
+    if (error) {
+      console.error("Error linking purchase order to vendor:", error);
+      throw new ActionError(
+        "Failed to link purchase order",
+        ERROR_CODES.DB_QUERY_ERROR
+      );
+    }
+
+    revalidatePath("/dashboard/work/vendors");
+    revalidatePath(`/dashboard/work/vendors/${vendorId}`);
+    revalidatePath("/dashboard/work/purchase-orders");
+    revalidatePath(`/dashboard/work/purchase-orders/${purchaseOrderId}`);
+  });
+}

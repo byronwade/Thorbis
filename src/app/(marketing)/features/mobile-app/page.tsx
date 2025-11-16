@@ -28,8 +28,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 3600;
-
 export const metadata = generateSEOMetadata({
   title: "Mobile Field Service App - Offline-First | Thorbis",
   section: "Features",

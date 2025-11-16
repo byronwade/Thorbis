@@ -133,6 +133,14 @@ export function useTelnyxWebRTC(
     }
 
     const currentOptions = optionsRef.current;
+    const hasCredentials =
+      Boolean(currentOptions.username) && Boolean(currentOptions.password);
+
+    if (!hasCredentials) {
+      // Don't initialize if credentials are missing
+      return null;
+    }
+
     const client = new TelnyxRTC({
       login: currentOptions.username,
       password: currentOptions.password,
@@ -143,7 +151,6 @@ export function useTelnyxWebRTC(
 
     // Handle ready event
     client.on("telnyx.ready", () => {
-      console.log("[useTelnyxWebRTC] ✅ Telnyx WebRTC client ready!");
       setIsConnected(true);
       setIsConnecting(false);
       setConnectionError(null);
@@ -151,22 +158,17 @@ export function useTelnyxWebRTC(
 
     // Handle error event
     client.on("telnyx.error", (error: any) => {
-      console.error("[useTelnyxWebRTC] ❌ Telnyx WebRTC error:", error);
-      console.error("[useTelnyxWebRTC] ❌ Error details:", {
-        message: error.message,
-        error: error.error,
-        code: error.code,
-        full: JSON.stringify(error, null, 2),
-      });
-      
-      const errorMessage = error.error?.message || error.message || "Connection error";
+      const errorMessage =
+        error?.error?.message ||
+        error?.message ||
+        error?.description ||
+        "Connection error";
       setConnectionError(errorMessage);
       setIsConnecting(false);
     });
 
     // Handle socket error
-    client.on("telnyx.socket.error", (error: any) => {
-      console.error("[useTelnyxWebRTC] ❌ Telnyx socket error:", error);
+    client.on("telnyx.socket.error", () => {
       setConnectionError("Socket connection failed");
       setIsConnecting(false);
       setIsConnected(false);
@@ -174,61 +176,52 @@ export function useTelnyxWebRTC(
 
     // Handle socket close
     client.on("telnyx.socket.close", () => {
-      console.log("[useTelnyxWebRTC] ⚠️ Telnyx socket closed");
       setIsConnected(false);
     });
 
     // Handle incoming call
     client.on("telnyx.notification", (notification: INotification) => {
-      if (notification.type === "callUpdate") {
-        const call = notification.call as Call & any;
+      if (notification.type !== "callUpdate") {
+        return;
+      }
 
-        console.log("[useTelnyxWebRTC] 🔔 Call update:", {
-          state: call.state,
-          direction: call.direction,
-          remoteNumber: call.remoteNumber,
-          cause: call.cause,
-          causeCode: call.causeCode,
-        });
+      const call = notification.call as Call | undefined;
 
-        // Update call state
-        const callState = mapTelnyxCallState(call.state);
-        const callInfo: WebRTCCall = {
-          id: call.id,
-          state: callState,
-          direction: call.direction === "inbound" ? "inbound" : "outbound",
-          remoteNumber: call.remoteNumber || "Unknown",
-          remoteName: call.remoteName,
-          localNumber: call.localNumber || "",
-          startTime: callState === "active" ? new Date() : undefined,
-          duration: 0,
-          isMuted: false,
-          isHeld: call.state === "held",
-          isRecording: false,
-        };
+      if (!call) {
+        // Guard against undefined call object
+        return;
+      }
 
-        setCurrentCall(callInfo);
-        activeCallRef.current = call;
+      // Update call state
+      const callState = mapTelnyxCallState(call.state);
+      const callInfo: WebRTCCall = {
+        id: call.id || "unknown",
+        state: callState,
+        direction: call.direction === "inbound" ? "inbound" : "outbound",
+        remoteNumber:
+          (call as any).remoteNumber || (call as any).to || "Unknown",
+        remoteName: (call as any).remoteName,
+        localNumber: ((call as any).localNumber as string) || "",
+        startTime: callState === "active" ? new Date() : undefined,
+        duration: 0,
+        isMuted: false,
+        isHeld: call.state === "held",
+        isRecording: false,
+      };
 
-        // Notify parent component
-        if (call.direction === "inbound" && call.state === "ringing") {
-          optionsRef.current.onIncomingCall?.(callInfo);
-        }
+      setCurrentCall(callInfo);
+      activeCallRef.current = call;
 
-        // Handle call ended
-        if (call.state === "destroy" || call.state === "hangup") {
-          console.error("[useTelnyxWebRTC] ❌ Call ended!", {
-            state: call.state,
-            cause: call.cause,
-            causeCode: call.causeCode,
-            remoteSDP: call.remoteSdp ? "present" : "missing",
-            full: call,
-          });
-          
-          optionsRef.current.onCallEnded?.(callInfo);
-          setCurrentCall(null);
-          activeCallRef.current = null;
-        }
+      // Notify parent component
+      if (call.direction === "inbound" && call.state === "ringing") {
+        optionsRef.current.onIncomingCall?.(callInfo);
+      }
+
+      // Handle call ended
+      if (call.state === "destroy" || call.state === "hangup") {
+        optionsRef.current.onCallEnded?.(callInfo);
+        setCurrentCall(null);
+        activeCallRef.current = null;
       }
     });
 
@@ -240,21 +233,20 @@ export function useTelnyxWebRTC(
    * Connect to Telnyx
    */
   const connect = useCallback(async () => {
-    console.log("[useTelnyxWebRTC] Attempting to connect...", {
-      username: optionsRef.current.username,
-      hasPassword: Boolean(optionsRef.current.password),
-    });
-    
     try {
       setIsConnecting(true);
       setConnectionError(null);
 
       const client = initializeClient();
-      console.log("[useTelnyxWebRTC] Client initialized, calling connect...");
+
+      // If client is null (no credentials), silently fail
+      if (!client) {
+        setIsConnecting(false);
+        return;
+      }
+
       await client.connect();
-      console.log("[useTelnyxWebRTC] Connect method called, waiting for ready event...");
     } catch (error) {
-      console.error("[useTelnyxWebRTC] Failed to connect:", error);
       setConnectionError(
         error instanceof Error ? error.message : "Connection failed"
       );
@@ -308,7 +300,6 @@ export function useTelnyxWebRTC(
 
         return call;
       } catch (error) {
-        console.error("Failed to make call:", error);
         throw error;
       }
     },
@@ -326,7 +317,6 @@ export function useTelnyxWebRTC(
     try {
       await activeCallRef.current.answer();
     } catch (error) {
-      console.error("Failed to answer call:", error);
       throw error;
     }
   }, []);
@@ -344,7 +334,6 @@ export function useTelnyxWebRTC(
       setCurrentCall(null);
       activeCallRef.current = null;
     } catch (error) {
-      console.error("Failed to end call:", error);
       throw error;
     }
   }, []);
@@ -361,7 +350,6 @@ export function useTelnyxWebRTC(
       await activeCallRef.current.muteAudio();
       setCurrentCall((prev) => (prev ? { ...prev, isMuted: true } : null));
     } catch (error) {
-      console.error("Failed to mute call:", error);
       throw error;
     }
   }, []);
@@ -378,7 +366,6 @@ export function useTelnyxWebRTC(
       await activeCallRef.current.unmuteAudio();
       setCurrentCall((prev) => (prev ? { ...prev, isMuted: false } : null));
     } catch (error) {
-      console.error("Failed to unmute call:", error);
       throw error;
     }
   }, []);
@@ -395,7 +382,6 @@ export function useTelnyxWebRTC(
       await activeCallRef.current.hold();
       setCurrentCall((prev) => (prev ? { ...prev, isHeld: true } : null));
     } catch (error) {
-      console.error("Failed to hold call:", error);
       throw error;
     }
   }, []);
@@ -412,7 +398,6 @@ export function useTelnyxWebRTC(
       await activeCallRef.current.unhold();
       setCurrentCall((prev) => (prev ? { ...prev, isHeld: false } : null));
     } catch (error) {
-      console.error("Failed to unhold call:", error);
       throw error;
     }
   }, []);
@@ -428,7 +413,6 @@ export function useTelnyxWebRTC(
     try {
       await activeCallRef.current.dtmf(digit);
     } catch (error) {
-      console.error("Failed to send DTMF:", error);
       throw error;
     }
   }, []);
@@ -444,7 +428,6 @@ export function useTelnyxWebRTC(
     try {
       await activeCallRef.current.setAudioOutDevice(deviceId);
     } catch (error) {
-      console.error("Failed to set audio device:", error);
       throw error;
     }
   }, []);
@@ -459,7 +442,6 @@ export function useTelnyxWebRTC(
       !navigator.mediaDevices ||
       !navigator.mediaDevices.enumerateDevices
     ) {
-      console.warn("MediaDevices API not available");
       return;
     }
 
@@ -469,8 +451,8 @@ export function useTelnyxWebRTC(
         (d) => d.kind === "audiooutput"
       );
       setAudioDevices(audioOutputDevices);
-    } catch (error) {
-      console.error("Failed to load audio devices:", error);
+    } catch {
+      // Ignore audio device loading errors
     }
   }, []);
 
@@ -517,18 +499,12 @@ export function useTelnyxWebRTC(
    * Separate effect for auto-connect to prevent dependency loop
    */
   useEffect(() => {
-    console.log("[useTelnyxWebRTC] Mount effect, autoConnect:", optionsRef.current.autoConnect);
-    
     if (optionsRef.current.autoConnect) {
-      console.log("[useTelnyxWebRTC] Auto-connecting...");
       connect();
-    } else {
-      console.log("[useTelnyxWebRTC] Auto-connect disabled, waiting for manual connect");
     }
 
     return () => {
       // Cleanup on unmount
-      console.log("[useTelnyxWebRTC] Unmounting, disconnecting...");
       disconnect();
     };
   }, []); // ✅ Runs once - uses ref for options

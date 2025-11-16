@@ -7,8 +7,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 300;
-
 export const metadata = generateSEOMetadata({
   title: "Thorbis System Status",
   description:

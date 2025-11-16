@@ -8,8 +8,6 @@
  * - Reduced JavaScript bundle size
  */
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 export default function TestFullWidthPage() {
   return (
     <div className="flex h-full flex-col">

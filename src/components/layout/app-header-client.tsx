@@ -473,8 +473,8 @@ export function AppHeaderClient({
           {/* Phone/Calls */}
           <PhoneDropdown
             companyId={activeCompanyId || ""}
-            customers={customers}
             companyPhones={companyPhones}
+            customers={customers}
           />
 
           {/* TV Display */}

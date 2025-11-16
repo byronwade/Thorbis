@@ -52,6 +52,7 @@ export type DataType =
   | "pricebook"
   | "materials"
   | "equipment"
+  | "properties"
   | "schedule"
   | "maintenance-plans"
   | "service-agreements"

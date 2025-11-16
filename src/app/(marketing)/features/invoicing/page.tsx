@@ -33,8 +33,6 @@ import {
   siteUrl,
 } from "@/lib/seo/metadata";
 
-export const revalidate = 3600;
-
 export const metadata = generateSEOMetadata({
   title: "0% Fee Payment Processing & Invoicing | Thorbis",
   section: "Features",

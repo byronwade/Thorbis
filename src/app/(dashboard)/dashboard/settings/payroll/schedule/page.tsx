@@ -6,7 +6,7 @@ export default function PayrollScheduleSettingsPage() {
     <SettingsComingSoon
       backLink="/dashboard/settings"
       description="Configure your payroll schedule, pay periods, and processing dates."
-      icon={Calendar}
+      icon={<Calendar className="size-10 text-primary" strokeWidth={1.5} />}
       title="Payroll Schedule Settings"
     />
   );

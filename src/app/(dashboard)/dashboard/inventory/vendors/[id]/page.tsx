@@ -33,8 +33,6 @@ import { Separator } from "@/components/ui/separator";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
-export const revalidate = 300; // Revalidate every 5 minutes
-
 function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

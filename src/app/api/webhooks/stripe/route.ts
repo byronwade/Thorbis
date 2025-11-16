@@ -80,33 +80,66 @@ export async function POST(request: NextRequest) {
 
   // Process the event
   try {
+    // Validate event structure
+    if (!(event.data && event.data.object)) {
+      console.error("Invalid event structure: missing data or object");
+      return NextResponse.json(
+        { error: "Invalid event structure" },
+        { status: 400 }
+      );
+    }
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (!session) {
+          console.error("checkout.session.completed: session is undefined");
+          break;
+        }
         await handleCheckoutSessionCompleted(session);
         break;
       }
 
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
+        if (!subscription) {
+          console.error(
+            "customer.subscription.updated: subscription is undefined"
+          );
+          break;
+        }
         await handleSubscriptionUpdated(subscription);
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
+        if (!subscription) {
+          console.error(
+            "customer.subscription.deleted: subscription is undefined"
+          );
+          break;
+        }
         await handleSubscriptionDeleted(subscription);
         break;
       }
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
+        if (!invoice) {
+          console.error("invoice.payment_succeeded: invoice is undefined");
+          break;
+        }
         await handleInvoicePaymentSucceeded(invoice);
         break;
       }
 
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
+        if (!invoice) {
+          console.error("invoice.payment_failed: invoice is undefined");
+          break;
+        }
         await handleInvoicePaymentFailed(invoice);
         break;
       }
@@ -139,6 +172,11 @@ async function handleCheckoutSessionCompleted(
   }
   if (!supabase) {
     console.error("Supabase not configured");
+    return;
+  }
+
+  if (!session) {
+    console.error("handleCheckoutSessionCompleted: session is undefined");
     return;
   }
 
@@ -243,6 +281,11 @@ async function handleSubscriptionUpdated(subscription: any) {
     return;
   }
 
+  if (!subscription) {
+    console.error("handleSubscriptionUpdated: subscription is undefined");
+    return;
+  }
+
   const companyId = subscription.metadata?.company_id;
 
   if (!companyId) {
@@ -288,6 +331,11 @@ async function handleSubscriptionDeleted(subscription: any) {
     return;
   }
 
+  if (!subscription) {
+    console.error("handleSubscriptionDeleted: subscription is undefined");
+    return;
+  }
+
   // Update company subscription status to canceled
   await supabase
     .from("companies")
@@ -312,6 +360,11 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
   }
   if (!supabase) {
     console.error("Supabase not configured");
+    return;
+  }
+
+  if (!invoice) {
+    console.error("handleInvoicePaymentSucceeded: invoice is undefined");
     return;
   }
 
@@ -344,6 +397,11 @@ async function handleInvoicePaymentFailed(invoice: any) {
   }
   if (!supabase) {
     console.error("Supabase not configured");
+    return;
+  }
+
+  if (!invoice) {
+    console.error("handleInvoicePaymentFailed: invoice is undefined");
     return;
   }
 

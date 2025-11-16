@@ -1,4 +1,4 @@
-import SchedulerShowcase from "@/components/scheduler-showcase";
+import SchedulerShowcase from "@/components/schedule/scheduler-showcase";
 
 export default function Page() {
   return (

@@ -49,8 +49,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 3600; // Revalidate every hour
-
 type ResourceCategory = {
   title: string;
   description: string;

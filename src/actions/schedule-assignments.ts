@@ -131,10 +131,7 @@ export async function updateAppointmentTimes(
   }
 }
 
-export async function cancelAppointment(
-  scheduleId: string,
-  reason?: string
-) {
+export async function cancelAppointment(scheduleId: string, reason?: string) {
   const supabase = await createClient();
 
   if (!supabase) {
@@ -142,8 +139,10 @@ export async function cancelAppointment(
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
@@ -166,7 +165,8 @@ export async function cancelAppointment(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to cancel appointment",
+      error:
+        error instanceof Error ? error.message : "Failed to cancel appointment",
     };
   }
 }
@@ -183,8 +183,10 @@ export async function cancelJobAndAppointment(
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
@@ -224,7 +226,10 @@ export async function cancelJobAndAppointment(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to cancel job and appointment",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to cancel job and appointment",
     };
   }
 }
@@ -250,7 +255,10 @@ export async function archiveAppointment(scheduleId: string) {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to archive appointment",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to archive appointment",
     };
   }
 }
@@ -263,8 +271,10 @@ export async function completeAppointment(scheduleId: string) {
   }
 
   try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     if (!user) {
       return { success: false, error: "Not authenticated" };
     }
@@ -286,7 +296,10 @@ export async function completeAppointment(scheduleId: string) {
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Failed to complete appointment",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to complete appointment",
     };
   }
 }
@@ -360,4 +373,34 @@ export async function closeAppointment(scheduleId: string) {
   return updateScheduleStatus(scheduleId, "closed", {
     actual_end_time: now,
   });
+}
+
+export async function unassignAppointment(scheduleId: string) {
+  const supabase = await createClient();
+
+  if (!supabase) {
+    return { success: false, error: "Database not available" };
+  }
+
+  try {
+    const { error } = await supabase
+      .from("schedules")
+      .update({
+        assigned_to: null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", scheduleId);
+
+    if (error) throw error;
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to move appointment to Unscheduled",
+    };
+  }
 }

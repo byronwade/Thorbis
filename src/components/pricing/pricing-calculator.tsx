@@ -816,8 +816,8 @@ export function PricingCalculator() {
               Ready to Save <span className="text-primary">$20,000+/year?</span>
             </h2>
             <p className="mb-8 text-foreground/70 text-xl">
-              Start your 14-day free trial today. No credit card required. No sales
-              calls. Cancel anytime.
+              Start your 14-day free trial today. No credit card required. No
+              sales calls. Cancel anytime.
             </p>
             <div className="flex justify-center">
               <Button asChild className="h-14 px-12" size="lg">

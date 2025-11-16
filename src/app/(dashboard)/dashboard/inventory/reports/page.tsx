@@ -8,8 +8,6 @@
  * - Reduced JavaScript bundle size
  */
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 export default function InventoryReportsPage() {
   return (
     <div className="space-y-6">

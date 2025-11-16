@@ -11,7 +11,7 @@ export default function ReportingSettingsPage() {
   return (
     <SettingsComingSoon
       description="Configure custom reports, dashboards, and analytics preferences."
-      icon={BarChart3}
+      icon={<BarChart3 className="size-10 text-primary" strokeWidth={1.5} />}
       title="Reporting Settings"
     />
   );

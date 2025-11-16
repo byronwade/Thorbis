@@ -24,7 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-export const revalidate = 300; // Revalidate every 5 minutes
 
 export default function DispatchPage() {
   return (

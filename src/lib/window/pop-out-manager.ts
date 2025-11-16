@@ -15,12 +15,10 @@
  * - call-window/page.tsx
  */
 
-// Window configuration
+// Window configuration - Opens as new tab
 export const POP_OUT_CONFIG = {
-  width: 900,
-  height: 800,
-  features:
-    "menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes",
+  target: "_blank", // Opens in new tab
+  features: "noopener,noreferrer", // Security features
 } as const;
 
 // Message types for window communication
@@ -95,35 +93,70 @@ export type PopOutMessage =
         sentiment?: "positive" | "neutral" | "negative";
         confidence?: number;
       };
+    }
+  | {
+      type: "FORM_DATA_UPDATE";
+      callId: string;
+      formType: "customer" | "job" | "appointment";
+      formData: Record<string, any>;
+      timestamp: number;
+    }
+  | {
+      type: "REQUEST_FORM_DATA";
+      callId: string;
+      formType: "customer" | "job" | "appointment";
+      timestamp: number;
+    }
+  | {
+      type: "FORM_DATA_SYNC";
+      callId: string;
+      formType: "customer" | "job" | "appointment";
+      formData: Record<string, any>;
+      timestamp: number;
+    }
+  | {
+      type: "TRANSCRIPT_UPDATE";
+      callId: string;
+      transcript?: {
+        entries: Array<{
+          id: string;
+          speaker: "csr" | "customer";
+          text: string;
+          timestamp: number;
+        }>;
+      };
+      timestamp?: number;
+    }
+  | {
+      type: "CUSTOMER_DATA_UPDATE";
+      callId: string;
+      customerData: Record<string, unknown>;
+      timestamp?: number;
     };
 
 /**
- * Creates a pop-out window for a call
+ * Creates a call window in a new browser tab
  */
 export function createPopOutWindow(callId: string): Window | null {
-  const { width, height, features } = POP_OUT_CONFIG;
-
-  // Calculate center position
-  const left = Math.max(0, window.screen.width / 2 - width / 2);
-  const top = Math.max(0, window.screen.height / 2 - height / 2);
-
-  const windowFeatures = `${features},width=${width},height=${height},left=${left},top=${top}`;
+  const { target, features } = POP_OUT_CONFIG;
 
   try {
     const popOut = window.open(
       `/call-window?callId=${callId}`,
-      `call-${callId}`,
-      windowFeatures
+      target,
+      features
     );
 
     if (!popOut) {
-      console.error("Failed to open pop-out window. Popup may be blocked.");
+      console.error(
+        "Failed to open call window. Please check browser settings."
+      );
       return null;
     }
 
     return popOut;
   } catch (error) {
-    console.error("Error creating pop-out window:", error);
+    console.error("Error creating call window:", error);
     return null;
   }
 }
@@ -194,7 +227,12 @@ export function isPopOutMessage(data: unknown): data is PopOutMessage {
       "CALL_POP_OUT_CLOSED",
       "CALL_ACTION",
       "TRANSCRIPT_ENTRY",
+      "TRANSCRIPT_UPDATE",
       "AI_EXTRACTION_UPDATE",
+      "FORM_DATA_UPDATE",
+      "REQUEST_FORM_DATA",
+      "FORM_DATA_SYNC",
+      "CUSTOMER_DATA_UPDATE",
     ].includes(message.type)
   );
 }

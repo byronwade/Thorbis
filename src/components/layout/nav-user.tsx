@@ -8,9 +8,9 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateUserStatus, type UserStatus } from "@/actions/user-status";
+import { useEffect, useState } from "react";
+import { type UserStatus, updateUserStatus } from "@/actions/user-status";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -82,8 +82,8 @@ export function NavUser({
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute -bottom-0.5 -right-0.5">
-                <StatusIndicator status={userStatus} size="sm" />
+              <div className="-bottom-0.5 -right-0.5 absolute">
+                <StatusIndicator size="sm" status={userStatus} />
               </div>
             </div>
             <div className="grid flex-1 text-left leading-[1.2]">
@@ -118,8 +118,8 @@ export function NavUser({
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
-                <div className="absolute -bottom-0.5 -right-0.5">
-                  <StatusIndicator status={userStatus} size="sm" />
+                <div className="-bottom-0.5 -right-0.5 absolute">
+                  <StatusIndicator size="sm" status={userStatus} />
                 </div>
               </div>
               <div className="grid flex-1 text-left leading-[1.2]">
@@ -149,8 +149,8 @@ export function NavUser({
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="absolute -bottom-0.5 -right-0.5">
-                    <StatusIndicator status={userStatus} size="md" />
+                  <div className="-bottom-0.5 -right-0.5 absolute">
+                    <StatusIndicator size="md" status={userStatus} />
                   </div>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -160,7 +160,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            
+
             {/* Status Selector */}
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               Status
@@ -175,7 +175,7 @@ export function NavUser({
                   onClick={() => handleStatusChange("online")}
                   type="button"
                 >
-                  <StatusIndicator status="online" size="md" />
+                  <StatusIndicator size="md" status="online" />
                   <span>Online</span>
                   {userStatus === "online" && (
                     <div className="ml-auto size-2 rounded-full bg-primary" />
@@ -189,7 +189,7 @@ export function NavUser({
                   onClick={() => handleStatusChange("available")}
                   type="button"
                 >
-                  <StatusIndicator status="available" size="md" />
+                  <StatusIndicator size="md" status="available" />
                   <span>Available</span>
                   {userStatus === "available" && (
                     <div className="ml-auto size-2 rounded-full bg-primary" />
@@ -203,7 +203,7 @@ export function NavUser({
                   onClick={() => handleStatusChange("busy")}
                   type="button"
                 >
-                  <StatusIndicator status="busy" size="md" />
+                  <StatusIndicator size="md" status="busy" />
                   <span>Busy</span>
                   {userStatus === "busy" && (
                     <div className="ml-auto size-2 rounded-full bg-primary" />

@@ -13,6 +13,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { CategoryNavigationSync } from "@/components/pricebook/category-navigation-sync";
 import { DrillDownView } from "@/components/pricebook/drill-down-view";
 import { getCategoryTree } from "@/lib/pricebook/category-tree-server";
@@ -25,14 +26,27 @@ export default async function CategoryPage({
   params: Promise<{ slug: string[] }>;
 }) {
   const { slug } = await params;
+
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-full items-center justify-center p-4">
+          <div className="text-muted-foreground text-sm">
+            Loading price book category...
+          </div>
+        </div>
+      }
+    >
+      <CategoryPageContent slug={slug} />
+    </Suspense>
+  );
+}
+
+async function CategoryPageContent({ slug }: { slug: string[] }) {
   const supabase = await createClient();
 
   if (!supabase) {
     return notFound();
-  }
-
-  if (!supabase) {
-    throw new Error("Database connection not available");
   }
 
   // Decode URL segments to category names

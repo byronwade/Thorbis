@@ -840,7 +840,52 @@ export async function getWebRTCCredentials() {
       };
     }
 
-    // Generate WebRTC token
+    // OPTION 1: Use static credentials from environment (recommended for production)
+    const staticUsername = process.env.TELNYX_WEBRTC_USERNAME;
+    const staticPassword = process.env.TELNYX_WEBRTC_PASSWORD;
+
+    if (staticUsername && staticPassword) {
+      console.log("[getWebRTCCredentials] Using static credentials");
+
+      const credential = {
+        username: staticUsername,
+        password: staticPassword,
+        expires_at: Date.now() + 86_400 * 1000, // 24 hours from now
+        realm: "sip.telnyx.com",
+        sip_uri: `sip:${staticUsername}@sip.telnyx.com`,
+        stun_servers: [
+          "stun:stun.telnyx.com:3478",
+          "stun:stun.telnyx.com:3479",
+        ],
+        turn_servers: [
+          {
+            urls: [
+              "turn:turn.telnyx.com:3478?transport=udp",
+              "turn:turn.telnyx.com:3478?transport=tcp",
+            ],
+            username: staticUsername,
+            credential: staticPassword,
+          },
+        ],
+      };
+
+      return {
+        success: true,
+        credential,
+      };
+    }
+
+    // OPTION 2: Generate dynamic credentials via API (fallback)
+    console.log(
+      "[getWebRTCCredentials] Static credentials not found, generating dynamic credentials"
+    );
+    console.log(
+      "[getWebRTCCredentials] ⚠️  Note: Dynamic credentials may not work without proper SIP connection"
+    );
+    console.log(
+      "[getWebRTCCredentials] ⚠️  See TELNYX_WEBRTC_CONNECTION_FIX.md for setup instructions"
+    );
+
     const { generateWebRTCToken } = await import("@/lib/telnyx/webrtc");
     const result = await generateWebRTCToken({
       username: user.email || user.id,
@@ -856,13 +901,13 @@ export async function getWebRTCCredentials() {
       credential: result.credential,
     };
   } catch (error) {
-    console.error("Error generating WebRTC credentials:", error);
+    console.error("Error getting WebRTC credentials:", error);
     return {
       success: false,
       error:
         error instanceof Error
           ? error.message
-          : "Failed to generate WebRTC credentials",
+          : "Failed to get WebRTC credentials",
     };
   }
 }

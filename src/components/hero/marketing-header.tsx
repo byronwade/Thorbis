@@ -410,10 +410,8 @@ export function MarketingHeader() {
                 subscriptionStatus === "active" ||
                 subscriptionStatus === "trialing";
               const onboardingProgress =
-                (m.companies.onboarding_progress as Record<
-                  string,
-                  unknown
-                >) || null;
+                (m.companies.onboarding_progress as Record<string, unknown>) ||
+                null;
               const onboardingComplete = isOnboardingComplete({
                 progress: onboardingProgress,
                 completedAt: m.companies.onboarding_completed_at ?? null,

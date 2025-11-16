@@ -1,30 +1,53 @@
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
+import { DragOverlay, useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
-import { AlertCircle, ChevronRight, Clock, MapPin } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  MapPin,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
 
-function UnassignedJobCard({ job }: { job: Job }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: job.id,
-      data: { job },
-    });
+function UnassignedJobCard({
+  job,
+  isDragOverlay = false,
+}: {
+  job: Job;
+  isDragOverlay?: boolean;
+}) {
+  const sortable = useSortable({
+    id: job.id,
+    data: { job },
+  });
 
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = sortable;
+
+  const style = isDragOverlay
+    ? undefined
+    : {
+        transform: CSS.Transform.toString(transform),
+        transition,
+      };
 
   const startTime =
     job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
@@ -36,13 +59,15 @@ function UnassignedJobCard({ job }: { job: Job }) {
 
   return (
     <div
-      ref={setNodeRef}
+      ref={isDragOverlay ? undefined : setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
+      {...(isDragOverlay ? {} : attributes)}
+      {...(isDragOverlay ? {} : listeners)}
       className={cn(
-        "group relative cursor-grab rounded-lg border-2 border-red-300 border-dashed bg-red-50 p-3 shadow-sm transition-all hover:border-red-400 hover:shadow-md active:cursor-grabbing dark:border-red-800 dark:bg-red-950",
-        isDragging && "opacity-50"
+        "group relative cursor-grab rounded-lg border-2 border-red-200 border-dashed bg-card p-3 shadow-sm transition-all hover:border-red-300 hover:shadow-md active:cursor-grabbing dark:border-red-900/50",
+        isDragging && !isDragOverlay && "opacity-30",
+        isDragOverlay &&
+          "scale-105 cursor-grabbing shadow-2xl ring-2 ring-red-500"
       )}
     >
       {/* Drag indicator */}
@@ -55,17 +80,15 @@ function UnassignedJobCard({ job }: { job: Job }) {
       <div className="space-y-2">
         {/* Title */}
         <div className="pr-6">
-          <p className="font-semibold text-red-900 text-sm dark:text-red-100">
-            {job.title}
-          </p>
-          <p className="text-red-700 text-xs dark:text-red-300">
-            {job.customer.name}
-          </p>
+          <p className="font-semibold text-foreground text-sm">{job.title}</p>
+          {job.customer?.name && (
+            <p className="text-muted-foreground text-xs">{job.customer.name}</p>
+          )}
         </div>
 
         {/* Time */}
         <div className="flex items-center gap-4 text-xs">
-          <div className="flex items-center gap-1.5 text-red-800 dark:text-red-200">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
             <Clock className="size-3.5" />
             <span className="font-medium font-mono">
               {format(startTime, "h:mm a")}
@@ -77,8 +100,8 @@ function UnassignedJobCard({ job }: { job: Job }) {
         </div>
 
         {/* Location */}
-        {job.location.address.street && (
-          <div className="flex items-start gap-1.5 text-red-700 text-xs dark:text-red-300">
+        {job.location?.address?.street && (
+          <div className="flex items-start gap-1.5 text-muted-foreground text-xs">
             <MapPin className="mt-0.5 size-3.5 shrink-0" />
             <span className="line-clamp-1">{job.location.address.street}</span>
           </div>
@@ -96,72 +119,108 @@ function UnassignedJobCard({ job }: { job: Job }) {
 }
 
 export function UnassignedPanel({
-  unassignedJobs,
+  unassignedJobs = [],
   isOpen,
   onToggle,
+  dropId = "unassigned-dropzone",
+  activeJobId,
 }: {
   unassignedJobs: Job[];
   isOpen: boolean;
   onToggle: () => void;
+  dropId?: string;
+  activeJobId: string | null;
 }) {
-  return (
-    <Collapsible className="h-full" onOpenChange={onToggle} open={isOpen}>
-      <div className="flex h-full flex-col border-r bg-card">
-        {isOpen ? (
-          // Expanded: Full panel with flex layout
-          <>
-            <CollapsibleTrigger asChild>
-              <Button
-                className="h-auto w-full shrink-0 justify-between px-4 py-3 hover:bg-muted"
-                variant="ghost"
-              >
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="size-4 text-red-500" />
-                  <span className="font-semibold text-sm">Unscheduled</span>
-                  <Badge className="text-[10px]" variant="destructive">
-                    {unassignedJobs.length}
-                  </Badge>
-                </div>
-                <ChevronRight className="size-4 rotate-90 transition-transform" />
-              </Button>
-            </CollapsibleTrigger>
+  const { setNodeRef, isOver } = useDroppable({
+    id: dropId,
+  });
 
-            <div className="flex-1 overflow-y-auto" style={{ height: 0 }}>
-              <div className="space-y-2 p-3">
-                {unassignedJobs.length === 0 ? (
-                  <div className="rounded-lg border border-dashed p-6 text-center">
-                    <p className="text-muted-foreground text-xs">
-                      All jobs scheduled
-                    </p>
+  const jobs = Array.isArray(unassignedJobs) ? unassignedJobs : [];
+  const activeJob = jobs.find((job) => job.id === activeJobId);
+
+  return (
+    <>
+      <Collapsible className="h-full" onOpenChange={onToggle} open={isOpen}>
+        <div
+          className={cn(
+            "flex h-full flex-col border-r bg-card transition-colors duration-200",
+            isOver &&
+              "bg-red-50/80 ring-2 ring-red-500 ring-inset dark:bg-red-950/50"
+          )}
+          ref={setNodeRef}
+        >
+          {isOpen ? (
+            // Expanded: Full panel with flex layout
+            <>
+              <CollapsibleTrigger asChild>
+                <Button
+                  className="h-auto w-full shrink-0 justify-between px-4 py-3 hover:bg-muted"
+                  variant="ghost"
+                >
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="size-4 text-red-500" />
+                    <span className="font-semibold text-sm">Unscheduled</span>
+                    <Badge
+                      className="bg-red-100 px-2 py-0.5 font-semibold text-red-700 text-xs dark:bg-red-950/50 dark:text-red-400"
+                      variant="secondary"
+                    >
+                      {jobs.length}
+                    </Badge>
                   </div>
-                ) : (
-                  unassignedJobs.map((job) => (
-                    <UnassignedJobCard job={job} key={job.id} />
-                  ))
-                )}
-              </div>
-            </div>
-          </>
-        ) : (
-          // Collapsed: Vertical text in sliver
-          <button
-            className="flex h-full w-12 items-center justify-center bg-red-50 transition-colors hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-900"
-            onClick={onToggle}
-          >
-            <div className="flex rotate-180 items-center gap-3 [writing-mode:vertical-rl]">
-              <span className="font-bold text-red-700 text-sm tracking-wider dark:text-red-300">
-                UNSCHEDULED
-              </span>
-              <Badge
-                className="px-2 py-0.5 font-bold text-[10px]"
-                variant="destructive"
+                  <ChevronLeft className="size-4 transition-transform" />
+                </Button>
+              </CollapsibleTrigger>
+
+              <div
+                className="flex-1 overflow-y-auto overflow-x-hidden"
+                style={{ minHeight: 0 }}
               >
-                {unassignedJobs.length}
-              </Badge>
-            </div>
-          </button>
-        )}
-      </div>
-    </Collapsible>
+                <div className="space-y-2 p-3">
+                  {jobs.length === 0 ? (
+                    <div className="rounded-lg border border-dashed p-6 text-center">
+                      <p className="text-muted-foreground text-xs">
+                        All jobs scheduled
+                      </p>
+                    </div>
+                  ) : (
+                    <SortableContext
+                      items={jobs.map((job) => job.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      {jobs.map((job) => (
+                        <UnassignedJobCard job={job} key={job.id} />
+                      ))}
+                    </SortableContext>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            // Collapsed: Vertical text in sliver
+            <button
+              className="flex h-full w-12 items-center justify-center bg-red-50 transition-colors hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50"
+              onClick={onToggle}
+            >
+              <div className="flex rotate-180 items-center gap-3 [writing-mode:vertical-rl]">
+                <span className="font-bold text-red-700 text-sm tracking-wider dark:text-red-400">
+                  UNSCHEDULED
+                </span>
+                <Badge
+                  className="bg-red-600 px-2.5 py-0.5 font-semibold text-white text-xs dark:bg-red-700"
+                  variant="secondary"
+                >
+                  {jobs.length}
+                </Badge>
+              </div>
+            </button>
+          )}
+        </div>
+      </Collapsible>
+
+      {/* Drag Overlay - Ghost preview */}
+      <DragOverlay dropAnimation={null}>
+        {activeJob ? <UnassignedJobCard isDragOverlay job={activeJob} /> : null}
+      </DragOverlay>
+    </>
   );
 }

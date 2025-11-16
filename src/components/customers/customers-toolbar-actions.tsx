@@ -9,9 +9,9 @@
  */
 
 import { UserPlus } from "lucide-react";
+import { CustomersFilterDropdown } from "@/components/customers/customers-filter-dropdown";
 import { BaseToolbarActions } from "@/components/ui/base-toolbar-actions";
 import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
-import { CustomersFilterDropdown } from "@/components/work/customers-filter-dropdown";
 
 // Critical columns (always visible - shown for reference)
 const CUSTOMERS_CRITICAL_COLUMNS = [{ key: "status", label: "Status" }];

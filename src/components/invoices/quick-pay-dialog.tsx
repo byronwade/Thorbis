@@ -18,10 +18,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-  getInvoicePaymentDetails,
-  payInvoiceWithSavedCard,
-} from "@/actions/invoice-payments";
+import { processInvoicePayment } from "@/actions/invoice-payments";
+import { getPaymentMethods } from "@/actions/payment-methods";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -67,22 +65,31 @@ export function QuickPayDialog({
     setIsLoading(true);
     setError(null);
 
-    const result = await getInvoicePaymentDetails(invoiceId);
+    const result = await getPaymentMethods();
 
-    if (result.success) {
-      const defaultPM = result.paymentMethods?.find((pm: any) => pm.is_default);
-      if (defaultPM) {
-        setDefaultPaymentMethod(defaultPM);
-      } else if (result.paymentMethods && result.paymentMethods.length > 0) {
-        // Use first available if no default
-        setDefaultPaymentMethod(result.paymentMethods[0]);
-      } else {
-        setError(
-          "No payment methods found. Please add a payment method first."
-        );
-      }
+    if (!(result.success && result.paymentMethods)) {
+      setError(result.error || "Failed to load payment methods");
+      setIsLoading(false);
+      return;
+    }
+
+    const defaultPM =
+      result.paymentMethods.find((pm: any) => pm.is_default) ??
+      result.paymentMethods[0];
+
+    if (defaultPM) {
+      // Normalize shape for this component
+      setDefaultPaymentMethod({
+        id: defaultPM.id,
+        card_brand: defaultPM.brand,
+        card_last4: defaultPM.last4,
+        card_exp_month: defaultPM.exp_month,
+        card_exp_year: defaultPM.exp_year,
+        nickname: defaultPM.display_name,
+        is_default: defaultPM.is_default,
+      });
     } else {
-      setError(result.error || "Failed to load payment details");
+      setError("No payment methods found. Please add a payment method first.");
     }
 
     setIsLoading(false);
@@ -103,9 +110,10 @@ export function QuickPayDialog({
     setIsProcessing(true);
     setError(null);
 
-    const result = await payInvoiceWithSavedCard({
+    const result = await processInvoicePayment({
       invoiceId,
       paymentMethodId: defaultPaymentMethod.id,
+      channel: "online",
     });
 
     setIsProcessing(false);

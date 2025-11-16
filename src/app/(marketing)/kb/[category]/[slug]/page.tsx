@@ -28,8 +28,6 @@ import {
 
 const RELATED_ARTICLE_LIMIT = 5;
 
-export const revalidate = 3600; // Revalidate every hour
-
 type ArticlePageProps = {
   params: Promise<{ category: string; slug: string }>;
 };

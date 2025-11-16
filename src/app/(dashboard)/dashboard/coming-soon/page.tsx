@@ -47,8 +47,6 @@ import {
   Zap,
 } from "lucide-react";
 
-export const revalidate = 3600; // Revalidate every hour
-
 export default function ComingSoonPage() {
   return (
     <div className="relative space-y-16 overflow-auto py-12">
@@ -59,7 +57,7 @@ export default function ComingSoonPage() {
       </div>
 
       {/* Main content */}
-      <div className="mx-auto w-full max-w-6xl space-y-16 text-center">
+      <div className="mx-auto w-full max-w-7xl space-y-16 text-center">
         {/* Hero Section */}
         <div className="space-y-8">
           {/* Status badge */}

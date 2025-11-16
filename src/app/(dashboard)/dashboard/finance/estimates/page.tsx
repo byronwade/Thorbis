@@ -11,8 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export const revalidate = 900;
-
 export default function EstimatesPage() {
   return (
     <div className="space-y-6">

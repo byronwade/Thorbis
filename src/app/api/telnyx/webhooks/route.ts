@@ -91,8 +91,33 @@ export async function POST(request: NextRequest) {
     // Parse webhook payload
     const webhook = JSON.parse(rawBody);
     const { data } = webhook;
-    const eventType = data?.event_type;
-    const payload = data?.payload;
+
+    if (!data) {
+      console.error("Webhook data is undefined:", webhook);
+      return NextResponse.json(
+        { error: "Invalid webhook structure: missing data" },
+        { status: 400 }
+      );
+    }
+
+    const eventType = data.event_type;
+    const payload = data.payload;
+
+    if (!eventType) {
+      console.error("Event type is undefined:", data);
+      return NextResponse.json(
+        { error: "Invalid webhook structure: missing event_type" },
+        { status: 400 }
+      );
+    }
+
+    if (!payload) {
+      console.error("Payload is undefined for event:", eventType);
+      return NextResponse.json(
+        { error: "Invalid webhook structure: missing payload" },
+        { status: 400 }
+      );
+    }
 
     console.log("Telnyx webhook received:", eventType);
 
@@ -143,6 +168,11 @@ async function handleCallInitiated(payload: any) {
     return;
   }
 
+  if (!payload) {
+    console.error("handleCallInitiated: payload is undefined");
+    return;
+  }
+
   const {
     call_control_id,
     call_leg_id,
@@ -180,6 +210,11 @@ async function handleCallAnswered(payload: any) {
     return;
   }
 
+  if (!payload) {
+    console.error("handleCallAnswered: payload is undefined");
+    return;
+  }
+
   const { call_control_id, call_session_id } = payload;
 
   // Update call log
@@ -203,6 +238,11 @@ async function handleCallHangup(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
     console.error("Failed to initialize Supabase client in handleCallHangup");
+    return;
+  }
+
+  if (!payload) {
+    console.error("handleCallHangup: payload is undefined");
     return;
   }
 
@@ -255,6 +295,11 @@ async function handleRecordingSaved(payload: any) {
     return;
   }
 
+  if (!payload) {
+    console.error("handleRecordingSaved: payload is undefined");
+    return;
+  }
+
   const { call_session_id, recording_urls, duration_millis } = payload;
 
   // Get the public URL (first URL in the object)
@@ -284,6 +329,11 @@ async function handleMachineDetection(payload: any) {
     console.error(
       "Failed to initialize Supabase client in handleMachineDetection"
     );
+    return;
+  }
+
+  if (!payload) {
+    console.error("handleMachineDetection: payload is undefined");
     return;
   }
 

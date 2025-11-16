@@ -8,8 +8,6 @@ import {
   createWebsiteSchema,
 } from "@/lib/seo/structured-data";
 
-export const revalidate = 900; // Revalidate every 15 minutes
-
 export const metadata = generateSEOMetadata({
   title: "Modern Business Management Platform",
   description:

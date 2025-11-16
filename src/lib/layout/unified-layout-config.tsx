@@ -33,8 +33,8 @@ import { MaterialsToolbarActions } from "@/components/inventory/materials-toolba
 import { DetailBackButton } from "@/components/layout/detail-back-button";
 // Toolbar breadcrumb components
 import { CategoryBreadcrumbs } from "@/components/pricebook/category-breadcrumbs";
+import { PropertiesToolbarActions } from "@/components/properties/properties-toolbar-actions";
 import { PropertyDetailToolbarActions } from "@/components/properties/property-detail-toolbar-actions";
-import { ScheduleToolbarActions } from "@/components/schedule/schedule-toolbar-actions";
 import { ShopToolbarActions } from "@/components/shop/shop-toolbar-actions";
 import { Button } from "@/components/ui/button";
 import type { StatCard } from "@/components/ui/stats-cards";
@@ -61,6 +61,8 @@ import { ServiceAgreementToolbarActions } from "@/components/work/service-agreem
 import { ServiceAgreementDetailToolbarActions } from "@/components/work/service-agreements/service-agreement-detail-toolbar-actions";
 import { TeamMemberDetailToolbar } from "@/components/work/team-member-detail-toolbar";
 import { TeamToolbarActions } from "@/components/work/team-toolbar-actions";
+import { VendorToolbarActions } from "@/components/work/vendor-toolbar-actions";
+import { VendorDetailToolbarActions } from "@/components/work/vendors/vendor-detail-toolbar-actions";
 import { WorkToolbarActions } from "@/components/work/work-toolbar-actions";
 import type { SidebarConfig } from "@/lib/sidebar/types";
 
@@ -95,8 +97,13 @@ export const ROUTE_PATTERNS = {
   WORK_PAYMENTS_DETAIL: /^\/dashboard\/work\/payments\/[^/]+$/,
   WORK_MATERIALS_LIST: /^\/dashboard\/work\/materials$/,
   WORK_MATERIALS_DETAIL: /^\/dashboard\/work\/materials\/[^/]+$/,
+  WORK_VENDORS_LIST: /^\/dashboard\/work\/vendors$/,
+  WORK_VENDORS_DETAIL: /^\/dashboard\/work\/vendors\/(?!new$)[^/]+$/,
+  WORK_VENDORS_NEW: /^\/dashboard\/work\/vendors\/new$/,
+  WORK_VENDORS_EDIT: /^\/dashboard\/work\/vendors\/[^/]+\/edit$/,
   WORK_PROPERTIES_LIST: /^\/dashboard\/work\/properties$/,
-  WORK_PROPERTIES_DETAIL: /^\/dashboard\/work\/properties\/[^/]+$/,
+  WORK_PROPERTIES_DETAIL: /^\/dashboard\/work\/properties\/(?!new$)[^/]+$/,
+  WORK_PROPERTIES_EDIT: /^\/dashboard\/work\/properties\/[^/]+\/edit$/,
   WORK_ESTIMATES_DETAIL: /^\/dashboard\/work\/estimates\/[^/]+$/,
   WORK_MAINTENANCE_PLANS_DETAIL:
     /^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
@@ -104,23 +111,31 @@ export const ROUTE_PATTERNS = {
     /^\/dashboard\/work\/service-agreements\/[^/]+$/,
   WORK_EQUIPMENT_DETAIL: /^\/dashboard\/work\/equipment\/[^/]+$/,
   WORK_CONTRACTS_LIST: /^\/dashboard\/work\/contracts$/,
-  WORK_CONTRACTS_DETAIL: /^\/dashboard\/work\/contracts\/[^/]+$/,
+  WORK_CONTRACTS_DETAIL:
+    /^\/dashboard\/work\/contracts\/(?!templates|new)[^/]+$/,
+  WORK_CONTRACTS_TEMPLATES: /^\/dashboard\/work\/contracts\/templates$/,
   WORK_PURCHASE_ORDERS_LIST: /^\/dashboard\/work\/purchase-orders$/,
   WORK_TEAM_LIST: /^\/dashboard\/work\/team$/,
-  WORK_TEAM_MEMBER_DETAIL: /^\/dashboard\/work\/team\/[^/]+$/,
+  WORK_TEAM_MEMBER_DETAIL:
+    /^\/dashboard\/work\/team\/(?!roles|departments|invite)[^/]+$/,
+  WORK_TEAM_INVITE: /^\/dashboard\/work\/team\/invite$/,
+  WORK_TEAM_DEPARTMENTS: /^\/dashboard\/work\/team\/departments$/,
+  WORK_TEAM_ROLES: /^\/dashboard\/work\/team\/roles$/,
+  WORK_TEAM_ROLE_DETAIL: /^\/dashboard\/work\/team\/roles\/[^/]+$/,
   WORK_PRICEBOOK_LIST: /^\/dashboard\/work\/pricebook$/,
   WORK_PRICEBOOK_CATEGORIES: /^\/dashboard\/work\/pricebook\/c\//,
   WORK_PRICEBOOK_NEW: /^\/dashboard\/work\/pricebook\/new$/,
   WORK_PRICEBOOK_EXPORT: /^\/dashboard\/work\/pricebook\/export$/,
   WORK_PRICEBOOK_IMPORT: /^\/dashboard\/work\/pricebook\/import$/,
   WORK_PRICEBOOK_MASS_UPDATE: /^\/dashboard\/work\/pricebook\/mass-update$/,
+  WORK_PRICEBOOK_SUPPLIERS: /^\/dashboard\/work\/pricebook\/suppliers\/[^/]+$/,
   WORK_PRICEBOOK_DETAILS:
-    /^\/dashboard\/work\/pricebook\/(?!new|export|import|mass-update|c\/)([^/]+)$/,
+    /^\/dashboard\/work\/pricebook\/(?!new|export|import|mass-update|suppliers|c\/)([^/]+)$/,
   // Purchase order details
   PURCHASE_ORDER_DETAILS: /^\/dashboard\/work\/purchase-orders\/[^/]+$/,
   // Job details - excludes known work subpages (schedule moved to /dashboard/schedule)
   JOB_DETAILS:
-    /^\/dashboard\/work\/(?!invoices|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team)([^/]+)$/,
+    /^\/dashboard\/work\/(?!invoices|pricebook|estimates|contracts|purchase-orders|maintenance-plans|service-agreements|tickets|materials|equipment|appointments|payments|team|vendors)([^/]+)$/,
 
   // Communication
   COMMUNICATION_DETAIL:
@@ -151,6 +166,9 @@ export const ROUTE_PATTERNS = {
 
   // Training & Automation
   TRAINING_AUTOMATION: /^\/dashboard\/(automation|training)/,
+
+  // Settings (root + nested routes)
+  SETTINGS_ALL: /^\/dashboard\/settings(?:\/.*)?$/,
 
   // Organization Creation (now uses welcome/onboarding page)
   ORGANIZATION_CREATE: /^\/dashboard\/welcome$/,
@@ -188,7 +206,7 @@ export type ToolbarConfig = {
   /** Whether to show the toolbar */
   show: boolean;
   /** Toolbar title */
-  title?: string;
+  title?: React.ReactNode;
   /** Toolbar subtitle */
   subtitle?: string;
   /** Toolbar action buttons (React component) */
@@ -201,6 +219,8 @@ export type ToolbarConfig = {
   showSearch?: boolean;
   /** Statistics to display inline in toolbar */
   stats?: StatCard[];
+  /** How actions block should align when rendered */
+  actionsJustify?: "flex-end" | "space-between";
 };
 
 /**
@@ -293,6 +313,20 @@ export type UnifiedLayoutConfig = {
   rightSidebar?: RightSidebarConfig;
 };
 
+export type LayoutMatchDebugInfo = {
+  pathname: string;
+  matchedPattern: string;
+  priority: number;
+  cacheHit: boolean;
+};
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __THORBIS_LAYOUT_CACHE__: Map<string, UnifiedLayoutConfig> | undefined;
+  // eslint-disable-next-line no-var
+  var __THORBIS_LAST_LAYOUT_DEBUG__: LayoutMatchDebugInfo | null | undefined;
+}
+
 /**
  * Layout rule with pattern matching and priority
  */
@@ -313,7 +347,7 @@ export type LayoutRule = {
 // ============================================================================
 
 const DEFAULT_STRUCTURE: PageStructureConfig = {
-  maxWidth: "full",
+  maxWidth: "7xl",
   padding: "md",
   gap: "md",
   fixedHeight: false,
@@ -348,12 +382,23 @@ const FULL_WIDTH_STRUCTURE: PageStructureConfig = {
   insetPadding: "none",
 };
 
+// Settings layout structure (centered content, generous spacing)
+const SETTINGS_STRUCTURE: PageStructureConfig = {
+  maxWidth: "7xl",
+  padding: "lg",
+  gap: "lg",
+  fixedHeight: false,
+  variant: "default",
+  background: "default",
+  insetPadding: "none",
+};
+
 // STANDARDIZED: All detail pages use this structure
 // This ensures consistent layout across all detail pages (customers, jobs, invoices, properties, etc.)
 const DETAIL_PAGE_STRUCTURE: PageStructureConfig = {
-  maxWidth: "full",
-  padding: "none",
-  gap: "lg",
+  maxWidth: "7xl",
+  padding: "lg",
+  gap: "none",
   fixedHeight: false,
   variant: "detail",
   background: "default",
@@ -444,6 +489,26 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 99,
     description: "Organization creation wizard - full page experience",
+  },
+
+  {
+    pattern: ROUTE_PATTERNS.SETTINGS_ALL,
+    config: {
+      structure: SETTINGS_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Settings",
+        subtitle: "Workspace controls & advanced configuration",
+      },
+      sidebar: {
+        show: true,
+        variant: "standard",
+      },
+    },
+    priority: 85,
+    description:
+      "Settings hub uses centered content with global toolbar + navigation",
   },
 
   // ========================================
@@ -573,6 +638,40 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
   },
 
   {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_NEW,
+    config: {
+      structure: {
+        maxWidth: "full",
+        padding: "none",
+        gap: "none",
+        fixedHeight: true,
+      },
+      header: { show: false },
+      toolbar: { show: false },
+      sidebar: { show: false },
+    },
+    priority: 96,
+    description: "Vendor creation wizard - full page experience",
+  },
+
+  {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_EDIT,
+    config: {
+      structure: {
+        maxWidth: "full",
+        padding: "none",
+        gap: "none",
+        fixedHeight: true,
+      },
+      header: { show: false },
+      toolbar: { show: false },
+      sidebar: { show: false },
+    },
+    priority: 96,
+    description: "Vendor edit wizard - full page experience",
+  },
+
+  {
     pattern: ROUTE_PATTERNS.AI_ROOT,
     config: {
       structure: {
@@ -621,7 +720,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     pattern: ROUTE_PATTERNS.WORK_PRICEBOOK_LIST,
     config: {
       structure: {
-        maxWidth: "full",
+        maxWidth: "7xl",
         padding: "none",
         gap: "none",
         fixedHeight: false,
@@ -649,7 +748,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     pattern: ROUTE_PATTERNS.WORK_PRICEBOOK_CATEGORIES,
     config: {
       structure: {
-        maxWidth: "full",
+        maxWidth: "7xl",
         padding: "none",
         gap: "none",
         fixedHeight: false,
@@ -741,6 +840,31 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     description: "Price book mass price update page",
   },
 
+  // Pricebook suppliers page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PRICEBOOK_SUPPLIERS,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/pricebook"
+            label="Price Book"
+          />
+        ),
+        title: "Supplier",
+        subtitle: "View and manage supplier details",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 77,
+    description: "Pricebook supplier details page",
+  },
+
   {
     pattern: ROUTE_PATTERNS.WORK_PRICEBOOK_DETAILS,
     config: {
@@ -811,16 +935,14 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
       },
       header: DEFAULT_HEADER,
       toolbar: {
-        show: true,
-        title: "Schedule",
-        actions: <ScheduleToolbarActions />,
+        show: false, // Full screen - no toolbar
       },
       sidebar: {
         show: false, // Full screen - no sidebar
       },
     },
     priority: 70,
-    description: "Schedule/calendar view - full screen",
+    description: "Schedule/calendar view - full screen with no chrome",
   },
 
   {
@@ -1196,6 +1318,29 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     description: "Contracts list page with view switcher in toolbar",
   },
 
+  // Contract templates page
+  {
+    pattern: ROUTE_PATTERNS.WORK_CONTRACTS_TEMPLATES,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/contracts"
+            label="Contracts"
+          />
+        ),
+        title: "Contract Templates",
+        subtitle: "Manage reusable contract templates",
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 57,
+    description: "Contract templates page",
+  },
+
   // Maintenance Plans list page
   {
     pattern: /^\/dashboard\/work\/maintenance-plans$/,
@@ -1230,6 +1375,128 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     },
     priority: 56,
     description: "Service agreements list page with view switcher in toolbar",
+  },
+
+  // Vendors list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Vendors",
+        subtitle: "Manage suppliers you can assign to purchase orders",
+        actions: <VendorToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Vendor list page with table view and actions",
+  },
+
+  {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
+        ),
+        actions: <VendorDetailToolbarActions />,
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 56,
+    description: "Vendor detail page mirroring job detail layout",
+  },
+
+  // Vendor new page
+  {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_NEW,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
+        ),
+        title: "New Vendor",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Create new vendor page with form",
+  },
+
+  // Vendor edit page
+  {
+    pattern: ROUTE_PATTERNS.WORK_VENDORS_EDIT,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
+        ),
+        title: "Edit Vendor",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Edit vendor page with form",
+  },
+
+  // Properties list page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PROPERTIES_LIST,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        title: "Properties",
+        subtitle: "Manage customer properties and service locations",
+        actions: <PropertiesToolbarActions />,
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 56,
+    description: "Properties list page with view switcher in toolbar",
+  },
+
+  // Properties edit page
+  {
+    pattern: ROUTE_PATTERNS.WORK_PROPERTIES_EDIT,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton
+            href="/dashboard/work/properties"
+            label="Properties"
+          />
+        ),
+        title: "Edit Property",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Edit property page with form",
   },
 
   // Materials list page
@@ -1349,6 +1616,88 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
     priority: 57,
     description:
       "Team member detail page - full width with toolbar, no sidebar",
+  },
+
+  // Team invite page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_INVITE,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/team" label="Team Members" />
+        ),
+        title: "Invite Team Member",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 57,
+    description: "Invite team member page with form",
+  },
+
+  // Team departments page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_DEPARTMENTS,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/team" label="Team Members" />
+        ),
+        title: "Departments",
+        subtitle: "Manage organizational departments",
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 57,
+    description: "Team departments page",
+  },
+
+  // Team roles page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_ROLES,
+    config: {
+      structure: FULL_WIDTH_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/team" label="Team Members" />
+        ),
+        title: "Roles & Permissions",
+        subtitle: "Manage team roles and access levels",
+      },
+      sidebar: DEFAULT_SIDEBAR,
+    },
+    priority: 57,
+    description: "Team roles page",
+  },
+
+  // Team role detail page
+  {
+    pattern: ROUTE_PATTERNS.WORK_TEAM_ROLE_DETAIL,
+    config: {
+      structure: DETAIL_PAGE_STRUCTURE,
+      header: DEFAULT_HEADER,
+      toolbar: {
+        show: true,
+        back: (
+          <DetailBackButton href="/dashboard/work/team/roles" label="Roles" />
+        ),
+        title: "Edit Role",
+      },
+      sidebar: {
+        show: false,
+      },
+    },
+    priority: 58,
+    description: "Team role detail/edit page",
   },
 
   // Other work list pages
@@ -1583,7 +1932,37 @@ const SORTED_LAYOUT_RULES = [...UNIFIED_LAYOUT_RULES].sort(
   (a, b) => b.priority - a.priority
 );
 
-const LAYOUT_CONFIG_CACHE = new Map<string, UnifiedLayoutConfig>();
+const ENABLE_LAYOUT_CACHE = process.env.NODE_ENV === "production";
+
+const LAYOUT_CONFIG_CACHE =
+  globalThis.__THORBIS_LAYOUT_CACHE__ ?? new Map<string, UnifiedLayoutConfig>();
+
+if (!globalThis.__THORBIS_LAYOUT_CACHE__) {
+  globalThis.__THORBIS_LAYOUT_CACHE__ = LAYOUT_CONFIG_CACHE;
+}
+
+function recordLayoutDebug(info: LayoutMatchDebugInfo) {
+  if (process.env.NODE_ENV === "production") {
+    return;
+  }
+
+  globalThis.__THORBIS_LAST_LAYOUT_DEBUG__ = info;
+}
+
+export function clearUnifiedLayoutCache() {
+  LAYOUT_CONFIG_CACHE.clear();
+  if (process.env.NODE_ENV !== "production") {
+    globalThis.__THORBIS_LAST_LAYOUT_DEBUG__ = null;
+  }
+}
+
+export function getLayoutDebugSnapshot(): LayoutMatchDebugInfo | null {
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
+
+  return globalThis.__THORBIS_LAST_LAYOUT_DEBUG__ ?? null;
+}
 
 // ============================================================================
 // CONFIGURATION GETTER FUNCTION
@@ -1597,15 +1976,31 @@ const LAYOUT_CONFIG_CACHE = new Map<string, UnifiedLayoutConfig>();
  * @returns Complete unified layout configuration
  */
 export function getUnifiedLayoutConfig(pathname: string): UnifiedLayoutConfig {
-  const cached = LAYOUT_CONFIG_CACHE.get(pathname);
-  if (cached) {
-    return cached;
+  if (ENABLE_LAYOUT_CACHE) {
+    const cached = LAYOUT_CONFIG_CACHE.get(pathname);
+    if (cached) {
+      recordLayoutDebug({
+        pathname,
+        matchedPattern: "[cache]",
+        priority: Number.POSITIVE_INFINITY,
+        cacheHit: true,
+      });
+      return cached;
+    }
   }
 
   // Find first matching rule
   for (const rule of SORTED_LAYOUT_RULES) {
     if (rule.pattern.test(pathname)) {
-      LAYOUT_CONFIG_CACHE.set(pathname, rule.config);
+      if (ENABLE_LAYOUT_CACHE) {
+        LAYOUT_CONFIG_CACHE.set(pathname, rule.config);
+      }
+      recordLayoutDebug({
+        pathname,
+        matchedPattern: rule.pattern.toString(),
+        priority: rule.priority,
+        cacheHit: false,
+      });
       return rule.config;
     }
   }
@@ -1617,7 +2012,15 @@ export function getUnifiedLayoutConfig(pathname: string): UnifiedLayoutConfig {
     toolbar: DEFAULT_TOOLBAR,
     sidebar: DEFAULT_SIDEBAR,
   };
-  LAYOUT_CONFIG_CACHE.set(pathname, fallback);
+  if (ENABLE_LAYOUT_CACHE) {
+    LAYOUT_CONFIG_CACHE.set(pathname, fallback);
+  }
+  recordLayoutDebug({
+    pathname,
+    matchedPattern: "[fallback]",
+    priority: -1,
+    cacheHit: false,
+  });
   return fallback;
 }
 

@@ -5,7 +5,7 @@ export default function GiftCardsSettingsPage() {
   return (
     <SettingsComingSoon
       description="Set up and manage gift card programs for your business."
-      icon={Gift}
+      icon={<Gift className="size-10 text-primary" strokeWidth={1.5} />}
       title="Gift Cards Settings"
     />
   );
