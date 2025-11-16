@@ -98,7 +98,6 @@ export async function generateWebRTCToken(params: {
 							},
 						});
 					} catch (_error) {
-    console.error("Error:", _error);
 						// Continue anyway - deletion errors shouldn't block new credential creation
 					}
 				}
@@ -193,7 +192,6 @@ export async function generateWebRTCToken(params: {
 			credential,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to generate WebRTC token",
@@ -358,7 +356,6 @@ export async function testWebRTCConnectivity(credential: WebRTCCredential): Prom
 			turnReachable,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			stunReachable: false,

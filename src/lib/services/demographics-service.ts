@@ -104,7 +104,6 @@ export class DemographicsService {
 			try {
 				censusData = JSON.parse(text);
 			} catch (_e) {
-    console.error("Error:", _e);
 				return null;
 			}
 
@@ -148,7 +147,6 @@ export class DemographicsService {
 
 			return demographics;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

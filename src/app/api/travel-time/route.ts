@@ -204,7 +204,6 @@ export async function GET(request: NextRequest) {
 
 		return NextResponse.json(result.data);
 	} catch (error) {
-    console.error("Error:", error);
 		return NextResponse.json(
 			{
 				error: "Failed to calculate travel time",

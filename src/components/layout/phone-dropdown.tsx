@@ -126,7 +126,6 @@ export function PhoneDropdown({
 					toast.error(`WebRTC setup failed: ${result.error}`);
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				toast.error("Failed to initialize calling. Please refresh the page.");
 			} finally {
 				setIsLoadingWebRTC(false);
@@ -241,7 +240,6 @@ export function PhoneDropdown({
 				setToNumber("");
 				setSelectedCustomer(null);
 			} catch (error) {
-    console.error("Error:", error);
 				if (error instanceof Error && error.message.includes("permission")) {
 					toast.error("Microphone access denied. Please allow microphone access to make calls.");
 				} else {

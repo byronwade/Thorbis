@@ -57,7 +57,6 @@ export function AppointmentDetailToolbarActions() {
 				toast.error(result.error || "Failed to archive appointment");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to archive appointment");
 		} finally {
 			setIsArchiving(false);

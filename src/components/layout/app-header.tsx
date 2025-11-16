@@ -41,7 +41,6 @@ export async function AppHeader() {
 			getActiveCompanyId(),
 		]);
 	} catch (error) {
-    console.error("Error:", error);
 		// During prerendering, cookies() may reject - this is expected
 		// Return null and let the client-side handle it
 		if (error instanceof Error && error.message.includes("prerendering")) {
@@ -81,7 +80,6 @@ export async function AppHeader() {
 				}));
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Continue without phone data - component will handle empty arrays
 		}
 	}

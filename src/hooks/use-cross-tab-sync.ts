@@ -209,7 +209,6 @@ export function useCrossTabSync() {
 					handleSyncMessage(event.data);
 				};
 			} catch (_error) {
-    console.error("Error:", _error);
 				setupLocalStorageFallback();
 			}
 		} else {

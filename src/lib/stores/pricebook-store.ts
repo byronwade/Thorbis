@@ -353,7 +353,6 @@ export const usePriceBookStore = create<PriceBookStore>()(
 							errorMessage: null,
 						});
 					} catch (error) {
-    console.error("Error:", error);
 						// Update error status
 						get().updateSupplierStatus(name, {
 							status: "error",

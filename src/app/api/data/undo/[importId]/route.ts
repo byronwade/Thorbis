@@ -76,7 +76,6 @@ export async function POST(_request: NextRequest, context: RouteContext) {
 			importId,
 		});
 	} catch (_error) {
-    console.error("Error:", _error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

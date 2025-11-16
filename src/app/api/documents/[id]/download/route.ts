@@ -91,7 +91,6 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 			},
 		});
 	} catch (error) {
-    console.error("Error:", error);
 		return NextResponse.json(
 			{
 				error: "Failed to generate download URL",
@@ -160,7 +159,6 @@ export async function HEAD(_request: NextRequest, { params }: { params: Promise<
 			},
 		});
 	} catch (_error) {
-    console.error("Error:", _error);
 		return new NextResponse(null, { status: 500 });
 	}
 }

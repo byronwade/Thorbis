@@ -76,7 +76,6 @@ export function TransferCallModal({
 				setError(result.error || "Failed to transfer call");
 			}
 		} catch (_err) {
-    console.error("Error:", _err);
 			setError("An unexpected error occurred");
 		} finally {
 			setIsTransferring(false);

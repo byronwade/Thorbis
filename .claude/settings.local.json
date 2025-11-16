@@ -124,13 +124,12 @@
       "Bash(time node:*)",
       "Bash(/tmp/add-use-cache.sh)",
       "Bash(timeout 30 pnpm dlx:*)",
-      "Bash(node test-performance.js)"
+      "Bash(node test-performance.js)",
+      "Bash(killall node:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "shadcn"
-  ]
+  "enabledMcpjsonServers": ["shadcn"]
 }

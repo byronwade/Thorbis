@@ -82,7 +82,6 @@ export async function getJobNotes({ jobId, noteType = "all", limit = 50, offset 
 			count: count || 0,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch notes",
@@ -150,7 +149,6 @@ export async function createJobNote({
 		revalidatePath(`/dashboard/work/${jobId}`);
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to create note",
@@ -193,7 +191,6 @@ export async function updateJobNote({
 
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update note",
@@ -230,7 +227,6 @@ export async function deleteJobNote(noteId: string) {
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to delete note",

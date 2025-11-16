@@ -64,7 +64,6 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 			onSuccess?.();
 			onOpenChange(false);
 		} catch (err) {
-    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Failed to add payment method");
 		} finally {
 			setIsLoading(false);

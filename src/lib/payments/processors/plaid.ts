@@ -72,7 +72,6 @@ export class PlaidProcessor implements PaymentProcessor {
 				error: "ACH processing via Plaid requires integration with ACH processor (Adyen/ProfitStars)",
 			};
 		} catch (error) {
-    console.error("Error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -105,7 +104,6 @@ export class PlaidProcessor implements PaymentProcessor {
 			// TODO: Implement proper Plaid webhook signature verification
 			return true; // Placeholder
 		} catch (_error) {
-    console.error("Error:", _error);
 			return false;
 		}
 	}
@@ -142,7 +140,6 @@ export class PlaidProcessor implements PaymentProcessor {
 
 			return { linkToken: data.link_token };
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -172,7 +169,6 @@ export class PlaidProcessor implements PaymentProcessor {
 
 			return { accessToken: data.access_token };
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

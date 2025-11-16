@@ -257,7 +257,6 @@ export function JobPageEditor({
 				setShowSaveSuccess(false);
 			}, 2000);
 		} catch (_error) {
-    console.error("Error:", _error);
 			setSaveStatus("error");
 		}
 	}, [hasUnsavedChanges, setSaveStatus]);

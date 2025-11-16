@@ -55,7 +55,6 @@ export function PlaidLinkButton({
 					toast.error(errorMsg || "Failed to initialize bank connection");
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				toast.error("Failed to initialize bank connection");
 			}
 		}
@@ -81,7 +80,6 @@ export function PlaidLinkButton({
 					toast.error(errorMsg);
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				toast.error("Failed to link bank account");
 			} finally {
 				setIsLoading(false);
@@ -111,7 +109,6 @@ export function PlaidLinkButton({
 			try {
 				open();
 			} catch (_error) {
-    console.error("Error:", _error);
 				toast.error("Failed to open bank connection dialog. Please refresh the page and try again.");
 			}
 		} else {

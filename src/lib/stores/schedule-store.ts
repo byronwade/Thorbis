@@ -328,7 +328,6 @@ export const useScheduleStore = create<ScheduleState>()(
 							},
 						});
 					} catch (error) {
-    console.error("Error:", error);
 						set({
 							error: error instanceof Error ? error.message : "Unknown error",
 						});

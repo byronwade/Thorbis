@@ -130,12 +130,10 @@ async function uploadCompanyLogo(
 			.eq("id", companyId);
 
 		if (updateError) {
-			console.error("Failed to update company logo:", updateError);
 		}
 
 		return publicUrl;
 	} catch (_error) {
-    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -463,7 +461,6 @@ export async function checkDatabaseConnection(): Promise<boolean> {
 		const { error } = await supabase.from("users").select("count").limit(1);
 		return !error;
 	} catch (_error) {
-    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -699,7 +696,6 @@ export async function saveOnboardingProgress(
 		try {
 			await ensureActiveMembership(serviceSupabase, companyId, userId);
 		} catch (membershipError) {
-    console.error("Error:", membershipError);
 			if (createdCompany) {
 				try {
 					await serviceSupabase.from("companies").delete().eq("id", companyId);
@@ -722,7 +718,6 @@ export async function saveOnboardingProgress(
 			});
 
 			if (!brandingResult.success) {
-				console.warn("Messaging branding setup failed:", brandingResult.error);
 			}
 		} catch (_brandingError) {
 			// Ignore branding errors during onboarding
@@ -746,7 +741,6 @@ export async function saveOnboardingProgress(
 				},
 			});
 		} catch (progressError) {
-    console.error("Error:", progressError);
 			return {
 				success: false,
 				error: progressError instanceof Error ? progressError.message : "Failed to save onboarding progress",
@@ -767,7 +761,6 @@ export async function saveOnboardingProgress(
 			companyId,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -853,7 +846,6 @@ export async function saveOnboardingStepProgress(
 		try {
 			await ensureActiveMembership(serviceSupabase, companyId, user.id);
 		} catch (membershipError) {
-    console.error("Error:", membershipError);
 			return {
 				success: false,
 				error: membershipError instanceof Error ? membershipError.message : "You don't have access to this company",
@@ -866,7 +858,6 @@ export async function saveOnboardingStepProgress(
 				stepData,
 			});
 		} catch (progressError) {
-    console.error("Error:", progressError);
 			return {
 				success: false,
 				error: progressError instanceof Error ? progressError.message : "Failed to save progress",
@@ -880,7 +871,6 @@ export async function saveOnboardingStepProgress(
 			companyId,
 		};
 	} catch (_error) {
-    console.error("Error:", _error);
 		return {
 			success: false,
 			error: "An unexpected error occurred. Please try again.",
@@ -949,7 +939,6 @@ export async function purchaseOnboardingPhoneNumber(formData: FormData): Promise
 
 		return result;
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to purchase phone number",
@@ -1114,7 +1103,6 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 
 		return result;
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to initiate porting",
@@ -1134,7 +1122,6 @@ export async function saveOnboardingNotificationSettings(formData: FormData): Pr
 		const result = await updateNotificationSettings(formData);
 		return result;
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to save notification settings",
@@ -1251,7 +1238,6 @@ export async function archiveIncompleteCompany(companyId: string): Promise<Onboa
 			success: true,
 		};
 	} catch (_error) {
-    console.error("Error:", _error);
 		return {
 			success: false,
 			error: "An unexpected error occurred. Please try again.",

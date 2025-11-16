@@ -173,7 +173,6 @@ export function ActionButton({
 				onError?.(result.error);
 			}
 		} catch (error) {
-    console.error("Error:", error);
 			setShowError(true);
 			const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
 			if (showToast) {

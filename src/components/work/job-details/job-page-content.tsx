@@ -245,7 +245,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				});
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Rollback on error
 			setCustomer(originalCustomer);
 			setProperty(originalProperty);
@@ -287,7 +286,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				});
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Rollback on error
 			setProperty(originalProperty);
 			toast.error("Failed to update property", { id: "property-update" });
@@ -327,7 +325,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				});
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Rollback on error
 			setCustomer(originalCustomer);
 			setProperty(originalProperty);
@@ -415,7 +412,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				toast.error(result.error ?? "Failed to create property");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Rollback on error
 			setProperty(originalProperty);
 			toast.error("Failed to create property");
@@ -466,7 +462,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				toast.error(result.error ?? "Failed to create property");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to create property");
 		} finally {
 			setIsCreatingProperty(false);
@@ -559,7 +554,6 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				toast.error(result.error || "Failed to save changes - changes reverted");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// ROLLBACK: Restore previous state on exception
 			setLocalJob(previousState);
 			setHasChanges(false);

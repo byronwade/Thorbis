@@ -50,7 +50,6 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 
 		return user;
 	} catch (error) {
-    console.error("Error:", error);
 		// Catch any unexpected errors (network issues, etc.)
 		// The error might be thrown instead of returned in some cases
 		if (error && typeof error === "object" && "name" in error && error.name === "AuthSessionMissingError") {
@@ -85,7 +84,6 @@ export const getSession = cache(async (): Promise<Session | null> => {
 
 		return session;
 	} catch (_error) {
-    console.error("Error:", _error);
 		return null;
 	}
 });
@@ -220,7 +218,6 @@ export async function refreshSession(): Promise<Session | null> {
 
 		return session;
 	} catch (_error) {
-    console.error("Error:", _error);
 		return null;
 	}
 }

@@ -151,7 +151,6 @@ export class PropertyDataService {
 
 			return propertyData;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -230,7 +229,6 @@ export class PropertyDataService {
 				enrichedAt: new Date().toISOString(),
 			};
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -319,7 +317,6 @@ export class PropertyDataService {
 				enrichedAt: new Date().toISOString(),
 			};
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

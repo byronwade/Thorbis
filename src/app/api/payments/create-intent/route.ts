@@ -102,7 +102,6 @@ export async function POST(request: NextRequest) {
 			paymentIntentId: paymentIntent.id,
 		});
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return NextResponse.json({ error: error.issues[0]?.message || "Validation error" }, { status: 400 });
 		}

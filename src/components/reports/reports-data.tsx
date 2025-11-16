@@ -8,7 +8,7 @@
 import { BarChart3, Calendar, Download, FileText } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function ReportsData() {
 	return (

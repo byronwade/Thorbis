@@ -138,7 +138,6 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
 			total: count || 0,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -206,7 +205,6 @@ export async function getKBArticle(
 
 		return { success: true, article };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -280,7 +278,6 @@ export async function getKBCategories(): Promise<{
 
 		return { success: true, categories: rootCategories };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -360,7 +357,6 @@ export async function searchKBArticles(
 			total: count || 0,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -416,7 +412,6 @@ export async function getKBRelatedArticles(
 
 		return { success: true, articles };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -461,7 +456,6 @@ export async function incrementArticleViews(articleId: string): Promise<{ succes
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -516,7 +510,6 @@ export async function submitKBFeedback(feedback: KBFeedbackSubmission): Promise<
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}

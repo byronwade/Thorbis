@@ -100,7 +100,6 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 				processorMetadata: data,
 			};
 		} catch (error) {
-    console.error("Error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -145,7 +144,6 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 				status: data.status === "processed" ? "succeeded" : "processing",
 			};
 		} catch (error) {
-    console.error("Error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -186,7 +184,6 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 			// TODO: Implement proper ProfitStars webhook signature verification
 			return true; // Placeholder
 		} catch (_error) {
-    console.error("Error:", _error);
 			return false;
 		}
 	}

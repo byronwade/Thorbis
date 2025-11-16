@@ -73,7 +73,6 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 					setShowNewCardForm(true);
 				}
 			} catch (_err) {
-    console.error("Error:", _err);
 				// Default to credit card on error
 				setSelectedMethod("new-card");
 				setShowNewCardForm(true);

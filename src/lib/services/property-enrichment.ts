@@ -230,7 +230,6 @@ export class PropertyEnrichmentService {
 					return enrichment;
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				// Continue to next provider
 			}
 		}

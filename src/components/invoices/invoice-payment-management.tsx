@@ -95,7 +95,6 @@ export function InvoicePaymentManagement({ invoice, paymentMethods, autoOpen = f
 			setShowPaymentDialog(false);
 			setPaymentAmount("");
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Payment failed. Please try again.");
 		} finally {
 			setIsProcessing(false);
@@ -109,7 +108,6 @@ export function InvoicePaymentManagement({ invoice, paymentMethods, autoOpen = f
 			toast.success("Card added successfully");
 			setShowAddCard(false);
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to add card");
 		}
 	};

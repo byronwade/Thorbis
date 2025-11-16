@@ -7,7 +7,7 @@
 import { DollarSign, FileText, PieChart, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function FinancialReportsData() {
 	return (

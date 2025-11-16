@@ -69,7 +69,6 @@ export function OnboardingHeader() {
 				setCompanies([]); // Set empty array on error
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			setCompanies([]); // Set empty array on error
 		} finally {
 			setLoading(false);

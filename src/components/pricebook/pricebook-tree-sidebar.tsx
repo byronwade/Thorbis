@@ -158,7 +158,6 @@ export function PriceBookTreeSidebar(props: PriceBookTreeSidebarProps) {
 				const tree = await getCategoryTreeClient();
 				setCategories(tree);
 			} catch (_error) {
-    console.error("Error:", _error);
 			} finally {
 				setIsLoading(false);
 			}

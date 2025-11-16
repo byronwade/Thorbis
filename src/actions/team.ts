@@ -174,7 +174,6 @@ export async function inviteTeamMember(formData: FormData): Promise<ActionResult
 				// Don't fail the whole operation if email fails
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Don't fail the whole operation if email fails
 		}
 

@@ -55,7 +55,6 @@ async function ScheduleData() {
 			lastSync: new Date(),
 		});
 	} catch (error) {
-    console.error("Error:", error);
 		bootstrapError =
 			error instanceof Error ? error.message : typeof error === "string" ? error : "Unable to load schedule data";
 	}

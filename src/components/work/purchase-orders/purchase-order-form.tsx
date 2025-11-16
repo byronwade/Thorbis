@@ -272,7 +272,6 @@ export function PurchaseOrderForm({
 			toast.success("Purchase order created.");
 			router.push(`/dashboard/work/purchase-orders/${result.data}`);
 		} catch (err) {
-    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Something went wrong while creating the purchase order.");
 			setIsSubmitting(false);
 		}

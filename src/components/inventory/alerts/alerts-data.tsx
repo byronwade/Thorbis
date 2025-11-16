@@ -9,7 +9,7 @@
 import { AlertTriangle, Bell, Mail, MessageSquare, TrendingDown } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function AlertsData() {
 	// Future: Fetch low stock alerts

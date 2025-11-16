@@ -115,7 +115,6 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			setLastUpdated(new Date());
 			setError(null);
 		} catch (err) {
-    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Failed to fetch travel time");
 			setTravelTime(null);
 		} finally {

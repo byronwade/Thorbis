@@ -95,7 +95,6 @@ export async function getCustomerBadges(customerId: string) {
 
 		return { success: true, data: data || [] };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch badges",
@@ -153,7 +152,6 @@ export async function generateAutoBadges(customerId: string) {
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true, data: autoBadges };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to generate badges",
@@ -219,7 +217,6 @@ export async function addCustomerBadge({
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to add badge",
@@ -246,7 +243,6 @@ export async function removeCustomerBadge(badgeId: string, customerId: string) {
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove badge",

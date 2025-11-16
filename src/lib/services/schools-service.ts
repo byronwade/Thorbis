@@ -119,7 +119,6 @@ export class SchoolsService {
 
 			return schoolsData;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

@@ -90,7 +90,6 @@ export async function GET() {
 			},
 		});
 	} catch (_error) {
-    console.error("Error:", _error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

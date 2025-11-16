@@ -105,7 +105,6 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 				clearInterval(checkInterval);
 				onPopOutCreated?.();
 			} catch (_error) {
-    console.error("Error:", _error);
 				// Pop-out not ready yet, continue checking
 			}
 		}, 100);

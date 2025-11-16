@@ -80,7 +80,6 @@ export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", s
 				setData([]);
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to load archived items");
 			setData([]);
 		} finally {
@@ -245,7 +244,6 @@ export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", s
 			setSelectedItems(new Set());
 			fetchData(); // Reload data
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to restore items");
 		}
 	};

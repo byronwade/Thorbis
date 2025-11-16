@@ -72,7 +72,6 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				toast.error(result.error || "Failed to unlink invoice");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to unlink invoice");
 		} finally {
 			setIsUnlinking(false);

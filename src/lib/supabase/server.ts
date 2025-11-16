@@ -22,7 +22,6 @@ export const createClient = cache(async () => {
 	try {
 		cookieStore = await cookies();
 	} catch (error) {
-    console.error("Error:", error);
 		// During prerendering, cookies() may reject - return null
 		// This allows PPR to work correctly
 		if (error instanceof Error && error.message.includes("prerendering")) {

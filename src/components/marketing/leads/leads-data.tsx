@@ -9,7 +9,7 @@
 import { Target, TrendingUp, Users, Zap } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function LeadsData() {
 	// Future: Fetch lead statistics

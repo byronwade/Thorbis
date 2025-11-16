@@ -151,7 +151,6 @@ export async function bulkSendInvoices(
 			results,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return buildBulkSendFailure("Failed to send invoices", error);
 	}
 }
@@ -516,7 +515,6 @@ export async function bulkSendEstimates(
 			results,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return buildBulkSendFailure("Failed to send estimates", error);
 	}
 }

@@ -43,7 +43,6 @@ export function InvitePortalButton({
 				alert(result.error || "Failed to send portal invitation");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			alert("An unexpected error occurred");
 		} finally {
 			setIsInviting(false);

@@ -67,7 +67,6 @@ function loadSectionOrder(storageKey: string): string[] | null {
 		const stored = localStorage.getItem(getUserStorageKey(storageKey));
 		return stored ? JSON.parse(stored) : null;
 	} catch (_error) {
-    console.error("Error:", _error);
 		return null;
 	}
 }

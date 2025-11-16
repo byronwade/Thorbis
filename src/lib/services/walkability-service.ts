@@ -139,7 +139,6 @@ export class WalkabilityService {
 
 			return walkability;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

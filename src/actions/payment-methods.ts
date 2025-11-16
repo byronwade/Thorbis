@@ -138,7 +138,6 @@ export async function savePaymentMethod(formData: FormData) {
 					});
 				}
 			} catch (_stripeError) {
-    console.error("Error:", _stripeError);
 				// Don't fail - payment method is saved in our DB
 			}
 		}
@@ -146,7 +145,6 @@ export async function savePaymentMethod(formData: FormData) {
 		revalidatePath("/dashboard/settings/billing");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -215,7 +213,6 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 					},
 				});
 			} catch (_stripeError) {
-    console.error("Error:", _stripeError);
 				// Don't fail - default is set in our DB
 			}
 		}
@@ -223,7 +220,6 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 		revalidatePath("/dashboard/settings/billing");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -301,14 +297,12 @@ export async function removePaymentMethod(formData: FormData) {
 		try {
 			await stripe.paymentMethods.detach(paymentMethodData.stripe_payment_method_id);
 		} catch (_stripeError) {
-    console.error("Error:", _stripeError);
 			// Don't fail - payment method is already removed from our DB
 		}
 
 		revalidatePath("/dashboard/settings/billing");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -359,7 +353,6 @@ export async function getPaymentMethods() {
 
 		return { success: true, paymentMethods: paymentMethods || [] };
 	} catch (_error) {
-    console.error("Error:", _error);
 		return { success: false, error: "An error occurred", paymentMethods: [] };
 	}
 }

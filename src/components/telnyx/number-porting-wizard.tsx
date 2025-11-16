@@ -155,7 +155,6 @@ export function NumberPortingWizard({ open, onOpenChange, onSuccess }: NumberPor
 				alert(result.error || "Failed to submit porting request");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			setSubmitting(false);
 			alert("An error occurred while submitting your porting request. Please try again.");
 		}

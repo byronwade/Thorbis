@@ -328,7 +328,6 @@ export const useNotificationsStore = create<NotificationsState>()(
 					set({ subscriptionPromise });
 					return subscriptionPromise;
 				} catch (_error) {
-    console.error("Error:", _error);
 					// App will still work without realtime, so don't set error state
 					set({
 						isSubscribed: false,

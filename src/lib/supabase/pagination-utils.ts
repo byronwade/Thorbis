@@ -218,7 +218,6 @@ export async function fetchPaginatedData<T>(
 				totalCount: result.count,
 			};
 		} catch (error) {
-    console.error("Error:", error);
 			lastError = error instanceof Error ? error : new Error("Unknown error");
 			attempt++;
 

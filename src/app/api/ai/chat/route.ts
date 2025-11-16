@@ -24,7 +24,6 @@ export async function POST(req: Request) {
 
 		return result.toTextStreamResponse();
 	} catch (error) {
-    console.error("Error:", error);
 		return Response.json({ error: error instanceof Error ? error.message : "Unknown error" }, { status: 500 });
 	}
 }

@@ -195,7 +195,6 @@ export class WeatherService {
 
 			return WeatherDataSchema.parse(weatherData);
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -222,7 +221,6 @@ export class WeatherService {
 				instruction: feature.properties.instruction,
 			}));
 		} catch (_error) {
-    console.error("Error:", _error);
 			return [];
 		}
 	}

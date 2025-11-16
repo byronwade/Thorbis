@@ -52,7 +52,6 @@ export default function TestAuthPage() {
 					setStatus("❌ No user authenticated");
 				}
 			} catch (err) {
-    console.error("Error:", err);
 				setError(err instanceof Error ? err.message : "Unknown error");
 				setStatus("❌ Error occurred");
 			}

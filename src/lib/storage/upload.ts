@@ -82,7 +82,6 @@ export async function uploadFile(
 			path: data.path,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Upload failed",
@@ -287,7 +286,6 @@ export async function deleteFile(bucket: StorageBucket, path: string): Promise<{
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Delete failed",
@@ -328,7 +326,6 @@ export async function getSignedUrl(
 			url: data.signedUrl,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			error: error instanceof Error ? error.message : "Failed to get signed URL",
 		};
@@ -366,7 +363,6 @@ export async function listFiles(bucket: StorageBucket, folder = "") {
 			files: data,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to list files",

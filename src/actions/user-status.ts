@@ -51,7 +51,6 @@ export async function updateUserStatus(status: UserStatus) {
 			status,
 		};
 	} catch (_error) {
-    console.error("Error:", _error);
 		return {
 			success: false,
 			error: "An unexpected error occurred",

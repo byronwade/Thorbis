@@ -103,7 +103,6 @@ export class AddressValidationService {
 
 			return AddressValidationSchema.parse(result);
 		} catch (error) {
-    console.error("Error:", error);
 			return {
 				isValid: false,
 				input: address,
@@ -188,7 +187,6 @@ export class AddressValidationService {
 				},
 			};
 		} catch (_error) {
-    console.error("Error:", _error);
 			return {
 				isValid: false,
 				input,

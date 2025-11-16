@@ -140,7 +140,6 @@ export function TeamMembersPage() {
 					setTeamMembers(members);
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				toast.error("Failed to load team members");
 				setTeamMembers([]);
 			} finally {

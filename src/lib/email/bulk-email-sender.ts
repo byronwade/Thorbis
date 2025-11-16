@@ -155,7 +155,6 @@ export async function sendBulkEmails(emails: BulkEmailItem[], config: BulkEmailC
 						await delay(retryDelay);
 					}
 				} catch (error) {
-    console.error("Error:", error);
 					lastError = error instanceof Error ? error.message : "Unknown error";
 
 					if (attempts < maxRetries) {

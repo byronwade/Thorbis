@@ -125,7 +125,6 @@ const withSupabaseRateLimitRetry = async <T extends { error?: unknown }>(operati
 
 			return result;
 		} catch (error) {
-    console.error("Error:", error);
 			if (
 				error instanceof AuthApiError &&
 				error.code === "over_request_rate_limit" &&
@@ -336,7 +335,6 @@ const syncSignUpProfile = async ({
 			const adminClient = await ensureServiceSupabase();
 			avatarUrl = await uploadAvatarForNewUser(adminClient, avatarFile, userId);
 		} catch (avatarUploadError) {
-    console.error("Error:", avatarUploadError);
 			reportAuthIssue("Avatar upload failed", avatarUploadError);
 		}
 	}
@@ -353,7 +351,6 @@ const syncSignUpProfile = async ({
 
 		await adminClient.from("users").update(updatePayload).eq("id", userId);
 	} catch (profileUpdateError) {
-    console.error("Error:", profileUpdateError);
 		reportAuthIssue("Failed to update user profile", profileUpdateError);
 	}
 
@@ -372,7 +369,6 @@ const syncSignUpProfile = async ({
 			},
 		});
 	} catch (metadataError) {
-    console.error("Error:", metadataError);
 		reportAuthIssue("Failed to sync avatar metadata", metadataError);
 	}
 };
@@ -499,7 +495,6 @@ const uploadAvatarWithFallback = async ({
 		const adminClient = await ensureServiceSupabase();
 		return await uploadAvatarForNewUser(adminClient, avatarFile, userId);
 	} catch (avatarUploadError) {
-    console.error("Error:", avatarUploadError);
 		reportAuthIssue("Avatar upload failed", avatarUploadError);
 		return fallbackAvatar;
 	}
@@ -547,7 +542,6 @@ const updateUserTableRecord = async ({
 			};
 		}
 	} catch (profileUpdateError) {
-    console.error("Error:", profileUpdateError);
 		reportAuthIssue("Failed to update user profile", profileUpdateError);
 		return {
 			success: false,
@@ -598,7 +592,6 @@ const syncUserMetadataProfile = async ({
 			user_metadata: metadata,
 		});
 	} catch (metadataError) {
-    console.error("Error:", metadataError);
 		reportAuthIssue("Failed to sync user metadata", metadataError);
 	}
 };
@@ -733,7 +726,6 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
 		revalidatePath("/", "layout");
 		redirect("/dashboard/welcome");
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof z.ZodError) {
 			return {
 				success: false,
@@ -794,7 +786,6 @@ export async function completeProfile(formData: FormData): Promise<AuthActionRes
 		revalidatePath("/", "layout");
 		redirect(redirectPath);
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof z.ZodError) {
 			return {
 				success: false,
@@ -845,7 +836,6 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		try {
 			await checkRateLimit(validatedData.email, authRateLimiter);
 		} catch (rateLimitError) {
-    console.error("Error:", rateLimitError);
 			if (rateLimitError instanceof RateLimitError) {
 				return {
 					success: false,
@@ -891,7 +881,6 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		revalidatePath("/", "layout");
 		redirect("/dashboard");
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof z.ZodError) {
 			return {
 				success: false,
@@ -953,7 +942,6 @@ export async function signOut(): Promise<AuthActionResult> {
 		revalidatePath("/", "layout");
 		redirect("/login");
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
 			return {
 				success: false,
@@ -1011,7 +999,6 @@ export async function signInWithOAuth(provider: "google" | "facebook"): Promise<
 			success: true,
 		};
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
 			return {
 				success: false,
@@ -1052,7 +1039,6 @@ export async function forgotPassword(formData: FormData): Promise<AuthActionResu
 		try {
 			await checkRateLimit(validatedData.email, passwordResetRateLimiter);
 		} catch (rateLimitError) {
-    console.error("Error:", rateLimitError);
 			if (rateLimitError instanceof RateLimitError) {
 				return {
 					success: false,
@@ -1111,7 +1097,6 @@ export async function forgotPassword(formData: FormData): Promise<AuthActionResu
 			},
 		};
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof z.ZodError) {
 			return {
 				success: false,
@@ -1200,7 +1185,6 @@ export async function resetPassword(formData: FormData): Promise<AuthActionResul
 			},
 		};
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		if (caughtError instanceof z.ZodError) {
 			return {
 				success: false,
@@ -1237,7 +1221,6 @@ export async function getCurrentUser() {
 
 		return user;
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		reportAuthIssue("Error getting current user", caughtError);
 		return null;
 	}
@@ -1265,7 +1248,6 @@ export async function getSession() {
 
 		return session;
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		reportAuthIssue("Error getting session", caughtError);
 		return null;
 	}
@@ -1336,7 +1318,6 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 			},
 		};
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		reportAuthIssue("Error verifying email", caughtError);
 		return {
 			success: false,
@@ -1404,7 +1385,6 @@ export async function resendVerificationEmail(email: string): Promise<AuthAction
 			},
 		};
 	} catch (caughtError) {
-    console.error("Error:", caughtError);
 		reportAuthIssue("Error resending verification email", caughtError);
 		return {
 			success: false,

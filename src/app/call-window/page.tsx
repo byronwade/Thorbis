@@ -196,7 +196,6 @@ function CallWindowContent() {
 					setCustomerData(result.data);
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 			} finally {
 				setIsLoadingCustomer(false);
 			}

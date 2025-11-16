@@ -75,7 +75,6 @@ export async function updateAvailabilitySettings(formData: FormData): Promise<Ac
 		try {
 			workHoursJson = JSON.parse(data.defaultWorkHours);
 		} catch (_e) {
-    console.error("Error:", _e);
 			throw new ActionError("Invalid work hours JSON", ERROR_CODES.VALIDATION_FAILED);
 		}
 
@@ -334,7 +333,6 @@ function parseJsonField(value?: string | null) {
 	try {
 		return JSON.parse(value);
 	} catch (_error) {
-    console.error("Error:", _error);
 		throw new ActionError("Invalid JSON provided", ERROR_CODES.VALIDATION_FAILED);
 	}
 }
@@ -544,7 +542,6 @@ export async function createServiceArea(formData: FormData): Promise<ActionResul
 			try {
 				polygonJson = JSON.parse(data.polygonCoordinates);
 			} catch (_e) {
-    console.error("Error:", _e);
 				throw new ActionError("Invalid polygon coordinates JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}
@@ -613,7 +610,6 @@ export async function updateServiceArea(areaId: string, formData: FormData): Pro
 			try {
 				polygonJson = JSON.parse(data.polygonCoordinates);
 			} catch (_e) {
-    console.error("Error:", _e);
 				throw new ActionError("Invalid polygon coordinates JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}

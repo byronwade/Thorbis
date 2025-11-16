@@ -108,7 +108,6 @@ Best regards,
 			},
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to load template",
@@ -220,7 +219,6 @@ export async function saveInvoiceEmailTemplate(template: InvoiceEmailTemplate): 
 			success: true,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to save template",

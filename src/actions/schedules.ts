@@ -44,7 +44,6 @@ export async function createSchedule(
 		revalidatePath("/dashboard/schedule");
 		return { success: true, scheduleId: schedule.id };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -77,7 +76,6 @@ export async function getSchedule(scheduleId: string): Promise<{ success: boolea
 
 		return { success: true, schedule };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -138,7 +136,6 @@ export async function getSchedules(filters?: {
 
 		return { success: true, schedules };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -192,7 +189,6 @@ export async function updateSchedule(
 		revalidatePath("/dashboard/work");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -220,7 +216,6 @@ export async function updateScheduleStatus(
 		revalidatePath("/dashboard/schedule");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -317,7 +312,6 @@ export async function createRecurringSchedule(
 			scheduleIds: [parentSchedule.id, ...(createdInstances?.map((s) => s.id) || [])],
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -345,7 +339,6 @@ export async function markReminderSent(scheduleId: string): Promise<{ success: b
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -388,7 +381,6 @@ export async function deleteSchedule(scheduleId: string): Promise<{ success: boo
 		revalidatePath("/dashboard/schedule");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}

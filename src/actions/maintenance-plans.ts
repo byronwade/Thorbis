@@ -604,7 +604,6 @@ export async function archiveMaintenancePlan(planId: string): Promise<{ success:
 		revalidatePath("/dashboard/work/maintenance-plans");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

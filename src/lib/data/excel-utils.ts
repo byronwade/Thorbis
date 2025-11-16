@@ -132,7 +132,6 @@ export async function parseExcelFile(file: File): Promise<unknown[]> {
 
 		return data;
 	} catch (_error) {
-    console.error("Error:", _error);
 		throw new Error("Failed to parse Excel file");
 	}
 }
@@ -163,7 +162,6 @@ export function createExcelFile(data: unknown[], headers?: string[]): Blob {
 			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		});
 	} catch (_error) {
-    console.error("Error:", _error);
 		throw new Error("Failed to create Excel file");
 	}
 }

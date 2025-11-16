@@ -41,7 +41,6 @@ export async function assignJobToTechnician(_jobId: string, scheduleId: string, 
 		// revalidatePath("/dashboard/schedule");
 		return { success: true, data: updatedSchedule };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to assign job",
@@ -91,7 +90,6 @@ export async function updateAppointmentTimes(scheduleId: string, startTime: Date
 		// revalidatePath("/dashboard/schedule");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update times",
@@ -133,7 +131,6 @@ export async function cancelAppointment(scheduleId: string, reason?: string) {
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to cancel appointment",
@@ -194,7 +191,6 @@ export async function cancelJobAndAppointment(scheduleId: string, jobId: string,
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to cancel job and appointment",
@@ -223,7 +219,6 @@ export async function archiveAppointment(scheduleId: string) {
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to archive appointment",
@@ -264,7 +259,6 @@ export async function completeAppointment(scheduleId: string) {
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to complete appointment",
@@ -314,7 +308,6 @@ async function updateScheduleStatus(
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : `Failed to update appointment status to ${status}`,
@@ -362,7 +355,6 @@ export async function unassignAppointment(scheduleId: string) {
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to move appointment to Unscheduled",

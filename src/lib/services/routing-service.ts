@@ -118,7 +118,6 @@ export class RoutingService {
 				to,
 			};
 		} catch (_error) {
-    console.error("Error:", _error);
 			return this.getStraightLineRoute(from, to);
 		}
 	}
@@ -170,7 +169,6 @@ export class RoutingService {
 				distances: data.distances || [],
 			};
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -266,7 +264,6 @@ export class RoutingService {
 				this.currentOverpassInstanceIndex = (instanceIndex + 1) % OVERPASS_INSTANCES.length;
 				return res;
 			} catch (error) {
-    console.error("Error:", error);
 				lastError = error instanceof Error ? error : new Error(String(error));
 
 				if (attempt < maxRetries) {
@@ -358,7 +355,6 @@ export class RoutingService {
 
 			return parsedSuppliers;
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Return cached data if available, even if expired
 			if (cached) {
 				return cached.data;

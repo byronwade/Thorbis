@@ -1,7 +1,7 @@
 import { Settings } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function MarketingData() {
 	return (

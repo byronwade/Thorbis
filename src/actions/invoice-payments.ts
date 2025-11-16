@@ -383,7 +383,6 @@ export async function checkPaymentApproval(
 			trustScore: trustCheck.score,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			requiresApproval: true,
 			reason: error instanceof Error ? error.message : "Unknown error occurred",
@@ -557,7 +556,6 @@ export async function removePaymentFromInvoice(
 
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove payment from invoice",

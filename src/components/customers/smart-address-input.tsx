@@ -73,7 +73,6 @@ export function SmartAddressInput({
 				await loadGoogleMapsScript();
 				setIsAutocompleteLoaded(true);
 			} catch (_error) {
-    console.error("Error:", _error);
 				setIsManualMode(true);
 			}
 		};

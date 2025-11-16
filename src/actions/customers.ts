@@ -14,6 +14,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
@@ -25,7 +26,6 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
-import { getActiveCompanyId } from "@/lib/auth/company-context";
 import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
 
 // ============================================================================

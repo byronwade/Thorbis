@@ -113,7 +113,6 @@ function AcceptInvitationContent() {
 					form.setValue("phone", data.invitation.phone);
 				}
 			} catch (_error) {
-    console.error("Error:", _error);
 				setTokenError("Failed to verify invitation. Please try again.");
 			} finally {
 				setIsLoading(false);
@@ -155,7 +154,6 @@ function AcceptInvitationContent() {
 				toast.error(result.error || "Failed to accept invitation");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("An unexpected error occurred. Please try again.");
 		} finally {
 			setIsSubmitting(false);

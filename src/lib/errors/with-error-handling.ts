@@ -61,7 +61,6 @@ export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<Action
 		const data = await fn();
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		// Handle ActionError (our custom errors)
 		if (error instanceof ActionError) {
 			// Log authorization errors as warnings since they're expected in some cases

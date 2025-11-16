@@ -131,7 +131,6 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 			setHasChanges(false);
 			router.refresh();
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to update team member");
 		} finally {
 			setIsSaving(false);

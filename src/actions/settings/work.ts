@@ -301,7 +301,6 @@ export async function updateInvoiceSettings(formData: FormData): Promise<ActionR
 			try {
 				paymentTermsOptionsArray = JSON.parse(data.paymentTermsOptions);
 			} catch (_e) {
-    console.error("Error:", _e);
 				// Use default
 			}
 		}
@@ -311,7 +310,6 @@ export async function updateInvoiceSettings(formData: FormData): Promise<ActionR
 			try {
 				reminderScheduleArray = JSON.parse(data.reminderSchedule);
 			} catch (_e) {
-    console.error("Error:", _e);
 				// Use default
 			}
 		}

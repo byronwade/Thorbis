@@ -605,7 +605,6 @@ export async function archiveServiceAgreement(agreementId: string): Promise<{ su
 		revalidatePath("/dashboard/work/service-agreements");
 		return { success: true };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

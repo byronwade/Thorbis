@@ -100,7 +100,6 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 			}
 			setIsDialogOpen(false);
 		} catch (_error) {
-    console.error("Error:", _error);
 		} finally {
 			setIsChanging(false);
 		}

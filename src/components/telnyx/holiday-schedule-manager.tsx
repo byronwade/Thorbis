@@ -75,7 +75,6 @@ export function HolidayScheduleManager() {
 				toast.error(result.error || "Failed to load holidays");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to load holidays");
 		} finally {
 			setIsLoading(false);

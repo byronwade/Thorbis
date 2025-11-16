@@ -9,7 +9,7 @@
 import { Bell, Calendar, MessageSquare, Target, Zap } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function SmsCampaignsData() {
 	// Future: Fetch SMS campaign statistics

@@ -76,7 +76,6 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
 		// Cookie and referer are REMOVED - they show stale/previous paths, not current
 		// We rely only on Next.js headers which are always accurate
 	} catch (_error) {
-    console.error("Error:", _error);
 		if (process.env.NODE_ENV !== "production") {
 			// TODO: Handle error case
 		}

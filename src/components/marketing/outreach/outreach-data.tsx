@@ -1,7 +1,7 @@
 import { Send } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function OutreachData() {
 	return (

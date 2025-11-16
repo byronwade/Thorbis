@@ -71,7 +71,6 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				toast.error("Failed to archive purchase orders");
 			}
 		} catch (_error) {
-    console.error("Error:", _error);
 			toast.error("Failed to archive purchase orders");
 		} finally {
 			setIsArchiving(false);

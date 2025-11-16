@@ -100,7 +100,6 @@ export async function submitTranscription(
 
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",
@@ -144,7 +143,6 @@ export async function getTranscription(
 		const data = (await response.json()) as TranscriptionResponse;
 		return { success: true, data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

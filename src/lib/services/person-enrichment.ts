@@ -85,7 +85,6 @@ export class PersonEnrichmentService {
 		try {
 			return await this.enrichWithHunter(email);
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

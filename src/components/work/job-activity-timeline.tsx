@@ -37,7 +37,6 @@ export function JobActivityTimeline({ jobId, entityType = "job" }: JobActivityTi
 					setError(result.error || "Failed to load activities");
 				}
 			} catch (err) {
-    console.error("Error:", err);
 				setError(err instanceof Error ? err.message : "Failed to load activities");
 			} finally {
 				setIsLoading(false);

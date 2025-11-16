@@ -57,7 +57,6 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 			completedAt: job.completed_at,
 		});
 	} catch (_error) {
-    console.error("Error:", _error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

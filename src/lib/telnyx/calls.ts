@@ -75,7 +75,6 @@ async function telnyxCallRequest<T>(
 
 		return { success: true, data: result.data };
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Request failed",
@@ -121,7 +120,6 @@ export async function initiateCall(params: {
 			data: result.data,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to initiate call",
@@ -145,7 +143,6 @@ export async function answerCall(params: { callControlId: string; webhookUrl?: s
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to answer call",
@@ -168,7 +165,6 @@ export async function rejectCall(params: { callControlId: string; cause?: "CALL_
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to reject call",
@@ -189,7 +185,6 @@ export async function hangupCall(params: { callControlId: string }) {
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to hangup call",
@@ -217,7 +212,6 @@ export async function startRecording(params: {
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to start recording",
@@ -238,7 +232,6 @@ export async function stopRecording(params: { callControlId: string }) {
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to stop recording",
@@ -262,7 +255,6 @@ export async function playAudio(params: { callControlId: string; audioUrl: strin
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to play audio",
@@ -292,7 +284,6 @@ export async function speakText(params: {
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to speak text",
@@ -316,7 +307,6 @@ export async function transferCall(params: { callControlId: string; to: string; 
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to transfer call",
@@ -339,7 +329,6 @@ export async function sendDTMF(params: { callControlId: string; digits: string }
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send DTMF",
@@ -391,7 +380,6 @@ export async function gatherInput(params: {
 			error: result.error,
 		};
 	} catch (error) {
-    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to gather input",

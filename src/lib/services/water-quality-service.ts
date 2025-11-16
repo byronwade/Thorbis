@@ -151,7 +151,6 @@ export class WaterQualityService {
 
 			return WaterQualitySchema.parse(waterQuality);
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}

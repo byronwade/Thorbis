@@ -154,7 +154,6 @@ export class GooglePlacesService {
 
 			return googlePlaces;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -186,7 +185,6 @@ export class GooglePlacesService {
 
 			return place;
 		} catch (_error) {
-    console.error("Error:", _error);
 			return place;
 		}
 	}

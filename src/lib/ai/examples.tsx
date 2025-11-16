@@ -51,7 +51,6 @@ export function ContentGeneratorExample() {
 			const data = await response.json();
 			setResult(data);
 		} catch (_error) {
-    console.error("Error:", _error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -135,7 +134,6 @@ export function CodeReviewExample() {
 			const data = await response.json();
 			setResult(data);
 		} catch (_error) {
-    console.error("Error:", _error);
 		} finally {
 			setIsLoading(false);
 		}

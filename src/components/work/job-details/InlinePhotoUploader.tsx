@@ -189,7 +189,6 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 						}
 					}
 				} catch (error) {
-    console.error("Error:", error);
 					errorCount++;
 					const errorMessage = error instanceof Error ? error.message : String(error);
 
@@ -232,7 +231,6 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 				setTimeout(() => onCancel(), 100);
 			}
 		} catch (error) {
-    console.error("Error:", error);
 			const errorMessage = error instanceof Error ? error.message : "Failed to upload files";
 			toast.error(errorMessage);
 		} finally {

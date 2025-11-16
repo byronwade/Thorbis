@@ -209,7 +209,6 @@ export function OptimisticUpdateExample() {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			// Success - count is already updated
 		} catch (_error) {
-    console.error("Error:", _error);
 			// Rollback on error
 			setCount((prev) => prev - 1);
 		} finally {
@@ -332,7 +331,6 @@ export function ComplexRealWorldExample() {
 				setTimeout(() => (Math.random() > 0.5 ? resolve(true) : reject("Error")), 1000)
 			);
 		} catch (_err) {
-    console.error("Error:", _err);
 			// Rollback on error
 			setJobs((prev) => prev.filter((j) => j.id !== tempId));
 			setError("Failed to add job");

@@ -9,7 +9,7 @@
 import { Calendar, Mail, Megaphone, MessageSquare, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-"use cache";
+("use cache");
 
 export async function CampaignsData() {
 	// Future: Fetch campaign statistics
