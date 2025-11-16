@@ -454,12 +454,12 @@ async function updateCompanyCoreRecord(supabase: TypedSupabaseClient, companyId:
 async function upsertCompanySettingsRecord(supabase: TypedSupabaseClient, companyId: string, data: ParsedCompanyInfo) {
 	const { data: existingSettings } = await supabase
 		.from("company_settings")
-		.select("id, portal_settings")
+		.select("id")
 		.eq("company_id", companyId)
 		.single();
 
+	// Portal settings column removed from database - use empty object
 	const portalSettingsPayload = {
-		...((existingSettings?.portal_settings as Record<string, unknown>) ?? {}),
 		profile_description: data.description ?? "",
 	};
 
@@ -477,7 +477,7 @@ async function upsertCompanySettingsRecord(supabase: TypedSupabaseClient, compan
 				service_radius: data.serviceRadius,
 				service_areas: data.serviceAreas,
 				hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
-				portal_settings: portalSettingsPayload,
+				// portal_settings column removed from database
 			})
 			.eq("company_id", companyId);
 
@@ -499,7 +499,7 @@ async function upsertCompanySettingsRecord(supabase: TypedSupabaseClient, compan
 		service_radius: data.serviceRadius,
 		service_areas: data.serviceAreas,
 		hours_of_operation: convertHoursToSettings(data.hoursOfOperation),
-		portal_settings: portalSettingsPayload,
+		// portal_settings column removed from database
 	});
 
 	if (createError) {

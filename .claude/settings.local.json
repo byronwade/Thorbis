@@ -111,11 +111,15 @@
       "Bash(then echo \"$file\" fi done)",
       "Bash(git log:*)",
       "Bash(git show:*)",
-      "Bash(pnpm dlx:*)"
+      "Bash(pnpm dlx:*)",
+      "Bash(/tmp/supabase-types-new.ts)",
+      "Bash(timeout 120 pnpm build:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
