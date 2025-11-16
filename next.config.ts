@@ -1,6 +1,5 @@
 import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
-import { withWorkflow } from "workflow/next";
 
 // Only load bundle analyzer when ANALYZE=true to avoid build overhead
 const SECONDS_PER_DAY = 24 * 60 * 60;

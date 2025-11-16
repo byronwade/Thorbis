@@ -1,6 +1,6 @@
 // biome-ignore-all lint: generated file
 /* eslint-disable */
-import { workflowEntrypoint } from 'workflow/runtime';
+import { workflowEntrypoint } from "workflow/runtime";
 
 const workflowCode = `var __create = Object.create;
 var __defProp = Object.defineProperty;

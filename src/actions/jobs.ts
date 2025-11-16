@@ -149,7 +149,7 @@ async function createRecurringJobs(
 	const maxOccurrences = recurrenceCount || 52; // Default to 1 year of weekly jobs
 	const endDateLimit = recurrenceEndDate ? new Date(recurrenceEndDate) : null;
 
-	const recurringJobs: typeof baseJob[] = [];
+	const recurringJobs: (typeof baseJob)[] = [];
 	let currentDate = new Date(startDate);
 
 	for (let i = 0; i < maxOccurrences - 1; i++) {

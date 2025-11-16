@@ -6,17 +6,11 @@
  * Catches and displays errors in training routes.
  */
 
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
-export default function TrainingError({
-	error,
-	reset,
-}: {
-	error: Error & { digest?: string };
-	reset: () => void;
-}) {
+export default function TrainingError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
 	useEffect(() => {
 		console.error("Training error:", error);
 	}, [error]);
@@ -32,12 +26,8 @@ export default function TrainingError({
 
 				<div className="space-y-2">
 					<h2 className="font-semibold text-2xl">Training Error</h2>
-					<p className="text-muted-foreground">
-						{error.message || "An error occurred in the training section."}
-					</p>
-					{error.digest && (
-						<p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>
-					)}
+					<p className="text-muted-foreground">{error.message || "An error occurred in the training section."}</p>
+					{error.digest && <p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>}
 				</div>
 
 				<div className="flex justify-center gap-3">

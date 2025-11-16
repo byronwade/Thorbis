@@ -6,17 +6,11 @@
  * Catches and displays errors in finance routes.
  */
 
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
-export default function FinanceError({
-	error,
-	reset,
-}: {
-	error: Error & { digest?: string };
-	reset: () => void;
-}) {
+export default function FinanceError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
 	useEffect(() => {
 		console.error("Finance error:", error);
 	}, [error]);
@@ -32,12 +26,8 @@ export default function FinanceError({
 
 				<div className="space-y-2">
 					<h2 className="font-semibold text-2xl">Financial Error</h2>
-					<p className="text-muted-foreground">
-						{error.message || "An error occurred in the finance section."}
-					</p>
-					{error.digest && (
-						<p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>
-					)}
+					<p className="text-muted-foreground">{error.message || "An error occurred in the finance section."}</p>
+					{error.digest && <p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>}
 				</div>
 
 				<div className="flex justify-center gap-3">
