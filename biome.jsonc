@@ -1,17 +1,26 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/core", "ultracite/next", "ultracite/react"],
+  "linter": {
+    "rules": {
+      "suspicious": {
+        "useAwait": "off"
+      }
+    }
+  },
   "overrides": [
     {
-      "includes": ["**/page.tsx", "**/layout.tsx"],
+      "includes": ["**/page.tsx", "**/layout.tsx", "**/actions/**/*.ts"],
       "linter": {
         "rules": {
           "suspicious": {
-            "noExplicitAny": "off"
+            "noExplicitAny": "off",
+            "useAwait": "off"
           },
           "complexity": {
             "noForEach": "off",
-            "useLiteralKeys": "off"
+            "useLiteralKeys": "off",
+            "noExcessiveCognitiveComplexity": "warn"
           },
           "style": {
             "noNonNullAssertion": "off"
