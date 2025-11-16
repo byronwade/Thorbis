@@ -8,6 +8,9 @@
 
 import { revalidatePath } from "next/cache";
 import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+
+// Regex constants
+const VENDOR_NUMBER_REGEX = /VND-\d{4}-(\d+)/;
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -34,7 +37,7 @@ async function generateVendorNumber(supabase: any, companyId: string): Promise<s
 		return `VND-${new Date().getFullYear()}-001`;
 	}
 
-	const match = latestVendor.vendor_number.match(/VND-\d{4}-(\d+)/);
+	const match = latestVendor.vendor_number.match(VENDOR_NUMBER_REGEX);
 	if (match) {
 		const nextNumber = Number.parseInt(match[1], 10) + 1;
 		return `VND-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;

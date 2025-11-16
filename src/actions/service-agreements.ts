@@ -10,6 +10,9 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+
+// Regex constants
+const SA_NUMBER_REGEX = /SA-(\d+)/;
 import { ActionError, ERROR_CODES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
@@ -90,7 +93,7 @@ async function generateServiceAgreementNumber(supabase: any, companyId: string):
 			return "SA-000001";
 		}
 
-		const match = latestAgreement.agreement_number.match(/SA-(\d+)/);
+		const match = latestAgreement.agreement_number.match(SA_NUMBER_REGEX);
 		if (match) {
 			const nextNumber = Number.parseInt(match[1], 10) + 1;
 			return `SA-${nextNumber.toString().padStart(6, "0")}`;

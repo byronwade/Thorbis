@@ -9,6 +9,9 @@
 
 import { revalidatePath } from "next/cache";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+
+// Regex constants
+const PO_NUMBER_REGEX = /PO-(\d{4})-(\d+)/;
 import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
@@ -35,7 +38,7 @@ async function generatePONumber(supabase: any, companyId: string): Promise<strin
 		return `PO-${new Date().getFullYear()}-001`;
 	}
 
-	const match = latestPO.po_number.match(/PO-(\d{4})-(\d+)/);
+	const match = latestPO.po_number.match(PO_NUMBER_REGEX);
 	if (match) {
 		const year = match[1];
 		const nextNumber = Number.parseInt(match[2], 10) + 1;

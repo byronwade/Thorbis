@@ -20,6 +20,9 @@ import {
 import { notifyJobCreated } from "@/lib/notifications/triggers";
 import { createClient } from "@/lib/supabase/server";
 
+// Regex constants
+const JOB_NUMBER_REGEX = /JOB-\d{4}-(\d+)/;
+
 // Validation Schemas
 const createJobSchema = z.object({
 	propertyId: z.string().uuid("Invalid property ID"),
@@ -79,7 +82,7 @@ async function generateJobNumber(supabase: any, companyId: string): Promise<stri
 	}
 
 	// Extract number from format: JOB-YYYY-NNN
-	const match = latestJob.job_number.match(/JOB-\d{4}-(\d+)/);
+	const match = latestJob.job_number.match(JOB_NUMBER_REGEX);
 	if (match) {
 		const nextNumber = Number.parseInt(match[1], 10) + 1;
 		return `JOB-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
