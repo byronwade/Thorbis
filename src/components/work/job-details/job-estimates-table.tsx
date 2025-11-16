@@ -71,7 +71,9 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
   );
 
   const handleArchive = useCallback(async () => {
-    if (selectedIds.size === 0) return;
+    if (selectedIds.size === 0) {
+      return;
+    }
 
     setIsArchiving(true);
     try {
@@ -88,7 +90,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
       } else {
         toast.error("Failed to archive estimates");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to archive estimates");
     } finally {
       setIsArchiving(false);
@@ -96,7 +98,9 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
   }, [selectedIds]);
 
   const handleUnlinkEstimate = useCallback(async () => {
-    if (!unlinkEstimateId) return;
+    if (!unlinkEstimateId) {
+      return;
+    }
 
     setIsUnlinking(true);
     try {
@@ -110,7 +114,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
       } else {
         toast.error(result.error || "Failed to unlink estimate");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to unlink estimate");
     } finally {
       setIsUnlinking(false);

@@ -89,12 +89,12 @@ type CompanyPhone = {
   label?: string;
 };
 
-interface PhoneDropdownProps {
+type PhoneDropdownProps = {
   companyId: string;
   customers?: Customer[];
   companyPhones?: CompanyPhone[];
   incomingCallsCount?: number;
-}
+};
 
 export function PhoneDropdown({
   companyId,
@@ -105,7 +105,7 @@ export function PhoneDropdown({
   const { toast } = useToast();
   const [mounted, setMounted] = useState(false);
   const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [isPending, _startTransition] = useTransition();
 
   // Dialer state
   const [toNumber, setToNumber] = useState("");
@@ -133,41 +133,26 @@ export function PhoneDropdown({
   // Load WebRTC credentials for browser audio calling
   useEffect(() => {
     async function loadWebRTCCredentials() {
-      console.log("[PhoneDropdown] Loading WebRTC credentials...");
       try {
         const result = await getWebRTCCredentials();
-        console.log("[PhoneDropdown] Credentials result:", result);
 
         if (result.success && result.credential) {
-          console.log("[PhoneDropdown] Setting credentials:", {
-            username: result.credential.username,
-            hasPassword: Boolean(result.credential.password),
-          });
           setWebrtcCredentials({
             username: result.credential.username,
             password: result.credential.password,
           });
         } else {
-          console.error(
-            "[PhoneDropdown] Failed to load WebRTC credentials:",
-            result.error
-          );
           toast.error(`WebRTC setup failed: ${result.error}`);
         }
-      } catch (error) {
-        console.error(
-          "[PhoneDropdown] Error loading WebRTC credentials:",
-          error
-        );
+      } catch (_error) {
         toast.error("Failed to initialize calling. Please refresh the page.");
       } finally {
         setIsLoadingWebRTC(false);
-        console.log("[PhoneDropdown] Credential loading complete");
       }
     }
     loadWebRTCCredentials();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount - toast is stable but causes re-renders if included
+  }, [toast.error]); // Only run once on mount - toast is stable but causes re-renders if included
 
   // Initialize WebRTC for browser calling with microphone/speaker
   const webrtc = useTelnyxWebRTC({
@@ -175,42 +160,19 @@ export function PhoneDropdown({
     password: webrtcCredentials?.password || "",
     autoConnect: false, // We'll manually connect when credentials are ready
     debug: true, // Always enable debug for troubleshooting
-    onIncomingCall: (call) => {
-      console.log("[PhoneDropdown] Incoming WebRTC call:", call);
-    },
-    onCallEnded: (call) => {
-      console.log("[PhoneDropdown] WebRTC call ended:", call);
-    },
+    onIncomingCall: (_call) => {},
+    onCallEnded: (_call) => {},
   });
 
   // Manually connect when credentials become available
   useEffect(() => {
     if (webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
-      console.log(
-        "[PhoneDropdown] Credentials ready, initiating connection..."
-      );
-      webrtc.connect().catch((error) => {
-        console.error("[PhoneDropdown] Failed to connect:", error);
-      });
+      webrtc.connect().catch((_error) => {});
     }
   }, [webrtcCredentials, webrtc]);
 
   // Log connection state changes for debugging
-  useEffect(() => {
-    console.log("[PhoneDropdown] WebRTC state:", {
-      isConnected: webrtc.isConnected,
-      isConnecting: webrtc.isConnecting,
-      connectionError: webrtc.connectionError,
-      hasCredentials: Boolean(webrtcCredentials),
-      isLoadingWebRTC,
-    });
-  }, [
-    webrtc.isConnected,
-    webrtc.isConnecting,
-    webrtc.connectionError,
-    webrtcCredentials,
-    isLoadingWebRTC,
-  ]);
+  useEffect(() => {}, []);
 
   // Update from number when company phones change
   useEffect(() => {
@@ -269,7 +231,7 @@ export function PhoneDropdown({
     }
 
     // Check for microphone permission
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (navigator.mediaDevices?.getUserMedia) {
       try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -281,16 +243,6 @@ export function PhoneDropdown({
           : `Calling ${toNumber}`;
         toast.success(callingMessage);
 
-        // Open call window in new tab with all necessary params
-        console.log("📞 Opening call window with:", {
-          callId: call.id,
-          companyId,
-          customerId: selectedCustomer?.id,
-          to: normalizedTo,
-          from: fromNumber,
-          direction: "outbound",
-        });
-
         const params = new URLSearchParams({
           callId: call.id,
           ...(companyId && { companyId }),
@@ -301,7 +253,6 @@ export function PhoneDropdown({
         });
 
         const url = `/call-window?${params.toString()}`;
-        console.log("📞 Call window URL:", url);
 
         window.open(url, "_blank", "noopener,noreferrer");
 
@@ -310,7 +261,6 @@ export function PhoneDropdown({
         setToNumber("");
         setSelectedCustomer(null);
       } catch (error) {
-        console.error("Call error:", error);
         if (error instanceof Error && error.message.includes("permission")) {
           toast.error(
             "Microphone access denied. Please allow microphone access to make calls."
@@ -345,24 +295,8 @@ export function PhoneDropdown({
   // Debug button state - MUST be before any conditional returns
   useEffect(() => {
     if (open) {
-      console.log("[PhoneDropdown] Call button state:", {
-        canCall,
-        hasToNumber: Boolean(toNumber.trim()),
-        hasFromNumber: Boolean(fromNumber),
-        companyPhonesCount: companyPhones.length,
-        isWebRTCConnected: webrtc.isConnected,
-        isLoadingWebRTC,
-      });
     }
-  }, [
-    open,
-    canCall,
-    toNumber,
-    fromNumber,
-    companyPhones.length,
-    webrtc.isConnected,
-    isLoadingWebRTC,
-  ]);
+  }, [open]);
 
   // Early return for SSR - AFTER all hooks are called
   if (!mounted) {

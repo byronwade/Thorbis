@@ -54,7 +54,7 @@ export type EquipmentPageContentProps = {
   entityData: EquipmentData;
 };
 
-function formatCurrency(cents: number | null | undefined): string {
+function _formatCurrency(cents: number | null | undefined): string {
   if (cents === null || cents === undefined) {
     return "$0.00";
   }
@@ -139,7 +139,9 @@ const classificationLabelMap = {
 } as const;
 
 function formatLabel(value?: string | null): string {
-  if (!value) return "N/A";
+  if (!value) {
+    return "N/A";
+  }
   return value
     .toString()
     .replace(/[_-]+/g, " ")
@@ -149,7 +151,9 @@ function formatLabel(value?: string | null): string {
 }
 
 function formatDate(value?: string | null): string {
-  if (!value) return "N/A";
+  if (!value) {
+    return "N/A";
+  }
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
     return "N/A";
@@ -170,9 +174,13 @@ function formatNumber(value?: number | null, unit?: string): string {
 }
 
 function getDaysUntil(value?: string | null): number | null {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const target = new Date(value);
-  if (Number.isNaN(target.getTime())) return null;
+  if (Number.isNaN(target.getTime())) {
+    return null;
+  }
   const diffMs = target.getTime() - Date.now();
   return Math.round(diffMs / (1000 * 60 * 60 * 24));
 }
@@ -543,11 +551,9 @@ export function EquipmentPageContent({
     equipment.tool_serial,
     equipment.vehicle_fuel_type,
     equipment.vehicle_inspection_due,
-    equipment.vehicle_last_service_mileage,
     equipment.vehicle_next_service_mileage,
     equipment.vehicle_odometer,
     equipment.vehicle_registration_expiration,
-    classificationKey,
     isTool,
     isVehicle,
     equipment.warranty_expiration,
@@ -1348,6 +1354,7 @@ export function EquipmentPageContent({
     serviceHistory,
     isTool,
     isVehicle,
+    typeLabel,
   ]);
 
   const relatedItems = useMemo(() => {
@@ -1400,25 +1407,23 @@ export function EquipmentPageContent({
   }
 
   return (
-    <>
-      <DetailPageContentLayout
-        activities={activities}
-        attachments={attachments}
-        beforeContent={beforeContent}
-        className="mx-auto w-full max-w-7xl"
-        customSections={customSections}
-        defaultOpenSection="equipment-details"
-        header={headerConfig}
-        notes={notes}
-        relatedItems={relatedItems}
-        showStandardSections={{
-          activities: true,
-          notes: true,
-          attachments: true,
-          relatedItems: true,
-        }}
-        storageKey="equipment-details"
-      />
-    </>
+    <DetailPageContentLayout
+      activities={activities}
+      attachments={attachments}
+      beforeContent={beforeContent}
+      className="mx-auto w-full max-w-7xl"
+      customSections={customSections}
+      defaultOpenSection="equipment-details"
+      header={headerConfig}
+      notes={notes}
+      relatedItems={relatedItems}
+      showStandardSections={{
+        activities: true,
+        notes: true,
+        attachments: true,
+        relatedItems: true,
+      }}
+      storageKey="equipment-details"
+    />
   );
 }

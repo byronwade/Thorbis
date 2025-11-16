@@ -36,13 +36,13 @@ type ImportStep =
   | "importing"
   | "results";
 
-interface ImportWorkflowClientProps {
+type ImportWorkflowClientProps = {
   dataType: string;
-}
+};
 
 export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
   const [currentStep, setCurrentStep] = useState<ImportStep>("upload");
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [_uploadedFile, _setUploadedFile] = useState<File | null>(null);
   const [importProgress, setImportProgress] = useState(0);
 
   const steps: { id: ImportStep; label: string; icon: React.ReactNode }[] = [

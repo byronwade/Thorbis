@@ -15,9 +15,9 @@ import { CompanyFeed } from "@/components/communication/company-feed";
 type ChannelType = "channel" | "dm";
 
 export default function CompanyFeedPage() {
-  const [selectedChannel, setSelectedChannel] =
+  const [selectedChannel, _setSelectedChannel] =
     useState<string>("company-feed");
-  const [selectedChannelType, setSelectedChannelType] =
+  const [selectedChannelType, _setSelectedChannelType] =
     useState<ChannelType>("channel");
 
   // Configure layout with channels sidebar

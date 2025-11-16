@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,20 +29,15 @@ function verifyWebhookSignature(
   try {
     // Check if signature verification is enabled
     if (!TELNYX_PUBLIC_KEY) {
-      console.error(
-        "TELNYX_PUBLIC_KEY not configured - REJECTING webhook for security"
-      );
       return false; // REJECT unsigned webhooks - security best practice
     }
 
     // Verify timestamp is recent (within 5 minutes)
-    const webhookTimestamp = Number.parseInt(timestamp);
+    const webhookTimestamp = Number.parseInt(timestamp, 10);
     const currentTimestamp = Math.floor(Date.now() / 1000);
     const timeDiff = Math.abs(currentTimestamp - webhookTimestamp);
 
     if (timeDiff > 300) {
-      // 5 minutes
-      console.error("Webhook timestamp too old:", timeDiff, "seconds");
       return false;
     }
 
@@ -67,8 +62,7 @@ function verifyWebhookSignature(
     );
 
     return isValid;
-  } catch (error) {
-    console.error("Webhook signature verification failed:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -84,7 +78,6 @@ export async function POST(request: NextRequest) {
 
     // Verify webhook signature
     if (!verifyWebhookSignature(rawBody, signature, timestamp)) {
-      console.error("Invalid webhook signature");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
@@ -93,7 +86,6 @@ export async function POST(request: NextRequest) {
     const { data } = webhook;
 
     if (!data) {
-      console.error("Webhook data is undefined:", webhook);
       return NextResponse.json(
         { error: "Invalid webhook structure: missing data" },
         { status: 400 }
@@ -104,7 +96,6 @@ export async function POST(request: NextRequest) {
     const payload = data.payload;
 
     if (!eventType) {
-      console.error("Event type is undefined:", data);
       return NextResponse.json(
         { error: "Invalid webhook structure: missing event_type" },
         { status: 400 }
@@ -112,14 +103,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!payload) {
-      console.error("Payload is undefined for event:", eventType);
       return NextResponse.json(
         { error: "Invalid webhook structure: missing payload" },
         { status: 400 }
       );
     }
-
-    console.log("Telnyx webhook received:", eventType);
 
     // Handle different event types
     switch (eventType) {
@@ -144,12 +132,10 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        console.log("Unhandled event type:", eventType);
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("Webhook processing error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
@@ -162,14 +148,10 @@ export async function POST(request: NextRequest) {
 async function handleCallInitiated(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
-    console.error(
-      "Failed to initialize Supabase client in handleCallInitiated"
-    );
     return;
   }
 
   if (!payload) {
-    console.error("handleCallInitiated: payload is undefined");
     return;
   }
 
@@ -199,19 +181,16 @@ async function handleCallInitiated(payload: any) {
   });
 
   if (error) {
-    console.error("Failed to create call log:", error);
   }
 }
 
 async function handleCallAnswered(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
-    console.error("Failed to initialize Supabase client in handleCallAnswered");
     return;
   }
 
   if (!payload) {
-    console.error("handleCallAnswered: payload is undefined");
     return;
   }
 
@@ -227,7 +206,6 @@ async function handleCallAnswered(payload: any) {
     .eq("call_sid", call_control_id || call_session_id);
 
   if (error) {
-    console.error("Failed to update call log:", error);
   }
 
   // TODO: Find available team member and assign call
@@ -237,12 +215,10 @@ async function handleCallAnswered(payload: any) {
 async function handleCallHangup(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
-    console.error("Failed to initialize Supabase client in handleCallHangup");
     return;
   }
 
   if (!payload) {
-    console.error("handleCallHangup: payload is undefined");
     return;
   }
 
@@ -259,7 +235,7 @@ async function handleCallHangup(payload: any) {
   let duration = 0;
   if (callLog?.answered_at) {
     const start = new Date(callLog.answered_at).getTime();
-    const end = new Date().getTime();
+    const end = Date.now();
     duration = Math.floor((end - start) / 1000); // seconds
   }
 
@@ -279,7 +255,6 @@ async function handleCallHangup(payload: any) {
     .eq("call_sid", call_control_id || call_session_id);
 
   if (error) {
-    console.error("Failed to update call log:", error);
   }
 
   // TODO: Decrement team_availability.current_calls_count
@@ -289,14 +264,10 @@ async function handleCallHangup(payload: any) {
 async function handleRecordingSaved(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
-    console.error(
-      "Failed to initialize Supabase client in handleRecordingSaved"
-    );
     return;
   }
 
   if (!payload) {
-    console.error("handleRecordingSaved: payload is undefined");
     return;
   }
 
@@ -316,7 +287,6 @@ async function handleRecordingSaved(payload: any) {
     .eq("call_sid", call_session_id);
 
   if (error) {
-    console.error("Failed to save recording URL:", error);
   }
 
   // TODO: Download recording and store in Supabase Storage
@@ -326,14 +296,10 @@ async function handleRecordingSaved(payload: any) {
 async function handleMachineDetection(payload: any) {
   const supabase = await createClient();
   if (!supabase) {
-    console.error(
-      "Failed to initialize Supabase client in handleMachineDetection"
-    );
     return;
   }
 
   if (!payload) {
-    console.error("handleMachineDetection: payload is undefined");
     return;
   }
 
@@ -355,13 +321,10 @@ async function handleMachineDetection(payload: any) {
     .eq("call_sid", call_control_id);
 
   if (error) {
-    console.error("Failed to update machine detection:", error);
   }
 
   // If machine detected, route to voicemail immediately
   if (result === "machine") {
-    // TODO: Transfer call to voicemail
-    console.log("Machine detected, routing to voicemail");
   }
 }
 

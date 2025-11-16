@@ -42,18 +42,32 @@ const DEFAULT_DATA: PerformanceScaleData = {
 
 // Get color based on score
 function getScoreColor(score: number): string {
-  if (score >= 85) return "text-success";
-  if (score >= 70) return "text-primary";
-  if (score >= 50) return "text-warning";
+  if (score >= 85) {
+    return "text-success";
+  }
+  if (score >= 70) {
+    return "text-primary";
+  }
+  if (score >= 50) {
+    return "text-warning";
+  }
   return "text-destructive";
 }
 
 // Get performance level text
 function getPerformanceLevel(score: number): { level: string; color: string } {
-  if (score >= 90) return { level: "Exceptional", color: "text-success" };
-  if (score >= 80) return { level: "Excellent", color: "text-success" };
-  if (score >= 70) return { level: "Good", color: "text-primary" };
-  if (score >= 60) return { level: "Fair", color: "text-warning" };
+  if (score >= 90) {
+    return { level: "Exceptional", color: "text-success" };
+  }
+  if (score >= 80) {
+    return { level: "Excellent", color: "text-success" };
+  }
+  if (score >= 70) {
+    return { level: "Good", color: "text-primary" };
+  }
+  if (score >= 60) {
+    return { level: "Fair", color: "text-warning" };
+  }
   return { level: "Needs Work", color: "text-destructive" };
 }
 
@@ -66,7 +80,7 @@ export function PerformanceScaleWidget({
     data.currentScore
   );
   const targetDiff = data.target - data.currentScore;
-  const progressPercent = (data.currentScore / data.target) * 100;
+  const _progressPercent = (data.currentScore / data.target) * 100;
 
   return (
     <ResponsiveWidgetWrapper className="bg-gradient-to-br from-background/90 to-background/70">

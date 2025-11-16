@@ -17,10 +17,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Job, Property } from "@/lib/db/schema";
 
-interface LocationMapWidgetProps {
+type LocationMapWidgetProps = {
   job: Job;
   property?: Property;
-}
+};
 
 export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
   if (!property) {
@@ -62,7 +62,7 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 
   // Google Maps Static API URL (in production, use actual API key)
   // For demo purposes, this is a placeholder
-  const mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=15&size=600x300&markers=color:red%7C${encodedAddress}&key=YOUR_API_KEY`;
+  const _mapImageUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=15&size=600x300&markers=color:red%7C${encodedAddress}&key=YOUR_API_KEY`;
 
   // External map links
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;

@@ -25,9 +25,9 @@ import {
 import { NumberPortingWizard } from "./number-porting-wizard";
 import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 
-interface PhoneNumbersToolbarProps {
+type PhoneNumbersToolbarProps = {
   companyId: string;
-}
+};
 
 export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
   const [searchOpen, setSearchOpen] = useState(false);

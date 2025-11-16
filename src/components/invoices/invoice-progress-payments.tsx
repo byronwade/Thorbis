@@ -38,12 +38,12 @@ type ProgressPayment = {
   paidDate: string | null;
 };
 
-interface InvoiceProgressPaymentsProps {
+type InvoiceProgressPaymentsProps = {
   invoice: {
     id: string;
     total_amount: number;
   };
-}
+};
 
 export function InvoiceProgressPayments({
   invoice,

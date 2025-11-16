@@ -5,7 +5,7 @@ import type { ScheduleHydrationPayload } from "@/lib/schedule-bootstrap";
 import { fetchScheduleData } from "@/lib/schedule-data";
 import { createClient } from "@/lib/supabase/client";
 
-interface ScheduleState {
+type ScheduleState = {
   // Data
   technicians: Map<string, Technician>;
   jobs: Map<string, Job>;
@@ -72,7 +72,7 @@ interface ScheduleState {
   getUnassignedJobs: () => Job[];
   getJobsGroupedByTechnician: () => Record<string, Job[]>;
   hydrateFromServer: (payload: ScheduleHydrationPayload) => void;
-}
+};
 
 export const useScheduleStore = create<ScheduleState>()(
   devtools(
@@ -236,7 +236,9 @@ export const useScheduleStore = create<ScheduleState>()(
 
         duplicateJob: (jobId, newStartTime) => {
           const job = get().jobs.get(jobId);
-          if (!job) return;
+          if (!job) {
+            return;
+          }
 
           const duration = job.endTime.getTime() - job.startTime.getTime();
           const newEndTime = new Date(newStartTime.getTime() + duration);
@@ -388,7 +390,9 @@ export const useScheduleStore = create<ScheduleState>()(
           const techJobs = get().getJobsByTechnician(technicianId);
 
           return techJobs.some((job) => {
-            if (excludeJobId && job.id === excludeJobId) return false;
+            if (excludeJobId && job.id === excludeJobId) {
+              return false;
+            }
 
             // Check for overlap
             return (
@@ -406,7 +410,9 @@ export const useScheduleStore = create<ScheduleState>()(
           const grouped: Record<string, Job[]> = {};
           for (const job of get().jobs.values()) {
             job.assignments.forEach((assignment) => {
-              if (!assignment.technicianId) return;
+              if (!assignment.technicianId) {
+                return;
+              }
               if (!grouped[assignment.technicianId]) {
                 grouped[assignment.technicianId] = [];
               }

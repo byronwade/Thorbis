@@ -101,8 +101,8 @@ export type BusinessEnrichment = z.infer<typeof BusinessEnrichmentSchema>;
 // ============================================================================
 
 export class BusinessEnrichmentService {
-  private googlePlacesApiKey: string | undefined;
-  private openCorporatesApiKey: string | undefined;
+  private readonly googlePlacesApiKey: string | undefined;
+  private readonly openCorporatesApiKey: string | undefined;
 
   constructor() {
     this.googlePlacesApiKey = process.env.GOOGLE_PLACES_API_KEY;
@@ -129,16 +129,12 @@ export class BusinessEnrichmentService {
         city,
         state
       );
-    } catch (error) {
-      console.error("Error with Google Places:", error);
-    }
+    } catch (_error) {}
 
     // Try OpenCorporates for registration data
     try {
       corporatesData = await this.enrichWithOpenCorporates(businessName, state);
-    } catch (error) {
-      console.error("Error with OpenCorporates:", error);
-    }
+    } catch (_error) {}
 
     // Combine results
     if (!(placesData || corporatesData)) {
@@ -186,7 +182,6 @@ export class BusinessEnrichmentService {
     state?: string
   ): Promise<Partial<BusinessEnrichment> | null> {
     if (!this.googlePlacesApiKey) {
-      console.log("Google Places API key not configured");
       return null;
     }
 

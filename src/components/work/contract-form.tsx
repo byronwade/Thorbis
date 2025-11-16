@@ -68,9 +68,15 @@ export function ContractForm({
     const formData = new FormData(event.currentTarget);
 
     // Add linked entity IDs if provided
-    if (jobId) formData.append("jobId", jobId);
-    if (estimateId) formData.append("estimateId", estimateId);
-    if (invoiceId) formData.append("invoiceId", invoiceId);
+    if (jobId) {
+      formData.append("jobId", jobId);
+    }
+    if (estimateId) {
+      formData.append("estimateId", estimateId);
+    }
+    if (invoiceId) {
+      formData.append("invoiceId", invoiceId);
+    }
 
     const result = await createContract(formData);
 

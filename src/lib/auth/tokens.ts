@@ -12,7 +12,7 @@
 
 "use server";
 
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 
 /**

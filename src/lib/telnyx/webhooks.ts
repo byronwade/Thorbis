@@ -7,7 +7,7 @@
  * - Webhook payload parsing
  */
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { TELNYX_CONFIG } from "./client";
 
 /**
@@ -52,7 +52,7 @@ export type WebhookEventType =
 /**
  * Base webhook payload structure
  */
-export interface WebhookPayload {
+export type WebhookPayload = {
   data: {
     event_type: WebhookEventType;
     id: string;
@@ -64,7 +64,7 @@ export interface WebhookPayload {
     attempt_number: number;
     delivered_to: string;
   };
-}
+};
 
 /**
  * Call webhook payload types
@@ -170,7 +170,6 @@ export function verifyWebhookSignature(params: {
     const publicKeyBase64 = TELNYX_CONFIG.publicKey;
 
     if (!publicKeyBase64) {
-      console.warn("Telnyx public key not configured - skipping verification");
       return true;
     }
 
@@ -195,8 +194,7 @@ export function verifyWebhookSignature(params: {
       publicKey,
       Buffer.from(params.signature, "base64")
     );
-  } catch (error) {
-    console.error("Error verifying webhook signature:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -214,14 +212,12 @@ export function parseWebhookPayload(
         : JSON.parse(rawPayload.toString());
 
     // Validate required fields
-    if (!(payload.data && payload.data.event_type && payload.data.payload)) {
-      console.error("Invalid webhook payload structure");
+    if (!(payload.data?.event_type && payload.data.payload)) {
       return null;
     }
 
     return payload as WebhookPayload;
-  } catch (error) {
-    console.error("Error parsing webhook payload:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -311,8 +307,7 @@ export function isWebhookTimestampValid(
     const age = (now - webhookTimeMs) / 1000; // Age in seconds
 
     return age <= maxAgeSeconds;
-  } catch (error) {
-    console.error("Error validating webhook timestamp:", error);
+  } catch (_error) {
     return false;
   }
 }

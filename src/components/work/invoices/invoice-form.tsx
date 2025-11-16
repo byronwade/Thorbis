@@ -172,7 +172,7 @@ export function InvoiceForm({
 
   // Filter properties by selected customer
   const customerProperties = selectedCustomerId
-    ? properties.filter((p) => true) // Simplified - would filter by customer_id
+    ? properties.filter((_p) => true) // Simplified - would filter by customer_id
     : properties;
 
   // Calculate totals

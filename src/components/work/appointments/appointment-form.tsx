@@ -116,7 +116,7 @@ export function AppointmentForm({
 
   // Filter properties and jobs by selected customer
   const customerProperties = selectedCustomerId
-    ? properties.filter((p) => true) // Simplified
+    ? properties.filter((_p) => true) // Simplified
     : properties;
 
   const customerJobs = selectedCustomerId

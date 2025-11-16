@@ -17,7 +17,7 @@ import { createClient } from "@/lib/supabase/server";
  * Get signed download URL for document
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -106,7 +106,6 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Download API error:", error);
     return NextResponse.json(
       {
         error: "Failed to generate download URL",
@@ -122,7 +121,7 @@ export async function GET(
  * Get document metadata without downloading
  */
 export async function HEAD(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -177,8 +176,7 @@ export async function HEAD(
         "X-File-Size": attachment.file_size.toString(),
       },
     });
-  } catch (error) {
-    console.error("HEAD request error:", error);
+  } catch (_error) {
     return new NextResponse(null, { status: 500 });
   }
 }

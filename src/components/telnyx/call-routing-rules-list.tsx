@@ -212,10 +212,18 @@ function TeamMembersInfo({ teamMembers }: { teamMembers: string[] }) {
 function FeaturesInfo({ rule }: { rule: any }) {
   const features = [];
 
-  if (rule.enable_voicemail) features.push("Voicemail");
-  if (rule.record_calls) features.push("Recording");
-  if (rule.voicemail_transcription_enabled) features.push("Transcription");
-  if (rule.voicemail_email_notifications) features.push("Email alerts");
+  if (rule.enable_voicemail) {
+    features.push("Voicemail");
+  }
+  if (rule.record_calls) {
+    features.push("Recording");
+  }
+  if (rule.voicemail_transcription_enabled) {
+    features.push("Transcription");
+  }
+  if (rule.voicemail_email_notifications) {
+    features.push("Email alerts");
+  }
 
   if (features.length === 0) {
     return null;

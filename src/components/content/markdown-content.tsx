@@ -1,10 +1,10 @@
 import { markdownToHtml } from "@/lib/kb/markdown";
 import { cn } from "@/lib/utils";
 
-interface MarkdownContentProps {
+type MarkdownContentProps = {
   content: string;
   className?: string;
-}
+};
 
 /**
  * Generic server component for converting markdown into styled HTML prose.

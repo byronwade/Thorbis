@@ -8,10 +8,10 @@ import Link from "next/link";
 import { extractTableOfContents } from "@/lib/kb/markdown";
 import { cn } from "@/lib/utils";
 
-interface KBTableOfContentsProps {
+type KBTableOfContentsProps = {
   htmlContent: string;
   className?: string;
-}
+};
 
 export function KBTableOfContents({
   htmlContent,

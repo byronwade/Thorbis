@@ -61,10 +61,14 @@ export async function getActiveCompanyId(): Promise<string | null> {
  */
 export async function getActiveCompany(): Promise<CompanyInfo | null> {
   const companyId = await getActiveCompanyId();
-  if (!companyId) return null;
+  if (!companyId) {
+    return null;
+  }
 
   const supabase = await createClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    return null;
+  }
 
   const { data: company } = await supabase
     .from("companies")
@@ -122,10 +126,14 @@ export async function clearActiveCompany(): Promise<void> {
  */
 export async function getUserCompanies(): Promise<CompanyInfo[]> {
   const user = await getCurrentUser();
-  if (!user) return [];
+  if (!user) {
+    return [];
+  }
 
   const supabase = await createClient();
-  if (!supabase) return [];
+  if (!supabase) {
+    return [];
+  }
 
   const { data: memberships } = await supabase
     .from("team_members")
@@ -144,7 +152,9 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
     .eq("status", "active")
     .is("companies.deleted_at", null); // Exclude archived companies
 
-  if (!memberships) return [];
+  if (!memberships) {
+    return [];
+  }
 
   return memberships.map((m: any) => ({
     id: m.companies.id,
@@ -163,10 +173,14 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
  */
 async function verifyCompanyAccess(companyId: string): Promise<boolean> {
   const user = await getCurrentUser();
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
 
   const supabase = await createClient();
-  if (!supabase) return false;
+  if (!supabase) {
+    return false;
+  }
 
   // Check if company exists and is not archived
   const { data: company } = await supabase
@@ -176,7 +190,9 @@ async function verifyCompanyAccess(companyId: string): Promise<boolean> {
     .is("deleted_at", null) // Exclude archived companies
     .single();
 
-  if (!company) return false;
+  if (!company) {
+    return false;
+  }
 
   // Check if user has active membership
   const { data } = await supabase
@@ -231,13 +247,19 @@ export async function hasMultipleCompanies(): Promise<boolean> {
  */
 export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
   const user = await getCurrentUser();
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
 
   const supabase = await createClient();
-  if (!supabase) return false;
+  if (!supabase) {
+    return false;
+  }
 
   const activeCompanyId = await getActiveCompanyId();
-  if (!activeCompanyId) return false;
+  if (!activeCompanyId) {
+    return false;
+  }
 
   // Check the ACTIVE company's payment status
   const { data: teamMember } = await supabase
@@ -250,7 +272,9 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
     .eq("status", "active")
     .maybeSingle();
 
-  if (!teamMember) return false;
+  if (!teamMember) {
+    return false;
+  }
 
   const companies = Array.isArray(teamMember.companies)
     ? teamMember.companies[0]

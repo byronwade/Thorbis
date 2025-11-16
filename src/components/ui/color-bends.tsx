@@ -159,12 +159,11 @@ export default function ColorBends({
   useEffect(() => {
     const container = containerRef.current;
     if (!container) {
-      console.error("ColorBends: Container ref is null");
       return;
     }
 
-    const containerWidth = container.clientWidth;
-    const containerHeight = container.clientHeight;
+    const _containerWidth = container.clientWidth;
+    const _containerHeight = container.clientHeight;
 
     // Removed debug logs
 
@@ -224,8 +223,11 @@ export default function ColorBends({
       .map(toVec3);
     for (let i = 0; i < MAX_COLORS; i++) {
       const vec = material.uniforms.uColors.value[i];
-      if (i < colorVectors.length) vec.copy(colorVectors[i]);
-      else vec.set(0, 0, 0);
+      if (i < colorVectors.length) {
+        vec.copy(colorVectors[i]);
+      } else {
+        vec.set(0, 0, 0);
+      }
     }
     material.uniforms.uColorCount.value = colorVectors.length;
 
@@ -298,9 +300,14 @@ export default function ColorBends({
     rafRef.current = requestAnimationFrame(loop);
 
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      if (resizeObserverRef.current) resizeObserverRef.current.disconnect();
-      else window.removeEventListener("resize", handleResize);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+      }
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+      } else {
+        window.removeEventListener("resize", handleResize);
+      }
       geometry.dispose();
       material.dispose();
       renderer.dispose();
@@ -320,12 +327,15 @@ export default function ColorBends({
     speed,
     transparent,
     warpStrength,
+    colors,
   ]);
 
   useEffect(() => {
     const material = materialRef.current;
     const renderer = rendererRef.current;
-    if (!material) return;
+    if (!material) {
+      return;
+    }
 
     rotationRef.current = rotation;
     autoRotateRef.current = autoRotate;
@@ -357,13 +367,18 @@ export default function ColorBends({
     const arr = (colors || []).filter(Boolean).slice(0, MAX_COLORS).map(toVec3);
     for (let i = 0; i < MAX_COLORS; i++) {
       const vec = material.uniforms.uColors.value[i];
-      if (i < arr.length) vec.copy(arr[i]);
-      else vec.set(0, 0, 0);
+      if (i < arr.length) {
+        vec.copy(arr[i]);
+      } else {
+        vec.set(0, 0, 0);
+      }
     }
     material.uniforms.uColorCount.value = arr.length;
 
     material.uniforms.uTransparent.value = transparent ? 1 : 0;
-    if (renderer) renderer.setClearColor(0x00_00_00, transparent ? 0 : 1);
+    if (renderer) {
+      renderer.setClearColor(0x00_00_00, transparent ? 0 : 1);
+    }
   }, [
     rotation,
     autoRotate,
@@ -381,7 +396,9 @@ export default function ColorBends({
   useEffect(() => {
     const material = materialRef.current;
     const container = containerRef.current;
-    if (!(material && container)) return;
+    if (!(material && container)) {
+      return;
+    }
 
     const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();

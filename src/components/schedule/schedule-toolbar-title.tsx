@@ -29,7 +29,6 @@ export function ScheduleToolbarTitle() {
         return format(dateObj, "MMMM yyyy");
       case "week":
         return format(dateObj, "MMM dd, yyyy");
-      case "day":
       default:
         return format(dateObj, "EEEE, MMMM dd, yyyy");
     }

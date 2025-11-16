@@ -47,7 +47,7 @@ import { Switch } from "@/components/ui/switch";
  * - Account and billing links
  */
 
-interface UserMenuProps {
+type UserMenuProps = {
   user: {
     name: string;
     email: string;
@@ -63,12 +63,12 @@ interface UserMenuProps {
     hasPayment?: boolean;
   }[];
   activeCompanyId?: string | null;
-}
+};
 
 export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const [userStatus, setUserStatus] = useState<UserStatus>(
     user.status || "online"
@@ -109,8 +109,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
         setUserStatus(status);
         router.refresh();
       }
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch (_error) {
     } finally {
       setIsUpdatingStatus(false);
     }

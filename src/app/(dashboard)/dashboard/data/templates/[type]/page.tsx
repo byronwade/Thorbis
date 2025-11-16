@@ -8,11 +8,11 @@ import { redirect } from "next/navigation";
 import { TemplateDownloadClient } from "@/components/data/template-download-client";
 import { getCurrentUser } from "@/lib/auth/session";
 
-interface TemplatePageProps {
+type TemplatePageProps = {
   params: {
     type: string;
   };
-}
+};
 
 export default async function TemplatePage({ params }: TemplatePageProps) {
   // Check authentication

@@ -23,7 +23,9 @@ export function JobTeam({
   jobId,
 }: JobTeamProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
+    if (!dateString) {
+      return "—";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -87,7 +89,9 @@ export function JobTeam({
           <div className="space-y-3">
             {teamAssignments.map((assignment) => {
               const member = assignment.user || assignment.team_member;
-              if (!member) return null;
+              if (!member) {
+                return null;
+              }
 
               return (
                 <div

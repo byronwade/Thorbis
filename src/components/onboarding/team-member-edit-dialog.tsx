@@ -38,12 +38,12 @@ type TeamMember = {
   isCurrentUser?: boolean;
 };
 
-interface TeamMemberEditDialogProps {
+type TeamMemberEditDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   member: TeamMember;
   onSave: (member: TeamMember) => void;
-}
+};
 
 export function TeamMemberEditDialog({
   open,

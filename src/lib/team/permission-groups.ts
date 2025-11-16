@@ -6,13 +6,13 @@
 
 import type { Permission } from "@/lib/auth/permissions";
 
-export interface PermissionDefinition {
+export type PermissionDefinition = {
   key: Permission;
   label: string;
   description: string;
   category: PermissionCategory;
   critical?: boolean; // Red badge for dangerous permissions
-}
+};
 
 export type PermissionCategory =
   | "team"
@@ -23,13 +23,13 @@ export type PermissionCategory =
   | "communication"
   | "reports";
 
-export interface PermissionGroup {
+export type PermissionGroup = {
   category: PermissionCategory;
   label: string;
   description: string;
   icon: string;
   permissions: PermissionDefinition[];
-}
+};
 
 export const PERMISSION_DEFINITIONS: PermissionDefinition[] = [
   // Team Management

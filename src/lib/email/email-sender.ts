@@ -25,7 +25,7 @@ import { emailSendSchema } from "./email-types";
 import { emailConfig, isResendConfigured, resend } from "./resend-client";
 
 // Email send options
-interface SendEmailOptions {
+type SendEmailOptions = {
   to: string | string[];
   subject: string;
   template: ReactElement;
@@ -35,7 +35,7 @@ interface SendEmailOptions {
   companyId?: string;
   communicationId?: string;
   fromOverride?: string;
-}
+};
 
 /**
  * Send email with React Email template
@@ -68,16 +68,10 @@ export async function sendEmail({
 
     // In development, log email instead of sending
     if (emailConfig.isDevelopment) {
-      console.log("📧 [DEV MODE] Email would be sent:");
-      console.log("  To:", validatedData.to);
-      console.log("  Subject:", validatedData.subject);
-      console.log("  Template:", templateType);
-      console.log("  Reply-To:", validatedData.replyTo || "N/A");
-
       return {
         success: true,
         data: {
-          id: "dev-mode-" + Date.now(),
+          id: `dev-mode-${Date.now()}`,
           message: "Email logged in development mode (not actually sent)",
         },
       };
@@ -127,8 +121,6 @@ export async function sendEmail({
     });
 
     if (error) {
-      console.error("Failed to send email:", error);
-
       // Log failed email to database for retry queue
       try {
         if (supabase) {
@@ -147,9 +139,7 @@ export async function sendEmail({
             next_retry_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
           });
         }
-      } catch (logError) {
-        console.error("Failed to log email error:", logError);
-      }
+      } catch (_logError) {}
 
       return {
         success: false,
@@ -173,8 +163,7 @@ export async function sendEmail({
           sent_at: new Date().toISOString(),
         });
       }
-    } catch (logError) {
-      console.error("Failed to log successful email:", logError);
+    } catch (_logError) {
       // Don't throw - email was sent successfully even if logging failed
     }
 
@@ -192,8 +181,6 @@ export async function sendEmail({
         error: error.issues[0]?.message || "Invalid email data",
       };
     }
-
-    console.error("Unexpected error sending email:", error);
 
     return {
       success: false,
@@ -327,7 +314,7 @@ async function getCompanyEmailIdentity(
 }
 
 function formatFromAddress(name: string | null | undefined, email: string) {
-  if (name && name.trim()) {
+  if (name?.trim()) {
     return `${name} <${email}>`;
   }
   return email;

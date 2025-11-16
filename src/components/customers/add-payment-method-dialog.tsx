@@ -27,12 +27,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface AddPaymentMethodDialogProps {
+type AddPaymentMethodDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerId: string;
   onSuccess?: () => void;
-}
+};
 
 export function AddPaymentMethodDialog({
   open,

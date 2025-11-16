@@ -18,7 +18,9 @@ export default function ResizableDivider({
 
   React.useEffect(() => {
     function onMove(e: MouseEvent) {
-      if (!dragging) return;
+      if (!dragging) {
+        return;
+      }
       // Sidebar width measured from viewport left works well for a top-level layout.
       const next = Math.min(max, Math.max(min, e.clientX));
       setWidth(next);
@@ -43,8 +45,12 @@ export default function ResizableDivider({
         "bg-transparent hover:bg-neutral-100"
       )}
       onKeyDown={(e) => {
-        if (e.key === "ArrowLeft") setWidth(Math.max(min, width - 10));
-        if (e.key === "ArrowRight") setWidth(Math.min(max, width + 10));
+        if (e.key === "ArrowLeft") {
+          setWidth(Math.max(min, width - 10));
+        }
+        if (e.key === "ArrowRight") {
+          setWidth(Math.min(max, width + 10));
+        }
       }}
       onMouseDown={() => setDragging(true)}
       role="separator"

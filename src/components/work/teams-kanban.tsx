@@ -25,7 +25,7 @@ const TEAM_COLUMNS: Array<{
   { id: "suspended", name: "Suspended", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(
+const _columnLabel = new Map(
   TEAM_COLUMNS.map((column) => [column.id, column.name])
 );
 

@@ -16,7 +16,7 @@ import { BadgeCheck, Building2, Check, ChevronRight, Wifi } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-interface CreditCardVisualProps {
+type CreditCardVisualProps = {
   type?: "card" | "ach" | "bank";
   brand?: string;
   last4: string;
@@ -29,7 +29,7 @@ interface CreditCardVisualProps {
   bankName?: string;
   accountType?: "checking" | "savings";
   className?: string;
-}
+};
 
 // Card brand configurations with colors, gradients, and logos
 const CARD_CONFIGS: Record<

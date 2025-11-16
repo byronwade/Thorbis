@@ -26,7 +26,7 @@ export type SyncOperationStatus =
   | "failed"
   | "queued";
 
-export interface SyncOperation {
+export type SyncOperation = {
   id: string;
   type: SyncOperationType;
   status: SyncOperationStatus;
@@ -39,18 +39,18 @@ export interface SyncOperation {
   completedAt?: Date;
   error?: string;
   metadata?: Record<string, any>;
-}
+};
 
-export interface OfflineOperation {
+export type OfflineOperation = {
   id: string;
   type: SyncOperationType;
   action: string;
   payload: any;
   createdAt: Date;
   retryCount: number;
-}
+};
 
-interface SyncState {
+type SyncState = {
   // Active operations
   operations: SyncOperation[];
 
@@ -82,7 +82,7 @@ interface SyncState {
   togglePanel: () => void;
   openPanel: () => void;
   closePanel: () => void;
-}
+};
 
 export const useSyncStore = create<SyncState>()(
   persist(

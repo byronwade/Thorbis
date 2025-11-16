@@ -21,13 +21,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface TransferCallModalProps {
+type TransferCallModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   callControlId: string | null;
   fromNumber: string;
   onTransferSuccess: () => void;
-}
+};
 
 export function TransferCallModal({
   open,
@@ -75,9 +75,8 @@ export function TransferCallModal({
       } else {
         setError(result.error || "Failed to transfer call");
       }
-    } catch (err) {
+    } catch (_err) {
       setError("An unexpected error occurred");
-      console.error("Transfer error:", err);
     } finally {
       setIsTransferring(false);
     }

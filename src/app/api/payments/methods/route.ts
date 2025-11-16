@@ -41,8 +41,7 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ paymentMethods: formattedMethods });
-  } catch (error) {
-    console.error("Error fetching payment methods:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Failed to fetch payment methods" },
       { status: 500 }

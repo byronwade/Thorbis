@@ -45,7 +45,7 @@ async function generatePONumber(
   const match = latestPO.po_number.match(/PO-(\d{4})-(\d+)/);
   if (match) {
     const year = match[1];
-    const nextNumber = Number.parseInt(match[2]) + 1;
+    const nextNumber = Number.parseInt(match[2], 10) + 1;
     return `PO-${year}-${nextNumber.toString().padStart(3, "0")}`;
   }
 
@@ -119,7 +119,6 @@ export async function getPurchaseOrder(
       .single();
 
     if (error) {
-      console.error("Error fetching purchase order:", error);
       throw new ActionError(
         "Failed to fetch purchase order",
         ERROR_CODES.DB_QUERY_ERROR
@@ -238,10 +237,10 @@ export async function createPurchaseOrder(
       line_items: lineItems,
       subtotal: totals.subtotal,
       tax_amount: formData.get("tax_amount")
-        ? Number.parseInt(formData.get("tax_amount") as string)
+        ? Number.parseInt(formData.get("tax_amount") as string, 10)
         : totals.taxAmount,
       shipping_amount: formData.get("shipping_amount")
-        ? Number.parseInt(formData.get("shipping_amount") as string)
+        ? Number.parseInt(formData.get("shipping_amount") as string, 10)
         : totals.shippingAmount,
       total_amount: totals.totalAmount,
       expected_delivery: formData.get("expected_delivery")
@@ -287,7 +286,6 @@ export async function createPurchaseOrder(
       .single();
 
     if (error) {
-      console.error("Error creating purchase order:", error);
       throw new ActionError(
         "Failed to create purchase order",
         ERROR_CODES.DB_QUERY_ERROR
@@ -309,7 +307,7 @@ export async function createPurchaseOrder(
 export async function updatePurchaseOrderStatus(
   poId: string,
   status: string,
-  notes?: string
+  _notes?: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
@@ -381,7 +379,6 @@ export async function updatePurchaseOrderStatus(
       .eq("id", poId);
 
     if (error) {
-      console.error("Error updating purchase order status:", error);
       throw new ActionError(
         "Failed to update purchase order status",
         ERROR_CODES.DB_QUERY_ERROR
@@ -476,7 +473,6 @@ export async function updatePurchaseOrderVendor(
       .eq("id", poId);
 
     if (error) {
-      console.error("Error updating purchase order vendor:", error);
       throw new ActionError(
         "Failed to update vendor",
         ERROR_CODES.DB_QUERY_ERROR
@@ -561,7 +557,6 @@ export async function updatePurchaseOrderLineItems(
       .eq("id", poId);
 
     if (error) {
-      console.error("Error updating purchase order line items:", error);
       throw new ActionError(
         "Failed to update purchase order line items",
         ERROR_CODES.DB_QUERY_ERROR

@@ -162,7 +162,7 @@ type ExtendedTeamMember = TeamMemberRow & {
   isCurrentUser?: boolean;
 };
 
-interface WelcomePageClientProps {
+type WelcomePageClientProps = {
   user: {
     id: string;
     email: string;
@@ -170,7 +170,7 @@ interface WelcomePageClientProps {
   };
   incompleteCompany: any | null;
   hasActiveCompany: boolean;
-}
+};
 
 export function WelcomePageClient({
   user,
@@ -268,12 +268,13 @@ export function WelcomePageClient({
     step: number,
     data: Record<string, unknown>
   ) => {
-    if (!companyId) return;
+    if (!companyId) {
+      return;
+    }
 
     try {
       await saveOnboardingStepProgress(companyId, step, data);
-    } catch (error) {
-      console.error("Error saving step progress:", error);
+    } catch (_error) {
       // Don't block user progress if saving fails
     }
   };
@@ -282,7 +283,9 @@ export function WelcomePageClient({
   const handleNext = async () => {
     if (currentStep === 1) {
       const isValid = await form.trigger();
-      if (!isValid) return;
+      if (!isValid) {
+        return;
+      }
 
       setIsLoading(true);
       try {
@@ -389,7 +392,9 @@ export function WelcomePageClient({
 
   // Handle payment
   const handlePayment = async () => {
-    if (!companyId) return;
+    if (!companyId) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -418,7 +423,9 @@ export function WelcomePageClient({
 
   // Handle archive
   const handleArchive = async () => {
-    if (!companyId) return;
+    if (!companyId) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -1005,7 +1012,9 @@ export function WelcomePageClient({
         <TeamMemberEditDialog
           member={editingMember}
           onOpenChange={(open) => {
-            if (!open) setEditingMember(null);
+            if (!open) {
+              setEditingMember(null);
+            }
           }}
           onSave={(updatedMember) => {
             setTeamMembers((prev) =>

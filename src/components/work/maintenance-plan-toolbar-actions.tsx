@@ -29,7 +29,7 @@ export function MaintenancePlanToolbarActions({
 }: {
   totalCount?: number;
 }) {
-  const archiveFilter = useArchiveStore(
+  const _archiveFilter = useArchiveStore(
     (state) => state.filters.maintenance_plans
   );
 

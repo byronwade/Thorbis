@@ -91,9 +91,7 @@ export class CustomerEnrichmentService {
         enrichmentData.person = personData;
         sources.push(personData.source);
       }
-    } catch (error) {
-      console.error("Person enrichment failed:", error);
-    }
+    } catch (_error) {}
 
     // 2. Business enrichment (if company name provided)
     if (customer.companyName) {
@@ -108,9 +106,7 @@ export class CustomerEnrichmentService {
           enrichmentData.business = businessData;
           sources.push(businessData.source);
         }
-      } catch (error) {
-        console.error("Business enrichment failed:", error);
-      }
+      } catch (_error) {}
     }
 
     // 3. Social enrichment
@@ -123,9 +119,7 @@ export class CustomerEnrichmentService {
         enrichmentData.social = socialData;
         sources.push("social");
       }
-    } catch (error) {
-      console.error("Social enrichment failed:", error);
-    }
+    } catch (_error) {}
 
     // 4. Property enrichment (if address provided)
     if (
@@ -145,19 +139,20 @@ export class CustomerEnrichmentService {
           enrichmentData.properties = [propertyData];
           sources.push(propertyData.source);
         }
-      } catch (error) {
-        console.error("Property enrichment failed:", error);
-      }
+      } catch (_error) {}
     }
 
     // Calculate overall confidence score
     const confidenceScores: number[] = [];
-    if (enrichmentData.person)
+    if (enrichmentData.person) {
       confidenceScores.push((enrichmentData.person as any).confidence);
-    if (enrichmentData.business)
+    }
+    if (enrichmentData.business) {
       confidenceScores.push((enrichmentData.business as any).confidence);
-    if (enrichmentData.social)
+    }
+    if (enrichmentData.social) {
       confidenceScores.push((enrichmentData.social as any).confidence);
+    }
     if (enrichmentData.properties?.length) {
       confidenceScores.push((enrichmentData.properties[0] as any).confidence);
     }

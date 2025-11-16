@@ -168,7 +168,7 @@ export default function TVLeaderboardSettingsPage() {
                   max={20}
                   min={3}
                   onChange={(e) =>
-                    setDisplayCount(Number.parseInt(e.target.value))
+                    setDisplayCount(Number.parseInt(e.target.value, 10))
                   }
                   type="range"
                   value={displayCount}
@@ -230,7 +230,7 @@ export default function TVLeaderboardSettingsPage() {
                   max={30}
                   min={3}
                   onChange={(e) =>
-                    setTableScrollInterval(Number.parseInt(e.target.value))
+                    setTableScrollInterval(Number.parseInt(e.target.value, 10))
                   }
                   type="range"
                   value={tableScrollInterval}
@@ -259,7 +259,7 @@ export default function TVLeaderboardSettingsPage() {
                   max={30}
                   min={5}
                   onChange={(e) =>
-                    setSlideshowInterval(Number.parseInt(e.target.value))
+                    setSlideshowInterval(Number.parseInt(e.target.value, 10))
                   }
                   type="range"
                   value={slideshowInterval}

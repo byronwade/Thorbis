@@ -17,13 +17,15 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import type { StatCard } from "@/components/ui/stats-cards";
 import { cn } from "@/lib/utils";
 
-interface ToolbarStatsProps {
+type ToolbarStatsProps = {
   stats: StatCard[];
   className?: string;
-}
+};
 
 export function ToolbarStats({ stats, className }: ToolbarStatsProps) {
-  if (!stats || stats.length === 0) return null;
+  if (!stats || stats.length === 0) {
+    return null;
+  }
 
   return (
     <div

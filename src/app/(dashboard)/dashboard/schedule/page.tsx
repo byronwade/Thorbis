@@ -69,7 +69,6 @@ async function ScheduleData() {
         : typeof error === "string"
           ? error
           : "Unable to load schedule data";
-    console.warn("Schedule bootstrap failed", bootstrapError);
   }
 
   return (

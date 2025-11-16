@@ -65,7 +65,7 @@ function userToCustomerData(user: User): CustomerData {
 // Props Types
 // ============================================================================
 
-interface WidgetRendererProps {
+type WidgetRendererProps = {
   widget: JobWidget;
   job: Job;
   property?: Property;
@@ -79,7 +79,7 @@ interface WidgetRendererProps {
   teamAssignments?: unknown[];
   materials?: unknown[];
   activities?: unknown[];
-}
+};
 
 // ============================================================================
 // Widget Renderer Component

@@ -51,7 +51,7 @@ import { WidgetRenderer } from "./widget-renderer";
 // Props Types
 // ============================================================================
 
-interface WidgetGridProps {
+type WidgetGridProps = {
   job: Job;
   property?: Property;
   customer?: User;
@@ -65,7 +65,7 @@ interface WidgetGridProps {
   teamAssignments?: unknown[];
   materials?: unknown[];
   activities?: unknown[];
-}
+};
 
 // ============================================================================
 // Widget Grid Component

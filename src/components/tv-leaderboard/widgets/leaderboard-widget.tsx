@@ -45,7 +45,9 @@ type LeaderboardWidgetProps = {
 };
 
 function TrophyIcon({ rank }: { rank: number }) {
-  if (rank >= 3) return null;
+  if (rank >= 3) {
+    return null;
+  }
   const colors = ["text-warning", "text-muted-foreground", "text-warning"];
   return <Trophy className={`size-3.5 ${colors[rank]}`} />;
 }

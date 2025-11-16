@@ -52,15 +52,19 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
     jobs,
     customerId,
   } = node.attrs;
-  const isEditable = editor.isEditable;
+  const _isEditable = editor.isEditable;
 
   // Filter to only show attachments related to this customer
   const customerAttachments = useMemo(() => {
-    if (!allAttachments) return [];
+    if (!allAttachments) {
+      return [];
+    }
 
     return allAttachments.filter((a: any) => {
       // Direct customer attachments
-      if (a.entity_type === "customer") return true;
+      if (a.entity_type === "customer") {
+        return true;
+      }
 
       // Job attachments for this customer's jobs
       if (a.entity_type === "job") {
@@ -98,14 +102,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 
   // Handle file upload
   const handleFileUpload = (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-
-    // TODO: Implement file upload to Supabase storage
-    // This would require a server action to handle the upload
-    console.log(
-      "Files to upload:",
-      Array.from(files).map((f) => f.name)
-    );
+    if (!files || files.length === 0) {
+      return;
+    }
     alert(
       `File upload functionality coming soon! Selected ${files.length} file(s)`
     );
@@ -142,12 +141,13 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
     let filtered = attachments || [];
 
     // Type filter
-    if (filterType === "images")
+    if (filterType === "images") {
       filtered = filtered.filter((a: any) => a.is_image);
-    else if (filterType === "documents")
+    } else if (filterType === "documents") {
       filtered = filtered.filter((a: any) => a.is_document);
-    else if (filterType === "videos")
+    } else if (filterType === "videos") {
       filtered = filtered.filter((a: any) => a.is_video);
+    }
 
     // Property filter
     if (filterProperty !== "all") {
@@ -244,7 +244,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
         });
       }
 
-      if (!groups[key]) groups[key] = [];
+      if (!groups[key]) {
+        groups[key] = [];
+      }
       groups[key].push(attachment);
     });
 
@@ -252,14 +254,22 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
   }, [filteredAttachments]);
 
   const getFileIcon = (attachment: any) => {
-    if (attachment.is_image) return ImageIcon;
-    if (attachment.is_video) return Video;
+    if (attachment.is_image) {
+      return ImageIcon;
+    }
+    if (attachment.is_video) {
+      return Video;
+    }
     return FileText;
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
@@ -572,7 +582,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
                   }
                 );
 
-                if (propertyAttachments.length === 0) return null;
+                if (propertyAttachments.length === 0) {
+                  return null;
+                }
 
                 return (
                   <div className="rounded-lg border p-4" key={property.id}>

@@ -22,9 +22,6 @@ export function getStripe(): Promise<Stripe | null> {
     const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
     if (!publishableKey) {
-      console.warn(
-        "Stripe publishable key not configured. Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
-      );
       return Promise.resolve(null);
     }
 

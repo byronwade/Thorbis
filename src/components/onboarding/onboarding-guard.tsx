@@ -23,14 +23,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-interface OnboardingGuardProps {
+type OnboardingGuardProps = {
   children: React.ReactNode;
   /**
    * If true, company is fully set up and we can skip all checks
    * This prevents unnecessary API calls when company is already configured
    */
   isOnboardingComplete?: boolean;
-}
+};
 
 export function OnboardingGuard({
   children,
@@ -123,9 +123,7 @@ export function OnboardingGuard({
             router.push("/dashboard/welcome");
           }
         })
-        .catch((error) => {
-          console.error("Error checking onboarding:", error);
-        })
+        .catch((_error) => {})
         .finally(() => {
           isCheckingRef.current = false;
         });

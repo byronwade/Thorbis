@@ -100,14 +100,6 @@ export async function createPlaidLinkToken(
 
       return { linkToken: response.data.link_token };
     } catch (error: any) {
-      // Log detailed Plaid error for debugging
-      console.error("Plaid link token creation error:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-      });
-
       const errorMessage =
         error.response?.data?.error_message ||
         error.message ||
@@ -203,15 +195,6 @@ export async function exchangePlaidToken(
 
         if (insertError) {
           if (insertError.code === "23505") {
-            // Duplicate account name for company - update existing record instead
-            console.warn(
-              "Bank account already exists for company. Updating existing record.",
-              {
-                companyId,
-                accountName,
-              }
-            );
-
             const { error: updateError } = await supabase
               .from("finance_bank_accounts")
               .update({
@@ -232,17 +215,12 @@ export async function exchangePlaidToken(
               .eq("account_name", accountName);
 
             if (updateError) {
-              console.error(
-                "Failed to update existing bank account:",
-                updateError
-              );
               throw new ActionError(
                 `Failed to update bank account: ${updateError.message}`,
                 ERROR_CODES.DB_UPDATE_ERROR
               );
             }
           } else {
-            console.error("Failed to insert bank account:", insertError);
             throw new ActionError(
               `Failed to save bank account: ${insertError.message}`,
               ERROR_CODES.DB_INSERT_ERROR
@@ -259,7 +237,6 @@ export async function exchangePlaidToken(
 
       return { accountsLinked: accounts.length };
     } catch (error: any) {
-      console.error("Plaid token exchange error:", error);
       throw new ActionError(
         error.message || "Failed to link bank account",
         ERROR_CODES.EXTERNAL_API_ERROR
@@ -384,11 +361,7 @@ export async function syncTransactions(
             })
             .eq("id", account.id);
         }
-      } catch (error: any) {
-        console.error(
-          `Failed to sync transactions for account ${account.id}:`,
-          error
-        );
+      } catch (_error: any) {
         // Continue with other accounts even if one fails
       }
     }

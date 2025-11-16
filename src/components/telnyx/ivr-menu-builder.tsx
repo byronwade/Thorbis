@@ -732,7 +732,7 @@ function NodeEditorDialog({
                   onChange={(e) =>
                     setEditedNode({
                       ...editedNode,
-                      timeout: Number.parseInt(e.target.value),
+                      timeout: Number.parseInt(e.target.value, 10),
                     })
                   }
                   type="number"
@@ -749,7 +749,7 @@ function NodeEditorDialog({
                   onChange={(e) =>
                     setEditedNode({
                       ...editedNode,
-                      maxRetries: Number.parseInt(e.target.value),
+                      maxRetries: Number.parseInt(e.target.value, 10),
                     })
                   }
                   type="number"

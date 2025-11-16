@@ -18,10 +18,10 @@ import {
 import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { getMarketingIcon } from "./marketing-icons";
 
-interface IntegrationPageProps {
+type IntegrationPageProps = {
   integration: MarketingIntegrationContent;
   related?: MarketingIntegrationContent[];
-}
+};
 
 export function IntegrationPage({
   integration,

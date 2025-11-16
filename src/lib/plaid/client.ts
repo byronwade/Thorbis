@@ -12,14 +12,6 @@ const environment = environmentRaw as keyof typeof PlaidEnvironments;
 const clientId = process.env.PLAID_CLIENT_ID;
 const secret = process.env[`PLAID_SECRET_${environmentRaw.toUpperCase()}`];
 
-// Log configuration (without secrets) for debugging
-console.log("Plaid configuration:", {
-  environment: environmentRaw,
-  hasClientId: !!clientId,
-  hasSecret: !!secret,
-  secretVarName: `PLAID_SECRET_${environmentRaw.toUpperCase()}`,
-});
-
 // Validate configuration
 if (!clientId) {
   throw new Error("PLAID_CLIENT_ID is not defined in environment variables");

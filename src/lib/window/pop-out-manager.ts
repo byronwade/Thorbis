@@ -148,15 +148,11 @@ export function createPopOutWindow(callId: string): Window | null {
     );
 
     if (!popOut) {
-      console.error(
-        "Failed to open call window. Please check browser settings."
-      );
       return null;
     }
 
     return popOut;
-  } catch (error) {
-    console.error("Error creating call window:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -169,15 +165,13 @@ export function sendToPopOut(
   message: PopOutMessage
 ): boolean {
   if (!popOutWindow || popOutWindow.closed) {
-    console.warn("Cannot send message: pop-out window is closed");
     return false;
   }
 
   try {
     popOutWindow.postMessage(message, window.location.origin);
     return true;
-  } catch (error) {
-    console.error("Error sending message to pop-out:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -187,15 +181,13 @@ export function sendToPopOut(
  */
 export function sendToMain(message: PopOutMessage): boolean {
   if (!window.opener || window.opener.closed) {
-    console.warn("Cannot send message: main window is closed");
     return false;
   }
 
   try {
     window.opener.postMessage(message, window.location.origin);
     return true;
-  } catch (error) {
-    console.error("Error sending message to main window:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -282,7 +274,7 @@ export function waitForPopOutReady(
       // If successful, stop checking
       clearInterval(checkInterval);
       onReady();
-    } catch (error) {
+    } catch (_error) {
       // Pop-out not ready yet, continue checking
     }
   }, 100);
@@ -290,7 +282,6 @@ export function waitForPopOutReady(
   // Stop checking after timeout
   const timeout = setTimeout(() => {
     clearInterval(checkInterval);
-    console.warn(`Pop-out window ready timeout after ${timeoutMs}ms`);
   }, timeoutMs);
 
   // Return cleanup function
@@ -307,9 +298,7 @@ export function closePopOutWindow(popOutWindow: Window | null): void {
   if (popOutWindow && !popOutWindow.closed) {
     try {
       popOutWindow.close();
-    } catch (error) {
-      console.error("Error closing pop-out window:", error);
-    }
+    } catch (_error) {}
   }
 }
 
@@ -320,9 +309,7 @@ export function focusPopOutWindow(popOutWindow: Window | null): void {
   if (popOutWindow && !popOutWindow.closed) {
     try {
       popOutWindow.focus();
-    } catch (error) {
-      console.error("Error focusing pop-out window:", error);
-    }
+    } catch (_error) {}
   }
 }
 

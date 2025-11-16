@@ -22,11 +22,11 @@ export const metadata = generateSEOMetadata({
   ],
 });
 
-interface CaseStudiesPageProps {
+type CaseStudiesPageProps = {
   searchParams?: {
     tag?: string;
   };
-}
+};
 
 export default async function CaseStudiesPage({
   searchParams,

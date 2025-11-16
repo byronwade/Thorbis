@@ -88,7 +88,9 @@ async function handleEmailReceived(
   payload: ResendWebhookPayload
 ) {
   const destination = payload.data.to?.[0]?.email;
-  if (!destination) return;
+  if (!destination) {
+    return;
+  }
 
   const { data: route } = await supabase
     .from("communication_email_inbound_routes")
@@ -104,7 +106,9 @@ async function handleEmailReceived(
   const storedAttachments = [];
 
   for (const attachment of attachments) {
-    if (!(attachment.filename && attachment.content)) continue;
+    if (!(attachment.filename && attachment.content)) {
+      continue;
+    }
     try {
       const buffer = Buffer.from(attachment.content, "base64");
       const filePath = `${route.company_id}/${Date.now()}-${attachment.filename}`;
@@ -119,9 +123,7 @@ async function handleEmailReceived(
         path: filePath,
         type: attachment.content_type,
       });
-    } catch (error) {
-      console.error("Failed to store inbound attachment:", error);
-    }
+    } catch (_error) {}
   }
 
   await supabase.from("communications").insert({

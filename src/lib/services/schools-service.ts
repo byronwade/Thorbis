@@ -38,9 +38,11 @@ export type School = z.infer<typeof SchoolSchema>;
 export type SchoolsData = z.infer<typeof SchoolsDataSchema>;
 
 export class SchoolsService {
-  private cache: Map<string, { data: SchoolsData; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days
+  private readonly cache: Map<
+    string,
+    { data: SchoolsData; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days
 
   async getNearbySchools(
     lat: number,
@@ -51,7 +53,6 @@ export class SchoolsService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Schools] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -79,14 +80,12 @@ export class SchoolsService {
       });
 
       if (!res.ok) {
-        console.warn(`[Schools] Overpass API failed: ${res.status}`);
         return null;
       }
 
       const data = await res.json();
 
       if (!data.elements || data.elements.length === 0) {
-        console.log("[Schools] No schools found nearby");
         return {
           schools: [],
           totalSchools: 0,
@@ -124,28 +123,36 @@ export class SchoolsService {
       };
 
       this.cache.set(cacheKey, { data: schoolsData, timestamp: Date.now() });
-      console.log(
-        `[Schools] Found ${schoolsData.totalSchools} schools within ${radius}m`
-      );
 
       return schoolsData;
-    } catch (error) {
-      console.error("[Schools] Error:", error);
+    } catch (_error) {
       return null;
     }
   }
 
   private getSchoolType(tags: any): string {
-    if (tags.amenity === "kindergarten") return "Preschool";
-    if (tags.amenity === "university") return "University";
-    if (tags.amenity === "college") return "College";
+    if (tags.amenity === "kindergarten") {
+      return "Preschool";
+    }
+    if (tags.amenity === "university") {
+      return "University";
+    }
+    if (tags.amenity === "college") {
+      return "College";
+    }
 
     // Check for grade levels
     if (tags["isced:level"]) {
       const level = tags["isced:level"];
-      if (level.includes("0") || level.includes("1")) return "Elementary";
-      if (level.includes("2")) return "Middle School";
-      if (level.includes("3")) return "High School";
+      if (level.includes("0") || level.includes("1")) {
+        return "Elementary";
+      }
+      if (level.includes("2")) {
+        return "Middle School";
+      }
+      if (level.includes("3")) {
+        return "High School";
+      }
     }
 
     return "School";

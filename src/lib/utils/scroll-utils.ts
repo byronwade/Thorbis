@@ -23,7 +23,6 @@ export function scrollToWidget(
   const element = document.getElementById(`widget-${widgetId}`);
 
   if (!element) {
-    console.warn(`Widget with ID "${widgetId}" not found`);
     return false;
   }
 

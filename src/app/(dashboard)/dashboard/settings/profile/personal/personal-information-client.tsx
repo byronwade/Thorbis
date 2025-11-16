@@ -75,9 +75,9 @@ const personalInfoSchema = z.object({
 
 type PersonalInfoFormData = z.infer<typeof personalInfoSchema>;
 
-export interface PersonalInformationClientProps {
+export type PersonalInformationClientProps = {
   initialData: PersonalInfoFormData & { avatar?: string | null };
-}
+};
 
 export function PersonalInformationClient({
   initialData,

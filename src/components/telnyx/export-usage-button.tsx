@@ -123,8 +123,7 @@ export function ExportUsageButton({
       document.body.removeChild(link);
 
       toast.success(`Exported ${csvRows.length - 1} records to CSV.`);
-    } catch (error) {
-      console.error("Error exporting usage:", error);
+    } catch (_error) {
       toast.error("Failed to export usage data. Please try again.");
     } finally {
       setIsExporting(false);

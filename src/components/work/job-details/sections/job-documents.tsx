@@ -23,7 +23,9 @@ type JobDocumentsProps = {
 
 export function JobDocuments({ documents }: JobDocumentsProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
+    if (!dateString) {
+      return "—";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -32,15 +34,21 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
   };
 
   const formatFileSize = (bytes: number | null | undefined) => {
-    if (!bytes) return "—";
+    if (!bytes) {
+      return "—";
+    }
     const kb = bytes / 1024;
-    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    if (kb < 1024) {
+      return `${kb.toFixed(1)} KB`;
+    }
     const mb = kb / 1024;
     return `${mb.toFixed(1)} MB`;
   };
 
   const getFileIcon = (fileType: string | null) => {
-    if (!fileType) return <FileText className="size-4 text-muted-foreground" />;
+    if (!fileType) {
+      return <FileText className="size-4 text-muted-foreground" />;
+    }
     // You can add more file type icons here
     return <FileText className="size-4 text-muted-foreground" />;
   };

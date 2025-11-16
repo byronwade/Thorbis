@@ -19,9 +19,9 @@ import { generateCategoryMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
 import { createBreadcrumbSchema } from "@/lib/seo/structured-data";
 
-interface CategoryPageProps {
+type CategoryPageProps = {
   params: Promise<{ category: string }>;
-}
+};
 
 export async function generateMetadata({ params }: CategoryPageProps) {
   const { category: categorySlug } = await params;

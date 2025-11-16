@@ -109,7 +109,7 @@ async function generateMaintenancePlanNumber(
 
     const match = latestPlan.plan_number.match(/MP-(\d+)/);
     if (match) {
-      const nextNumber = Number.parseInt(match[1]) + 1;
+      const nextNumber = Number.parseInt(match[1], 10) + 1;
       return `MP-${nextNumber.toString().padStart(6, "0")}`;
     }
 
@@ -243,7 +243,7 @@ export async function createMaintenancePlan(
       description: (formData.get("description") as string) || undefined,
       frequency: formData.get("frequency") as string,
       customFrequencyDays: formData.get("customFrequencyDays")
-        ? Number.parseInt(formData.get("customFrequencyDays") as string)
+        ? Number.parseInt(formData.get("customFrequencyDays") as string, 10)
         : undefined,
       startDate: formData.get("startDate") as string,
       endDate: (formData.get("endDate") as string) || undefined,
@@ -398,7 +398,7 @@ export async function updateMaintenancePlan(
         if (field === "amount") {
           rawData[field] = Number.parseFloat(value as string);
         } else if (field === "customFrequencyDays") {
-          rawData[field] = Number.parseInt(value as string);
+          rawData[field] = Number.parseInt(value as string, 10);
         } else if (field === "autoRenew") {
           rawData[field] = value === "true";
         } else if (field === "servicesIncluded") {

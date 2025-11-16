@@ -15,14 +15,14 @@ export const USER_ROLES = {
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
-export interface RoleConfig {
+export type RoleConfig = {
   id: UserRole;
   label: string;
   description: string;
   color: string;
   permissions: string[];
   dashboardFeatures: string[];
-}
+};
 
 export const ROLE_CONFIGS: Record<UserRole, RoleConfig> = {
   [USER_ROLES.OWNER]: {

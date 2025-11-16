@@ -162,7 +162,7 @@ export async function EstimateDetailData({
   // Calculate days until expiry
   const daysUntilExpiry = estimate.valid_until
     ? Math.ceil(
-        (new Date(estimate.valid_until).getTime() - new Date().getTime()) /
+        (new Date(estimate.valid_until).getTime() - Date.now()) /
           (1000 * 60 * 60 * 24)
       )
     : null;

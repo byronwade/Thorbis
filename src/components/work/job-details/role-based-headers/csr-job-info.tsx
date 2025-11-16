@@ -214,7 +214,7 @@ export function CSRJobInfo({
 
       {/* Needs Follow-up */}
       {lastContact &&
-        new Date().getTime() - new Date(lastContact).getTime() >
+        Date.now() - new Date(lastContact).getTime() >
           7 * 24 * 60 * 60 * 1000 && (
           <button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
             <AlertCircle className="size-4" />

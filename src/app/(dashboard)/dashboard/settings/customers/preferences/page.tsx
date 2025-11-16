@@ -91,7 +91,7 @@ export default function CustomerPreferencesPage() {
             // Note: Other fields don't exist in DB yet, keeping UI defaults
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load customer preferences");
       } finally {
         setIsLoading(false);

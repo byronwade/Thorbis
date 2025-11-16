@@ -61,10 +61,16 @@ type LeadsDataTableProps = {
 
 function formatTimeAgo(date: Date): string {
   const hours = Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60));
-  if (hours < 1) return "Just now";
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 1) {
+    return "Just now";
+  }
+  if (hours < 24) {
+    return `${hours}h ago`;
+  }
   const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
+  if (days < 7) {
+    return `${days}d ago`;
+  }
   return date.toLocaleDateString();
 }
 
@@ -260,7 +266,7 @@ export function LeadsDataTable({
       header: "",
       width: "w-10",
       shrink: true,
-      render: (lead) => (
+      render: (_lead) => (
         <div data-no-row-click>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -302,23 +308,17 @@ export function LeadsDataTable({
     {
       label: "Send Email",
       icon: <Mail className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Email leads:", Array.from(selectedIds));
-      },
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Send Text",
       icon: <MessageSquare className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Text leads:", Array.from(selectedIds));
-      },
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Call",
       icon: <Phone className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Call leads:", Array.from(selectedIds));
-      },
+      onClick: (_selectedIds) => {},
     },
   ];
 

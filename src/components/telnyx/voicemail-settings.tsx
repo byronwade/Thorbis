@@ -111,7 +111,9 @@ export function VoicemailSettings() {
   // Handle file upload
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     // Validate file type
     if (!file.type.startsWith("audio/")) {
@@ -511,7 +513,7 @@ export function VoicemailSettings() {
                 onValueChange={(value) =>
                   setBoxSettings({
                     ...boxSettings,
-                    maxMessageLength: Number.parseInt(value),
+                    maxMessageLength: Number.parseInt(value, 10),
                   })
                 }
                 value={boxSettings.maxMessageLength.toString()}
@@ -534,7 +536,7 @@ export function VoicemailSettings() {
                 onValueChange={(value) =>
                   setBoxSettings({
                     ...boxSettings,
-                    maxMessages: Number.parseInt(value),
+                    maxMessages: Number.parseInt(value, 10),
                   })
                 }
                 value={boxSettings.maxMessages.toString()}
@@ -557,7 +559,7 @@ export function VoicemailSettings() {
                 onValueChange={(value) =>
                   setBoxSettings({
                     ...boxSettings,
-                    deleteAfterDays: Number.parseInt(value),
+                    deleteAfterDays: Number.parseInt(value, 10),
                   })
                 }
                 value={boxSettings.deleteAfterDays.toString()}
@@ -624,9 +626,11 @@ export function VoicemailSettings() {
 
 // Helper function to format file size
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / k ** i) * 100) / 100 + " " + sizes[i];
+  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`;
 }

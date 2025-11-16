@@ -38,11 +38,12 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
   try {
     // Get authenticated user from Supabase Auth
     const user = await getCurrentUser();
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
 
     const supabase = await createClient();
     if (!supabase) {
-      console.warn("Supabase client not available, using mock user");
       // Return mock user for development
       return {
         id: "dev-user-1",
@@ -62,12 +63,6 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
       .single();
 
     if (error) {
-      // Profile doesn't exist in public.users table yet (will be created by trigger)
-      // This is expected on first login, so we fall back to auth user data
-      console.warn(
-        "Profile not found in database, using auth data:",
-        error.message || "Unknown error"
-      );
       return getUserProfileFromAuth(user);
     }
 
@@ -90,10 +85,7 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
       emailVerified: !!user.email_confirmed_at || profile?.emailVerified,
       createdAt: new Date(profile?.createdAt || user.created_at),
     };
-  } catch (error) {
-    console.error("Unexpected error fetching user profile:", error);
-    // Return mock user for development when Supabase is unavailable
-    console.warn("Using mock user due to Supabase connection error");
+  } catch (_error) {
     return {
       id: "dev-user-1",
       name: "Development User",
@@ -166,7 +158,9 @@ export function getUserDisplayName(name: string): string {
  */
 export const isUserEmailVerified = cache(async (): Promise<boolean> => {
   const user = await getCurrentUser();
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
 
   return !!user.email_confirmed_at;
 });
@@ -189,10 +183,14 @@ export const getUserCompanies = cache(
   > => {
     try {
       const user = await getCurrentUser();
-      if (!user) return [];
+      if (!user) {
+        return [];
+      }
 
       const supabase = await createClient();
-      if (!supabase) return [];
+      if (!supabase) {
+        return [];
+      }
 
       // Fetch user's companies via team_members join
       // RLS ensures user can only see companies they're a member of
@@ -217,7 +215,6 @@ export const getUserCompanies = cache(
         .is("companies.deleted_at", null); // Exclude archived companies
 
       if (error) {
-        console.error("Error fetching user companies:", error);
         return [];
       }
 
@@ -268,8 +265,7 @@ export const getUserCompanies = cache(
       });
 
       return Array.from(companyMap.values());
-    } catch (error) {
-      console.error("Unexpected error fetching user companies:", error);
+    } catch (_error) {
       return [];
     }
   }
@@ -285,10 +281,14 @@ export const getUserCompanies = cache(
 export const getUserCompanyId = cache(async (): Promise<string | null> => {
   try {
     const user = await getCurrentUser();
-    if (!user) return null;
+    if (!user) {
+      return null;
+    }
 
     const supabase = await createClient();
-    if (!supabase) return null;
+    if (!supabase) {
+      return null;
+    }
 
     // Get first active company membership
     const { data: membership, error } = await supabase
@@ -300,13 +300,11 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
       .single();
 
     if (error) {
-      console.error("Error fetching user company:", error);
       return null;
     }
 
     return membership?.company_id || null;
-  } catch (error) {
-    console.error("Unexpected error fetching user company:", error);
+  } catch (_error) {
     return null;
   }
 });
@@ -341,7 +339,6 @@ export async function updateUserProfile(
       .eq("id", user.id);
 
     if (error) {
-      console.error("Error updating user profile:", error);
       return { success: false, error: error.message };
     }
 
@@ -355,14 +352,12 @@ export async function updateUserProfile(
       });
 
       if (authError) {
-        console.warn("Error updating auth metadata:", authError);
         // Don't fail the whole operation if auth update fails
       }
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Unexpected error updating profile:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Update failed",

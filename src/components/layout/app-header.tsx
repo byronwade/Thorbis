@@ -83,8 +83,7 @@ export async function AppHeader() {
           label: p.formatted_number || p.phone_number,
         }));
       }
-    } catch (error) {
-      console.error("Error fetching phone dropdown data:", error);
+    } catch (_error) {
       // Continue without phone data - component will handle empty arrays
     }
   }

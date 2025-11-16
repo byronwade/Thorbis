@@ -413,8 +413,6 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
   }, [
     material.isLowStock,
     material.lowStockAlertSent,
-    material.minimumQuantity,
-    material.name,
     material.notes,
     material.primaryLocation,
     material.quantityAvailable,
@@ -430,6 +428,8 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
     priceBookItem?.name,
     priceBookItem?.subcategory,
     priceBookItem?.unit,
+    priceBookItem,
+    material.lastPurchaseCost,
   ]);
 
   return (

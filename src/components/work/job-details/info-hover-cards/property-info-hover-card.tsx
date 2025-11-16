@@ -101,9 +101,7 @@ export function PropertyInfoHoverCard({
           const data: TravelTimeData = await response.json();
           setTravelTime(data);
         }
-      } catch (error) {
-        // Silently fail - travel time is optional enhancement
-        console.error("Failed to fetch travel time:", error);
+      } catch (_error) {
       } finally {
         setIsLoadingTravel(false);
       }

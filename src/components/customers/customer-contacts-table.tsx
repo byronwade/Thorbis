@@ -48,10 +48,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface CustomerContactsTableProps {
+type CustomerContactsTableProps = {
   customerId: string;
   triggerAdd?: number;
-}
+};
 
 export function CustomerContactsTable({
   customerId,
@@ -78,7 +78,7 @@ export function CustomerContactsTable({
 
   useEffect(() => {
     loadContacts();
-  }, [customerId]);
+  }, [loadContacts]);
 
   // Respond to external trigger
   useEffect(() => {

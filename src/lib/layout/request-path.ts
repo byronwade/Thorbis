@@ -59,27 +59,12 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
     const headerList = await headers();
 
     if (process.env.NODE_ENV !== "production") {
-      console.log(
-        "[getRequestPathname] headers",
-        INTERNAL_PATH_HEADERS.concat(CUSTOM_PATH_HEADERS).reduce<
-          Record<string, string | null>
-        >((acc, key) => {
-          acc[key] = headerList.get(key);
-          return acc;
-        }, {})
-      );
     }
 
     for (const headerName of INTERNAL_PATH_HEADERS) {
       const candidate = sanitizePathCandidate(headerList.get(headerName));
       if (candidate) {
         if (process.env.NODE_ENV !== "production") {
-          console.log(
-            "[getRequestPathname] match",
-            headerName,
-            "=>",
-            candidate
-          );
         }
         return candidate;
       }
@@ -89,12 +74,6 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
       const candidate = sanitizePathCandidate(headerList.get(headerName));
       if (candidate) {
         if (process.env.NODE_ENV !== "production") {
-          console.log(
-            "[getRequestPathname] match",
-            headerName,
-            "=>",
-            candidate
-          );
         }
         return candidate;
       }
@@ -102,18 +81,13 @@ export async function getRequestPathname(defaultPath = DASHBOARD_PREFIX) {
 
     // Cookie and referer are REMOVED - they show stale/previous paths, not current
     // We rely only on Next.js headers which are always accurate
-  } catch (error) {
+  } catch (_error) {
     if (process.env.NODE_ENV !== "production") {
-      console.error(
-        "[getRequestPathname] Error accessing headers/cookies:",
-        error
-      );
     }
     // Ignore header access errors and fall back to default dashboard route
   }
 
   if (process.env.NODE_ENV !== "production") {
-    console.log("[getRequestPathname] fallback to default =>", defaultPath);
   }
   return defaultPath;
 }

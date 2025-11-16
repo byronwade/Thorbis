@@ -16,7 +16,9 @@ type JobHeaderProps = {
 
 export function JobHeader({ job, onUpdate }: JobHeaderProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Not set";
+    if (!dateString) {
+      return "Not set";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",

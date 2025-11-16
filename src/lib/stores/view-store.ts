@@ -3,14 +3,14 @@ import { devtools, persist } from "zustand/middleware";
 
 export type ZoomLevel = number; // 5 - 500 (percentage)
 
-export interface ViewFilters {
+export type ViewFilters = {
   technicianIds: string[];
   statuses: Array<"scheduled" | "in-progress" | "completed" | "cancelled">;
   priorities: Array<"low" | "medium" | "high" | "urgent">;
   searchQuery: string;
-}
+};
 
-interface ViewState {
+type ViewState = {
   // Zoom and timeline
   zoom: ZoomLevel;
   currentDate: Date;
@@ -59,7 +59,7 @@ interface ViewState {
   // Helpers
   getVisibleTimeRange: () => { start: Date; end: Date };
   isFiltered: () => boolean;
-}
+};
 
 const defaultFilters: ViewFilters = {
   technicianIds: [],

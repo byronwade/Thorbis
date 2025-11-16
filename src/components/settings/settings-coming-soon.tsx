@@ -24,7 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface SettingsComingSoonProps {
+type SettingsComingSoonProps = {
   /** Icon to display in the coming soon card */
   icon: ReactNode;
 
@@ -42,7 +42,7 @@ interface SettingsComingSoonProps {
 
   /** Label for back button (default: Back to Settings) */
   backLabel?: string;
-}
+};
 
 export function SettingsComingSoon({
   icon,

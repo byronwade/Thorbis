@@ -105,24 +105,9 @@ export function ServiceLocationMap({
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
-  // Debug logging
-  console.log("[ServiceLocationMap] Rendering with:", {
-    address,
-    lat,
-    lon,
-    supplierCount: nearbySuppliers.length,
-    apiKey: apiKey ? "✅ Set" : "❌ Missing",
-  });
-
   // Initialize compact map
   useEffect(() => {
-    console.log(
-      "[ServiceLocationMap] useEffect called, ref exists:",
-      !!compactMapRef.current
-    );
-
     if (!apiKey) {
-      console.error("[ServiceLocationMap] ❌ No API key");
       setError("Google Maps API key not configured");
       setIsLoading(false);
       return;
@@ -130,7 +115,6 @@ export function ServiceLocationMap({
 
     // Skip if already initialized
     if (compactMapInstance.current) {
-      console.log("[ServiceLocationMap] Map already initialized");
       setIsLoading(false);
       return;
     }
@@ -141,47 +125,39 @@ export function ServiceLocationMap({
     let retryCount = 0;
 
     const attemptInit = () => {
-      if (!isMounted) return;
+      if (!isMounted) {
+        return;
+      }
 
       if (!compactMapRef.current) {
         retryCount++;
         if (retryCount >= MAX_RETRIES) {
-          console.error(
-            "[ServiceLocationMap] ❌ Max retries reached, ref never ready"
-          );
           setError("Failed to initialize map");
           setIsLoading(false);
           return;
         }
-        console.warn(
-          `[ServiceLocationMap] ⚠️ Ref not ready (${retryCount}/${MAX_RETRIES}), retrying...`
-        );
         timeoutId = setTimeout(attemptInit, 100);
         return;
       }
-
-      console.log("[ServiceLocationMap] Loading Google Maps script...");
       loadGoogleMapsScript(apiKey)
         .then(() => {
-          if (!isMounted) return;
-          console.log("[ServiceLocationMap] ✅ Script loaded");
+          if (!isMounted) {
+            return;
+          }
           if (compactMapRef.current && !compactMapInstance.current) {
-            console.log(
-              "[ServiceLocationMap] Initializing map with lat/lon:",
-              lat,
-              lon
-            );
             initMap(compactMapRef.current, false);
           }
         })
-        .catch((err) => {
-          if (!isMounted) return;
-          console.error("[ServiceLocationMap] ❌ Failed to load:", err);
+        .catch((_err) => {
+          if (!isMounted) {
+            return;
+          }
           setError("Failed to load Google Maps");
         })
         .finally(() => {
-          if (!isMounted) return;
-          console.log("[ServiceLocationMap] Loading complete");
+          if (!isMounted) {
+            return;
+          }
           setIsLoading(false);
         });
     };
@@ -195,27 +171,19 @@ export function ServiceLocationMap({
         clearTimeout(timeoutId);
       }
     };
-  }, [apiKey, lat, lon]);
+  }, [apiKey, initMap]);
 
   // Initialize expanded map when dialog opens
   useEffect(() => {
     if (isExpanded && expandedMapRef.current && !expandedMapInstance.current) {
       initMap(expandedMapRef.current, true);
     }
-  }, [isExpanded]);
+  }, [isExpanded, initMap]);
 
   const initMap = (container: HTMLDivElement, isExpanded: boolean) => {
-    console.log("[ServiceLocationMap] initMap called", {
-      isExpanded,
-      hasGoogle: !!window.google?.maps,
-    });
-
     if (!window.google?.maps) {
-      console.error("[ServiceLocationMap] ❌ Google Maps not loaded");
       return;
     }
-
-    console.log("[ServiceLocationMap] Creating map at", { lat, lon });
     const map = new google.maps.Map(container, {
       center: { lat, lng: lon },
       zoom: isExpanded ? 13 : 12,
@@ -223,8 +191,6 @@ export function ServiceLocationMap({
       streetViewControl: false,
       fullscreenControl: isExpanded,
     });
-
-    console.log("[ServiceLocationMap] ✅ Map created");
 
     // Add job location marker (red)
     new google.maps.Marker({

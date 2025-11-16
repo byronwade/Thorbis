@@ -173,7 +173,7 @@ export function CustomerPageContent({
       handleFieldChange("last_name", "");
     } else {
       handleFieldChange("first_name", parts.slice(0, -1).join(" "));
-      handleFieldChange("last_name", parts[parts.length - 1]);
+      handleFieldChange("last_name", parts.at(-1));
     }
   };
 
@@ -245,8 +245,7 @@ export function CustomerPageContent({
       toast.success("Customer updated successfully");
       setHasChanges(false);
       router.refresh();
-    } catch (error) {
-      console.error("Error saving customer:", error);
+    } catch (_error) {
       toast.error("Failed to update customer");
     } finally {
       setIsSaving(false);
@@ -259,7 +258,7 @@ export function CustomerPageContent({
   };
 
   // Helper to determine badge type based on status
-  const getStatusBadge = (
+  const _getStatusBadge = (
     status: string,
     entityType: "job" | "invoice" = "job"
   ) => {
@@ -371,22 +370,22 @@ export function CustomerPageContent({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => console.log("Export")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Download className="mr-2 size-3.5" />
               Export Customer Data
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Print")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Printer className="mr-2 size-3.5" />
               Print Customer Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Share")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Share2 className="mr-2 size-3.5" />
               Share Customer Link
             </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => console.log("Merge")}>
+            <DropdownMenuItem onClick={() => {}}>
               <User className="mr-2 size-3.5" />
               Merge with Another Customer
             </DropdownMenuItem>
@@ -395,7 +394,7 @@ export function CustomerPageContent({
 
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => console.log("Archive")}
+              onClick={() => {}}
             >
               <Archive className="mr-2 size-3.5" />
               Archive Customer
@@ -411,7 +410,7 @@ export function CustomerPageContent({
     if (pathname) {
       setToolbarActions(pathname, getToolbarActions());
     }
-  }, [hasChanges, isSaving, pathname, setToolbarActions]);
+  }, [pathname, setToolbarActions, getToolbarActions]);
 
   const metadataItems: DetailPageHeaderConfig["metadata"] = [
     {
@@ -914,11 +913,7 @@ export function CustomerPageContent({
         title: "Equipment",
         icon: <Package className="size-4" />,
         actions: (
-          <Button
-            onClick={() => console.log("Add equipment")}
-            size="sm"
-            variant="outline"
-          >
+          <Button onClick={() => {}} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" /> Add Equipment
           </Button>
         ),
@@ -978,11 +973,7 @@ export function CustomerPageContent({
         icon: <CreditCard className="size-4" />,
         count: paymentMethods.length,
         actions: (
-          <Button
-            onClick={() => console.log("Add payment method")}
-            size="sm"
-            variant="outline"
-          >
+          <Button onClick={() => {}} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" /> Add Payment Method
           </Button>
         ),
@@ -1015,10 +1006,8 @@ export function CustomerPageContent({
                       is_verified={method.is_verified}
                       key={method.id}
                       nickname={method.nickname}
-                      onRemove={() =>
-                        console.log("Remove payment method", method.id)
-                      }
-                      onSetDefault={() => console.log("Set default", method.id)}
+                      onRemove={() => {}}
+                      onSetDefault={() => {}}
                       type={type}
                     />
                   );
@@ -1582,19 +1571,19 @@ export function CustomerPageContent({
     customer.mobile_phone,
     customer.phone,
     equipment,
-    estimates, // NEW
-    appointments, // NEW
-    contracts, // NEW
-    payments, // NEW
-    maintenancePlans, // NEW
-    serviceAgreements, // NEW
-    formatDate,
+    estimates,
+    appointments,
+    contracts,
+    payments,
+    maintenancePlans,
+    serviceAgreements,
     handleFieldChange,
     jobs,
     localCustomer,
     paymentMethods,
     properties,
     router,
+    invoices,
   ]);
 
   const relatedItems = useMemo(() => {

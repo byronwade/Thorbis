@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface PropertyLocationVisualProps {
+type PropertyLocationVisualProps = {
   property: {
     address: string;
     address2?: string | null;
@@ -42,7 +42,7 @@ interface PropertyLocationVisualProps {
     distance: number;
     address: string;
   }>;
-}
+};
 
 export function PropertyLocationVisual({
   property,

@@ -15,9 +15,9 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-interface KBSidebarProviderProps {
+type KBSidebarProviderProps = {
   children: ReactNode;
-}
+};
 
 export function KBSidebarProvider({ children }: KBSidebarProviderProps) {
   // Extract sidebar content and main content from children

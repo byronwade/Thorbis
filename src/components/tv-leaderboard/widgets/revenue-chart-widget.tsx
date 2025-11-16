@@ -26,7 +26,7 @@ type RevenueChartWidgetProps = {
 
 export function RevenueChartWidget({ data }: RevenueChartWidgetProps) {
   const maxRevenue = Math.max(...data.trend.map((d) => d.revenue));
-  const latestRevenue = data.trend[data.trend.length - 1]?.revenue || 0;
+  const latestRevenue = data.trend.at(-1)?.revenue || 0;
 
   return (
     <ResponsiveWidgetWrapper className="bg-gradient-to-br from-green-500/10 to-green-500/5">

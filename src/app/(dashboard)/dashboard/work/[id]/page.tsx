@@ -23,12 +23,9 @@ export default async function JobDetailsPage({
 }) {
   const { id: jobId } = await params;
 
-  console.log("[Job Details] Loading job:", jobId);
-
   const supabase = await createClient();
 
   if (!supabase) {
-    console.error("[Job Details] No supabase client");
     return notFound();
   }
 
@@ -38,21 +35,13 @@ export default async function JobDetailsPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    console.error("[Job Details] No authenticated user");
     return notFound();
   }
-
-  console.log("[Job Details] User authenticated:", user.id);
 
   // Check if active company has completed onboarding (has payment)
   const isOnboardingComplete = await isActiveCompanyOnboardingComplete();
 
   if (!isOnboardingComplete) {
-    console.log(
-      "[Job Details] Company onboarding incomplete for user:",
-      user.id,
-      "- redirecting to onboarding"
-    );
     // Redirect to onboarding if company hasn't completed setup
     redirect("/dashboard/welcome");
   }
@@ -62,16 +51,9 @@ export default async function JobDetailsPage({
   const activeCompanyId = await getActiveCompanyId();
 
   if (!activeCompanyId) {
-    console.log(
-      "[Job Details] No active company found for user:",
-      user.id,
-      "- redirecting to onboarding"
-    );
     // Redirect to onboarding if user doesn't have an active company
     redirect("/dashboard/welcome");
   }
-
-  console.log("[Job Details] Active company:", activeCompanyId);
 
   // Verify user has access to the active company and get their role
   const { data: teamMember, error: teamMemberError } = await supabase
@@ -84,21 +66,15 @@ export default async function JobDetailsPage({
 
   // Get user's role for role-based UI
   const userRole = await getUserRole(supabase, user.id, activeCompanyId);
-  console.log("[Job Details] User role:", userRole);
 
   // Check for real errors (not "no rows found")
   const hasRealError = hasReportableError(teamMemberError);
 
   if (hasRealError) {
-    console.error("[Job Details] Error fetching team member:", teamMemberError);
     return notFound();
   }
 
   if (!teamMember?.company_id) {
-    console.error(
-      "[Job Details] User doesn't have access to active company:",
-      activeCompanyId
-    );
     // Show 404 instead of redirecting to avoid redirect loops
     // The dashboard layout handles onboarding redirects
     return notFound();
@@ -120,20 +96,14 @@ export default async function JobDetailsPage({
     .single();
 
   if (jobError) {
-    console.error("[Job Details] Error fetching job:", jobError);
     return notFound();
   }
 
   if (!job) {
-    console.error("[Job Details] Job not found:", jobId);
     return notFound();
   }
 
   if (job.company_id !== activeCompanyId) {
-    console.error(
-      "[Job Details] Job company mismatch:",
-      `Job company: ${job.company_id}, Active company: ${activeCompanyId}`
-    );
     return notFound();
   }
 
@@ -478,10 +448,6 @@ export default async function JobDetailsPage({
   }
 
   if (hasReportableError(jobCommunicationsError)) {
-    console.error(
-      "[Job Details] Failed to load communications:",
-      jobCommunicationsError
-    );
   }
 
   const communications =

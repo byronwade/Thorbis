@@ -127,7 +127,7 @@ export function TeamMembersPage() {
 
   // Load real team members from database
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+  const [_isLoadingMembers, setIsLoadingMembers] = useState(true);
 
   useEffect(() => {
     async function loadTeamMembers() {
@@ -166,7 +166,7 @@ export function TeamMembersPage() {
           }));
           setTeamMembers(members);
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load team members");
         setTeamMembers([]);
       } finally {
@@ -175,7 +175,7 @@ export function TeamMembersPage() {
     }
     loadTeamMembers();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount - toast is stable from useToast hook
+  }, [getDepartmentColor, getRelativeTime, getRoleColor, toast.error]); // Run once on mount - toast is stable from useToast hook
 
   // Helper functions for colors
   function getRoleColor(roleName: string | undefined): string {
@@ -203,11 +203,16 @@ export function TeamMembersPage() {
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60_000);
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffMins < 1) {
+      return "Just now";
+    }
+    if (diffMins < 60) {
+      return `${diffMins} min ago`;
+    }
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24)
+    if (diffHours < 24) {
       return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+    }
     const diffDays = Math.floor(diffHours / 24);
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   }

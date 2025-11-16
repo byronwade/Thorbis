@@ -55,9 +55,9 @@ import {
   WIDGET_METADATA,
 } from "@/lib/stores/job-details-layout-store";
 
-interface JobDetailsToolbarActionsProps {
+type JobDetailsToolbarActionsProps = {
   jobId?: string;
-}
+};
 
 export function JobDetailsToolbarActions({
   jobId = "job-123",
@@ -90,10 +90,7 @@ export function JobDetailsToolbarActions({
       acc[metadata.category].push([widgetType, metadata]);
       return acc;
     },
-    {} as Record<
-      string,
-      Array<[string, (typeof WIDGET_METADATA)[JobWidgetType]]>
-    >
+    {} as Record<string, [string, (typeof WIDGET_METADATA)[JobWidgetType]][]>
   );
 
   function handleLoadPreset(presetId: string) {

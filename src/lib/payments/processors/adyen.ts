@@ -23,17 +23,17 @@ import type {
   RefundPaymentResponse,
 } from "../processor-types";
 
-interface AdyenConfig {
+type AdyenConfig = {
   companyId: string;
   accountId: string;
   apiKey: string;
   merchantAccount: string;
   liveMode: boolean;
-}
+};
 
 export class AdyenProcessor implements PaymentProcessor {
-  private config: AdyenConfig;
-  private apiUrl: string;
+  private readonly config: AdyenConfig;
+  private readonly apiUrl: string;
 
   constructor(config: AdyenConfig) {
     this.config = config;
@@ -128,7 +128,6 @@ export class AdyenProcessor implements PaymentProcessor {
         processorMetadata: data,
       };
     } catch (error) {
-      console.error("Adyen payment processing error:", error);
       return {
         success: false,
         status: "failed",
@@ -187,7 +186,6 @@ export class AdyenProcessor implements PaymentProcessor {
         status: data.status === "received" ? "succeeded" : "processing",
       };
     } catch (error) {
-      console.error("Adyen refund error:", error);
       return {
         success: false,
         status: "failed",
@@ -201,35 +199,30 @@ export class AdyenProcessor implements PaymentProcessor {
     amount: number;
     metadata?: Record<string, unknown>;
   }> {
-    try {
-      const response = await fetch(
-        `${this.apiUrl}/v68/payments/${transactionId}`,
-        {
-          method: "GET",
-          headers: {
-            "X-API-Key": this.config.apiKey,
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to get payment status");
+    const response = await fetch(
+      `${this.apiUrl}/v68/payments/${transactionId}`,
+      {
+        method: "GET",
+        headers: {
+          "X-API-Key": this.config.apiKey,
+        },
       }
+    );
 
-      return {
-        status: data.status || "unknown",
-        amount: data.amount?.value || 0,
-        metadata: data,
-      };
-    } catch (error) {
-      console.error("Adyen get payment status error:", error);
-      throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to get payment status");
     }
+
+    return {
+      status: data.status || "unknown",
+      amount: data.amount?.value || 0,
+      metadata: data,
+    };
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
+  verifyWebhook(_payload: string, _signature: string): boolean {
     // Adyen webhook verification
     // In production, use Adyen's webhook signature verification
     // This is a simplified version - implement proper HMAC verification
@@ -237,8 +230,7 @@ export class AdyenProcessor implements PaymentProcessor {
       // TODO: Implement proper Adyen webhook signature verification
       // Adyen uses HMAC SHA256 with a webhook username/password
       return true; // Placeholder
-    } catch (error) {
-      console.error("Adyen webhook verification error:", error);
+    } catch (_error) {
       return false;
     }
   }

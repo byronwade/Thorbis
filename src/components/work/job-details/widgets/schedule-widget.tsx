@@ -27,12 +27,12 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatDate } from "@/lib/formatters";
 
-interface ScheduleWidgetProps {
+type ScheduleWidgetProps = {
   job: Job;
-}
+};
 
 // Mock schedule details (in production, fetch from database)
-interface ScheduleDetails {
+type ScheduleDetails = {
   scheduledStart: Date;
   scheduledEnd: Date;
   estimatedDuration: number; // minutes
@@ -60,7 +60,7 @@ interface ScheduleDetails {
     type: "double_booking" | "travel_time" | "unavailable";
     message: string;
   }[];
-}
+};
 
 export function ScheduleWidget({ job }: ScheduleWidgetProps) {
   const toDate = (value: unknown, fallback?: Date): Date => {
@@ -151,7 +151,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
   }
 
   function formatTime(date: Date | null | undefined): string {
-    if (!date) return "—";
+    if (!date) {
+      return "—";
+    }
     return new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
@@ -161,23 +163,37 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
   function formatDuration(minutes: number): string {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    if (hours === 0) return `${mins}m`;
-    if (mins === 0) return `${hours}h`;
+    if (hours === 0) {
+      return `${mins}m`;
+    }
+    if (mins === 0) {
+      return `${hours}h`;
+    }
     return `${hours}h ${mins}m`;
   }
 
   function getTimeUntilStart(date: Date | null | undefined): string {
-    if (!date) return "unknown";
+    if (!date) {
+      return "unknown";
+    }
     const diffMs = date.getTime() - Date.now();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffHours = Math.floor(
       (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
     );
 
-    if (diffDays > 1) return `in ${diffDays} days`;
-    if (diffDays === 1) return "tomorrow";
-    if (diffHours > 0) return `in ${diffHours} hours`;
-    if (diffMs > 0) return "soon";
+    if (diffDays > 1) {
+      return `in ${diffDays} days`;
+    }
+    if (diffDays === 1) {
+      return "tomorrow";
+    }
+    if (diffHours > 0) {
+      return `in ${diffHours} hours`;
+    }
+    if (diffMs > 0) {
+      return "soon";
+    }
     return "started";
   }
 

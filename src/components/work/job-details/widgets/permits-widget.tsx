@@ -27,9 +27,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatDate } from "@/lib/formatters";
 
-interface PermitsWidgetProps {
+type PermitsWidgetProps = {
   job: Job;
-}
+};
 
 // Permit status types
 type PermitStatus =
@@ -40,7 +40,7 @@ type PermitStatus =
   | "expired";
 
 // Mock permit type (in production, fetch from permits table)
-interface Permit {
+type Permit = {
   id: string;
   name: string;
   type: string;
@@ -52,7 +52,7 @@ interface Permit {
   issuingAuthority: string;
   fee?: number;
   notes?: string;
-}
+};
 
 export function PermitsWidget({ job }: PermitsWidgetProps) {
   // Mock permits (in production, fetch from database)
@@ -146,7 +146,9 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
     totalPermits > 0 ? (approvedPermits / totalPermits) * 100 : 0;
 
   function getDaysUntilExpiry(date?: Date): number | null {
-    if (!date) return null;
+    if (!date) {
+      return null;
+    }
     const diffMs = date.getTime() - Date.now();
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
   }

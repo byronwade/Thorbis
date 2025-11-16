@@ -134,8 +134,12 @@ export function PropertiesTable({
   // Filter properties based on archive status
   const filteredProperties = properties.filter((property) => {
     const isArchived = Boolean(property.archived_at || property.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -447,7 +451,9 @@ export function PropertiesTable({
                 let archived = 0;
                 for (const propertyId of propertyIds) {
                   const result = await archiveProperty(propertyId as string);
-                  if (result.success) archived++;
+                  if (result.success) {
+                    archived++;
+                  }
                 }
                 if (archived > 0) {
                   window.location.reload();

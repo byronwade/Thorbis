@@ -96,8 +96,12 @@ export function EquipmentTable({
   // Filter equipment based on archive status
   const filteredEquipment = equipment.filter((item) => {
     const isArchived = Boolean(item.archived_at || item.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -202,7 +206,7 @@ export function EquipmentTable({
       header: "",
       width: "w-10",
       shrink: true,
-      render: (item) => (
+      render: (_item) => (
         <div data-no-row-click>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -237,18 +241,18 @@ export function EquipmentTable({
     {
       label: "Schedule Service",
       icon: <Wrench className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Schedule Service:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Export",
       icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Export:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
       variant: "destructive",
-      onClick: (selectedIds) => console.log("Archive:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
   ];
 

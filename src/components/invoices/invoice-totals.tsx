@@ -26,9 +26,9 @@ type Invoice = {
   status: string;
 };
 
-interface InvoiceTotalsProps {
+type InvoiceTotalsProps = {
   invoice: Invoice;
-}
+};
 
 export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
   return (

@@ -7,9 +7,9 @@ import {
 } from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
-interface SettingsMetricCardProps {
+type SettingsMetricCardProps = {
   metric: SettingsMetricDatum;
-}
+};
 
 export function SettingsMetricCard({ metric }: SettingsMetricCardProps) {
   const statusColors = metric.status

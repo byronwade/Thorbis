@@ -62,7 +62,7 @@ export function GeneralPhoneSettings() {
 
   useEffect(() => {
     loadSettings();
-  }, []);
+  }, [loadSettings]);
 
   async function loadSettings() {
     setIsLoading(true);
@@ -87,7 +87,7 @@ export function GeneralPhoneSettings() {
           maxConcurrentCalls: result.data.max_concurrent_calls || 3,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to load phone settings");
     } finally {
       setIsLoading(false);
@@ -285,7 +285,10 @@ export function GeneralPhoneSettings() {
               <Label htmlFor="concurrent">Max Concurrent Calls Per Agent</Label>
               <Select
                 onValueChange={(value) =>
-                  updateSetting("maxConcurrentCalls", Number.parseInt(value))
+                  updateSetting(
+                    "maxConcurrentCalls",
+                    Number.parseInt(value, 10)
+                  )
                 }
                 value={settings.maxConcurrentCalls.toString()}
               >

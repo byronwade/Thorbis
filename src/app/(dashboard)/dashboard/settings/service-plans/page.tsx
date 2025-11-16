@@ -53,7 +53,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 const _MAX_DESCRIPTION_LENGTH = 500;
 const DEFAULT_BILLING_DAY = 1;
 

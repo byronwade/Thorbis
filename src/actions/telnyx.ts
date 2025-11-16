@@ -133,7 +133,6 @@ export async function searchPhoneNumbers(params: {
 
     return result;
   } catch (error) {
-    console.error("Error searching phone numbers:", error);
     return {
       success: false,
       error:
@@ -195,7 +194,9 @@ export async function purchasePhoneNumber(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
 
@@ -205,19 +206,13 @@ export async function purchasePhoneNumber(params: {
         { id: data.id, e164: normalizedPhoneNumber },
         { supabase }
       );
-    } catch (campaignError) {
-      console.error(
-        "Failed to ensure messaging campaign for phone number:",
-        campaignError
-      );
-    }
+    } catch (_campaignError) {}
 
     return {
       success: true,
       data,
     };
   } catch (error) {
-    console.error("Error purchasing phone number:", error);
     return {
       success: false,
       error:
@@ -245,14 +240,15 @@ export async function getCompanyPhoneNumbers(companyId: string) {
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return {
       success: true,
       data: data || [],
     };
   } catch (error) {
-    console.error("Error getting company phone numbers:", error);
     return {
       success: false,
       error:
@@ -287,7 +283,9 @@ export async function updatePhoneNumber(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
 
@@ -296,7 +294,6 @@ export async function updatePhoneNumber(params: {
       data,
     };
   } catch (error) {
-    console.error("Error updating phone number:", error);
     return {
       success: false,
       error:
@@ -342,13 +339,14 @@ export async function deletePhoneNumber(phoneNumberId: string) {
       })
       .eq("id", phoneNumberId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/phone-numbers");
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting phone number:", error);
     return {
       success: false,
       error:
@@ -428,7 +426,9 @@ export async function makeCall(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return {
       success: true,
@@ -436,7 +436,6 @@ export async function makeCall(params: {
       data,
     };
   } catch (error) {
-    console.error("Error making call:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to make call",
@@ -456,7 +455,6 @@ export async function acceptCall(callControlId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error answering call:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to answer call",
@@ -476,7 +474,6 @@ export async function declineCall(callControlId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error rejecting call:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to reject call",
@@ -493,7 +490,6 @@ export async function endCall(callControlId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error ending call:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to end call",
@@ -514,7 +510,6 @@ export async function startCallRecording(callControlId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error starting recording:", error);
     return {
       success: false,
       error:
@@ -532,7 +527,6 @@ export async function stopCallRecording(callControlId: string) {
 
     return result;
   } catch (error) {
-    console.error("Error stopping recording:", error);
     return {
       success: false,
       error:
@@ -559,7 +553,6 @@ export async function transferActiveCall(params: {
 
     return result;
   } catch (error) {
-    console.error("Error transferring call:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to transfer call",
@@ -596,10 +589,6 @@ export async function transcribeCallRecording(params: {
 
     const webhookUrl = `${baseUrl}/api/webhooks/assemblyai`;
 
-    console.log(
-      `📝 Submitting call recording for transcription: ${params.recordingUrl}`
-    );
-
     // Submit to AssemblyAI
     const result = await submitTranscription({
       audio_url: params.recordingUrl,
@@ -608,7 +597,6 @@ export async function transcribeCallRecording(params: {
     });
 
     if (!(result.success && result.data)) {
-      console.error("❌ Failed to submit transcription:", result.error);
       return {
         success: false,
         error: result.error || "Failed to submit transcription",
@@ -621,17 +609,12 @@ export async function transcribeCallRecording(params: {
       assemblyai_status: result.data.status,
     });
 
-    console.log(
-      `✅ Transcription job submitted: ${result.data.id}, status: ${result.data.status}`
-    );
-
     return {
       success: true,
       transcriptionId: result.data.id,
       status: result.data.status,
     };
   } catch (error) {
-    console.error("Error submitting transcription:", error);
     return {
       success: false,
       error:
@@ -710,7 +693,9 @@ export async function sendTextMessage(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/communication");
 
@@ -720,7 +705,6 @@ export async function sendTextMessage(params: {
       data,
     };
   } catch (error) {
-    console.error("Error sending SMS:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send SMS",
@@ -796,7 +780,9 @@ export async function sendMMSMessage(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/communication");
 
@@ -806,7 +792,6 @@ export async function sendMMSMessage(params: {
       data,
     };
   } catch (error) {
-    console.error("Error sending MMS:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send MMS",
@@ -845,8 +830,6 @@ export async function getWebRTCCredentials() {
     const staticPassword = process.env.TELNYX_WEBRTC_PASSWORD;
 
     if (staticUsername && staticPassword) {
-      console.log("[getWebRTCCredentials] Using static credentials");
-
       const credential = {
         username: staticUsername,
         password: staticPassword,
@@ -875,17 +858,6 @@ export async function getWebRTCCredentials() {
       };
     }
 
-    // OPTION 2: Generate dynamic credentials via API (fallback)
-    console.log(
-      "[getWebRTCCredentials] Static credentials not found, generating dynamic credentials"
-    );
-    console.log(
-      "[getWebRTCCredentials] ⚠️  Note: Dynamic credentials may not work without proper SIP connection"
-    );
-    console.log(
-      "[getWebRTCCredentials] ⚠️  See TELNYX_WEBRTC_CONNECTION_FIX.md for setup instructions"
-    );
-
     const { generateWebRTCToken } = await import("@/lib/telnyx/webrtc");
     const result = await generateWebRTCToken({
       username: user.email || user.id,
@@ -901,7 +873,6 @@ export async function getWebRTCCredentials() {
       credential: result.credential,
     };
   } catch (error) {
-    console.error("Error getting WebRTC credentials:", error);
     return {
       success: false,
       error:
@@ -937,14 +908,15 @@ export async function getVoicemails(companyId: string) {
       .is("deleted_at", null)
       .order("received_at", { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return {
       success: true,
       data: data || [],
     };
   } catch (error) {
-    console.error("Error getting voicemails:", error);
     return {
       success: false,
       error:
@@ -974,7 +946,9 @@ export async function markVoicemailAsRead(voicemailId: string, userId: string) {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/communication");
 
@@ -983,7 +957,6 @@ export async function markVoicemailAsRead(voicemailId: string, userId: string) {
       data,
     };
   } catch (error) {
-    console.error("Error marking voicemail as read:", error);
     return {
       success: false,
       error:
@@ -1012,13 +985,14 @@ export async function deleteVoicemail(voicemailId: string, userId: string) {
       })
       .eq("id", voicemailId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/communication");
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting voicemail:", error);
     return {
       success: false,
       error:
@@ -1052,14 +1026,15 @@ export async function getCallRoutingRules(companyId: string) {
       .is("deleted_at", null)
       .order("priority", { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return {
       success: true,
       data: data || [],
     };
   } catch (error) {
-    console.error("Error getting call routing rules:", error);
     return {
       success: false,
       error:
@@ -1138,7 +1113,9 @@ export async function createCallRoutingRule(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/call-routing");
 
@@ -1147,7 +1124,6 @@ export async function createCallRoutingRule(params: {
       data,
     };
   } catch (error) {
-    console.error("Error creating call routing rule:", error);
     return {
       success: false,
       error:
@@ -1191,41 +1167,65 @@ export async function updateCallRoutingRule(params: {
 
     const updateData: Record<string, unknown> = {};
 
-    if (params.name !== undefined) updateData.name = params.name;
-    if (params.description !== undefined)
+    if (params.name !== undefined) {
+      updateData.name = params.name;
+    }
+    if (params.description !== undefined) {
       updateData.description = params.description;
-    if (params.priority !== undefined) updateData.priority = params.priority;
-    if (params.businessHours !== undefined)
+    }
+    if (params.priority !== undefined) {
+      updateData.priority = params.priority;
+    }
+    if (params.businessHours !== undefined) {
       updateData.business_hours = params.businessHours;
-    if (params.timezone !== undefined) updateData.timezone = params.timezone;
-    if (params.afterHoursAction !== undefined)
+    }
+    if (params.timezone !== undefined) {
+      updateData.timezone = params.timezone;
+    }
+    if (params.afterHoursAction !== undefined) {
       updateData.after_hours_action = params.afterHoursAction;
-    if (params.afterHoursForwardTo !== undefined)
+    }
+    if (params.afterHoursForwardTo !== undefined) {
       updateData.after_hours_forward_to = params.afterHoursForwardTo;
-    if (params.teamMembers !== undefined)
+    }
+    if (params.teamMembers !== undefined) {
       updateData.team_members = params.teamMembers;
-    if (params.ringTimeout !== undefined)
+    }
+    if (params.ringTimeout !== undefined) {
       updateData.ring_timeout = params.ringTimeout;
-    if (params.ivrMenu !== undefined) updateData.ivr_menu = params.ivrMenu;
-    if (params.ivrGreetingUrl !== undefined)
+    }
+    if (params.ivrMenu !== undefined) {
+      updateData.ivr_menu = params.ivrMenu;
+    }
+    if (params.ivrGreetingUrl !== undefined) {
       updateData.ivr_greeting_url = params.ivrGreetingUrl;
-    if (params.forwardToNumber !== undefined)
+    }
+    if (params.forwardToNumber !== undefined) {
       updateData.forward_to_number = params.forwardToNumber;
-    if (params.forwardToUserId !== undefined)
+    }
+    if (params.forwardToUserId !== undefined) {
       updateData.forward_to_user_id = params.forwardToUserId;
-    if (params.enableVoicemail !== undefined)
+    }
+    if (params.enableVoicemail !== undefined) {
       updateData.enable_voicemail = params.enableVoicemail;
-    if (params.voicemailGreetingUrl !== undefined)
+    }
+    if (params.voicemailGreetingUrl !== undefined) {
       updateData.voicemail_greeting_url = params.voicemailGreetingUrl;
-    if (params.voicemailTranscriptionEnabled !== undefined)
+    }
+    if (params.voicemailTranscriptionEnabled !== undefined) {
       updateData.voicemail_transcription_enabled =
         params.voicemailTranscriptionEnabled;
-    if (params.voicemailEmailNotifications !== undefined)
+    }
+    if (params.voicemailEmailNotifications !== undefined) {
       updateData.voicemail_email_notifications =
         params.voicemailEmailNotifications;
-    if (params.recordCalls !== undefined)
+    }
+    if (params.recordCalls !== undefined) {
       updateData.record_calls = params.recordCalls;
-    if (params.isActive !== undefined) updateData.is_active = params.isActive;
+    }
+    if (params.isActive !== undefined) {
+      updateData.is_active = params.isActive;
+    }
 
     const { data, error } = await supabase
       .from("call_routing_rules")
@@ -1234,7 +1234,9 @@ export async function updateCallRoutingRule(params: {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/call-routing");
 
@@ -1243,7 +1245,6 @@ export async function updateCallRoutingRule(params: {
       data,
     };
   } catch (error) {
-    console.error("Error updating call routing rule:", error);
     return {
       success: false,
       error:
@@ -1272,13 +1273,14 @@ export async function deleteCallRoutingRule(ruleId: string, userId: string) {
       })
       .eq("id", ruleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/call-routing");
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting call routing rule:", error);
     return {
       success: false,
       error:
@@ -1306,7 +1308,9 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     revalidatePath("/dashboard/settings/communications/call-routing");
 
@@ -1315,7 +1319,6 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
       data,
     };
   } catch (error) {
-    console.error("Error toggling call routing rule:", error);
     return {
       success: false,
       error:
@@ -1354,7 +1357,9 @@ export async function getPhoneNumberUsageStats(
       .eq("phone_number_id", phoneNumberId)
       .gte("created_at", startDate.toISOString());
 
-    if (callError) throw callError;
+    if (callError) {
+      throw callError;
+    }
 
     // Get SMS statistics
     const { data: smsStats, error: smsError } = await supabase
@@ -1364,7 +1369,9 @@ export async function getPhoneNumberUsageStats(
       .eq("phone_number_id", phoneNumberId)
       .gte("created_at", startDate.toISOString());
 
-    if (smsError) throw smsError;
+    if (smsError) {
+      throw smsError;
+    }
 
     // Calculate aggregates
     const calls = callStats || [];
@@ -1395,7 +1402,6 @@ export async function getPhoneNumberUsageStats(
       },
     };
   } catch (error) {
-    console.error("Error getting phone number usage stats:", error);
     return {
       success: false,
       error:
@@ -1427,7 +1433,9 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
       .in("type", ["phone", "sms"])
       .gte("created_at", startDate.toISOString());
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     const items = communications || [];
     const calls = items.filter((i) => i.type === "phone");
@@ -1460,7 +1468,6 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
       },
     };
   } catch (error) {
-    console.error("Error getting company usage stats:", error);
     return {
       success: false,
       error:

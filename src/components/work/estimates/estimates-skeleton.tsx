@@ -18,7 +18,7 @@ export function EstimatesSkeleton() {
 
       {/* Table rows skeleton */}
       <div className="space-y-2">
-        {[...Array(10)].map((_, i) => (
+        {[...new Array(10)].map((_, i) => (
           <div className="flex items-center gap-4" key={i}>
             <div className="h-12 w-12 animate-pulse rounded bg-muted" />
             <div className="flex-1 space-y-2">

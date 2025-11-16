@@ -211,7 +211,7 @@ export async function createCustomField(
     if (data.fieldOptions) {
       try {
         fieldOptionsJson = JSON.parse(data.fieldOptions);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid field options JSON",
           ERROR_CODES.VALIDATION_FAILED
@@ -282,7 +282,7 @@ export async function updateCustomField(
     if (data.fieldOptions) {
       try {
         fieldOptionsJson = JSON.parse(data.fieldOptions);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid field options JSON",
           ERROR_CODES.VALIDATION_FAILED
@@ -435,7 +435,7 @@ export async function updateLoyaltySettings(
     if (data.rewardTiers) {
       try {
         rewardTiersJson = JSON.parse(data.rewardTiers);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid reward tiers JSON",
           ERROR_CODES.VALIDATION_FAILED
@@ -790,7 +790,7 @@ export async function updateIntakeSettings(
     if (data.customQuestions) {
       try {
         customQuestionsJson = JSON.parse(data.customQuestions);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid custom questions JSON",
           ERROR_CODES.VALIDATION_FAILED

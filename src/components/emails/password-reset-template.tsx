@@ -18,13 +18,13 @@ import {
   Text,
 } from "@react-email/components";
 
-interface PasswordResetTemplateProps {
+type PasswordResetTemplateProps = {
   teamMemberName: string;
   resetByName: string;
   resetLink: string;
   companyName: string;
   expiresInHours?: number;
-}
+};
 
 export function PasswordResetTemplate({
   teamMemberName,

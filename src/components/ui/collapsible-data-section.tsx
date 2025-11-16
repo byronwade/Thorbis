@@ -92,7 +92,9 @@ export function CollapsibleDataSection({
 }: CollapsibleDataSectionProps) {
   // Standalone mode state management
   const [localIsOpen, setLocalIsOpen] = useState(() => {
-    if (!standalone) return defaultOpen;
+    if (!standalone) {
+      return defaultOpen;
+    }
     if (storageKey && typeof window !== "undefined") {
       const stored = localStorage.getItem(storageKey);
       return stored ? JSON.parse(stored) : defaultOpen;
@@ -103,7 +105,9 @@ export function CollapsibleDataSection({
   const isOpen = standalone ? (controlledIsOpen ?? localIsOpen) : undefined;
 
   const toggleOpen = () => {
-    if (!standalone) return;
+    if (!standalone) {
+      return;
+    }
     const newValue = !isOpen;
     setLocalIsOpen(newValue);
     onOpenChange?.(newValue);
@@ -158,9 +162,15 @@ export function CollapsibleDataSection({
 
   // Render content
   const renderContent = () => {
-    if (isLoading) return renderLoadingSkeleton();
-    if (error) return renderError();
-    if (showEmptyState) return renderEmptyState();
+    if (isLoading) {
+      return renderLoadingSkeleton();
+    }
+    if (error) {
+      return renderError();
+    }
+    if (showEmptyState) {
+      return renderEmptyState();
+    }
     return fullWidthContent ? (
       <div>{children}</div>
     ) : (

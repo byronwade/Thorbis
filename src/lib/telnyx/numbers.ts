@@ -57,7 +57,6 @@ export async function searchAvailableNumbers(params: {
       data: numbers.data,
     };
   } catch (error) {
-    console.error("Error searching available numbers:", error);
     return {
       success: false,
       error:
@@ -95,7 +94,6 @@ export async function purchaseNumber(params: {
       data: number.data,
     };
   } catch (error) {
-    console.error("Error purchasing number:", error);
     return {
       success: false,
       error:
@@ -131,7 +129,6 @@ export async function listOwnedNumbers(params?: {
       meta: numbers.meta,
     };
   } catch (error) {
-    console.error("Error listing owned numbers:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to list numbers",
@@ -153,7 +150,6 @@ export async function getNumberDetails(phoneNumberId: string) {
       data: number.data,
     };
   } catch (error) {
-    console.error("Error retrieving number details:", error);
     return {
       success: false,
       error:
@@ -190,7 +186,6 @@ export async function updateNumber(params: {
       data: number.data,
     };
   } catch (error) {
-    console.error("Error updating number:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to update number",
@@ -209,7 +204,6 @@ export async function releaseNumber(phoneNumberId: string) {
       success: true,
     };
   } catch (error) {
-    console.error("Error releasing number:", error);
     return {
       success: false,
       error:
@@ -261,7 +255,6 @@ export async function initiatePorting(params: {
       data: portingOrder.data,
     };
   } catch (error) {
-    console.error("Error initiating porting:", error);
     return {
       success: false,
       error:
@@ -285,7 +278,6 @@ export async function getPortingStatus(portingOrderId: string) {
       data: order.data,
     };
   } catch (error) {
-    console.error("Error getting porting status:", error);
     return {
       success: false,
       error:
@@ -374,7 +366,6 @@ export async function validatePortability(phoneNumber: string) {
       fastPortEligible: false,
     };
   } catch (error) {
-    console.error("Error validating portability:", error);
     return {
       success: false,
       error:

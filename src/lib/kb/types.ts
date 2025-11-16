@@ -26,7 +26,7 @@ export type KBCategoryWithChildren = KBCategory & {
 /**
  * Article frontmatter (from markdown files)
  */
-export interface KBArticleFrontmatter {
+export type KBArticleFrontmatter = {
   title: string;
   slug: string;
   excerpt?: string;
@@ -44,17 +44,17 @@ export interface KBArticleFrontmatter {
     metaDescription?: string;
     keywords?: string[];
   };
-}
+};
 
 /**
  * Category metadata (from _category.json files)
  */
-export interface KBCategoryMetadata {
+export type KBCategoryMetadata = {
   title: string;
   description?: string;
   icon?: string;
   order?: number;
-}
+};
 
 /**
  * Search result with ranking
@@ -68,21 +68,21 @@ export interface KBSearchResult extends KBArticle {
 /**
  * Search filters
  */
-export interface KBSearchFilters {
+export type KBSearchFilters = {
   query?: string;
   category?: string;
   tag?: string;
   featured?: boolean;
   limit?: number;
   offset?: number;
-}
+};
 
 /**
  * Feedback submission
  */
-export interface KBFeedbackSubmission {
+export type KBFeedbackSubmission = {
   articleId: string;
   helpful?: boolean;
   comment?: string;
   userEmail?: string;
-}
+};

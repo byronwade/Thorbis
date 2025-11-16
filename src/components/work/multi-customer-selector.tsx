@@ -74,7 +74,9 @@ export function MultiCustomerSelector({
 
   const addCustomer = (customerId: string) => {
     const customer = customers.find((c) => c.id === customerId);
-    if (!customer) return;
+    if (!customer) {
+      return;
+    }
 
     // Check if already added
     if (selectedCustomers.some((sc) => sc.id === customerId)) {

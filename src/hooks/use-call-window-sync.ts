@@ -29,7 +29,7 @@ export function useCallWindowSync(
 ) {
   const [hasCallWindow, setHasCallWindow] = useState(false);
   const [callWindowId, setCallWindowId] = useState<string | null>(null);
-  const [popOutWindow, setPopOutWindow] = useState<Window | null>(null);
+  const [popOutWindow, _setPopOutWindow] = useState<Window | null>(null);
   const [pendingSync, setPendingSync] = useState<Record<string, any> | null>(
     null
   );
@@ -54,8 +54,12 @@ export function useCallWindowSync(
   // Detect if call window is open
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (!verifyMessageOrigin(event)) return;
-      if (!isPopOutMessage(event.data)) return;
+      if (!verifyMessageOrigin(event)) {
+        return;
+      }
+      if (!isPopOutMessage(event.data)) {
+        return;
+      }
 
       const message = event.data as PopOutMessage;
 

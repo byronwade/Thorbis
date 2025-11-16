@@ -8,10 +8,10 @@ import {
 } from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
-interface SettingsShellProps {
+type SettingsShellProps = {
   sections: SettingsOverviewSection[];
   children: ReactNode;
-}
+};
 
 export function SettingsShell({ sections, children }: SettingsShellProps) {
   if (sections.length <= 1) {

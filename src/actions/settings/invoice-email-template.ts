@@ -9,17 +9,17 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export interface InvoiceEmailTemplate {
+export type InvoiceEmailTemplate = {
   subject: string;
   body: string;
   footer: string;
-}
+};
 
-interface ActionResult<T> {
+type ActionResult<T> = {
   success: boolean;
   data?: T;
   error?: string;
-}
+};
 
 /**
  * Load the invoice email template for the current company
@@ -111,7 +111,6 @@ Best regards,
       },
     };
   } catch (error) {
-    console.error("Error loading invoice email template:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to load template",
@@ -201,7 +200,6 @@ export async function saveInvoiceEmailTemplate(
         .eq("id", existing.id);
 
       if (error) {
-        console.error("Error updating template:", error);
         return {
           success: false,
           error: "Failed to update template",
@@ -214,7 +212,6 @@ export async function saveInvoiceEmailTemplate(
         .insert(templateData);
 
       if (error) {
-        console.error("Error inserting template:", error);
         return {
           success: false,
           error: "Failed to save template",
@@ -229,7 +226,6 @@ export async function saveInvoiceEmailTemplate(
       success: true,
     };
   } catch (error) {
-    console.error("Error saving invoice email template:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to save template",

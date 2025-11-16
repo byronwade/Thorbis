@@ -28,7 +28,9 @@ import type { PropertyEnrichment } from "@/lib/services/property-enrichment";
 // ============================================================================
 
 function getRiskColor(zone: string | undefined): string {
-  if (!zone) return "text-muted-foreground";
+  if (!zone) {
+    return "text-muted-foreground";
+  }
 
   const lowerZone = zone.toLowerCase();
   if (lowerZone.includes("high") || lowerZone.includes("x")) {
@@ -44,10 +46,10 @@ function getRiskColor(zone: string | undefined): string {
 // Props Types
 // ============================================================================
 
-interface PropertyIntelligenceWidgetProps {
+type PropertyIntelligenceWidgetProps = {
   property?: Property;
   enrichment?: PropertyEnrichment | null;
-}
+};
 
 // ============================================================================
 // Property Intelligence Widget Component

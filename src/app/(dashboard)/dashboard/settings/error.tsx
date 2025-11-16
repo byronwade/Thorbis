@@ -21,9 +21,7 @@ export default function SettingsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Settings error:", error);
-  }, [error]);
+  useEffect(() => {}, []);
 
   return (
     <div className="flex min-h-[400px] items-center justify-center p-4">

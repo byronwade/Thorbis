@@ -135,7 +135,6 @@ async function uploadCompanyLogo(
       });
 
     if (uploadError) {
-      console.warn("Failed to upload company logo:", uploadError);
       return null;
     }
 
@@ -149,15 +148,10 @@ async function uploadCompanyLogo(
       .eq("id", companyId);
 
     if (updateError) {
-      console.warn(
-        "Uploaded logo but failed to attach to company:",
-        updateError
-      );
     }
 
     return publicUrl;
-  } catch (error) {
-    console.warn("Unexpected error uploading logo:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -174,7 +168,6 @@ async function ensureActiveMembership(
     .limit(1);
 
   if (testError) {
-    console.error("Team members table access error:", testError);
     // If table doesn't exist, this is a critical error
     if (
       testError.message?.includes("does not exist") ||
@@ -195,7 +188,6 @@ async function ensureActiveMembership(
     .maybeSingle();
 
   if (error) {
-    console.error("Failed to load team membership:", error);
     throw new Error(`Failed to verify organization access: ${error.message}`);
   }
 
@@ -211,7 +203,6 @@ async function ensureActiveMembership(
       });
 
     if (insertError) {
-      console.error("Failed to insert team member:", insertError);
       throw new Error(
         `Failed to add you to the organization: ${insertError.message}`
       );
@@ -264,7 +255,6 @@ async function fetchIncompleteCompanyCandidates(
     );
 
   if (error) {
-    console.error("Failed to load incomplete companies:", error);
     return [];
   }
 
@@ -293,7 +283,6 @@ async function validateCompanyForOnboarding(
     .maybeSingle();
 
   if (error) {
-    console.error("Failed to verify company:", error);
     return null;
   }
 
@@ -316,7 +305,6 @@ async function validateCompanyForOnboarding(
     .maybeSingle();
 
   if (membershipError) {
-    console.error("Failed to verify company membership:", membershipError);
     return null;
   }
 
@@ -389,7 +377,9 @@ async function generateUniqueSlug(
 }
 
 function extractDomainFromUrl(url?: string | null) {
-  if (!url) return null;
+  if (!url) {
+    return null;
+  }
   try {
     const normalized = url.startsWith("http")
       ? url
@@ -423,12 +413,7 @@ async function autoConfigureEmailInfrastructure(
             last_synced_at: new Date().toISOString(),
           });
       }
-    } catch (error) {
-      console.error(
-        "Failed to provision email domain during onboarding:",
-        error
-      );
-    }
+    } catch (_error) {}
   }
 
   const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
@@ -471,9 +456,7 @@ async function autoConfigureEmailInfrastructure(
           last_synced_at: new Date().toISOString(),
         });
     }
-  } catch (error) {
-    console.error("Failed to create inbound route during onboarding:", error);
-  }
+  } catch (_error) {}
 }
 
 async function updateOnboardingProgressRecord(
@@ -535,8 +518,7 @@ export async function checkDatabaseConnection(): Promise<boolean> {
     // Simple query to test connection
     const { error } = await supabase.from("users").select("count").limit(1);
     return !error;
-  } catch (error) {
-    console.error("Database connection check failed:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -687,13 +669,7 @@ export async function saveOnboardingProgress(
     if (geocodeResult) {
       companyLat = geocodeResult.lat;
       companyLon = geocodeResult.lon;
-      console.log(
-        `Geocoded company address: ${geocodeResult.lat}, ${geocodeResult.lon}`
-      );
     } else {
-      console.warn(
-        "Failed to geocode company address - coordinates will be null"
-      );
     }
 
     let createdCompany = false;
@@ -786,25 +762,16 @@ export async function saveOnboardingProgress(
         await startWorkflow(companyTrialWorkflow, [
           { companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS },
         ]);
-      } catch (trialError) {
-        console.error("Failed to initialize company trial:", trialError);
-      }
+      } catch (_trialError) {}
     }
 
     try {
       await ensureActiveMembership(serviceSupabase, companyId, userId);
     } catch (membershipError) {
-      console.error("Failed to ensure company membership:", membershipError);
-
       if (createdCompany) {
         try {
           await serviceSupabase.from("companies").delete().eq("id", companyId);
-        } catch (cleanupError) {
-          console.error(
-            "Failed to clean up company after membership error:",
-            cleanupError
-          );
-        }
+        } catch (_cleanupError) {}
       }
 
       return {
@@ -824,17 +791,8 @@ export async function saveOnboardingProgress(
       });
 
       if (!brandingResult.success) {
-        console.error(
-          `Failed to provision Telnyx branding for company ${companyId}:`,
-          brandingResult.error
-        );
       }
-    } catch (brandingError) {
-      console.error(
-        `Error ensuring Telnyx branding for company ${companyId}:`,
-        brandingError
-      );
-    }
+    } catch (_brandingError) {}
 
     try {
       await autoConfigureEmailInfrastructure(
@@ -842,12 +800,7 @@ export async function saveOnboardingProgress(
         companyId,
         data.orgWebsite
       );
-    } catch (emailInfraError) {
-      console.error(
-        `Failed to configure email automation for company ${companyId}:`,
-        emailInfraError
-      );
-    }
+    } catch (_emailInfraError) {}
 
     const progressStep = typeof step === "number" ? step : 1;
     const progressData = stepData ?? (progressStep === 1 ? step1Snapshot : {});
@@ -861,7 +814,6 @@ export async function saveOnboardingProgress(
         },
       });
     } catch (progressError) {
-      console.error("Failed to update onboarding progress:", progressError);
       return {
         success: false,
         error:
@@ -873,9 +825,7 @@ export async function saveOnboardingProgress(
 
     try {
       await companyContext.setActiveCompany(companyId);
-    } catch (error) {
-      console.warn("Failed to set active company:", error);
-    }
+    } catch (_error) {}
 
     revalidatePath("/dashboard/welcome");
     revalidatePath("/", "layout");
@@ -885,8 +835,6 @@ export async function saveOnboardingProgress(
       companyId,
     };
   } catch (error) {
-    console.error("Save onboarding progress error:", error);
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -978,7 +926,6 @@ export async function saveOnboardingStepProgress(
     try {
       await ensureActiveMembership(serviceSupabase, companyId, user.id);
     } catch (membershipError) {
-      console.error("Failed to ensure company membership:", membershipError);
       return {
         success: false,
         error:
@@ -994,7 +941,6 @@ export async function saveOnboardingStepProgress(
         stepData,
       });
     } catch (progressError) {
-      console.error("Error saving onboarding progress:", progressError);
       return {
         success: false,
         error:
@@ -1010,8 +956,7 @@ export async function saveOnboardingStepProgress(
       success: true,
       companyId,
     };
-  } catch (error) {
-    console.error("Save onboarding step progress error:", error);
+  } catch (_error) {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",
@@ -1065,7 +1010,7 @@ export async function purchaseOnboardingPhoneNumber(
     }
 
     const phoneNumber = formData.get("phoneNumber") as string;
-    const areaCode = formData.get("areaCode") as string | null;
+    const _areaCode = formData.get("areaCode") as string | null;
 
     if (!phoneNumber) {
       return { success: false, error: "Phone number is required" };
@@ -1082,7 +1027,6 @@ export async function purchaseOnboardingPhoneNumber(
 
     return result;
   } catch (error) {
-    console.error("Error purchasing phone number:", error);
     return {
       success: false,
       error:
@@ -1206,7 +1150,6 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
         .single();
 
       if (portRecordError) {
-        console.error("Failed to persist porting request:", portRecordError);
       }
 
       const portingRequestId = portRecord?.id ?? null;
@@ -1243,10 +1186,6 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
           });
 
         if (insertPhoneError) {
-          console.error(
-            "Failed to create placeholder phone record:",
-            insertPhoneError
-          );
         }
       }
 
@@ -1255,7 +1194,6 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 
     return result;
   } catch (error) {
-    console.error("Error porting phone number:", error);
     return {
       success: false,
       error:
@@ -1278,7 +1216,6 @@ export async function saveOnboardingNotificationSettings(
     const result = await updateNotificationSettings(formData);
     return result;
   } catch (error) {
-    console.error("Error saving notification settings:", error);
     return {
       success: false,
       error:
@@ -1323,7 +1260,6 @@ export async function archiveIncompleteCompany(
       .maybeSingle();
 
     if (companyError) {
-      console.error("Failed to load company for archiving:", companyError);
       return {
         success: false,
         error: `Failed to verify company: ${companyError.message}`,
@@ -1371,7 +1307,6 @@ export async function archiveIncompleteCompany(
       .eq("id", companyId);
 
     if (archiveError) {
-      console.error("Failed to archive company:", archiveError);
       return {
         success: false,
         error: `Failed to archive company: ${archiveError.message}`,
@@ -1388,7 +1323,6 @@ export async function archiveIncompleteCompany(
       .eq("company_id", companyId);
 
     if (memberArchiveError) {
-      console.error("Failed to archive team members:", memberArchiveError);
     }
 
     const { getActiveCompanyId, clearActiveCompany } = await import(
@@ -1406,8 +1340,7 @@ export async function archiveIncompleteCompany(
     return {
       success: true,
     };
-  } catch (error) {
-    console.error("Archive incomplete company error:", error);
+  } catch (_error) {
     return {
       success: false,
       error: "An unexpected error occurred. Please try again.",

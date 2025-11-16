@@ -71,24 +71,27 @@ export default function IndustryPricingStandards() {
   const markupNum = Number.parseFloat(myMarkup) || 0;
 
   const getStatus = (value: number, min: number, max: number, avg: number) => {
-    if (value < min)
+    if (value < min) {
       return {
         label: "Below Market",
         color: "text-destructive",
         bg: "bg-destructive/10",
       };
-    if (value > max)
+    }
+    if (value > max) {
       return {
         label: "Above Market",
         color: "text-warning",
         bg: "bg-warning/10",
       };
-    if (value >= avg - 5 && value <= avg + 5)
+    }
+    if (value >= avg - 5 && value <= avg + 5) {
       return {
         label: "Market Average",
         color: "text-success",
         bg: "bg-success/10",
       };
+    }
     return {
       label: "Within Range",
       color: "text-primary",

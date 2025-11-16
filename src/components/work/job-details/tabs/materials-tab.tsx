@@ -17,11 +17,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface MaterialsTabProps {
+type MaterialsTabProps = {
   job: any;
   materials: any[];
   isEditMode: boolean;
-}
+};
 
 export function MaterialsTab({
   job,

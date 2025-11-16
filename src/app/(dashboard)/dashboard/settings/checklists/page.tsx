@@ -50,7 +50,7 @@ import {
 import { useSettings } from "@/hooks/use-settings";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 
 type ChecklistItem = {
   id: string;

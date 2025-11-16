@@ -25,21 +25,21 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-interface Change {
+type Change = {
   field: string;
   oldValue: any;
   newValue: any;
   section: string;
-}
+};
 
-interface ChangesConfirmationDialogProps {
+type ChangesConfirmationDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   changes: Change[];
   onConfirm: () => void;
   onCancel: () => void;
   isLoading?: boolean;
-}
+};
 
 export function ChangesConfirmationDialog({
   open,
@@ -60,7 +60,7 @@ export function ChangesConfirmationDialog({
       return value.toLocaleString();
     }
     if (typeof value === "string" && value.length > 100) {
-      return value.substring(0, 100) + "...";
+      return `${value.substring(0, 100)}...`;
     }
     return String(value);
   };

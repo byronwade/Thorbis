@@ -21,7 +21,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useToast } from "@/hooks/use-toast";
 import type { ActionResult } from "@/lib/errors/with-error-handling";
 
-interface UseSettingsOptions<T> {
+type UseSettingsOptions<T> = {
   /** Server action to fetch settings */
   getter: () => Promise<ActionResult<T>>;
   /** Server action to save settings */
@@ -36,9 +36,9 @@ interface UseSettingsOptions<T> {
   transformSave?: (settings: T) => FormData;
   /** Optional: Prefetched settings to avoid client-side re-fetch */
   prefetchedData?: Partial<T>;
-}
+};
 
-interface UseSettingsReturn<T> {
+type UseSettingsReturn<T> = {
   /** Current settings state */
   settings: T;
   /** Whether initial load is in progress */
@@ -57,7 +57,7 @@ interface UseSettingsReturn<T> {
   reset: () => void;
   /** Reload settings from database */
   reload: () => Promise<void>;
-}
+};
 
 export function useSettings<T extends Record<string, any>>({
   getter,
@@ -95,7 +95,7 @@ export function useSettings<T extends Record<string, any>>({
         setBaseline(merged);
         setHasUnsavedChanges(false);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error(`Failed to load ${settingsName} settings`);
     } finally {
       setIsLoading(false);
@@ -109,7 +109,7 @@ export function useSettings<T extends Record<string, any>>({
     }
     void loadSettings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadSettings]);
 
   // Update a single setting
   const updateSetting = <K extends keyof T>(key: K, value: T[K]) => {
@@ -144,7 +144,7 @@ export function useSettings<T extends Record<string, any>>({
             result.error || `Failed to save ${settingsName} settings`
           );
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error(
           `An unexpected error occurred while saving ${settingsName} settings`
         );

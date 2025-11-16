@@ -52,13 +52,27 @@ export function PaymentsFilterDropdown({
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (localFilters.archiveStatus !== "active") count++;
-    if (localFilters.status !== "all") count++;
-    if (localFilters.method !== "all") count++;
-    if (localFilters.amountMin) count++;
-    if (localFilters.amountMax) count++;
-    if (localFilters.customerName) count++;
-    if (localFilters.referenceNumber) count++;
+    if (localFilters.archiveStatus !== "active") {
+      count++;
+    }
+    if (localFilters.status !== "all") {
+      count++;
+    }
+    if (localFilters.method !== "all") {
+      count++;
+    }
+    if (localFilters.amountMin) {
+      count++;
+    }
+    if (localFilters.amountMax) {
+      count++;
+    }
+    if (localFilters.customerName) {
+      count++;
+    }
+    if (localFilters.referenceNumber) {
+      count++;
+    }
     return count;
   }, [localFilters]);
 

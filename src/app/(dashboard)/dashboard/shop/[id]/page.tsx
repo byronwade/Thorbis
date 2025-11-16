@@ -379,7 +379,7 @@ export default async function ProductDetailPage({
                 </p>
                 <div className="mt-4 flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
+                    {[...new Array(5)].map((_, i) => (
                       <Star
                         className={`h-5 w-5 ${
                           i < Math.floor(product.rating)

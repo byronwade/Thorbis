@@ -95,12 +95,12 @@ export type ConversationThread = {
   messages: ThreadMessage[];
 };
 
-interface SMSThreadViewProps {
+type SMSThreadViewProps = {
   threads: ConversationThread[];
   companyId: string;
   companyPhones: CompanyPhone[];
   onMessageCreated: (record: CommunicationRecord) => void;
-}
+};
 
 export function SMSThreadView({
   threads,
@@ -163,7 +163,7 @@ export function SMSThreadView({
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [selectedConversation, threads]);
+  }, []);
 
   useEffect(() => {
     if (!selectedConversation && filteredThreads.length > 0) {
@@ -616,12 +616,21 @@ function formatTime(timestamp: string): string {
   const diffHours = Math.floor(diffMs / 3_600_000);
   const diffDays = Math.floor(diffMs / 86_400_000);
 
-  if (diffMins < 1) return "Now";
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7)
+  if (diffMins < 1) {
+    return "Now";
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h`;
+  }
+  if (diffDays === 1) {
+    return "Yesterday";
+  }
+  if (diffDays < 7) {
     return date.toLocaleDateString("en-US", { weekday: "short" });
+  }
 
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
@@ -636,11 +645,13 @@ function formatMessageTime(timestamp: string): string {
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / k ** i) * 100) / 100 + " " + sizes[i];
+  return `${Math.round((bytes / k ** i) * 100) / 100} ${sizes[i]}`;
 }
 
 function mapOutboundCommunicationRecord(

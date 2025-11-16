@@ -100,12 +100,12 @@ type LaborCalculation = {
   suggestedPrice: number;
 };
 
-interface LaborCalculatorModalProps {
+type LaborCalculatorModalProps = {
   trigger?: React.ReactNode;
   onAddLabor?: (
     calculation: LaborCalculation & { description: string }
   ) => void;
-}
+};
 
 export function LaborCalculatorModal({
   trigger,

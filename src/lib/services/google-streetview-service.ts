@@ -45,7 +45,6 @@ export class GoogleStreetViewService {
     address?: string
   ): Promise<StreetView | null> {
     if (!this.apiKey) {
-      console.log("[Street View] Google Maps API key not configured");
       return null;
     }
 
@@ -53,7 +52,6 @@ export class GoogleStreetViewService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Street View] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -64,18 +62,12 @@ export class GoogleStreetViewService {
       const metadataRes = await fetch(metadataUrl);
 
       if (!metadataRes.ok) {
-        console.warn(
-          `[Street View] Metadata request failed: ${metadataRes.status}`
-        );
         return null;
       }
 
       const metadata = await metadataRes.json();
 
       if (metadata.status !== "OK") {
-        console.log(
-          `[Street View] No street view available for location: ${metadata.status}`
-        );
         return {
           mainView: "",
           available: false,
@@ -117,11 +109,9 @@ export class GoogleStreetViewService {
       };
 
       this.cache.set(cacheKey, { data: streetView, timestamp: Date.now() });
-      console.log("[Street View] Generated street view URLs for location");
 
       return streetView;
-    } catch (error) {
-      console.error("[Street View] Error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -135,7 +125,9 @@ export class GoogleStreetViewService {
     heading = 0,
     size = "600x400"
   ): string | null {
-    if (!this.apiKey) return null;
+    if (!this.apiKey) {
+      return null;
+    }
 
     return `https://maps.googleapis.com/maps/api/streetview?size=${size}&location=${lat},${lon}&heading=${heading}&key=${this.apiKey}`;
   }

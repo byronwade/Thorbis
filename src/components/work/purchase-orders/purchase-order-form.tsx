@@ -122,9 +122,9 @@ export function PurchaseOrderForm({
   const [vendorEmail, setVendorEmail] = useState("");
   const [vendorPhone, setVendorPhone] = useState("");
   const [title, setTitle] = useState("");
-  const [poNumber, setPoNumber] = useState("");
-  const [status, setStatus] = useState<(typeof PO_STATUSES)[number]>("draft");
-  const [priority, setPriority] =
+  const [poNumber, _setPoNumber] = useState("");
+  const [status, _setStatus] = useState<(typeof PO_STATUSES)[number]>("draft");
+  const [priority, _setPriority] =
     useState<(typeof PRIORITIES)[number]>("normal");
   const [jobId, setJobId] = useState(defaults?.jobId || "");
   const [estimateId, setEstimateId] = useState(defaults?.estimateId || "");

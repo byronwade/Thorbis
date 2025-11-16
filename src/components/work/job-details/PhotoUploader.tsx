@@ -26,22 +26,22 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { PhotoCategory } from "./photo-types";
 
-interface PhotoFile {
+type PhotoFile = {
   id: string;
   file: File;
   preview: string;
   category: PhotoCategory;
   caption: string;
   isDocument: boolean;
-}
+};
 
-interface PhotoUploaderProps {
+type PhotoUploaderProps = {
   jobId: string;
   companyId: string;
   onUpload?: (files: PhotoFile[]) => Promise<void>;
   onCancel?: () => void;
   className?: string;
-}
+};
 
 // Comprehensive file type support
 const ACCEPTED_FILE_TYPES = {
@@ -139,7 +139,7 @@ export function PhotoUploader({
 
       setFiles((prev) => [...prev, ...newFiles]);
     },
-    [toast]
+    [toast, generateId, isImageFile, validateFile]
   );
 
   const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -249,11 +249,9 @@ export function PhotoUploader({
             successCount++;
           } else {
             errorCount++;
-            console.error("Upload failed:", result.error);
           }
-        } catch (error) {
+        } catch (_error) {
           errorCount++;
-          console.error("Upload error:", error);
         }
 
         // Update progress

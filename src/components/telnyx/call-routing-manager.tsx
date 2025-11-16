@@ -100,7 +100,7 @@ export function CallRoutingManager() {
 
   useEffect(() => {
     loadRoutingRules();
-  }, []);
+  }, [loadRoutingRules]);
 
   async function loadRoutingRules() {
     setIsLoading(true);
@@ -111,7 +111,7 @@ export function CallRoutingManager() {
       } else {
         toast.error(result.error || "Failed to load routing rules");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to load routing rules");
     } finally {
       setIsLoading(false);
@@ -170,7 +170,9 @@ export function CallRoutingManager() {
   }
 
   function handleDeleteRule(ruleId: string) {
-    if (!confirm("Are you sure you want to delete this routing rule?")) return;
+    if (!confirm("Are you sure you want to delete this routing rule?")) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await deleteRoutingRule(ruleId);
@@ -421,7 +423,7 @@ export function CallRoutingManager() {
                 onValueChange={(value) =>
                   setRuleForm({
                     ...ruleForm,
-                    ring_timeout: Number.parseInt(value),
+                    ring_timeout: Number.parseInt(value, 10),
                   })
                 }
                 value={ruleForm.ring_timeout.toString()}

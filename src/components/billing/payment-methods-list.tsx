@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-interface PaymentMethod {
+type PaymentMethod = {
   id: string;
   stripePaymentMethodId: string;
   type:
@@ -52,9 +52,9 @@ interface PaymentMethod {
   isDefault: boolean;
   isDefaultForSubscription: boolean;
   createdAt: string;
-}
+};
 
-interface PaymentMethodsListProps {
+type PaymentMethodsListProps = {
   /** List of payment methods */
   paymentMethods: PaymentMethod[];
   /** Callback when a payment method is set as default */
@@ -63,12 +63,12 @@ interface PaymentMethodsListProps {
   onSetDefaultSubscription?: (id: string) => Promise<void>;
   /** Callback when a payment method is removed */
   onRemove?: (id: string) => Promise<void>;
-}
+};
 
 /**
  * Get icon for payment method type
  */
-function getPaymentMethodIcon(type: string, brand?: string) {
+function getPaymentMethodIcon(type: string, _brand?: string) {
   if (type === "apple_pay") {
     return <Smartphone className="size-4" />;
   }

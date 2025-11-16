@@ -610,22 +610,20 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
   }, [customer, invoice, job]);
 
   return (
-    <>
-      <DetailPageContentLayout
-        activities={activities}
-        attachments={attachments}
-        customHeader={customHeader}
-        customSections={customSections}
-        defaultOpenSection="payment-details"
-        notes={notes}
-        relatedItems={relatedItems}
-        showStandardSections={{
-          activities: true,
-          notes: true,
-          attachments: true,
-          relatedItems: true,
-        }}
-      />
-    </>
+    <DetailPageContentLayout
+      activities={activities}
+      attachments={attachments}
+      customHeader={customHeader}
+      customSections={customSections}
+      defaultOpenSection="payment-details"
+      notes={notes}
+      relatedItems={relatedItems}
+      showStandardSections={{
+        activities: true,
+        notes: true,
+        attachments: true,
+        relatedItems: true,
+      }}
+    />
   );
 }

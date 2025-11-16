@@ -78,9 +78,11 @@ export type WeatherPeriod = z.infer<typeof WeatherPeriodSchema>;
 // ============================================================================
 
 export class WeatherService {
-  private cache: Map<string, { data: WeatherData; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 30; // 30 minutes
+  private readonly cache: Map<
+    string,
+    { data: WeatherData; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 30; // 30 minutes
 
   /**
    * Get complete weather data for a location
@@ -107,7 +109,6 @@ export class WeatherService {
       );
 
       if (!pointsRes.ok) {
-        console.error(`NWS points API failed: ${pointsRes.status}`);
         return null;
       }
 
@@ -215,8 +216,7 @@ export class WeatherService {
       this.cache.set(cacheKey, { data: weatherData, timestamp: Date.now() });
 
       return WeatherDataSchema.parse(weatherData);
-    } catch (error) {
-      console.error("Weather service error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -244,8 +244,7 @@ export class WeatherService {
         expires: feature.properties.expires,
         instruction: feature.properties.instruction,
       }));
-    } catch (error) {
-      console.error("Error fetching alerts:", error);
+    } catch (_error) {
       return [];
     }
   }
@@ -327,12 +326,22 @@ export class WeatherService {
   private normalizeSeverity(
     severity: string | undefined
   ): WeatherAlert["severity"] {
-    if (!severity) return "Unknown";
+    if (!severity) {
+      return "Unknown";
+    }
     const s = severity.toLowerCase();
-    if (s.includes("extreme")) return "Extreme";
-    if (s.includes("severe")) return "Severe";
-    if (s.includes("moderate")) return "Moderate";
-    if (s.includes("minor")) return "Minor";
+    if (s.includes("extreme")) {
+      return "Extreme";
+    }
+    if (s.includes("severe")) {
+      return "Severe";
+    }
+    if (s.includes("moderate")) {
+      return "Moderate";
+    }
+    if (s.includes("minor")) {
+      return "Minor";
+    }
     return "Unknown";
   }
 
@@ -342,12 +351,22 @@ export class WeatherService {
   private normalizeUrgency(
     urgency: string | undefined
   ): WeatherAlert["urgency"] {
-    if (!urgency) return "Unknown";
+    if (!urgency) {
+      return "Unknown";
+    }
     const u = urgency.toLowerCase();
-    if (u.includes("immediate")) return "Immediate";
-    if (u.includes("expected")) return "Expected";
-    if (u.includes("future")) return "Future";
-    if (u.includes("past")) return "Past";
+    if (u.includes("immediate")) {
+      return "Immediate";
+    }
+    if (u.includes("expected")) {
+      return "Expected";
+    }
+    if (u.includes("future")) {
+      return "Future";
+    }
+    if (u.includes("past")) {
+      return "Past";
+    }
     return "Unknown";
   }
 

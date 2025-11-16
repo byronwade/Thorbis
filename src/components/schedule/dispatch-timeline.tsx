@@ -332,16 +332,9 @@ const JobCard = memo(function JobCard({
                     assignments={job.assignments}
                     maxVisible={3}
                     onAddMember={() => {
-                      console.log("[AddTeamMember] Job:", job.id);
                       // TODO: Implement add team member
                     }}
-                    onRemove={(techId) => {
-                      console.log(
-                        "[RemoveTeamMember] Job:",
-                        job.id,
-                        "Tech:",
-                        techId
-                      );
+                    onRemove={(_techId) => {
                       // TODO: Implement remove team member
                     }}
                   />
@@ -431,7 +424,6 @@ const JobCard = memo(function JobCard({
 
                 <ContextMenuItem
                   onClick={() => {
-                    console.log("[ContextMenu] Reschedule:", job.id);
                     // TODO: Open reschedule dialog
                   }}
                 >
@@ -440,7 +432,6 @@ const JobCard = memo(function JobCard({
 
                 <ContextMenuItem
                   onClick={() => {
-                    console.log("[ContextMenu] Duplicate:", job.id);
                     // TODO: Implement duplicate
                   }}
                 >
@@ -708,7 +699,7 @@ export function DispatchTimeline() {
   const [hoverTime, setHoverTime] = useState<string | null>(null);
   const [isJobHovered, setIsJobHovered] = useState(false);
   const [activeJobId, setActiveJobId] = useState<string | null>(null);
-  const [dragPreview, setDragPreview] = useState<{
+  const [_dragPreview, setDragPreview] = useState<{
     label: string;
     technician: string;
   } | null>(null);
@@ -804,7 +795,7 @@ export function DispatchTimeline() {
 
   const timeRange = useMemo(() => {
     const start = hourlySlots[0];
-    const end = new Date(hourlySlots[hourlySlots.length - 1]);
+    const end = new Date(hourlySlots.at(-1));
     end.setHours(23, 59, 59, 999);
     return { start, end };
   }, [hourlySlots]);
@@ -814,7 +805,9 @@ export function DispatchTimeline() {
   const currentTimePosition = useMemo(() => {
     const now = new Date();
     const isToday = now.toDateString() === dateObj.toDateString();
-    if (!isToday) return null;
+    if (!isToday) {
+      return null;
+    }
 
     const totalMinutes =
       (timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
@@ -881,14 +874,6 @@ export function DispatchTimeline() {
     const lanesHeight = technicianLanes.reduce(
       (sum, lane) => sum + lane.height,
       0
-    );
-    console.log(
-      "[Height Calc] Header:",
-      headerHeight,
-      "Lanes:",
-      lanesHeight,
-      "Total:",
-      headerHeight + lanesHeight
     );
     return headerHeight + lanesHeight;
   }, [technicianLanes]);
@@ -1018,7 +1003,6 @@ export function DispatchTimeline() {
       setDragPreview(null);
 
       if (!over) {
-        console.log("[DragEnd] No drop target");
         return;
       }
 
@@ -1026,10 +1010,6 @@ export function DispatchTimeline() {
       const overId = over.id as string;
       const droppedOnUnassigned = overId === UNASSIGNED_DROP_ID;
       const overIsUnassignedJob = unassignedJobs.some((j) => j.id === overId);
-
-      console.log("[DragEnd] Job ID:", jobId);
-      console.log("[DragEnd] Drop Target ID:", overId);
-      console.log("[DragEnd] Delta:", delta);
 
       // Check if this is from the unassigned panel
       const isFromUnassigned = unassignedJobs.some((j) => j.id === jobId);
@@ -1039,7 +1019,6 @@ export function DispatchTimeline() {
       if (isFromUnassigned) {
         // Dragging from unassigned panel
         job = unassignedJobs.find((j) => j.id === jobId);
-        console.log("[DragEnd] Dragging unassigned job:", job?.title);
       } else {
         // Dragging from existing lane
         const jobData = technicianLanes
@@ -1047,14 +1026,12 @@ export function DispatchTimeline() {
           .find((j) => j.job.id === jobId);
 
         if (!jobData) {
-          console.log("[DragEnd] Job not found in lanes");
           return;
         }
         job = jobData.job;
       }
 
       if (!job) {
-        console.log("[DragEnd] Job not found");
         return;
       }
       if (isFromUnassigned && overIsUnassignedJob && jobId !== overId) {
@@ -1111,15 +1088,6 @@ export function DispatchTimeline() {
       const targetTechnicianId = overId;
       const targetTech = technicians.find((t) => t.id === targetTechnicianId);
 
-      console.log("[DragEnd] Job:", job.title);
-      console.log("[DragEnd] Current Tech ID:", job.technicianId);
-      console.log("[DragEnd] Target Tech:", targetTech?.name);
-      console.log("[DragEnd] Target Tech User ID:", targetTech?.userId);
-      console.log(
-        "[DragEnd] Target Tech Team Member ID:",
-        targetTech?.teamMemberId
-      );
-
       let newStart: Date;
       let newEnd: Date;
 
@@ -1139,11 +1107,6 @@ export function DispatchTimeline() {
           newStart = new Date(timeRange.start);
           newStart.setMinutes(newStart.getMinutes() + snappedMinutes);
           newEnd = new Date(newStart.getTime() + 2 * 60 * 60 * 1000); // 2 hours
-
-          console.log(
-            "[DragEnd] Creating appointment at:",
-            format(newStart, "h:mm a")
-          );
         } else {
           // Fallback to current time
           newStart = new Date();
@@ -1179,12 +1142,6 @@ export function DispatchTimeline() {
       // Update in Supabase
       // Use userId if available, otherwise use the technician ID (which might be team_member_id)
       const techIdForDb = targetTech?.userId || targetTechnicianId;
-      console.log(
-        "[DragEnd] Calling assignJobToTechnician with:",
-        jobId,
-        jobId,
-        techIdForDb
-      );
 
       // Update technician assignment
       const assignResult = await assignJobToTechnician(
@@ -1193,25 +1150,13 @@ export function DispatchTimeline() {
         techIdForDb
       );
 
-      console.log("[DragEnd] Assignment result:", JSON.stringify(assignResult));
-
       if (!assignResult.success) {
         toast.error(assignResult.error || "Failed to assign job", {
           id: toastId,
         });
-        console.error("[DragEnd] Assignment failed:", assignResult.error);
         return;
       }
-
-      // Always update times (for both unassigned and moved jobs)
-      console.log(
-        "[DragEnd] Updating times:",
-        format(newStart, "h:mm a"),
-        "to",
-        format(newEnd, "h:mm a")
-      );
       const timeResult = await updateAppointmentTimes(jobId, newStart, newEnd);
-      console.log("[DragEnd] Time update result:", JSON.stringify(timeResult));
 
       if (!timeResult.success) {
         toast.error(timeResult.error || "Failed to update times", {
@@ -1233,11 +1178,10 @@ export function DispatchTimeline() {
       unassignedJobs,
       timeRange,
       totalWidth,
-      setUnassignedOrder,
     ]
   );
 
-  const handleDragMove = useCallback(
+  const _handleDragMove = useCallback(
     (event: DragMoveEvent) => {
       const jobId = event.active.id as string;
       const jobData = technicianLanes
@@ -1277,7 +1221,7 @@ export function DispatchTimeline() {
     [technicianLanes, technicians]
   );
 
-  const handleDragCancel = useCallback(() => {
+  const _handleDragCancel = useCallback(() => {
     setActiveJobId(null);
     setDragPreview(null);
   }, []);
@@ -1468,7 +1412,9 @@ export function DispatchTimeline() {
   }, []);
 
   const activeJob = useMemo(() => {
-    if (!activeJobId) return null;
+    if (!activeJobId) {
+      return null;
+    }
     return technicianLanes
       .flatMap((lane) => lane.jobs)
       .find((j) => j.job.id === activeJobId)?.job;
@@ -1515,7 +1461,7 @@ export function DispatchTimeline() {
         currentTimePosition - container.clientWidth / 2
       );
     }
-  }, [dateObj, currentTimePosition]);
+  }, [currentTimePosition]);
 
   // Command menu keyboard shortcut (Cmd+K)
   useEffect(() => {

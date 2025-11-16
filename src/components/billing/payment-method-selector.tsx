@@ -50,7 +50,7 @@ function PaymentMethodSelectorInner({
   const stripe = useStripe();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<string>("");
-  const [showNewCardForm, setShowNewCardForm] = useState(false);
+  const [_showNewCardForm, setShowNewCardForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch existing payment methods if customer ID is provided
@@ -88,8 +88,7 @@ function PaymentMethodSelectorInner({
           setSelectedMethod("new-card");
           setShowNewCardForm(true);
         }
-      } catch (err) {
-        console.error("Error fetching payment methods:", err);
+      } catch (_err) {
         // Default to credit card on error
         setSelectedMethod("new-card");
         setShowNewCardForm(true);
@@ -99,7 +98,7 @@ function PaymentMethodSelectorInner({
     }
 
     fetchPaymentMethods();
-  }, [customerId, stripe]);
+  }, [customerId, stripe, onPaymentMethodSelected]);
 
   const handleMethodSelect = (methodId: string) => {
     if (methodId === "new-card") {

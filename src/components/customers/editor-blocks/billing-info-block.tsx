@@ -96,7 +96,7 @@ export function BillingInfoBlockComponent({
     }
   };
 
-  const getCardIcon = (brand: string) => {
+  const _getCardIcon = (brand: string) => {
     switch (brand.toLowerCase()) {
       case "visa":
         return "💳";
@@ -111,13 +111,13 @@ export function BillingInfoBlockComponent({
     }
   };
 
-  const formatCurrency = (cents: number) =>
+  const _formatCurrency = (cents: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(cents / 100);
 
-  const paymentTermsLabels: Record<string, string> = {
+  const _paymentTermsLabels: Record<string, string> = {
     due_on_receipt: "Due on Receipt",
     net_15: "Net 15",
     net_30: "Net 30",

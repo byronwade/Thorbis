@@ -18,9 +18,9 @@ import {
 } from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
-interface SettingsSectionProps {
+type SettingsSectionProps = {
   section: SettingsOverviewSection;
-}
+};
 
 export function SettingsSection({ section }: SettingsSectionProps) {
   const statusColors = getStatusColorClasses(section.status);

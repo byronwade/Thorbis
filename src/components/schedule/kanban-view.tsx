@@ -334,7 +334,7 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 
 export function KanbanView() {
   const { getAllJobs, isLoading } = useSchedule();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const jobs = getAllJobs();
 

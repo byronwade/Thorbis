@@ -15,7 +15,7 @@ import { persist } from "zustand/middleware";
 // Density options for timeline display
 export type TimelineDensity = "text-only" | "small" | "medium" | "large";
 
-interface ActivityTimelineStore {
+type ActivityTimelineStore = {
   // Density/compactness setting
   density: TimelineDensity;
   setDensity: (density: TimelineDensity) => void;
@@ -34,7 +34,7 @@ interface ActivityTimelineStore {
 
   // Apply density settings
   applyDensity: (density: TimelineDensity) => void;
-}
+};
 
 // Density presets
 const DENSITY_PRESETS: Record<

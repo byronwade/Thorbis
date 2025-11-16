@@ -162,8 +162,7 @@ export async function getTeamExtensions() {
     }));
 
     return { success: true, data: transformedData };
-  } catch (error) {
-    console.error("Error fetching team extensions:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to fetch team extensions" };
   }
 }
@@ -222,7 +221,6 @@ export async function updateTeamMemberExtension(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error updating team member extension:", error);
     return { success: false, error: "Failed to update extension settings" };
   }
 }
@@ -288,7 +286,6 @@ export async function setVacationMode(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error setting vacation mode:", error);
     return { success: false, error: "Failed to set vacation mode" };
   }
 }
@@ -323,8 +320,7 @@ export async function getCallRoutingRules() {
     }
 
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching routing rules:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to fetch routing rules" };
   }
 }
@@ -377,7 +373,6 @@ export async function createRoutingRule(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error creating routing rule:", error);
     return { success: false, error: "Failed to create routing rule" };
   }
 }
@@ -420,7 +415,6 @@ export async function updateRoutingRule(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error updating routing rule:", error);
     return { success: false, error: "Failed to update routing rule" };
   }
 }
@@ -452,8 +446,7 @@ export async function deleteRoutingRule(ruleId: string) {
 
     revalidatePath("/dashboard/settings/communications/phone");
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting routing rule:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to delete routing rule" };
   }
 }
@@ -512,8 +505,7 @@ export async function updateRulePriority(
 
     revalidatePath("/dashboard/settings/communications/phone");
     return { success: true };
-  } catch (error) {
-    console.error("Error updating rule priority:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to update priority" };
   }
 }
@@ -548,8 +540,7 @@ export async function getCompanyHolidays() {
     }
 
     return { success: true, data };
-  } catch (error) {
-    console.error("Error fetching holidays:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to fetch holidays" };
   }
 }
@@ -590,7 +581,6 @@ export async function createHoliday(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error creating holiday:", error);
     return { success: false, error: "Failed to create holiday" };
   }
 }
@@ -633,7 +623,6 @@ export async function updateHoliday(
         error: error.issues[0]?.message || "Validation error",
       };
     }
-    console.error("Error updating holiday:", error);
     return { success: false, error: "Failed to update holiday" };
   }
 }
@@ -665,8 +654,7 @@ export async function deleteHoliday(holidayId: string) {
 
     revalidatePath("/dashboard/settings/communications/phone");
     return { success: true };
-  } catch (error) {
-    console.error("Error deleting holiday:", error);
+  } catch (_error) {
     return { success: false, error: "Failed to delete holiday" };
   }
 }

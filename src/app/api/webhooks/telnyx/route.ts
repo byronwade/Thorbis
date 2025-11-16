@@ -59,7 +59,6 @@ export async function POST(request: NextRequest) {
       process.env.TELNYX_SKIP_SIGNATURE_VERIFICATION === "true";
 
     if (signature && timestamp && !skipSignatureVerification) {
-      console.log("🔒 Verifying webhook signature...");
       const isValid = verifyWebhookSignature({
         payload: body,
         signature,
@@ -67,7 +66,6 @@ export async function POST(request: NextRequest) {
       });
 
       if (!isValid) {
-        console.error("❌ Invalid Telnyx webhook signature");
         return NextResponse.json(
           createWebhookResponse(false, "Invalid signature"),
           {
@@ -78,7 +76,6 @@ export async function POST(request: NextRequest) {
 
       // Validate timestamp to prevent replay attacks
       if (!isWebhookTimestampValid(timestamp)) {
-        console.error("❌ Telnyx webhook timestamp too old");
         return NextResponse.json(
           createWebhookResponse(false, "Webhook too old"),
           {
@@ -86,16 +83,13 @@ export async function POST(request: NextRequest) {
           }
         );
       }
-      console.log("✅ Signature verified");
     } else if (skipSignatureVerification) {
-      console.log("⚠️  Skipping signature verification (development mode)");
     }
 
     // Parse webhook payload
     const payload = parseWebhookPayload(body);
 
     if (!payload) {
-      console.error("Invalid Telnyx webhook payload");
       return NextResponse.json(
         createWebhookResponse(false, "Invalid payload"),
         {
@@ -106,8 +100,6 @@ export async function POST(request: NextRequest) {
 
     // Get event type
     const eventType = getEventType(payload);
-    console.log(`\n🔔 Received Telnyx webhook: ${eventType}`);
-    console.log("📦 Payload:", JSON.stringify(payload, null, 2));
 
     // Route to appropriate handler based on event type
     if (isCallEvent(eventType)) {
@@ -115,13 +107,11 @@ export async function POST(request: NextRequest) {
     } else if (isMessageEvent(eventType)) {
       await handleMessageEvent(payload, eventType);
     } else {
-      console.log(`Unhandled Telnyx event type: ${eventType}`);
     }
 
     // Return success response
     return NextResponse.json(createWebhookResponse(true), { status: 200 });
   } catch (error) {
-    console.error("Error processing Telnyx webhook:", error);
     return NextResponse.json(
       createWebhookResponse(
         false,
@@ -143,15 +133,9 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
       const event = payload as CallInitiatedPayload;
       const callData = event.data.payload;
 
-      console.log(`📞 Incoming call from ${callData.from} to ${callData.to}`);
-      console.log(`📱 Call Control ID: ${callData.call_control_id}`);
-
       const phoneContext = await getPhoneNumberContext(supabase, callData.to);
 
       if (!phoneContext) {
-        console.warn(
-          `⚠️  Could not find phone number ${callData.to} in phone_numbers table`
-        );
         break;
       }
 
@@ -220,11 +204,8 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         });
 
       if (upsertError) {
-        console.error("❌ Failed to save call to database:", upsertError);
         throw upsertError;
       }
-
-      console.log("✅ Call saved to database");
 
       // Broadcast call initiated event to UI (for real-time notifications)
       // This would typically use WebSocket or Server-Sent Events
@@ -247,9 +228,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .eq("telnyx_call_control_id", callData.call_control_id);
 
       if (updateError) {
-        console.error("❌ Failed to update call answered status:", updateError);
       } else {
-        console.log(`✅ Call answered: ${callData.call_control_id}`);
       }
       break;
     }
@@ -276,11 +255,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .eq("telnyx_call_control_id", callData.call_control_id);
 
       if (hangupError) {
-        console.error("❌ Failed to update call hangup:", hangupError);
       } else {
-        console.log(
-          `✅ Call ended: ${callData.call_control_id}, duration: ${duration}s`
-        );
       }
       break;
     }
@@ -301,12 +276,8 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         .select("id")
         .single();
 
-      console.log(`📼 Call recording saved: ${recordingData.call_control_id}`);
-
       // Automatically trigger transcription if recording URL exists
       if (recordingUrl && communication?.id) {
-        console.log("📝 Triggering automatic transcription for recording...");
-
         // Import and call transcription action
         const { transcribeCallRecording } = await import("@/actions/telnyx");
         const transcriptionResult = await transcribeCallRecording({
@@ -315,13 +286,7 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
         });
 
         if (transcriptionResult.success) {
-          console.log(
-            `✅ Transcription job started: ${transcriptionResult.transcriptionId}`
-          );
         } else {
-          console.error(
-            `❌ Failed to start transcription: ${transcriptionResult.error}`
-          );
         }
       }
 
@@ -339,15 +304,10 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
           answering_machine_detected: machineData.result !== "human",
         })
         .eq("telnyx_call_control_id", machineData.call_control_id);
-
-      console.log(
-        `Machine detection: ${machineData.call_control_id}, result: ${machineData.result}`
-      );
       break;
     }
 
     default:
-      console.log(`Unhandled call event: ${eventType}`);
   }
 }
 
@@ -368,9 +328,6 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
         : null;
 
       if (!phoneContext) {
-        console.warn(
-          `⚠️  Could not associate inbound SMS ${messageData.id} to a company`
-        );
         break;
       }
 
@@ -406,8 +363,6 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
           media: messageData.media,
         },
       });
-
-      console.log(`Message received: ${messageData.id}`);
       break;
     }
 
@@ -422,8 +377,6 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
           sent_at: new Date().toISOString(),
         })
         .eq("telnyx_message_id", messageData.id);
-
-      console.log(`Message sent: ${messageData.id}`);
       break;
     }
 
@@ -438,8 +391,6 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
           delivered_at: new Date().toISOString(),
         })
         .eq("telnyx_message_id", messageData.id);
-
-      console.log(`Message delivered: ${messageData.id}`);
       break;
     }
 
@@ -456,13 +407,10 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
           failure_reason: messageData.errors?.[0]?.detail || "Unknown error",
         })
         .eq("telnyx_message_id", messageData.id);
-
-      console.log(`Message failed: ${messageData.id}`);
       break;
     }
 
     default:
-      console.log(`Unhandled message event: ${eventType}`);
   }
 }
 
@@ -531,7 +479,9 @@ async function getCustomerDisplayName(
     .eq("id", customerId)
     .maybeSingle();
 
-  if (!data) return null;
+  if (!data) {
+    return null;
+  }
 
   const first = data.first_name?.trim();
   const last = data.last_name?.trim();

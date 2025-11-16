@@ -199,16 +199,26 @@ export function IntelligentCustomerWizard() {
 
     switch (step) {
       case 1:
-        if (!customerData.type) newErrors.push("Customer type is required");
+        if (!customerData.type) {
+          newErrors.push("Customer type is required");
+        }
         if (customerData.type !== "residential" && !customerData.companyName) {
           newErrors.push("Company name is required for business customers");
         }
         break;
       case 2:
-        if (!customerData.firstName) newErrors.push("First name is required");
-        if (!customerData.lastName) newErrors.push("Last name is required");
-        if (!customerData.email) newErrors.push("Email is required");
-        if (!customerData.phone) newErrors.push("Phone is required");
+        if (!customerData.firstName) {
+          newErrors.push("First name is required");
+        }
+        if (!customerData.lastName) {
+          newErrors.push("Last name is required");
+        }
+        if (!customerData.email) {
+          newErrors.push("Email is required");
+        }
+        if (!customerData.phone) {
+          newErrors.push("Phone is required");
+        }
         break;
       case 3:
         // Address is optional
@@ -235,7 +245,9 @@ export function IntelligentCustomerWizard() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(4)) return;
+    if (!validateStep(4)) {
+      return;
+    }
 
     setIsSubmitting(true);
     setErrors([]);
@@ -301,7 +313,7 @@ export function IntelligentCustomerWizard() {
       } else {
         setErrors([result.error || "Failed to create customer"]);
       }
-    } catch (error) {
+    } catch (_error) {
       setErrors(["An unexpected error occurred"]);
     } finally {
       setIsSubmitting(false);

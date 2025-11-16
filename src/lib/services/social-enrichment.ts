@@ -60,10 +60,10 @@ export type SocialEnrichment = z.infer<typeof SocialEnrichmentSchema>;
 // ============================================================================
 
 export class SocialEnrichmentService {
-  private rapidApiKey: string | undefined;
-  private twitterBearerToken: string | undefined;
-  private facebookAppId: string | undefined;
-  private facebookAppSecret: string | undefined;
+  private readonly rapidApiKey: string | undefined;
+  private readonly twitterBearerToken: string | undefined;
+  private readonly facebookAppId: string | undefined;
+  private readonly facebookAppSecret: string | undefined;
 
   constructor() {
     this.rapidApiKey = process.env.RAPIDAPI_KEY;
@@ -87,27 +87,21 @@ export class SocialEnrichmentService {
       if (linkedinProfile) {
         profiles.linkedin = linkedinProfile;
       }
-    } catch (error) {
-      console.error("Error finding LinkedIn profile:", error);
-    }
+    } catch (_error) {}
 
     try {
       const twitterProfile = await this.findTwitterProfile(fullName);
       if (twitterProfile) {
         profiles.twitter = twitterProfile;
       }
-    } catch (error) {
-      console.error("Error finding Twitter profile:", error);
-    }
+    } catch (_error) {}
 
     try {
       const facebookProfile = await this.findFacebookProfile(email);
       if (facebookProfile) {
         profiles.facebook = facebookProfile;
       }
-    } catch (error) {
-      console.error("Error finding Facebook profile:", error);
-    }
+    } catch (_error) {}
 
     // Return null if no profiles found
     if (Object.keys(profiles).length === 0) {
@@ -129,7 +123,6 @@ export class SocialEnrichmentService {
     fullName?: string
   ): Promise<SocialEnrichment["profiles"]["linkedin"] | null> {
     if (!this.rapidApiKey) {
-      console.log("RapidAPI key not configured");
       return null;
     }
 
@@ -174,7 +167,6 @@ export class SocialEnrichmentService {
     fullName?: string
   ): Promise<SocialEnrichment["profiles"]["twitter"] | null> {
     if (!this.twitterBearerToken) {
-      console.log("Twitter bearer token not configured");
       return null;
     }
 
@@ -218,10 +210,9 @@ export class SocialEnrichmentService {
    * Find Facebook profile using Facebook Graph API
    */
   private async findFacebookProfile(
-    email: string
+    _email: string
   ): Promise<SocialEnrichment["profiles"]["facebook"] | null> {
     if (!(this.facebookAppId && this.facebookAppSecret)) {
-      console.log("Facebook credentials not configured");
       return null;
     }
 
@@ -234,7 +225,7 @@ export class SocialEnrichmentService {
     }
 
     const tokenData = await tokenResponse.json();
-    const accessToken = tokenData.access_token;
+    const _accessToken = tokenData.access_token;
 
     // Note: Facebook's public search capabilities are very limited
     // This is a placeholder - actual implementation would require user consent

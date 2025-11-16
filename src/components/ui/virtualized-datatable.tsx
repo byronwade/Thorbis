@@ -100,7 +100,7 @@ const VirtualRow = memo(function VirtualRow<T>({
   itemId: string;
 }) {
   const handleSelect = useCallback(
-    (checked: boolean) => {
+    (_checked: boolean) => {
       onSelectItem(itemId);
     },
     [itemId, onSelectItem]
@@ -174,7 +174,9 @@ export function VirtualizedDataTable<T>({
 
   // Memoize filtered data (only recalculates when data or search changes)
   const filteredData = useMemo(() => {
-    if (!(searchQuery && searchFilter)) return data;
+    if (!(searchQuery && searchFilter)) {
+      return data;
+    }
     return data.filter((item) => searchFilter(item, searchQuery.toLowerCase()));
   }, [data, searchQuery, searchFilter]);
 
@@ -226,7 +228,7 @@ export function VirtualizedDataTable<T>({
     filteredData.length > 0 &&
     filteredData.every((item) => selectedIds.has(getItemId(item)));
 
-  const someSelected = filteredData.some((item) =>
+  const _someSelected = filteredData.some((item) =>
     selectedIds.has(getItemId(item))
   );
 

@@ -54,7 +54,9 @@ export function CallIndicatorBadge({
 
   // Update duration every second
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setDisplayDuration((prev) => prev + 1);
@@ -86,7 +88,9 @@ export function CallIndicatorBadge({
 
   // Close context menu when clicking outside
   useEffect(() => {
-    if (!showContextMenu) return;
+    if (!showContextMenu) {
+      return;
+    }
 
     const handleClickOutside = () => setShowContextMenu(false);
     document.addEventListener("click", handleClickOutside);

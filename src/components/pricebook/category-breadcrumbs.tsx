@@ -112,9 +112,7 @@ export function CategoryBreadcrumbs() {
             >
               ← Back
             </Button>
-            <span className="font-medium text-sm">
-              {segments[segments.length - 1].label}
-            </span>
+            <span className="font-medium text-sm">{segments.at(-1).label}</span>
           </>
         )}
       </div>

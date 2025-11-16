@@ -23,12 +23,12 @@ import {
 import type { KBArticleWithRelations } from "@/lib/kb/types";
 import { KBTableOfContents } from "./kb-table-of-contents";
 
-interface KBSidebarContentProps {
+type KBSidebarContentProps = {
   currentCategory?: string;
   currentArticleId?: string;
   htmlContent?: string;
   relatedArticles?: KBArticleWithRelations[];
-}
+};
 
 export async function KBSidebarContent({
   currentCategory,

@@ -87,8 +87,12 @@ export function MaterialsTable({
   // Filter materials based on archive status
   const filteredMaterials = materials.filter((material) => {
     const isArchived = Boolean(material.archived_at || material.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -179,7 +183,7 @@ export function MaterialsTable({
       header: "",
       width: "w-10",
       shrink: true,
-      render: (material) => (
+      render: (_material) => (
         <div data-no-row-click>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -214,18 +218,18 @@ export function MaterialsTable({
     {
       label: "Reorder",
       icon: <ShoppingCart className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Reorder:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Export",
       icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Export:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
       variant: "destructive",
-      onClick: (selectedIds) => console.log("Archive:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
   ];
 

@@ -93,7 +93,9 @@ export function ScheduleToolbarActions() {
         <ToggleGroup
           className="border"
           onValueChange={(value) => {
-            if (value) setViewMode(value as "day" | "week" | "month");
+            if (value) {
+              setViewMode(value as "day" | "week" | "month");
+            }
           }}
           size="sm"
           type="single"

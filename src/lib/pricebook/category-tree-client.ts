@@ -18,7 +18,6 @@ export async function fetchCategoriesClient(): Promise<DatabaseCategory[]> {
   const supabase = createBrowserClient();
 
   if (!supabase) {
-    console.error("Failed to create Supabase client");
     return [];
   }
 
@@ -32,7 +31,6 @@ export async function fetchCategoriesClient(): Promise<DatabaseCategory[]> {
     .order("sort_order", { ascending: true });
 
   if (error) {
-    console.error("Error fetching categories:", error);
     return [];
   }
 

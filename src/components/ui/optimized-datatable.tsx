@@ -84,7 +84,7 @@ const TableRowInner = function TableRow<T>({
   enableSelection?: boolean;
 }) {
   const handleSelect = useCallback(
-    (checked: boolean) => {
+    (_checked: boolean) => {
       onSelectItem((item as any).id || "");
     },
     [item, onSelectItem]
@@ -156,13 +156,17 @@ export function OptimizedDataTable<T>({
 
   // Memoize filtered data
   const filteredData = useMemo(() => {
-    if (!(searchQuery && searchFilter)) return data;
+    if (!(searchQuery && searchFilter)) {
+      return data;
+    }
     return data.filter((item) => searchFilter(item, searchQuery.toLowerCase()));
   }, [data, searchQuery, searchFilter]);
 
   // Memoize paginated data
   const paginatedData = useMemo(() => {
-    if (!showPagination) return filteredData;
+    if (!showPagination) {
+      return filteredData;
+    }
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return filteredData.slice(start, end);
@@ -208,7 +212,7 @@ export function OptimizedDataTable<T>({
   const allSelected =
     paginatedData.length > 0 &&
     paginatedData.every((item) => selectedIds.has(getItemId(item)));
-  const someSelected = paginatedData.some((item) =>
+  const _someSelected = paginatedData.some((item) =>
     selectedIds.has(getItemId(item))
   );
 

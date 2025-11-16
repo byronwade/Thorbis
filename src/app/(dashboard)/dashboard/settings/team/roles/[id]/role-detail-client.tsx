@@ -216,7 +216,7 @@ const buildPermissionMap = (selected: string[]): PermissionMap => {
   }, {});
 };
 
-interface RoleDetailClientProps {
+type RoleDetailClientProps = {
   initialRole: {
     id?: string;
     name: string;
@@ -226,7 +226,7 @@ interface RoleDetailClientProps {
     isSystem: boolean;
   };
   mode: "create" | "edit";
-}
+};
 
 export default function RoleDetailClient({
   initialRole,
@@ -278,7 +278,9 @@ export default function RoleDetailClient({
   };
 
   const handleSave = () => {
-    if (!isEditable) return;
+    if (!isEditable) {
+      return;
+    }
 
     if (!formState.name.trim()) {
       toast.error("Role name is required");

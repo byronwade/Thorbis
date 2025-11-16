@@ -10,7 +10,7 @@
  * - File operations (move, delete, duplicate)
  */
 
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import {
   formatFileSize,
@@ -46,7 +46,7 @@ export type StorageBucket =
   | "contracts"
   | "avatars";
 
-export interface UploadOptions {
+export type UploadOptions = {
   companyId: string;
   context: DocumentContext;
   bucket?: StorageBucket;
@@ -57,9 +57,9 @@ export interface UploadOptions {
   expiryDate?: Date;
   validationOptions?: ValidationOptions;
   onProgress?: (progress: number) => void;
-}
+};
 
-export interface UploadResult {
+export type UploadResult = {
   success: boolean;
   attachmentId?: string;
   storageUrl?: string;
@@ -67,9 +67,9 @@ export interface UploadResult {
   publicUrl?: string;
   error?: string;
   warnings?: string[];
-}
+};
 
-export interface DocumentMetadata {
+export type DocumentMetadata = {
   id: string;
   companyId: string;
   entityType: string;
@@ -90,9 +90,9 @@ export interface DocumentMetadata {
   tags?: string[];
   accessCount: number;
   downloadCount: number;
-}
+};
 
-export interface ListFilesOptions {
+export type ListFilesOptions = {
   companyId: string;
   context?: DocumentContext;
   folder?: string;
@@ -104,7 +104,7 @@ export interface ListFilesOptions {
   offset?: number;
   sortBy?: "created_at" | "file_name" | "file_size" | "access_count";
   sortOrder?: "asc" | "desc";
-}
+};
 
 // ============================================================================
 // BUCKET SELECTION
@@ -117,7 +117,9 @@ function selectBucket(
   context: DocumentContext,
   customBucket?: StorageBucket
 ): StorageBucket {
-  if (customBucket) return customBucket;
+  if (customBucket) {
+    return customBucket;
+  }
 
   switch (context.type) {
     case "customer":
@@ -130,8 +132,6 @@ function selectBucket(
       return "estimates";
     case "contract":
       return "contracts";
-    case "equipment":
-    case "general":
     default:
       return "company-files";
   }
@@ -159,7 +159,7 @@ export function generateStoragePath(
 
   // Add context type
   if (context.type !== "general") {
-    parts.push(context.type + "s"); // customers, jobs, etc.
+    parts.push(`${context.type}s`); // customers, jobs, etc.
   } else {
     parts.push("general");
   }
@@ -189,7 +189,7 @@ function generateFolderPath(context: DocumentContext): string {
   if (context.type === "general") {
     parts.push("general");
   } else {
-    parts.push(context.type + "s");
+    parts.push(`${context.type}s`);
   }
 
   if (context.id) {
@@ -200,7 +200,7 @@ function generateFolderPath(context: DocumentContext): string {
     parts.push(context.folder);
   }
 
-  return "/" + parts.join("/");
+  return `/${parts.join("/")}`;
 }
 
 // ============================================================================
@@ -367,7 +367,6 @@ export async function uploadDocument(
       warnings: validation.warnings,
     };
   } catch (error) {
-    console.error("Upload error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Upload failed",
@@ -725,9 +724,7 @@ async function queueVirusScan(
     await supabase.functions.invoke("virus-scan", {
       body: { attachmentId, bucket, path },
     });
-  } catch (error) {
-    console.error("Failed to queue virus scan:", error);
-  }
+  } catch (_error) {}
 }
 
 // ============================================================================

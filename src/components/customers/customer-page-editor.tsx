@@ -84,14 +84,14 @@ import { JobsTableBlock } from "./editor-blocks/jobs-table-block";
 import { MetricsBlock } from "./editor-blocks/metrics-block";
 import { NotesCollapsibleBlock } from "./editor-blocks/notes-collapsible-block";
 
-interface CustomerPageEditorProps {
+type CustomerPageEditorProps = {
   customerId: string;
   initialContent?: any; // Tiptap JSON
   initialData?: any; // Customer data for custom blocks
   isEditable?: boolean;
   onChange?: (content: any) => void;
   className?: string;
-}
+};
 
 export function CustomerPageEditor({
   customerId,
@@ -103,14 +103,6 @@ export function CustomerPageEditor({
 }: CustomerPageEditorProps) {
   // Generate default content - simplified for testing
   const getDefaultContent = () => {
-    console.log("getDefaultContent called with:", {
-      hasInitialContent: !!initialContent,
-      initialContentType: initialContent?.type,
-      initialContentLength: initialContent?.content?.length,
-      hasInitialData: !!initialData,
-      customerName: initialData?.display_name,
-    });
-
     // Check if we have valid existing content (not just empty doc)
     if (
       initialContent &&
@@ -118,8 +110,6 @@ export function CustomerPageEditor({
       initialContent.content &&
       initialContent.content.length > 0
     ) {
-      console.log("Using existing page_content:", initialContent);
-
       // Update content blocks with fresh data from database
       const updatedContent = initialContent.content.map((node: any) => {
         const nodeAttrs = node.attrs || {};
@@ -245,7 +235,6 @@ export function CustomerPageEditor({
       );
 
       if (!hasBadgesBlock) {
-        console.log("Adding missing badges block to existing content");
         return {
           ...initialContent,
           content: [
@@ -265,19 +254,6 @@ export function CustomerPageEditor({
         content: updatedContent,
       };
     }
-
-    // Create full page layout with all customer data blocks
-    console.log(
-      "Creating default content for customer:",
-      initialData?.display_name,
-      "with",
-      {
-        propertiesCount: initialData?.properties?.length,
-        jobsCount: initialData?.jobs?.length,
-        invoicesCount: initialData?.invoices?.length,
-        activitiesCount: initialData?.activities?.length,
-      }
-    );
     return {
       type: "doc",
       content: [
@@ -478,14 +454,8 @@ export function CustomerPageEditor({
       },
       // Enable drag and drop
       handleDOMEvents: {
-        dragstart: () => {
-          console.log("Drag started");
-          return false;
-        },
-        drop: () => {
-          console.log("Dropped");
-          return false;
-        },
+        dragstart: () => false,
+        drop: () => false,
       },
     },
     onUpdate: ({ editor }) => {
@@ -496,15 +466,7 @@ export function CustomerPageEditor({
   });
 
   // Debug logging
-  useEffect(() => {
-    console.log("CustomerPageEditor mounted", {
-      hasEditor: !!editor,
-      isEditable,
-      customerId,
-      hasInitialContent: !!initialContent,
-      hasInitialData: !!initialData,
-    });
-  }, [editor, isEditable, customerId, initialContent, initialData]);
+  useEffect(() => {}, []);
 
   if (!editor) {
     return (

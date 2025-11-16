@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CustomerCallData } from "@/types/call-window";
 
-interface CallToolbarProps {
+type CallToolbarProps = {
   // Call state
   callId: string;
   isActive: boolean;
@@ -54,7 +54,7 @@ interface CallToolbarProps {
   onTransfer: () => void;
   onEndCall: () => void;
   onClose: () => void;
-}
+};
 
 export function CallToolbar({
   callId,
@@ -76,11 +76,13 @@ export function CallToolbar({
   onEndCall,
   onClose,
 }: CallToolbarProps) {
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [_showMoreMenu, _setShowMoreMenu] = useState(false);
 
   // Get initials for avatar
   const getInitials = (name: string) => {
-    if (!name || name === "Unknown Caller") return "?";
+    if (!name || name === "Unknown Caller") {
+      return "?";
+    }
     return name
       .split(" ")
       .map((n) => n[0])
@@ -98,7 +100,6 @@ export function CallToolbar({
         return <Wifi className="h-3 w-3 text-warning" />;
       case "poor":
         return <WifiOff className="h-3 w-3 text-destructive" />;
-      case "unknown":
       default:
         return <Signal className="h-3 w-3 text-muted-foreground" />;
     }
@@ -113,7 +114,6 @@ export function CallToolbar({
         return "secondary";
       case "poor":
         return "destructive";
-      case "unknown":
       default:
         return "outline";
     }

@@ -21,10 +21,18 @@ export function ZoomControls() {
 
   // Calculate zoom level description
   const getZoomDescription = (zoomLevel: number): string => {
-    if (zoomLevel < 50) return "Year/Quarter";
-    if (zoomLevel < 100) return "Monthly";
-    if (zoomLevel < 200) return "Weekly";
-    if (zoomLevel < 400) return "Daily";
+    if (zoomLevel < 50) {
+      return "Year/Quarter";
+    }
+    if (zoomLevel < 100) {
+      return "Monthly";
+    }
+    if (zoomLevel < 200) {
+      return "Weekly";
+    }
+    if (zoomLevel < 400) {
+      return "Daily";
+    }
     return "Hourly";
   };
 

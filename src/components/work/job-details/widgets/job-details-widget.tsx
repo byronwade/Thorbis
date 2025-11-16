@@ -9,9 +9,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatDate } from "@/lib/formatters";
 
-interface JobDetailsWidgetProps {
+type JobDetailsWidgetProps = {
   job: Job;
-}
+};
 
 export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
   const jobNumber =

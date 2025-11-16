@@ -41,8 +41,7 @@ export async function GET() {
     }
 
     return NextResponse.json({ customerId: userData.stripe_customer_id });
-  } catch (error) {
-    console.error("Error fetching primary customer:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Failed to fetch customer information" },
       { status: 500 }

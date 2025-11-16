@@ -40,13 +40,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 
-interface NumberPortingWizardProps {
+type NumberPortingWizardProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (phoneNumber: string) => void;
-}
+};
 
-interface PortingData {
+type PortingData = {
   phoneNumber: string;
   currentCarrier: string;
   accountNumber: string;
@@ -58,7 +58,7 @@ interface PortingData {
   authorizedPerson: string;
   authorizedEmail: string;
   billDocument: File | null;
-}
+};
 
 export function NumberPortingWizard({
   open,
@@ -166,8 +166,7 @@ export function NumberPortingWizard({
         setSubmitting(false);
         alert(result.error || "Failed to submit porting request");
       }
-    } catch (error) {
-      console.error("Error submitting porting request:", error);
+    } catch (_error) {
       setSubmitting(false);
       alert(
         "An error occurred while submitting your porting request. Please try again."

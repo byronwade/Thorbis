@@ -17,9 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Property } from "@/lib/db/schema";
 
-interface PropertyDetailsWidgetProps {
+type PropertyDetailsWidgetProps = {
   property?: Property;
-}
+};
 
 export function PropertyDetailsWidget({
   property,

@@ -178,7 +178,7 @@ function validateAndTransform(data: any[]): {
 
   // Check for duplicate emails
   const emailSet = new Set<string>();
-  validData.forEach((member, index) => {
+  validData.forEach((member, _index) => {
     if (emailSet.has(member.email)) {
       errors.push(`Duplicate email found: ${member.email}`);
     }

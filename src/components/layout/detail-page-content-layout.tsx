@@ -25,7 +25,7 @@ const UnifiedAccordion = dynamic(
   { ssr: false }
 );
 
-interface DetailPageContentLayoutProps {
+type DetailPageContentLayoutProps = {
   /** Header configuration */
   header?: DetailPageHeaderConfig;
 
@@ -77,7 +77,7 @@ interface DetailPageContentLayoutProps {
 
   /** Enable drag-and-drop reordering of sections (default: true) */
   enableReordering?: boolean;
-}
+};
 
 export function DetailPageContentLayout({
   header,

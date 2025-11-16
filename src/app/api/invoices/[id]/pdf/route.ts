@@ -13,7 +13,7 @@ import { InvoicePDFDocument } from "@/lib/pdf/invoice-pdf-generator";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -94,8 +94,7 @@ export async function GET(
         "Content-Disposition": `attachment; filename="invoice-${invoice.invoice_number}.pdf"`,
       },
     });
-  } catch (error) {
-    console.error("PDF generation error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Failed to generate PDF" },
       { status: 500 }

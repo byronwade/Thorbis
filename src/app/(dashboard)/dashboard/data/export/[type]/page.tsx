@@ -14,11 +14,11 @@ import { redirect } from "next/navigation";
 import { ExportWorkflowClient } from "@/components/data/export-workflow-client";
 import { getCurrentUser } from "@/lib/auth/session";
 
-interface ExportPageProps {
+type ExportPageProps = {
   params: {
     type: string;
   };
-}
+};
 
 export default async function ExportPage({ params }: ExportPageProps) {
   // Check authentication

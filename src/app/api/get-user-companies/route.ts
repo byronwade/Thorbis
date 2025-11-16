@@ -40,7 +40,6 @@ export async function GET() {
       .is("companies.deleted_at", null); // Exclude archived companies
 
     if (error) {
-      console.error("Error fetching user companies:", error);
       return NextResponse.json(
         { error: "Failed to fetch companies" },
         { status: 500 }
@@ -102,8 +101,7 @@ export async function GET() {
         Expires: "0",
       },
     });
-  } catch (error) {
-    console.error("Error fetching user companies:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

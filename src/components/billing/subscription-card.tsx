@@ -169,7 +169,9 @@ export function SubscriptionCard({
   };
 
   const formatDate = (dateString?: string | null) => {
-    if (!dateString) return "N/A";
+    if (!dateString) {
+      return "N/A";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",

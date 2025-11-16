@@ -16,21 +16,21 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import type { PhotoCategory } from "./photo-types";
 
-interface PhotoFile {
+type PhotoFile = {
   id: string;
   file: File;
   preview: string;
   category: PhotoCategory;
   caption: string;
   isDocument: boolean;
-}
+};
 
-interface InlinePhotoUploaderProps {
+type InlinePhotoUploaderProps = {
   jobId: string;
   companyId: string;
   onUploadComplete?: () => void;
   onCancel?: () => void;
-}
+};
 
 const ACCEPTED_FILE_TYPES = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -85,7 +85,9 @@ export function InlinePhotoUploader({
 
   const processFiles = useCallback(
     (fileList: FileList | null) => {
-      if (!fileList) return;
+      if (!fileList) {
+        return;
+      }
 
       const newFiles: PhotoFile[] = [];
       const errors: string[] = [];
@@ -116,7 +118,7 @@ export function InlinePhotoUploader({
 
       setFiles((prev) => [...prev, ...newFiles]);
     },
-    [toast]
+    [toast, generateId, isImageFile, validateFile]
   );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +129,9 @@ export function InlinePhotoUploader({
   const removeFile = (id: string) => {
     setFiles((prev) => {
       const file = prev.find((f) => f.id === id);
-      if (file) URL.revokeObjectURL(file.preview);
+      if (file) {
+        URL.revokeObjectURL(file.preview);
+      }
       return prev.filter((f) => f.id !== id);
     });
   };
@@ -141,13 +145,9 @@ export function InlinePhotoUploader({
   };
 
   const handleUpload = async () => {
-    if (files.length === 0) return;
-
-    console.log("🚀 Starting upload:", {
-      jobId,
-      companyId,
-      fileCount: files.length,
-    });
+    if (files.length === 0) {
+      return;
+    }
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -183,30 +183,13 @@ export function InlinePhotoUploader({
             formData.append("tags", JSON.stringify([photoFile.category]));
           }
 
-          console.log(
-            "Uploading:",
-            photoFile.file.name,
-            "companyId:",
-            companyId,
-            "jobId:",
-            jobId
-          );
-
           const result = await uploadDocument(formData);
 
-          console.log("Upload result for", photoFile.file.name, ":", result);
-
-          if (result && result.success) {
+          if (result?.success) {
             successCount++;
           } else {
             errorCount++;
             const errorMessage = result?.error || "Unknown error";
-            console.error(
-              "Upload failed for",
-              photoFile.file.name,
-              ":",
-              errorMessage
-            );
 
             // Show specific error messages
             if (errorMessage.includes("Access denied")) {
@@ -227,12 +210,6 @@ export function InlinePhotoUploader({
           errorCount++;
           const errorMessage =
             error instanceof Error ? error.message : String(error);
-          console.error(
-            "Upload exception for",
-            photoFile.file.name,
-            ":",
-            error
-          );
 
           // Handle different error types
           if (errorMessage.includes("unexpected response")) {
@@ -277,7 +254,6 @@ export function InlinePhotoUploader({
         setTimeout(() => onCancel(), 100);
       }
     } catch (error) {
-      console.error("❌ Upload exception:", error);
       const errorMessage =
         error instanceof Error ? error.message : "Failed to upload files";
       toast.error(errorMessage);
@@ -288,8 +264,12 @@ export function InlinePhotoUploader({
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 

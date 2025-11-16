@@ -177,7 +177,7 @@ const mockPortingRequests: PortingRequest[] = [
 ];
 
 export function PortingStatusDashboard() {
-  const [requests, setRequests] = useState(mockPortingRequests);
+  const [requests, _setRequests] = useState(mockPortingRequests);
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
 
   return (
@@ -459,7 +459,7 @@ function TimelineStageItem({
     }
   };
 
-  const getStageColor = () => {
+  const _getStageColor = () => {
     switch (stage.status) {
       case "completed":
         return "border-success";

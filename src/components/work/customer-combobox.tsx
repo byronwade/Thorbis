@@ -67,13 +67,15 @@ export function CustomerCombobox({
   const selectedCustomer = customers.find((c) => c.id === value);
 
   // Separate recent customers
-  const recentCustomers = recentCustomerIds
+  const _recentCustomers = recentCustomerIds
     .map((id) => customers.find((c) => c.id === id))
     .filter(Boolean) as Customer[];
 
   // Filter customers based on search query
   const filteredCustomers = customers.filter((customer) => {
-    if (!searchQuery) return true;
+    if (!searchQuery) {
+      return true;
+    }
 
     const query = searchQuery.toLowerCase();
     const fullName =

@@ -13,10 +13,10 @@ import { usePathname } from "next/navigation";
 import { useLayoutEffect } from "react";
 import { useToolbarActionsStore } from "@/lib/stores/toolbar-actions-store";
 
-interface ToolbarActionsProviderProps {
+type ToolbarActionsProviderProps = {
   actions?: React.ReactNode;
   children: React.ReactNode;
-}
+};
 
 export function ToolbarActionsProvider({
   actions,

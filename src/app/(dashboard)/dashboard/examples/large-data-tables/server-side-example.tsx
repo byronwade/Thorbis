@@ -55,8 +55,12 @@ function generatePageData(params: PaginationParams) {
     allData.sort((a: any, b: any) => {
       const aVal = a[sortBy];
       const bVal = b[sortBy];
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      if (aVal < bVal) {
+        return sortDirection === "asc" ? -1 : 1;
+      }
+      if (aVal > bVal) {
+        return sortDirection === "asc" ? 1 : -1;
+      }
       return 0;
     });
   }

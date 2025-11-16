@@ -46,7 +46,7 @@ export type Place = z.infer<typeof PlaceSchema>;
 export type GooglePlaces = z.infer<typeof GooglePlacesSchema>;
 
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
-const EARTH_RADIUS_METERS = 6_371_000;
+const _EARTH_RADIUS_METERS = 6_371_000;
 
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class GooglePlacesService {
@@ -70,7 +70,6 @@ export class GooglePlacesService {
     radius = 8000
   ): Promise<GooglePlaces | null> {
     if (!this.apiKey) {
-      console.log("[Google Places] API key not configured");
       return null;
     }
 
@@ -78,7 +77,6 @@ export class GooglePlacesService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Google Places] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -102,14 +100,12 @@ export class GooglePlacesService {
         });
 
         if (!res.ok) {
-          console.warn(`[Google Places] API request failed: ${res.status}`);
           continue;
         }
 
         const data = await res.json();
 
         if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
-          console.warn(`[Google Places] API status: ${data.status}`);
           continue;
         }
 
@@ -170,13 +166,9 @@ export class GooglePlacesService {
       };
 
       this.cache.set(cacheKey, { data: googlePlaces, timestamp: Date.now() });
-      console.log(
-        `[Google Places] Found ${googlePlaces.totalResults} suppliers`
-      );
 
       return googlePlaces;
-    } catch (error) {
-      console.error("[Google Places] Error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -192,7 +184,9 @@ export class GooglePlacesService {
         headers: { "User-Agent": USER_AGENT },
       });
 
-      if (!res.ok) return place;
+      if (!res.ok) {
+        return place;
+      }
 
       const data = await res.json();
 
@@ -205,8 +199,7 @@ export class GooglePlacesService {
       }
 
       return place;
-    } catch (error) {
-      console.error("[Google Places] Error enriching place details:", error);
+    } catch (_error) {
       return place;
     }
   }

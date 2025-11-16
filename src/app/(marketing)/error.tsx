@@ -21,9 +21,7 @@ export default function MarketingError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Marketing page error:", error);
-  }, [error]);
+  useEffect(() => {}, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">

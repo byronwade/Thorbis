@@ -15,11 +15,11 @@ import { redirect } from "next/navigation";
 import { ImportWorkflowClient } from "@/components/data/import-workflow-client";
 import { getCurrentUser } from "@/lib/auth/session";
 
-interface ImportPageProps {
+type ImportPageProps = {
   params: {
     type: string;
   };
-}
+};
 
 export default async function ImportPage({ params }: ImportPageProps) {
   // Check authentication

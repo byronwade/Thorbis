@@ -51,10 +51,6 @@ export type TrafficData = z.infer<typeof TrafficDataSchema>;
 // ============================================================================
 
 class TrafficService {
-  private readonly SEARCH_RADIUS_MILES = 10;
-  private readonly MILES_TO_METERS = 1609.34;
-  private readonly METERS_TO_MILES = 0.000_621_371;
-
   /**
    * Get traffic incidents near a location
    */
@@ -72,7 +68,6 @@ class TrafficService {
         process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
       if (!apiKey) {
-        console.log("[Traffic] Google Maps API key not configured");
         return null;
       }
 
@@ -108,13 +103,8 @@ class TrafficService {
         enrichedAt: new Date().toISOString(),
       };
 
-      console.log(
-        `[Traffic] Found ${incidents.length} incidents (${nearbyCount} nearby, ${routeAffectingCount} on route)`
-      );
-
       return TrafficDataSchema.parse(trafficData);
-    } catch (error) {
-      console.error("[Traffic] Error fetching traffic data:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -194,8 +184,7 @@ class TrafficService {
       }
 
       return incidents;
-    } catch (error) {
-      console.error("[Traffic] Error fetching route incidents:", error);
+    } catch (_error) {
       return [];
     }
   }
@@ -204,9 +193,9 @@ class TrafficService {
    * Search for incidents using Google Places API
    */
   private async getNearbyIncidents(
-    lat: number,
-    lon: number,
-    apiKey: string
+    _lat: number,
+    _lon: number,
+    _apiKey: string
   ): Promise<TrafficIncident[]> {
     // Note: Google Places API doesn't directly provide traffic incidents
     // In production, you'd want to use a dedicated traffic API like:
@@ -232,32 +221,6 @@ class TrafficService {
       return "crash";
     }
     return "other";
-  }
-
-  /**
-   * Calculate distance between two points in miles
-   */
-  private calculateDistance(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 3959; // Earth's radius in miles
-    const dLat = this.toRad(lat2 - lat1);
-    const dLon = this.toRad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) *
-        Math.cos(this.toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  }
-
-  private toRad(degrees: number): number {
-    return degrees * (Math.PI / 180);
   }
 }
 

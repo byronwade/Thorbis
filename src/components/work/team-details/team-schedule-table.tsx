@@ -59,7 +59,9 @@ type TeamScheduleTableProps = {
 
 export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
   const getStatusColor = (status?: string) => {
-    if (!status) return "bg-secondary0/10 text-muted-foreground";
+    if (!status) {
+      return "bg-secondary0/10 text-muted-foreground";
+    }
     const statusColors: Record<string, string> = {
       scheduled: "bg-primary/10 text-primary hover:bg-primary/20",
       confirmed: "bg-success/10 text-success hover:bg-success/20",
@@ -74,8 +76,12 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
   };
 
   const formatDuration = (minutes?: number) => {
-    if (!minutes) return "-";
-    if (minutes < 60) return `${minutes}m`;
+    if (!minutes) {
+      return "-";
+    }
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
@@ -240,7 +246,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
         ),
       },
     ],
-    []
+    [formatDuration, getStatusColor]
   );
 
   return (

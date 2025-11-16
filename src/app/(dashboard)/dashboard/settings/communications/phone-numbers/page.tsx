@@ -85,7 +85,7 @@ export default async function PhoneNumbersPage() {
 function PhoneNumbersListSkeleton() {
   return (
     <div className="space-y-4 p-6">
-      {[...Array(5)].map((_, i) => (
+      {[...new Array(5)].map((_, i) => (
         <Skeleton className="h-20 w-full" key={i} />
       ))}
     </div>

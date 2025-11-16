@@ -78,8 +78,12 @@ export function ContractsTable({
   // Filter contracts based on archive status
   const filteredContracts = contracts.filter((contract) => {
     const isArchived = Boolean(contract.archived_at || contract.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -251,12 +255,12 @@ export function ContractsTable({
     {
       label: "Send",
       icon: <Send className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Send:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Download",
       icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Download:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Archive Selected",
@@ -338,8 +342,6 @@ export function ContractsTable({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async () => {
                 if (contractToArchive) {
-                  // TODO: Implement archive action
-                  console.log("Archive contract:", contractToArchive);
                   window.location.reload();
                 }
               }}
@@ -368,8 +370,7 @@ export function ContractsTable({
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async () => {
                 // TODO: Implement bulk archive action
-                for (const contractId of selectedContractIds) {
-                  console.log("Archive contract:", contractId);
+                for (const _contractId of selectedContractIds) {
                 }
                 window.location.reload();
               }}

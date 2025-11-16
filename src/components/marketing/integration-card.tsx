@@ -11,10 +11,10 @@ import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { cn } from "@/lib/utils";
 import { getMarketingIcon } from "./marketing-icons";
 
-interface IntegrationCardProps {
+type IntegrationCardProps = {
   integration: MarketingIntegrationContent;
   className?: string;
-}
+};
 
 export function IntegrationCard({
   integration,

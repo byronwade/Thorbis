@@ -27,7 +27,7 @@ import { UserMenu } from "./user-menu";
  * - Click outside to close mobile menu
  */
 
-interface AppHeaderClientProps {
+type AppHeaderClientProps = {
   userProfile: UserProfile;
   companies: Array<{
     id: string;
@@ -50,7 +50,7 @@ interface AppHeaderClientProps {
     number: string;
     label?: string;
   }>;
-}
+};
 
 type NavItemStatus = "beta" | "new" | "updated" | "coming-soon" | null;
 

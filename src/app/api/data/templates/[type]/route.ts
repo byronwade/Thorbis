@@ -7,13 +7,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { generateExcelTemplate } from "@/lib/data/excel-template-generator";
 
-interface RouteContext {
+type RouteContext = {
   params: {
     type: string;
   };
-}
+};
 
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
     const { type } = context.params;
 
@@ -52,8 +52,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         "Content-Disposition": `attachment; filename="${type}_import_template.xlsx"`,
       },
     });
-  } catch (error) {
-    console.error("Template API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

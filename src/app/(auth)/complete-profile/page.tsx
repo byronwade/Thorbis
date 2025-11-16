@@ -37,24 +37,10 @@ export default async function CompleteProfilePage() {
     .eq("id", user.id)
     .single();
 
-  console.log("📋 Complete Profile Page - User data:", {
-    userId: user.id,
-    email: user.email,
-    hasProfile: !!profile,
-    profileError: profileError?.message,
-    phone: profile?.phone || "MISSING",
-    name: profile?.name || "MISSING",
-    avatar: profile?.avatar || "MISSING",
-    isComplete: !!(profile?.phone && profile?.name),
-  });
-
   // If profile is complete, redirect to dashboard
   if (profile?.phone && profile?.name) {
-    console.log("✅ Profile is complete - redirecting to dashboard");
     redirect("/dashboard/welcome");
   }
-
-  console.log("⚠️ Profile incomplete - showing form");
 
   // Get OAuth avatar from user metadata if available
   const oauthAvatar =

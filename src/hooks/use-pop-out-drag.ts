@@ -52,7 +52,6 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
   // Create call window in new tab
   const createPopOut = useCallback(() => {
     if (state.isPopOutActive || popOutWindowRef.current) {
-      console.warn("Call window already active");
       return;
     }
 
@@ -64,9 +63,6 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
     );
 
     if (!popOut) {
-      console.error(
-        "Failed to open call window. Please check browser settings."
-      );
       return;
     }
 
@@ -101,7 +97,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
         // Successfully sent, stop checking
         clearInterval(checkInterval);
         onPopOutCreated?.();
-      } catch (error) {
+      } catch (_error) {
         // Pop-out not ready yet, continue checking
       }
     }, 100);
@@ -121,7 +117,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
       clearInterval(checkInterval);
       clearInterval(closeInterval);
     };
-  }, [callId, state.isPopOutActive, onPopOutCreated]);
+  }, [callId, state.isPopOutActive, onPopOutCreated, handlePopOutClosed]);
 
   // Handle when pop-out window is closed
   const handlePopOutClosed = useCallback(() => {
@@ -188,9 +184,6 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
           break;
 
         case "CALL_ACTION":
-          // Forward call actions (mute, hold, etc.) to main window
-          // The pop-out can trigger actions, main window executes them
-          console.log("Call action from pop-out:", event.data.action);
           break;
 
         default:

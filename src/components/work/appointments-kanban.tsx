@@ -195,7 +195,7 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 
 export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const handleItemMove = async ({
     item,

@@ -74,8 +74,6 @@ export function ReportingSidebarNav() {
 
   const handleCreateReport = () => {
     setIsCreatingReport(true);
-    // In real app, this would open a modal or navigate to report builder
-    console.log("Create new report - opening builder");
   };
 
   return (

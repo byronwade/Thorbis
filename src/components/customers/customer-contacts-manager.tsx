@@ -187,7 +187,7 @@ export function CustomerContactsManager({
           toast.error(result.error || "Failed to add contact");
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An error occurred while saving the contact");
     } finally {
       setIsLoading(false);
@@ -213,7 +213,9 @@ export function CustomerContactsManager({
   };
 
   const handleDelete = async (contactId: string) => {
-    if (!confirm("Are you sure you want to delete this contact?")) return;
+    if (!confirm("Are you sure you want to delete this contact?")) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -224,7 +226,7 @@ export function CustomerContactsManager({
       } else {
         toast.error(result.error || "Failed to delete contact");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An error occurred while deleting the contact");
     } finally {
       setIsLoading(false);

@@ -84,7 +84,9 @@ export function TicketsView({ messages }: TicketsViewProps) {
   };
 
   const getStatusLabel = (ticketStatus?: TicketStatus) => {
-    if (!ticketStatus) return "New";
+    if (!ticketStatus) {
+      return "New";
+    }
     return ticketStatus.charAt(0).toUpperCase() + ticketStatus.slice(1);
   };
 

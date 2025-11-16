@@ -357,7 +357,9 @@ export function MarketingHeader() {
           .eq("id", user.id)
           .single();
 
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
 
         const fallbackName =
           user.user_metadata?.name || user.email?.split("@")[0] || "User";
@@ -439,8 +441,7 @@ export function MarketingHeader() {
         }
 
         setLoading(false);
-      } catch (error) {
-        console.error("Error loading profile", error);
+      } catch (_error) {
         if (!cancelled) {
           setUserProfile(null);
           setLoading(false);

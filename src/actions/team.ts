@@ -208,14 +208,9 @@ export async function inviteTeamMember(
         await sendSingleTeamInvitation(invitationFormData);
 
       if (!invitationResult.success) {
-        console.error(
-          "Failed to send invitation email:",
-          invitationResult.error
-        );
         // Don't fail the whole operation if email fails
       }
-    } catch (error) {
-      console.error("Error sending invitation email:", error);
+    } catch (_error) {
       // Don't fail the whole operation if email fails
     }
 
@@ -944,7 +939,7 @@ export async function sendPasswordResetEmail(
  * Returns true if current user is owner or manager
  */
 export async function canManageTeamMember(
-  memberId: string
+  _memberId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
@@ -1784,7 +1779,6 @@ export async function getTeamMembers() {
       .order("created_at", { ascending: false });
 
     if (membersError) {
-      console.error("Team members query error:", membersError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("fetch team members"),
         ERROR_CODES.DB_QUERY_ERROR,

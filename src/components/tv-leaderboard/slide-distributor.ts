@@ -79,16 +79,15 @@ export function optimizeSlideDistribution(widgets: Widget[]): Slide[] {
 
   // If last slide has only 1 widget and it's not full-size, try to rebalance
   if (slides.length > 1) {
-    const lastSlide = slides[slides.length - 1];
-    const secondLastSlide = slides[slides.length - 2];
+    const lastSlide = slides.at(-1);
+    const secondLastSlide = slides.at(-2);
 
     if (
       lastSlide.widgets.length === 1 &&
       getWidgetCellCount(lastSlide.widgets[0].size) < GRID_CAPACITY
     ) {
       // Try to move one widget from second-last to last slide
-      const lastWidget =
-        secondLastSlide.widgets[secondLastSlide.widgets.length - 1];
+      const lastWidget = secondLastSlide.widgets.at(-1);
       const lastWidgetCells = getWidgetCellCount(lastWidget.size);
       const singleWidgetCells = getWidgetCellCount(lastSlide.widgets[0].size);
 

@@ -14,12 +14,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-interface KBFeedbackProps {
+type KBFeedbackProps = {
   articleId: string;
   helpfulCount: number;
   notHelpfulCount: number;
   className?: string;
-}
+};
 
 export function KBFeedback({
   articleId,
@@ -33,7 +33,9 @@ export function KBFeedback({
   const { toast } = useToast();
 
   const handleFeedback = async (value: boolean) => {
-    if (isSubmitting) return;
+    if (isSubmitting) {
+      return;
+    }
 
     setIsSubmitting(true);
     const result = await submitKBFeedback({
@@ -53,7 +55,9 @@ export function KBFeedback({
   };
 
   const handleCommentSubmit = async () => {
-    if (!comment.trim() || isSubmitting) return;
+    if (!comment.trim() || isSubmitting) {
+      return;
+    }
 
     setIsSubmitting(true);
     const result = await submitKBFeedback({

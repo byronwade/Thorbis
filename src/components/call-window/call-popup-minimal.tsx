@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CustomerCallData } from "@/types/call-window";
 
-interface CallPopupMinimalProps {
+type CallPopupMinimalProps = {
   // Call state
   callId: string;
   status: "incoming" | "active" | "ended";
@@ -56,7 +56,7 @@ interface CallPopupMinimalProps {
   onTransfer: () => void;
   onExpand: () => void; // Opens full customer intake in new tab
   onClose: () => void;
-}
+};
 
 export function CallPopupMinimal({
   callId,
@@ -87,7 +87,9 @@ export function CallPopupMinimal({
 
   // Get initials for avatar
   const getInitials = (name: string) => {
-    if (!name || name === "Unknown Caller") return "?";
+    if (!name || name === "Unknown Caller") {
+      return "?";
+    }
     return name
       .split(" ")
       .map((n) => n[0])

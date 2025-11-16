@@ -93,7 +93,6 @@ export async function expireCompanyTrialIfEligible({
     .maybeSingle();
 
   if (error || !company) {
-    console.error("Failed to load company for trial expiration:", error);
     return { expired: false };
   }
 

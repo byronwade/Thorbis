@@ -29,7 +29,7 @@ export function MaterialsToolbarActions({
 }: {
   totalCount?: number;
 }) {
-  const archiveFilter = useArchiveStore((state) => state.filters.materials);
+  const _archiveFilter = useArchiveStore((state) => state.filters.materials);
 
   // Calculate counts (will be passed from page)
   const activeCount = totalCount; // TODO: Get actual counts from page

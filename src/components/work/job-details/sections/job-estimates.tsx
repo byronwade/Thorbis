@@ -37,7 +37,9 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
+    if (!dateString) {
+      return "—";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",

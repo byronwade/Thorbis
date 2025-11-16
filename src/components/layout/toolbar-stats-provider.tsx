@@ -12,10 +12,10 @@ import { useLayoutEffect } from "react";
 import type { StatCard } from "@/components/ui/stats-cards";
 import { useToolbarStatsStore } from "@/lib/stores/toolbar-stats-store";
 
-interface ToolbarStatsProviderProps {
+type ToolbarStatsProviderProps = {
   stats?: StatCard[];
   children: React.ReactNode;
-}
+};
 
 export function ToolbarStatsProvider({
   stats,

@@ -21,10 +21,10 @@ import {
 } from "react";
 import { cn } from "@/lib/utils";
 
-interface StickyStatsBarProps {
+type StickyStatsBarProps = {
   children: ReactElement;
   className?: string;
-}
+};
 
 export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -33,7 +33,9 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    if (!sentinel) {
+      return;
+    }
 
     // Find the scrollable parent container
     const findScrollableParent = (element: HTMLElement): HTMLElement | null => {

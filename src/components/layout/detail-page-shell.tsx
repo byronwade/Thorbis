@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export interface DetailPageMetadataItem {
+export type DetailPageMetadataItem = {
   icon?: ReactNode;
   label: string;
   value: ReactNode;
   helperText?: ReactNode;
-}
+};
 
-export interface DetailPageHeaderConfig {
+export type DetailPageHeaderConfig = {
   title?: ReactNode;
   subtitle?: ReactNode;
   description?: ReactNode;
@@ -18,9 +18,9 @@ export interface DetailPageHeaderConfig {
   actions?: ReactNode[];
   secondaryActions?: ReactNode[];
   metadata?: DetailPageMetadataItem[];
-}
+};
 
-interface DetailPageShellProps {
+type DetailPageShellProps = {
   header?: DetailPageHeaderConfig;
   customHeader?: ReactNode;
   metadata?: DetailPageMetadataItem[];
@@ -30,7 +30,7 @@ interface DetailPageShellProps {
   className?: string;
   contentGapClassName?: string;
   statsBar?: ReactNode;
-}
+};
 
 export function DetailPageShell({
   header,
@@ -75,12 +75,12 @@ type SurfacePadding = "none" | "sm" | "md" | "lg";
 
 type SurfaceVariant = "default" | "muted" | "subtle" | "ghost";
 
-interface DetailPageSurfaceProps {
+type DetailPageSurfaceProps = {
   children: ReactNode;
   className?: string;
   padding?: SurfacePadding;
   variant?: SurfaceVariant;
-}
+};
 
 const SURFACE_PADDING_CLASSES: Record<SurfacePadding, string> = {
   none: "p-0",

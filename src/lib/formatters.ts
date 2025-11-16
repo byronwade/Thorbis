@@ -114,7 +114,7 @@ export function formatCurrencyFromDollars(
   const finalMinFractionDigits =
     decimals !== undefined ? decimals : minimumFractionDigits;
 
-  if (amount === null || amount === undefined || isNaN(amount)) {
+  if (amount === null || amount === undefined || Number.isNaN(amount)) {
     return showZero
       ? new Intl.NumberFormat("en-US", {
           style: "currency",
@@ -158,7 +158,7 @@ export function formatDate(
       ? new Date(date)
       : date;
 
-  if (isNaN(dateObj.getTime())) {
+  if (Number.isNaN(dateObj.getTime())) {
     return "—";
   }
 
@@ -275,7 +275,7 @@ export function formatDateRange(
       ? new Date(start)
       : start;
 
-  if (isNaN(startDate.getTime())) {
+  if (Number.isNaN(startDate.getTime())) {
     return "—";
   }
 
@@ -286,7 +286,7 @@ export function formatDateRange(
   const endDate =
     typeof end === "number" || typeof end === "string" ? new Date(end) : end;
 
-  if (isNaN(endDate.getTime())) {
+  if (Number.isNaN(endDate.getTime())) {
     return formatDate(startDate, { preset: "short" });
   }
 

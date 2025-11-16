@@ -57,8 +57,7 @@ export function InlineEditableMetadata({
       if (success) {
         setIsEditing(false);
       }
-    } catch (error) {
-      console.error("Failed to save:", error);
+    } catch (_error) {
     } finally {
       setIsSaving(false);
     }

@@ -130,7 +130,9 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
   } = entityData;
 
   const handleUnlinkJob = async () => {
-    if (!unlinkJobId) return;
+    if (!unlinkJobId) {
+      return;
+    }
 
     setIsUnlinking(true);
     try {
@@ -144,7 +146,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
       } else {
         toast.error(result.error || "Failed to unlink job");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to unlink job");
     } finally {
       setIsUnlinking(false);

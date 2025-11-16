@@ -70,7 +70,7 @@ export type JobWidgetType =
 /**
  * Widget configuration
  */
-export interface JobWidget {
+export type JobWidget = {
   id: string;
   type: JobWidgetType;
   title: string;
@@ -98,7 +98,7 @@ export interface JobWidget {
   // PERFORMANCE: Skip hydration to prevent SSR mismatches
   // Allows Next.js to generate static pages without Zustand errors
   skipHydration?: true;
-}
+};
 
 /**
  * Industry-specific preset layouts
@@ -117,14 +117,14 @@ export type IndustryType =
 /**
  * Layout preset configuration
  */
-export interface LayoutPreset {
+export type LayoutPreset = {
   id: string;
   name: string;
   description: string;
   industry: IndustryType;
   widgets: JobWidget[];
   thumbnail?: string;
-}
+};
 
 // ============================================================================
 // Default Widget Configurations
@@ -708,7 +708,7 @@ export const WIDGET_METADATA: Record<
 // Store State and Actions
 // ============================================================================
 
-interface JobDetailsLayoutStore {
+type JobDetailsLayoutStore = {
   // Current layout
   widgets: JobWidget[];
   industry: IndustryType;
@@ -734,7 +734,7 @@ interface JobDetailsLayoutStore {
   // Utility
   getWidgetById: (widgetId: string) => JobWidget | undefined;
   getVisibleWidgets: () => JobWidget[];
-}
+};
 
 // ============================================================================
 // Create Store
@@ -970,7 +970,7 @@ export const useJobDetailsLayoutStore = create<JobDetailsLayoutStore>()(
 
         toggleWidgetCollapse: (widgetId) => {
           const widget = get().getWidgetById(widgetId);
-          if (widget && widget.isCollapsible) {
+          if (widget?.isCollapsible) {
             get().updateWidget(widgetId, { isCollapsed: !widget.isCollapsed });
           }
         },

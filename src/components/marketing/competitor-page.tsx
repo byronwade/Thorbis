@@ -13,9 +13,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { CompetitorComparison } from "@/lib/marketing/competitors";
 import { getMarketingIcon } from "./marketing-icons";
 
-interface CompetitorPageProps {
+type CompetitorPageProps = {
   competitor: CompetitorComparison;
-}
+};
 
 export function CompetitorPage({ competitor }: CompetitorPageProps) {
   return (
@@ -307,7 +307,7 @@ export function CompetitorPage({ competitor }: CompetitorPageProps) {
             </p>
 
             <div className="mt-6 space-y-4">
-              {competitor.pricingNotes.map((note, index) => (
+              {competitor.pricingNotes.map((note, _index) => (
                 <div
                   className="group flex gap-3 rounded-lg border border-transparent p-3 transition-colors hover:border-green-500/20 hover:bg-green-500/5"
                   key={note}

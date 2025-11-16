@@ -59,8 +59,7 @@ export function NavUser({
         setUserStatus(status);
         router.refresh();
       }
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch (_error) {
     } finally {
       setIsUpdatingStatus(false);
     }

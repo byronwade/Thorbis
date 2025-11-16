@@ -76,8 +76,7 @@ export async function GET() {
       subscriptionStatus,
       needsOnboarding: !onboardingComplete,
     });
-  } catch (error) {
-    console.error("Error checking onboarding status:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -109,8 +109,12 @@ export function SmartContactInput({
 
     const updated = { ...contact };
 
-    if (email) updated.email = email;
-    if (phone) updated.phone = phone;
+    if (email) {
+      updated.email = email;
+    }
+    if (phone) {
+      updated.phone = phone;
+    }
     if (name) {
       updated.firstName = name.first;
       updated.lastName = name.last;

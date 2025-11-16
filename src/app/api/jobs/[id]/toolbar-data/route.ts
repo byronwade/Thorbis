@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
  * Returns minimal data needed for statistics sheet
  */
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -154,8 +154,7 @@ export async function GET(
       payments: payments || [],
       jobMaterials: jobMaterials || [],
     });
-  } catch (error) {
-    console.error("Error fetching job toolbar data:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

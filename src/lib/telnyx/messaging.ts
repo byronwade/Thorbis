@@ -53,7 +53,6 @@ export async function sendSMS(params: {
       data: message.data,
     };
   } catch (error) {
-    console.error("Error sending SMS:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send SMS",
@@ -91,7 +90,6 @@ export async function sendMMS(params: {
       data: message.data,
     };
   } catch (error) {
-    console.error("Error sending MMS:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send MMS",
@@ -111,7 +109,6 @@ export async function getMessage(messageId: string) {
       data: message.data,
     };
   } catch (error) {
-    console.error("Error retrieving message:", error);
     return {
       success: false,
       error:
@@ -149,7 +146,6 @@ export async function listMessages(params?: {
       meta: messages.meta,
     };
   } catch (error) {
-    console.error("Error listing messages:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to list messages",
@@ -189,7 +185,6 @@ export async function sendBulkSMS(params: {
       results,
     };
   } catch (error) {
-    console.error("Error sending bulk SMS:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to send bulk SMS",
@@ -223,7 +218,6 @@ export async function validatePhoneNumber(phoneNumber: string) {
       formattedNumber,
     };
   } catch (error) {
-    console.error("Error validating phone number:", error);
     return {
       success: false,
       error:

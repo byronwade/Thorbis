@@ -155,6 +155,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
     property?.zip_code,
     property?.lat,
     property?.lon,
+    property,
   ]);
 
   // Use ref to always get latest fetchTravelTime without triggering effect
@@ -182,7 +183,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
     // Always return cleanup function
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [property?.address]);
 
   if (!property?.address) {
     // Empty deps - only run once on mount, never re-run

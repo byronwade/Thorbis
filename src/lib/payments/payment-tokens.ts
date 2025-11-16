@@ -15,17 +15,17 @@
 import { emailConfig } from "@/lib/email/resend-client";
 import { createClient } from "@/lib/supabase/server";
 
-export interface PaymentToken {
+export type PaymentToken = {
   token: string;
   expiresAt: string;
   paymentLink: string;
-}
+};
 
-export interface TokenValidation {
+export type TokenValidation = {
   isValid: boolean;
   invoiceId: string | null;
   message: string;
-}
+};
 
 /**
  * Generate a secure payment token for an invoice
@@ -44,7 +44,6 @@ export async function generatePaymentToken(
     const supabase = await createClient();
 
     if (!supabase) {
-      console.error("Unable to connect to database");
       return null;
     }
 
@@ -59,7 +58,6 @@ export async function generatePaymentToken(
     );
 
     if (error || !data || data.length === 0) {
-      console.error("Error generating payment token:", error);
       return null;
     }
 
@@ -71,8 +69,7 @@ export async function generatePaymentToken(
       expiresAt: tokenData.expires_at,
       paymentLink,
     };
-  } catch (error) {
-    console.error("Exception generating payment token:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -86,7 +83,7 @@ export async function generatePaymentToken(
  */
 export async function validatePaymentToken(
   token: string,
-  ipAddress?: string
+  _ipAddress?: string
 ): Promise<TokenValidation> {
   try {
     const supabase = await createClient();
@@ -104,7 +101,6 @@ export async function validatePaymentToken(
     });
 
     if (error || !data || data.length === 0) {
-      console.error("Error validating payment token:", error);
       return {
         isValid: false,
         invoiceId: null,
@@ -119,8 +115,7 @@ export async function validatePaymentToken(
       invoiceId: validation.invoice_id,
       message: validation.message,
     };
-  } catch (error) {
-    console.error("Exception validating payment token:", error);
+  } catch (_error) {
     return {
       isValid: false,
       invoiceId: null,
@@ -144,7 +139,6 @@ export async function markTokenAsUsed(
     const supabase = await createClient();
 
     if (!supabase) {
-      console.error("Unable to connect to database");
       return false;
     }
 
@@ -155,10 +149,6 @@ export async function markTokenAsUsed(
       .limit(1);
 
     if (fetchError || !existingTokens || existingTokens.length === 0) {
-      console.error(
-        "Unable to fetch token before marking as used:",
-        fetchError
-      );
       return false;
     }
 
@@ -175,13 +165,11 @@ export async function markTokenAsUsed(
       .eq("token", token);
 
     if (error) {
-      console.error("Error marking token as used:", error);
       return false;
     }
 
     return true;
-  } catch (error) {
-    console.error("Exception marking token as used:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -201,7 +189,6 @@ export async function getInvoicePaymentTokens(
     const supabase = await createClient();
 
     if (!supabase) {
-      console.error("Unable to connect to database");
       return [];
     }
 
@@ -214,7 +201,6 @@ export async function getInvoicePaymentTokens(
       .order("created_at", { ascending: false });
 
     if (error || !data) {
-      console.error("Error fetching payment tokens:", error);
       return [];
     }
 
@@ -223,8 +209,7 @@ export async function getInvoicePaymentTokens(
       expiresAt: row.expires_at,
       paymentLink: `${emailConfig.appUrl}/pay/${invoiceId}?token=${row.token}`,
     }));
-  } catch (error) {
-    console.error("Exception fetching payment tokens:", error);
+  } catch (_error) {
     return [];
   }
 }

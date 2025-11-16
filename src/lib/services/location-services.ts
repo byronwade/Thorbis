@@ -73,8 +73,9 @@ export type LocationIntelligence = z.infer<typeof LocationIntelligenceSchema>;
 // ============================================================================
 
 export class LocationServices {
-  private cache: Map<string, { data: any; timestamp: number }> = new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
+  private readonly cache: Map<string, { data: any; timestamp: number }> =
+    new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
   /**
    * Geocode using Google Geocoding API (more accurate than Nominatim)
@@ -85,7 +86,6 @@ export class LocationServices {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
     if (!apiKey) {
-      console.warn("[Google Geocoding] API key not configured");
       return null;
     }
 
@@ -95,8 +95,6 @@ export class LocationServices {
         key: apiKey,
       });
 
-      console.log(`[Google Geocoding] Geocoding: ${address}`);
-
       const res = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?${params}`,
         {
@@ -105,18 +103,12 @@ export class LocationServices {
       );
 
       if (!res.ok) {
-        console.error(
-          `[Google Geocoding] HTTP ${res.status}: ${res.statusText}`
-        );
         return null;
       }
 
       const data = await res.json();
 
       if (data.status !== "OK" || !data.results || data.results.length === 0) {
-        console.warn(
-          `[Google Geocoding] No results for: ${address} (status: ${data.status})`
-        );
         return null;
       }
 
@@ -146,16 +138,10 @@ export class LocationServices {
           country: getComponent("country"),
         },
       };
-
-      console.log(
-        `[Google Geocoding] ✅ Success: ${result.lat}, ${result.lon}`
-      );
       return GeocodingResultSchema.parse(result);
     } catch (error: any) {
       if (error.name === "TimeoutError" || error.name === "AbortError") {
-        console.error(`[Google Geocoding] Timeout for: ${address}`);
       } else {
-        console.error("[Google Geocoding] Error:", error.message || error);
       }
       return null;
     }
@@ -175,8 +161,6 @@ export class LocationServices {
         limit: "1",
       });
 
-      console.log(`[Nominatim] Geocoding: ${address}`);
-
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?${params}`,
         {
@@ -186,22 +170,15 @@ export class LocationServices {
       );
 
       if (!res.ok) {
-        console.error(`[Nominatim] HTTP ${res.status}: ${res.statusText}`);
-
         if (res.status === 429) {
-          console.warn(
-            "[Nominatim] Rate limited - wait 1 minute before trying again"
-          );
         }
 
         return null;
       }
 
       const data = await res.json();
-      console.log(`[Nominatim] Found ${data?.length || 0} results`);
 
       if (!Array.isArray(data) || data.length === 0) {
-        console.warn(`[Nominatim] No results for: ${address}`);
         return null;
       }
 
@@ -224,14 +201,10 @@ export class LocationServices {
             }
           : undefined,
       };
-
-      console.log(`[Nominatim] ✅ Success: ${result.lat}, ${result.lon}`);
       return GeocodingResultSchema.parse(result);
     } catch (error: any) {
       if (error.name === "TimeoutError" || error.name === "AbortError") {
-        console.error(`[Nominatim] Timeout for: ${address}`);
       } else {
-        console.error("[Nominatim] Error:", error.message || error);
       }
       return null;
     }
@@ -245,7 +218,6 @@ export class LocationServices {
     const cacheKey = `geocode:${address}`;
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Geocoding] Using cached result for: ${address}`);
       return cached.data;
     }
 
@@ -254,7 +226,6 @@ export class LocationServices {
 
     // Fall back to Nominatim if Google fails
     if (!result) {
-      console.log("[Geocoding] Google failed, trying Nominatim...");
       result = await this.geocodeWithNominatim(address);
     }
 
@@ -294,7 +265,6 @@ export class LocationServices {
       );
 
       if (!res.ok) {
-        console.error(`Reverse geocoding failed: ${res.status}`);
         return null;
       }
 
@@ -319,8 +289,7 @@ export class LocationServices {
 
       this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
       return GeocodingResultSchema.parse(result);
-    } catch (error) {
-      console.error("Reverse geocoding error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -343,7 +312,6 @@ export class LocationServices {
       });
 
       if (!res.ok) {
-        console.error(`FCC Census API failed: ${res.status}`);
         return null;
       }
 
@@ -359,8 +327,7 @@ export class LocationServices {
 
       this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
       return CountyDataSchema.parse(result);
-    } catch (error) {
-      console.error("County data error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -401,9 +368,7 @@ export class LocationServices {
       if (!res.ok) {
         // 404 just means no flood zone data available for this location (expected)
         if (res.status === 404) {
-          console.log("[FEMA NFHL] No flood zone data available for location");
         } else {
-          console.warn(`[FEMA NFHL] Service unavailable: ${res.status}`);
         }
         return null;
       }
@@ -459,8 +424,7 @@ export class LocationServices {
 
       this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
       return FloodZoneSchema.parse(result);
-    } catch (error) {
-      console.error("Flood zone error:", error);
+    } catch (_error) {
       return null;
     }
   }

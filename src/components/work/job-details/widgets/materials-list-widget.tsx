@@ -25,13 +25,13 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 
-interface MaterialsListWidgetProps {
+type MaterialsListWidgetProps = {
   job: Job;
   materials?: unknown[];
-}
+};
 
 // Material type from database
-interface Material {
+type Material = {
   id: string;
   name: string;
   sku?: string;
@@ -44,7 +44,7 @@ interface Material {
   status: "in_stock" | "low_stock" | "out_of_stock" | "ordered" | "received";
   estimatedDelivery?: Date;
   notes?: string;
-}
+};
 
 export function MaterialsListWidget({
   job,
@@ -117,7 +117,9 @@ export function MaterialsListWidget({
     totalItems > 0 ? (receivedItems / totalItems) * 100 : 0;
 
   function formatDate(date?: Date): string {
-    if (!date) return "N/A";
+    if (!date) {
+      return "N/A";
+    }
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",

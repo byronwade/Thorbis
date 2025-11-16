@@ -34,10 +34,10 @@ import {
   FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 
-interface CustomerInvoicesTableProps {
+type CustomerInvoicesTableProps = {
   invoices: any[];
   onUpdate?: () => void;
-}
+};
 
 export function CustomerInvoicesTable({
   invoices,
@@ -226,7 +226,13 @@ export function CustomerInvoicesTable({
         },
       },
     ],
-    [isSending]
+    [
+      isSending,
+      formatCurrency,
+      getStatusBadge,
+      handleSendEstimate,
+      handleSendInvoice,
+    ]
   );
 
   return (

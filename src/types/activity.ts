@@ -45,7 +45,7 @@ export type ActorType = "user" | "system" | "ai" | "automation";
 export type AttachmentType = "photo" | "document" | "video" | null;
 
 // Activity data structure (matches database schema)
-export interface Activity {
+export type Activity = {
   id: string;
   // Entity references
   entityType: EntityType;
@@ -84,10 +84,10 @@ export interface Activity {
   // Timestamps
   occurredAt: Date;
   createdAt: Date;
-}
+};
 
 // Data to create a new activity
-export interface CreateActivityData {
+export type CreateActivityData = {
   // Required
   entityType: EntityType;
   entityId: string;
@@ -123,10 +123,10 @@ export interface CreateActivityData {
   isVisible?: boolean;
   // Optional - Custom timestamp
   occurredAt?: Date;
-}
+};
 
 // Activity filter options
-export interface ActivityFilters {
+export type ActivityFilters = {
   entityType?: EntityType;
   entityId?: string;
   companyId?: string;
@@ -138,10 +138,10 @@ export interface ActivityFilters {
   isImportant?: boolean;
   isSystemGenerated?: boolean;
   limit?: number;
-}
+};
 
 // Activity timeline view model (for UI display)
-export interface ActivityTimelineItem {
+export type ActivityTimelineItem = {
   id: string;
   // Display data
   icon: string;
@@ -164,25 +164,25 @@ export interface ActivityTimelineItem {
   isSystemGenerated: boolean;
   // Metadata
   metadata?: Record<string, unknown>;
-}
+};
 
 // Helper type for status changes
-export interface StatusChangeActivity {
+export type StatusChangeActivity = {
   oldStatus: string;
   newStatus: string;
   reason?: string;
-}
+};
 
 // Helper type for field updates
-export interface FieldUpdateActivity {
+export type FieldUpdateActivity = {
   fieldName: string;
   fieldLabel: string;
   oldValue: string | null;
   newValue: string | null;
-}
+};
 
 // Helper type for assignment changes
-export interface AssignmentChangeActivity {
+export type AssignmentChangeActivity = {
   oldAssignee?: {
     id: string;
     name: string;
@@ -191,22 +191,22 @@ export interface AssignmentChangeActivity {
     id: string;
     name: string;
   };
-}
+};
 
 // Helper type for AI insights
-export interface AIInsightActivity {
+export type AIInsightActivity = {
   model: string;
   insightType: string;
   confidence?: number;
   data: Record<string, unknown>;
-}
+};
 
 // Helper type for automation activities
-export interface AutomationActivity {
+export type AutomationActivity = {
   workflowId: string;
   workflowName: string;
   triggerType: string;
   actionType: string;
   result: "success" | "failure" | "partial";
   details?: Record<string, unknown>;
-}
+};

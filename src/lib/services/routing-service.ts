@@ -65,7 +65,7 @@ export type NearbySupplier = z.infer<typeof NearbySupplierSchema>;
 // ============================================================================
 
 export class RoutingService {
-  private orsApiKey: string | undefined;
+  private readonly orsApiKey: string | undefined;
   private overpassCache: Map<
     string,
     { data: NearbySupplier[]; timestamp: number }
@@ -86,7 +86,6 @@ export class RoutingService {
     to: { lat: number; lon: number }
   ): Promise<Route | null> {
     if (!this.orsApiKey) {
-      console.warn("ORS_API_KEY not configured, using straight-line distance");
       return this.getStraightLineRoute(from, to);
     }
 
@@ -111,7 +110,6 @@ export class RoutingService {
       );
 
       if (!res.ok) {
-        console.error(`ORS API failed: ${res.status}`);
         return this.getStraightLineRoute(from, to);
       }
 
@@ -128,8 +126,7 @@ export class RoutingService {
         from,
         to,
       };
-    } catch (error) {
-      console.error("Routing error:", error);
+    } catch (_error) {
       return this.getStraightLineRoute(from, to);
     }
   }
@@ -145,7 +142,6 @@ export class RoutingService {
     distances: number[][]; // meters
   } | null> {
     if (!this.orsApiKey) {
-      console.warn("ORS_API_KEY not configured");
       return null;
     }
 
@@ -178,7 +174,6 @@ export class RoutingService {
       );
 
       if (!res.ok) {
-        console.error(`ORS matrix failed: ${res.status}`);
         return null;
       }
 
@@ -188,8 +183,7 @@ export class RoutingService {
         durations: data.durations || [],
         distances: data.distances || [],
       };
-    } catch (error) {
-      console.error("Route matrix error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -235,9 +229,6 @@ export class RoutingService {
       oldestRequest + OVERPASS_RATE_LIMIT.windowMs - Date.now() + 1000; // Add 1s buffer
 
     if (waitTime > 0) {
-      console.log(
-        `[Overpass API] Rate limit reached, waiting ${Math.ceil(waitTime / 1000)}s...`
-      );
       await new Promise((resolve) => setTimeout(resolve, waitTime));
     }
   }
@@ -281,10 +272,6 @@ export class RoutingService {
             ? Number.parseInt(retryAfter, 10) * 1000
             : 2 ** attempt * 1000; // Exponential backoff
 
-          console.warn(
-            `[Overpass API] Rate limited (429) on ${instanceUrl}, waiting ${Math.ceil(waitTime / 1000)}s before retry ${attempt + 1}/${maxRetries}...`
-          );
-
           if (attempt < maxRetries) {
             await new Promise((resolve) => setTimeout(resolve, waitTime));
             // Switch to next instance for next attempt
@@ -311,9 +298,6 @@ export class RoutingService {
         if (attempt < maxRetries) {
           // Exponential backoff for other errors
           const waitTime = 2 ** attempt * 1000;
-          console.warn(
-            `[Overpass API] Request failed on ${instanceUrl}, retrying in ${Math.ceil(waitTime / 1000)}s... (${attempt + 1}/${maxRetries})`
-          );
           await new Promise((resolve) => setTimeout(resolve, waitTime));
           // Try next instance
           this.currentOverpassInstanceIndex =
@@ -341,9 +325,6 @@ export class RoutingService {
     if (cached) {
       const age = Date.now() - cached.timestamp;
       if (age < CACHE_TTL) {
-        console.log(
-          `[Overpass API] Using cached supplier data (age: ${Math.round(age / 1000)}s)`
-        );
         return cached.data;
       }
     }
@@ -372,7 +353,9 @@ export class RoutingService {
           const supplierLat = e.lat ?? e.center?.lat;
           const supplierLon = e.lon ?? e.center?.lon;
 
-          if (!(supplierLat && supplierLon)) return null;
+          if (!(supplierLat && supplierLon)) {
+            return null;
+          }
 
           const distance = this.calculateDistance(
             lat,
@@ -412,12 +395,9 @@ export class RoutingService {
       }
 
       return parsedSuppliers;
-    } catch (error) {
-      console.error("[Overpass API] Nearby suppliers error:", error);
-
+    } catch (_error) {
       // Return cached data if available, even if expired
       if (cached) {
-        console.warn("[Overpass API] Using expired cache due to API error");
         return cached.data;
       }
 

@@ -54,15 +54,17 @@ type DepartmentSummary = {
   member_count?: number;
 };
 
-interface TeamSettingsClientProps {
+type TeamSettingsClientProps = {
   members: TeamMemberWithDetails[];
   roles: RoleSummary[];
   departments: DepartmentSummary[];
   overview: TeamOverviewSnapshot;
-}
+};
 
 function formatDate(iso?: string | null) {
-  if (!iso) return "—";
+  if (!iso) {
+    return "—";
+  }
   try {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -75,7 +77,9 @@ function formatDate(iso?: string | null) {
 }
 
 function getInitials(name?: string | null) {
-  if (!name) return "??";
+  if (!name) {
+    return "??";
+  }
   return name
     .split(" ")
     .filter(Boolean)

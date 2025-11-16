@@ -45,7 +45,7 @@ export function buildCategoryTree(
   // Second pass: Build tree structure
   const rootNodes: CategoryNode[] = [];
 
-  categoryMap.forEach((node, id) => {
+  categoryMap.forEach((node, _id) => {
     if (node.parent_id === null) {
       // Root level category
       const { parent_id, ...cleanNode } = node;
@@ -53,7 +53,7 @@ export function buildCategoryTree(
     } else {
       // Child category - add to parent's children
       const parent = categoryMap.get(node.parent_id);
-      if (parent && parent.children) {
+      if (parent?.children) {
         const { parent_id, ...cleanNode } = node;
         parent.children.push(cleanNode);
       }
@@ -75,7 +75,7 @@ export function getCategoriesAtPath(
 
   for (const segment of path) {
     const found = current.find((cat) => cat.name === segment);
-    if (!(found && found.children)) {
+    if (!found?.children) {
       return [];
     }
     current = found.children;

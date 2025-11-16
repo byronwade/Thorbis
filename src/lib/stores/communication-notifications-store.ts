@@ -29,7 +29,7 @@ import type { Notification } from "./notifications-types";
 
 export type CommunicationType = "call" | "sms" | "email" | "voicemail";
 
-export interface CommunicationToastOptions {
+export type CommunicationToastOptions = {
   id?: string;
   duration?: number;
   closeButton?: boolean;
@@ -38,9 +38,9 @@ export interface CommunicationToastOptions {
     label: string;
     onClick: () => void;
   };
-}
+};
 
-interface CommunicationNotificationsState {
+type CommunicationNotificationsState = {
   // State
   toastQueue: string[]; // Track active toast IDs
   soundEnabled: boolean;
@@ -89,7 +89,7 @@ interface CommunicationNotificationsState {
     body: string,
     data?: Record<string, any>
   ) => void;
-}
+};
 
 // Initial state (load from localStorage if available)
 const loadSettings = () => {
@@ -136,14 +136,14 @@ export const useCommunicationNotificationsStore =
 
           // Determine toast appearance based on communication type
           let icon = "📩"; // Default
-          let toastType: "info" | "success" | "error" = "info";
+          let _toastType: "info" | "success" | "error" = "info";
 
           switch (communicationType) {
             case "call":
               icon = "📞";
               if (notification.priority === "high") {
                 icon = "📵"; // Missed call
-                toastType = "error";
+                _toastType = "error";
               }
               break;
             case "sms":
@@ -155,7 +155,7 @@ export const useCommunicationNotificationsStore =
             case "voicemail":
               icon = "🎙️";
               if (notification.priority === "urgent") {
-                toastType = "error";
+                _toastType = "error";
               }
               break;
           }
@@ -221,26 +221,26 @@ export const useCommunicationNotificationsStore =
         showCallToast: (customerName, phoneNumber, status, metadata = {}) => {
           let title = "";
           let message = "";
-          let priority: "low" | "medium" | "high" = "medium";
+          let _priority: "low" | "medium" | "high" = "medium";
           let icon = "📞";
 
           switch (status) {
             case "incoming":
               title = `Incoming call from ${customerName}`;
               message = phoneNumber;
-              priority = "high";
+              _priority = "high";
               icon = "📞";
               break;
             case "missed":
               title = `Missed call from ${customerName}`;
               message = phoneNumber;
-              priority = "high";
+              _priority = "high";
               icon = "📵";
               break;
             case "completed":
               title = `Call with ${customerName}`;
               message = `Duration: ${metadata.duration || "Unknown"}`;
-              priority = "low";
+              _priority = "low";
               icon = "✅";
               break;
           }
@@ -431,24 +431,20 @@ export const useCommunicationNotificationsStore =
         // ===============================================================================
 
         playNotificationSound: () => {
-          if (typeof window === "undefined") return;
+          if (typeof window === "undefined") {
+            return;
+          }
 
           try {
             // Create audio element for notification sound
             const audio = new Audio("/sounds/notification.mp3");
             audio.volume = 0.4;
-            audio.play().catch((error) => {
-              // Ignore autoplay errors (user hasn't interacted with page yet)
-              console.debug("Could not play notification sound:", error);
-            });
-          } catch (error) {
-            console.error("Error playing notification sound:", error);
-          }
+            audio.play().catch((_error) => {});
+          } catch (_error) {}
         },
 
         requestDesktopNotificationPermission: async () => {
           if (typeof window === "undefined" || !("Notification" in window)) {
-            console.warn("Desktop notifications not supported");
             return false;
           }
 
@@ -492,9 +488,7 @@ export const useCommunicationNotificationsStore =
               }
               notification.close();
             };
-          } catch (error) {
-            console.error("Error showing desktop notification:", error);
-          }
+          } catch (_error) {}
         },
       }),
       { name: "CommunicationNotificationsStore" }

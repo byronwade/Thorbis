@@ -21,11 +21,11 @@ const SERVICE_TICKETS_COLUMNS = [
   { key: "created_at", label: "Created" },
 ];
 
-interface ServiceTicketToolbarActionsProps {
+type ServiceTicketToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function ServiceTicketToolbarActions({
   totalCount = 0,

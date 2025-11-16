@@ -8,11 +8,11 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-interface RouteContext {
+type RouteContext = {
   params: {
     importId: string;
   };
-}
+};
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
@@ -86,7 +86,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq("id", importId);
 
     if (updateError) {
-      console.error("Error updating import:", updateError);
       return NextResponse.json(
         { error: "Failed to update import" },
         { status: 500 }
@@ -101,8 +100,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       importId,
       status: newStatus,
     });
-  } catch (error) {
-    console.error("Approve API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -41,14 +41,14 @@ export type RowAction = {
   separatorBefore?: boolean;
 };
 
-interface RowActionsDropdownProps {
+type RowActionsDropdownProps = {
   /** Array of action configurations */
   actions: RowAction[];
   /** Optional label for dropdown menu (default: "Actions") */
   label?: string;
   /** Additional className for trigger button */
   className?: string;
-}
+};
 
 /**
  * RowActionsDropdown - Generic dropdown menu for table row actions

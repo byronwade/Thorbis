@@ -1180,7 +1180,6 @@ export async function bulkUpdatePrices(
         .eq("id", item.id);
 
       if (updateError) {
-        console.error(`Failed to update item ${item.id}:`, updateError);
         continue;
       }
 

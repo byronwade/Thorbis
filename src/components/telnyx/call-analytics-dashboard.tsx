@@ -165,7 +165,7 @@ export function CallAnalyticsDashboard() {
                   </div>
                   <Badge
                     variant={
-                      Number.parseInt(member.answerRate) >= 90
+                      Number.parseInt(member.answerRate, 10) >= 90
                         ? "default"
                         : "secondary"
                     }

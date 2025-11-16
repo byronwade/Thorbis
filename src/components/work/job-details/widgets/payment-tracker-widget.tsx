@@ -26,9 +26,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency } from "@/lib/formatters";
 
-interface PaymentTrackerWidgetProps {
+type PaymentTrackerWidgetProps = {
   job: Job;
-}
+};
 
 export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
   const totalAmount = job.totalAmount || 0;

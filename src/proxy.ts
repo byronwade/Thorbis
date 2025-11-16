@@ -19,7 +19,6 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function proxy(request: NextRequest) {
   if (process.env.NODE_ENV !== "production") {
-    console.log("[proxy] handling request", request.nextUrl.pathname);
   }
   // Add pathname header for server-side layout detection
   const requestHeaders = new Headers(request.headers);

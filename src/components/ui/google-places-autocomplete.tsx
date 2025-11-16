@@ -120,10 +120,12 @@ export function GooglePlacesAutocomplete({
         google.maps.event.clearInstanceListeners(autocompleteRef.current);
       }
     };
-  }, []);
+  }, [initAutocomplete]);
 
   const initAutocomplete = () => {
-    if (!(inputRef.current && window.google?.maps?.places)) return;
+    if (!(inputRef.current && window.google?.maps?.places)) {
+      return;
+    }
 
     // Clear existing instance if any
     if (autocompleteRef.current) {
@@ -146,10 +148,7 @@ export function GooglePlacesAutocomplete({
       setIsLoading(true);
       const place = autocomplete.getPlace();
 
-      console.log("[GooglePlaces] Place selected:", place);
-
       if (!place.address_components) {
-        console.warn("[GooglePlaces] No address_components found");
         setError("No address details found");
         setIsLoading(false);
         return;
@@ -197,8 +196,6 @@ export function GooglePlacesAutocomplete({
         lon: place.geometry?.location?.lng() || 0,
         formattedAddress: place.formatted_address || "",
       };
-
-      console.log("[GooglePlaces] Parsed result:", result);
       setIsLoading(false);
       onPlaceSelect(result);
     });
@@ -232,7 +229,7 @@ export function GooglePlacesAutocomplete({
 
 // Type declarations for Google Maps API
 declare global {
-  interface Window {
+  type Window = {
     google?: {
       maps?: {
         places?: {
@@ -242,5 +239,5 @@ declare global {
         };
       };
     };
-  }
+  };
 }

@@ -23,7 +23,6 @@ export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret) {
-    console.error("CRON_SECRET not configured");
     return NextResponse.json(
       { error: "Cron secret not configured" },
       { status: 500 }
@@ -31,7 +30,6 @@ export async function GET(request: Request) {
   }
 
   if (authHeader !== `Bearer ${cronSecret}`) {
-    console.error("Unauthorized cron request");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -53,7 +51,6 @@ export async function GET(request: Request) {
       .not("plaid_access_token_encrypted", "is", null);
 
     if (error) {
-      console.error("Error fetching accounts for sync:", error);
       return NextResponse.json(
         { error: "Failed to fetch accounts", details: error.message },
         { status: 500 }
@@ -70,7 +67,6 @@ export async function GET(request: Request) {
 
     // Get unique company IDs
     const companyIds = [...new Set(accounts.map((a) => a.company_id))];
-    console.log(`Starting sync for ${companyIds.length} companies`);
 
     let totalSynced = 0;
     const results = [];
@@ -87,9 +83,6 @@ export async function GET(request: Request) {
             success: true,
             synced: result.data.synced,
           });
-          console.log(
-            `Synced ${result.data.synced} transactions for company ${companyId}`
-          );
         } else {
           results.push({
             companyId,
@@ -98,10 +91,6 @@ export async function GET(request: Request) {
               ? "Unknown error"
               : result.error || "Unknown error",
           });
-          console.error(
-            `Failed to sync transactions for company ${companyId}:`,
-            result.success ? "Unknown error" : result.error || "Unknown error"
-          );
         }
       } catch (error: any) {
         results.push({
@@ -109,14 +98,8 @@ export async function GET(request: Request) {
           success: false,
           error: error.message,
         });
-        console.error(
-          `Error syncing transactions for company ${companyId}:`,
-          error
-        );
       }
     }
-
-    console.log(`Sync complete. Total transactions synced: ${totalSynced}`);
 
     return NextResponse.json({
       success: true,
@@ -125,7 +108,6 @@ export async function GET(request: Request) {
       results,
     });
   } catch (error: any) {
-    console.error("Cron job error:", error);
     return NextResponse.json(
       {
         error: "Sync failed",

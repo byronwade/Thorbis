@@ -365,7 +365,7 @@ export async function updateInvoiceSettings(
     if (data.paymentTermsOptions) {
       try {
         paymentTermsOptionsArray = JSON.parse(data.paymentTermsOptions);
-      } catch (e) {
+      } catch (_e) {
         // Use default
       }
     }
@@ -374,7 +374,7 @@ export async function updateInvoiceSettings(
     if (data.reminderSchedule) {
       try {
         reminderScheduleArray = JSON.parse(data.reminderSchedule);
-      } catch (e) {
+      } catch (_e) {
         // Use default
       }
     }

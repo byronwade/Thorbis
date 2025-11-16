@@ -124,32 +124,61 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
     if (mode === "create" || formData.vendor_number) {
       serverFormData.append("vendor_number", formData.vendor_number);
     }
-    if (formData.email) serverFormData.append("email", formData.email);
-    if (formData.phone) serverFormData.append("phone", formData.phone);
-    if (formData.secondary_phone)
+    if (formData.email) {
+      serverFormData.append("email", formData.email);
+    }
+    if (formData.phone) {
+      serverFormData.append("phone", formData.phone);
+    }
+    if (formData.secondary_phone) {
       serverFormData.append("secondary_phone", formData.secondary_phone);
-    if (formData.website) serverFormData.append("website", formData.website);
-    if (formData.address) serverFormData.append("address", formData.address);
-    if (formData.address2) serverFormData.append("address2", formData.address2);
-    if (formData.city) serverFormData.append("city", formData.city);
-    if (formData.state) serverFormData.append("state", formData.state);
-    if (formData.zip_code) serverFormData.append("zip_code", formData.zip_code);
-    if (formData.country) serverFormData.append("country", formData.country);
-    if (formData.tax_id) serverFormData.append("tax_id", formData.tax_id);
-    if (formData.payment_terms)
+    }
+    if (formData.website) {
+      serverFormData.append("website", formData.website);
+    }
+    if (formData.address) {
+      serverFormData.append("address", formData.address);
+    }
+    if (formData.address2) {
+      serverFormData.append("address2", formData.address2);
+    }
+    if (formData.city) {
+      serverFormData.append("city", formData.city);
+    }
+    if (formData.state) {
+      serverFormData.append("state", formData.state);
+    }
+    if (formData.zip_code) {
+      serverFormData.append("zip_code", formData.zip_code);
+    }
+    if (formData.country) {
+      serverFormData.append("country", formData.country);
+    }
+    if (formData.tax_id) {
+      serverFormData.append("tax_id", formData.tax_id);
+    }
+    if (formData.payment_terms) {
       serverFormData.append("payment_terms", formData.payment_terms);
-    if (formData.credit_limit)
+    }
+    if (formData.credit_limit) {
       serverFormData.append("credit_limit", formData.credit_limit);
-    if (formData.preferred_payment_method)
+    }
+    if (formData.preferred_payment_method) {
       serverFormData.append(
         "preferred_payment_method",
         formData.preferred_payment_method
       );
-    if (formData.category) serverFormData.append("category", formData.category);
+    }
+    if (formData.category) {
+      serverFormData.append("category", formData.category);
+    }
     serverFormData.append("status", formData.status);
-    if (formData.notes) serverFormData.append("notes", formData.notes);
-    if (formData.internal_notes)
+    if (formData.notes) {
+      serverFormData.append("notes", formData.notes);
+    }
+    if (formData.internal_notes) {
       serverFormData.append("internal_notes", formData.internal_notes);
+    }
 
     try {
       const result =
@@ -167,7 +196,7 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
         setError(result.error || "Failed to save vendor");
         setIsLoading(false);
       }
-    } catch (err) {
+    } catch (_err) {
       setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }

@@ -97,7 +97,7 @@ function formatCurrency(cents: number | null | undefined): string {
 }
 
 export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
-  const [hasChanges, setHasChanges] = useState(false);
+  const [_hasChanges, setHasChanges] = useState(false);
   const [showQuickPayment, setShowQuickPayment] = useState(false);
   const [invoice, setInvoice] = useState(entityData.invoice);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
@@ -151,7 +151,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       } else {
         toast.error(result.error || "Failed to archive invoice");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to archive invoice");
     } finally {
       setIsArchiving(false);
@@ -159,7 +159,9 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
   };
 
   const handleUnlinkJob = async () => {
-    if (!unlinkJobId) return;
+    if (!unlinkJobId) {
+      return;
+    }
 
     setIsUnlinking(true);
     try {
@@ -173,7 +175,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
       } else {
         toast.error(result.error || "Failed to unlink job");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to unlink job");
     } finally {
       setIsUnlinking(false);
@@ -349,7 +351,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
     const sections: UnifiedAccordionSection[] = [];
 
     // Overdue Banner (before content)
-    const overdueBanner =
+    const _overdueBanner =
       invoice.balance_amount > 0 && invoice.due_date ? (
         <InvoiceOverdueBanner
           balanceAmount={invoice.balance_amount}
@@ -582,13 +584,14 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
     communications,
     job,
     property,
-    estimate, // NEW
-    contract, // NEW
+    estimate,
+    contract,
     paymentMethods,
     invoicePayments,
     showQuickPayment,
     updateField,
     handleQuickPayment,
+    renderInvoiceCommunicationEntries,
   ]);
 
   const relatedItems = useMemo(() => {

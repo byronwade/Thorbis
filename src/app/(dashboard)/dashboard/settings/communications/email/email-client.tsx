@@ -58,13 +58,13 @@ import {
   mapEmailSettings,
 } from "./email-config";
 
-interface EmailSettingsClientProps {
+type EmailSettingsClientProps = {
   initialSettings: Partial<EmailSettingsState> | null;
   initialInfrastructure?: {
     domain: Record<string, unknown> | null;
     inboundRoute: Record<string, unknown> | null;
   };
-}
+};
 
 const MAX_SIGNATURE_LENGTH = 300;
 
@@ -169,9 +169,11 @@ export function EmailSettingsClient({
   );
 
   const handleRefreshDomain = useCallback(() => {
-    if (!infra.domain?.id) return;
+    if (!infra.domain?.id) {
+      return;
+    }
     startSyncDomain(async () => {
-      const result = await refreshEmailDomain(infra.domain!.id);
+      const result = await refreshEmailDomain(infra.domain?.id);
       if (result.success) {
         toast.success("Domain status refreshed");
         await refreshInfrastructure();
@@ -182,9 +184,11 @@ export function EmailSettingsClient({
   }, [infra.domain, refreshInfrastructure, toast]);
 
   const handleVerifyDomain = useCallback(() => {
-    if (!infra.domain?.id) return;
+    if (!infra.domain?.id) {
+      return;
+    }
     startSyncDomain(async () => {
-      const result = await verifyEmailDomain(infra.domain!.id);
+      const result = await verifyEmailDomain(infra.domain?.id);
       if (result.success) {
         toast.success("Verification requested");
       } else {

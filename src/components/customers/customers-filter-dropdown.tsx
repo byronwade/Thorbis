@@ -52,12 +52,24 @@ export function CustomersFilterDropdown({
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (localFilters.archiveStatus !== "active") count++;
-    if (localFilters.type !== "all") count++;
-    if (localFilters.status !== "all") count++;
-    if (localFilters.name) count++;
-    if (localFilters.email) count++;
-    if (localFilters.phone) count++;
+    if (localFilters.archiveStatus !== "active") {
+      count++;
+    }
+    if (localFilters.type !== "all") {
+      count++;
+    }
+    if (localFilters.status !== "all") {
+      count++;
+    }
+    if (localFilters.name) {
+      count++;
+    }
+    if (localFilters.email) {
+      count++;
+    }
+    if (localFilters.phone) {
+      count++;
+    }
     return count;
   }, [localFilters]);
 

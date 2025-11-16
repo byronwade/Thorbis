@@ -27,10 +27,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 
-interface ActivityLogWidgetProps {
+type ActivityLogWidgetProps = {
   job: Job;
   activities?: unknown[];
-}
+};
 
 // Activity types and their icons/colors
 const activityConfig = {
@@ -73,7 +73,7 @@ const activityConfig = {
 
 type ActivityType = keyof typeof activityConfig;
 
-interface Activity {
+type Activity = {
   id: string;
   type: ActivityType;
   title: string;
@@ -81,7 +81,7 @@ interface Activity {
   user: string;
   timestamp: Date;
   metadata?: Record<string, unknown>;
-}
+};
 
 export function ActivityLogWidget({
   job,
@@ -101,13 +101,19 @@ export function ActivityLogWidget({
 
     // Map activity_type from database to our widget types
     let type: ActivityType = "work";
-    if (activity.activity_type?.includes("status")) type = "status_change";
-    else if (activity.activity_type?.includes("payment")) type = "payment";
-    else if (activity.activity_type?.includes("schedule")) type = "schedule";
-    else if (activity.activity_type?.includes("communication"))
+    if (activity.activity_type?.includes("status")) {
+      type = "status_change";
+    } else if (activity.activity_type?.includes("payment")) {
+      type = "payment";
+    } else if (activity.activity_type?.includes("schedule")) {
+      type = "schedule";
+    } else if (activity.activity_type?.includes("communication")) {
       type = "communication";
-    else if (activity.activity_type?.includes("document")) type = "document";
-    else if (activity.activity_type?.includes("assign")) type = "assignment";
+    } else if (activity.activity_type?.includes("document")) {
+      type = "document";
+    } else if (activity.activity_type?.includes("assign")) {
+      type = "assignment";
+    }
 
     return {
       id: activity.id,
@@ -127,10 +133,18 @@ export function ActivityLogWidget({
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffMins < 1) {
+      return "Just now";
+    }
+    if (diffMins < 60) {
+      return `${diffMins}m ago`;
+    }
+    if (diffHours < 24) {
+      return `${diffHours}h ago`;
+    }
+    if (diffDays < 7) {
+      return `${diffDays}d ago`;
+    }
 
     return new Intl.DateTimeFormat("en-US", {
       month: "short",

@@ -24,11 +24,11 @@ const JOBS_OPTIONAL_COLUMNS = [
   { key: "scheduledStart", label: "Scheduled" },
 ];
 
-interface WorkToolbarActionsProps {
+type WorkToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function WorkToolbarActions({
   totalCount = 0,

@@ -80,7 +80,7 @@ export function QuickCustomerAdd({
       } else {
         alert(result.error || "Failed to create customer");
       }
-    } catch (error) {
+    } catch (_error) {
       alert("Failed to create customer");
     } finally {
       setIsLoading(false);

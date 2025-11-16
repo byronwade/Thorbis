@@ -5,12 +5,12 @@
  * Extracts human-readable field changes for confirmation dialog
  */
 
-interface Change {
+type Change = {
   field: string;
   oldValue: any;
   newValue: any;
   section: string;
-}
+};
 
 const FIELD_LABELS: Record<string, string> = {
   displayName: "Profile Display Name",
@@ -67,7 +67,9 @@ export function extractChanges(
 
   newBlocks.forEach((newBlock: any) => {
     const originalAttrs = originalMap.get(newBlock.type);
-    if (!originalAttrs) return;
+    if (!originalAttrs) {
+      return;
+    }
 
     const section = SECTION_LABELS[newBlock.type] || newBlock.type;
 

@@ -45,9 +45,6 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
       if (error.name === "AuthSessionMissingError") {
         return null;
       }
-
-      // Other errors should be logged
-      console.error("Error getting current user:", error.message);
       return null;
     }
 
@@ -63,8 +60,6 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
     ) {
       return null;
     }
-
-    console.error("Unexpected error getting current user:", error);
     return null;
   }
 });
@@ -89,13 +84,11 @@ export const getSession = cache(async (): Promise<Session | null> => {
     } = await supabase.auth.getSession();
 
     if (error) {
-      console.error("Error getting session:", error);
       return null;
     }
 
     return session;
-  } catch (error) {
-    console.error("Unexpected error getting session:", error);
+  } catch (_error) {
     return null;
   }
 });
@@ -227,13 +220,11 @@ export async function refreshSession(): Promise<Session | null> {
     } = await supabase.auth.refreshSession();
 
     if (error) {
-      console.error("Error refreshing session:", error);
       return null;
     }
 
     return session;
-  } catch (error) {
-    console.error("Unexpected error refreshing session:", error);
+  } catch (_error) {
     return null;
   }
 }

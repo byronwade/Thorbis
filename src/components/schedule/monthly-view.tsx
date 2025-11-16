@@ -764,7 +764,7 @@ export function MonthlyView() {
       if (!grouped.has(dateKey)) {
         grouped.set(dateKey, []);
       }
-      grouped.get(dateKey)!.push(job);
+      grouped.get(dateKey)?.push(job);
     }
 
     return { jobsByDate: grouped, unassignedJobs: unassigned };
@@ -781,7 +781,6 @@ export function MonthlyView() {
       setActiveJobId(null);
 
       if (!over) {
-        console.log("[MonthlyView] No drop target");
         return;
       }
 
@@ -789,7 +788,6 @@ export function MonthlyView() {
       const dropData = over.data.current as { date: Date } | undefined;
 
       if (!dropData?.date) {
-        console.log("[MonthlyView] Invalid drop target");
         return;
       }
 
@@ -797,7 +795,6 @@ export function MonthlyView() {
       const job = allJobs.find((j) => j.id === jobId);
 
       if (!job) {
-        console.log("[MonthlyView] Job not found");
         return;
       }
 
@@ -835,7 +832,9 @@ export function MonthlyView() {
   );
 
   const activeJob = useMemo(() => {
-    if (!activeJobId) return null;
+    if (!activeJobId) {
+      return null;
+    }
     return getAllJobs().find((j) => j.id === activeJobId);
   }, [activeJobId, getAllJobs]);
 
@@ -888,7 +887,7 @@ export function MonthlyView() {
                 const jobs = jobsByDate.get(dateKey) || [];
                 const isCurrentMonth = isSameMonth(date, dateObj);
                 const isSelectedDate = isSameDay(date, dateObj);
-                const rowIndex = Math.floor(idx / 7);
+                const _rowIndex = Math.floor(idx / 7);
 
                 return (
                   <DayCell

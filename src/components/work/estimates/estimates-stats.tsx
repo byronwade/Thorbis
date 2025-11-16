@@ -38,7 +38,6 @@ export async function EstimatesStats() {
     .eq("company_id", activeCompanyId);
 
   if (error) {
-    console.error("Error fetching estimate stats:", error);
     return <StatusPipeline compact stats={[]} />;
   }
 

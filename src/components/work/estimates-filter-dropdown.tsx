@@ -52,12 +52,24 @@ export function EstimatesFilterDropdown({
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (localFilters.archiveStatus !== "active") count++;
-    if (localFilters.status !== "all") count++;
-    if (localFilters.amountMin) count++;
-    if (localFilters.amountMax) count++;
-    if (localFilters.customerName) count++;
-    if (localFilters.estimateNumber) count++;
+    if (localFilters.archiveStatus !== "active") {
+      count++;
+    }
+    if (localFilters.status !== "all") {
+      count++;
+    }
+    if (localFilters.amountMin) {
+      count++;
+    }
+    if (localFilters.amountMax) {
+      count++;
+    }
+    if (localFilters.customerName) {
+      count++;
+    }
+    if (localFilters.estimateNumber) {
+      count++;
+    }
     return count;
   }, [localFilters]);
 

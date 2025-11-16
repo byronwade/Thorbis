@@ -39,7 +39,6 @@ export async function ContractsStats() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching contract stats:", error);
     // Return empty stats on error
     return <StatusPipeline compact stats={[]} />;
   }

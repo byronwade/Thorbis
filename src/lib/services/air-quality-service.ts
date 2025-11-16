@@ -29,10 +29,10 @@ export const AirQualitySchema = z.object({
 export type AirQuality = z.infer<typeof AirQualitySchema>;
 
 export class AirQualityService {
-  private apiKey: string | undefined;
-  private cache: Map<string, { data: AirQuality; timestamp: number }> =
+  private readonly apiKey: string | undefined;
+  private readonly cache: Map<string, { data: AirQuality; timestamp: number }> =
     new Map();
-  private cacheTTL = 1000 * 60 * 60; // 1 hour (AQI updates hourly)
+  private readonly cacheTTL = 1000 * 60 * 60; // 1 hour (AQI updates hourly)
 
   constructor() {
     this.apiKey = process.env.AIRNOW_API_KEY;
@@ -40,9 +40,6 @@ export class AirQualityService {
 
   async getAirQuality(lat: number, lon: number): Promise<AirQuality | null> {
     if (!this.apiKey) {
-      console.log(
-        "[Air Quality] API key not configured (get free key at airnowapi.org)"
-      );
       return null;
     }
 
@@ -50,7 +47,6 @@ export class AirQualityService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Air Quality] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -63,26 +59,22 @@ export class AirQualityService {
       });
 
       if (!res.ok) {
-        console.warn(`[Air Quality] API request failed: ${res.status}`);
         return null;
       }
 
       const text = await res.text();
       if (!text || text.trim() === "") {
-        console.log("[Air Quality] API returned empty response");
         return null;
       }
 
       let data: unknown;
       try {
         data = JSON.parse(text);
-      } catch (e) {
-        console.warn("[Air Quality] Invalid JSON response");
+      } catch (_e) {
         return null;
       }
 
       if (!Array.isArray(data) || data.length === 0) {
-        console.log("[Air Quality] No data available for location");
         return null;
       }
 
@@ -107,13 +99,9 @@ export class AirQualityService {
       };
 
       this.cache.set(cacheKey, { data: airQuality, timestamp: Date.now() });
-      console.log(
-        `[Air Quality] AQI: ${airQuality.aqi} (${airQuality.category})`
-      );
 
       return airQuality;
-    } catch (error) {
-      console.error("[Air Quality] Error:", error);
+    } catch (_error) {
       return null;
     }
   }

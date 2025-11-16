@@ -148,7 +148,9 @@ function SortableColumnHeader<T>({
 
   // Handle click for sorting - only if it was a click (not a drag)
   const handleClick = (e: React.MouseEvent) => {
-    if (!(column.sortable && mouseDownPos)) return;
+    if (!(column.sortable && mouseDownPos)) {
+      return;
+    }
 
     // Calculate movement since mouse down
     const deltaX = Math.abs(e.clientX - mouseDownPos.x);
@@ -173,19 +175,16 @@ function SortableColumnHeader<T>({
       {...listeners}
     >
       <span className="font-medium">{column.header}</span>
-      {column.sortable && (
-        <>
-          {isSorted ? (
-            sortDirection === "asc" ? (
-              <ArrowUp className="size-3 shrink-0" />
-            ) : (
-              <ArrowDown className="size-3 shrink-0" />
-            )
+      {column.sortable &&
+        (isSorted ? (
+          sortDirection === "asc" ? (
+            <ArrowUp className="size-3 shrink-0" />
           ) : (
-            <ArrowUpDown className="size-3 shrink-0 opacity-40 transition-opacity group-hover/header:opacity-60" />
-          )}
-        </>
-      )}
+            <ArrowDown className="size-3 shrink-0" />
+          )
+        ) : (
+          <ArrowUpDown className="size-3 shrink-0 opacity-40 transition-opacity group-hover/header:opacity-60" />
+        ))}
     </div>
   );
 }
@@ -285,7 +284,7 @@ export function FullWidthDataTable<T>({
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   // Column visibility and ordering from Zustand store
-  const isColumnVisible = useDataTableColumnsStore(
+  const _isColumnVisible = useDataTableColumnsStore(
     (state) => state.isColumnVisible
   );
   const getColumnOrder = useDataTableColumnsStore(
@@ -340,11 +339,13 @@ export function FullWidthDataTable<T>({
       window.removeEventListener("resize", measureToolbar);
       clearTimeout(timer);
     };
-  }, [selectedIds.size, bulkActions.length, searchFilter, showPagination]); // Re-measure when toolbar content changes
+  }, []); // Re-measure when toolbar content changes
 
   // Merge predefined columns with custom columns
   const allColumns = useMemo(() => {
-    if (!entity) return columns;
+    if (!entity) {
+      return columns;
+    }
 
     // Convert custom columns to ColumnDef format
     const customColumnDefs: ColumnDef<T>[] = customColumns.map((col) => ({
@@ -372,10 +373,14 @@ export function FullWidthDataTable<T>({
   // Get ordered columns based on stored order (only on client to prevent hydration issues)
   const orderedColumns = useMemo(() => {
     // Always use default order on server or when entity is not provided
-    if (!(isClient && entity)) return allColumns;
+    if (!(isClient && entity)) {
+      return allColumns;
+    }
 
     const storedOrder = columnOrderState || getColumnOrder(entity);
-    if (!storedOrder || storedOrder.length === 0) return allColumns;
+    if (!storedOrder || storedOrder.length === 0) {
+      return allColumns;
+    }
 
     // Create a map of columns by key for quick lookup
     const columnMap = new Map(allColumns.map((col) => [col.key, col]));
@@ -401,15 +406,19 @@ export function FullWidthDataTable<T>({
     }
 
     return ordered;
-  }, [isClient, allColumns, entity, columnOrderState]);
+  }, [isClient, allColumns, entity, columnOrderState, getColumnOrder]);
 
   // Filter columns based on visibility (only if entity is provided)
   const visibleColumns = useMemo(() => {
-    if (!entity) return orderedColumns;
+    if (!entity) {
+      return orderedColumns;
+    }
 
     // Read visibility directly from the state object for better reactivity
     const filtered = orderedColumns.filter((col) => {
-      if (!col.hideable) return true;
+      if (!col.hideable) {
+        return true;
+      }
       const visible = columnVisibilityState?.[col.key] ?? true;
       return visible;
     });
@@ -460,10 +469,14 @@ export function FullWidthDataTable<T>({
 
   // Sort data - CRITICAL: archived items ALWAYS at bottom
   const sortedData = useMemo(() => {
-    if (!sortBy) return filteredData;
+    if (!sortBy) {
+      return filteredData;
+    }
 
     const column = allColumns.find((c) => c.key === sortBy);
-    if (!column?.sortable) return filteredData;
+    if (!column?.sortable) {
+      return filteredData;
+    }
 
     // Separate active and archived items
     const active = filteredData.filter((item) => !isArchived?.(item));
@@ -507,10 +520,13 @@ export function FullWidthDataTable<T>({
 
   // Paginate data (only when not virtualizing)
   const paginatedData = useMemo(() => {
-    if (useVirtualization) return sortedData;
-    if (!showPagination)
+    if (useVirtualization) {
+      return sortedData;
+    }
+    if (!showPagination) {
       // Return all data for virtualization
       return sortedData;
+    }
     const start = (currentPage - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     return sortedData.slice(start, end);
@@ -627,7 +643,6 @@ export function FullWidthDataTable<T>({
 
   // Handle drag start
   const handleDragStart = (event: DragStartEvent) => {
-    console.log("🚀 Drag started:", event.active.id);
     const column = orderedColumns.find((col) => col.key === event.active.id);
     if (column) {
       // Get the actual width of the column being dragged
@@ -635,12 +650,10 @@ export function FullWidthDataTable<T>({
       let width = 150; // Default fallback
       try {
         const element = event.active.rect?.current?.initial;
-        if (element && element.width) {
+        if (element?.width) {
           width = element.width;
         }
-      } catch (error) {
-        console.warn("Could not get drag element width, using default");
-      }
+      } catch (_error) {}
 
       const align = column.align || "left";
       setActiveColumn({ column, width, align });
@@ -653,26 +666,15 @@ export function FullWidthDataTable<T>({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
-    console.log("🔄 Drag ended:", {
-      activeId: active.id,
-      overId: over?.id,
-      entity,
-      hasOver: !!over,
-      sameId: active.id === over?.id,
-    });
-
     if (!(entity && over) || active.id === over.id) {
-      console.log("❌ Drag cancelled or no valid drop target");
       setActiveColumn(null);
       return;
     }
 
     // Get current order from store
     const currentOrder = getColumnOrder(entity);
-    console.log("📋 Current order:", currentOrder);
 
     if (!currentOrder) {
-      console.log("❌ No current order found");
       setActiveColumn(null);
       return;
     }
@@ -680,10 +682,7 @@ export function FullWidthDataTable<T>({
     const oldIndex = currentOrder.indexOf(active.id as string);
     const newIndex = currentOrder.indexOf(over.id as string);
 
-    console.log("📍 Indices:", { oldIndex, newIndex });
-
     if (oldIndex === -1 || newIndex === -1) {
-      console.log("❌ Invalid indices");
       setActiveColumn(null);
       return;
     }
@@ -692,8 +691,6 @@ export function FullWidthDataTable<T>({
     const newOrder = [...currentOrder];
     const [removed] = newOrder.splice(oldIndex, 1);
     newOrder.splice(newIndex, 0, removed);
-
-    console.log("✅ New order:", newOrder);
 
     // Save to store - this will trigger a re-render via columnOrderState subscription
     setColumnOrder(entity, newOrder);
@@ -823,67 +820,14 @@ export function FullWidthDataTable<T>({
         </div>
 
         {/* Table Header - Excel Style with Drag & Drop */}
-        {paginatedData.length > 0 && (
-          <>
-            {isClient && entity ? (
-              <DndContext
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-                onDragStart={handleDragStart}
-                sensors={sensors}
-              >
-                <div
-                  className="sticky z-20 flex items-center gap-4 border-border/30 border-b bg-muted px-4 py-2 font-semibold text-foreground text-xs sm:gap-6 sm:px-4 dark:bg-muted"
-                  style={{ top: `${toolbarHeight}px` }}
-                >
-                  {/* Spacer for checkbox */}
-                  {enableSelection && <div className="w-8 shrink-0" />}
-
-                  {/* Column Headers with Drag & Drop */}
-                  <SortableContext
-                    items={visibleColumns.map((col) => col.key)}
-                    strategy={horizontalListSortingStrategy}
-                  >
-                    {visibleColumns.map((column, colIndex) => {
-                      const isSorted = sortBy === column.key;
-
-                      return (
-                        <SortableColumnHeader
-                          colIndex={colIndex}
-                          column={column}
-                          isSorted={isSorted}
-                          key={column.key}
-                          onSort={handleSort}
-                          sortDirection={sortDirection}
-                          totalColumns={visibleColumns.length}
-                        />
-                      );
-                    })}
-                  </SortableContext>
-                </div>
-                <DragOverlay dropAnimation={null}>
-                  {activeColumn ? (
-                    <div
-                      className={`flex cursor-grabbing items-center gap-1.5 overflow-hidden border border-primary/40 bg-background/95 px-2 py-2 font-medium text-foreground text-xs shadow-2xl ring-2 ring-primary/30 backdrop-blur-sm ${
-                        activeColumn.align === "right"
-                          ? "justify-end text-right"
-                          : activeColumn.align === "center"
-                            ? "justify-center text-center"
-                            : "justify-start text-left"
-                      }`}
-                      style={{ width: `${activeColumn.width}px` }}
-                    >
-                      <span className="truncate">
-                        {activeColumn.column.header}
-                      </span>
-                      {activeColumn.column.sortable && (
-                        <ArrowUpDown className="size-3 shrink-0 opacity-50" />
-                      )}
-                    </div>
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
-            ) : (
+        {paginatedData.length > 0 &&
+          (isClient && entity ? (
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+              sensors={sensors}
+            >
               <div
                 className="sticky z-20 flex items-center gap-4 border-border/30 border-b bg-muted px-4 py-2 font-semibold text-foreground text-xs sm:gap-6 sm:px-4 dark:bg-muted"
                 style={{ top: `${toolbarHeight}px` }}
@@ -891,58 +835,108 @@ export function FullWidthDataTable<T>({
                 {/* Spacer for checkbox */}
                 {enableSelection && <div className="w-8 shrink-0" />}
 
-                {/* Column Headers - Non-draggable */}
-                {visibleColumns.map((column, colIndex) => {
-                  const widthClass = column.width || "flex-1";
-                  const shrinkClass = column.shrink ? "shrink-0" : "";
-                  const alignClass =
-                    column.align === "right"
-                      ? "justify-end text-right"
-                      : column.align === "center"
-                        ? "justify-center text-center"
-                        : "justify-start text-left";
-                  const hideClass = column.hideOnMobile
-                    ? "hidden md:flex"
-                    : "flex";
-                  const cellBorder =
-                    colIndex < visibleColumns.length - 1
-                      ? "border-r border-border/30"
-                      : "";
+                {/* Column Headers with Drag & Drop */}
+                <SortableContext
+                  items={visibleColumns.map((col) => col.key)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  {visibleColumns.map((column, colIndex) => {
+                    const isSorted = sortBy === column.key;
 
-                  const isSorted = sortBy === column.key;
-
-                  return (
-                    <div
-                      className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} ${cellBorder} min-w-0 overflow-hidden px-2`}
-                      key={column.key}
-                    >
-                      {column.sortable ? (
-                        <button
-                          className="flex items-center gap-1.5 transition-all duration-200 hover:scale-105 hover:text-foreground active:scale-100"
-                          onClick={() => handleSort(column.key)}
-                          type="button"
-                        >
-                          <span className="font-medium">{column.header}</span>
-                          {isSorted ? (
-                            sortDirection === "asc" ? (
-                              <ArrowUp className="size-3 shrink-0" />
-                            ) : (
-                              <ArrowDown className="size-3 shrink-0" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-60" />
-                          )}
-                        </button>
-                      ) : (
-                        <span className="font-medium">{column.header}</span>
-                      )}
-                    </div>
-                  );
-                })}
+                    return (
+                      <SortableColumnHeader
+                        colIndex={colIndex}
+                        column={column}
+                        isSorted={isSorted}
+                        key={column.key}
+                        onSort={handleSort}
+                        sortDirection={sortDirection}
+                        totalColumns={visibleColumns.length}
+                      />
+                    );
+                  })}
+                </SortableContext>
               </div>
-            )}
-          </>
-        )}
+              <DragOverlay dropAnimation={null}>
+                {activeColumn ? (
+                  <div
+                    className={`flex cursor-grabbing items-center gap-1.5 overflow-hidden border border-primary/40 bg-background/95 px-2 py-2 font-medium text-foreground text-xs shadow-2xl ring-2 ring-primary/30 backdrop-blur-sm ${
+                      activeColumn.align === "right"
+                        ? "justify-end text-right"
+                        : activeColumn.align === "center"
+                          ? "justify-center text-center"
+                          : "justify-start text-left"
+                    }`}
+                    style={{ width: `${activeColumn.width}px` }}
+                  >
+                    <span className="truncate">
+                      {activeColumn.column.header}
+                    </span>
+                    {activeColumn.column.sortable && (
+                      <ArrowUpDown className="size-3 shrink-0 opacity-50" />
+                    )}
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+          ) : (
+            <div
+              className="sticky z-20 flex items-center gap-4 border-border/30 border-b bg-muted px-4 py-2 font-semibold text-foreground text-xs sm:gap-6 sm:px-4 dark:bg-muted"
+              style={{ top: `${toolbarHeight}px` }}
+            >
+              {/* Spacer for checkbox */}
+              {enableSelection && <div className="w-8 shrink-0" />}
+
+              {/* Column Headers - Non-draggable */}
+              {visibleColumns.map((column, colIndex) => {
+                const widthClass = column.width || "flex-1";
+                const shrinkClass = column.shrink ? "shrink-0" : "";
+                const alignClass =
+                  column.align === "right"
+                    ? "justify-end text-right"
+                    : column.align === "center"
+                      ? "justify-center text-center"
+                      : "justify-start text-left";
+                const hideClass = column.hideOnMobile
+                  ? "hidden md:flex"
+                  : "flex";
+                const cellBorder =
+                  colIndex < visibleColumns.length - 1
+                    ? "border-r border-border/30"
+                    : "";
+
+                const isSorted = sortBy === column.key;
+
+                return (
+                  <div
+                    className={`${hideClass} ${widthClass} ${shrinkClass} ${alignClass} ${cellBorder} min-w-0 overflow-hidden px-2`}
+                    key={column.key}
+                  >
+                    {column.sortable ? (
+                      <button
+                        className="flex items-center gap-1.5 transition-all duration-200 hover:scale-105 hover:text-foreground active:scale-100"
+                        onClick={() => handleSort(column.key)}
+                        type="button"
+                      >
+                        <span className="font-medium">{column.header}</span>
+                        {isSorted ? (
+                          sortDirection === "asc" ? (
+                            <ArrowUp className="size-3 shrink-0" />
+                          ) : (
+                            <ArrowDown className="size-3 shrink-0" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="size-3 shrink-0 opacity-40 transition-opacity group-hover:opacity-60" />
+                        )}
+                      </button>
+                    ) : (
+                      <span className="font-medium">{column.header}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
 
         {/* Table Content */}
         {paginatedData.length === 0 ? (
@@ -984,7 +978,9 @@ export function FullWidthDataTable<T>({
             }}
           >
             {displayData.map(({ item, virtualItem }) => {
-              if (!virtualItem) return null;
+              if (!virtualItem) {
+                return null;
+              }
 
               const itemId = getItemId(item);
               const isSelected = selectedIds.has(itemId);

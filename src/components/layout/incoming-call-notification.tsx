@@ -197,53 +197,70 @@ type CustomerData = {
 };
 
 // AI Constants
-const AI_SPAM_THRESHOLD = 75;
-const AI_MAX_SCORE = 100;
-const AI_LOW_SPAM_SCORE = 15;
+const _AI_SPAM_THRESHOLD = 75;
+const _AI_MAX_SCORE = 100;
+const _AI_LOW_SPAM_SCORE = 15;
 const AI_HIGH_TRUST_SCORE = 95;
-const AI_LOW_TRUST_SCORE = 20;
+const _AI_LOW_TRUST_SCORE = 20;
 const AI_MEDIUM_TRUST_SCORE = 60;
-const AI_SPAM_SIMILAR_CALLERS = 47;
+const _AI_SPAM_SIMILAR_CALLERS = 47;
 const AI_TRUST_HIGH_THRESHOLD = 80;
 const AI_TRUST_MEDIUM_THRESHOLD = 50;
 
 // Helper functions
 const getPriorityColorClass = (priority: "low" | "medium" | "high"): string => {
-  if (priority === "high") return "bg-destructive text-destructive-foreground";
-  if (priority === "medium")
+  if (priority === "high") {
+    return "bg-destructive text-destructive-foreground";
+  }
+  if (priority === "medium") {
     return "bg-warning text-warning-foreground dark:text-warning-foreground";
+  }
   return "bg-success text-success-foreground dark:text-success-foreground";
 };
 
 const getPriorityTextColorClass = (
   priority: "low" | "medium" | "high"
 ): string => {
-  if (priority === "high") return "text-destructive";
-  if (priority === "medium") return "text-warning";
+  if (priority === "high") {
+    return "text-destructive";
+  }
+  if (priority === "medium") {
+    return "text-warning";
+  }
   return "text-success";
 };
 
 const getTrustScoreColorClass = (score: number): string => {
-  if (score >= AI_TRUST_HIGH_THRESHOLD) return "bg-success";
-  if (score >= AI_TRUST_MEDIUM_THRESHOLD) return "bg-warning";
+  if (score >= AI_TRUST_HIGH_THRESHOLD) {
+    return "bg-success";
+  }
+  if (score >= AI_TRUST_MEDIUM_THRESHOLD) {
+    return "bg-warning";
+  }
   return "bg-destructive";
 };
 
 const getRiskLevelColorClass = (
   riskLevel: "low" | "medium" | "high"
 ): string => {
-  if (riskLevel === "high") return "bg-destructive text-destructive";
-  if (riskLevel === "medium") return "bg-warning text-warning";
+  if (riskLevel === "high") {
+    return "bg-destructive text-destructive";
+  }
+  if (riskLevel === "medium") {
+    return "bg-warning text-warning";
+  }
   return "bg-success text-success";
 };
 
-const getVideoButtonClass = (
+const _getVideoButtonClass = (
   videoStatus: "off" | "requesting" | "ringing" | "connected" | "declined"
 ): string => {
-  if (videoStatus === "connected")
+  if (videoStatus === "connected") {
     return "bg-primary hover:bg-primary/90 text-primary-foreground";
-  if (videoStatus === "requesting" || videoStatus === "ringing")
+  }
+  if (videoStatus === "requesting" || videoStatus === "ringing") {
     return "animate-pulse bg-warning hover:bg-warning/90 text-warning-foreground dark:text-warning-foreground";
+  }
   return "bg-background hover:bg-accent text-muted-foreground";
 };
 
@@ -301,7 +318,9 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
         getCustomerByPhone(callerNumber, companyId)
       )
       .then((result) => {
-        if (cancelled) return;
+        if (cancelled) {
+          return;
+        }
         if (result.success && result.data) {
           // Don't update if unmounted
           const customer = result.data;
@@ -311,7 +330,9 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
           const randomSpamScore = 0; // Real spam detection would come from external service
           const isSpam = false;
 
-          if (cancelled) return; // Double-check before state update
+          if (cancelled) {
+            return; // Double-check before state update
+          }
           setCustomerData({
             name: `${customer.first_name} ${customer.last_name}`,
             email: customer.email || "",
@@ -378,9 +399,10 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
           });
         }
       })
-      .catch((error) => {
-        console.error("Error fetching customer data:", error);
-        if (cancelled) return; // Check before state update
+      .catch((_error) => {
+        if (cancelled) {
+          return; // Check before state update
+        }
         setCustomerData({
           name: "Unknown Customer",
           email: "",
@@ -1690,7 +1712,7 @@ export function IncomingCallNotification() {
     username: string;
     password: string;
   } | null>(null);
-  const [isLoadingCredentials, setIsLoadingCredentials] = useState(true);
+  const [_isLoadingCredentials, setIsLoadingCredentials] = useState(true);
 
   // Fetch WebRTC credentials on mount
   useEffect(() => {
@@ -1703,10 +1725,8 @@ export function IncomingCallNotification() {
             password: result.credential.password,
           });
         } else {
-          console.error("Failed to load WebRTC credentials:", result.error);
         }
-      } catch (error) {
-        console.error("Error loading WebRTC credentials:", error);
+      } catch (_error) {
       } finally {
         setIsLoadingCredentials(false);
       }
@@ -1720,12 +1740,10 @@ export function IncomingCallNotification() {
     password: webrtcCredentials?.password || "",
     autoConnect: Boolean(webrtcCredentials),
     debug: process.env.NODE_ENV === "development",
-    onIncomingCall: (call) => {
-      console.log("Incoming call from WebRTC:", call);
+    onIncomingCall: (_call) => {
       // The incoming call UI will show based on currentCall state
     },
-    onCallEnded: (call) => {
-      console.log("Call ended from WebRTC:", call);
+    onCallEnded: (_call) => {
       clearTranscript();
     },
   });
@@ -1800,7 +1818,9 @@ export function IncomingCallNotification() {
       const supabase = await import("@/lib/supabase/client").then((m) =>
         m.createClient()
       );
-      if (!supabase) return;
+      if (!supabase) {
+        return;
+      }
 
       const {
         data: { user },
@@ -1820,7 +1840,6 @@ export function IncomingCallNotification() {
           .limit(1);
 
         if (error) {
-          console.warn("Failed to load team member company:", error.message);
           return;
         }
 
@@ -1829,9 +1848,7 @@ export function IncomingCallNotification() {
         if (firstRow?.company_id) {
           setCompanyId(firstRow.company_id);
         }
-      } catch (error) {
-        console.error("Error fetching company ID:", error);
-      }
+      } catch (_error) {}
     }
     fetchCompanyId();
   }, []);
@@ -1890,7 +1907,7 @@ export function IncomingCallNotification() {
 
   // Multi-directional resize functionality
   const resizeHook = useResizableMulti(dragHook.position, currentHeight, {
-    onResize: (width, height, x, y) => {
+    onResize: (_width, height, _x, _y) => {
       setCurrentHeight(height);
     },
   });
@@ -1906,12 +1923,8 @@ export function IncomingCallNotification() {
     focusPopOut,
   } = usePopOutDrag({
     callId,
-    onPopOutCreated: () => {
-      console.log("Call popped out to separate window");
-    },
-    onPopOutClosed: () => {
-      console.log("Pop-out window closed, returned to main");
-    },
+    onPopOutCreated: () => {},
+    onPopOutClosed: () => {},
   });
 
   // Handle creating pop-out when drag ends in pop-out zone
@@ -1966,7 +1979,12 @@ export function IncomingCallNotification() {
       // Only stop recording when call actually ends
       stopRecording();
     }
-  }, [call.status]); // Fixed: Only depend on call.status, functions should be stable
+  }, [
+    call.status,
+    addEntry,
+    startRecording, // Only stop recording when call actually ends
+    stopRecording,
+  ]); // Fixed: Only depend on call.status, functions should be stable
 
   // Call duration timer
   useEffect(() => {
@@ -2003,13 +2021,6 @@ export function IncomingCallNotification() {
 
       // Open call window in new tab when user accepts the call
       if (callId) {
-        console.log("📞 Opening call window with:", {
-          callId,
-          companyId,
-          from: call.caller?.number,
-          direction: "inbound",
-        });
-
         const params = new URLSearchParams({
           callId,
           ...(companyId && { companyId }),
@@ -2018,13 +2029,10 @@ export function IncomingCallNotification() {
         });
 
         const url = `/call-window?${params.toString()}`;
-        console.log("📞 Call window URL:", url);
 
         window.open(url, "_blank", "noopener,noreferrer");
       }
-    } catch (error) {
-      console.error("Failed to answer call:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleEndCall = async () => {
@@ -2040,9 +2048,7 @@ export function IncomingCallNotification() {
       clearTranscript();
       setIsRecording(false); // Reset recording state
       sync.broadcastCallEnded();
-    } catch (error) {
-      console.error("Failed to end call:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleVoicemail = async () => {
@@ -2055,9 +2061,7 @@ export function IncomingCallNotification() {
     try {
       await webrtc.endCall();
       sync.broadcastCallEnded();
-    } catch (error) {
-      console.error("Failed to send to voicemail:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleToggleMute = async () => {
@@ -2070,9 +2074,7 @@ export function IncomingCallNotification() {
         await webrtc.muteCall();
         sync.broadcastCallAction("mute");
       }
-    } catch (error) {
-      console.error("Failed to toggle mute:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleToggleHold = async () => {
@@ -2085,55 +2087,39 @@ export function IncomingCallNotification() {
         await webrtc.holdCall();
         sync.broadcastCallAction("hold");
       }
-    } catch (error) {
-      console.error("Failed to toggle hold:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleToggleRecording = async () => {
     if (!webrtc.currentCall?.id) {
-      console.error("No active call to record");
       return;
     }
 
     try {
       if (isRecording) {
-        // Stop recording
-        console.log("Stopping call recording...");
         const result = await stopCallRecording(webrtc.currentCall.id);
 
         if (result.success) {
           setIsRecording(false);
           sync.broadcastCallAction("record_stop");
-          console.log("✅ Call recording stopped successfully");
         } else {
-          console.error("❌ Failed to stop recording:", result.error);
         }
       } else {
-        // Start recording
-        console.log("Starting call recording...");
         const result = await startCallRecording(webrtc.currentCall.id);
 
         if (result.success) {
           setIsRecording(true);
           sync.broadcastCallAction("record_start");
-          console.log("✅ Call recording started successfully");
         } else {
-          console.error("❌ Failed to start recording:", result.error);
         }
       }
-    } catch (error) {
-      console.error("Failed to toggle recording:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleSendDTMF = async (digit: string) => {
     try {
       await webrtc.sendDTMF(digit);
-      console.log("Sent DTMF tone:", digit);
-    } catch (error) {
-      console.error("Failed to send DTMF:", error);
-    }
+    } catch (_error) {}
   };
 
   const handleTransfer = () => {

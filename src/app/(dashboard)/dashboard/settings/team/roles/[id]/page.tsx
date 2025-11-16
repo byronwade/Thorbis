@@ -1,9 +1,9 @@
 import { getRoleDetails } from "@/actions/team";
 import RoleDetailClient from "./role-detail-client";
 
-interface RoleDetailPageProps {
+type RoleDetailPageProps = {
   params: Promise<{ id: string }>;
-}
+};
 
 export default async function RoleDetailPage({ params }: RoleDetailPageProps) {
   const { id } = await params;

@@ -95,7 +95,7 @@ export function HolidayScheduleManager() {
 
   useEffect(() => {
     loadHolidays();
-  }, []);
+  }, [loadHolidays]);
 
   async function loadHolidays() {
     setIsLoading(true);
@@ -106,7 +106,7 @@ export function HolidayScheduleManager() {
       } else {
         toast.error(result.error || "Failed to load holidays");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to load holidays");
     } finally {
       setIsLoading(false);
@@ -170,7 +170,9 @@ export function HolidayScheduleManager() {
   }
 
   function handleDeleteHoliday(holidayId: string) {
-    if (!confirm("Are you sure you want to delete this holiday?")) return;
+    if (!confirm("Are you sure you want to delete this holiday?")) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await deleteHoliday(holidayId);

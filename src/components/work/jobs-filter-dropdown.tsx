@@ -30,11 +30,11 @@ import {
   useJobsFiltersStore,
 } from "@/lib/stores/jobs-filters-store";
 
-interface JobsFilterDropdownProps {
+type JobsFilterDropdownProps = {
   activeCount?: number;
   archivedCount?: number;
   totalCount?: number;
-}
+};
 
 export function JobsFilterDropdown({
   activeCount,
@@ -56,8 +56,12 @@ export function JobsFilterDropdown({
 
   const activeFilterCount = Object.entries(globalFilters).filter(
     ([key, value]) => {
-      if (key === "archiveStatus") return value !== "active";
-      if (key === "status" || key === "priority") return value !== "all";
+      if (key === "archiveStatus") {
+        return value !== "active";
+      }
+      if (key === "status" || key === "priority") {
+        return value !== "all";
+      }
       return value !== "";
     }
   ).length;

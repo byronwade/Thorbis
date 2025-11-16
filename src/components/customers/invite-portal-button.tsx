@@ -39,16 +39,10 @@ export function InvitePortalButton({
 
       if (result.success) {
         setIsInvited(true);
-        // TODO: Show success toast
-        console.log(`Portal invitation sent to ${customerName}`);
       } else {
-        // TODO: Show error toast
-        console.error("Failed to send portal invitation:", result.error);
         alert(result.error || "Failed to send portal invitation");
       }
-    } catch (error) {
-      // TODO: Show error toast
-      console.error("Unexpected error:", error);
+    } catch (_error) {
       alert("An unexpected error occurred");
     } finally {
       setIsInviting(false);

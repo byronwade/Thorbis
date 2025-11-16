@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InlinePhotoUploader } from "../InlinePhotoUploader";
 
-interface PhotosDocsTabProps {
+type PhotosDocsTabProps = {
   job: any;
   photos: any[];
   photosByCategory: Record<string, any[]>;
@@ -21,7 +21,7 @@ interface PhotosDocsTabProps {
   customerSignature: any;
   technicianSignature: any;
   isEditMode: boolean;
-}
+};
 
 export function PhotosDocsTab({
   job,

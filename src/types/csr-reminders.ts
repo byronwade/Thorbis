@@ -5,17 +5,17 @@
  * to help CSRs follow best practices during customer calls.
  */
 
-export interface CSRReminder {
+export type CSRReminder = {
   id: string;
   text: string;
   enabled: boolean;
   order: number;
-}
+};
 
-export interface CSRReminderSettings {
+export type CSRReminderSettings = {
   enabled: boolean;
   reminders: CSRReminder[];
-}
+};
 
 /**
  * Default CSR reminders

@@ -49,13 +49,13 @@ export function useSchedule() {
   // Get view store values with selectors to avoid re-renders
   const filters = useViewStore((state) => state.filters);
   const showCompletedJobs = useViewStore((state) => state.showCompletedJobs);
-  const currentDate = useViewStore((state) => state.currentDate);
-  const zoom = useViewStore((state) => state.zoom);
+  const _currentDate = useViewStore((state) => state.currentDate);
+  const _zoom = useViewStore((state) => state.zoom);
 
   // Calculate visible time range once
   const visibleTimeRange = useMemo(
     () => useViewStore.getState().getVisibleTimeRange(),
-    [currentDate, zoom]
+    []
   );
 
   const rangeStart = visibleTimeRange.start.getTime();

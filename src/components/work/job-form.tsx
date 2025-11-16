@@ -202,7 +202,9 @@ export function JobForm({
     }
 
     const form = formRef.current;
-    if (!form) return;
+    if (!form) {
+      return;
+    }
 
     // Set job type
     const jobTypeInput = form.querySelector(
@@ -650,7 +652,9 @@ export function JobForm({
                   <SelectContent>
                     {teamMembers.map((member) => {
                       const user = member.users;
-                      if (!user) return null;
+                      if (!user) {
+                        return null;
+                      }
                       return (
                         <SelectItem key={user.id} value={user.id}>
                           {user.first_name} {user.last_name}

@@ -44,9 +44,9 @@ import {
   type SmsSettingsState,
 } from "./sms-config";
 
-interface SmsSettingsClientProps {
+type SmsSettingsClientProps = {
   initialSettings: Partial<SmsSettingsState> | null;
-}
+};
 
 export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
   const {

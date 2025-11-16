@@ -15,7 +15,7 @@
 
 import { cn } from "@/lib/utils";
 
-interface InlineTextProps {
+type InlineTextProps = {
   value: string;
   onUpdate: (newValue: string) => void;
   isEditable: boolean;
@@ -23,7 +23,7 @@ interface InlineTextProps {
   className?: string;
   as?: "h1" | "h2" | "h3" | "p" | "span" | "div" | "a";
   multiline?: boolean;
-}
+};
 
 export function InlineText({
   value,

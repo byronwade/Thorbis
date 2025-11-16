@@ -27,7 +27,7 @@ export type TranscriptionStatus =
   | "completed"
   | "error";
 
-export interface TranscriptionResponse {
+export type TranscriptionResponse = {
   id: string;
   status: TranscriptionStatus;
   audio_url: string;
@@ -47,15 +47,15 @@ export interface TranscriptionResponse {
     speaker: string;
   }>;
   error?: string;
-}
+};
 
-export interface TranscriptionRequest {
+export type TranscriptionRequest = {
   audio_url: string;
   speaker_labels?: boolean;
   webhook_url?: string;
   webhook_auth_header_name?: string;
   webhook_auth_header_value?: string;
-}
+};
 
 /**
  * Submit audio URL for transcription
@@ -80,8 +80,6 @@ export async function submitTranscription(
       throw new Error("ASSEMBLYAI_API_KEY is not configured");
     }
 
-    console.log("📝 Submitting audio for transcription:", params.audio_url);
-
     const response = await fetch(`${ASSEMBLYAI_API_URL}/transcript`, {
       method: "POST",
       headers: {
@@ -99,18 +97,13 @@ export async function submitTranscription(
 
     if (!response.ok) {
       const error = await response.text();
-      console.error("❌ AssemblyAI transcription request failed:", error);
       throw new Error(`AssemblyAI API error: ${response.status} - ${error}`);
     }
 
     const data = (await response.json()) as TranscriptionResponse;
-    console.log(
-      `✅ Transcription job created: ${data.id}, status: ${data.status}`
-    );
 
     return { success: true, data };
   } catch (error) {
-    console.error("Failed to submit transcription:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -157,7 +150,6 @@ export async function getTranscription(
     const data = (await response.json()) as TranscriptionResponse;
     return { success: true, data };
   } catch (error) {
-    console.error("Failed to get transcription:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

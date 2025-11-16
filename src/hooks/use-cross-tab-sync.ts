@@ -135,22 +135,34 @@ export function useCrossTabSync() {
             const action = message.data as CallAction;
             switch (action) {
               case "mute":
-                if (!call.isMuted) actions.toggleMute();
+                if (!call.isMuted) {
+                  actions.toggleMute();
+                }
                 break;
               case "unmute":
-                if (call.isMuted) actions.toggleMute();
+                if (call.isMuted) {
+                  actions.toggleMute();
+                }
                 break;
               case "hold":
-                if (!call.isOnHold) actions.toggleHold();
+                if (!call.isOnHold) {
+                  actions.toggleHold();
+                }
                 break;
               case "unhold":
-                if (call.isOnHold) actions.toggleHold();
+                if (call.isOnHold) {
+                  actions.toggleHold();
+                }
                 break;
               case "record_start":
-                if (!call.isRecording) actions.toggleRecording();
+                if (!call.isRecording) {
+                  actions.toggleRecording();
+                }
                 break;
               case "record_stop":
-                if (call.isRecording) actions.toggleRecording();
+                if (call.isRecording) {
+                  actions.toggleRecording();
+                }
                 break;
             }
             break;
@@ -190,9 +202,7 @@ export function useCrossTabSync() {
         try {
           const message: CallSyncMessage = JSON.parse(e.newValue);
           handleSyncMessage(message);
-        } catch (error) {
-          console.error("Failed to parse sync message:", error);
-        }
+        } catch (_error) {}
       }
     };
 
@@ -215,11 +225,7 @@ export function useCrossTabSync() {
         ) => {
           handleSyncMessage(event.data);
         };
-      } catch (error) {
-        console.warn(
-          "BroadcastChannel not available, falling back to localStorage",
-          error
-        );
+      } catch (_error) {
         setupLocalStorageFallback();
       }
     } else {
@@ -250,9 +256,7 @@ export function useCrossTabSync() {
           ) {
             actions.setPopoverWidth(newState.state.popoverWidth);
           }
-        } catch (error) {
-          console.error("Failed to sync preferences:", error);
-        }
+        } catch (_error) {}
       }
     };
 

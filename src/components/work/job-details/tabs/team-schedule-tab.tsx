@@ -44,13 +44,13 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
-interface TeamScheduleTabProps {
+type TeamScheduleTabProps = {
   job: any;
   teamAssignments: any[];
   timeEntries: any[];
   assignedUser: any;
   isEditMode: boolean;
-}
+};
 
 export function TeamScheduleTab({
   job,
@@ -173,24 +173,22 @@ export function TeamScheduleTab({
         </CardHeader>
         <CardContent className="space-y-4">
           {activeEntry ? (
-            <>
-              <div className="rounded-lg border border-success bg-success p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-sm text-success">
-                      Currently Working
-                    </p>
-                    <p className="text-success text-xs">
-                      Clocked in at {formatDateTime(activeEntry.clock_in)}
-                    </p>
-                  </div>
-                  <Button onClick={handleClockOut} variant="destructive">
-                    <Square className="mr-2 h-4 w-4" />
-                    Clock Out
-                  </Button>
+            <div className="rounded-lg border border-success bg-success p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm text-success">
+                    Currently Working
+                  </p>
+                  <p className="text-success text-xs">
+                    Clocked in at {formatDateTime(activeEntry.clock_in)}
+                  </p>
                 </div>
+                <Button onClick={handleClockOut} variant="destructive">
+                  <Square className="mr-2 h-4 w-4" />
+                  Clock Out
+                </Button>
               </div>
-            </>
+            </div>
           ) : (
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>

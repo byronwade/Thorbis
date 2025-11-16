@@ -194,8 +194,12 @@ export function PaymentsTable({
   // Filter payments based on archive status
   const filteredPayments = payments.filter((payment) => {
     const isArchived = Boolean(payment.archived_at || payment.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -332,10 +336,7 @@ export function PaymentsTable({
     {
       label: "Export Selected",
       icon: <Archive className="h-4 w-4" />,
-      onClick: async (selectedIds) => {
-        // TODO: Implement bulk export
-        console.log("Export payments:", Array.from(selectedIds));
-      },
+      onClick: async (_selectedIds) => {},
     },
   ];
 

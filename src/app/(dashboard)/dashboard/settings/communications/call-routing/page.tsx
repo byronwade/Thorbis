@@ -107,7 +107,7 @@ export default function CallRoutingPage() {
 function RoutingRulesListSkeleton() {
   return (
     <div className="space-y-4 p-6">
-      {[...Array(3)].map((_, i) => (
+      {[...new Array(3)].map((_, i) => (
         <Skeleton className="h-32 w-full" key={i} />
       ))}
     </div>

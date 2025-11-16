@@ -60,7 +60,6 @@ async function createPaymentWithData(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -97,7 +96,6 @@ async function createPaymentWithData(
     revalidatePath("/dashboard/finance/payments");
     return { success: true, paymentId: payment.id };
   } catch (error) {
-    console.error("Create payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -172,7 +170,6 @@ async function createPaymentFromForm(
 
     return createPaymentWithData(paymentData, supabase);
   } catch (error) {
-    console.error("Create payment (form) error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -202,13 +199,11 @@ export async function getPayment(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, payment };
   } catch (error) {
-    console.error("Get payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -260,13 +255,11 @@ export async function getPayments(filters?: {
     const { data: payments, error } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, payments };
   } catch (error) {
-    console.error("Get payments error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -297,7 +290,6 @@ export async function updatePayment(
       .is("deleted_at", null);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -305,7 +297,6 @@ export async function updatePayment(
     revalidatePath(`/dashboard/finance/payments/${paymentId}`);
     return { success: true };
   } catch (error) {
-    console.error("Update payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -374,7 +365,6 @@ export async function refundPayment(
       .single();
 
     if (refundError) {
-      console.error("Supabase error:", refundError);
       return { success: false, error: refundError.message };
     }
 
@@ -394,7 +384,6 @@ export async function refundPayment(
       .eq("id", paymentId);
 
     if (updateError) {
-      console.error("Supabase error:", updateError);
       return { success: false, error: updateError.message };
     }
 
@@ -402,7 +391,6 @@ export async function refundPayment(
     revalidatePath(`/dashboard/finance/payments/${paymentId}`);
     return { success: true, refundId: refund.id };
   } catch (error) {
-    console.error("Refund payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -442,7 +430,6 @@ export async function reconcilePayment(
       .eq("id", paymentId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -450,7 +437,6 @@ export async function reconcilePayment(
     revalidatePath(`/dashboard/finance/payments/${paymentId}`);
     return { success: true };
   } catch (error) {
-    console.error("Reconcile payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -478,7 +464,6 @@ export async function unreconcilePayment(
       .eq("id", paymentId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -486,7 +471,6 @@ export async function unreconcilePayment(
     revalidatePath(`/dashboard/finance/payments/${paymentId}`);
     return { success: true };
   } catch (error) {
-    console.error("Unreconcile payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -525,7 +509,6 @@ export async function deletePayment(
       .eq("id", paymentId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -533,7 +516,6 @@ export async function deletePayment(
     revalidatePath("/dashboard/work/payments");
     return { success: true };
   } catch (error) {
-    console.error("Delete payment error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -586,7 +568,6 @@ export async function unlinkPaymentFromJob(
       .eq("id", paymentId);
 
     if (unlinkError) {
-      console.error("Supabase error:", unlinkError);
       return { success: false, error: unlinkError.message };
     }
 
@@ -599,7 +580,6 @@ export async function unlinkPaymentFromJob(
 
     return { success: true };
   } catch (error) {
-    console.error("Unlink payment from job error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

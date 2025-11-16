@@ -13,7 +13,7 @@ export function InventoryVendorNewSkeleton() {
         </div>
       </div>
       <div className="space-y-3">
-        {[...Array(6)].map((_, index) => (
+        {[...new Array(6)].map((_, index) => (
           <div className="space-y-2" key={index}>
             <div className="h-4 w-32 animate-pulse rounded bg-muted" />
             <div className="h-9 w-full animate-pulse rounded bg-muted" />

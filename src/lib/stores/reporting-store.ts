@@ -75,7 +75,7 @@ const initialState = {
 export const useReportingStore = create<ReportingStore>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set, _get) => ({
         ...initialState,
 
         setCustomReports: (reports) => set({ customReports: reports }),

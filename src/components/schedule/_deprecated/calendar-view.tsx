@@ -109,7 +109,7 @@ export function CalendarView() {
             {/* Time Slots */}
             <div className="relative grid grid-cols-4">
               {/* Grid Lines */}
-              {HOURS.map((hour, hourIndex) => (
+              {HOURS.map((hour, _hourIndex) => (
                 <div className="col-span-4 flex h-24 border-t" key={hour}>
                   {mockTechnicians.slice(0, 4).map((_, techIndex) => (
                     <div className="flex-1 border-r" key={techIndex} />

@@ -26,17 +26,17 @@ import {
 } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils/format";
 
-interface LineItem {
+type LineItem = {
   description: string;
   quantity: number;
   unitPrice: number;
   total: number;
-}
+};
 
-interface InvoiceLineItemsProps {
+type InvoiceLineItemsProps = {
   lineItems: LineItem[];
   onUpdate: (items: LineItem[]) => void;
-}
+};
 
 export function InvoiceLineItems({
   lineItems: initialItems,

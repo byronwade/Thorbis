@@ -66,7 +66,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
   );
 
   const handleUnlinkInvoice = useCallback(async () => {
-    if (!unlinkInvoiceId) return;
+    if (!unlinkInvoiceId) {
+      return;
+    }
 
     setIsUnlinking(true);
     try {
@@ -80,7 +82,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
       } else {
         toast.error(result.error || "Failed to unlink invoice");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to unlink invoice");
     } finally {
       setIsUnlinking(false);

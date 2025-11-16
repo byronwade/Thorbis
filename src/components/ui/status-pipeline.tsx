@@ -15,11 +15,11 @@
 
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
-interface StatusPipelineProps {
+type StatusPipelineProps = {
   stats: StatCard[];
   variant?: "ticker" | "chart";
   compact?: boolean;
-}
+};
 
 export function StatusPipeline({
   stats,

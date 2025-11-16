@@ -102,8 +102,7 @@ export async function GET() {
         hasPayment,
       },
     });
-  } catch (error) {
-    console.error("Error fetching incomplete company:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

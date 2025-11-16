@@ -52,10 +52,10 @@ import {
   useSetActiveTab,
 } from "@/lib/stores/job-editor-store";
 
-interface JobCommandPaletteProps {
+type JobCommandPaletteProps = {
   jobId: string;
   customer?: any;
-}
+};
 
 export function JobCommandPalette({ jobId, customer }: JobCommandPaletteProps) {
   const isOpen = useIsCommandPaletteOpen();
@@ -85,9 +85,7 @@ export function JobCommandPalette({ jobId, customer }: JobCommandPaletteProps) {
   );
 
   const handleQuickAction = useCallback(
-    (action: string) => {
-      // TODO: Implement actions
-      console.log("Quick action:", action);
+    (_action: string) => {
       setCommandPaletteOpen(false);
     },
     [setCommandPaletteOpen]

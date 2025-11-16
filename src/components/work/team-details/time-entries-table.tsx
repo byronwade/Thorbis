@@ -54,15 +54,21 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
   };
 
   const formatDuration = (minutes?: number | null) => {
-    if (!minutes) return "-";
-    if (minutes < 60) return `${minutes}m`;
+    if (!minutes) {
+      return "-";
+    }
+    if (minutes < 60) {
+      return `${minutes}m`;
+    }
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
   };
 
   const calculateDuration = (entry: TimeEntry): number | null => {
-    if (entry.total_duration) return entry.total_duration;
+    if (entry.total_duration) {
+      return entry.total_duration;
+    }
 
     const clockIn = new Date(entry.clock_in);
     const clockOut = entry.clock_out ? new Date(entry.clock_out) : new Date();
@@ -248,7 +254,7 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
         ),
       },
     ],
-    []
+    [calculateDuration, formatDuration, getStatusColor]
   );
 
   // Calculate total hours

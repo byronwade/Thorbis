@@ -118,7 +118,6 @@ export async function POST(request: NextRequest) {
       });
 
     if (insertError) {
-      console.error("Error saving payment method:", insertError);
       return NextResponse.json(
         { error: "Failed to save payment method" },
         { status: 500 }
@@ -140,19 +139,13 @@ export async function POST(request: NextRequest) {
             },
           });
         }
-      } catch (stripeError) {
-        console.error(
-          "Error attaching payment method to customer:",
-          stripeError
-        );
+      } catch (_stripeError) {
         // Don't fail - payment method is saved in our DB
       }
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error saving payment method:", error);
-
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.issues[0]?.message || "Validation error" },

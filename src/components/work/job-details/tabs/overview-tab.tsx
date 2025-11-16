@@ -52,7 +52,7 @@ import { formatCurrency, formatDate } from "@/lib/formatters";
 import { useJobEditorStore } from "@/lib/stores/job-editor-store";
 import { TeamMemberSelector } from "../team-member-selector";
 
-interface OverviewTabProps {
+type OverviewTabProps = {
   job: any;
   customer: any;
   customers: any[];
@@ -60,7 +60,7 @@ interface OverviewTabProps {
   properties: any[];
   propertyEnrichment: any;
   isEditMode: boolean;
-}
+};
 
 export function OverviewTab({
   job,

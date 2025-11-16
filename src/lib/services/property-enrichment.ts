@@ -125,7 +125,7 @@ export type PropertyEnrichment = z.infer<typeof PropertyEnrichmentSchema>;
 /**
  * API configuration for property data providers
  */
-interface PropertyDataProvider {
+type PropertyDataProvider = {
   name: string;
   apiKey: string;
   baseUrl: string;
@@ -133,16 +133,16 @@ interface PropertyDataProvider {
     requestsPerSecond: number;
     requestsPerDay: number;
   };
-}
+};
 
 // ============================================================================
 // Property Enrichment Service
 // ============================================================================
 
 export class PropertyEnrichmentService {
-  private providers: Map<string, PropertyDataProvider> = new Map();
-  private cache: Map<string, PropertyEnrichment> = new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
+  private readonly providers: Map<string, PropertyDataProvider> = new Map();
+  private readonly cache: Map<string, PropertyEnrichment> = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
   constructor() {
     this.initializeProviders();
@@ -217,7 +217,9 @@ export class PropertyEnrichmentService {
 
     for (const providerName of providers) {
       const provider = this.providers.get(providerName);
-      if (!provider) continue;
+      if (!provider) {
+        continue;
+      }
 
       try {
         const enrichment = await this.fetchFromProvider(
@@ -233,8 +235,7 @@ export class PropertyEnrichmentService {
           this.cache.set(cacheKey, enrichment);
           return enrichment;
         }
-      } catch (error) {
-        console.error(`Error fetching from ${providerName}:`, error);
+      } catch (_error) {
         // Continue to next provider
       }
     }
@@ -354,7 +355,9 @@ export class PropertyEnrichmentService {
   private mapPropertyType(
     providerType: string | undefined
   ): PropertyEnrichment["details"]["propertyType"] | undefined {
-    if (!providerType) return;
+    if (!providerType) {
+      return;
+    }
 
     const typeMap: Record<
       string,
@@ -376,10 +379,10 @@ export class PropertyEnrichmentService {
    * Get permit history for a property
    */
   async getPermitHistory(
-    address: string,
-    city: string,
-    state: string,
-    zipCode: string
+    _address: string,
+    _city: string,
+    _state: string,
+    _zipCode: string
   ): Promise<PropertyEnrichment["permits"]> {
     // This would integrate with local permit systems or aggregators
     // Implementation depends on availability of permit data APIs

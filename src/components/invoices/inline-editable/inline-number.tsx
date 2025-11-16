@@ -10,7 +10,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface InlineNumberProps {
+type InlineNumberProps = {
   value: number;
   onUpdate: (newValue: number) => void;
   isEditable: boolean;
@@ -19,7 +19,7 @@ interface InlineNumberProps {
   decimals?: number;
   min?: number;
   max?: number;
-}
+};
 
 export function InlineNumber({
   value,
@@ -41,8 +41,12 @@ export function InlineNumber({
     let newValue = Number.parseFloat(text.replace(/[^0-9.-]/g, "")) || 0;
 
     // Apply min/max constraints
-    if (min !== undefined && newValue < min) newValue = min;
-    if (max !== undefined && newValue > max) newValue = max;
+    if (min !== undefined && newValue < min) {
+      newValue = min;
+    }
+    if (max !== undefined && newValue > max) {
+      newValue = max;
+    }
 
     if (newValue !== value) {
       onUpdate(newValue);

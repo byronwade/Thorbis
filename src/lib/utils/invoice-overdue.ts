@@ -14,7 +14,7 @@ export type OverdueLevel =
   | "60-days"
   | "90-days";
 
-export interface OverdueStatus {
+export type OverdueStatus = {
   level: OverdueLevel;
   daysOverdue: number;
   urgency: "none" | "low" | "medium" | "high" | "critical" | "severe";
@@ -27,7 +27,7 @@ export interface OverdueStatus {
   message: string;
   showBanner: boolean;
   allowPayment: boolean;
-}
+};
 
 /**
  * Calculate overdue status from due date
@@ -193,7 +193,7 @@ export function getOverdueStatus(
  */
 export function formatOverdueAmount(
   cents: number,
-  urgency: OverdueStatus["urgency"]
+  _urgency: OverdueStatus["urgency"]
 ): string {
   const formatted = new Intl.NumberFormat("en-US", {
     style: "currency",

@@ -74,9 +74,6 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
   // If user has an active company and is NOT explicitly creating a new one,
   // redirect them to the main dashboard
   if (hasActiveCompany && !isCreatingNewCompany) {
-    console.log(
-      `✅ User has active company - redirecting to dashboard (company: ${activeCompanyId})`
-    );
     redirect("/dashboard");
   }
 

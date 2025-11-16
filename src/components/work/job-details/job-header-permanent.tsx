@@ -128,7 +128,9 @@ export function JobHeaderPermanent({
 
   // Build Google Maps URL - prefer coordinates if available
   const getDirectionsUrl = () => {
-    if (!property) return null;
+    if (!property) {
+      return null;
+    }
 
     if (property.lat && property.lon) {
       return `https://www.google.com/maps/dir/?api=1&destination=${property.lat},${property.lon}`;

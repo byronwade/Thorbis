@@ -25,12 +25,12 @@ import {
 } from "@/components/ui/command";
 import type { Job } from "./schedule-types";
 
-interface ScheduleCommandMenuProps {
+type ScheduleCommandMenuProps = {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: Date | null;
   unassignedJobs?: Job[];
-}
+};
 
 export function ScheduleCommandMenu({
   isOpen,
@@ -67,7 +67,9 @@ export function ScheduleCommandMenu({
 
   // Filter unassigned jobs by search query
   const filteredJobs = unassignedJobs.filter((job) => {
-    if (!searchQuery) return true;
+    if (!searchQuery) {
+      return true;
+    }
     const query = searchQuery.toLowerCase();
     return (
       job.title?.toLowerCase().includes(query) ||

@@ -35,12 +35,16 @@ const numberFormatter = new Intl.NumberFormat("en-US", {
 });
 
 function formatCurrency(value: number) {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
   return currencyFormatter.format(value);
 }
 
 function formatNumber(value: number) {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
   return numberFormatter.format(value);
 }
 

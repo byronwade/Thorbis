@@ -58,9 +58,9 @@ export type PhoneNumberRecord = {
   metadata?: Record<string, unknown> | null;
 };
 
-interface PhoneNumbersListProps {
+type PhoneNumbersListProps = {
   numbers: PhoneNumberRecord[];
-}
+};
 
 export function PhoneNumbersList({ numbers }: PhoneNumbersListProps) {
   return (

@@ -127,7 +127,7 @@ export function TeamExtensionsManager() {
 
   useEffect(() => {
     loadTeamExtensions();
-  }, []);
+  }, [loadTeamExtensions]);
 
   async function loadTeamExtensions() {
     setIsLoading(true);
@@ -138,7 +138,7 @@ export function TeamExtensionsManager() {
       } else {
         toast.error(result.error || "Failed to load team extensions");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to load team extensions");
     } finally {
       setIsLoading(false);
@@ -173,7 +173,9 @@ export function TeamExtensionsManager() {
   }
 
   function handleSaveExtension() {
-    if (!selectedMember) return;
+    if (!selectedMember) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await updateTeamMemberExtension(
@@ -192,7 +194,9 @@ export function TeamExtensionsManager() {
   }
 
   function handleSaveVacation() {
-    if (!selectedMember) return;
+    if (!selectedMember) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await setVacationMode(selectedMember.id, vacationForm);
@@ -547,7 +551,7 @@ export function TeamExtensionsManager() {
                 onValueChange={(value) =>
                   setExtensionForm({
                     ...extensionForm,
-                    ring_timeout_seconds: Number.parseInt(value),
+                    ring_timeout_seconds: Number.parseInt(value, 10),
                   })
                 }
                 value={extensionForm.ring_timeout_seconds.toString()}

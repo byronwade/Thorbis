@@ -210,7 +210,7 @@ const FILE_SIGNATURES: Record<string, { bytes: number[]; offset: number }[]> = {
 
 export type FileContext = keyof typeof SIZE_LIMITS;
 
-export interface ValidationResult {
+export type ValidationResult = {
   valid: boolean;
   errors: string[];
   warnings: string[];
@@ -219,15 +219,15 @@ export interface ValidationResult {
     detectedMimeType?: string;
     category?: string;
   };
-}
+};
 
-export interface ValidationOptions {
+export type ValidationOptions = {
   context?: FileContext;
   maxSize?: number;
   allowedMimeTypes?: string[];
   checkMagicNumbers?: boolean;
   strictMode?: boolean;
-}
+};
 
 // ============================================================================
 // MAIN VALIDATION FUNCTION
@@ -322,7 +322,7 @@ export async function validateFile(
           );
         }
       }
-    } catch (error) {
+    } catch (_error) {
       warnings.push("Could not verify file signature");
     }
   }
@@ -441,10 +441,18 @@ function detectFileCategory(mimeType: string): string | undefined {
   }
 
   // Fallback to general category detection
-  if (mimeType.startsWith("image/")) return "image";
-  if (mimeType.startsWith("video/")) return "video";
-  if (mimeType.startsWith("audio/")) return "audio";
-  if (mimeType.startsWith("text/")) return "document";
+  if (mimeType.startsWith("image/")) {
+    return "image";
+  }
+  if (mimeType.startsWith("video/")) {
+    return "video";
+  }
+  if (mimeType.startsWith("audio/")) {
+    return "audio";
+  }
+  if (mimeType.startsWith("text/")) {
+    return "document";
+  }
 
   return;
 }
@@ -462,7 +470,7 @@ function performSecurityChecks(
   // Check for double extensions (e.g., file.pdf.exe)
   const parts = sanitizedName.split(".");
   if (parts.length > 2) {
-    const secondExt = "." + parts[parts.length - 2];
+    const secondExt = `.${parts.at(-2)}`;
     if (isBlockedExtension(secondExt)) {
       errors.push(
         "File has suspicious double extension that could hide malicious content"
@@ -492,7 +500,9 @@ function performSecurityChecks(
  * Format file size for display
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
 
   const k = 1024;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];

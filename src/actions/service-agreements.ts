@@ -125,7 +125,7 @@ async function generateServiceAgreementNumber(
 
     const match = latestAgreement.agreement_number.match(/SA-(\d+)/);
     if (match) {
-      const nextNumber = Number.parseInt(match[1]) + 1;
+      const nextNumber = Number.parseInt(match[1], 10) + 1;
       return `SA-${nextNumber.toString().padStart(6, "0")}`;
     }
 
@@ -258,17 +258,17 @@ export async function createServiceAgreement(
         : undefined,
       autoRenew: formData.get("autoRenew") === "true",
       renewalTermMonths: formData.get("renewalTermMonths")
-        ? Number.parseInt(formData.get("renewalTermMonths") as string)
+        ? Number.parseInt(formData.get("renewalTermMonths") as string, 10)
         : undefined,
       terms: (formData.get("terms") as string) || undefined,
       scopeOfWork: (formData.get("scopeOfWork") as string) || undefined,
       deliverables,
       performanceMetrics,
       responseTimeHours: formData.get("responseTimeHours")
-        ? Number.parseInt(formData.get("responseTimeHours") as string)
+        ? Number.parseInt(formData.get("responseTimeHours") as string, 10)
         : undefined,
       resolutionTimeHours: formData.get("resolutionTimeHours")
-        ? Number.parseInt(formData.get("resolutionTimeHours") as string)
+        ? Number.parseInt(formData.get("resolutionTimeHours") as string, 10)
         : undefined,
       availabilityPercentage: formData.get("availabilityPercentage")
         ? Number.parseFloat(formData.get("availabilityPercentage") as string)
@@ -413,7 +413,7 @@ export async function updateServiceAgreement(
         if (numericFields.includes(key)) {
           rawData[key] =
             key.includes("Months") || key.includes("Hours")
-              ? Number.parseInt(value as string)
+              ? Number.parseInt(value as string, 10)
               : Number.parseFloat(value as string);
         } else if (jsonFields.includes(key)) {
           try {

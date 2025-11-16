@@ -71,10 +71,10 @@ type PaymentData = {
   };
 };
 
-interface InvoicePaymentsProps {
+type InvoicePaymentsProps = {
   invoice: Invoice;
   payments?: PaymentData[];
-}
+};
 
 export function InvoicePayments({
   invoice,
@@ -93,7 +93,9 @@ export function InvoicePayments({
 
   // Format date
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "-";
+    if (!dateString) {
+      return "-";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -103,7 +105,9 @@ export function InvoicePayments({
 
   // Format date with time
   const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return "-";
+    if (!dateString) {
+      return "-";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -126,7 +130,9 @@ export function InvoicePayments({
 
   // Handle removing payment from invoice
   const handleRemovePayment = async () => {
-    if (!removePaymentId) return;
+    if (!removePaymentId) {
+      return;
+    }
 
     setIsRemoving(true);
     try {
@@ -140,7 +146,7 @@ export function InvoicePayments({
       } else {
         toast.error(result.error || "Failed to remove payment");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove payment");
     } finally {
       setIsRemoving(false);

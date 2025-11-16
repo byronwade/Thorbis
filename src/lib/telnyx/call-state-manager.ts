@@ -21,14 +21,14 @@ export type TelnyxCallEvent =
 /**
  * Telnyx call event payload
  */
-export interface TelnyxCallEventPayload {
+export type TelnyxCallEventPayload = {
   call_control_id: string;
   call_session_id: string;
   from: string;
   to: string;
   direction: "incoming" | "outgoing";
   state?: string;
-}
+};
 
 /**
  * Initialize call state from Telnyx webhook
@@ -85,14 +85,10 @@ export function initializeCallFromWebhook(
     }
 
     case "call.recording.saved": {
-      // Recording saved - could trigger notification
-      console.log("Recording saved for call:", payload.call_control_id);
       break;
     }
 
     case "call.machine.detection.ended": {
-      // Machine detection completed
-      console.log("Machine detection ended:", payload.state);
       break;
     }
   }
@@ -106,7 +102,7 @@ export function broadcastCallStateToWindow(
   state: Partial<CallState>
 ): void {
   // Find call window by callId
-  const callWindows = Array.from(window.opener ? [window.opener] : []);
+  const _callWindows = Array.from(window.opener ? [window.opener] : []);
 
   // Also check for child windows
   if (typeof window !== "undefined") {
@@ -126,9 +122,7 @@ export function broadcastCallStateToWindow(
 /**
  * Handle Telnyx error
  */
-export function handleTelnyxError(error: Error, context: string): void {
-  console.error(`Telnyx error in ${context}:`, error);
-
+export function handleTelnyxError(error: Error, _context: string): void {
   const store = useUIStore.getState();
   if (store.setTelnyxError) {
     store.setTelnyxError(error.message);
@@ -220,7 +214,9 @@ export function updateCallWithCustomerData(
  * Listen for Telnyx events from WebRTC
  */
 export function setupTelnyxEventListeners(): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   // Listen for custom Telnyx events
   window.addEventListener("telnyx:call:initiated", (event: any) => {
@@ -244,7 +240,9 @@ export function setupTelnyxEventListeners(): void {
  * Cleanup Telnyx event listeners
  */
 export function cleanupTelnyxEventListeners(): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   window.removeEventListener("telnyx:call:initiated", () => {});
   window.removeEventListener("telnyx:call:answered", () => {});

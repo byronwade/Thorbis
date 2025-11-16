@@ -30,7 +30,7 @@ export function EquipmentToolbarActions({
 }: {
   totalCount?: number;
 }) {
-  const archiveFilter = useArchiveStore((state) => state.filters.equipment);
+  const _archiveFilter = useArchiveStore((state) => state.filters.equipment);
 
   // Calculate counts (will be passed from page)
   const activeCount = totalCount; // TODO: Get actual counts from page

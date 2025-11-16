@@ -21,7 +21,7 @@ import {
 import { StatusIndicator } from "@/components/ui/status-indicator";
 import type { UserProfile } from "@/lib/auth/user-data";
 
-interface OnboardingHeaderClientProps {
+type OnboardingHeaderClientProps = {
   userProfile: UserProfile;
   companies: Array<{
     id: string;
@@ -30,7 +30,7 @@ interface OnboardingHeaderClientProps {
     onboardingComplete?: boolean;
     hasPayment?: boolean;
   }>;
-}
+};
 
 export function OnboardingHeaderClient({
   userProfile,
@@ -80,8 +80,7 @@ export function OnboardingHeaderClient({
         setUserStatus(status);
         router.refresh();
       }
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch (_error) {
     } finally {
       setIsUpdatingStatus(false);
     }

@@ -36,9 +36,9 @@ import {
 
 type ExportStep = "filters" | "fields" | "format" | "schedule" | "preview";
 
-interface ExportWorkflowClientProps {
+type ExportWorkflowClientProps = {
   dataType: string;
-}
+};
 
 export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
   const [currentStep, setCurrentStep] = useState<ExportStep>("filters");

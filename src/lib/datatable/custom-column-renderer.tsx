@@ -19,9 +19,13 @@ function getNestedValue(obj: any, path: string): any {
  * Format currency value
  */
 function formatCurrency(value: any): string {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") {
+    return "—";
+  }
   const num = Number(value);
-  if (isNaN(num)) return "—";
+  if (Number.isNaN(num)) {
+    return "—";
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -32,9 +36,13 @@ function formatCurrency(value: any): string {
  * Format number value
  */
 function formatNumber(value: any): string {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") {
+    return "—";
+  }
   const num = Number(value);
-  if (isNaN(num)) return "—";
+  if (Number.isNaN(num)) {
+    return "—";
+  }
   return new Intl.NumberFormat("en-US").format(num);
 }
 
@@ -42,10 +50,14 @@ function formatNumber(value: any): string {
  * Format date value
  */
 function formatDate(value: any): string {
-  if (!value) return "—";
+  if (!value) {
+    return "—";
+  }
   try {
     const date = new Date(value);
-    if (isNaN(date.getTime())) return "—";
+    if (Number.isNaN(date.getTime())) {
+      return "—";
+    }
     return format(date, "MMM d, yyyy h:mm a");
   } catch {
     return "—";
@@ -100,8 +112,6 @@ export function renderCustomColumn(
           {String(value).replace(/_/g, " ")}
         </Badge>
       );
-
-    case "text":
     default: {
       // Truncate long text
       const text = String(value);
@@ -128,7 +138,6 @@ export function getColumnWidthClass(width?: string): string {
       return "w-64";
     case "xl":
       return "w-96";
-    case "auto":
     default:
       return "flex-1";
   }

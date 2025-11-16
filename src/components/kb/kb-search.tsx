@@ -15,11 +15,11 @@ import { Input } from "@/components/ui/input";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
 import { cn } from "@/lib/utils";
 
-interface KBSearchProps {
+type KBSearchProps = {
   className?: string;
   placeholder?: string;
   showButton?: boolean;
-}
+};
 
 export function KBSearch({
   className,

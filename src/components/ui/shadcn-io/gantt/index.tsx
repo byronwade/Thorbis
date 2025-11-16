@@ -1363,16 +1363,7 @@ export const GanttProvider: FC<GanttProviderProps> = ({
         behavior: "smooth",
       });
     },
-    [
-      timelineData,
-      zoom,
-      range,
-      columnWidth,
-      sidebarWidth,
-      headerHeight,
-      rowHeight,
-      onAddItem,
-    ]
+    [timelineData, zoom, range, columnWidth, sidebarWidth, onAddItem]
   );
 
   return (
@@ -1430,7 +1421,9 @@ function throttle<T extends (...args: any[]) => any>(
       func.apply(this, args);
       lastRan = now;
     } else {
-      if (timeout) clearTimeout(timeout);
+      if (timeout) {
+        clearTimeout(timeout);
+      }
       timeout = setTimeout(
         () => {
           func.apply(this, args);

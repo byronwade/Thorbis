@@ -41,10 +41,10 @@ import {
 import { cn } from "@/lib/utils";
 import { ScheduleTimeline } from "./schedule-timeline";
 
-interface CSRScheduleViewProps {
+type CSRScheduleViewProps = {
   className?: string;
   companyId?: string;
-}
+};
 
 export function CSRScheduleView({
   className,
@@ -83,8 +83,7 @@ export function CSRScheduleView({
       try {
         const schedules = await getTechnicianSchedules(selectedDate, companyId);
         setTechnicians(schedules);
-      } catch (err) {
-        console.error("Error fetching schedules:", err);
+      } catch (_err) {
         setError("Failed to load schedules");
       } finally {
         setIsLoading(false);
@@ -187,7 +186,6 @@ export function CSRScheduleView({
             Cancelled
           </Badge>
         );
-      case "scheduled":
       default:
         return (
           <Badge className="text-[10px]" variant="outline">
@@ -422,7 +420,7 @@ export function CSRScheduleView({
       <div className="border-t bg-card/50 p-3">
         <Button
           className="w-full gap-2 text-xs"
-          onClick={() => console.log("Book appointment")}
+          onClick={() => {}}
           size="sm"
           variant="default"
         >

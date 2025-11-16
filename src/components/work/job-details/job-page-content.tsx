@@ -173,13 +173,13 @@ export function JobPageContent({
   const canShowInteractiveMap =
     Boolean(property?.lat && property?.lon) || hasMapsApiKey;
 
-  const [customerSearchQuery, setCustomerSearchQuery] = useState("");
-  const [propertySearchQuery, setPropertySearchQuery] = useState("");
-  const [propertyDropdownMode, setPropertyDropdownMode] = useState<
+  const [customerSearchQuery, _setCustomerSearchQuery] = useState("");
+  const [propertySearchQuery, _setPropertySearchQuery] = useState("");
+  const [_propertyDropdownMode, setPropertyDropdownMode] = useState<
     "search" | "add"
   >("search");
-  const [isUpdatingCustomer, setIsUpdatingCustomer] = useState(false);
-  const [isUpdatingProperty, setIsUpdatingProperty] = useState(false);
+  const [_isUpdatingCustomer, _setIsUpdatingCustomer] = useState(false);
+  const [_isUpdatingProperty, setIsUpdatingProperty] = useState(false);
   const [isCreatePropertyDialogOpen, setIsCreatePropertyDialogOpen] =
     useState(false);
   const [isCreatingProperty, setIsCreatingProperty] = useState(false);
@@ -216,7 +216,7 @@ export function JobPageContent({
   };
 
   // Handle customer change
-  const handleCustomerChange = async (newCustomerId: string | null) => {
+  const _handleCustomerChange = async (newCustomerId: string | null) => {
     if (newCustomerId === customer?.id) {
       return;
     }
@@ -276,7 +276,7 @@ export function JobPageContent({
           id: "customer-update",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       setCustomer(originalCustomer);
       setProperty(originalProperty);
@@ -285,7 +285,7 @@ export function JobPageContent({
   };
 
   // Handle property change
-  const handlePropertyChange = async (newPropertyId: string | null) => {
+  const _handlePropertyChange = async (newPropertyId: string | null) => {
     if (newPropertyId === property?.id) {
       return;
     }
@@ -319,7 +319,7 @@ export function JobPageContent({
           id: "property-update",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       setProperty(originalProperty);
       toast.error("Failed to update property", { id: "property-update" });
@@ -327,7 +327,7 @@ export function JobPageContent({
   };
 
   // Handle remove customer
-  const handleRemoveCustomer = async () => {
+  const _handleRemoveCustomer = async () => {
     // Store original for rollback
     const originalCustomer = customer;
     const originalProperty = property;
@@ -358,7 +358,7 @@ export function JobPageContent({
           id: "customer-remove",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       setCustomer(originalCustomer);
       setProperty(originalProperty);
@@ -367,7 +367,7 @@ export function JobPageContent({
   };
 
   // Handle create new property from Google Places
-  const handlePlaceSelect = async (place: {
+  const _handlePlaceSelect = async (place: {
     address: string;
     address2?: string;
     city: string;
@@ -378,22 +378,17 @@ export function JobPageContent({
     lon: number;
     formattedAddress: string;
   }) => {
-    console.log("[JobPage] handlePlaceSelect called with:", place);
-
     if (!customer?.id) {
-      console.error("[JobPage] No customer selected");
       toast.error("Please select a customer first");
       return;
     }
-
-    console.log("[JobPage] Creating property for customer:", customer.id);
 
     // Store original property for rollback
     const originalProperty = property;
 
     // Create optimistic property object
     const optimisticProperty = {
-      id: "temp-" + Date.now(),
+      id: `temp-${Date.now()}`,
       customer_id: customer.id,
       company_id: customer.company_id,
       name: place.formattedAddress,
@@ -450,7 +445,7 @@ export function JobPageContent({
         setProperty(originalProperty);
         toast.error(result.error ?? "Failed to create property");
       }
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       setProperty(originalProperty);
       toast.error("Failed to create property");
@@ -500,7 +495,7 @@ export function JobPageContent({
       } else {
         toast.error(result.error ?? "Failed to create property");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to create property");
     } finally {
       setIsCreatingProperty(false);
@@ -508,8 +503,10 @@ export function JobPageContent({
   };
 
   // Filter customers based on search
-  const filteredCustomers = allCustomers.filter((c: any) => {
-    if (!customerSearchQuery) return true;
+  const _filteredCustomers = allCustomers.filter((c: any) => {
+    if (!customerSearchQuery) {
+      return true;
+    }
     const query = customerSearchQuery.toLowerCase();
     const fullName = `${c.first_name} ${c.last_name}`.toLowerCase();
     const phone = c.phone?.toLowerCase() || "";
@@ -524,8 +521,10 @@ export function JobPageContent({
   });
 
   // Filter properties based on search
-  const filteredProperties = availableProperties.filter((p: any) => {
-    if (!propertySearchQuery) return true;
+  const _filteredProperties = availableProperties.filter((p: any) => {
+    if (!propertySearchQuery) {
+      return true;
+    }
     const query = propertySearchQuery.toLowerCase();
     const name = p.name?.toLowerCase() || "";
     const address = p.address?.toLowerCase() || "";
@@ -568,18 +567,24 @@ export function JobPageContent({
         setHasChanges(false);
         // Update local state immediately with the saved values
         const updatedJob = { ...localJob };
-        if (formData.has("title"))
+        if (formData.has("title")) {
           updatedJob.title = formData.get("title") as string;
-        if (formData.has("description"))
+        }
+        if (formData.has("description")) {
           updatedJob.description = formData.get("description") as string;
-        if (formData.has("status"))
+        }
+        if (formData.has("status")) {
           updatedJob.status = formData.get("status") as string;
-        if (formData.has("priority"))
+        }
+        if (formData.has("priority")) {
           updatedJob.priority = formData.get("priority") as string;
-        if (formData.has("jobType"))
+        }
+        if (formData.has("jobType")) {
           updatedJob.job_type = formData.get("jobType") as string;
-        if (formData.has("notes"))
+        }
+        if (formData.has("notes")) {
           updatedJob.notes = formData.get("notes") as string;
+        }
         setLocalJob(updatedJob);
         // Force router refresh to get latest data from server
         router.refresh();
@@ -620,9 +625,9 @@ export function JobPageContent({
     }).format(new Date(date));
   };
 
-  const formatHours = (hours: number) => `${hours.toFixed(1)}h`;
+  const _formatHours = (hours: number) => `${hours.toFixed(1)}h`;
 
-  const formatTime = (date: string | null) => {
+  const _formatTime = (date: string | null) => {
     if (!date) {
       return "Not set";
     }
@@ -632,7 +637,7 @@ export function JobPageContent({
     }).format(new Date(date));
   };
 
-  const formatDuration = (minutes: number | null) => {
+  const _formatDuration = (minutes: number | null) => {
     if (!minutes) {
       return "-";
     }
@@ -745,7 +750,7 @@ export function JobPageContent({
     return parsed && typeof parsed === "object"
       ? (parsed as Record<string, any>)
       : {};
-  }, [customer?.metadata]);
+  }, [customer?.metadata, parseMaybeJson]);
 
   const communicationPreferences = useMemo<Record<
     string,
@@ -756,7 +761,7 @@ export function JobPageContent({
       return parsed as Record<string, boolean>;
     }
     return null;
-  }, [customer?.communication_preferences]);
+  }, [customer?.communication_preferences, parseMaybeJson]);
 
   const membershipLabel = useMemo(() => {
     const fromMetadata =
@@ -819,7 +824,7 @@ export function JobPageContent({
       label: "In Good Standing",
       description: "No outstanding balances or restrictions.",
     };
-  }, [customer, outstandingBalance]);
+  }, [customer, outstandingBalance, formatCurrency]);
 
   const toneClasses = {
     positive:
@@ -873,7 +878,7 @@ export function JobPageContent({
     });
   }, [openInvoices]);
 
-  const totalOutstanding = useMemo(
+  const _totalOutstanding = useMemo(
     () =>
       openInvoices.reduce((sum: number, invoice: any) => {
         const balance = invoice?.balance_amount ?? invoice?.balanceAmount ?? 0;
@@ -897,7 +902,7 @@ export function JobPageContent({
         };
       })
       .filter((item) => item.dueDate && !Number.isNaN(item.dueDate.getTime()))
-      .sort((a, b) => a.dueDate!.getTime() - b.dueDate!.getTime());
+      .sort((a, b) => a.dueDate?.getTime() - b.dueDate?.getTime());
 
     return withDates[0]?.invoice ?? null;
   }, [openInvoices]);
@@ -925,7 +930,7 @@ export function JobPageContent({
           !Number.isNaN(startDate.getTime()) &&
           startDate.getTime() > now
       )
-      .sort((a, b) => a.startDate!.getTime() - b.startDate!.getTime())
+      .sort((a, b) => a.startDate?.getTime() - b.startDate?.getTime())
       .map(({ schedule }) => schedule);
   }, [schedules]);
 
@@ -992,10 +997,10 @@ export function JobPageContent({
 
   const customerSince = customer?.created_at ?? customer?.createdAt ?? null;
 
-  const lastInvoiceDate =
+  const _lastInvoiceDate =
     customer?.last_invoice_date ?? customer?.lastInvoiceDate ?? null;
 
-  const lastPaymentDate =
+  const _lastPaymentDate =
     customer?.last_payment_date ?? customer?.lastPaymentDate ?? null;
 
   const lastJobDate = customer?.last_job_date ?? customer?.lastJobDate ?? null;
@@ -1007,10 +1012,10 @@ export function JobPageContent({
 
   const totalJobs = customer?.total_jobs ?? customer?.totalJobs ?? 0;
 
-  const outstandingInvoicesCount = openInvoices.length;
+  const _outstandingInvoicesCount = openInvoices.length;
   const overdueInvoicesCount = overdueInvoices.length;
 
-  const internalNotes =
+  const _internalNotes =
     customer?.internal_notes ?? customer?.internalNotes ?? "";
 
   const assignedTeamMembers = useMemo(() => {
@@ -1067,7 +1072,7 @@ export function JobPageContent({
       .filter(Boolean);
   }, [teamAssignments]);
 
-  const primaryAddressLine = [
+  const _primaryAddressLine = [
     customer?.address,
     customer?.city,
     customer?.state,
@@ -1085,23 +1090,23 @@ export function JobPageContent({
     customer?.email ??
     null;
 
-  const lastCommunicationAt =
+  const _lastCommunicationAt =
     lastCommunication?.created_at ?? lastCommunication?.createdAt ?? null;
 
-  const lastCommunicationChannel =
+  const _lastCommunicationChannel =
     lastCommunication?.channel ??
     lastCommunication?.type ??
     lastCommunication?.medium ??
     null;
 
-  const nextInvoiceDueDate =
+  const _nextInvoiceDueDate =
     nextDueInvoice?.due_date ??
     nextDueInvoice?.dueDate ??
     nextDueInvoice?.due_on ??
     nextDueInvoice?.dueOn ??
     null;
 
-  const nextInvoiceBalance =
+  const _nextInvoiceBalance =
     nextDueInvoice?.balance_amount ?? nextDueInvoice?.balanceAmount ?? 0;
 
   const customerStatusLabel = (customer?.status || "active").replace(/_/g, " ");
@@ -2147,11 +2152,7 @@ export function JobPageContent({
     icon: <FileText className="size-4" />,
     count: invoices.length,
     actions: (
-      <Button
-        onClick={() => console.log("Create invoice")}
-        size="sm"
-        variant="outline"
-      >
+      <Button onClick={() => {}} size="sm" variant="outline">
         <Plus className="mr-2 h-4 w-4" /> Create Invoice
       </Button>
     ),
@@ -2173,11 +2174,7 @@ export function JobPageContent({
     icon: <Receipt className="size-4" />,
     count: estimates.length,
     actions: (
-      <Button
-        onClick={() => console.log("Create estimate")}
-        size="sm"
-        variant="outline"
-      >
+      <Button onClick={() => {}} size="sm" variant="outline">
         <Plus className="mr-2 h-4 w-4" /> Create Estimate
       </Button>
     ),
@@ -2199,11 +2196,7 @@ export function JobPageContent({
     icon: <Package className="size-4" />,
     count: purchaseOrders.length,
     actions: (
-      <Button
-        onClick={() => console.log("Create PO")}
-        size="sm"
-        variant="outline"
-      >
+      <Button onClick={() => {}} size="sm" variant="outline">
         <Plus className="mr-2 h-4 w-4" /> Create PO
       </Button>
     ),
@@ -2489,11 +2482,7 @@ export function JobPageContent({
     icon: <Activity className="size-4" />,
     count: activities.length + communications.length,
     actions: (
-      <Button
-        onClick={() => console.log("Add note")}
-        size="sm"
-        variant="outline"
-      >
+      <Button onClick={() => {}} size="sm" variant="outline">
         <Plus className="mr-2 h-4 w-4" /> Add Note
       </Button>
     ),
@@ -2577,13 +2566,7 @@ export function JobPageContent({
     icon: <Wrench className="size-4" />,
     count: jobEquipment.length,
     actions: (
-      <Button
-        onClick={() => {
-          console.log("Add equipment");
-        }}
-        size="sm"
-        variant="outline"
-      >
+      <Button onClick={() => {}} size="sm" variant="outline">
         <Plus className="mr-2 h-4 w-4" /> Add Equipment
       </Button>
     ),
@@ -2600,11 +2583,7 @@ export function JobPageContent({
             <p className="mb-4 text-muted-foreground text-sm">
               Equipment serviced on this job will appear here
             </p>
-            <Button
-              onClick={() => console.log("Add equipment")}
-              size="sm"
-              variant="secondary"
-            >
+            <Button onClick={() => {}} size="sm" variant="secondary">
               <Plus className="mr-2 h-4 w-4" /> Add Equipment
             </Button>
           </div>
@@ -2895,7 +2874,7 @@ export function JobPageContent({
         </DialogContent>
       </Dialog>
 
-      {customer && customer.email && (
+      {customer?.email && (
         <EmailDialog
           companyId={job.company_id}
           customerEmail={customer.email}
@@ -2908,7 +2887,7 @@ export function JobPageContent({
         />
       )}
 
-      {customer && customer.phone && (
+      {customer?.phone && (
         <SMSDialog
           companyId={job.company_id}
           companyPhones={companyPhones}

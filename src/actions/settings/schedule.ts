@@ -93,7 +93,7 @@ export async function updateAvailabilitySettings(
     let workHoursJson;
     try {
       workHoursJson = JSON.parse(data.defaultWorkHours);
-    } catch (e) {
+    } catch (_e) {
       throw new ActionError(
         "Invalid work hours JSON",
         ERROR_CODES.VALIDATION_FAILED
@@ -406,7 +406,7 @@ function parseJsonField(value?: string | null) {
   }
   try {
     return JSON.parse(value);
-  } catch (error) {
+  } catch (_error) {
     throw new ActionError(
       "Invalid JSON provided",
       ERROR_CODES.VALIDATION_FAILED
@@ -659,7 +659,7 @@ export async function createServiceArea(
     if (data.polygonCoordinates) {
       try {
         polygonJson = JSON.parse(data.polygonCoordinates);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid polygon coordinates JSON",
           ERROR_CODES.VALIDATION_FAILED
@@ -742,7 +742,7 @@ export async function updateServiceArea(
     if (data.polygonCoordinates) {
       try {
         polygonJson = JSON.parse(data.polygonCoordinates);
-      } catch (e) {
+      } catch (_e) {
         throw new ActionError(
           "Invalid polygon coordinates JSON",
           ERROR_CODES.VALIDATION_FAILED

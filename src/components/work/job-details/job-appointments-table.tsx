@@ -71,7 +71,9 @@ export function JobAppointmentsTable({
 
   // Check if appointment is scheduled for today
   const isToday = useCallback((dateString: string) => {
-    if (!dateString) return false;
+    if (!dateString) {
+      return false;
+    }
     const appointmentDate = new Date(dateString);
     const today = new Date();
     return (
@@ -96,7 +98,7 @@ export function JobAppointmentsTable({
         } else {
           toast.error(result.error || "Failed to dispatch appointment");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to dispatch appointment");
       } finally {
         setLoadingAppointmentId(null);
@@ -120,7 +122,7 @@ export function JobAppointmentsTable({
         } else {
           toast.error(result.error || "Failed to mark as arrived");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to mark as arrived");
       } finally {
         setLoadingAppointmentId(null);
@@ -160,7 +162,7 @@ export function JobAppointmentsTable({
         } else {
           toast.error(result.error || "Failed to close appointment");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to close appointment");
       } finally {
         setLoadingAppointmentId(null);
@@ -170,7 +172,9 @@ export function JobAppointmentsTable({
   );
 
   const formatDate = useCallback((date: string | null) => {
-    if (!date) return "—";
+    if (!date) {
+      return "—";
+    }
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
@@ -179,15 +183,19 @@ export function JobAppointmentsTable({
   }, []);
 
   const formatTime = useCallback((date: string | null) => {
-    if (!date) return "—";
+    if (!date) {
+      return "—";
+    }
     return new Intl.DateTimeFormat("en-US", {
       hour: "numeric",
       minute: "2-digit",
     }).format(new Date(date));
   }, []);
 
-  const formatDateTime = useCallback((date: string | null) => {
-    if (!date) return "—";
+  const _formatDateTime = useCallback((date: string | null) => {
+    if (!date) {
+      return "—";
+    }
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
@@ -198,7 +206,9 @@ export function JobAppointmentsTable({
   }, []);
 
   const formatDuration = useCallback((minutes: number | null) => {
-    if (!minutes) return "—";
+    if (!minutes) {
+      return "—";
+    }
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0 && mins > 0) {

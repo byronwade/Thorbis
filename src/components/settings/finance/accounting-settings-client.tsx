@@ -176,22 +176,29 @@ export function AccountingSettingsClient() {
         "providerEnabled",
         formData.providerEnabled.toString()
       );
-      if (formData.apiKey) formDataObj.append("apiKey", formData.apiKey);
-      if (formData.apiSecret)
+      if (formData.apiKey) {
+        formDataObj.append("apiKey", formData.apiKey);
+      }
+      if (formData.apiSecret) {
         formDataObj.append("apiSecret", formData.apiSecret);
+      }
       formDataObj.append(
         "autoSyncEnabled",
         formData.autoSyncEnabled.toString()
       );
       formDataObj.append("syncFrequency", formData.syncFrequency);
-      if (formData.incomeAccount)
+      if (formData.incomeAccount) {
         formDataObj.append("incomeAccount", formData.incomeAccount);
-      if (formData.expenseAccount)
+      }
+      if (formData.expenseAccount) {
         formDataObj.append("expenseAccount", formData.expenseAccount);
-      if (formData.assetAccount)
+      }
+      if (formData.assetAccount) {
         formDataObj.append("assetAccount", formData.assetAccount);
-      if (formData.liabilityAccount)
+      }
+      if (formData.liabilityAccount) {
         formDataObj.append("liabilityAccount", formData.liabilityAccount);
+      }
       formDataObj.append("syncInvoices", formData.syncInvoices.toString());
       formDataObj.append("syncPayments", formData.syncPayments.toString());
       formDataObj.append("syncExpenses", formData.syncExpenses.toString());

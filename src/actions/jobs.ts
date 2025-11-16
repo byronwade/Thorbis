@@ -117,7 +117,7 @@ async function generateJobNumber(
   // Extract number from format: JOB-YYYY-NNN
   const match = latestJob.job_number.match(/JOB-\d{4}-(\d+)/);
   if (match) {
-    const nextNumber = Number.parseInt(match[1]) + 1;
+    const nextNumber = Number.parseInt(match[1], 10) + 1;
     return `JOB-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
   }
 
@@ -273,7 +273,7 @@ export async function createJob(
       recurrenceType: (formData.get("recurrenceType") as any) || undefined,
       recurrenceEndDate: formData.get("recurrenceEndDate") || undefined,
       recurrenceCount: formData.get("recurrenceCount")
-        ? Number.parseInt(formData.get("recurrenceCount") as string)
+        ? Number.parseInt(formData.get("recurrenceCount") as string, 10)
         : undefined,
     });
 
@@ -570,7 +570,7 @@ export async function updateJob(
       jobType: formData.get("jobType") || undefined,
       notes: formData.get("notes") || undefined,
       totalAmount: formData.get("totalAmount")
-        ? Number.parseInt(formData.get("totalAmount") as string)
+        ? Number.parseInt(formData.get("totalAmount") as string, 10)
         : undefined,
       scheduledStart: formData.get("scheduledStart") || undefined,
       scheduledEnd: formData.get("scheduledEnd") || undefined,
@@ -581,21 +581,39 @@ export async function updateJob(
 
     // Build update object with only defined values
     const updateData: any = {};
-    if (data.title !== undefined) updateData.title = data.title;
-    if (data.description !== undefined)
+    if (data.title !== undefined) {
+      updateData.title = data.title;
+    }
+    if (data.description !== undefined) {
       updateData.description = data.description;
-    if (data.status !== undefined) updateData.status = data.status;
-    if (data.priority !== undefined) updateData.priority = data.priority;
-    if (data.jobType !== undefined) updateData.job_type = data.jobType;
-    if (data.notes !== undefined) updateData.notes = data.notes;
-    if (data.totalAmount !== undefined)
+    }
+    if (data.status !== undefined) {
+      updateData.status = data.status;
+    }
+    if (data.priority !== undefined) {
+      updateData.priority = data.priority;
+    }
+    if (data.jobType !== undefined) {
+      updateData.job_type = data.jobType;
+    }
+    if (data.notes !== undefined) {
+      updateData.notes = data.notes;
+    }
+    if (data.totalAmount !== undefined) {
       updateData.total_amount = data.totalAmount;
-    if (data.scheduledStart !== undefined)
+    }
+    if (data.scheduledStart !== undefined) {
       updateData.scheduled_start = data.scheduledStart;
-    if (data.scheduledEnd !== undefined)
+    }
+    if (data.scheduledEnd !== undefined) {
       updateData.scheduled_end = data.scheduledEnd;
-    if (data.assignedTo !== undefined) updateData.assigned_to = data.assignedTo;
-    if (data.customerId !== undefined) updateData.customer_id = data.customerId;
+    }
+    if (data.assignedTo !== undefined) {
+      updateData.assigned_to = data.assignedTo;
+    }
+    if (data.customerId !== undefined) {
+      updateData.customer_id = data.customerId;
+    }
     if (data.propertyId !== undefined) {
       updateData.property_id = data.propertyId;
       // If property is being set (not null), verify it belongs to the customer (if customer is set)
@@ -626,7 +644,6 @@ export async function updateJob(
       .eq("id", jobId);
 
     if (updateError) {
-      console.error("Database update error:", updateError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("update job") +
           `: ${updateError.message}`,

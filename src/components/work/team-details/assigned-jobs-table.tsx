@@ -72,7 +72,9 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
   };
 
   const getPriorityColor = (priority?: string) => {
-    if (!priority) return "bg-secondary0/10 text-muted-foreground";
+    if (!priority) {
+      return "bg-secondary0/10 text-muted-foreground";
+    }
     const priorityColors: Record<string, string> = {
       low: "bg-primary/10 text-primary",
       medium: "bg-warning/10 text-warning",
@@ -247,7 +249,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
         ),
       },
     ],
-    []
+    [getPriorityColor, getStatusColor]
   );
 
   return (

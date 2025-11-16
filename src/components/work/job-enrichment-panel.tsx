@@ -860,13 +860,19 @@ export function JobEnrichmentPanel({
           ) &&
             (() => {
               const googleFeatures = [];
-              if (streetView?.available)
+              if (streetView?.available) {
                 googleFeatures.push("Street View photos");
-              if (googlePlaces?.places?.length)
+              }
+              if (googlePlaces?.places?.length) {
                 googleFeatures.push("supplier details");
-              if (timeZone) googleFeatures.push("timezone data");
+              }
+              if (timeZone) {
+                googleFeatures.push("timezone data");
+              }
 
-              if (googleFeatures.length === 0) return null;
+              if (googleFeatures.length === 0) {
+                return null;
+              }
 
               return (
                 <Alert className="border-success bg-success dark:border-success dark:bg-success">

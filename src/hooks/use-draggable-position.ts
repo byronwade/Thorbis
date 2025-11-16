@@ -75,7 +75,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
   // Check if position is beyond window bounds (for pop-out detection)
   const checkBeyondBounds = useCallback((pos: Position): boolean => {
-    if (typeof window === "undefined") return false;
+    if (typeof window === "undefined") {
+      return false;
+    }
     return (
       pos.x < -POP_OUT_THRESHOLD ||
       pos.y < -POP_OUT_THRESHOLD ||
@@ -87,7 +89,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
   // Constrain position to viewport with optional edge snapping
   const constrainPosition = useCallback(
     (pos: Position, allowBeyondBounds = false): Position => {
-      if (typeof window === "undefined") return pos;
+      if (typeof window === "undefined") {
+        return pos;
+      }
 
       let { x, y } = pos;
 
@@ -97,8 +101,12 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
         y = Math.max(0, Math.min(y, window.innerHeight - height));
 
         // Edge snapping
-        if (x < snapThreshold) x = 0;
-        if (y < snapThreshold) y = 0;
+        if (x < snapThreshold) {
+          x = 0;
+        }
+        if (y < snapThreshold) {
+          y = 0;
+        }
         if (window.innerWidth - x - width < snapThreshold) {
           x = window.innerWidth - width;
         }
@@ -114,7 +122,7 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
   // Handle drag start
   const handleDragStart = useCallback(
-    (clientX: number, clientY: number, element: HTMLElement) => {
+    (clientX: number, clientY: number, _element: HTMLElement) => {
       isDraggingRef.current = true;
       setIsDragging(true);
       dragStartPosRef.current = { x: clientX, y: clientY };
@@ -183,10 +191,14 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
   // Handle dragging
   useEffect(() => {
-    if (!isDragging) return;
+    if (!isDragging) {
+      return;
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isDraggingRef.current) return;
+      if (!isDraggingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
@@ -213,7 +225,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-      if (!isDraggingRef.current) return;
+      if (!isDraggingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
@@ -242,7 +256,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isDraggingRef.current) return;
+      if (!isDraggingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
@@ -268,7 +284,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      if (!isDraggingRef.current) return;
+      if (!isDraggingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
@@ -316,7 +334,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
   // Reset to default position
   const resetPosition = useCallback(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
     const defaultPos = { x: window.innerWidth - width - 24, y: 24 };
     setCurrentPosition(defaultPos);
     setPosition(defaultPos);

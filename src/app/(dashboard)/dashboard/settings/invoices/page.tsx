@@ -55,7 +55,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 const DEFAULT_INVOICE_PREFIX = "INV";
 const DEFAULT_NEXT_NUMBER = 1001;
 const MAX_TERMS_LENGTH = 500;
@@ -204,7 +204,7 @@ export default function InvoiceSettingsPage() {
             sendOverdueReminders: result.data.send_reminders ?? true,
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load invoice settings");
       } finally {
         setIsLoading(false);

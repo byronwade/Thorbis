@@ -227,10 +227,7 @@ export function BulkImportForm() {
     setStep("complete");
   };
 
-  const downloadTemplate = () => {
-    // TODO: Generate and download CSV template
-    console.log("Download template");
-  };
+  const downloadTemplate = () => {};
 
   // Step 1: Upload
   if (step === "upload") {

@@ -61,8 +61,8 @@ export function generateExcelTemplate(dataType: string): Blob {
   instructionsSheet["!cols"] = [{ wch: 30 }, { wch: 50 }];
 
   // Style the title
-  if (instructionsSheet["A1"]) {
-    instructionsSheet["A1"].s = {
+  if (instructionsSheet.A1) {
+    instructionsSheet.A1.s = {
       font: { bold: true, sz: 14 },
     };
   }

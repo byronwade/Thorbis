@@ -42,13 +42,13 @@ import {
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-interface FinancialsTabProps {
+type FinancialsTabProps = {
   job: any;
   invoices: any[];
   estimates: any[];
   metrics: any;
   isEditMode: boolean;
-}
+};
 
 export function FinancialsTab({
   job,

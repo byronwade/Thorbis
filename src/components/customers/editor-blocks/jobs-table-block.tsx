@@ -20,7 +20,7 @@ import { JobsTable } from "@/components/work/jobs-table";
 // React component that renders the block
 export function JobsTableBlockComponent({ node, editor }: any) {
   const { jobs, customerId } = node.attrs;
-  const isEditable = editor.isEditable;
+  const _isEditable = editor.isEditable;
 
   const handleAddJob = () => {
     // Navigate to add job page with customer pre-selected

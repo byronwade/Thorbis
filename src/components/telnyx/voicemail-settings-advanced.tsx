@@ -186,7 +186,7 @@ export function VoicemailSettingsAdvanced() {
               onValueChange={(value) =>
                 setSettings({
                   ...settings,
-                  retentionDays: Number.parseInt(value),
+                  retentionDays: Number.parseInt(value, 10),
                 })
               }
               value={settings.retentionDays.toString()}
@@ -214,7 +214,7 @@ export function VoicemailSettingsAdvanced() {
               onValueChange={(value) =>
                 setSettings({
                   ...settings,
-                  maxMessageLength: Number.parseInt(value),
+                  maxMessageLength: Number.parseInt(value, 10),
                 })
               }
               value={settings.maxMessageLength.toString()}

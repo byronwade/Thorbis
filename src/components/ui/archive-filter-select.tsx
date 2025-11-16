@@ -28,12 +28,12 @@ import {
   type ArchiveFilter,
 } from "@/lib/utils/archive";
 
-interface ArchiveFilterSelectProps {
+type ArchiveFilterSelectProps = {
   entity: ArchivableEntity;
   activeCount?: number;
   archivedCount?: number;
   totalCount?: number;
-}
+};
 
 export function ArchiveFilterSelect({
   entity,

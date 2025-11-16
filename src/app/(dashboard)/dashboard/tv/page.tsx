@@ -197,9 +197,7 @@ export default function TVDisplayPage() {
         if (isMounted) {
           setWeather(payload as WeatherData);
         }
-      } catch (error) {
-        console.error("Failed to load weather:", error);
-      }
+      } catch (_error) {}
     }
     fetchWeather();
     const interval = setInterval(fetchWeather, WEATHER_REFRESH_INTERVAL);

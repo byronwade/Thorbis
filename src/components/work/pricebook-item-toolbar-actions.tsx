@@ -38,7 +38,7 @@ import {
 export function PriceBookItemToolbarActions() {
   const pathname = usePathname();
   const segments = pathname?.split("/") || [];
-  const itemId = segments[segments.length - 1];
+  const itemId = segments.at(-1);
 
   return (
     <div className="flex items-center gap-1.5">
@@ -72,26 +72,23 @@ export function PriceBookItemToolbarActions() {
           </Tooltip>
         </TooltipProvider>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => console.log("Duplicate")}>
+          <DropdownMenuItem onClick={() => {}}>
             <Copy className="mr-2 size-4" />
             Duplicate Item
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => console.log("Add to invoice")}>
+          <DropdownMenuItem onClick={() => {}}>
             <ShoppingCart className="mr-2 size-4" />
             Add to Invoice
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-warning dark:text-warning"
-            onClick={() => console.log("Toggle active")}
+            onClick={() => {}}
           >
             <Archive className="mr-2 size-4" />
             Deactivate
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={() => console.log("Delete")}
-          >
+          <DropdownMenuItem className="text-destructive" onClick={() => {}}>
             <Trash2 className="mr-2 size-4" />
             Delete
           </DropdownMenuItem>

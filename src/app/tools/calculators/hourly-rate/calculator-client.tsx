@@ -45,16 +45,20 @@ function toPercent(value: string) {
 }
 
 function formatCurrency(value: number) {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
   return currencyFormatter.format(value);
 }
 
 function formatNumber(value: number) {
-  if (!Number.isFinite(value)) return "-";
+  if (!Number.isFinite(value)) {
+    return "-";
+  }
   return numberFormatter.format(value);
 }
 
-interface InputState {
+type InputState = {
   // Time & capacity
   workDaysPerWeek: string;
   weeksPerYear: string;
@@ -102,10 +106,10 @@ interface InputState {
 
   // Profit
   profitPercent: string;
-}
+};
 
 export default function HonestHourlyRateCalculator() {
-  const [activeSection, setActiveSection] = useState("overview");
+  const [_activeSection, setActiveSection] = useState("overview");
   const { track } = useAnalytics();
   const { trackFeatureUse } = useFeatureTracking();
 
@@ -324,7 +328,7 @@ export default function HonestHourlyRateCalculator() {
       }));
     };
 
-  const scrollToSection = (sectionId: string) => {
+  const _scrollToSection = (sectionId: string) => {
     setActiveSection(sectionId);
     const element = document.getElementById(sectionId);
     if (element) {
@@ -371,7 +375,7 @@ export default function HonestHourlyRateCalculator() {
     </div>
   );
 
-  const navSections = [
+  const _navSections = [
     { id: "capacity", label: "Work Schedule", icon: Briefcase },
     { id: "expenses", label: "Expenses", icon: Wrench },
     { id: "overview", label: "Overview", icon: BarChart3 },

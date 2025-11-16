@@ -67,8 +67,12 @@ export function CustomersTable({
   // Filter customers based on archive status
   const filteredCustomers = customers.filter((customer) => {
     const isArchived = Boolean(customer.archived_at || customer.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -248,16 +252,14 @@ export function CustomersTable({
     {
       label: "Export",
       icon: <Archive className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Export customers:", Array.from(selectedIds));
+      onClick: (_selectedIds) => {
         // TODO: Implement export functionality
       },
     },
     {
       label: "Delete",
       icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => {
-        console.log("Delete customers:", Array.from(selectedIds));
+      onClick: (_selectedIds) => {
         // TODO: Implement delete functionality
       },
       variant: "destructive",

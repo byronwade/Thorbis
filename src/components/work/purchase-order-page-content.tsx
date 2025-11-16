@@ -94,7 +94,7 @@ export type PurchaseOrderPageContentProps = {
   metrics: any;
 };
 
-const defaultAccordionSections = ["line-items"];
+const _defaultAccordionSections = ["line-items"];
 
 export function PurchaseOrderPageContent({
   entityData,
@@ -102,8 +102,8 @@ export function PurchaseOrderPageContent({
 }: PurchaseOrderPageContentProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const [hasChanges, setHasChanges] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [_hasChanges, _setHasChanges] = useState(false);
+  const [_isSaving, _setIsSaving] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
 
@@ -124,7 +124,7 @@ export function PurchaseOrderPageContent({
     po.status || "draft"
   );
   const [statusUpdateNotes, setStatusUpdateNotes] = useState("");
-  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingStatus, _setIsUpdatingStatus] = useState(false);
   const [isEditingVendor, setIsEditingVendor] = useState(false);
   const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(
     po.vendor_id
@@ -132,7 +132,7 @@ export function PurchaseOrderPageContent({
   const [selectedVendor, setSelectedVendor] = useState<any>(null);
   const [isUpdatingVendor, setIsUpdatingVendor] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [openSection, setOpenSection] = useState<string | null>("line-items");
+  const [_openSection, _setOpenSection] = useState<string | null>("line-items");
 
   const handleArchivePurchaseOrder = async () => {
     setIsArchiving(true);
@@ -145,7 +145,7 @@ export function PurchaseOrderPageContent({
       } else {
         sonnerToast.error(result.error || "Failed to archive purchase order");
       }
-    } catch (error) {
+    } catch (_error) {
       sonnerToast.error("Failed to archive purchase order");
     } finally {
       setIsArchiving(false);

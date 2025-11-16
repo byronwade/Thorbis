@@ -5,7 +5,7 @@
  * Separated from server actions to comply with Next.js 16 "use server" restrictions.
  */
 
-export interface CustomerBadge {
+export type CustomerBadge = {
   id: string;
   company_id: string;
   customer_id: string;
@@ -25,7 +25,7 @@ export interface CustomerBadge {
   is_active: boolean;
   created_at: string;
   updated_at: string;
-}
+};
 
 // Premade badge definitions
 export const PREMADE_BADGES = [

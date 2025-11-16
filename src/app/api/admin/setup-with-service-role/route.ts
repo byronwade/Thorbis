@@ -32,8 +32,6 @@ export async function POST() {
 
     const userId = "f5923029-11a5-439a-b6a8-ce3b8da62716";
 
-    console.log("Creating test company with service role for user:", userId);
-
     // Create company
     const { data: company, error: companyError } = await supabase
       .from("companies")
@@ -46,14 +44,11 @@ export async function POST() {
       .single();
 
     if (companyError) {
-      console.error("Failed to create company:", companyError);
       return NextResponse.json(
         { error: "Failed to create company", details: companyError },
         { status: 500 }
       );
     }
-
-    console.log("Created company:", company.id);
 
     // Create team member
     const { data: teamMember, error: teamMemberError } = await supabase
@@ -68,14 +63,11 @@ export async function POST() {
       .single();
 
     if (teamMemberError) {
-      console.error("Failed to create team member:", teamMemberError);
       return NextResponse.json(
         { error: "Failed to create team member", details: teamMemberError },
         { status: 500 }
       );
     }
-
-    console.log("Created team member");
 
     // Create customer
     const { data: customer, error: customerError } = await supabase
@@ -94,14 +86,11 @@ export async function POST() {
       .single();
 
     if (customerError) {
-      console.error("Failed to create customer:", customerError);
       return NextResponse.json(
         { error: "Failed to create customer", details: customerError },
         { status: 500 }
       );
     }
-
-    console.log("Created customer:", customer.id);
 
     // Create property
     const { data: property, error: propertyError } = await supabase
@@ -123,14 +112,11 @@ export async function POST() {
       .single();
 
     if (propertyError) {
-      console.error("Failed to create property:", propertyError);
       return NextResponse.json(
         { error: "Failed to create property", details: propertyError },
         { status: 500 }
       );
     }
-
-    console.log("Created property:", property.id);
 
     // Create job
     const { data: job, error: jobError } = await supabase
@@ -151,14 +137,11 @@ export async function POST() {
       .single();
 
     if (jobError) {
-      console.error("Failed to create job:", jobError);
       return NextResponse.json(
         { error: "Failed to create job", details: jobError },
         { status: 500 }
       );
     }
-
-    console.log("Created job:", job.id);
 
     return NextResponse.json({
       success: true,
@@ -187,7 +170,6 @@ export async function POST() {
       ],
     });
   } catch (error: any) {
-    console.error("Setup error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
       { status: 500 }

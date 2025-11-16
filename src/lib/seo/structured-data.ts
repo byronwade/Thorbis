@@ -13,7 +13,7 @@ import {
   SEO_URLS,
 } from "./config";
 
-export interface OrganizationSchemaOptions {
+export type OrganizationSchemaOptions = {
   name?: string;
   legalName?: string;
   url?: string;
@@ -21,7 +21,7 @@ export interface OrganizationSchemaOptions {
   sameAs?: string[];
   contactEmail?: string;
   contactPhone?: string;
-}
+};
 
 export function createOrganizationSchema(
   options: OrganizationSchemaOptions = {}
@@ -57,12 +57,12 @@ export function createOrganizationSchema(
   };
 }
 
-export interface WebSiteSchemaOptions {
+export type WebSiteSchemaOptions = {
   url?: string;
   name?: string;
   description?: string;
   searchUrl?: string;
-}
+};
 
 export function createWebsiteSchema(options: WebSiteSchemaOptions = {}) {
   const {
@@ -89,10 +89,10 @@ export function createWebsiteSchema(options: WebSiteSchemaOptions = {}) {
   };
 }
 
-export interface BreadcrumbItem {
+export type BreadcrumbItem = {
   name: string;
   url: string;
-}
+};
 
 export function createBreadcrumbSchema(items: BreadcrumbItem[]) {
   return {
@@ -107,10 +107,10 @@ export function createBreadcrumbSchema(items: BreadcrumbItem[]) {
   };
 }
 
-export interface FAQQuestion {
+export type FAQQuestion = {
   question: string;
   answer: string;
-}
+};
 
 export function createFAQSchema(questions: FAQQuestion[]) {
   return {
@@ -127,7 +127,7 @@ export function createFAQSchema(questions: FAQQuestion[]) {
   };
 }
 
-export interface SoftwareApplicationSchemaOptions {
+export type SoftwareApplicationSchemaOptions = {
   name?: string;
   description?: string;
   operatingSystems?: string[];
@@ -144,7 +144,7 @@ export interface SoftwareApplicationSchemaOptions {
   };
   category?: string;
   applicationSuite?: string;
-}
+};
 
 export function createSoftwareApplicationSchema(
   options: SoftwareApplicationSchemaOptions = {}
@@ -196,7 +196,7 @@ export function createSoftwareApplicationSchema(
   };
 }
 
-export interface ServiceSchemaOptions {
+export type ServiceSchemaOptions = {
   name: string;
   description: string;
   serviceType?: string;
@@ -206,7 +206,7 @@ export interface ServiceSchemaOptions {
     currency: string;
     description?: string;
   }>;
-}
+};
 
 export function createServiceSchema(options: ServiceSchemaOptions) {
   const {
@@ -243,7 +243,7 @@ export function createServiceSchema(options: ServiceSchemaOptions) {
   };
 }
 
-export interface ArticleSchemaOptions {
+export type ArticleSchemaOptions = {
   title: string;
   description: string;
   url: string;
@@ -255,7 +255,7 @@ export interface ArticleSchemaOptions {
   section?: string;
   wordCount?: number;
   estimatedReadTime?: string;
-}
+};
 
 export function createArticleSchema(options: ArticleSchemaOptions) {
   const {
@@ -300,14 +300,14 @@ export function createArticleSchema(options: ArticleSchemaOptions) {
   };
 }
 
-export interface HowToStep {
+export type HowToStep = {
   name: string;
   text?: string;
   url?: string;
   image?: string;
-}
+};
 
-export interface HowToSchemaOptions {
+export type HowToSchemaOptions = {
   name: string;
   description?: string;
   steps: HowToStep[];
@@ -318,7 +318,7 @@ export interface HowToSchemaOptions {
     currency: string;
   };
   totalTime?: string;
-}
+};
 
 export function createHowToSchema(options: HowToSchemaOptions) {
   const {
@@ -361,7 +361,7 @@ export function createHowToSchema(options: HowToSchemaOptions) {
   };
 }
 
-export interface ReviewAggregateSchemaOptions {
+export type ReviewAggregateSchemaOptions = {
   item: {
     name: string;
     url?: string;
@@ -372,7 +372,7 @@ export interface ReviewAggregateSchemaOptions {
   reviewCount: number;
   bestRating?: number;
   worstRating?: number;
-}
+};
 
 export function createReviewAggregateSchema(
   options: ReviewAggregateSchemaOptions

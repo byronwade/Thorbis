@@ -176,13 +176,13 @@ export function AppointmentsTable({
   // State for archive confirmation dialogs
   const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
   const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-  const [isPermanentDeleteOpen, setIsPermanentDeleteOpen] = useState(false);
+  const [_isPermanentDeleteOpen, _setIsPermanentDeleteOpen] = useState(false);
   const [appointmentToArchive, setAppointmentToArchive] = useState<
     string | null
   >(null);
-  const [appointmentToDelete, setAppointmentToDelete] = useState<string | null>(
-    null
-  );
+  const [_appointmentToDelete, _setAppointmentToDelete] = useState<
+    string | null
+  >(null);
   const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
     Set<string>
   >(new Set());
@@ -190,8 +190,12 @@ export function AppointmentsTable({
   // Filter appointments based on archive status
   const filteredAppointments = appointments.filter((apt) => {
     const isArchived = Boolean(apt.archived_at || apt.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 

@@ -137,10 +137,14 @@ export default async function EquipmentDetailsPage({
       .limit(5)
       .then(async (result) => {
         // Filter schedules related to this equipment via job_equipment
-        if (!result.data) return result;
+        if (!result.data) {
+          return result;
+        }
 
         const jobIds = result.data.map((s: any) => s.job_id).filter(Boolean);
-        if (jobIds.length === 0) return { data: [], error: null };
+        if (jobIds.length === 0) {
+          return { data: [], error: null };
+        }
 
         const { data: relatedJobs } = await supabase
           .from("job_equipment")

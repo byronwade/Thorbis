@@ -132,7 +132,7 @@ const EquipmentTab = dynamic(
 // Types
 // ============================================================================
 
-export interface JobPageEditorProps {
+export type JobPageEditorProps = {
   job: any;
   customer: any;
   customers: any[];
@@ -156,7 +156,7 @@ export interface JobPageEditorProps {
   equipment: any[];
   workflowStages: any[];
   metrics: any;
-}
+};
 
 // ============================================================================
 // Component
@@ -238,14 +238,16 @@ export function JobPageEditor({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isEditMode, hasUnsavedChanges, toggleEditMode]);
+  }, [isEditMode, hasUnsavedChanges, toggleEditMode, handleSave]);
 
   // ============================================================================
   // Save Handler
   // ============================================================================
 
   const handleSave = useCallback(async () => {
-    if (!hasUnsavedChanges) return;
+    if (!hasUnsavedChanges) {
+      return;
+    }
 
     setSaveStatus("saving");
 
@@ -264,8 +266,7 @@ export function JobPageEditor({
         setSaveStatus("idle");
         setShowSaveSuccess(false);
       }, 2000);
-    } catch (error) {
-      console.error("Failed to save job:", error);
+    } catch (_error) {
       setSaveStatus("error");
     }
   }, [hasUnsavedChanges, setSaveStatus]);

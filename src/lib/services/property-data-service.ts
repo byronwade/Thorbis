@@ -12,7 +12,7 @@
 
 import { z } from "zod";
 
-const USER_AGENT = "ThorbisFieldService/1.0";
+const _USER_AGENT = "ThorbisFieldService/1.0";
 
 // ============================================================================
 // Types and Schemas
@@ -89,11 +89,13 @@ export type PropertyData = z.infer<typeof PropertyDataSchema>;
 // ============================================================================
 
 export class PropertyDataService {
-  private rentcastApiKey: string | undefined;
-  private attomApiKey: string | undefined; // Optional fallback
-  private cache: Map<string, { data: PropertyData; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days (property data doesn't change often)
+  private readonly rentcastApiKey: string | undefined;
+  private readonly attomApiKey: string | undefined; // Optional fallback
+  private readonly cache: Map<
+    string,
+    { data: PropertyData; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days (property data doesn't change often)
 
   constructor() {
     this.rentcastApiKey = process.env.RENTCAST_API_KEY;
@@ -108,20 +110,18 @@ export class PropertyDataService {
     city: string,
     state: string,
     zipCode: string,
-    lat?: number,
-    lon?: number
+    _lat?: number,
+    _lon?: number
   ): Promise<PropertyData | null> {
     const cacheKey = `${address}-${city}-${state}-${zipCode}`;
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Property Data] Using cached data for: ${address}`);
       return cached.data;
     }
 
     try {
       const fullAddress = `${address}, ${city}, ${state} ${zipCode}`;
-      console.log(`[Property Data] Fetching data for: ${fullAddress}`);
 
       // Try RentCast first (free tier: 50/month)
       let propertyData = await this.getRentCastData(
@@ -133,15 +133,11 @@ export class PropertyDataService {
 
       // Fallback to Attom if available
       if (!propertyData && this.attomApiKey) {
-        console.log("[Property Data] RentCast failed, trying Attom...");
         propertyData = await this.getAttomData(address, city, state, zipCode);
       }
 
       // Final fallback to basic data
       if (!propertyData) {
-        console.log(
-          "[Property Data] Using basic data (no API keys configured)"
-        );
         propertyData = {
           address: {
             full: fullAddress,
@@ -162,8 +158,7 @@ export class PropertyDataService {
       });
 
       return propertyData;
-    } catch (error) {
-      console.error("[Property Data] Error fetching property data:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -181,7 +176,6 @@ export class PropertyDataService {
     zipCode: string
   ): Promise<PropertyData | null> {
     if (!this.rentcastApiKey) {
-      console.log("[RentCast] API key not configured");
       return null;
     }
 
@@ -197,14 +191,12 @@ export class PropertyDataService {
       });
 
       if (!res.ok) {
-        console.warn(`[RentCast] API request failed: ${res.status}`);
         return null;
       }
 
       const data = await res.json();
 
-      if (!(data && data.id)) {
-        console.log("[RentCast] No property data found");
+      if (!data?.id) {
         return null;
       }
 
@@ -247,8 +239,7 @@ export class PropertyDataService {
         dataSource: "rentcast",
         enrichedAt: new Date().toISOString(),
       };
-    } catch (error) {
-      console.error("[RentCast] Error fetching property data:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -266,13 +257,12 @@ export class PropertyDataService {
     zipCode: string
   ): Promise<PropertyData | null> {
     if (!this.attomApiKey) {
-      console.log("[Attom] API key not configured");
       return null;
     }
 
     try {
       // Attom Property API - Basic Profile
-      const url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/basicprofile?address1=${encodeURIComponent(address)}&address2=${encodeURIComponent(city + ", " + state + " " + zipCode)}`;
+      const url = `https://api.gateway.attomdata.com/propertyapi/v1.0.0/property/basicprofile?address1=${encodeURIComponent(address)}&address2=${encodeURIComponent(`${city}, ${state} ${zipCode}`)}`;
 
       const res = await fetch(url, {
         headers: {
@@ -282,7 +272,6 @@ export class PropertyDataService {
       });
 
       if (!res.ok) {
-        console.warn(`[Attom] API request failed: ${res.status}`);
         return null;
       }
 
@@ -290,7 +279,6 @@ export class PropertyDataService {
       const property = data.property?.[0];
 
       if (!property) {
-        console.log("[Attom] No property data found");
         return null;
       }
 
@@ -311,22 +299,22 @@ export class PropertyDataService {
         characteristics: {
           propertyType: building?.propertyType || summary?.proptype,
           yearBuilt: building?.yearBuilt
-            ? Number.parseInt(building.yearBuilt)
+            ? Number.parseInt(building.yearBuilt, 10)
             : undefined,
           squareFeet: building?.size?.livingSize
-            ? Number.parseInt(building.size.livingSize)
+            ? Number.parseInt(building.size.livingSize, 10)
             : undefined,
           lotSize: summary?.lotSize
-            ? Number.parseInt(summary.lotSize)
+            ? Number.parseInt(summary.lotSize, 10)
             : undefined,
           bedrooms: building?.rooms?.beds
-            ? Number.parseInt(building.rooms.beds)
+            ? Number.parseInt(building.rooms.beds, 10)
             : undefined,
           bathrooms: building?.rooms?.bathstotal
-            ? Number.parseInt(building.rooms.bathstotal)
+            ? Number.parseInt(building.rooms.bathstotal, 10)
             : undefined,
           stories: building?.stories
-            ? Number.parseInt(building.stories)
+            ? Number.parseInt(building.stories, 10)
             : undefined,
           garage: building?.parking?.garagetype ? true : undefined,
           pool: building?.pool ? true : undefined,
@@ -334,13 +322,13 @@ export class PropertyDataService {
         assessment: assessment
           ? {
               assessedValue: assessment.assessed?.assdTtlValue
-                ? Number.parseInt(assessment.assessed.assdTtlValue)
+                ? Number.parseInt(assessment.assessed.assdTtlValue, 10)
                 : undefined,
               taxAmount: assessment.tax?.taxAmt
-                ? Number.parseInt(assessment.tax.taxAmt)
+                ? Number.parseInt(assessment.tax.taxAmt, 10)
                 : undefined,
               assessmentYear: assessment.assessed?.assdYear
-                ? Number.parseInt(assessment.assessed.assdYear)
+                ? Number.parseInt(assessment.assessed.assdYear, 10)
                 : undefined,
             }
           : undefined,
@@ -348,15 +336,14 @@ export class PropertyDataService {
           ? {
               lastSoldDate: sale.saleTransDate,
               lastSoldPrice: sale.amount?.saleAmt
-                ? Number.parseInt(sale.amount.saleAmt)
+                ? Number.parseInt(sale.amount.saleAmt, 10)
                 : undefined,
             }
           : undefined,
         dataSource: "attom",
         enrichedAt: new Date().toISOString(),
       };
-    } catch (error) {
-      console.error("[Attom] Error fetching property data:", error);
+    } catch (_error) {
       return null;
     }
   }

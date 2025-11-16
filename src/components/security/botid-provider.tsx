@@ -8,7 +8,9 @@ let hasInitializedBotId = false;
 
 export function BotIdProvider() {
   useEffect(() => {
-    if (hasInitializedBotId) return;
+    if (hasInitializedBotId) {
+      return;
+    }
 
     initBotId({
       protect: botIdProtectedRoutes,

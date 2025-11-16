@@ -40,7 +40,7 @@ export default function PurchaseOrderSettingsPage() {
   const [autoGenerateThreshold, setAutoGenerateThreshold] = useState("100");
   const [defaultVendors, setDefaultVendors] = useState("");
   const [notificationEmails, setNotificationEmails] = useState("");
-  const [approvers, setApprovers] = useState<string[]>([]);
+  const [_approvers, _setApprovers] = useState<string[]>([]);
 
   return (
     <div className="space-y-6">

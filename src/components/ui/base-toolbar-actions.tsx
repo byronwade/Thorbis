@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import type { WorkSection } from "@/lib/stores/work-view-store";
 
-export interface BaseToolbarActionsProps {
+export type BaseToolbarActionsProps = {
   /** Optional view switcher section (e.g., "jobs", "invoices", "customers") */
   viewSwitcherSection?: WorkSection;
 
@@ -43,7 +43,7 @@ export interface BaseToolbarActionsProps {
 
   /** Custom actions to render after primary action */
   afterPrimaryAction?: ReactNode;
-}
+};
 
 export function BaseToolbarActions({
   viewSwitcherSection,

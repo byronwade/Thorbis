@@ -24,11 +24,11 @@ const APPOINTMENTS_OPTIONAL_COLUMNS = [
   { key: "assigned_user", label: "Assigned To" },
 ];
 
-interface AppointmentsToolbarActionsProps {
+type AppointmentsToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function AppointmentsToolbarActions({
   totalCount = 0,

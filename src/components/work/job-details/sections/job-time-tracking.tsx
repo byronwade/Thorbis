@@ -22,7 +22,9 @@ type JobTimeTrackingProps = {
 
 export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "—";
+    if (!dateString) {
+      return "—";
+    }
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -31,7 +33,9 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
   };
 
   const formatTime = (dateString: string | null) => {
-    if (!dateString) return "—";
+    if (!dateString) {
+      return "—";
+    }
     return new Date(dateString).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
@@ -42,7 +46,9 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
     startTime: string | null,
     endTime: string | null
   ) => {
-    if (!(startTime && endTime)) return "—";
+    if (!(startTime && endTime)) {
+      return "—";
+    }
     const start = new Date(startTime);
     const end = new Date(endTime);
     const durationMs = end.getTime() - start.getTime();
@@ -133,7 +139,9 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
             <p className="font-bold text-2xl">
               {timeEntries
                 .reduce((total, entry) => {
-                  if (!(entry.start_time && entry.end_time)) return total;
+                  if (!(entry.start_time && entry.end_time)) {
+                    return total;
+                  }
                   const start = new Date(entry.start_time);
                   const end = new Date(entry.end_time);
                   const hours =

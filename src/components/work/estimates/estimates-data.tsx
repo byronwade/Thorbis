@@ -56,7 +56,6 @@ export async function EstimatesData() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching estimates:", error);
   }
 
   // Transform data for table component

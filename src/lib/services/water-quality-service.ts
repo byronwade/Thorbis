@@ -46,9 +46,11 @@ export type WaterQuality = z.infer<typeof WaterQualitySchema>;
 // ============================================================================
 
 export class WaterQualityService {
-  private cache: Map<string, { data: WaterQuality; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days (data changes slowly)
+  private readonly cache: Map<
+    string,
+    { data: WaterQuality; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days (data changes slowly)
 
   /**
    * Get water quality data for a location
@@ -91,11 +93,7 @@ export class WaterQualityService {
       if (!res.ok) {
         // 406 (Not Acceptable) or 404 means no data available for this location (expected)
         if (res.status === 404 || res.status === 406) {
-          console.log("[Water Quality] No data available for location");
         } else {
-          console.warn(
-            `[Water Quality Portal] Service unavailable: ${res.status}`
-          );
         }
         return null;
       }
@@ -111,7 +109,8 @@ export class WaterQualityService {
       const measurements = data
         .filter(
           (row: any) =>
-            row.ResultMeasureValue && !isNaN(Number(row.ResultMeasureValue))
+            row.ResultMeasureValue &&
+            !Number.isNaN(Number(row.ResultMeasureValue))
         )
         .map((row: any) => ({
           value: Number(row.ResultMeasureValue),
@@ -163,8 +162,7 @@ export class WaterQualityService {
       this.cache.set(cacheKey, { data: waterQuality, timestamp: Date.now() });
 
       return WaterQualitySchema.parse(waterQuality);
-    } catch (error) {
-      console.error("Water quality service error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -175,9 +173,15 @@ export class WaterQualityService {
   private classifyHardness(
     mgL: number
   ): WaterQuality["hardness"]["classification"] {
-    if (mgL < 60) return "soft";
-    if (mgL < 120) return "moderate";
-    if (mgL < 180) return "hard";
+    if (mgL < 60) {
+      return "soft";
+    }
+    if (mgL < 120) {
+      return "moderate";
+    }
+    if (mgL < 180) {
+      return "hard";
+    }
     return "very_hard";
   }
 

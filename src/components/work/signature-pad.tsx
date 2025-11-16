@@ -39,10 +39,14 @@ export function SignaturePad({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
 
     const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     // Set canvas size
     const rect = canvas.getBoundingClientRect();
@@ -59,7 +63,9 @@ export function SignaturePad({
 
   const getCoordinates = (e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current;
-    if (!canvas) return null;
+    if (!canvas) {
+      return null;
+    }
 
     const rect = canvas.getBoundingClientRect();
     let clientX: number;
@@ -80,26 +86,36 @@ export function SignaturePad({
   };
 
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
 
     e.preventDefault();
     const coords = getCoordinates(e);
-    if (!coords) return;
+    if (!coords) {
+      return;
+    }
 
     setIsDrawing(true);
     setLastPoint(coords);
   };
 
   const draw = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing || disabled) return;
+    if (!isDrawing || disabled) {
+      return;
+    }
 
     e.preventDefault();
     const coords = getCoordinates(e);
-    if (!(coords && lastPoint)) return;
+    if (!(coords && lastPoint)) {
+      return;
+    }
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!ctx) return;
+    if (!ctx) {
+      return;
+    }
 
     ctx.beginPath();
     ctx.moveTo(lastPoint.x, lastPoint.y);
@@ -111,7 +127,9 @@ export function SignaturePad({
   };
 
   const stopDrawing = () => {
-    if (!isDrawing) return;
+    if (!isDrawing) {
+      return;
+    }
 
     setIsDrawing(false);
     setLastPoint(null);
@@ -128,7 +146,9 @@ export function SignaturePad({
   const clearSignature = () => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
-    if (!(ctx && canvas)) return;
+    if (!(ctx && canvas)) {
+      return;
+    }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setHasSignature(false);

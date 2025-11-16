@@ -12,11 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 
-interface InvoiceOverdueBannerProps {
+type InvoiceOverdueBannerProps = {
   dueDate: string | null;
   balanceAmount: number;
   onQuickPay?: () => void;
-}
+};
 
 export function InvoiceOverdueBanner({
   dueDate,

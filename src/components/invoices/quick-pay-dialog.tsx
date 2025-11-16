@@ -32,14 +32,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface QuickPayDialogProps {
+type QuickPayDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   invoiceId: string;
   invoiceNumber: string;
   amount: number;
   onSuccess?: () => void;
-}
+};
 
 export function QuickPayDialog({
   open,
@@ -59,7 +59,7 @@ export function QuickPayDialog({
     if (open) {
       loadDefaultPaymentMethod();
     }
-  }, [open]);
+  }, [open, loadDefaultPaymentMethod]);
 
   const loadDefaultPaymentMethod = async () => {
     setIsLoading(true);

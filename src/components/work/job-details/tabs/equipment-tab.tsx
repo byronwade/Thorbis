@@ -17,12 +17,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-interface EquipmentTabProps {
+type EquipmentTabProps = {
   job: any;
   equipment: any[];
   property: any;
   isEditMode: boolean;
-}
+};
 
 export function EquipmentTab({
   job,
@@ -31,7 +31,9 @@ export function EquipmentTab({
   isEditMode,
 }: EquipmentTabProps) {
   const formatDate = (date: string | null) => {
-    if (!date) return "N/A";
+    if (!date) {
+      return "N/A";
+    }
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",

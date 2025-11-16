@@ -61,7 +61,9 @@ export function DrillDownView({
   // Filter items that belong EXACTLY to the current navigation path
   // (not deeper in subcategories)
   const getFilteredItems = (): PriceBookItem[] => {
-    if (navigationPath.length === 0) return [];
+    if (navigationPath.length === 0) {
+      return [];
+    }
 
     return items.filter((item) => {
       // Build category path from item
@@ -70,7 +72,9 @@ export function DrillDownView({
         : [item.category];
 
       // Item must match current path exactly (not deeper)
-      if (itemPath.length !== navigationPath.length) return false;
+      if (itemPath.length !== navigationPath.length) {
+        return false;
+      }
 
       return navigationPath.every(
         (segment, index) => itemPath[index] === segment
@@ -113,10 +117,7 @@ export function DrillDownView({
               name={
                 navigationPath.length === 0 ? "Add Category" : "Add Subcategory"
               }
-              onClick={() => {
-                // TODO: Open add category modal
-                console.log("Add new category at path:", navigationPath);
-              }}
+              onClick={() => {}}
               variant="add"
             />
           </div>
@@ -124,22 +125,19 @@ export function DrillDownView({
       )}
 
       {/* Items Section (Table or Grid) */}
-      {hasItems && (
-        <>
-          {viewMode === "table" ? (
-            // Table view - full width, no padding
-            <PriceBookTable items={filteredItems} itemsPerPage={itemsPerPage} />
-          ) : (
-            // Grid view - with padding
-            <div className="px-6 py-6">
-              <PriceBookCardGrid
-                emptyMessage="No items found in this category"
-                items={filteredItems}
-              />
-            </div>
-          )}
-        </>
-      )}
+      {hasItems &&
+        (viewMode === "table" ? (
+          // Table view - full width, no padding
+          <PriceBookTable items={filteredItems} itemsPerPage={itemsPerPage} />
+        ) : (
+          // Grid view - with padding
+          <div className="px-6 py-6">
+            <PriceBookCardGrid
+              emptyMessage="No items found in this category"
+              items={filteredItems}
+            />
+          </div>
+        ))}
 
       {/* Empty State */}
       {!(hasCategories || hasItems) && navigationPath.length > 0 && (
@@ -171,10 +169,7 @@ export function DrillDownView({
             <div className="flex items-center justify-center gap-3">
               <button
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
-                onClick={() => {
-                  // TODO: Open add item modal
-                  console.log("Add item to path:", navigationPath);
-                }}
+                onClick={() => {}}
               >
                 <svg
                   className="size-4"
@@ -194,10 +189,7 @@ export function DrillDownView({
               </button>
               <button
                 className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 font-medium text-sm transition-colors hover:bg-muted"
-                onClick={() => {
-                  // TODO: Open add subcategory modal
-                  console.log("Add subcategory to path:", navigationPath);
-                }}
+                onClick={() => {}}
               >
                 <svg
                   className="size-4"

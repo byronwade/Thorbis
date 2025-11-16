@@ -48,9 +48,9 @@ type RoleRecord = {
   member_count?: number;
 };
 
-interface RolesClientProps {
+type RolesClientProps = {
   roles: RoleRecord[];
-}
+};
 
 const DEFAULT_COLOR = "#3b82f6";
 

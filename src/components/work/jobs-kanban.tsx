@@ -254,7 +254,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 
 export function JobsKanban({ jobs }: JobsKanbanProps) {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const handleItemMove = async ({
     item,

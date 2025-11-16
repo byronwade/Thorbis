@@ -28,14 +28,16 @@ export function SmartNotes() {
 
   // Auto-save every 5 seconds
   useEffect(() => {
-    if (!notes) return;
+    if (!notes) {
+      return;
+    }
 
     const timer = setTimeout(() => {
       saveNotes();
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [notes]);
+  }, [notes, saveNotes]);
 
   const saveNotes = async () => {
     setIsSaving(true);

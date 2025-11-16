@@ -7,13 +7,13 @@
 
 import * as XLSX from "xlsx";
 
-export interface ExcelTemplate {
+export type ExcelTemplate = {
   dataType: string;
   headers: string[];
   validations: Record<string, string[]>;
   examples: Record<string, unknown>[];
   instructions: string;
-}
+};
 
 /**
  * Generate Excel template for import
@@ -160,8 +160,7 @@ export async function parseExcelFile(file: File): Promise<unknown[]> {
     });
 
     return data;
-  } catch (error) {
-    console.error("Error parsing Excel file:", error);
+  } catch (_error) {
     throw new Error("Failed to parse Excel file");
   }
 }
@@ -191,8 +190,7 @@ export function createExcelFile(data: unknown[], headers?: string[]): Blob {
     return new Blob([excelBuffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-  } catch (error) {
-    console.error("Error creating Excel file:", error);
+  } catch (_error) {
     throw new Error("Failed to create Excel file");
   }
 }

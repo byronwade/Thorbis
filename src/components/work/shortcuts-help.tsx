@@ -69,7 +69,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
     typeof navigator !== "undefined" && navigator.platform.includes("Mac");
 
   const formatKey = (key: string) => {
-    if (key === "⌘" && !isMac) return "Ctrl";
+    if (key === "⌘" && !isMac) {
+      return "Ctrl";
+    }
     return key;
   };
 

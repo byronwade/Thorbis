@@ -8,15 +8,21 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function CommunicationIdData() {
   const supabase = await createClient();
-  if (!supabase) return notFound();
+  if (!supabase) {
+    return notFound();
+  }
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return notFound();
+  if (!user) {
+    return notFound();
+  }
 
   const activeCompanyId = await getActiveCompanyId();
-  if (!activeCompanyId) return notFound();
+  if (!activeCompanyId) {
+    return notFound();
+  }
 
   // TODO: Move data fetching logic from original page when we PPR-ify it
 

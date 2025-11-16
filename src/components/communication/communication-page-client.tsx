@@ -280,7 +280,7 @@ function convertCommunicationToMessage(
     timestampStr.includes("+") ||
     timestampStr.includes("-")
       ? new Date(timestampStr)
-      : new Date(timestampStr + "Z"); // Force UTC parsing
+      : new Date(`${timestampStr}Z`); // Force UTC parsing
 
   return {
     id: record.id,

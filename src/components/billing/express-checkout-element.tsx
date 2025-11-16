@@ -31,7 +31,7 @@ import type { Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { getStripe } from "@/lib/stripe/client";
 
-interface ExpressCheckoutElementProps {
+type ExpressCheckoutElementProps = {
   /** Amount in cents (e.g., 1000 = $10.00) */
   amount: number;
   /** Currency code (e.g., 'usd') */
@@ -53,7 +53,7 @@ interface ExpressCheckoutElementProps {
     detail?: string;
     amount: number;
   }>;
-}
+};
 
 /**
  * Inner component that uses Stripe hooks
@@ -76,9 +76,7 @@ function ExpressCheckoutInner({
       className={`transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}
     >
       <StripeExpressCheckout
-        onCancel={() => {
-          console.log("Payment cancelled");
-        }}
+        onCancel={() => {}}
         onConfirm={async (event) => {
           try {
             // Create PaymentIntent on server
@@ -125,24 +123,18 @@ function ExpressCheckoutInner({
               }
             }
           } catch (error) {
-            console.error("Payment error:", error);
             (event as any).complete("fail");
             onPaymentError?.(
               error instanceof Error ? error : new Error("Payment failed")
             );
           }
         }}
-        onReady={(event) => {
+        onReady={(_event) => {
           setIsReady(true);
-          console.log(
-            "Express Checkout ready with:",
-            event.availablePaymentMethods
-          );
         }}
         onShippingAddressChange={
           collectShipping
             ? (event) => {
-                console.log("Shipping address changed:", event.address);
                 (event as any).resolve({
                   shippingOptions: shippingOptions || [],
                 });
@@ -152,7 +144,6 @@ function ExpressCheckoutInner({
         onShippingRateChange={
           collectShipping
             ? (event) => {
-                console.log("Shipping rate changed:", event.shippingRate);
                 event.resolve();
               }
             : undefined

@@ -41,7 +41,7 @@ const bulkAssignTeamMembersSchema = z.object({
 // TEAM MEMBER TYPES
 // ============================================================================
 
-export interface TeamMemberAssignment {
+export type TeamMemberAssignment = {
   id: string;
   jobId: string;
   teamMemberId: string;
@@ -62,7 +62,7 @@ export interface TeamMemberAssignment {
       phone: string | null;
     };
   };
-}
+};
 
 // ============================================================================
 // ACTIONS
@@ -142,7 +142,9 @@ export async function getJobTeamAssignments(
       .is("removed_at", null)
       .order("assigned_at", { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Transform to expected format
     const transformed = (assignments || []).map((assignment: any) => ({
@@ -241,7 +243,9 @@ export async function getAvailableTeamMembers(): Promise<
       .eq("status", "active")
       .order("users(first_name)", { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Transform to expected format
     const transformed = (members || []).map((member: any) => ({
@@ -348,7 +352,9 @@ export async function assignTeamMemberToJob(
       .select("id")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Revalidate paths
     revalidatePath("/dashboard/work");
@@ -401,7 +407,9 @@ export async function removeTeamMemberFromJob(
       .eq("team_member_id", validated.teamMemberId)
       .is("removed_at", null);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Revalidate paths
     revalidatePath("/dashboard/work");
@@ -467,7 +475,9 @@ export async function bulkAssignTeamMembers(
         onConflict: "job_id,team_member_id",
       });
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Revalidate paths
     revalidatePath("/dashboard/work");
@@ -517,7 +527,9 @@ export async function updateTeamMemberRole(
       .eq("team_member_id", teamMemberId)
       .is("removed_at", null);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Revalidate paths
     revalidatePath("/dashboard/work");

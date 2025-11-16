@@ -147,7 +147,7 @@ export function JobEnrichmentInline({
         const data = await response.json();
         setEnrichmentData(data);
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail - enrichment is non-critical
     } finally {
       setIsLoading(false);
@@ -169,7 +169,7 @@ export function JobEnrichmentInline({
       fetchEnrichment();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount only
+  }, [fetchEnrichment, hasFetched, initialData, jobId, property]); // Run once on mount only
 
   // Fetch travel time data
   useEffect(() => {
@@ -202,9 +202,7 @@ export function JobEnrichmentInline({
           const data: TravelTimeData = await response.json();
           setTravelTime(data);
         }
-      } catch (error) {
-        // Silently fail - travel time is optional enhancement
-        console.error("Failed to fetch travel time:", error);
+      } catch (_error) {
       } finally {
         setIsLoadingTravel(false);
       }
@@ -232,7 +230,6 @@ export function JobEnrichmentInline({
 
   // Log full data to console for debugging
   if (enrichmentData) {
-    console.log("[Job Enrichment] Full data:", enrichmentData);
   }
 
   const hasWeatherAlerts =
@@ -268,7 +265,7 @@ export function JobEnrichmentInline({
         )
       : [];
 
-  const getSeverityVariant = (severity: string) => {
+  const _getSeverityVariant = (severity: string) => {
     switch (severity) {
       case "Extreme":
         return "destructive";
@@ -279,12 +276,12 @@ export function JobEnrichmentInline({
     }
   };
 
-  const getTrafficIcon = (type: string) => {
+  const _getTrafficIcon = (_type: string) => {
     // Using AlertTriangle for all types for now, could customize
     return AlertTriangle;
   };
 
-  const getTrafficVariant = (severity: string) => {
+  const _getTrafficVariant = (severity: string) => {
     switch (severity) {
       case "major":
         return "destructive";
@@ -323,9 +320,15 @@ export function JobEnrichmentInline({
 
   const getWeatherIcon = (forecast: string) => {
     const lower = forecast.toLowerCase();
-    if (lower.includes("rain") || lower.includes("shower")) return CloudRain;
-    if (lower.includes("cloud") || lower.includes("overcast")) return Cloud;
-    if (lower.includes("wind")) return Wind;
+    if (lower.includes("rain") || lower.includes("shower")) {
+      return CloudRain;
+    }
+    if (lower.includes("cloud") || lower.includes("overcast")) {
+      return Cloud;
+    }
+    if (lower.includes("wind")) {
+      return Wind;
+    }
     return Sun;
   };
 

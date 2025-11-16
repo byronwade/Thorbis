@@ -42,14 +42,14 @@ export const metadata: Metadata = {
   description: "Securely pay your invoice online",
 };
 
-interface PageProps {
+type PageProps = {
   params: Promise<{
     invoiceId: string;
   }>;
   searchParams: Promise<{
     token?: string;
   }>;
-}
+};
 
 export default async function InvoicePaymentPage({
   params,

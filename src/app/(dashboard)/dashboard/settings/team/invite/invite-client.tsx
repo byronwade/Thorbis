@@ -65,10 +65,10 @@ const EMPTY_INVITE: InviteRow = {
   jobTitle: "",
 };
 
-interface InviteClientProps {
+type InviteClientProps = {
   roles: RoleOption[];
   departments: DepartmentOption[];
-}
+};
 
 export function InviteMembersClient({ roles, departments }: InviteClientProps) {
   const [invites, setInvites] = useState<InviteRow[]>([{ ...EMPTY_INVITE }]);

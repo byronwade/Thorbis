@@ -39,7 +39,7 @@ function PortingStatusSkeleton() {
     <div className="space-y-4 p-6">
       <Skeleton className="h-8 w-64" />
       <Skeleton className="h-4 w-96" />
-      {[...Array(3)].map((_, i) => (
+      {[...new Array(3)].map((_, i) => (
         <Skeleton className="h-40 w-full" key={i} />
       ))}
     </div>

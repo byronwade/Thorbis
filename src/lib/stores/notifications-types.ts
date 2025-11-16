@@ -16,7 +16,7 @@ export type NotificationType =
 
 export type NotificationPriority = "low" | "medium" | "high" | "urgent";
 
-export interface Notification {
+export type Notification = {
   id: string;
   user_id: string;
   company_id: string;
@@ -31,4 +31,4 @@ export interface Notification {
   metadata: Record<string, any> | null;
   created_at: string;
   updated_at: string;
-}
+};

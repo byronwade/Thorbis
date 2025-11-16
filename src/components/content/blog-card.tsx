@@ -30,12 +30,12 @@ function formatDate(input?: string | null): string | null {
   });
 }
 
-interface BlogCardProps {
+type BlogCardProps = {
   post: BlogPost;
   className?: string;
   showImage?: boolean;
   variant?: "default" | "compact";
-}
+};
 
 export function BlogCard({
   post,

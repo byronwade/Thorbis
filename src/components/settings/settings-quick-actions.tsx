@@ -6,10 +6,10 @@ import { trackCustomEvent } from "@/lib/analytics/client";
 import type { SettingsQuickAction } from "@/lib/settings/overview-data";
 import { cn } from "@/lib/utils";
 
-interface SettingsQuickActionsProps {
+type SettingsQuickActionsProps = {
   actions: SettingsQuickAction[];
   section: string;
-}
+};
 
 export function SettingsQuickActions({
   actions,

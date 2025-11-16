@@ -33,7 +33,7 @@ export class DataSyncManager {
     appointment: {},
   };
 
-  private listeners: Set<(data: FormData) => void> = new Set();
+  private readonly listeners: Set<(data: FormData) => void> = new Set();
 
   /**
    * Update a field from AI extraction

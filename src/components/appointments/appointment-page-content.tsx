@@ -70,7 +70,7 @@ export function AppointmentPageContent({
   entityData,
 }: AppointmentPageContentProps) {
   const [hasChanges, setHasChanges] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, _setIsSaving] = useState(false);
 
   const {
     appointment,

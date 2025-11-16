@@ -72,7 +72,7 @@ export type PersonEnrichment = z.infer<typeof PersonEnrichmentSchema>;
 // ============================================================================
 
 export class PersonEnrichmentService {
-  private hunterApiKey: string | undefined;
+  private readonly hunterApiKey: string | undefined;
 
   constructor() {
     this.hunterApiKey = process.env.HUNTER_API_KEY;
@@ -84,8 +84,7 @@ export class PersonEnrichmentService {
   async enrichPerson(email: string): Promise<PersonEnrichment | null> {
     try {
       return await this.enrichWithHunter(email);
-    } catch (error) {
-      console.error("Error enriching with Hunter:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -98,7 +97,6 @@ export class PersonEnrichmentService {
     email: string
   ): Promise<PersonEnrichment | null> {
     if (!this.hunterApiKey) {
-      console.log("Hunter API key not configured");
       return null;
     }
 

@@ -46,7 +46,9 @@ export function useViewPagination(
   const canFitInView = useCallback(
     (widget: Widget, viewIndex: number): boolean => {
       const view = views.find((v) => v.index === viewIndex);
-      if (!view) return false;
+      if (!view) {
+        return false;
+      }
 
       const widgetSize = convertLegacySize(widget.size);
       const widgetCells = calculateWidgetCells(widgetSize);
@@ -156,11 +158,13 @@ function createView(widgets: Widget[], index: number, maxCells: number): View {
  * Optimize view distribution to balance widgets across views
  */
 export function optimizeViewDistribution(views: View[]): View[] {
-  if (views.length <= 1) return views;
+  if (views.length <= 1) {
+    return views;
+  }
 
   // If last view has very few cells used, try to rebalance
-  const lastView = views[views.length - 1];
-  const secondLastView = views[views.length - 2];
+  const lastView = views.at(-1);
+  const secondLastView = views.at(-2);
 
   if (lastView.usedCells < lastView.availableCells * 0.3 && views.length > 1) {
     // Try to move some widgets from second-last view

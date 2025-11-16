@@ -141,17 +141,29 @@ export function generateCustomerStats(metrics: {
  * Format relative date string
  */
 function formatDate(dateString: string | null): string {
-  if (!dateString) return "Never";
+  if (!dateString) {
+    return "Never";
+  }
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Yesterday";
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+  if (diffDays === 0) {
+    return "Today";
+  }
+  if (diffDays === 1) {
+    return "Yesterday";
+  }
+  if (diffDays < 7) {
+    return `${diffDays} days ago`;
+  }
+  if (diffDays < 30) {
+    return `${Math.floor(diffDays / 7)} weeks ago`;
+  }
+  if (diffDays < 365) {
+    return `${Math.floor(diffDays / 30)} months ago`;
+  }
   return `${Math.floor(diffDays / 365)} years ago`;
 }
 
@@ -159,17 +171,29 @@ function formatDate(dateString: string | null): string {
  * Format next scheduled date
  */
 function formatNextScheduled(dateString: string | null): string {
-  if (!dateString) return "Not scheduled";
+  if (!dateString) {
+    return "Not scheduled";
+  }
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = date.getTime() - now.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) return "Overdue";
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Tomorrow";
-  if (diffDays < 7) return `In ${diffDays} days`;
-  if (diffDays < 30) return `In ${Math.floor(diffDays / 7)} weeks`;
+  if (diffDays < 0) {
+    return "Overdue";
+  }
+  if (diffDays === 0) {
+    return "Today";
+  }
+  if (diffDays === 1) {
+    return "Tomorrow";
+  }
+  if (diffDays < 7) {
+    return `In ${diffDays} days`;
+  }
+  if (diffDays < 30) {
+    return `In ${Math.floor(diffDays / 7)} weeks`;
+  }
   return date.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -229,7 +253,9 @@ export function generatePropertyStats(metrics: {
  * Calculate days until due date
  */
 function daysUntilDue(dueDate: string | null): number | null {
-  if (!dueDate) return null;
+  if (!dueDate) {
+    return null;
+  }
   const due = new Date(dueDate);
   const now = new Date();
   const diffTime = due.getTime() - now.getTime();
@@ -299,12 +325,24 @@ function formatValidUntil(
   dateString: string | null,
   daysUntil: number | null
 ): string {
-  if (!dateString) return "No expiry";
-  if (daysUntil === null) return "No expiry";
-  if (daysUntil < 0) return "Expired";
-  if (daysUntil === 0) return "Expires today";
-  if (daysUntil === 1) return "Expires tomorrow";
-  if (daysUntil < 7) return `${daysUntil} days left`;
+  if (!dateString) {
+    return "No expiry";
+  }
+  if (daysUntil === null) {
+    return "No expiry";
+  }
+  if (daysUntil < 0) {
+    return "Expired";
+  }
+  if (daysUntil === 0) {
+    return "Expires today";
+  }
+  if (daysUntil === 1) {
+    return "Expires tomorrow";
+  }
+  if (daysUntil < 7) {
+    return `${daysUntil} days left`;
+  }
   return new Date(dateString).toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -620,7 +658,7 @@ export function generatePaymentStats(metrics: {
   processedAt?: string | null;
   refundedAmount?: number; // in cents
 }): StatCard[] {
-  const now = new Date();
+  const _now = new Date();
   const createdAt = new Date(metrics.createdAt);
   const processedAt = metrics.processedAt
     ? new Date(metrics.processedAt)
@@ -750,7 +788,7 @@ export function generateTeamMemberStats(
     ];
   }
   // Simplified version for detail pages
-  const completionRate =
+  const _completionRate =
     metrics.totalJobs > 0
       ? Math.round((metrics.completedJobs / metrics.totalJobs) * 100)
       : 0;

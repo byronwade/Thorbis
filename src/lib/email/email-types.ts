@@ -21,10 +21,10 @@ export type EmailSendResult = {
 };
 
 // Base email template props
-export interface BaseEmailProps {
+export type BaseEmailProps = {
   previewText?: string;
   companyName?: string;
-}
+};
 
 // Authentication Email Props
 export interface WelcomeEmailProps extends BaseEmailProps {

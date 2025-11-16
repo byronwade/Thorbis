@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { PhotoUploader } from "./PhotoUploader";
 import type { JobPhoto, PhotoCategory } from "./photo-types";
 
-interface PhotoGalleryProps {
+type PhotoGalleryProps = {
   jobId: string;
   companyId: string;
   photos: JobPhoto[];
@@ -38,7 +38,7 @@ interface PhotoGalleryProps {
   onDelete?: (photoId: string) => void;
   onDownloadAll?: () => void;
   className?: string;
-}
+};
 
 export function PhotoGallery({
   jobId,
@@ -369,7 +369,7 @@ export function PhotoGallery({
               companyId={companyId}
               jobId={jobId}
               onCancel={() => setShowUploader(false)}
-              onUpload={async (files) => {
+              onUpload={async (_files) => {
                 setShowUploader(false);
                 // Call the onUpload prop if provided
                 onUpload?.();

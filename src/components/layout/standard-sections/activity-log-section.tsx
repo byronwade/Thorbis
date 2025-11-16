@@ -5,9 +5,9 @@ import { Activity } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 
-interface ActivityLogSectionProps {
+type ActivityLogSectionProps = {
   activities: any[];
-}
+};
 
 export function ActivityLogSection({ activities }: ActivityLogSectionProps) {
   if (!activities || activities.length === 0) {

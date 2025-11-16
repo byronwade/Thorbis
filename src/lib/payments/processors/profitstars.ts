@@ -23,16 +23,16 @@ import type {
   RefundPaymentResponse,
 } from "../processor-types";
 
-interface ProfitStarsConfig {
+type ProfitStarsConfig = {
   companyId: string;
   merchantId: string;
   apiKey: string;
   routingNumber: string;
-}
+};
 
 export class ProfitStarsProcessor implements PaymentProcessor {
-  private config: ProfitStarsConfig;
-  private apiUrl = "https://api.profitstars.com"; // Update with actual API URL
+  private readonly config: ProfitStarsConfig;
+  private readonly apiUrl = "https://api.profitstars.com"; // Update with actual API URL
 
   constructor(config: ProfitStarsConfig) {
     this.config = config;
@@ -102,7 +102,6 @@ export class ProfitStarsProcessor implements PaymentProcessor {
         processorMetadata: data,
       };
     } catch (error) {
-      console.error("ProfitStars payment processing error:", error);
       return {
         success: false,
         status: "failed",
@@ -150,7 +149,6 @@ export class ProfitStarsProcessor implements PaymentProcessor {
         status: data.status === "processed" ? "succeeded" : "processing",
       };
     } catch (error) {
-      console.error("ProfitStars refund error:", error);
       return {
         success: false,
         status: "failed",
@@ -164,42 +162,36 @@ export class ProfitStarsProcessor implements PaymentProcessor {
     amount: number;
     metadata?: Record<string, unknown>;
   }> {
-    try {
-      const response = await fetch(
-        `${this.apiUrl}/v1/payments/${transactionId}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${this.config.apiKey}`,
-            "X-Merchant-ID": this.config.merchantId,
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to get payment status");
+    const response = await fetch(
+      `${this.apiUrl}/v1/payments/${transactionId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${this.config.apiKey}`,
+          "X-Merchant-ID": this.config.merchantId,
+        },
       }
+    );
 
-      return {
-        status: data.status || "unknown",
-        amount: (data.amount || 0) * 100, // Convert dollars to cents
-        metadata: data,
-      };
-    } catch (error) {
-      console.error("ProfitStars get payment status error:", error);
-      throw error;
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to get payment status");
     }
+
+    return {
+      status: data.status || "unknown",
+      amount: (data.amount || 0) * 100, // Convert dollars to cents
+      metadata: data,
+    };
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
+  verifyWebhook(_payload: string, _signature: string): boolean {
     // ProfitStars webhook verification
     try {
       // TODO: Implement proper ProfitStars webhook signature verification
       return true; // Placeholder
-    } catch (error) {
-      console.error("ProfitStars webhook verification error:", error);
+    } catch (_error) {
       return false;
     }
   }

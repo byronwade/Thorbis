@@ -110,8 +110,7 @@ export function CustomerInfoWidgetClient({
         await onCustomerChange(customerId);
       }
       setIsDialogOpen(false);
-    } catch (error) {
-      console.error("Failed to change customer:", error);
+    } catch (_error) {
     } finally {
       setIsChanging(false);
     }
@@ -171,20 +170,18 @@ export function CustomerInfoWidgetClient({
       ) : null}
 
       {customer.address ? (
-        <>
-          <div>
-            <div className="mb-1 text-muted-foreground text-xs">Address</div>
-            <div className="text-sm">
-              {customer.address}
-              {customer.city && customer.state && customer.zipCode ? (
-                <>
-                  <br />
-                  {customer.city}, {customer.state} {customer.zipCode}
-                </>
-              ) : null}
-            </div>
+        <div>
+          <div className="mb-1 text-muted-foreground text-xs">Address</div>
+          <div className="text-sm">
+            {customer.address}
+            {customer.city && customer.state && customer.zipCode ? (
+              <>
+                <br />
+                {customer.city}, {customer.state} {customer.zipCode}
+              </>
+            ) : null}
           </div>
-        </>
+        </div>
       ) : null}
 
       <div className="flex gap-2">

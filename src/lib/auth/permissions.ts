@@ -73,13 +73,13 @@ export type Permission =
 /**
  * Role configuration with permissions and metadata
  */
-export interface RoleConfig {
+export type RoleConfig = {
   id: UserRole;
   label: string;
   description: string;
   permissions: Permission[];
   dashboardFeatures: string[];
-}
+};
 
 // ============================================================================
 // Role Definitions
@@ -297,7 +297,6 @@ export async function hasRole(
   });
 
   if (error) {
-    console.error("Error checking role:", error);
     return false;
   }
 
@@ -336,7 +335,6 @@ export async function hasAnyRole(
   });
 
   if (error) {
-    console.error("Error checking roles:", error);
     return false;
   }
 
@@ -368,7 +366,6 @@ export async function getUserRole(
   });
 
   if (error) {
-    console.error("Error getting user role:", error);
     return null;
   }
 
@@ -405,7 +402,6 @@ export async function hasPermission(
   });
 
   if (error) {
-    console.error("Error checking permission:", error);
     return false;
   }
 
@@ -439,7 +435,6 @@ export async function isCompanyOwner(
   });
 
   if (error) {
-    console.error("Error checking company ownership:", error);
     return false;
   }
 

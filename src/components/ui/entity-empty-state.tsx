@@ -26,7 +26,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 
-interface EntityEmptyStateProps {
+type EntityEmptyStateProps = {
   /** Icon to display */
   icon: LucideIcon;
   /** Title text */
@@ -37,7 +37,7 @@ interface EntityEmptyStateProps {
   action?: React.ReactNode;
   /** Additional className */
   className?: string;
-}
+};
 
 /**
  * EntityEmptyState - Standardized empty state for entities

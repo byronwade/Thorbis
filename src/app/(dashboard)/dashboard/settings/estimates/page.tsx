@@ -50,7 +50,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 const DEFAULT_ESTIMATE_PREFIX = "EST";
 const DEFAULT_NEXT_NUMBER = 2001;
 const MAX_TERMS_LENGTH = 500;
@@ -191,7 +191,7 @@ export default function EstimatesSettingsPage() {
               result.data.reminder_days_before_expiry ?? 7,
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load estimate settings");
       } finally {
         setIsLoading(false);

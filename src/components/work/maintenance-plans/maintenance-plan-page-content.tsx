@@ -632,22 +632,20 @@ export function MaintenancePlanPageContent({
   }, [customer, property, equipment]);
 
   return (
-    <>
-      <DetailPageContentLayout
-        activities={activities}
-        attachments={attachments}
-        customHeader={customHeader}
-        customSections={customSections}
-        defaultOpenSection="service-schedule"
-        notes={notes}
-        relatedItems={relatedItems}
-        showStandardSections={{
-          activities: true,
-          notes: true,
-          attachments: true,
-          relatedItems: true,
-        }}
-      />
-    </>
+    <DetailPageContentLayout
+      activities={activities}
+      attachments={attachments}
+      customHeader={customHeader}
+      customSections={customSections}
+      defaultOpenSection="service-schedule"
+      notes={notes}
+      relatedItems={relatedItems}
+      showStandardSections={{
+        activities: true,
+        notes: true,
+        attachments: true,
+        relatedItems: true,
+      }}
+    />
   );
 }

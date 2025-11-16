@@ -44,8 +44,7 @@ export async function GET() {
       lastName,
       phone: profile?.phone || user.user_metadata?.phone || "",
     });
-  } catch (error) {
-    console.error("Error getting user info:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

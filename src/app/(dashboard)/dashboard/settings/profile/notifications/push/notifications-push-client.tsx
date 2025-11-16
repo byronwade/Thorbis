@@ -91,9 +91,9 @@ const pickPushSettings = (
   pushMessages: prefs.pushMessages,
 });
 
-interface NotificationsPushClientProps {
+type NotificationsPushClientProps = {
   initialPreferences: NotificationPreferencesState;
-}
+};
 
 export default function NotificationsPushClient({
   initialPreferences,

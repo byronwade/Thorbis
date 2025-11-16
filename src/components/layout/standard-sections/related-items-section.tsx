@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 
-interface RelatedItem {
+type RelatedItem = {
   id: string;
   type: string;
   title: string;
@@ -15,11 +15,11 @@ interface RelatedItem {
     label: string;
     variant?: "default" | "secondary" | "destructive" | "outline";
   };
-}
+};
 
-interface RelatedItemsSectionProps {
+type RelatedItemsSectionProps = {
   relatedItems: RelatedItem[];
-}
+};
 
 export function RelatedItemsSection({
   relatedItems,

@@ -40,7 +40,6 @@ export async function updateUserStatus(status: UserStatus) {
       .eq("id", user.id);
 
     if (updateError) {
-      console.error("Error updating user status:", updateError);
       return {
         success: false,
         error: "Failed to update status",
@@ -54,8 +53,7 @@ export async function updateUserStatus(status: UserStatus) {
       success: true,
       status,
     };
-  } catch (error) {
-    console.error("Error in updateUserStatus:", error);
+  } catch (_error) {
     return {
       success: false,
       error: "An unexpected error occurred",

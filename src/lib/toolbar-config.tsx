@@ -199,7 +199,7 @@ export function getToolbarConfig(pathname: string): ToolbarConfig | undefined {
   // Check for product details page pattern: /dashboard/shop/[id]
   const productDetailsMatch = pathname.match(PRODUCT_DETAILS_PATTERN);
   if (productDetailsMatch) {
-    const productId = productDetailsMatch[1];
+    const _productId = productDetailsMatch[1];
     return {
       title: "Product Details",
       actions: (

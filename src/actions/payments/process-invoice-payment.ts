@@ -22,13 +22,13 @@ import {
 } from "@/lib/payments/payment-tokens";
 import { createClient } from "@/lib/supabase/server";
 
-interface PaymentResult {
+type PaymentResult = {
   success: boolean;
   error?: string;
   transactionId?: string;
-}
+};
 
-interface ProcessPaymentParams {
+type ProcessPaymentParams = {
   invoiceId: string;
   token: string;
   paymentMethod: "card" | "ach";
@@ -42,7 +42,7 @@ interface ProcessPaymentParams {
     routingNumber?: string;
     accountName?: string;
   };
-}
+};
 
 export async function processInvoicePayment(
   params: ProcessPaymentParams
@@ -129,12 +129,6 @@ export async function processInvoicePayment(
         status: "success",
         message: "Development mode - payment simulated",
       };
-
-      console.log("💳 [DEV MODE] Payment simulated:");
-      console.log("  Invoice:", invoice.invoice_number);
-      console.log("  Amount:", `$${(amount / 100).toFixed(2)}`);
-      console.log("  Method:", paymentMethod);
-      console.log("  Transaction ID:", transactionId);
     } else {
       // Production mode - process real payment
       // TODO: Implement actual payment processor integration
@@ -158,7 +152,6 @@ export async function processInvoicePayment(
       .eq("id", invoiceId);
 
     if (updateError) {
-      console.error("Error updating invoice:", updateError);
       return {
         success: false,
         error:
@@ -237,8 +230,7 @@ export async function processInvoicePayment(
             { name: "transaction_id", value: transactionId },
           ],
         });
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
+      } catch (_emailError) {
         // Don't fail the payment if email fails
       }
     }
@@ -252,7 +244,6 @@ export async function processInvoicePayment(
       transactionId,
     };
   } catch (error) {
-    console.error("Payment processing error:", error);
     return {
       success: false,
       error:

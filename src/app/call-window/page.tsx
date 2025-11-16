@@ -83,10 +83,10 @@ function CallWindowContent() {
     });
 
   // Local state
-  const [isReady, setIsReady] = useState(false);
+  const [_isReady, setIsReady] = useState(false);
   const [isLoadingCustomer, setIsLoadingCustomer] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [showTransfer, setShowTransfer] = useState(false);
+  const [_showTransfer, setShowTransfer] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(
     searchParams?.get("companyId") ?? null
   );
@@ -103,7 +103,9 @@ function CallWindowContent() {
 
   // Initialize call window
   useEffect(() => {
-    if (!callId) return;
+    if (!callId) {
+      return;
+    }
 
     // Send ready message to main window
     sendToMain({
@@ -126,7 +128,9 @@ function CallWindowContent() {
 
   // Fetch customer data
   useEffect(() => {
-    if (!callId) return;
+    if (!callId) {
+      return;
+    }
 
     const fetchCustomerData = async () => {
       setIsLoadingCustomer(true);
@@ -135,10 +139,6 @@ function CallWindowContent() {
         // Resolve company ID from URL or cached state
         let resolvedCompanyId =
           companyId ?? searchParams?.get("companyId") ?? null;
-        console.log(
-          "📞 Call Window - Company ID from URL or state:",
-          resolvedCompanyId
-        );
 
         // Update state if we got it from URL params
         if (resolvedCompanyId && !companyId) {
@@ -147,14 +147,10 @@ function CallWindowContent() {
 
         // If not in URL, fetch from user session
         if (!resolvedCompanyId) {
-          console.log(
-            "📞 Call Window - No companyId in URL, fetching from session..."
-          );
           try {
             const { createClient } = await import("@/lib/supabase/client");
             const supabase = createClient();
             if (!supabase) {
-              console.error("📞 Call Window - Supabase client not available");
               return;
             }
             const {
@@ -163,9 +159,7 @@ function CallWindowContent() {
             } = await supabase.auth.getUser();
 
             if (userError) {
-              console.error("📞 Call Window - Failed to get user:", userError);
             } else if (user) {
-              console.log("📞 Call Window - User found:", user.id);
               const { data: teamMembers, error: teamError } = await supabase
                 .from("team_members")
                 .select("company_id, status, joined_at")
@@ -174,60 +168,26 @@ function CallWindowContent() {
                 .order("joined_at", { ascending: false });
 
               if (teamError) {
-                console.error(
-                  "📞 Call Window - Failed to fetch team member:",
-                  teamError
-                );
               } else if (Array.isArray(teamMembers) && teamMembers.length > 0) {
                 if (teamMembers.length > 1) {
-                  console.warn(
-                    "📞 Call Window - Multiple team memberships found, defaulting to newest record",
-                    teamMembers.map((member) => member.company_id)
-                  );
                 }
                 const activeMembership = teamMembers[0];
                 if (activeMembership?.company_id) {
                   resolvedCompanyId = activeMembership.company_id;
                   setCompanyId(activeMembership.company_id);
-                  console.log(
-                    "📞 Call Window - Company ID from session:",
-                    resolvedCompanyId
-                  );
                 } else {
-                  console.warn(
-                    "📞 Call Window - Active membership missing company_id"
-                  );
                 }
               } else {
-                console.warn(
-                  "📞 Call Window - No team member record found for user"
-                );
               }
             } else {
-              console.warn("📞 Call Window - No user logged in");
             }
-          } catch (error) {
-            console.error(
-              "📞 Call Window - Failed to fetch company ID from session:",
-              error
-            );
-          }
+          } catch (_error) {}
         }
 
         if (!resolvedCompanyId) {
-          console.error(
-            "📞 Call Window - No company ID available. URL params:",
-            {
-              callId,
-              customerId,
-              allParams: Object.fromEntries(searchParams?.entries() || []),
-            }
-          );
           setIsLoadingCustomer(false);
           return;
         }
-
-        console.log("📞 Call Window - Using company ID:", resolvedCompanyId);
 
         let result;
         if (customerId) {
@@ -244,8 +204,7 @@ function CallWindowContent() {
         if (result?.success && result.data) {
           setCustomerData(result.data);
         }
-      } catch (error) {
-        console.error("Error fetching customer data:", error);
+      } catch (_error) {
       } finally {
         setIsLoadingCustomer(false);
       }
@@ -263,7 +222,9 @@ function CallWindowContent() {
 
   // Update call timer
   useEffect(() => {
-    if (call.status !== "active" || !call.startTime) return;
+    if (call.status !== "active" || !call.startTime) {
+      return;
+    }
 
     const interval = setInterval(() => {
       setCurrentTime(Math.floor((Date.now() - call.startTime!) / 1000));
@@ -275,8 +236,12 @@ function CallWindowContent() {
   // Handle messages from main window
   useEffect(() => {
     const handleMessage = (event: MessageEvent<PopOutMessage>) => {
-      if (!verifyMessageOrigin(event)) return;
-      if (!isPopOutMessage(event.data)) return;
+      if (!verifyMessageOrigin(event)) {
+        return;
+      }
+      if (!isPopOutMessage(event.data)) {
+        return;
+      }
 
       const message = event.data;
 
@@ -284,8 +249,6 @@ function CallWindowContent() {
         case "CALL_STATE_SYNC":
           // Sync call state from main window
           if (message.callData) {
-            // Update UI store with synced data
-            console.log("Synced call state:", message.callData);
           }
           break;
 
@@ -320,7 +283,9 @@ function CallWindowContent() {
   // Call action handlers
   const handleCallAction = useCallback(
     (action: string) => {
-      if (!callId) return;
+      if (!callId) {
+        return;
+      }
 
       switch (action) {
         case "mute":
@@ -384,7 +349,9 @@ function CallWindowContent() {
   );
 
   const handleVideoToggle = useCallback(() => {
-    if (!callId) return;
+    if (!callId) {
+      return;
+    }
 
     if (call.videoStatus === "off") {
       requestVideo();

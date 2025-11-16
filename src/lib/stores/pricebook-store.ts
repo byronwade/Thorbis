@@ -262,7 +262,7 @@ export const usePriceBookStore = create<PriceBookStore>()(
         getCurrentLevel: () => {
           const state = get();
           return state.navigationPath.length > 0
-            ? state.navigationPath[state.navigationPath.length - 1]
+            ? state.navigationPath.at(-1)
             : null;
         },
 

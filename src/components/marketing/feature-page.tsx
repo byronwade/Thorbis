@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import type { MarketingFeatureContent } from "@/lib/marketing/types";
 import { getMarketingIcon } from "./marketing-icons";
 
-interface FeaturePageProps {
+type FeaturePageProps = {
   feature: MarketingFeatureContent;
-}
+};
 
 export function FeaturePage({ feature }: FeaturePageProps) {
   return (

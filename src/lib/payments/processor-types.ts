@@ -20,14 +20,14 @@ export type PaymentChannel =
   | "wire"
   | "check";
 
-export interface PaymentProcessorConfig {
+export type PaymentProcessorConfig = {
   companyId: string;
   processorType: PaymentProcessorType;
   liveMode?: boolean;
   metadata?: Record<string, unknown>;
-}
+};
 
-export interface ProcessPaymentRequest {
+export type ProcessPaymentRequest = {
   amount: number; // In cents
   currency?: string;
   invoiceId?: string;
@@ -36,9 +36,9 @@ export interface ProcessPaymentRequest {
   channel: PaymentChannel;
   metadata?: Record<string, unknown>;
   description?: string;
-}
+};
 
-export interface ProcessPaymentResponse {
+export type ProcessPaymentResponse = {
   success: boolean;
   transactionId?: string;
   processorTransactionId?: string;
@@ -48,24 +48,24 @@ export interface ProcessPaymentResponse {
   failureCode?: string;
   failureMessage?: string;
   processorMetadata?: Record<string, unknown>;
-}
+};
 
-export interface RefundPaymentRequest {
+export type RefundPaymentRequest = {
   transactionId: string;
   amount?: number; // Partial refund if specified
   reason?: string;
   metadata?: Record<string, unknown>;
-}
+};
 
-export interface RefundPaymentResponse {
+export type RefundPaymentResponse = {
   success: boolean;
   refundId?: string;
   processorRefundId?: string;
   status: "pending" | "processing" | "succeeded" | "failed";
   error?: string;
-}
+};
 
-export interface PaymentProcessor {
+export type PaymentProcessor = {
   /**
    * Process a payment
    */
@@ -96,4 +96,4 @@ export interface PaymentProcessor {
    * Get supported payment channels
    */
   getSupportedChannels(): PaymentChannel[];
-}
+};

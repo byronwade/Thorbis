@@ -10,13 +10,13 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-interface InlineCurrencyProps {
+type InlineCurrencyProps = {
   value: number; // in cents
   onUpdate: (newValue: number) => void; // in cents
   isEditable: boolean;
   className?: string;
   readOnly?: boolean;
-}
+};
 
 export function InlineCurrency({
   value,

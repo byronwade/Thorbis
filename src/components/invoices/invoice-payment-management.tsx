@@ -38,7 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { getOverdueStatus } from "@/lib/utils/invoice-overdue";
 
-interface PaymentMethod {
+type PaymentMethod = {
   id: string;
   card_brand: string;
   last_four: string;
@@ -46,9 +46,9 @@ interface PaymentMethod {
   exp_year: number;
   is_default: boolean;
   cardholder_name: string;
-}
+};
 
-interface InvoicePaymentManagementProps {
+type InvoicePaymentManagementProps = {
   invoice: {
     id: string;
     total_amount: number;
@@ -59,7 +59,7 @@ interface InvoicePaymentManagementProps {
   };
   paymentMethods: PaymentMethod[];
   autoOpen?: boolean;
-}
+};
 
 export function InvoicePaymentManagement({
   invoice,
@@ -96,7 +96,7 @@ export function InvoicePaymentManagement({
     }).format(cents / 100);
 
   // Get card icon based on brand
-  const getCardIcon = (brand: string) => <CreditCard className="h-4 w-4" />;
+  const getCardIcon = (_brand: string) => <CreditCard className="h-4 w-4" />;
 
   // Handle payment submission
   const handlePayment = async () => {
@@ -107,7 +107,7 @@ export function InvoicePaymentManagement({
       toast.success("Payment processed successfully");
       setShowPaymentDialog(false);
       setPaymentAmount("");
-    } catch (error) {
+    } catch (_error) {
       toast.error("Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
@@ -120,7 +120,7 @@ export function InvoicePaymentManagement({
       // TODO: Implement card addition
       toast.success("Card added successfully");
       setShowAddCard(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add card");
     }
   };
@@ -165,7 +165,7 @@ export function InvoicePaymentManagement({
                 <DialogDescription
                   className={
                     isOverdue
-                      ? overdueStatus.colors.text + "font-semibold text-lg"
+                      ? `${overdueStatus.colors.text}font-semibold text-lg`
                       : ""
                   }
                 >

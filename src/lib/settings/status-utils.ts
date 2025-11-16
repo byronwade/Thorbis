@@ -81,7 +81,6 @@ export function getStatusColorClasses(status: HealthStatus): {
         background: "bg-warning/10",
         border: "border-warning/50",
       };
-    case "danger":
     default:
       return {
         text: "text-destructive",

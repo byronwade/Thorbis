@@ -86,7 +86,7 @@ async function generateInvoiceNumber(
 
   const match = latestInvoice.invoice_number.match(/INV-\d{4}-(\d+)/);
   if (match) {
-    const nextNumber = Number.parseInt(match[1]) + 1;
+    const nextNumber = Number.parseInt(match[1], 10) + 1;
     return `INV-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
   }
 
@@ -164,7 +164,7 @@ export async function createInvoice(
         ? Number.parseFloat(formData.get("discountAmount") as string)
         : 0,
       dueDays: formData.get("dueDays")
-        ? Number.parseInt(formData.get("dueDays") as string)
+        ? Number.parseInt(formData.get("dueDays") as string, 10)
         : 30,
       terms: formData.get("terms") || undefined,
       notes: formData.get("notes") || undefined,
@@ -300,7 +300,7 @@ export async function updateInvoice(
         ? Number.parseFloat(formData.get("discountAmount") as string)
         : undefined,
       dueDays: formData.get("dueDays")
-        ? Number.parseInt(formData.get("dueDays") as string)
+        ? Number.parseInt(formData.get("dueDays") as string, 10)
         : undefined,
       terms: formData.get("terms") || undefined,
       notes: formData.get("notes") || undefined,
@@ -308,11 +308,18 @@ export async function updateInvoice(
 
     // Prepare update data
     const updateData: any = {};
-    if (data.title) updateData.title = data.title;
-    if (data.description !== undefined)
+    if (data.title) {
+      updateData.title = data.title;
+    }
+    if (data.description !== undefined) {
       updateData.description = data.description;
-    if (data.terms !== undefined) updateData.terms = data.terms;
-    if (data.notes !== undefined) updateData.notes = data.notes;
+    }
+    if (data.terms !== undefined) {
+      updateData.terms = data.terms;
+    }
+    if (data.notes !== undefined) {
+      updateData.notes = data.notes;
+    }
 
     // Recalculate totals if line items changed
     if (data.lineItems) {

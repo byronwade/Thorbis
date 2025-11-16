@@ -42,7 +42,9 @@ export function TeamChat({
   const [messages] = useState<Message[]>(initialMessages);
 
   const handleSend = () => {
-    if (!message.trim()) return;
+    if (!message.trim()) {
+      return;
+    }
     // Handle message send
     setMessage("");
   };

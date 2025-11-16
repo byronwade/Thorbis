@@ -56,20 +56,20 @@ import {
 } from "@/components/ui/full-width-datatable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface ArchiveDataTableProps {
+type ArchiveDataTableProps = {
   entityFilter?: string;
   dateRange?: string;
   searchQuery?: string;
-}
+};
 
 export function ArchiveDataTable({
   entityFilter = "all",
   dateRange = "30days",
   searchQuery,
 }: ArchiveDataTableProps) {
-  const router = useRouter();
+  const _router = useRouter();
   const [data, setData] = useState<ArchivedItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [selectedEntity, setSelectedEntity] = useState(entityFilter);
   const [showRestoreDialog, setShowRestoreDialog] = useState(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -92,7 +92,7 @@ export function ArchiveDataTable({
         toast.error("Failed to load archived items");
         setData([]);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to load archived items");
       setData([]);
     } finally {
@@ -103,7 +103,7 @@ export function ArchiveDataTable({
   // Load data on mount and when filters change
   useEffect(() => {
     fetchData();
-  }, [selectedEntity, dateRange, searchQuery]);
+  }, [fetchData]);
 
   // Get entity icon
   const getEntityIcon = (entityType: ArchivableEntityType) => {
@@ -223,7 +223,7 @@ export function ArchiveDataTable({
     {
       label: "Permanently Delete",
       icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds: Set<string>) => {
+      onClick: (_selectedIds: Set<string>) => {
         toast.error(
           "Permanent deletion not yet implemented. Items will auto-delete after 90 days."
         );
@@ -234,7 +234,9 @@ export function ArchiveDataTable({
 
   // Handle bulk restore
   const handleBulkRestore = async () => {
-    if (selectedItems.size === 0) return;
+    if (selectedItems.size === 0) {
+      return;
+    }
 
     try {
       // Group by entity type
@@ -260,7 +262,7 @@ export function ArchiveDataTable({
       setShowRestoreDialog(false);
       setSelectedItems(new Set());
       fetchData(); // Reload data
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to restore items");
     }
   };

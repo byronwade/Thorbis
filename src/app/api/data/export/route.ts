@@ -85,7 +85,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error("Error creating export record:", insertError);
       return NextResponse.json(
         { error: "Failed to create export record" },
         { status: 500 }
@@ -100,8 +99,7 @@ export async function POST(request: NextRequest) {
       format,
       expiresAt: exportRecord.expires_at,
     });
-  } catch (error) {
-    console.error("Export API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

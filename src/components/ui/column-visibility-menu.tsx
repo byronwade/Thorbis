@@ -94,7 +94,7 @@ export function ColumnVisibilityMenu({
   // Count visible columns (recompute when visibility state changes)
   const visibleCount = useMemo(
     () => columns.filter((col) => isColumnVisible(entity, col.key)).length,
-    [columns, entity, isColumnVisible, columnVisibilityState]
+    [columns, entity, isColumnVisible]
   );
   const allVisible = visibleCount === columns.length;
   const noneVisible = visibleCount === 0;

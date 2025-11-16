@@ -24,7 +24,7 @@ export type StatusConfig = {
   };
 };
 
-interface GenericStatusBadgeProps {
+type GenericStatusBadgeProps = {
   /** The status value to display */
   status: string;
   /** Configuration map: status -> { label, className, variant? } */
@@ -35,7 +35,7 @@ interface GenericStatusBadgeProps {
   className?: string;
   /** Badge variant (overrides config variant) */
   variant?: "default" | "secondary" | "destructive" | "outline";
-}
+};
 
 /**
  * GenericStatusBadge - Displays a badge based on status configuration

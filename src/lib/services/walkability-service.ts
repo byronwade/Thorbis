@@ -33,16 +33,17 @@ export const WalkabilitySchema = z.object({
 export type Walkability = z.infer<typeof WalkabilitySchema>;
 
 export class WalkabilityService {
-  private cache: Map<string, { data: Walkability; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days
+  private readonly cache: Map<
+    string,
+    { data: Walkability; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days
 
   async getWalkability(lat: number, lon: number): Promise<Walkability | null> {
     const cacheKey = `walkability:${lat.toFixed(4)},${lon.toFixed(4)}`;
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Walkability] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -72,7 +73,6 @@ export class WalkabilityService {
       });
 
       if (!res.ok) {
-        console.warn(`[Walkability] Overpass API failed: ${res.status}`);
         return null;
       }
 
@@ -154,22 +154,26 @@ export class WalkabilityService {
       };
 
       this.cache.set(cacheKey, { data: walkability, timestamp: Date.now() });
-      console.log(
-        `[Walkability] Score: ${walkability.score} (${walkability.category})`
-      );
 
       return walkability;
-    } catch (error) {
-      console.error("[Walkability] Error:", error);
+    } catch (_error) {
       return null;
     }
   }
 
   private getWalkabilityCategory(score: number): string {
-    if (score >= 90) return "Walker's Paradise";
-    if (score >= 70) return "Very Walkable";
-    if (score >= 50) return "Somewhat Walkable";
-    if (score >= 25) return "Car-Dependent";
+    if (score >= 90) {
+      return "Walker's Paradise";
+    }
+    if (score >= 70) {
+      return "Very Walkable";
+    }
+    if (score >= 50) {
+      return "Somewhat Walkable";
+    }
+    if (score >= 25) {
+      return "Car-Dependent";
+    }
     return "Very Car-Dependent";
   }
 }

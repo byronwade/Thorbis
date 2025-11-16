@@ -262,7 +262,9 @@ export function InvoicesTable({
       label: "Send",
       icon: <Send className="h-4 w-4" />,
       onClick: async (selectedIds) => {
-        if (isBulkSending) return;
+        if (isBulkSending) {
+          return;
+        }
 
         const invoicesToSend = filteredInvoices.filter((inv) =>
           selectedIds.has(inv.id)

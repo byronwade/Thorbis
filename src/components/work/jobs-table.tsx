@@ -69,11 +69,13 @@ export function JobsTable({
   // Filter jobs based on archive status
   const filteredJobs = jobs.filter((job) => {
     const jobRecord = job as unknown as Record<string, unknown>;
-    const isArchived = Boolean(
-      jobRecord["archived_at"] ?? jobRecord["deleted_at"]
-    );
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    const isArchived = Boolean(jobRecord.archived_at ?? jobRecord.deleted_at);
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -281,7 +283,7 @@ export function JobsTable({
         getItemId={(job) => job.id}
         isArchived={(job) => {
           const jobRecord = job as unknown as Record<string, unknown>;
-          return Boolean(jobRecord["archived_at"] ?? jobRecord["deleted_at"]);
+          return Boolean(jobRecord.archived_at ?? jobRecord.deleted_at);
         }}
         itemsPerPage={itemsPerPage}
         onRefresh={handleRefresh}
@@ -345,7 +347,9 @@ export function JobsTable({
                 let archived = 0;
                 for (const id of selectedItemIds) {
                   const result = await archiveJob(id);
-                  if (result.success) archived++;
+                  if (result.success) {
+                    archived++;
+                  }
                 }
                 if (archived > 0) {
                   window.location.reload();

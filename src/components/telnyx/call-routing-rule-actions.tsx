@@ -45,9 +45,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
-interface CallRoutingRuleActionsProps {
+type CallRoutingRuleActionsProps = {
   rule: any;
-}
+};
 
 export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
   const router = useRouter();

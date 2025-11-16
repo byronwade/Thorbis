@@ -135,7 +135,9 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
           set((state) => {
             const cards = [...state.cards];
             const cardIndex = cards.findIndex((c) => c.id === cardId);
-            if (cardIndex === -1) return state;
+            if (cardIndex === -1) {
+              return state;
+            }
 
             const [card] = cards.splice(cardIndex, 1);
             card.order = newOrder;

@@ -52,7 +52,7 @@ export type AddressValidation = z.infer<typeof AddressValidationSchema>;
 // ============================================================================
 
 export class AddressValidationService {
-  private uspsUserId: string | undefined;
+  private readonly uspsUserId: string | undefined;
 
   constructor() {
     this.uspsUserId = process.env.USPS_USER_ID;
@@ -73,7 +73,6 @@ export class AddressValidationService {
     zip4?: string;
   }): Promise<AddressValidation> {
     if (!this.uspsUserId) {
-      console.log("[USPS] API not configured, skipping address validation");
       return {
         isValid: false,
         input: address,
@@ -104,7 +103,6 @@ export class AddressValidationService {
 
       return AddressValidationSchema.parse(result);
     } catch (error) {
-      console.error("Address validation error:", error);
       return {
         isValid: false,
         input: address,
@@ -192,7 +190,7 @@ export class AddressValidationService {
           deliveryPoint: dpvMatch ? dpvMatch[1] : undefined,
         },
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         isValid: false,
         input,

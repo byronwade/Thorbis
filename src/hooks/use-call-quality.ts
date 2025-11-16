@@ -16,23 +16,23 @@ import { useCallback, useEffect, useState } from "react";
 
 export type ConnectionQuality = "excellent" | "good" | "poor" | "unknown";
 
-interface QualityMetrics {
+type QualityMetrics = {
   packetLoss: number;
   jitter: number;
   rtt: number;
   audioLevel: number;
-}
+};
 
-interface UseCallQualityOptions {
+type UseCallQualityOptions = {
   call: Call | null;
   updateInterval?: number; // milliseconds
-}
+};
 
-interface UseCallQualityReturn {
+type UseCallQualityReturn = {
   quality: ConnectionQuality;
   metrics: QualityMetrics | null;
   isMonitoring: boolean;
-}
+};
 
 /**
  * Calculate connection quality based on WebRTC metrics
@@ -99,8 +99,7 @@ async function getQualityMetrics(call: Call): Promise<QualityMetrics | null> {
     });
 
     return metrics;
-  } catch (error) {
-    console.error("Failed to get quality metrics:", error);
+  } catch (_error) {
     return null;
   }
 }

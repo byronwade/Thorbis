@@ -51,12 +51,12 @@ type Property = {
   property_type: string | null;
 };
 
-interface InvoicePartiesProps {
+type InvoicePartiesProps = {
   company: Company | null;
   customer: Customer | null;
   property?: Property | null;
   invoice: Invoice;
-}
+};
 
 export function InvoiceParties({
   company,

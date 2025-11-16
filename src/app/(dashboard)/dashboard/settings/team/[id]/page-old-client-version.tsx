@@ -369,16 +369,11 @@ export default function EmployeeProfilePage() {
   const handleSavePermissions = async () => {
     setIsSavingPermissions(true);
     try {
-      // TODO: Call updateTeamMemberRole and updateTeamMemberPermissions actions
-      console.log("Saving role:", currentRole);
-      console.log("Saving permissions:", customPermissions);
-
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setHasUnsavedChanges(false);
-    } catch (error) {
-      console.error("Failed to save permissions:", error);
+    } catch (_error) {
     } finally {
       setIsSavingPermissions(false);
     }

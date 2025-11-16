@@ -58,7 +58,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 
 type LeadSource = {
   id: string;
@@ -113,7 +113,7 @@ type LeadSourceSettings = {
 
 export default function LeadSourcesPage() {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [isPending, _startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [leadSources, setLeadSources] = useState<LeadSource[]>([]);
@@ -172,7 +172,7 @@ export default function LeadSourcesPage() {
           }));
           setLeadSources(mapped);
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load lead sources");
       } finally {
         setIsLoading(false);
@@ -389,7 +389,7 @@ export default function LeadSourcesPage() {
   }
 
   // Use loaded sources or fallback to samples
-  const displaySources = leadSources.length > 0 ? leadSources : sources;
+  const _displaySources = leadSources.length > 0 ? leadSources : sources;
 
   return (
     <TooltipProvider>

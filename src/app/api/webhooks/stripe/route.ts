@@ -28,7 +28,6 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function POST(request: NextRequest) {
   if (!stripe) {
-    console.error("Stripe not configured");
     return NextResponse.json(
       { error: "Stripe not configured" },
       { status: 500 }
@@ -40,13 +39,11 @@ export async function POST(request: NextRequest) {
   const signature = headersList.get("stripe-signature");
 
   if (!signature) {
-    console.error("No Stripe signature found");
     return NextResponse.json({ error: "No signature found" }, { status: 400 });
   }
 
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
-    console.error("Webhook secret not configured");
     return NextResponse.json(
       { error: "Webhook secret not configured" },
       { status: 500 }
@@ -66,7 +63,6 @@ export async function POST(request: NextRequest) {
     // Verify webhook signature
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (error) {
-    console.error("Webhook signature verification failed:", error);
     return NextResponse.json(
       {
         error:
@@ -81,8 +77,7 @@ export async function POST(request: NextRequest) {
   // Process the event
   try {
     // Validate event structure
-    if (!(event.data && event.data.object)) {
-      console.error("Invalid event structure: missing data or object");
+    if (!event.data?.object) {
       return NextResponse.json(
         { error: "Invalid event structure" },
         { status: 400 }
@@ -93,7 +88,6 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         if (!session) {
-          console.error("checkout.session.completed: session is undefined");
           break;
         }
         await handleCheckoutSessionCompleted(session);
@@ -103,9 +97,6 @@ export async function POST(request: NextRequest) {
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         if (!subscription) {
-          console.error(
-            "customer.subscription.updated: subscription is undefined"
-          );
           break;
         }
         await handleSubscriptionUpdated(subscription);
@@ -115,9 +106,6 @@ export async function POST(request: NextRequest) {
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         if (!subscription) {
-          console.error(
-            "customer.subscription.deleted: subscription is undefined"
-          );
           break;
         }
         await handleSubscriptionDeleted(subscription);
@@ -127,7 +115,6 @@ export async function POST(request: NextRequest) {
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
         if (!invoice) {
-          console.error("invoice.payment_succeeded: invoice is undefined");
           break;
         }
         await handleInvoicePaymentSucceeded(invoice);
@@ -137,7 +124,6 @@ export async function POST(request: NextRequest) {
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
         if (!invoice) {
-          console.error("invoice.payment_failed: invoice is undefined");
           break;
         }
         await handleInvoicePaymentFailed(invoice);
@@ -145,12 +131,10 @@ export async function POST(request: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`);
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("Error processing webhook:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Webhook processing failed" },
       { status: 500 }
@@ -171,12 +155,10 @@ async function handleCheckoutSessionCompleted(
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
   if (!supabase) {
-    console.error("Supabase not configured");
     return;
   }
 
   if (!session) {
-    console.error("handleCheckoutSessionCompleted: session is undefined");
     return;
   }
 
@@ -185,12 +167,13 @@ async function handleCheckoutSessionCompleted(
   const phoneNumber = session.metadata?.phone_number;
 
   if (!(companyId && subscriptionId)) {
-    console.error("Missing company_id or subscription_id in session metadata");
     return;
   }
 
   // Get subscription details from Stripe
-  if (!stripe) return;
+  if (!stripe) {
+    return;
+  }
   const subscriptionData: any =
     await stripe.subscriptions.retrieve(subscriptionId);
 
@@ -223,17 +206,9 @@ async function handleCheckoutSessionCompleted(
       });
 
       if (purchaseResult.success) {
-        console.log(
-          `Phone number ${phoneNumber} purchased for company ${companyId}`
-        );
       } else if ("error" in purchaseResult) {
-        console.error(
-          `Failed to purchase phone number: ${purchaseResult.error}`
-        );
       }
-    } catch (error) {
-      console.error("Error purchasing phone number after payment:", error);
-    }
+    } catch (_error) {}
   }
 
   // Send team member invitations after payment is complete
@@ -244,26 +219,11 @@ async function handleCheckoutSessionCompleted(
     const invitationResult = await sendTeamMemberInvitations(companyId);
 
     if (invitationResult.success && invitationResult.data) {
-      console.log(
-        `Sent ${invitationResult.data.sent} team invitations for company ${companyId}`
-      );
       if (invitationResult.data.failed > 0) {
-        console.error(
-          `Failed to send ${invitationResult.data.failed} team invitations`
-        );
       }
     } else {
-      console.error(
-        `Failed to send team invitations: ${invitationResult.success ? "Unknown error" : invitationResult.error || "Unknown error"}`
-      );
     }
-  } catch (error) {
-    console.error("Error sending team invitations after payment:", error);
-  }
-
-  console.log(
-    `Subscription ${subscriptionId} created for company ${companyId}`
-  );
+  } catch (_error) {}
 }
 
 /**
@@ -277,19 +237,16 @@ async function handleSubscriptionUpdated(subscription: any) {
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
   if (!supabase) {
-    console.error("Supabase not configured");
     return;
   }
 
   if (!subscription) {
-    console.error("handleSubscriptionUpdated: subscription is undefined");
     return;
   }
 
   const companyId = subscription.metadata?.company_id;
 
   if (!companyId) {
-    console.error("Missing company_id in subscription metadata");
     return;
   }
 
@@ -310,10 +267,6 @@ async function handleSubscriptionUpdated(subscription: any) {
         : null,
     })
     .eq("stripe_subscription_id", subscription.id);
-
-  console.log(
-    `Subscription ${subscription.id} updated for company ${companyId}`
-  );
 }
 
 /**
@@ -327,12 +280,10 @@ async function handleSubscriptionDeleted(subscription: any) {
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
   if (!supabase) {
-    console.error("Supabase not configured");
     return;
   }
 
   if (!subscription) {
-    console.error("handleSubscriptionDeleted: subscription is undefined");
     return;
   }
 
@@ -344,8 +295,6 @@ async function handleSubscriptionDeleted(subscription: any) {
       subscription_cancel_at_period_end: false,
     })
     .eq("stripe_subscription_id", subscription.id);
-
-  console.log(`Subscription ${subscription.id} deleted`);
 }
 
 /**
@@ -359,12 +308,10 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
   if (!supabase) {
-    console.error("Supabase not configured");
     return;
   }
 
   if (!invoice) {
-    console.error("handleInvoicePaymentSucceeded: invoice is undefined");
     return;
   }
 
@@ -381,8 +328,6 @@ async function handleInvoicePaymentSucceeded(invoice: any) {
       stripe_subscription_status: "active",
     })
     .eq("stripe_subscription_id", subscriptionId);
-
-  console.log(`Invoice payment succeeded for subscription ${subscriptionId}`);
 }
 
 /**
@@ -396,12 +341,10 @@ async function handleInvoicePaymentFailed(invoice: any) {
     return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
   }
   if (!supabase) {
-    console.error("Supabase not configured");
     return;
   }
 
   if (!invoice) {
-    console.error("handleInvoicePaymentFailed: invoice is undefined");
     return;
   }
 
@@ -418,6 +361,4 @@ async function handleInvoicePaymentFailed(invoice: any) {
       stripe_subscription_status: "past_due",
     })
     .eq("stripe_subscription_id", subscriptionId);
-
-  console.log(`Invoice payment failed for subscription ${subscriptionId}`);
 }

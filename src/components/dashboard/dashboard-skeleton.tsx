@@ -9,7 +9,7 @@ export function DashboardSkeleton() {
     <div className="space-y-6">
       {/* Stats skeleton - 4 cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
+        {[...new Array(4)].map((_, i) => (
           <div className="animate-pulse rounded-lg border bg-card p-6" key={i}>
             <div className="h-4 w-24 rounded bg-muted" />
             <div className="mt-2 h-8 w-32 rounded bg-muted" />
@@ -26,7 +26,7 @@ export function DashboardSkeleton() {
           <div className="animate-pulse rounded-lg border bg-card p-6">
             <div className="h-6 w-32 rounded bg-muted" />
             <div className="mt-4 space-y-3">
-              {[...Array(5)].map((_, i) => (
+              {[...new Array(5)].map((_, i) => (
                 <div className="h-16 rounded bg-muted" key={i} />
               ))}
             </div>
@@ -36,7 +36,7 @@ export function DashboardSkeleton() {
           <div className="animate-pulse rounded-lg border bg-card p-6">
             <div className="h-6 w-32 rounded bg-muted" />
             <div className="mt-4 space-y-3">
-              {[...Array(4)].map((_, i) => (
+              {[...new Array(4)].map((_, i) => (
                 <div className="h-16 rounded bg-muted" key={i} />
               ))}
             </div>
@@ -49,7 +49,7 @@ export function DashboardSkeleton() {
           <div className="animate-pulse rounded-lg border bg-card p-6">
             <div className="h-6 w-32 rounded bg-muted" />
             <div className="mt-4 space-y-3">
-              {[...Array(5)].map((_, i) => (
+              {[...new Array(5)].map((_, i) => (
                 <div className="h-16 rounded bg-muted" key={i} />
               ))}
             </div>
@@ -59,7 +59,7 @@ export function DashboardSkeleton() {
           <div className="animate-pulse rounded-lg border bg-card p-6">
             <div className="h-6 w-32 rounded bg-muted" />
             <div className="mt-4 space-y-3">
-              {[...Array(4)].map((_, i) => (
+              {[...new Array(4)].map((_, i) => (
                 <div className="h-16 rounded bg-muted" key={i} />
               ))}
             </div>

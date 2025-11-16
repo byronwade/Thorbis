@@ -134,7 +134,9 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
       reorderColumn: (entity, fromIndex, toIndex) => {
         const state = get();
         const currentOrder = state.columnOrder[entity];
-        if (!currentOrder) return;
+        if (!currentOrder) {
+          return;
+        }
 
         const newOrder = [...currentOrder];
         const [removed] = newOrder.splice(fromIndex, 1);

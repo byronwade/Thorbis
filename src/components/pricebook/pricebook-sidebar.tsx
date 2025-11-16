@@ -66,7 +66,6 @@ function SupplierStatusIcon({ status }: { status: SyncStatus }) {
       );
     case "warning":
       return <AlertCircle className="size-4 text-warning dark:text-warning" />;
-    case "disconnected":
     default:
       return <div className="size-2 rounded-full bg-muted-foreground/30" />;
   }
@@ -101,15 +100,23 @@ function SupplierStatusCard({
   };
 
   const getStatusText = () => {
-    if (status === "syncing") return "Syncing...";
-    if (status === "error") return errorMessage || "Error";
+    if (status === "syncing") {
+      return "Syncing...";
+    }
+    if (status === "error") {
+      return errorMessage || "Error";
+    }
     if (status === "connected" && lastSyncAt) {
       const now = new Date();
       const diffHours = Math.floor(
         (now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60)
       );
-      if (diffHours < 1) return "Just now";
-      if (diffHours < 24) return `${diffHours}h ago`;
+      if (diffHours < 1) {
+        return "Just now";
+      }
+      if (diffHours < 24) {
+        return `${diffHours}h ago`;
+      }
       return `${Math.floor(diffHours / 24)}d ago`;
     }
     return "Not connected";
@@ -300,7 +307,9 @@ function ActiveFiltersSection() {
     filters.statusFilter !== "all" ||
     filters.supplierFilter.length > 0;
 
-  if (!hasActiveFilters) return null;
+  if (!hasActiveFilters) {
+    return null;
+  }
 
   const removeCategory = (category: string) => {
     setCategories(filters.categories.filter((c) => c !== category));

@@ -25,11 +25,11 @@ const PURCHASE_ORDERS_OPTIONAL_COLUMNS = [
   { key: "expectedDelivery", label: "Expected Delivery" },
 ];
 
-interface PurchaseOrderToolbarActionsProps {
+type PurchaseOrderToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function PurchaseOrderToolbarActions({
   totalCount = 0,

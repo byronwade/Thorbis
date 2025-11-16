@@ -29,7 +29,9 @@ export function slugToCategory(slug: string): string {
  * Example: ["HVAC", "Heating"] -> "/dashboard/work/pricebook/c/hvac/heating"
  */
 export function buildCategoryUrl(path: string[]): string {
-  if (path.length === 0) return "/dashboard/work/pricebook";
+  if (path.length === 0) {
+    return "/dashboard/work/pricebook";
+  }
   return `/dashboard/work/pricebook/c/${path.map(categoryToSlug).join("/")}`;
 }
 

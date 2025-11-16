@@ -120,7 +120,6 @@ export async function POST(request: NextRequest) {
       warnings: result.warnings,
     });
   } catch (error) {
-    console.error("Upload API error:", error);
     return NextResponse.json(
       {
         error: "Upload failed",

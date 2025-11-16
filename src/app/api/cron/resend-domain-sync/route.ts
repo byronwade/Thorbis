@@ -15,9 +15,13 @@ export async function GET() {
 
   let updated = 0;
   for (const domain of domains) {
-    if (!domain.resend_domain_id) continue;
+    if (!domain.resend_domain_id) {
+      continue;
+    }
     const result = await getResendDomain(domain.resend_domain_id);
-    if (!result.success) continue;
+    if (!result.success) {
+      continue;
+    }
 
     await supabase
       .from("communication_email_domains")

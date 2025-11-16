@@ -765,7 +765,7 @@ export async function updateConsumerFinancingSettings(
 
     const termsStr = formData.get("availableTerms") as string;
     const availableTerms = termsStr
-      ? termsStr.split(",").map((term) => Number.parseInt(term.trim()))
+      ? termsStr.split(",").map((term) => Number.parseInt(term.trim(), 10))
       : [6, 12, 24, 36, 48, 60];
 
     const data = consumerFinancingSchema.parse({

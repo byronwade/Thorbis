@@ -147,7 +147,7 @@ export async function findOrCreateProperty(
     }
 
     // Use coordinates from Google Places if provided, otherwise geocode in background
-    const fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
+    const _fullAddress = `${data.address}, ${data.city}, ${data.state} ${data.zipCode}`;
 
     // Create property immediately
     const insertData: Record<string, any> = {
@@ -163,17 +163,20 @@ export async function findOrCreateProperty(
     };
 
     // Only include optional fields if they have values
-    if (data.address2) insertData.address2 = data.address2;
-    if (data.squareFootage) insertData.square_footage = data.squareFootage;
-    if (data.yearBuilt) insertData.year_built = data.yearBuilt;
+    if (data.address2) {
+      insertData.address2 = data.address2;
+    }
+    if (data.squareFootage) {
+      insertData.square_footage = data.squareFootage;
+    }
+    if (data.yearBuilt) {
+      insertData.year_built = data.yearBuilt;
+    }
 
     // If coordinates provided from Google Places, save them immediately
     if (data.lat && data.lon) {
       insertData.lat = data.lat;
       insertData.lon = data.lon;
-      console.log(
-        `[Property] Using Google Places coordinates: ${data.lat}, ${data.lon}`
-      );
     }
 
     const { data: property, error: createError } = await supabase
@@ -184,9 +187,6 @@ export async function findOrCreateProperty(
 
     // Only geocode in background if coordinates weren't provided
     if (property?.id && !data.lat && !data.lon) {
-      console.log(
-        "[Property] No coordinates provided, geocoding in background..."
-      );
       // Fire and forget - don't wait for this
       geocodeAddressSilent(
         data.address,
@@ -205,20 +205,13 @@ export async function findOrCreateProperty(
                 lon: geocoded.lon,
               })
               .eq("id", property.id)
-              .then(() => {
-                console.log(
-                  `[Property] Geocoded ${fullAddress} to: ${geocoded.lat}, ${geocoded.lon}`
-                );
-              });
+              .then(() => {});
           }
         })
-        .catch((error) => {
-          console.warn("[Property] Background geocoding failed:", error);
-        });
+        .catch((_error) => {});
     }
 
     if (createError) {
-      console.error("Property creation error:", createError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create property"),
         ERROR_CODES.DB_QUERY_ERROR
@@ -306,14 +299,6 @@ export async function createProperty(
       );
     }
 
-    // Log data for debugging RLS issues
-    console.log("Creating property with:", {
-      company_id: teamMember.company_id,
-      customer_id: data.customerId,
-      user_id: user.id,
-      name: data.name,
-    });
-
     // Geocode property address
     let propertyLat: number | null = null;
     let propertyLon: number | null = null;
@@ -329,13 +314,7 @@ export async function createProperty(
     if (geocodeResult) {
       propertyLat = geocodeResult.lat;
       propertyLon = geocodeResult.lon;
-      console.log(
-        `Geocoded property address: ${geocodeResult.lat}, ${geocodeResult.lon}`
-      );
     } else {
-      console.warn(
-        "Failed to geocode property address - coordinates will be null"
-      );
     }
 
     // Create property
@@ -362,7 +341,6 @@ export async function createProperty(
       .single();
 
     if (createError) {
-      console.error("Database error creating property:", createError);
       throw new ActionError(
         ERROR_MESSAGES.operationFailed("create property"),
         ERROR_CODES.DB_QUERY_ERROR,

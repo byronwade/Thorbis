@@ -1055,7 +1055,7 @@ export function ModernHomepage() {
                   key={testimonial.name}
                 >
                   <div className="mb-4 flex gap-1">
-                    {[...Array(testimonial.rating)].map((_, index) => (
+                    {[...new Array(testimonial.rating)].map((_, index) => (
                       <Star
                         className="size-4 fill-yellow-500 text-warning"
                         key={index}

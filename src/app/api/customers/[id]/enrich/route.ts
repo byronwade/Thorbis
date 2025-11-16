@@ -16,7 +16,7 @@ import { createClient } from "@/lib/supabase/server";
  * GET - Retrieve cached enrichment data
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -48,8 +48,7 @@ export async function GET(
     }
 
     return NextResponse.json({ data: result.data });
-  } catch (error) {
-    console.error("Error fetching enrichment:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
@@ -101,8 +100,7 @@ export async function POST(
     }
 
     return NextResponse.json({ data: result.data }, { status: 201 });
-  } catch (error) {
-    console.error("Error enriching customer:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -78,10 +78,18 @@ function formatTimestamp(date: Date): string {
   const diffHours = Math.floor(diffMs / MS_PER_HOUR);
   const diffDays = Math.floor(diffMs / (MS_PER_HOUR * 24));
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffMins < 1) {
+    return "Just now";
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+  if (diffDays < 7) {
+    return `${diffDays}d ago`;
+  }
 
   return date.toLocaleDateString();
 }
@@ -117,7 +125,6 @@ export function NotificationsList() {
         const supabase = createClient();
 
         if (!supabase) {
-          console.error("Supabase client not configured");
           return;
         }
 
@@ -126,7 +133,6 @@ export function NotificationsList() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          console.error("No authenticated user found");
           return;
         }
 
@@ -140,9 +146,7 @@ export function NotificationsList() {
         // Set up Supabase Realtime subscription
         await subscribe(user.id);
         setIsInitialized(true);
-      } catch (error) {
-        console.error("Error initializing notifications:", error);
-      }
+      } catch (_error) {}
     }
 
     if (!isInitialized) {
@@ -159,7 +163,6 @@ export function NotificationsList() {
     optimisticMarkAsRead(id);
     const result = await markAsReadAction(id);
     if (!result.success) {
-      console.error("Failed to mark notification as read:", result.error);
     }
   };
 
@@ -168,7 +171,6 @@ export function NotificationsList() {
     optimisticMarkAllAsRead();
     const result = await markAllAsReadAction();
     if (!result.success) {
-      console.error("Failed to mark all notifications as read:", result.error);
     }
   };
 
@@ -177,7 +179,6 @@ export function NotificationsList() {
     optimisticDelete(id);
     const result = await deleteNotificationAction(id);
     if (!result.success) {
-      console.error("Failed to delete notification:", result.error);
     }
   };
 

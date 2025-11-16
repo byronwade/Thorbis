@@ -55,7 +55,6 @@ export function OnboardingHeader() {
             : new Date(),
         });
       } else {
-        console.error("Failed to fetch user profile:", profileRes.status);
       }
 
       if (companiesRes.ok) {
@@ -72,13 +71,10 @@ export function OnboardingHeader() {
         }>;
         setCompanies(uniqueCompanies || []);
       } else {
-        console.error("Failed to fetch companies:", companiesRes.status);
-        const errorData = await companiesRes.json().catch(() => ({}));
-        console.error("Error details:", errorData);
+        const _errorData = await companiesRes.json().catch(() => ({}));
         setCompanies([]); // Set empty array on error
       }
-    } catch (error) {
-      console.error("Error fetching header data:", error);
+    } catch (_error) {
       setCompanies([]); // Set empty array on error
     } finally {
       setLoading(false);
@@ -107,7 +103,7 @@ export function OnboardingHeader() {
       window.removeEventListener("refresh-companies", handleRefresh);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [fetchData]);
 
   if (loading || !userProfile) {
     return (

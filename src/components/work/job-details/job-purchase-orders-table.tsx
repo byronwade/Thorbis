@@ -64,7 +64,9 @@ export function JobPurchaseOrdersTable({
   );
 
   const handleArchive = useCallback(async () => {
-    if (selectedIds.size === 0) return;
+    if (selectedIds.size === 0) {
+      return;
+    }
 
     setIsArchiving(true);
     try {
@@ -84,7 +86,7 @@ export function JobPurchaseOrdersTable({
       } else {
         toast.error("Failed to archive purchase orders");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to archive purchase orders");
     } finally {
       setIsArchiving(false);

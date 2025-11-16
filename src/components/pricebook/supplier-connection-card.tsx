@@ -81,7 +81,9 @@ const statusConfig = {
 };
 
 function formatLastSync(date: Date | null): string {
-  if (!date) return "Never";
+  if (!date) {
+    return "Never";
+  }
 
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
@@ -89,9 +91,15 @@ function formatLastSync(date: Date | null): string {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffMins < 1) {
+    return "Just now";
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
   return `${diffDays}d ago`;
 }
 
@@ -109,20 +117,11 @@ export function SupplierConnectionCard({
     setIsSyncing(false);
   };
 
-  const handleConnect = () => {
-    // TODO: Open connection modal
-    console.log("Connect to", supplier.name);
-  };
+  const handleConnect = () => {};
 
-  const handleDisconnect = () => {
-    // TODO: Confirm and disconnect
-    console.log("Disconnect from", supplier.name);
-  };
+  const handleDisconnect = () => {};
 
-  const handleSettings = () => {
-    // TODO: Open settings modal
-    console.log("Settings for", supplier.name);
-  };
+  const handleSettings = () => {};
 
   return (
     <Card>

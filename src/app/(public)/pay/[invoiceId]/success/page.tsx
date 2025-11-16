@@ -21,11 +21,11 @@ export const metadata: Metadata = {
   description: "Your payment has been processed successfully",
 };
 
-interface PageProps {
+type PageProps = {
   params: Promise<{
     invoiceId: string;
   }>;
-}
+};
 
 export default async function PaymentSuccessPage({ params }: PageProps) {
   const { invoiceId } = await params;

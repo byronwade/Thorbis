@@ -122,7 +122,7 @@ const TableRowInner = function TableRow<T>({
   itemId: string;
 }) {
   const handleSelect = useCallback(
-    (checked: boolean) => {
+    (_checked: boolean) => {
       onSelectItem(itemId);
     },
     [itemId, onSelectItem]

@@ -241,7 +241,9 @@ export function BusinessHoursEditor() {
 
   // Paste day schedule
   const pasteDay = (targetDayOfWeek: number) => {
-    if (!copiedDay) return;
+    if (!copiedDay) {
+      return;
+    }
 
     setBusinessHours((prev) => ({
       ...prev,
@@ -483,7 +485,7 @@ function DayScheduleCard({
       {day.isOpen && (
         <CardContent className="space-y-3">
           {/* Time Ranges */}
-          {day.timeRanges.map((range, index) => {
+          {day.timeRanges.map((range, _index) => {
             const isValid = validateTimeRange(range);
             return (
               <div className="flex items-center gap-3" key={range.id}>

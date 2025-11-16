@@ -131,7 +131,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 }: KanbanProviderProps<T>) {
   const columnIdGetter = useCallback(
     getColumnId ?? ((item: T) => item.columnId),
-    [getColumnId]
+    []
   );
   const [itemsByColumn, setItemsByColumn] = useState<Record<string, T[]>>(() =>
     buildState(columns, data, columnIdGetter)

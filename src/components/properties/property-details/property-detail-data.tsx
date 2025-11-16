@@ -297,10 +297,6 @@ export async function PropertyDetailData({
   }
 
   if (hasReportableError(propertyCommunicationsError)) {
-    console.error(
-      "[Property Details] Failed to load communications:",
-      propertyCommunicationsError
-    );
   }
 
   const communications =

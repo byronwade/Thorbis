@@ -6,7 +6,7 @@
 
 export type PhotoCategory = "before" | "during" | "after" | "other";
 
-export interface JobPhoto {
+export type JobPhoto = {
   id: string;
   url: string;
   thumbnailUrl?: string;
@@ -25,4 +25,4 @@ export interface JobPhoto {
     width: number;
     height: number;
   };
-}
+};

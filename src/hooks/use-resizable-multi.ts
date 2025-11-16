@@ -207,10 +207,14 @@ export function useResizableMulti(
 
   // Handle resize move
   useEffect(() => {
-    if (!(isResizing && activeDirection)) return;
+    if (!(isResizing && activeDirection)) {
+      return;
+    }
 
     const handleMove = (e: MouseEvent | TouchEvent) => {
-      if (!isResizingRef.current) return;
+      if (!isResizingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {
@@ -246,7 +250,9 @@ export function useResizableMulti(
     };
 
     const handleEnd = () => {
-      if (!isResizingRef.current) return;
+      if (!isResizingRef.current) {
+        return;
+      }
 
       // Cancel any pending animation frame
       if (animationFrameRef.current) {

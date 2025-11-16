@@ -12,10 +12,10 @@ import { getActivities } from "@/actions/activity";
 import type { Activity } from "@/types/activity";
 import { ActivityTimeline } from "./activity-timeline";
 
-interface JobActivityTimelineProps {
+type JobActivityTimelineProps = {
   jobId: string;
   entityType?: "job" | "customer" | "invoice" | "estimate";
-}
+};
 
 export function JobActivityTimeline({
   jobId,

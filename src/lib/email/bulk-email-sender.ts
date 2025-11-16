@@ -19,7 +19,7 @@ import type { EmailTemplate } from "./email-types";
 // - Paid tier: Varies by plan, typically 10-50 emails/second
 // We'll use conservative defaults to avoid rate limiting
 
-export interface BulkEmailConfig {
+export type BulkEmailConfig = {
   /** Maximum emails to send in a single batch (default: 10) */
   batchSize?: number;
   /** Delay between batches in milliseconds (default: 1000ms = 1 second) */
@@ -28,9 +28,9 @@ export interface BulkEmailConfig {
   maxRetries?: number;
   /** Delay between retries in milliseconds (default: 5000ms = 5 seconds) */
   retryDelay?: number;
-}
+};
 
-export interface BulkEmailItem {
+export type BulkEmailItem = {
   to: string;
   subject: string;
   template: ReactElement;
@@ -39,9 +39,9 @@ export interface BulkEmailItem {
   tags?: { name: string; value: string }[];
   /** Optional identifier for tracking (e.g., invoice ID) */
   itemId?: string;
-}
+};
 
-export interface BulkEmailResult {
+export type BulkEmailResult = {
   /** Total number of emails attempted */
   total: number;
   /** Number of emails sent successfully */
@@ -58,7 +58,7 @@ export interface BulkEmailResult {
   }>;
   /** Overall success (true if all emails sent) */
   allSuccessful: boolean;
-}
+};
 
 /**
  * Delay execution for specified milliseconds
@@ -121,10 +121,6 @@ export async function sendBulkEmails(
   for (let i = 0; i < emails.length; i += batchSize) {
     const batch = emails.slice(i, i + batchSize);
 
-    console.log(
-      `📧 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(emails.length / batchSize)} (${batch.length} emails)`
-    );
-
     // Send all emails in current batch concurrently
     const batchPromises = batch.map(async (email) => {
       let lastError: string | undefined;
@@ -159,18 +155,12 @@ export async function sendBulkEmails(
           lastError = result.error;
 
           if (attempts < maxRetries) {
-            console.warn(
-              `⚠️ Email to ${email.to} failed (attempt ${attempts + 1}/${maxRetries + 1}), retrying...`
-            );
             await delay(retryDelay);
           }
         } catch (error) {
           lastError = error instanceof Error ? error.message : "Unknown error";
 
           if (attempts < maxRetries) {
-            console.warn(
-              `⚠️ Email to ${email.to} threw error (attempt ${attempts + 1}/${maxRetries + 1}), retrying...`
-            );
             await delay(retryDelay);
           }
         }
@@ -202,16 +192,11 @@ export async function sendBulkEmails(
 
     // Delay before next batch (except for last batch)
     if (i + batchSize < emails.length) {
-      console.log(`⏱️ Waiting ${batchDelay}ms before next batch...`);
       await delay(batchDelay);
     }
   }
 
   results.allSuccessful = results.failed === 0;
-
-  console.log(
-    `✅ Bulk send complete: ${results.successful}/${results.total} successful, ${results.failed} failed`
-  );
 
   return results;
 }

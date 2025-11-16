@@ -42,14 +42,12 @@ export async function createSchedule(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     revalidatePath("/dashboard/schedule");
     return { success: true, scheduleId: schedule.id };
   } catch (error) {
-    console.error("Create schedule error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -81,13 +79,11 @@ export async function getSchedule(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, schedule };
   } catch (error) {
-    console.error("Get schedule error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -145,13 +141,11 @@ export async function getSchedules(filters?: {
     const { data: schedules, error } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, schedules };
   } catch (error) {
-    console.error("Get schedules error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -202,7 +196,6 @@ export async function updateSchedule(
       .is("deleted_at", null);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -212,7 +205,6 @@ export async function updateSchedule(
     revalidatePath("/dashboard/work");
     return { success: true };
   } catch (error) {
-    console.error("Update schedule error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -243,14 +235,12 @@ export async function updateScheduleStatus(
       .eq("id", scheduleId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     revalidatePath("/dashboard/schedule");
     return { success: true };
   } catch (error) {
-    console.error("Update schedule status error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -293,7 +283,6 @@ export async function createRecurringSchedule(
       .single();
 
     if (parentError) {
-      console.error("Supabase error:", parentError);
       return { success: false, error: parentError.message };
     }
 
@@ -351,7 +340,6 @@ export async function createRecurringSchedule(
       .select("id");
 
     if (instancesError) {
-      console.error("Supabase error:", instancesError);
       return { success: false, error: instancesError.message };
     }
 
@@ -364,7 +352,6 @@ export async function createRecurringSchedule(
       ],
     };
   } catch (error) {
-    console.error("Create recurring schedule error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -392,13 +379,11 @@ export async function markReminderSent(
       .eq("id", scheduleId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Mark reminder sent error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -437,14 +422,12 @@ export async function deleteSchedule(
       .eq("id", scheduleId);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
     revalidatePath("/dashboard/schedule");
     return { success: true };
   } catch (error) {
-    console.error("Delete schedule error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

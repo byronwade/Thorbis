@@ -81,7 +81,6 @@ async function CategoryPageContent({ slug }: { slug: string[] }) {
     .order("name", { ascending: true });
 
   if (itemsError) {
-    console.error("Error fetching price book items:", itemsError);
     throw new Error(`Failed to load price book items: ${itemsError.message}`);
   }
 

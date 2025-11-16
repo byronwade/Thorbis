@@ -68,12 +68,24 @@ export function InvoicesFilterDropdown({
   // Count active filters (excluding defaults)
   const activeFilterCount = useMemo(() => {
     let count = 0;
-    if (localFilters.archiveStatus !== "active") count++;
-    if (localFilters.status !== "all") count++;
-    if (localFilters.amountMin) count++;
-    if (localFilters.amountMax) count++;
-    if (localFilters.customerName) count++;
-    if (localFilters.invoiceNumber) count++;
+    if (localFilters.archiveStatus !== "active") {
+      count++;
+    }
+    if (localFilters.status !== "all") {
+      count++;
+    }
+    if (localFilters.amountMin) {
+      count++;
+    }
+    if (localFilters.amountMax) {
+      count++;
+    }
+    if (localFilters.customerName) {
+      count++;
+    }
+    if (localFilters.invoiceNumber) {
+      count++;
+    }
     return count;
   }, [localFilters]);
 

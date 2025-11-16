@@ -13,9 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency } from "@/lib/formatters";
 
-interface JobFinancialsWidgetProps {
+type JobFinancialsWidgetProps = {
   job: Job;
-}
+};
 
 export function JobFinancialsWidget({ job }: JobFinancialsWidgetProps) {
   const totalAmount = job.totalAmount || 0;

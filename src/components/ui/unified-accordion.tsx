@@ -21,7 +21,7 @@ import { ChevronRight, GripVertical } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export interface UnifiedAccordionSection {
+export type UnifiedAccordionSection = {
   id: string;
   title: string;
   icon?: ReactNode;
@@ -29,9 +29,9 @@ export interface UnifiedAccordionSection {
   content: ReactNode;
   defaultOpen?: boolean;
   actions?: ReactNode;
-}
+};
 
-interface UnifiedAccordionProps {
+type UnifiedAccordionProps = {
   sections: UnifiedAccordionSection[];
   className?: string;
   defaultOpenSection?: string | null;
@@ -39,7 +39,7 @@ interface UnifiedAccordionProps {
   storageKey?: string;
   /** Enable drag-and-drop reordering (default: true) */
   enableReordering?: boolean;
-}
+};
 
 // Helper to get user-specific storage key
 function getUserStorageKey(baseKey: string): string {
@@ -50,22 +50,23 @@ function getUserStorageKey(baseKey: string): string {
 
 // Save section order to user preferences
 function saveSectionOrder(storageKey: string, order: string[]) {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
   try {
     localStorage.setItem(getUserStorageKey(storageKey), JSON.stringify(order));
-  } catch (error) {
-    console.error("Failed to save section order:", error);
-  }
+  } catch (_error) {}
 }
 
 // Load section order from user preferences
 function loadSectionOrder(storageKey: string): string[] | null {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") {
+    return null;
+  }
   try {
     const stored = localStorage.getItem(getUserStorageKey(storageKey));
     return stored ? JSON.parse(stored) : null;
-  } catch (error) {
-    console.error("Failed to load section order:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -211,10 +212,14 @@ export function UnifiedAccordion({
 }: UnifiedAccordionProps) {
   // Initialize sections with user's saved order
   const [sections, setSections] = useState<UnifiedAccordionSection[]>(() => {
-    if (!(storageKey && enableReordering)) return initialSections;
+    if (!(storageKey && enableReordering)) {
+      return initialSections;
+    }
 
     const savedOrder = loadSectionOrder(storageKey);
-    if (!savedOrder) return initialSections;
+    if (!savedOrder) {
+      return initialSections;
+    }
 
     // Reorder sections based on saved order
     const orderedSections = [...initialSections];
@@ -222,8 +227,12 @@ export function UnifiedAccordion({
       const indexA = savedOrder.indexOf(a.id);
       const indexB = savedOrder.indexOf(b.id);
       // If not in saved order, put at end
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
+      if (indexA === -1) {
+        return 1;
+      }
+      if (indexB === -1) {
+        return -1;
+      }
       return indexA - indexB;
     });
 
@@ -254,8 +263,12 @@ export function UnifiedAccordion({
     orderedSections.sort((a, b) => {
       const indexA = savedOrder.indexOf(a.id);
       const indexB = savedOrder.indexOf(b.id);
-      if (indexA === -1) return 1;
-      if (indexB === -1) return -1;
+      if (indexA === -1) {
+        return 1;
+      }
+      if (indexB === -1) {
+        return -1;
+      }
       return indexA - indexB;
     });
 
@@ -307,7 +320,7 @@ export function UnifiedAccordion({
       }
 
       // Check for number keys 0-9
-      const keyNum = Number.parseInt(event.key);
+      const keyNum = Number.parseInt(event.key, 10);
       if (Number.isNaN(keyNum) || keyNum < 0 || keyNum > 9) {
         return;
       }

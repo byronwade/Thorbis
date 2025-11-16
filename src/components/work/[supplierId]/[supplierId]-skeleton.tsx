@@ -13,7 +13,7 @@ export function WorkSupplierIdSkeleton() {
         </div>
       </div>
       <div className="space-y-2">
-        {[...Array(10)].map((_, index) => (
+        {[...new Array(10)].map((_, index) => (
           <div className="flex items-center gap-4" key={index}>
             <div className="h-12 w-12 animate-pulse rounded bg-muted" />
             <div className="flex-1 space-y-2">

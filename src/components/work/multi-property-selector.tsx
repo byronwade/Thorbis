@@ -78,7 +78,9 @@ export function MultiPropertySelector({
 
   const addProperty = (propertyId: string) => {
     const property = filteredProperties.find((p) => p.id === propertyId);
-    if (!property) return;
+    if (!property) {
+      return;
+    }
 
     // Check if already added
     if (selectedProperties.some((sp) => sp.id === propertyId)) {

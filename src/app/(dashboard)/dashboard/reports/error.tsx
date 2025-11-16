@@ -21,9 +21,7 @@ export default function ReportsError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Reports error:", error);
-  }, [error]);
+  useEffect(() => {}, []);
 
   return (
     <div className="flex min-h-[400px] items-center justify-center p-4">

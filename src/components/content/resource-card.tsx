@@ -65,11 +65,11 @@ function formatDate(
   });
 }
 
-interface ResourceCardProps {
+type ResourceCardProps = {
   item: ResourceItem;
   className?: string;
   showImage?: boolean;
-}
+};
 
 export function ResourceCard({
   item,

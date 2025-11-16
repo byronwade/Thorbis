@@ -53,8 +53,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json({ data: result.data });
-  } catch (error) {
-    console.error("Error fetching enrichment usage:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

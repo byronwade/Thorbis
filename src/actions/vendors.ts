@@ -47,7 +47,7 @@ async function generateVendorNumber(
 
   const match = latestVendor.vendor_number.match(/VND-\d{4}-(\d+)/);
   if (match) {
-    const nextNumber = Number.parseInt(match[1]) + 1;
+    const nextNumber = Number.parseInt(match[1], 10) + 1;
     return `VND-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;
   }
 
@@ -113,7 +113,7 @@ export async function createVendor(
       tax_id: formData.get("tax_id") || undefined,
       payment_terms: formData.get("payment_terms") || "net_30",
       credit_limit: formData.get("credit_limit")
-        ? Number.parseInt(formData.get("credit_limit") as string) * 100
+        ? Number.parseInt(formData.get("credit_limit") as string, 10) * 100
         : 0,
       preferred_payment_method:
         formData.get("preferred_payment_method") || undefined,
@@ -178,7 +178,6 @@ export async function createVendor(
       .single();
 
     if (error) {
-      console.error("Error creating vendor:", error);
       throw new ActionError(
         "Failed to create vendor",
         ERROR_CODES.DB_QUERY_ERROR
@@ -251,58 +250,82 @@ export async function updateVendor(
     // Build update object from form data
     const updateData: Partial<VendorUpdate> = {};
 
-    if (formData.has("name")) updateData.name = formData.get("name") as string;
-    if (formData.has("display_name"))
+    if (formData.has("name")) {
+      updateData.name = formData.get("name") as string;
+    }
+    if (formData.has("display_name")) {
       updateData.display_name = formData.get("display_name") as string;
-    if (formData.has("vendor_number"))
+    }
+    if (formData.has("vendor_number")) {
       updateData.vendor_number = formData.get("vendor_number") as string;
-    if (formData.has("email"))
+    }
+    if (formData.has("email")) {
       updateData.email = (formData.get("email") as string) || undefined;
-    if (formData.has("phone"))
+    }
+    if (formData.has("phone")) {
       updateData.phone = (formData.get("phone") as string) || undefined;
-    if (formData.has("secondary_phone"))
+    }
+    if (formData.has("secondary_phone")) {
       updateData.secondary_phone =
         (formData.get("secondary_phone") as string) || undefined;
-    if (formData.has("website"))
+    }
+    if (formData.has("website")) {
       updateData.website = (formData.get("website") as string) || undefined;
-    if (formData.has("address"))
+    }
+    if (formData.has("address")) {
       updateData.address = (formData.get("address") as string) || undefined;
-    if (formData.has("address2"))
+    }
+    if (formData.has("address2")) {
       updateData.address2 = (formData.get("address2") as string) || undefined;
-    if (formData.has("city"))
+    }
+    if (formData.has("city")) {
       updateData.city = (formData.get("city") as string) || undefined;
-    if (formData.has("state"))
+    }
+    if (formData.has("state")) {
       updateData.state = (formData.get("state") as string) || undefined;
-    if (formData.has("zip_code"))
+    }
+    if (formData.has("zip_code")) {
       updateData.zip_code = (formData.get("zip_code") as string) || undefined;
-    if (formData.has("country"))
+    }
+    if (formData.has("country")) {
       updateData.country = formData.get("country") as string;
-    if (formData.has("tax_id"))
+    }
+    if (formData.has("tax_id")) {
       updateData.tax_id = (formData.get("tax_id") as string) || undefined;
-    if (formData.has("payment_terms"))
+    }
+    if (formData.has("payment_terms")) {
       updateData.payment_terms = formData.get("payment_terms") as any;
-    if (formData.has("credit_limit"))
+    }
+    if (formData.has("credit_limit")) {
       updateData.credit_limit =
-        Number.parseInt(formData.get("credit_limit") as string) * 100;
-    if (formData.has("preferred_payment_method"))
+        Number.parseInt(formData.get("credit_limit") as string, 10) * 100;
+    }
+    if (formData.has("preferred_payment_method")) {
       updateData.preferred_payment_method = formData.get(
         "preferred_payment_method"
       ) as any;
-    if (formData.has("category"))
+    }
+    if (formData.has("category")) {
       updateData.category = formData.get("category") as any;
-    if (formData.has("tags"))
+    }
+    if (formData.has("tags")) {
       updateData.tags = JSON.parse(formData.get("tags") as string);
-    if (formData.has("status"))
+    }
+    if (formData.has("status")) {
       updateData.status = formData.get("status") as "active" | "inactive";
-    if (formData.has("notes"))
+    }
+    if (formData.has("notes")) {
       updateData.notes = (formData.get("notes") as string) || undefined;
-    if (formData.has("internal_notes"))
+    }
+    if (formData.has("internal_notes")) {
       updateData.internal_notes =
         (formData.get("internal_notes") as string) || undefined;
-    if (formData.has("custom_fields"))
+    }
+    if (formData.has("custom_fields")) {
       updateData.custom_fields = JSON.parse(
         formData.get("custom_fields") as string
       );
+    }
 
     // Validate update data
     const validated = vendorUpdateSchema.parse(updateData);
@@ -336,7 +359,6 @@ export async function updateVendor(
       .eq("id", vendorId);
 
     if (error) {
-      console.error("Error updating vendor:", error);
       throw new ActionError(
         "Failed to update vendor",
         ERROR_CODES.DB_QUERY_ERROR
@@ -411,7 +433,6 @@ export async function deleteVendor(
       .eq("id", vendorId);
 
     if (error) {
-      console.error("Error deleting vendor:", error);
       throw new ActionError(
         "Failed to delete vendor",
         ERROR_CODES.DB_QUERY_ERROR
@@ -464,7 +485,6 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
       .single();
 
     if (error) {
-      console.error("Error fetching vendor:", error);
       throw new ActionError(
         "Failed to fetch vendor",
         ERROR_CODES.DB_QUERY_ERROR
@@ -538,7 +558,6 @@ export async function listVendors(options?: {
     const { data: vendors, error } = await query;
 
     if (error) {
-      console.error("Error fetching vendors:", error);
       throw new ActionError(
         "Failed to fetch vendors",
         ERROR_CODES.DB_QUERY_ERROR
@@ -596,7 +615,6 @@ export async function searchVendors(
       .limit(20);
 
     if (error) {
-      console.error("Error searching vendors:", error);
       throw new ActionError(
         "Failed to search vendors",
         ERROR_CODES.DB_QUERY_ERROR
@@ -686,7 +704,6 @@ export async function linkPurchaseOrderToVendor(
       .eq("id", purchaseOrderId);
 
     if (error) {
-      console.error("Error linking purchase order to vendor:", error);
       throw new ActionError(
         "Failed to link purchase order",
         ERROR_CODES.DB_QUERY_ERROR

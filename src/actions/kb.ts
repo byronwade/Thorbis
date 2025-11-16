@@ -116,7 +116,6 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
     const { data, error, count } = await query;
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -129,7 +128,6 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
       total: count || 0,
     };
   } catch (error) {
-    console.error("Get KB articles error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -185,7 +183,6 @@ export async function getKBArticle(
       .single();
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -198,7 +195,6 @@ export async function getKBArticle(
 
     return { success: true, article };
   } catch (error) {
-    console.error("Get KB article error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -233,7 +229,6 @@ export async function getKBCategories(): Promise<{
       .order("title", { ascending: true });
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -252,7 +247,9 @@ export async function getKBCategories(): Promise<{
     // Second pass: build hierarchy
     data?.forEach((cat) => {
       const category = categoryMap.get(cat.id);
-      if (!category) return;
+      if (!category) {
+        return;
+      }
 
       if (cat.parent_id) {
         const parent = categoryMap.get(cat.parent_id);
@@ -267,7 +264,6 @@ export async function getKBCategories(): Promise<{
 
     return { success: true, categories: rootCategories };
   } catch (error) {
-    console.error("Get KB categories error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -342,7 +338,6 @@ export async function searchKBArticles(
       );
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -356,7 +351,6 @@ export async function searchKBArticles(
       total: (data as any)?.length || 0,
     };
   } catch (error) {
-    console.error("Search KB articles error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -405,7 +399,6 @@ export async function getKBRelatedArticles(
       .limit(limit);
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -414,7 +407,6 @@ export async function getKBRelatedArticles(
 
     return { success: true, articles };
   } catch (error) {
-    console.error("Get related articles error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -458,7 +450,6 @@ export async function incrementArticleViews(
           .eq("id", articleId);
 
         if (updateError) {
-          console.error("Supabase error:", updateError);
           return { success: false, error: updateError.message };
         }
       }
@@ -466,7 +457,6 @@ export async function incrementArticleViews(
 
     return { success: true };
   } catch (error) {
-    console.error("Increment views error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }
@@ -499,7 +489,6 @@ export async function submitKBFeedback(
     });
 
     if (error) {
-      console.error("Supabase error:", error);
       return { success: false, error: error.message };
     }
 
@@ -525,7 +514,6 @@ export async function submitKBFeedback(
 
     return { success: true };
   } catch (error) {
-    console.error("Submit feedback error:", error);
     if (error instanceof Error) {
       return { success: false, error: error.message };
     }

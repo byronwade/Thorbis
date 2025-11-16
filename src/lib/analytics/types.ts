@@ -8,10 +8,10 @@
 /**
  * Base event structure
  */
-export interface BaseAnalyticsEvent {
+export type BaseAnalyticsEvent = {
   name: string;
   properties?: Record<string, unknown>;
-}
+};
 
 /**
  * Dashboard Events - Core business operations

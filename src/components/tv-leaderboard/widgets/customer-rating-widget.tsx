@@ -76,7 +76,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
           {/* Star display - only on FULL */}
           <ShowAt stage="full">
             <div className="mt-1 flex gap-0.5">
-              {[...Array(5)].map((_, i) => (
+              {[...new Array(5)].map((_, i) => (
                 <Star
                   className={`size-3 ${i < Math.floor(data.rating) ? "fill-yellow-500 text-warning" : "text-muted-foreground"}`}
                   key={i}

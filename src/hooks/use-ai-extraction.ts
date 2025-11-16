@@ -103,7 +103,9 @@ export function useAIExtraction() {
     }
 
     // Only extract if we have new transcript entries
-    if (entries.length === lastExtractedLength) return;
+    if (entries.length === lastExtractedLength) {
+      return;
+    }
 
     setIsExtracting(true);
 
@@ -138,7 +140,9 @@ export function useAIExtraction() {
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            break;
+          }
           result += decoder.decode(value);
         }
       }
@@ -179,8 +183,7 @@ export function useAIExtraction() {
 
         setLastExtractedLength(entries.length);
       }
-    } catch (error) {
-      console.error("AI extraction error:", error);
+    } catch (_error) {
       // Fall back to previous data on error
     } finally {
       setIsExtracting(false);
@@ -194,7 +197,7 @@ export function useAIExtraction() {
     }, 2000); // 2 second debounce for cost optimization
 
     return () => clearTimeout(timer);
-  }, [entries, extractData]);
+  }, [extractData]);
 
   return {
     extractedData,

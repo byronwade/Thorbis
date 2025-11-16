@@ -23,9 +23,9 @@ export const ElevationSchema = z.object({
 export type Elevation = z.infer<typeof ElevationSchema>;
 
 export class ElevationService {
-  private cache: Map<string, { data: Elevation; timestamp: number }> =
+  private readonly cache: Map<string, { data: Elevation; timestamp: number }> =
     new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 365; // 1 year (elevation doesn't change)
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 365; // 1 year (elevation doesn't change)
 
   async getElevation(lat: number, lon: number): Promise<Elevation | null> {
     const cacheKey = `elevation:${lat.toFixed(6)},${lon.toFixed(6)}`;
@@ -44,32 +44,27 @@ export class ElevationService {
       });
 
       if (!res.ok) {
-        console.warn(`[Elevation] API request failed: ${res.status}`);
         return null;
       }
 
       const text = await res.text();
       if (!text || text.trim() === "") {
-        console.log("[Elevation] API returned empty response");
         return null;
       }
 
       let data: unknown;
       try {
         data = JSON.parse(text);
-      } catch (e) {
-        console.warn("[Elevation] Invalid JSON response");
+      } catch (_e) {
         return null;
       }
 
       if (!data || typeof data !== "object" || !("value" in data)) {
-        console.log("[Elevation] No elevation data available");
         return null;
       }
 
       const elevationData = data as { value: string };
       if (!elevationData.value) {
-        console.log("[Elevation] No elevation data available");
         return null;
       }
 
@@ -84,13 +79,9 @@ export class ElevationService {
       };
 
       this.cache.set(cacheKey, { data: elevation, timestamp: Date.now() });
-      console.log(
-        `[Elevation] ${elevation.elevationFeet} ft (${elevation.elevationMeters} m)`
-      );
 
       return elevation;
-    } catch (error) {
-      console.error("[Elevation] Error:", error);
+    } catch (_error) {
       return null;
     }
   }

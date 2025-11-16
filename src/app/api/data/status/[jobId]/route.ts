@@ -9,13 +9,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-interface RouteContext {
+type RouteContext = {
   params: {
     jobId: string;
   };
-}
+};
 
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(_request: NextRequest, context: RouteContext) {
   try {
     // Check authentication
     const user = await getCurrentUser();
@@ -59,8 +59,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       createdAt: job.created_at,
       completedAt: job.completed_at,
     });
-  } catch (error) {
-    console.error("Status API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

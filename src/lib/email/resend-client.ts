@@ -32,9 +32,6 @@ export const emailConfig = {
 // Check if Resend is properly configured
 export function isResendConfigured(): boolean {
   if (!resend) {
-    console.warn(
-      "Resend is not configured. Please add RESEND_API_KEY to your environment variables."
-    );
     return false;
   }
   return true;

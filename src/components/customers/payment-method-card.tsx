@@ -14,7 +14,7 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreditCardVisual } from "@/components/ui/credit-card-visual";
 
-interface PaymentMethodCardProps {
+type PaymentMethodCardProps = {
   id: string;
   type?: "card" | "ach" | "bank";
   card_brand?: string;
@@ -30,7 +30,7 @@ interface PaymentMethodCardProps {
   onSetDefault?: () => void;
   onRemove?: () => void;
   disabled?: boolean;
-}
+};
 
 export function PaymentMethodCard({
   id,

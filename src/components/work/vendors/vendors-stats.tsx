@@ -6,7 +6,7 @@ import { formatCurrency } from "@/lib/formatters";
 import { createClient } from "@/lib/supabase/server";
 
 const PERCENTAGE_MULTIPLIER = 100;
-const MONTHS_IN_YEAR = 12;
+const _MONTHS_IN_YEAR = 12;
 
 export async function VendorsStats() {
   const supabase = await createClient();

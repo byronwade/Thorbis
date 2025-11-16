@@ -27,27 +27,27 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency } from "@/lib/formatters";
 
-interface ProfitabilityWidgetProps {
+type ProfitabilityWidgetProps = {
   job: Job;
   materials?: unknown[];
-}
+};
 
 // Cost breakdown type
-interface CostBreakdown {
+type CostBreakdown = {
   labor: number;
   materials: number;
   equipment: number;
   permits: number;
   overhead: number;
   other: number;
-}
+};
 
-interface RevenueBreakdown {
+type RevenueBreakdown = {
   services: number;
   materials: number;
   equipment: number;
   other: number;
-}
+};
 
 export function ProfitabilityWidget({
   job,

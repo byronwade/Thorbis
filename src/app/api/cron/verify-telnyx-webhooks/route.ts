@@ -35,7 +35,6 @@ export async function GET(request: Request) {
   const cronSecret = process.env.CRON_SECRET;
 
   if (!cronSecret) {
-    console.error("CRON_SECRET not configured");
     return NextResponse.json(
       { error: "Cron secret not configured" },
       { status: 500 }
@@ -43,7 +42,6 @@ export async function GET(request: Request) {
   }
 
   if (authHeader !== `Bearer ${cronSecret}`) {
-    console.error("Unauthorized cron request");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -81,11 +79,8 @@ export async function GET(request: Request) {
           );
           summary.voiceWebhookUpdated = true;
         }
-      } catch (error) {
-        console.error("Failed to verify call control webhook:", error);
-      }
+      } catch (_error) {}
     } else {
-      console.warn("TELNYX connection ID not configured");
     }
 
     if (TELNYX_CONFIG.messagingProfileId) {
@@ -109,11 +104,8 @@ export async function GET(request: Request) {
           );
           summary.messagingProfileUpdated = true;
         }
-      } catch (error) {
-        console.error("Failed to verify messaging profile webhook:", error);
-      }
+      } catch (_error) {}
     } else {
-      console.warn("TELNYX messaging profile ID not configured");
     }
 
     const serviceSupabase = await createServiceSupabaseClient();
@@ -131,10 +123,6 @@ export async function GET(request: Request) {
       .limit(50);
 
     if (phoneError) {
-      console.error(
-        "Failed to load phone numbers for Telnyx audit:",
-        phoneError
-      );
     } else if (phoneNumbers?.length) {
       summary.numbersChecked = phoneNumbers.length;
 
@@ -146,12 +134,7 @@ export async function GET(request: Request) {
           await ensureMessagingBranding(companyId, {
             supabase: serviceSupabase,
           });
-        } catch (error) {
-          console.error(
-            `Failed to ensure messaging branding for company ${companyId}:`,
-            error
-          );
-        }
+        } catch (_error) {}
       }
 
       for (const phone of phoneNumbers) {
@@ -168,12 +151,7 @@ export async function GET(request: Request) {
           if (result.success) {
             summary.numbersLinked = (summary.numbersLinked as number) + 1;
           }
-        } catch (error) {
-          console.error(
-            `Failed to ensure messaging campaign for phone ${phone.id}:`,
-            error
-          );
-        }
+        } catch (_error) {}
       }
     }
 
@@ -182,7 +160,6 @@ export async function GET(request: Request) {
       ...summary,
     });
   } catch (error: any) {
-    console.error("Telnyx webhook verification failed:", error);
     return NextResponse.json(
       { error: "Verification failed", details: error.message },
       { status: 500 }

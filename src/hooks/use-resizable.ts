@@ -64,7 +64,9 @@ export function useResizable(options: UseResizableOptions = {}) {
 
   // Handle mouse move during resize
   useEffect(() => {
-    if (!isResizing) return;
+    if (!isResizing) {
+      return;
+    }
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = startXRef.current - e.clientX; // Inverted because resizing from right edge
@@ -118,7 +120,9 @@ export function useResizable(options: UseResizableOptions = {}) {
   );
 
   useEffect(() => {
-    if (!isResizing) return;
+    if (!isResizing) {
+      return;
+    }
 
     const handleTouchMove = (e: TouchEvent) => {
       const deltaX = startXRef.current - e.touches[0].clientX;

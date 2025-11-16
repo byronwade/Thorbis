@@ -16,7 +16,7 @@
 // Basic Types (commonly used)
 // ============================================================================
 
-export interface User {
+export type User = {
   id: string;
   name: string;
   email: string;
@@ -28,9 +28,9 @@ export interface User {
   isActive?: boolean | null;
   createdAt?: Date | string | null;
   updatedAt?: Date | string | null;
-}
+};
 
-export interface NewUser {
+export type NewUser = {
   name: string;
   email: string;
   avatar?: string | null;
@@ -39,9 +39,9 @@ export interface NewUser {
   emailVerified?: boolean | null;
   lastLoginAt?: Date | string | null;
   isActive?: boolean | null;
-}
+};
 
-export interface Post {
+export type Post = {
   id: string;
   title: string;
   content: string;
@@ -49,20 +49,20 @@ export interface Post {
   authorId: string;
   createdAt?: Date | string | null;
   updatedAt?: Date | string | null;
-}
+};
 
-export interface NewPost {
+export type NewPost = {
   title: string;
   content: string;
   published: boolean;
   authorId: string;
-}
+};
 
 // ============================================================================
 // Additional Types (add more as needed based on your Supabase schema)
 // ============================================================================
 
-export interface Job {
+export type Job = {
   id: string;
   jobNumber?: string | number | null;
   jobType?: string | null;
@@ -84,9 +84,9 @@ export interface Job {
   actualStart?: string | Date | null;
   actualEnd?: string | Date | null;
   updatedAt?: string | Date | null;
-}
+};
 
-export interface Property {
+export type Property = {
   id: string;
   name?: string | null;
   address?: string | null;
@@ -107,26 +107,26 @@ export interface Property {
   lon?: number | null;
   archived_at?: string | null;
   deleted_at?: string | null;
-}
+};
 
-export interface Customer {
+export type Customer = {
   id: string;
   first_name?: string | null;
   last_name?: string | null;
   email?: string | null;
   phone?: string | null;
   company_name?: string | null;
-}
+};
 
-export interface Company {
+export type Company = {
   id: string;
-}
+};
 
-export interface TeamMember {
+export type TeamMember = {
   id: string;
-}
+};
 
-export interface VerificationToken {
+export type VerificationToken = {
   id: string;
   token: string;
   email: string;
@@ -136,19 +136,19 @@ export interface VerificationToken {
   used: boolean;
   usedAt?: Date | string | null;
   createdAt?: Date | string | null;
-}
+};
 
-export interface NewVerificationToken {
+export type NewVerificationToken = {
   token: string;
   email: string;
   type: "email_verification" | "password_reset" | "magic_link";
   userId?: string | null;
   expiresAt: Date | string;
   used?: boolean;
-}
+};
 
 // Knowledge Base Types
-export interface KBCategory {
+export type KBCategory = {
   id: string;
   slug: string;
   title: string;
@@ -158,16 +158,16 @@ export interface KBCategory {
   parent_id?: string | null;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface KBTag {
+export type KBTag = {
   id: string;
   name: string;
   slug: string;
   created_at: string;
-}
+};
 
-export interface KBArticle {
+export type KBArticle = {
   id: string;
   title: string;
   slug: string;
@@ -188,7 +188,7 @@ export interface KBArticle {
   keywords?: string[] | null;
   createdAt?: string | Date | null;
   updatedAt?: string | Date | null;
-}
+};
 
 // Add more types as needed based on your actual Supabase schema
 // You can generate these automatically using Supabase CLI:

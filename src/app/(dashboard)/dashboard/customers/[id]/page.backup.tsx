@@ -65,7 +65,7 @@ function formatDate(date: Date | number | null): string {
   }).format(d);
 }
 
-function getStatusBadge(status: string) {
+function _getStatusBadge(status: string) {
   const statusVariants: Record<
     string,
     "default" | "secondary" | "destructive" | "outline"

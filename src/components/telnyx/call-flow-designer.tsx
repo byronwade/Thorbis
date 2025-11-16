@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/card";
 
 export function CallFlowDesigner() {
-  const [flows, setFlows] = useState([
+  const [flows, _setFlows] = useState([
     {
       id: "1",
       name: "Main Reception",

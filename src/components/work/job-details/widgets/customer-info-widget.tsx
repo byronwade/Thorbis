@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-interface CustomerInfoWidgetProps {
+type CustomerInfoWidgetProps = {
   customer: {
     id: string;
     name: string;
@@ -19,7 +19,7 @@ interface CustomerInfoWidgetProps {
     state: string;
     zipCode: string;
   };
-}
+};
 
 export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
   return (

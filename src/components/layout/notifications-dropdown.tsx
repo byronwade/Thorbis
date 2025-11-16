@@ -69,9 +69,15 @@ const ONE_HOUR = 24;
 const ONE_WEEK = 7;
 
 function formatBadgeCount(count: number): string {
-  if (count <= 9) return count.toString();
-  if (count <= 99) return "99+";
-  if (count <= 999) return "999+";
+  if (count <= 9) {
+    return count.toString();
+  }
+  if (count <= 99) {
+    return "99+";
+  }
+  if (count <= 999) {
+    return "999+";
+  }
   return "1K+";
 }
 
@@ -170,7 +176,6 @@ export function NotificationsDropdown() {
         const supabase = createClient();
 
         if (!supabase) {
-          console.error("Supabase client not configured");
           return;
         }
 
@@ -179,7 +184,6 @@ export function NotificationsDropdown() {
         } = await supabase.auth.getUser();
 
         if (!user) {
-          console.error("No authenticated user found");
           return;
         }
 
@@ -193,9 +197,7 @@ export function NotificationsDropdown() {
         // Set up Supabase Realtime subscription
         await subscribe(user.id);
         setIsInitialized(true);
-      } catch (error) {
-        console.error("Error initializing notifications:", error);
-      }
+      } catch (_error) {}
     }
 
     if (!isInitialized) {
@@ -236,7 +238,6 @@ export function NotificationsDropdown() {
     // Server action
     const result = await markAsReadAction(id);
     if (!result.success) {
-      console.error("Failed to mark notification as read:", result.error);
       // TODO: Revert optimistic update on error
     }
   };
@@ -249,7 +250,6 @@ export function NotificationsDropdown() {
     // Server action
     const result = await markAllAsReadAction();
     if (!result.success) {
-      console.error("Failed to mark all notifications as read:", result.error);
       // TODO: Revert optimistic update on error
     }
   };
@@ -262,7 +262,6 @@ export function NotificationsDropdown() {
     // Server action
     const result = await deleteNotificationAction(id);
     if (!result.success) {
-      console.error("Failed to delete notification:", result.error);
       // TODO: Revert optimistic update on error
     }
   };

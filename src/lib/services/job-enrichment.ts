@@ -157,14 +157,8 @@ export class JobEnrichmentService {
       let lon = job.lon;
 
       if (lat && lon) {
-        console.log(
-          `[Job Enrichment] Using property coordinates: ${lat}, ${lon}`
-        );
       } else {
         const fullAddress = `${job.address}, ${job.city}, ${job.state} ${job.zipCode}`;
-        console.log(
-          `[Job Enrichment] No coordinates, geocoding: ${fullAddress}`
-        );
 
         const geocoded = await locationServices.geocode(fullAddress);
 
@@ -172,16 +166,7 @@ export class JobEnrichmentService {
           lat = geocoded.lat;
           lon = geocoded.lon;
           sources.push("nominatim");
-          console.log(`[Job Enrichment] ✅ Geocoded to: ${lat}, ${lon}`);
         } else {
-          // Can't enrich without coordinates - but provide helpful info
-          console.warn(
-            `[Job Enrichment] ⚠️ Geocoding failed for: ${fullAddress}`
-          );
-          console.warn(
-            "[Job Enrichment] Enrichment will be skipped. Consider adding lat/lon to the property."
-          );
-
           return {
             jobId: job.id,
             location: {
@@ -203,11 +188,6 @@ export class JobEnrichmentService {
           };
         }
       }
-
-      // Step 2: Fetch all enrichment data in parallel
-      console.log(
-        `[Job Enrichment] Fetching data for coordinates: ${lat}, ${lon}`
-      );
 
       const [
         propertyData,
@@ -236,31 +216,10 @@ export class JobEnrichmentService {
             lat,
             lon
           )
-          .catch((e) => {
-            console.error(
-              "[Job Enrichment] Property Data API failed:",
-              e.message
-            );
-            return null;
-          }),
-        buildingDataService.getBuildingData(lat, lon).catch((e) => {
-          console.error(
-            "[Job Enrichment] Building Data (OSM) failed:",
-            e.message
-          );
-          return null;
-        }),
-        weatherService.getWeatherData(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Weather API failed:", e.message);
-          return null;
-        }),
-        waterQualityService.getWaterQuality(lat, lon).catch((e) => {
-          console.error(
-            "[Job Enrichment] Water Quality API failed:",
-            e.message
-          );
-          return null;
-        }),
+          .catch((_e) => null),
+        buildingDataService.getBuildingData(lat, lon).catch((_e) => null),
+        weatherService.getWeatherData(lat, lon).catch((_e) => null),
+        waterQualityService.getWaterQuality(lat, lon).catch((_e) => null),
         addressValidationService
           .validateAddress({
             address2: job.address,
@@ -269,90 +228,77 @@ export class JobEnrichmentService {
             state: job.state,
             zip5: job.zipCode,
           })
-          .catch((e) => {
-            console.error(
-              "[Job Enrichment] Address Validation failed:",
-              e.message
-            );
-            return null;
-          }),
-        locationServices.getLocationIntelligence(lat, lon).catch((e) => {
-          console.error(
-            "[Job Enrichment] Location Intelligence failed:",
-            e.message
-          );
-          return null;
-        }),
-        routingService.findNearbySuppliers(lat, lon, 8000).catch((e) => {
-          console.error("[Job Enrichment] Nearby Suppliers failed:", e.message);
-          return [];
-        }),
+          .catch((_e) => null),
+        locationServices.getLocationIntelligence(lat, lon).catch((_e) => null),
+        routingService.findNearbySuppliers(lat, lon, 8000).catch((_e) => []),
         // NEW SERVICES
         demographicsService
           .getDemographics(lat, lon)
-          .catch((e) => {
-            console.error("[Job Enrichment] Demographics failed:", e.message);
-            return null;
-          }),
-        airQualityService.getAirQuality(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Air Quality failed:", e.message);
-          return null;
-        }),
-        elevationService.getElevation(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Elevation failed:", e.message);
-          return null;
-        }),
-        walkabilityService.getWalkability(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Walkability failed:", e.message);
-          return null;
-        }),
-        schoolsService.getNearbySchools(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Schools failed:", e.message);
-          return null;
-        }),
+          .catch((_e) => null),
+        airQualityService.getAirQuality(lat, lon).catch((_e) => null),
+        elevationService.getElevation(lat, lon).catch((_e) => null),
+        walkabilityService.getWalkability(lat, lon).catch((_e) => null),
+        schoolsService.getNearbySchools(lat, lon).catch((_e) => null),
         // GOOGLE SERVICES
         googleStreetViewService
           .getStreetView(lat, lon, `${job.address}, ${job.city}, ${job.state}`)
-          .catch((e) => {
-            console.error("[Job Enrichment] Street View failed:", e.message);
-            return null;
-          }),
-        googlePlacesService.findNearbySuppliers(lat, lon, 8000).catch((e) => {
-          console.error("[Job Enrichment] Google Places failed:", e.message);
-          return null;
-        }),
-        timeZoneService.getTimeZone(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Time Zone failed:", e.message);
-          return null;
-        }),
-        trafficService.getTrafficIncidents(lat, lon).catch((e) => {
-          console.error("[Job Enrichment] Traffic failed:", e.message);
-          return null;
-        }),
+          .catch((_e) => null),
+        googlePlacesService
+          .findNearbySuppliers(lat, lon, 8000)
+          .catch((_e) => null),
+        timeZoneService.getTimeZone(lat, lon).catch((_e) => null),
+        trafficService.getTrafficIncidents(lat, lon).catch((_e) => null),
       ]);
 
-      if (propertyData)
+      if (propertyData) {
         // Track sources
         sources.push(propertyData.dataSource);
-      if (buildingData) sources.push("osm");
-      if (weather) sources.push("nws");
-      if (waterQuality) sources.push("usgs");
-      if (addressValidation?.isValid) sources.push("usps");
-      if (locationIntelligence) sources.push("fcc", "fema");
-      if (nearbySuppliers.length > 0) sources.push("overpass");
-      if (demographics) sources.push("census");
-      if (airQuality) sources.push("airnow");
-      if (elevation) sources.push("usgs-elevation");
-      if (walkability) sources.push("osm-walkability");
-      if (schools) sources.push("osm-schools");
-      if (streetView?.available) sources.push("google-streetview");
-      if (googlePlaces) sources.push("google-places");
-      if (timeZone) sources.push("google-timezone");
-      if (traffic) sources.push("google-traffic");
-
-      console.log(
-        `[Job Enrichment] Successfully enriched with sources: ${sources.join(", ")}`
-      );
+      }
+      if (buildingData) {
+        sources.push("osm");
+      }
+      if (weather) {
+        sources.push("nws");
+      }
+      if (waterQuality) {
+        sources.push("usgs");
+      }
+      if (addressValidation?.isValid) {
+        sources.push("usps");
+      }
+      if (locationIntelligence) {
+        sources.push("fcc", "fema");
+      }
+      if (nearbySuppliers.length > 0) {
+        sources.push("overpass");
+      }
+      if (demographics) {
+        sources.push("census");
+      }
+      if (airQuality) {
+        sources.push("airnow");
+      }
+      if (elevation) {
+        sources.push("usgs-elevation");
+      }
+      if (walkability) {
+        sources.push("osm-walkability");
+      }
+      if (schools) {
+        sources.push("osm-schools");
+      }
+      if (streetView?.available) {
+        sources.push("google-streetview");
+      }
+      if (googlePlaces) {
+        sources.push("google-places");
+      }
+      if (timeZone) {
+        sources.push("google-timezone");
+      }
+      if (traffic) {
+        sources.push("google-traffic");
+      }
 
       if (weather && weather.alerts.length > 0) {
         // Step 3: Generate recommendations
@@ -459,9 +405,7 @@ export class JobEnrichmentService {
       });
 
       return enrichment;
-    } catch (error) {
-      console.error("Job enrichment error:", error);
-
+    } catch (_error) {
       return {
         jobId: job.id,
         location: {
@@ -486,8 +430,7 @@ export class JobEnrichmentService {
   async getWeatherAlerts(lat: number, lon: number) {
     try {
       return await weatherService.getActiveAlerts(lat, lon);
-    } catch (error) {
-      console.error("Weather alerts error:", error);
+    } catch (_error) {
       return [];
     }
   }
@@ -501,8 +444,7 @@ export class JobEnrichmentService {
   ) {
     try {
       return await routingService.getRoute(from, to);
-    } catch (error) {
-      console.error("Travel time error:", error);
+    } catch (_error) {
       return null;
     }
   }

@@ -193,7 +193,9 @@ export function CustomerSearchCombobox({
             >
               {(searchQuery ? customers : otherCustomers)
                 .filter((customer) => {
-                  if (!searchQuery) return true;
+                  if (!searchQuery) {
+                    return true;
+                  }
                   const query = searchQuery.toLowerCase();
                   return (
                     customer.first_name.toLowerCase().includes(query) ||

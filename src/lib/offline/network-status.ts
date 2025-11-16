@@ -16,12 +16,12 @@ import { useEffect, useRef, useState } from "react";
 import { countRecords } from "./indexed-db";
 import { processSyncQueue } from "./sync-queue";
 
-export interface NetworkStatus {
+export type NetworkStatus = {
   isOnline: boolean;
   pendingOperations: number;
   lastSync: Date | null;
   isSyncing: boolean;
-}
+};
 
 /**
  * Hook to monitor network status and pending sync operations
@@ -37,14 +37,14 @@ export function useNetworkStatus(): NetworkStatus {
   // Update pending operations count
   const updatePendingCount = async () => {
     // SSR guard - only run in browser
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     try {
       const count = await countRecords("sync-queue");
       setPendingOperations(count);
-    } catch (error) {
-      console.error("Failed to count pending operations:", error);
-    }
+    } catch (_error) {}
   };
 
   // Use ref to prevent concurrent sync operations (CRITICAL FIX)
@@ -52,7 +52,9 @@ export function useNetworkStatus(): NetworkStatus {
 
   useEffect(() => {
     // SSR guard - only run in browser
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     // Initial pending count
     updatePendingCount();
@@ -68,11 +70,8 @@ export function useNetworkStatus(): NetworkStatus {
     const handleOnline = async () => {
       // Guard: prevent concurrent sync operations
       if (isSyncingRef.current) {
-        console.log("Sync already in progress, skipping online handler");
         return;
       }
-
-      console.log("Network connection restored");
       setIsOnline(true);
       isSyncingRef.current = true;
 
@@ -82,8 +81,7 @@ export function useNetworkStatus(): NetworkStatus {
         await processSyncQueue();
         setLastSync(new Date());
         await updatePendingCount();
-      } catch (error) {
-        console.error("Failed to process sync queue:", error);
+      } catch (_error) {
       } finally {
         setIsSyncing(false);
         isSyncingRef.current = false;
@@ -91,7 +89,6 @@ export function useNetworkStatus(): NetworkStatus {
     };
 
     const handleOffline = () => {
-      console.log("Network connection lost - entering offline mode");
       setIsOnline(false);
     };
 
@@ -111,11 +108,7 @@ export function useNetworkStatus(): NetworkStatus {
           await processSyncQueue();
           setLastSync(new Date());
           await updatePendingCount();
-        } catch (error) {
-          console.error(
-            "Failed to process sync queue on visibility change:",
-            error
-          );
+        } catch (_error) {
         } finally {
           setIsSyncing(false);
           isSyncingRef.current = false;
@@ -134,7 +127,10 @@ export function useNetworkStatus(): NetworkStatus {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearInterval(interval);
     };
-  }, []);
+  }, [
+    // Initial pending count
+    updatePendingCount,
+  ]);
 
   return {
     isOnline,
@@ -173,7 +169,6 @@ export function waitForOnline(): Promise<void> {
  */
 export async function executeWhenOnline<T>(fn: () => Promise<T>): Promise<T> {
   if (!navigator.onLine) {
-    console.log("Waiting for network connection...");
     await waitForOnline();
   }
   return fn();

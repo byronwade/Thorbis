@@ -15,7 +15,7 @@
 import { EntityStatsBar } from "@/components/ui/entity-stats-bar";
 import type { StatCard } from "@/components/ui/stats-cards";
 
-interface TeamMemberStatsBarProps {
+type TeamMemberStatsBarProps = {
   metrics: {
     activeJobsCount: number; // Count of currently assigned jobs
     hoursThisMonth: number; // Total hours worked this month (decimal)
@@ -28,7 +28,7 @@ interface TeamMemberStatsBarProps {
   memberName: string;
   status: "active" | "invited" | "suspended";
   compact?: boolean;
-}
+};
 
 export function TeamMemberStatsBar({
   metrics,

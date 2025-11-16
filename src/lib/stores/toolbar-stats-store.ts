@@ -8,12 +8,12 @@
 import { create } from "zustand";
 import type { StatCard } from "@/components/ui/stats-cards";
 
-interface ToolbarStatsState {
+type ToolbarStatsState = {
   stats: Record<string, StatCard[] | undefined>;
   setStats: (pathname: string, stats: StatCard[] | undefined) => void;
   getStats: (pathname: string) => StatCard[] | undefined;
   clearStats: (pathname: string) => void;
-}
+};
 
 export const useToolbarStatsStore = create<ToolbarStatsState>((set, get) => ({
   stats: {},

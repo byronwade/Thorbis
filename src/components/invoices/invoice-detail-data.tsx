@@ -77,7 +77,6 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
     .single();
 
   if (invoiceError || !invoice) {
-    console.error("Invoice fetch error:", invoiceError);
     return notFound();
   }
 
@@ -271,10 +270,6 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
     await invoiceCommunicationsQuery;
 
   if (invoiceCommunicationsError) {
-    console.error(
-      "[Invoice Details] Failed to load communications:",
-      invoiceCommunicationsError
-    );
   }
 
   const communications =

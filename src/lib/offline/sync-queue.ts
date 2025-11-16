@@ -48,7 +48,6 @@ export async function addToSyncQueue(
   };
 
   await addRecord("sync-queue", syncOp);
-  console.log(`Added ${operation} operation to sync queue for ${table}:`, id);
   return id;
 }
 
@@ -63,11 +62,8 @@ export async function processSyncQueue(): Promise<{
   const operations = await getAllRecords<SyncOperation>("sync-queue");
 
   if (operations.length === 0) {
-    console.log("No pending sync operations");
     return { success: 0, failed: 0, errors: [] };
   }
-
-  console.log(`Processing ${operations.length} pending sync operations`);
 
   const supabase = createClient();
   let successCount = 0;
@@ -80,16 +76,9 @@ export async function processSyncQueue(): Promise<{
       await processSingleOperation(supabase, operation);
       await deleteRecord("sync-queue", operation.id);
       successCount++;
-      console.log(
-        `Successfully synced ${operation.operation} on ${operation.table}`
-      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
-      console.error(
-        `Failed to sync ${operation.operation} on ${operation.table}:`,
-        errorMessage
-      );
 
       // Increment retry count
       const updatedOp = {
@@ -99,8 +88,6 @@ export async function processSyncQueue(): Promise<{
       };
 
       if (updatedOp.retry_count >= MAX_RETRIES) {
-        // Max retries reached, keep in queue for manual intervention
-        console.error(`Max retries reached for operation ${operation.id}`);
         await updateRecord("sync-queue", updatedOp);
         failedCount++;
         errors.push({ operation, error: errorMessage });
@@ -111,10 +98,6 @@ export async function processSyncQueue(): Promise<{
       }
     }
   }
-
-  console.log(
-    `Sync complete: ${successCount} succeeded, ${failedCount} failed`
-  );
   return { success: successCount, failed: failedCount, errors };
 }
 
@@ -136,7 +119,9 @@ async function processSingleOperation(
         .select()
         .single();
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
 
       // Update local record with server ID
       if (isTempId(tempId)) {
@@ -156,7 +141,9 @@ async function processSingleOperation(
         .update(updateData)
         .eq("id", id);
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
 
       // Update local record sync status
       const storeName = getStoreNameFromTable(table);
@@ -177,7 +164,9 @@ async function processSingleOperation(
       const { id } = data;
       const { error } = await supabase.from(table).delete().eq("id", id);
 
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw new Error(error.message);
+      }
 
       // Remove from local storage
       const storeName = getStoreNameFromTable(table);
@@ -220,8 +209,6 @@ export async function clearFailedOperations(): Promise<void> {
   for (const op of failedOps) {
     await deleteRecord("sync-queue", op.id);
   }
-
-  console.log(`Cleared ${failedOps.length} failed operations from queue`);
 }
 
 /**
@@ -238,7 +225,6 @@ export async function getFailedOperations(): Promise<SyncOperation[]> {
 export async function retryOperation(operationId: string): Promise<boolean> {
   const operation = await getRecord<SyncOperation>("sync-queue", operationId);
   if (!operation) {
-    console.error(`Operation ${operationId} not found`);
     return false;
   }
 
@@ -247,12 +233,10 @@ export async function retryOperation(operationId: string): Promise<boolean> {
   try {
     await processSingleOperation(supabase, operation);
     await deleteRecord("sync-queue", operationId);
-    console.log(`Successfully retried operation ${operationId}`);
     return true;
   } catch (error) {
-    const errorMessage =
+    const _errorMessage =
       error instanceof Error ? error.message : "Unknown error";
-    console.error(`Failed to retry operation ${operationId}:`, errorMessage);
     return false;
   }
 }

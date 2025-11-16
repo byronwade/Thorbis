@@ -20,7 +20,7 @@ export function CustomersSkeleton() {
 
       {/* Table rows */}
       <div className="divide-y">
-        {[...Array(10)].map((_, i) => (
+        {[...new Array(10)].map((_, i) => (
           <div className="flex gap-4 p-4" key={i}>
             <div className="h-4 w-48 animate-pulse rounded bg-muted" />
             <div className="h-4 w-32 animate-pulse rounded bg-muted" />

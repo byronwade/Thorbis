@@ -126,13 +126,11 @@ export function AdvancedFilters({
   onChange,
   onClear,
 }: AdvancedFiltersProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [_isOpen, _setIsOpen] = useState(false);
 
   const addCondition = (fieldId: string) => {
-    console.log("➕ Adding filter for field:", fieldId);
     const field = fields.find((f) => f.id === fieldId);
     if (!field) {
-      console.error("❌ Field not found:", fieldId);
       return;
     }
 
@@ -142,18 +140,13 @@ export function AdvancedFilters({
       operator: "equals",
       value: "",
     };
-
-    console.log("➕ New condition created:", newCondition);
-    console.log("➕ Calling onChange with:", [...conditions, newCondition]);
     onChange([...conditions, newCondition]);
   };
 
   const updateCondition = (id: string, updates: Partial<FilterCondition>) => {
-    console.log("🔄 Updating condition:", id, "with:", updates);
     const newConditions = conditions.map((c) =>
       c.id === id ? { ...c, ...updates } : c
     );
-    console.log("🔄 Updated conditions:", newConditions);
     onChange(newConditions);
   };
 
@@ -163,7 +156,9 @@ export function AdvancedFilters({
 
   const getOperatorsForField = (fieldId: string) => {
     const field = fields.find((f) => f.id === fieldId);
-    if (!field) return TEXT_OPERATORS;
+    if (!field) {
+      return TEXT_OPERATORS;
+    }
 
     switch (field.type) {
       case "text":
@@ -191,7 +186,9 @@ export function AdvancedFilters({
         <div className="space-y-2">
           {conditions.map((condition, index) => {
             const field = fields.find((f) => f.id === condition.field);
-            if (!field) return null;
+            if (!field) {
+              return null;
+            }
 
             const operators = getOperatorsForField(condition.field);
             const showValueInput = needsValueInput(condition.operator);
@@ -393,7 +390,9 @@ export function applyFilters<T extends Record<string, any>>(
   data: T[],
   conditions: FilterCondition[]
 ): T[] {
-  if (conditions.length === 0) return data;
+  if (conditions.length === 0) {
+    return data;
+  }
 
   return data.filter((item) => {
     return conditions.every((condition) => {

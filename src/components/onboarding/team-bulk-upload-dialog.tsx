@@ -44,11 +44,11 @@ import {
   type TeamMemberRow,
 } from "@/lib/onboarding/team-bulk-upload";
 
-interface TeamBulkUploadDialogProps {
+type TeamBulkUploadDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImport: (members: TeamMemberRow[]) => void;
-}
+};
 
 export function TeamBulkUploadDialog({
   open,
@@ -62,7 +62,9 @@ export function TeamBulkUploadDialog({
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
@@ -93,8 +95,7 @@ export function TeamBulkUploadDialog({
         setErrors(result.errors || ["Failed to parse file"]);
         setPreviewData(null);
       }
-    } catch (error) {
-      console.error("File upload error:", error);
+    } catch (_error) {
       setErrors([
         "Failed to parse file. Please check the format and try again.",
       ]);

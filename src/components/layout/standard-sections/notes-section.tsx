@@ -9,12 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 
-interface NotesSectionProps {
+type NotesSectionProps = {
   notes: any[];
   entityType?: string;
   entityId?: string;
   onAddNote?: (content: string) => Promise<void>;
-}
+};
 
 export function NotesSection({
   notes,
@@ -43,7 +43,7 @@ export function NotesSection({
       toast.success("Note added successfully");
       setNewNote("");
       setIsAdding(false);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add note");
     } finally {
       setIsSaving(false);

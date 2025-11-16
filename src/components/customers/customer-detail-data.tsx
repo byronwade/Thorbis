@@ -23,7 +23,6 @@ export async function CustomerDetailData({
   const supabase = await createClient();
 
   if (!supabase) {
-    console.error("[Customer Page] Supabase client not initialized");
     return notFound();
   }
 
@@ -34,7 +33,6 @@ export async function CustomerDetailData({
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    console.error("[Customer Page] Auth error:", authError);
     return notFound();
   }
 
@@ -43,7 +41,6 @@ export async function CustomerDetailData({
   const activeCompanyId = await getActiveCompanyId();
 
   if (!activeCompanyId) {
-    console.error("[Customer Page] No active company ID");
     return notFound();
   }
 
@@ -63,12 +60,10 @@ export async function CustomerDetailData({
     Object.keys(teamMemberError).length > 0;
 
   if (hasRealError) {
-    console.error("[Customer Page] Team member query error:", teamMemberError);
     return notFound();
   }
 
   if (!teamMember) {
-    console.error("[Customer Page] User not a member of active company");
     return notFound();
   }
 
@@ -128,7 +123,6 @@ export async function CustomerDetailData({
   }
 
   if (!customer) {
-    console.error("[Customer Page] Customer not found");
     return notFound();
   }
 

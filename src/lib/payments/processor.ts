@@ -52,7 +52,9 @@ export async function getPaymentProcessor(
   }
 ): Promise<PaymentProcessor | null> {
   const supabase = await createClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    return null;
+  }
 
   // Check if company has at least one bank account (required for payments)
   const { data: bankAccounts } = await supabase
@@ -63,9 +65,6 @@ export async function getPaymentProcessor(
     .limit(1);
 
   if (!bankAccounts || bankAccounts.length === 0) {
-    console.warn(
-      `No bank account configured for company ${companyId}. Payments cannot be processed without a bank account.`
-    );
     return null;
   }
 
@@ -78,8 +77,6 @@ export async function getPaymentProcessor(
     .order("created_at", { ascending: false });
 
   if (!processors || processors.length === 0) {
-    // No processor configured, use Stripe as fallback (for platform billing only)
-    console.warn(`No payment processor configured for company ${companyId}`);
     return null;
   }
 
@@ -278,7 +275,9 @@ export async function updateTrustScoreAfterPayment(
   amount: number
 ): Promise<void> {
   const supabase = await createClient();
-  if (!supabase) return;
+  if (!supabase) {
+    return;
+  }
 
   const { data: trustScore } = await supabase
     .from("payment_trust_scores")
@@ -286,7 +285,9 @@ export async function updateTrustScoreAfterPayment(
     .eq("company_id", companyId)
     .single();
 
-  if (!trustScore) return;
+  if (!trustScore) {
+    return;
+  }
 
   // Update metrics
   const updates: any = {
@@ -313,7 +314,7 @@ export async function updateTrustScoreAfterPayment(
     updates.successful_payments_count ||
     trustScore.successful_payments_count ||
     0;
-  const failedPayments =
+  const _failedPayments =
     updates.failed_payments_count || trustScore.failed_payments_count || 0;
 
   // Success rate (0-100)

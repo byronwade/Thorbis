@@ -140,8 +140,12 @@ export function jobOverlapsRange(
  * @returns Clamped time
  */
 export function clampTime(time: Date, min: Date, max: Date): Date {
-  if (time < min) return min;
-  if (time > max) return max;
+  if (time < min) {
+    return min;
+  }
+  if (time > max) {
+    return max;
+  }
   return time;
 }
 

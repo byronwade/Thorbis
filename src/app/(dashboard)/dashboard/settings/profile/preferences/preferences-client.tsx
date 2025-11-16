@@ -45,9 +45,9 @@ import {
   type ThemeOption,
 } from "./preferences-config";
 
-interface PreferencesClientProps {
+type PreferencesClientProps = {
   initialSettings: PreferenceSettings;
-}
+};
 
 export function PreferencesClient({ initialSettings }: PreferencesClientProps) {
   const {

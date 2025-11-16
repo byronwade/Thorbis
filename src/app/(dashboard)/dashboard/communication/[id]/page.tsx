@@ -123,7 +123,7 @@ export default async function CommunicationDetailPage({
   // Determine from/to addresses
   const isInbound = communication.direction === "inbound";
   const fromAddress = communication.from_address || "";
-  const toAddress = communication.to_address || "";
+  const _toAddress = communication.to_address || "";
 
   return (
     <div className="flex h-full flex-col">

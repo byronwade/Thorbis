@@ -4,7 +4,7 @@
  * Handles generation and verification of invitation tokens
  */
 
-import { createHmac, randomBytes } from "crypto";
+import { createHmac, randomBytes } from "node:crypto";
 
 const INVITATION_SECRET =
   process.env.INVITATION_SECRET || "fallback-secret-change-in-production";
@@ -64,7 +64,7 @@ export function verifyInvitationToken(token: string): {
     }
 
     return { valid: true, payload };
-  } catch (error) {
+  } catch (_error) {
     return { valid: false, error: "Token verification failed" };
   }
 }

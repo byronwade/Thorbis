@@ -177,7 +177,9 @@ export function WorkVendorForm({
 
   const addTag = () => {
     const value = tagInput.trim();
-    if (!value) return;
+    if (!value) {
+      return;
+    }
     setTags((prev) => (prev.includes(value) ? prev : [...prev, value]));
     setTagInput("");
   };
@@ -275,31 +277,59 @@ export function WorkVendorForm({
     if (formData.vendor_number) {
       payload.append("vendor_number", formData.vendor_number.trim());
     }
-    if (formData.email) payload.append("email", formData.email.trim());
-    if (formData.phone) payload.append("phone", formData.phone.trim());
-    if (formData.secondary_phone)
+    if (formData.email) {
+      payload.append("email", formData.email.trim());
+    }
+    if (formData.phone) {
+      payload.append("phone", formData.phone.trim());
+    }
+    if (formData.secondary_phone) {
       payload.append("secondary_phone", formData.secondary_phone.trim());
-    if (formData.website) payload.append("website", formData.website.trim());
-    if (formData.address) payload.append("address", formData.address.trim());
-    if (formData.address2) payload.append("address2", formData.address2.trim());
-    if (formData.city) payload.append("city", formData.city.trim());
-    if (formData.state) payload.append("state", formData.state.trim());
-    if (formData.zip_code) payload.append("zip_code", formData.zip_code.trim());
-    if (formData.country) payload.append("country", formData.country.trim());
-    if (formData.tax_id) payload.append("tax_id", formData.tax_id.trim());
+    }
+    if (formData.website) {
+      payload.append("website", formData.website.trim());
+    }
+    if (formData.address) {
+      payload.append("address", formData.address.trim());
+    }
+    if (formData.address2) {
+      payload.append("address2", formData.address2.trim());
+    }
+    if (formData.city) {
+      payload.append("city", formData.city.trim());
+    }
+    if (formData.state) {
+      payload.append("state", formData.state.trim());
+    }
+    if (formData.zip_code) {
+      payload.append("zip_code", formData.zip_code.trim());
+    }
+    if (formData.country) {
+      payload.append("country", formData.country.trim());
+    }
+    if (formData.tax_id) {
+      payload.append("tax_id", formData.tax_id.trim());
+    }
     payload.append("payment_terms", formData.payment_terms);
-    if (formData.credit_limit)
+    if (formData.credit_limit) {
       payload.append("credit_limit", formData.credit_limit);
-    if (formData.preferred_payment_method)
+    }
+    if (formData.preferred_payment_method) {
       payload.append(
         "preferred_payment_method",
         formData.preferred_payment_method
       );
-    if (formData.category) payload.append("category", formData.category);
+    }
+    if (formData.category) {
+      payload.append("category", formData.category);
+    }
     payload.append("status", formData.status);
-    if (formData.notes) payload.append("notes", formData.notes);
-    if (formData.internal_notes)
+    if (formData.notes) {
+      payload.append("notes", formData.notes);
+    }
+    if (formData.internal_notes) {
       payload.append("internal_notes", formData.internal_notes);
+    }
 
     if (tags.length) {
       payload.append("tags", JSON.stringify(tags));

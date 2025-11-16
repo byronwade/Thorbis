@@ -5,7 +5,7 @@ const CENTS_IN_DOLLAR = 100;
 
 type NullableString = string | null | undefined;
 
-interface MissionControlJob {
+type MissionControlJob = {
   id: string;
   jobNumber: NullableString;
   title: NullableString;
@@ -15,9 +15,9 @@ interface MissionControlJob {
   customerName: NullableString;
   address: NullableString;
   totalAmountCents: number;
-}
+};
 
-interface MissionControlScheduleItem {
+type MissionControlScheduleItem = {
   id: string;
   title: NullableString;
   startTime: NullableString;
@@ -27,9 +27,9 @@ interface MissionControlScheduleItem {
   customerName: NullableString;
   address: NullableString;
   jobId: NullableString;
-}
+};
 
-interface MissionControlCommunication {
+type MissionControlCommunication = {
   id: string;
   type: NullableString;
   direction: NullableString;
@@ -37,9 +37,9 @@ interface MissionControlCommunication {
   createdAt: NullableString;
   status: NullableString;
   customerName: NullableString;
-}
+};
 
-interface MissionControlInvoice {
+type MissionControlInvoice = {
   id: string;
   invoiceNumber: NullableString;
   status: NullableString;
@@ -47,24 +47,24 @@ interface MissionControlInvoice {
   balanceAmountCents: number;
   dueDate: NullableString;
   customerName: NullableString;
-}
+};
 
-interface MissionControlActivity {
+type MissionControlActivity = {
   id: string;
   entityType: NullableString;
   action: NullableString;
   createdAt: NullableString;
   actorName: NullableString;
-}
+};
 
-interface MissionControlAlert {
+type MissionControlAlert = {
   id: string;
   level: "critical" | "warning" | "info";
   title: string;
   description?: string;
-}
+};
 
-interface MissionControlMetrics {
+type MissionControlMetrics = {
   revenueToday: number;
   averageTicket: number;
   jobsScheduledToday: number;
@@ -74,9 +74,9 @@ interface MissionControlMetrics {
   outstandingInvoicesAmount: number;
   overdueInvoicesCount: number;
   communicationsToday: number;
-}
+};
 
-export interface MissionControlData {
+export type MissionControlData = {
   metrics: MissionControlMetrics;
   alerts: MissionControlAlert[];
   operations: {
@@ -90,7 +90,7 @@ export interface MissionControlData {
   };
   activity: MissionControlActivity[];
   lastUpdated: string;
-}
+};
 
 const EMPTY_DATA: MissionControlData = {
   metrics: {

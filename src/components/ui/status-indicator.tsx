@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 
 export type UserStatus = "online" | "available" | "busy";
 
-interface StatusIndicatorProps {
+type StatusIndicatorProps = {
   status: UserStatus;
   className?: string;
   showLabel?: boolean;
   size?: "sm" | "md" | "lg";
-}
+};
 
 const statusConfig = {
   online: {

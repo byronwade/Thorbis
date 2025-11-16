@@ -24,7 +24,7 @@ const DB_NAME = "thorbis-offline";
 const DB_VERSION = 2;
 
 // Type definitions
-export interface OfflineJob {
+export type OfflineJob = {
   id: string;
   customer_id: string;
   status: string;
@@ -33,9 +33,9 @@ export interface OfflineJob {
   created_at: number;
   updated_at: number;
   synced: boolean;
-}
+};
 
-export interface OfflineInvoice {
+export type OfflineInvoice = {
   id: string;
   customer_id: string;
   amount: number;
@@ -44,9 +44,9 @@ export interface OfflineInvoice {
   created_at: number;
   updated_at: number;
   synced: boolean;
-}
+};
 
-export interface OfflineCustomer {
+export type OfflineCustomer = {
   id: string;
   company_id: string;
   user_id?: string | null;
@@ -69,9 +69,9 @@ export interface OfflineCustomer {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface OfflineCommunication {
+export type OfflineCommunication = {
   id: string;
   company_id: string;
   customer_id?: string | null;
@@ -94,9 +94,9 @@ export interface OfflineCommunication {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface OfflinePayment {
+export type OfflinePayment = {
   id: string;
   company_id: string;
   customer_id: string;
@@ -116,9 +116,9 @@ export interface OfflinePayment {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface OfflineEquipment {
+export type OfflineEquipment = {
   id: string;
   company_id: string;
   customer_id: string;
@@ -137,9 +137,9 @@ export interface OfflineEquipment {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface OfflineSchedule {
+export type OfflineSchedule = {
   id: string;
   company_id: string;
   customer_id?: string | null;
@@ -157,9 +157,9 @@ export interface OfflineSchedule {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface OfflineTag {
+export type OfflineTag = {
   id: string;
   company_id: string;
   name: string;
@@ -171,9 +171,9 @@ export interface OfflineTag {
   created_at: number;
   updated_at: number;
   synced: boolean;
-}
+};
 
-export interface OfflineAttachment {
+export type OfflineAttachment = {
   id: string;
   company_id: string;
   entity_type: string; // 'job' | 'customer' | 'invoice' | 'equipment' | etc.
@@ -189,9 +189,9 @@ export interface OfflineAttachment {
   updated_at: number;
   synced: boolean;
   deleted_at?: number | null;
-}
+};
 
-export interface SyncOperation {
+export type SyncOperation = {
   id: string;
   operation: "INSERT" | "UPDATE" | "DELETE";
   table: string;
@@ -199,7 +199,7 @@ export interface SyncOperation {
   timestamp: number;
   retry_count: number;
   error?: string;
-}
+};
 
 export type StoreName =
   | "jobs"

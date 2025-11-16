@@ -45,18 +45,34 @@ export function RegisterForm() {
 
   const passwordScore = useMemo(() => {
     let score = 0;
-    if (password.length >= 8) score += 30;
-    if (/[A-Z]/.test(password)) score += 20;
-    if (/[a-z]/.test(password)) score += 20;
-    if (/\d/.test(password)) score += 20;
-    if (/[^A-Za-z0-9]/.test(password)) score += 10;
+    if (password.length >= 8) {
+      score += 30;
+    }
+    if (/[A-Z]/.test(password)) {
+      score += 20;
+    }
+    if (/[a-z]/.test(password)) {
+      score += 20;
+    }
+    if (/\d/.test(password)) {
+      score += 20;
+    }
+    if (/[^A-Za-z0-9]/.test(password)) {
+      score += 10;
+    }
     return Math.min(score, 100);
   }, [password]);
 
   const passwordStrengthLabel = useMemo(() => {
-    if (passwordScore >= 80) return "Strong";
-    if (passwordScore >= 60) return "Good";
-    if (passwordScore >= 40) return "Fair";
+    if (passwordScore >= 80) {
+      return "Strong";
+    }
+    if (passwordScore >= 60) {
+      return "Good";
+    }
+    if (passwordScore >= 40) {
+      return "Fair";
+    }
     return "Weak";
   }, [passwordScore]);
 

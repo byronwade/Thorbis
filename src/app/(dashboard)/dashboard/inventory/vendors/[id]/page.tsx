@@ -166,11 +166,9 @@ export default async function VendorDetailPage({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               {vendor.email && (
-                <>
-                  <DropdownMenuItem asChild>
-                    <a href={`mailto:${vendor.email}`}>Send Email</a>
-                  </DropdownMenuItem>
-                </>
+                <DropdownMenuItem asChild>
+                  <a href={`mailto:${vendor.email}`}>Send Email</a>
+                </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>

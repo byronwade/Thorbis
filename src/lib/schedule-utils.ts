@@ -43,8 +43,12 @@ export function findConflictingJobs(
   excludeJobId?: string
 ): Job[] {
   return jobs.filter((job) => {
-    if (excludeJobId && job.id === excludeJobId) return false;
-    if (!jobHasTechnician(job, technicianId)) return false;
+    if (excludeJobId && job.id === excludeJobId) {
+      return false;
+    }
+    if (!jobHasTechnician(job, technicianId)) {
+      return false;
+    }
 
     return hasTimeConflict(startTime, endTime, job.startTime, job.endTime);
   });
@@ -242,7 +246,9 @@ export function generateRecurringJobInstances(
   startDate: Date,
   endDate: Date
 ): Job[] {
-  if (!baseJob.recurrence) return [baseJob];
+  if (!baseJob.recurrence) {
+    return [baseJob];
+  }
 
   const instances: Job[] = [];
   const {
@@ -275,8 +281,12 @@ export function generateRecurringJobInstances(
     // Move to next occurrence
     instanceCount++;
 
-    if (count && instanceCount >= count) break;
-    if (recurrenceEndDate && currentDate >= recurrenceEndDate) break;
+    if (count && instanceCount >= count) {
+      break;
+    }
+    if (recurrenceEndDate && currentDate >= recurrenceEndDate) {
+      break;
+    }
 
     switch (frequency) {
       case "daily":
@@ -318,24 +328,27 @@ export function filterJobs(
       !filters.technicianIds.some((technicianId) =>
         jobHasTechnician(job, technicianId)
       )
-    )
+    ) {
       return false;
+    }
 
     // Filter by status
     if (
       filters.statuses &&
       filters.statuses.length > 0 &&
       !filters.statuses.includes(job.status)
-    )
+    ) {
       return false;
+    }
 
     // Filter by priority
     if (
       filters.priorities &&
       filters.priorities.length > 0 &&
       !filters.priorities.includes(job.priority)
-    )
+    ) {
       return false;
+    }
 
     // Filter by search query
     if (filters.searchQuery && filters.searchQuery.trim() !== "") {
@@ -344,8 +357,9 @@ export function filterJobs(
       const matchesCustomer = job.customer.name.toLowerCase().includes(query);
       const matchesDescription = job.description?.toLowerCase().includes(query);
 
-      if (!(matchesTitle || matchesCustomer || matchesDescription))
+      if (!(matchesTitle || matchesCustomer || matchesDescription)) {
         return false;
+      }
     }
 
     return true;
@@ -412,8 +426,7 @@ export function validateJob(job: Partial<Job>): {
 
   const hasTechnician =
     !!job.technicianId ||
-    (job.assignments &&
-      job.assignments.some((assignment) => assignment.technicianId));
+    job.assignments?.some((assignment) => assignment.technicianId);
 
   if (!hasTechnician) {
     errors.push("Technician must be assigned");

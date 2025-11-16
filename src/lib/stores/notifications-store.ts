@@ -45,7 +45,7 @@ import type {
   NotificationType,
 } from "./notifications-types";
 
-interface NotificationsState {
+type NotificationsState = {
   // State
   notifications: Notification[];
   unreadCount: number;
@@ -76,7 +76,7 @@ interface NotificationsState {
 
   // Utility
   reset: () => void;
-}
+};
 
 // Initial state
 const initialState = {
@@ -112,7 +112,9 @@ export const useNotificationsStore = create<NotificationsState>()(
           const exists = state.notifications.some(
             (n) => n.id === notification.id
           );
-          if (exists) return state;
+          if (exists) {
+            return state;
+          }
 
           const newNotifications = [notification, ...state.notifications];
           const unreadCount = newNotifications.filter((n) => !n.read).length;
@@ -202,13 +204,11 @@ export const useNotificationsStore = create<NotificationsState>()(
 
           // CRITICAL: Return existing promise if subscription is in progress
           if (state.subscriptionPromise) {
-            console.log("Subscription already in progress, waiting...");
             return state.subscriptionPromise;
           }
 
           // Don't subscribe if already subscribed
           if (state.isSubscribed || state.realtimeChannel) {
-            console.log("Already subscribed to notifications");
             return Promise.resolve();
           }
 
@@ -220,9 +220,6 @@ export const useNotificationsStore = create<NotificationsState>()(
             const supabase = createClient();
 
             if (!supabase) {
-              console.warn(
-                "⚠️ Supabase client not configured, realtime updates disabled"
-              );
               set({
                 isSubscribed: false,
               });
@@ -328,37 +325,21 @@ export const useNotificationsStore = create<NotificationsState>()(
                   }
                 }
               )
-              .subscribe((status, err) => {
+              .subscribe((status, _err) => {
                 if (status === "SUBSCRIBED") {
-                  console.log(
-                    "✅ Successfully subscribed to notifications channel"
-                  );
                   set({ error: null }); // Clear any previous errors
                 } else if (status === "CHANNEL_ERROR") {
-                  // Log as warning instead of error to avoid cluttering console
-                  console.warn(
-                    "⚠️ Notifications real-time updates unavailable:",
-                    err || "Channel error"
-                  );
-                  console.warn(
-                    "💡 This is usually because:\n" +
-                      "  1. Realtime is not enabled on the 'notifications' table in Supabase\n" +
-                      "  2. RLS policies are blocking the subscription\n" +
-                      "  3. The app will still work, but won't receive live updates"
-                  );
                   // Don't set error state to avoid breaking the UI
                   set({
                     isSubscribed: false,
                     realtimeChannel: null,
                   });
                 } else if (status === "TIMED_OUT") {
-                  console.warn("⚠️ Notification subscription timed out");
                   set({
                     isSubscribed: false,
                     realtimeChannel: null,
                   });
                 } else if (status === "CLOSED") {
-                  console.log("ℹ️ Notification channel closed");
                   set({
                     isSubscribed: false,
                     realtimeChannel: null,
@@ -375,8 +356,7 @@ export const useNotificationsStore = create<NotificationsState>()(
           // Set the promise immediately to prevent concurrent calls
           set({ subscriptionPromise });
           return subscriptionPromise;
-        } catch (error) {
-          console.warn("⚠️ Could not set up realtime subscription:", error);
+        } catch (_error) {
           // App will still work without realtime, so don't set error state
           set({
             isSubscribed: false,
@@ -390,7 +370,6 @@ export const useNotificationsStore = create<NotificationsState>()(
         const state = get();
 
         if (state.realtimeChannel) {
-          console.log("Unsubscribing from notifications channel");
           state.realtimeChannel.unsubscribe();
           set({ realtimeChannel: null, isSubscribed: false });
         }

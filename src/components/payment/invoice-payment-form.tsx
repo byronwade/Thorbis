@@ -31,12 +31,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-interface InvoicePaymentFormProps {
+type InvoicePaymentFormProps = {
   invoice: any;
   token: string;
   company: any;
   customer: any;
-}
+};
 
 export function InvoicePaymentForm({
   invoice,
@@ -68,7 +68,9 @@ export function InvoicePaymentForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (isProcessing) return;
+    if (isProcessing) {
+      return;
+    }
 
     setIsProcessing(true);
 
@@ -111,8 +113,7 @@ export function InvoicePaymentForm({
               result.error || "Unable to process payment. Please try again.",
           });
         }
-      } catch (error) {
-        console.error("Payment error:", error);
+      } catch (_error) {
         toast.error("Payment error", {
           description: "An unexpected error occurred. Please try again.",
         });

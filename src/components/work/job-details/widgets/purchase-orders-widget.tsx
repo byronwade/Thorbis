@@ -28,12 +28,12 @@ import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
-interface PurchaseOrdersWidgetProps {
+type PurchaseOrdersWidgetProps = {
   job: Job;
-}
+};
 
 // Mock purchase order type (in production, fetch from purchase_orders table)
-interface PurchaseOrder {
+type PurchaseOrder = {
   id: string;
   poNumber: string;
   vendor: string;
@@ -51,7 +51,7 @@ interface PurchaseOrder {
   itemCount: number;
   notes?: string;
   trackingNumber?: string;
-}
+};
 
 export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
   // Mock purchase orders (in production, fetch from database)
@@ -151,13 +151,21 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
     totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
 
   function getDaysUntil(date?: Date): string {
-    if (!date) return "";
+    if (!date) {
+      return "";
+    }
     const diffMs = date.getTime() - Date.now();
     const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays < 0) return `${Math.abs(diffDays)}d overdue`;
-    if (diffDays === 0) return "today";
-    if (diffDays === 1) return "tomorrow";
+    if (diffDays < 0) {
+      return `${Math.abs(diffDays)}d overdue`;
+    }
+    if (diffDays === 0) {
+      return "today";
+    }
+    if (diffDays === 1) {
+      return "tomorrow";
+    }
     return `in ${diffDays}d`;
   }
 

@@ -5,7 +5,7 @@
  * Separated from server actions to comply with Next.js 16 "use server" restrictions.
  */
 
-export interface JobNote {
+export type JobNote = {
   id: string;
   company_id: string;
   job_id: string;
@@ -20,4 +20,4 @@ export interface JobNote {
     email: string;
     avatar?: string;
   };
-}
+};

@@ -15,11 +15,11 @@ import {
   Text,
 } from "@react-email/components";
 
-interface GenericEmailProps {
+type GenericEmailProps = {
   recipientName: string;
   message: string;
   companyName?: string;
-}
+};
 
 export function GenericEmail({
   recipientName,

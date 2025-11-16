@@ -375,7 +375,7 @@ export async function updatePhoneSettings(
     if (ivrMenuStr) {
       try {
         ivrMenuJson = JSON.parse(ivrMenuStr);
-      } catch (e) {
+      } catch (_e) {
         // Invalid JSON, use empty object
       }
     }

@@ -54,7 +54,7 @@ export function TranscriptPanel() {
       scrollContainerRef.current.scrollTop =
         scrollContainerRef.current.scrollHeight;
     }
-  }, [entries, autoScroll]);
+  }, [autoScroll]);
 
   // Handle scroll to detect manual scrolling
   const handleScroll = () => {

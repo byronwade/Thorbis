@@ -17,10 +17,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { trackCustomEvent } from "@/lib/analytics/client";
 
-interface POSystemToggleProps {
+type POSystemToggleProps = {
   enabled: boolean;
   lastEnabledAt?: string | null;
-}
+};
 
 export function POSystemToggle({
   enabled,

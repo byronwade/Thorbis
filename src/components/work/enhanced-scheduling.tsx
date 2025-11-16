@@ -147,7 +147,9 @@ export function EnhancedScheduling({
     }
 
     const timeWindow = TIME_WINDOWS.find((w) => w.value === windowValue);
-    if (!timeWindow) return;
+    if (!timeWindow) {
+      return;
+    }
 
     setSelectedTimeWindow(windowValue);
 

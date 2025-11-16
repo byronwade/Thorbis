@@ -137,7 +137,7 @@ export async function TeamMemberDetailData({
     : teamMember.user;
 
   // Calculate metrics
-  const totalJobs = assignedJobs?.length || 0;
+  const _totalJobs = assignedJobs?.length || 0;
   const totalHours =
     timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
   const completedJobs =

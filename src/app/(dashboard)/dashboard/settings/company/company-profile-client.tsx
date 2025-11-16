@@ -143,9 +143,9 @@ const companyProfileSchema = z.object({
 
 type CompanyProfileFormData = z.infer<typeof companyProfileSchema>;
 
-interface CompanyProfileClientProps {
+type CompanyProfileClientProps = {
   initialData: CompanyProfileFormData;
-}
+};
 
 function capitalizeDay(day: string): string {
   return day.charAt(0).toUpperCase() + day.slice(1);

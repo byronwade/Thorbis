@@ -37,7 +37,9 @@ type ManagerJobMetricsProps = {
 
 export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
   const formatCurrency = (amount: number | undefined | null) => {
-    if (amount === null || amount === undefined) return "$0.00";
+    if (amount === null || amount === undefined) {
+      return "$0.00";
+    }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",

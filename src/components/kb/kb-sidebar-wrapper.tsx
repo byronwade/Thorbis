@@ -9,13 +9,13 @@ import type { KBArticleWithRelations } from "@/lib/kb/types";
 import { KBSidebarContent } from "./kb-sidebar";
 import { KBSidebarProvider } from "./kb-sidebar-provider";
 
-interface KBSidebarWrapperProps {
+type KBSidebarWrapperProps = {
   currentCategory?: string;
   currentArticleId?: string;
   htmlContent?: string;
   relatedArticles?: KBArticleWithRelations[];
   children: React.ReactNode;
-}
+};
 
 export async function KBSidebarWrapper({
   currentCategory,

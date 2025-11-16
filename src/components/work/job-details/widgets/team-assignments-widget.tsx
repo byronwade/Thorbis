@@ -19,13 +19,13 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { Job } from "@/lib/db/schema";
 
-interface TeamAssignmentsWidgetProps {
+type TeamAssignmentsWidgetProps = {
   job: Job;
   teamAssignments?: unknown[];
-}
+};
 
 // Team member type from database
-interface TeamMember {
+type TeamMember = {
   id: string;
   name: string;
   role: "primary" | "assistant" | "crew";
@@ -34,7 +34,7 @@ interface TeamMember {
   phone: string;
   status: "available" | "on_job" | "off_duty";
   skills: string[];
-}
+};
 
 export function TeamAssignmentsWidget({
   job,
@@ -53,7 +53,9 @@ export function TeamAssignmentsWidget({
           : teamMember.users
         : null;
 
-      if (!user) return null;
+      if (!user) {
+        return null;
+      }
 
       return {
         id: user.id,

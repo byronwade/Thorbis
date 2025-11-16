@@ -28,7 +28,7 @@
  * ```
  */
 
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { cookies, headers } from "next/headers";
 
 const CSRF_TOKEN_COOKIE = "csrf_token";

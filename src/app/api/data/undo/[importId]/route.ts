@@ -9,13 +9,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
-interface RouteContext {
+type RouteContext = {
   params: {
     importId: string;
   };
-}
+};
 
-export async function POST(request: NextRequest, context: RouteContext) {
+export async function POST(_request: NextRequest, context: RouteContext) {
   try {
     // Check authentication
     const user = await getCurrentUser();
@@ -77,7 +77,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq("id", importId);
 
     if (updateError) {
-      console.error("Error updating import status:", updateError);
       return NextResponse.json(
         { error: "Failed to undo import" },
         { status: 500 }
@@ -89,8 +88,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       message: "Import successfully undone",
       importId,
     });
-  } catch (error) {
-    console.error("Undo API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

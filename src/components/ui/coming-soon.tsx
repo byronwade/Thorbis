@@ -13,14 +13,14 @@
 import { Clock, type LucideIcon, Rocket } from "lucide-react";
 import Link from "next/link";
 
-interface Feature {
+type Feature = {
   icon: LucideIcon;
   title: string;
   description: string;
   color?: string;
-}
+};
 
-interface ComingSoonProps {
+type ComingSoonProps = {
   /** Main icon to display */
   icon: LucideIcon;
   /** Page title */
@@ -33,7 +33,7 @@ interface ComingSoonProps {
   features?: Feature[];
   /** Optional link to view all coming soon features */
   showViewAllLink?: boolean;
-}
+};
 
 export function ComingSoon({
   icon: Icon,

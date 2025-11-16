@@ -24,11 +24,11 @@ const SERVICE_AGREEMENTS_OPTIONAL_COLUMNS = [
   { key: "value", label: "Value" },
 ];
 
-interface ServiceAgreementToolbarActionsProps {
+type ServiceAgreementToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function ServiceAgreementToolbarActions({
   totalCount = 0,

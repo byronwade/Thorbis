@@ -7,9 +7,9 @@
 import type { ArchivableEntityType } from "@/actions/archive";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
-interface ArchiveStatsProps {
+type ArchiveStatsProps = {
   stats: Record<ArchivableEntityType, number>;
-}
+};
 
 export function ArchiveStats({ stats }: ArchiveStatsProps) {
   const totalArchived =

@@ -104,7 +104,6 @@ export async function sendTeamMemberInvitations(
           );
 
         if (ownerError) {
-          console.error("Error creating owner team member:", ownerError);
         }
         continue;
       }
@@ -136,7 +135,6 @@ export async function sendTeamMemberInvitations(
           });
 
         if (invitationError) {
-          console.error("Error creating invitation:", invitationError);
           failedCount++;
           continue;
         }
@@ -161,11 +159,9 @@ export async function sendTeamMemberInvitations(
         if (emailResult.success) {
           sentCount++;
         } else {
-          console.error("Error sending invitation email:", emailResult.error);
           failedCount++;
         }
-      } catch (error) {
-        console.error("Error processing team member invitation:", error);
+      } catch (_error) {
         failedCount++;
       }
     }
@@ -288,7 +284,6 @@ export async function sendSingleTeamInvitation(
     });
 
     if (!emailResult.success) {
-      console.error("Error sending invitation email:", emailResult.error);
       // Don't fail the whole operation if email fails
     }
 

@@ -49,17 +49,17 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { CustomerNote } from "@/types/customer-notes";
 
-interface CustomerNotesTableProps {
+type CustomerNotesTableProps = {
   customerId: string;
   triggerAdd?: number; // Trigger to show add note form from external button
-}
+};
 
 export function CustomerNotesTable({
   customerId,
   triggerAdd,
 }: CustomerNotesTableProps) {
   const [notes, setNotes] = useState<CustomerNote[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
   const [filterType, setFilterType] = useState<"all" | "customer" | "internal">(
     "all"
   );
@@ -78,7 +78,7 @@ export function CustomerNotesTable({
   // Load notes
   useEffect(() => {
     loadNotes();
-  }, [customerId, filterType, page]);
+  }, [loadNotes]);
 
   // Respond to external trigger
   useEffect(() => {
@@ -104,7 +104,9 @@ export function CustomerNotesTable({
   };
 
   const handleAddNote = async () => {
-    if (!newNoteContent.trim()) return;
+    if (!newNoteContent.trim()) {
+      return;
+    }
 
     const result = await createCustomerNote({
       customerId,

@@ -18,9 +18,9 @@ import {
 } from "@/components/ui/card";
 import { downloadExcelTemplate } from "@/lib/data/excel-template-generator";
 
-interface TemplateDownloadClientProps {
+type TemplateDownloadClientProps = {
   dataType: string;
-}
+};
 
 export function TemplateDownloadClient({
   dataType,

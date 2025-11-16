@@ -21,8 +21,8 @@ class InMemoryRateLimiter {
     string,
     { count: number; resetAt: number; requests: number[] }
   >;
-  private maxRequests: number;
-  private windowMs: number;
+  private readonly maxRequests: number;
+  private readonly windowMs: number;
 
   constructor(maxRequests: number, windowMs: number) {
     this.requests = new Map();

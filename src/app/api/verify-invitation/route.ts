@@ -79,8 +79,7 @@ export async function GET(request: NextRequest) {
         companyName: companies?.name || "Unknown Company",
       },
     });
-  } catch (error) {
-    console.error("Error verifying invitation:", error);
+  } catch (_error) {
     return NextResponse.json(
       { valid: false, error: "Internal server error" },
       { status: 500 }

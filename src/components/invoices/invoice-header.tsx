@@ -30,11 +30,11 @@ type Invoice = {
   [key: string]: any;
 };
 
-interface InvoiceHeaderProps {
+type InvoiceHeaderProps = {
   invoice: Invoice;
   onUpdate: (field: string, value: any) => void;
   job?: { id: string; job_number: string; title: string } | null;
-}
+};
 
 export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
   // Get overdue status
@@ -46,7 +46,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 
   // Format dates for input
   const formatDateForInput = (dateString: string | null) => {
-    if (!dateString) return "";
+    if (!dateString) {
+      return "";
+    }
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
   };
@@ -133,7 +135,7 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 
           <div>
             <Label
-              className={`text-sm ${isOverdue ? overdueStatus.colors.text + "font-bold" : "text-muted-foreground"}`}
+              className={`text-sm ${isOverdue ? `${overdueStatus.colors.text}font-bold` : "text-muted-foreground"}`}
             >
               {isOverdue ? "PAST DUE AMOUNT" : "Amount Due"}
             </Label>

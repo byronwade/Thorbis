@@ -124,7 +124,6 @@ export async function savePaymentMethod(formData: FormData) {
       });
 
     if (insertError) {
-      console.error("Error saving payment method:", insertError);
       return { success: false, error: "Failed to save payment method" };
     }
 
@@ -149,11 +148,7 @@ export async function savePaymentMethod(formData: FormData) {
             },
           });
         }
-      } catch (stripeError) {
-        console.error(
-          "Error attaching payment method to customer:",
-          stripeError
-        );
+      } catch (_stripeError) {
         // Don't fail - payment method is saved in our DB
       }
     }
@@ -161,8 +156,6 @@ export async function savePaymentMethod(formData: FormData) {
     revalidatePath("/dashboard/settings/billing");
     return { success: true };
   } catch (error) {
-    console.error("Error in savePaymentMethod:", error);
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -213,7 +206,6 @@ export async function setDefaultPaymentMethod(formData: FormData) {
       .eq("user_id", user.id);
 
     if (updateError) {
-      console.error("Error setting default payment method:", updateError);
       return { success: false, error: "Failed to set default payment method" };
     }
 
@@ -240,8 +232,7 @@ export async function setDefaultPaymentMethod(formData: FormData) {
             default_payment_method: paymentMethodData.stripe_payment_method_id,
           },
         });
-      } catch (stripeError) {
-        console.error("Error updating Stripe customer:", stripeError);
+      } catch (_stripeError) {
         // Don't fail - default is set in our DB
       }
     }
@@ -249,8 +240,6 @@ export async function setDefaultPaymentMethod(formData: FormData) {
     revalidatePath("/dashboard/settings/billing");
     return { success: true };
   } catch (error) {
-    console.error("Error in setDefaultPaymentMethod:", error);
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -327,7 +316,6 @@ export async function removePaymentMethod(formData: FormData) {
       .eq("user_id", user.id);
 
     if (deleteError) {
-      console.error("Error deleting payment method:", deleteError);
       return { success: false, error: "Failed to remove payment method" };
     }
 
@@ -336,16 +324,13 @@ export async function removePaymentMethod(formData: FormData) {
       await stripe.paymentMethods.detach(
         paymentMethodData.stripe_payment_method_id
       );
-    } catch (stripeError) {
-      console.error("Error detaching payment method from Stripe:", stripeError);
+    } catch (_stripeError) {
       // Don't fail - payment method is already removed from our DB
     }
 
     revalidatePath("/dashboard/settings/billing");
     return { success: true };
   } catch (error) {
-    console.error("Error in removePaymentMethod:", error);
-
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -387,7 +372,6 @@ export async function getPaymentMethods() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching payment methods:", error);
       return {
         success: false,
         error: "Failed to fetch payment methods",
@@ -396,8 +380,7 @@ export async function getPaymentMethods() {
     }
 
     return { success: true, paymentMethods: paymentMethods || [] };
-  } catch (error) {
-    console.error("Error in getPaymentMethods:", error);
+  } catch (_error) {
     return { success: false, error: "An error occurred", paymentMethods: [] };
   }
 }

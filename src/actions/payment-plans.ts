@@ -102,7 +102,8 @@ export async function createPaymentPlan(
         : 0,
       paymentFrequency: formData.get("paymentFrequency") as any,
       numberOfPayments: Number.parseInt(
-        formData.get("numberOfPayments") as string
+        formData.get("numberOfPayments") as string,
+        10
       ),
       startDate: formData.get("startDate") as string,
       hasInterest: formData.get("hasInterest") === "true",
@@ -116,7 +117,7 @@ export async function createPaymentPlan(
         ? Number.parseFloat(formData.get("lateFee") as string)
         : 0,
       gracePeriodDays: formData.get("gracePeriodDays")
-        ? Number.parseInt(formData.get("gracePeriodDays") as string)
+        ? Number.parseInt(formData.get("gracePeriodDays") as string, 10)
         : 0,
       autoPayEnabled: formData.get("autoPayEnabled") === "true",
       stripePaymentMethodId: formData.get("stripePaymentMethodId") || undefined,
@@ -258,7 +259,9 @@ async function createPaymentSchedule(
   }
 ) {
   const supabase = await createClient();
-  if (!supabase) return;
+  if (!supabase) {
+    return;
+  }
 
   const scheduleItems = [];
   const currentDate = new Date(config.firstPaymentDate);

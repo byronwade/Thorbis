@@ -42,10 +42,10 @@ import {
 import type { CustomerCallData } from "@/types/call-window";
 import { DEFAULT_CSR_REMINDERS } from "@/types/csr-reminders";
 
-interface CustomerSidebarProps {
+type CustomerSidebarProps = {
   customerData: CustomerCallData | null;
   isLoading?: boolean;
-}
+};
 
 export function CustomerSidebar({
   customerData,
@@ -104,7 +104,9 @@ export function CustomerSidebar({
 
   // Format date
   const formatDate = (date: string | null) => {
-    if (!date) return "N/A";
+    if (!date) {
+      return "N/A";
+    }
     return new Date(date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
@@ -144,10 +146,6 @@ export function CustomerSidebar({
 
   // Save customer data
   const handleSaveCustomer = async () => {
-    console.log("Saving customer data...", {
-      phoneNumbers,
-      emailAddresses,
-    });
     // TODO: Implement save logic
   };
 
@@ -409,7 +407,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Link Job")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -463,7 +461,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Link Invoice")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -524,7 +522,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Schedule Appointment")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -584,7 +582,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Link Property")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -631,7 +629,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Add Equipment")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -680,7 +678,7 @@ export function CustomerSidebar({
       actions: (
         <Button
           className="h-8 gap-1.5 px-3"
-          onClick={() => console.log("Add Note")}
+          onClick={() => {}}
           size="sm"
           variant="outline"
         >
@@ -721,7 +719,7 @@ export function CustomerSidebar({
               </p>
               <Button
                 className="mt-4"
-                onClick={() => console.log("Add Note")}
+                onClick={() => {}}
                 size="sm"
                 variant="outline"
               >
@@ -774,7 +772,7 @@ export function CustomerSidebar({
                   </h4>
                   <Button
                     className="h-6 px-2 text-xs"
-                    onClick={() => console.log("Add Tag")}
+                    onClick={() => {}}
                     size="sm"
                     variant="ghost"
                   >

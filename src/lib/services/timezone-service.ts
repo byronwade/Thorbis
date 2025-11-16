@@ -50,7 +50,6 @@ export class TimeZoneService {
 
   async getTimeZone(lat: number, lon: number): Promise<TimeZoneInfo | null> {
     if (!this.apiKey) {
-      console.log("[Time Zone] Google Maps API key not configured");
       return null;
     }
 
@@ -58,7 +57,6 @@ export class TimeZoneService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Time Zone] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -73,14 +71,12 @@ export class TimeZoneService {
       });
 
       if (!res.ok) {
-        console.warn(`[Time Zone] API request failed: ${res.status}`);
         return null;
       }
 
       const data = await res.json();
 
       if (data.status !== "OK") {
-        console.log(`[Time Zone] API status: ${data.status}`);
         return null;
       }
 
@@ -101,13 +97,9 @@ export class TimeZoneService {
       };
 
       this.cache.set(cacheKey, { data: timeZone, timestamp: Date.now() });
-      console.log(
-        `[Time Zone] ${timeZone.timeZoneId} (UTC${totalOffsetHours >= 0 ? "+" : ""}${totalOffsetHours})`
-      );
 
       return timeZone;
-    } catch (error) {
-      console.error("[Time Zone] Error:", error);
+    } catch (_error) {
       return null;
     }
   }

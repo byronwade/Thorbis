@@ -18,13 +18,13 @@ import type {
   RefundPaymentResponse,
 } from "../processor-types";
 
-interface StripeConfig {
+type StripeConfig = {
   companyId: string;
   liveMode?: boolean;
-}
+};
 
 export class StripeProcessor implements PaymentProcessor {
-  private config: StripeConfig;
+  private readonly config: StripeConfig;
 
   constructor(config: StripeConfig) {
     this.config = config;
@@ -49,10 +49,6 @@ export class StripeProcessor implements PaymentProcessor {
       // WARNING: Stripe has limitations on high-value payments
       // This should only be used for platform billing, not contractor payments
       if (request.amount > 100_000) {
-        // $1,000 - warn but allow (for platform billing)
-        console.warn(
-          `High-value payment ($${request.amount / 100}) processed through Stripe. Consider using Adyen for amounts > $10,000.`
-        );
       }
 
       const paymentIntent = await stripe.paymentIntents.create({
@@ -84,7 +80,6 @@ export class StripeProcessor implements PaymentProcessor {
         processorMetadata: paymentIntent as unknown as Record<string, unknown>,
       };
     } catch (error: any) {
-      console.error("Stripe payment processing error:", error);
       return {
         success: false,
         status: "failed",
@@ -123,7 +118,6 @@ export class StripeProcessor implements PaymentProcessor {
         status: refund.status === "succeeded" ? "succeeded" : "processing",
       };
     } catch (error: any) {
-      console.error("Stripe refund error:", error);
       return {
         success: false,
         status: "failed",
@@ -150,19 +144,22 @@ export class StripeProcessor implements PaymentProcessor {
     };
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
-    if (!stripe) return false;
+  verifyWebhook(_payload: string, _signature: string): boolean {
+    if (!stripe) {
+      return false;
+    }
 
     try {
       // Stripe webhook signature verification
       const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-      if (!webhookSecret) return false;
+      if (!webhookSecret) {
+        return false;
+      }
 
       // Note: This is a simplified check - in production, use Stripe's webhook.constructEvent
       // which properly verifies the signature
       return true; // Placeholder - implement proper verification
-    } catch (error) {
-      console.error("Stripe webhook verification error:", error);
+    } catch (_error) {
       return false;
     }
   }

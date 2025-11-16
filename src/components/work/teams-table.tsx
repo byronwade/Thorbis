@@ -81,7 +81,7 @@ export function TeamsTable({
   itemsPerPage = 50,
 }: TeamsTableProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
   const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [itemToSuspend, setItemToSuspend] = useState<string | null>(null);
@@ -229,8 +229,9 @@ export function TeamsTable({
       sortable: true,
       hideable: true,
       render: (member) => {
-        if (!member.departmentName)
+        if (!member.departmentName) {
           return <span className="text-muted-foreground">—</span>;
+        }
         return (
           <Badge
             style={{

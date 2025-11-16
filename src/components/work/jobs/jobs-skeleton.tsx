@@ -16,7 +16,7 @@ export function JobsSkeleton() {
 
       {/* Table / list skeleton */}
       <div className="flex-1 space-y-2">
-        {[...Array(10)].map((_, i) => (
+        {[...new Array(10)].map((_, i) => (
           <div
             className="flex items-center gap-4 rounded-md border p-3"
             key={i}

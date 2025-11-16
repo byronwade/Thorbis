@@ -75,8 +75,7 @@ export function SmartAddressInput({
         // Use singleton loader to prevent multiple script loads
         await loadGoogleMapsScript();
         setIsAutocompleteLoaded(true);
-      } catch (error) {
-        console.error("Failed to load Google Maps:", error);
+      } catch (_error) {
         setIsManualMode(true);
       }
     };
@@ -97,11 +96,13 @@ export function SmartAddressInput({
 
       autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
     }
-  }, [isAutocompleteLoaded, isManualMode]);
+  }, [isAutocompleteLoaded, isManualMode, handlePlaceSelect]);
 
   const handlePlaceSelect = () => {
     const place = autocompleteRef.current?.getPlace();
-    if (!place?.address_components) return;
+    if (!place?.address_components) {
+      return;
+    }
 
     const newAddress: AddressData = {
       address: "",

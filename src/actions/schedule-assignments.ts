@@ -3,19 +3,13 @@
 import { createClient } from "@/lib/supabase/server";
 
 export async function assignJobToTechnician(
-  jobId: string,
+  _jobId: string,
   scheduleId: string,
   technicianId: string
 ) {
-  console.log("[SERVER] assignJobToTechnician called");
-  console.log("[SERVER] Schedule ID:", scheduleId);
-  console.log("[SERVER] Technician ID:", technicianId);
-  console.log("[SERVER] Job ID:", jobId);
-
   const supabase = await createClient();
 
   if (!supabase) {
-    console.error("[SERVER] Database not available");
     return { success: false, error: "Database not available" };
   }
 
@@ -28,17 +22,12 @@ export async function assignJobToTechnician(
       .single();
 
     if (checkError) {
-      console.error("[SERVER] Schedule check failed:", checkError);
       throw new Error(`Schedule check failed: ${checkError.message}`);
     }
 
     if (!existingSchedule) {
-      console.error("[SERVER] Schedule not found");
       throw new Error("Schedule not found");
     }
-
-    console.log("[SERVER] Current assignment:", existingSchedule.assigned_to);
-    console.log("[SERVER] New assignment:", technicianId);
 
     // Update the schedule's assigned_to field
     const { data: updatedSchedule, error: scheduleError } = await supabase
@@ -49,28 +38,13 @@ export async function assignJobToTechnician(
       .single();
 
     if (scheduleError) {
-      console.error("[SERVER] Schedule update failed:", scheduleError);
       throw new Error(`Schedule update failed: ${scheduleError.message}`);
     }
-
-    console.log("[SERVER] Schedule updated successfully:", updatedSchedule?.id);
-
-    // Skip job_team_assignments for now - RLS policy is blocking inserts
-    // The schedules.assigned_to field is sufficient for the dispatch board
-    // TODO: Fix RLS policy or use service role for team assignments
-
-    console.log("[SERVER] Assignment complete");
 
     // Don't revalidate immediately - let the optimistic update show
     // revalidatePath("/dashboard/schedule");
     return { success: true, data: updatedSchedule };
   } catch (error) {
-    console.error("[SERVER] CAUGHT ERROR:", error);
-    console.error("[SERVER] Error type:", typeof error);
-    console.error(
-      "[SERVER] Error message:",
-      error instanceof Error ? error.message : String(error)
-    );
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to assign job",
@@ -118,7 +92,9 @@ export async function updateAppointmentTimes(
       })
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     // Don't revalidate immediately - let the optimistic update show
     // revalidatePath("/dashboard/schedule");
@@ -159,7 +135,9 @@ export async function cancelAppointment(scheduleId: string, reason?: string) {
       })
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return { success: true };
   } catch (error) {
@@ -205,7 +183,9 @@ export async function cancelJobAndAppointment(
       })
       .eq("id", scheduleId);
 
-    if (scheduleError) throw scheduleError;
+    if (scheduleError) {
+      throw scheduleError;
+    }
 
     // Also cancel the job if it exists
     if (jobId) {
@@ -219,7 +199,9 @@ export async function cancelJobAndAppointment(
         })
         .eq("id", jobId);
 
-      if (jobError) throw jobError;
+      if (jobError) {
+        throw jobError;
+      }
     }
 
     return { success: true };
@@ -249,7 +231,9 @@ export async function archiveAppointment(scheduleId: string) {
       })
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return { success: true };
   } catch (error) {
@@ -290,7 +274,9 @@ export async function completeAppointment(scheduleId: string) {
       })
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return { success: true };
   } catch (error) {
@@ -343,7 +329,9 @@ async function updateScheduleStatus(
       .update(updates)
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return { success: true };
   } catch (error) {
@@ -391,7 +379,9 @@ export async function unassignAppointment(scheduleId: string) {
       })
       .eq("id", scheduleId);
 
-    if (error) throw error;
+    if (error) {
+      throw error;
+    }
 
     return { success: true };
   } catch (error) {

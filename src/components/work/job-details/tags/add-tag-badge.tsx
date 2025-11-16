@@ -165,7 +165,7 @@ export function AddTagBadge({
           toast.error(result.error || "Failed to add tag");
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add tag");
     } finally {
       setIsSaving(false);

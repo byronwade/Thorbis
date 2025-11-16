@@ -347,7 +347,9 @@ export function getRelatedIntegrations(
   limit = 3
 ): MarketingIntegrationContent[] {
   const current = getIntegrationBySlug(slug);
-  if (!current) return [];
+  if (!current) {
+    return [];
+  }
 
   const related =
     current.related

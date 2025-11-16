@@ -196,11 +196,11 @@ const styles = StyleSheet.create({
   },
 });
 
-interface InvoicePDFProps {
+type InvoicePDFProps = {
   invoice: any;
   customer: any;
   company: any;
-}
+};
 
 export function InvoicePDFDocument({
   invoice,

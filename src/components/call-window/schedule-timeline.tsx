@@ -4,7 +4,7 @@ import { Clock, Users } from "lucide-react";
 import type { ScheduleAppointment } from "@/actions/schedule";
 import { cn } from "@/lib/utils";
 
-interface ScheduleTimelineProps {
+type ScheduleTimelineProps = {
   appointments: ScheduleAppointment[];
   workingHours: {
     start: number;
@@ -12,7 +12,7 @@ interface ScheduleTimelineProps {
   };
   technicianColor: string;
   currentTime?: Date;
-}
+};
 
 export function ScheduleTimeline({
   appointments,
@@ -27,8 +27,12 @@ export function ScheduleTimeline({
     const now = currentTime;
     const currentHour = now.getHours() + now.getMinutes() / 60;
 
-    if (currentHour < workStart) return 0;
-    if (currentHour > workEnd) return 100;
+    if (currentHour < workStart) {
+      return 0;
+    }
+    if (currentHour > workEnd) {
+      return 100;
+    }
 
     return ((currentHour - workStart) / totalHours) * 100;
   };

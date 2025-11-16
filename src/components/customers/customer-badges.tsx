@@ -58,9 +58,9 @@ import {
 import { cn } from "@/lib/utils";
 import { type CustomerBadge, PREMADE_BADGES } from "@/types/customer-badges";
 
-interface CustomerBadgesProps {
+type CustomerBadgesProps = {
   customerId: string;
-}
+};
 
 const ICON_MAP: Record<string, any> = {
   AlertTriangle,
@@ -83,7 +83,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
   // Load badges
   useEffect(() => {
     loadBadges();
-  }, [customerId]);
+  }, [loadBadges]);
 
   const loadBadges = async () => {
     setIsLoading(true);
@@ -109,7 +109,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
   };
 
   const handleAddCustomBadge = async () => {
-    if (!customLabel.trim()) return;
+    if (!customLabel.trim()) {
+      return;
+    }
 
     const result = await addCustomerBadge({
       customerId,

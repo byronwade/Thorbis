@@ -52,7 +52,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
     customerId,
   } = node.attrs;
 
-  const isEditable = editor.isEditable;
+  const _isEditable = editor.isEditable;
   const propertyCount = properties?.length || 0;
 
   const handleAddProperty = () => {
@@ -63,7 +63,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
   // CASE 1: Single Address (0-1 properties)
   // Show simple address editor/display
   if (propertyCount <= 1) {
-    const fullAddress = [
+    const _fullAddress = [
       address,
       address2,
       [city, state].filter(Boolean).join(", "),
@@ -163,7 +163,9 @@ export function AddressPropertiesAdaptiveBlockComponent({
   // CASE 2: Multiple Properties (2+)
   // Show datatable with enriched API data
   const formatCurrency = (cents: number | undefined) => {
-    if (!cents) return "—";
+    if (!cents) {
+      return "—";
+    }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",

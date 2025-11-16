@@ -12,10 +12,10 @@
 
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 
-interface EntityStatsBarProps {
+type EntityStatsBarProps = {
   stats: StatCard[];
   compact?: boolean;
-}
+};
 
 export function EntityStatsBar({
   stats,

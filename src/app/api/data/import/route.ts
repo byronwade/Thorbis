@@ -99,7 +99,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error("Error creating import job:", insertError);
       return NextResponse.json(
         { error: "Failed to create import job" },
         { status: 500 }
@@ -115,8 +114,7 @@ export async function POST(request: NextRequest) {
         ? "Import requires admin approval"
         : "Import started successfully",
     });
-  } catch (error) {
-    console.error("Import API error:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

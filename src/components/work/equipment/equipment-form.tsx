@@ -77,7 +77,7 @@ export function EquipmentForm({
 
   // Filter properties by selected customer
   const customerProperties = selectedCustomerId
-    ? properties.filter((p) => true) // Simplified
+    ? properties.filter((_p) => true) // Simplified
     : properties;
 
   // Keyboard shortcuts

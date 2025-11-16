@@ -25,11 +25,11 @@ const TEAM_OPTIONAL_COLUMNS = [
   { key: "lastActive", label: "Last Active" },
 ];
 
-interface TeamToolbarActionsProps {
+type TeamToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function TeamToolbarActions({
   totalCount = 0,

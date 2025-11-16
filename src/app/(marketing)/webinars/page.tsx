@@ -22,9 +22,9 @@ export const metadata = generateSEOMetadata({
   ],
 });
 
-interface WebinarsPageProps {
+type WebinarsPageProps = {
   searchParams?: { tag?: string };
-}
+};
 
 export default async function WebinarsPage({
   searchParams,

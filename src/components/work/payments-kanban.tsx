@@ -187,7 +187,7 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 
 export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
 
   const handleItemMove = async ({
     item,

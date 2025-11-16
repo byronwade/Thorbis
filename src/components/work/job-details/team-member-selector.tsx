@@ -113,7 +113,7 @@ export function TeamMemberSelector({
   useEffect(() => {
     setShowAll(false);
     setShowAllEdit(false);
-  }, [assignments.length]);
+  }, []);
   /* eslint-enable react-hooks/exhaustive-deps */
 
   // Helper functions

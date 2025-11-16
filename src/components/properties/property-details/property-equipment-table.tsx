@@ -39,7 +39,9 @@ export function PropertyEquipmentTable({
   equipment,
 }: PropertyEquipmentTableProps) {
   const getStatusColor = (status?: string) => {
-    if (!status) return "bg-secondary0/10 text-muted-foreground";
+    if (!status) {
+      return "bg-secondary0/10 text-muted-foreground";
+    }
     const statusColors: Record<string, string> = {
       active: "bg-success/10 text-success hover:bg-success/20",
       inactive: "bg-secondary0/10 text-muted-foreground hover:bg-secondary0/20",
@@ -188,7 +190,7 @@ export function PropertyEquipmentTable({
         ),
       },
     ],
-    []
+    [getStatusColor]
   );
 
   return (

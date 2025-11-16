@@ -31,12 +31,12 @@ import { createClient } from "@/lib/supabase/server";
 // Types
 // =====================================================================================
 
-interface BaseNotificationParams {
+type BaseNotificationParams = {
   userId: string;
   companyId: string;
   priority?: NotificationPriority;
   actionUrl?: string;
-}
+};
 
 interface JobNotificationParams extends BaseNotificationParams {
   jobId: string;
@@ -94,7 +94,6 @@ async function createNotification(
     const supabase = await createClient();
 
     if (!supabase) {
-      console.error("Supabase client not configured");
       return { success: false, error: "Supabase client not configured" };
     }
 
@@ -115,13 +114,11 @@ async function createNotification(
       .single();
 
     if (error) {
-      console.error("Error creating notification:", error);
       return { success: false, error: error.message };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error in createNotification:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",

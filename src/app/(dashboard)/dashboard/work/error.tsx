@@ -24,10 +24,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    // Log the error to an error reporting service
-    console.error("Work page error:", error);
-  }, [error]);
+  useEffect(() => {}, []);
 
   return (
     <div className="flex h-full min-h-[60vh] items-center justify-center px-4 py-12">

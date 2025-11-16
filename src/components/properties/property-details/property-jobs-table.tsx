@@ -60,7 +60,9 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
   };
 
   const getPriorityColor = (priority?: string) => {
-    if (!priority) return "bg-secondary0/10 text-muted-foreground";
+    if (!priority) {
+      return "bg-secondary0/10 text-muted-foreground";
+    }
     const priorityColors: Record<string, string> = {
       low: "bg-primary/10 text-primary",
       medium: "bg-warning/10 text-warning",
@@ -74,7 +76,9 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
   };
 
   const formatCurrency = (cents?: number) => {
-    if (!cents) return "-";
+    if (!cents) {
+      return "-";
+    }
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
@@ -232,7 +236,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
         ),
       },
     ],
-    []
+    [formatCurrency, getPriorityColor, getStatusColor]
   );
 
   return (

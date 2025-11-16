@@ -44,8 +44,8 @@ export function ListView() {
 
   // Sort by start time
   const sortedJobs = allJobs.sort((a, b) => {
-    const timeA = Number.parseInt(a.startTime.replace(":", ""));
-    const timeB = Number.parseInt(b.startTime.replace(":", ""));
+    const timeA = Number.parseInt(a.startTime.replace(":", ""), 10);
+    const timeB = Number.parseInt(b.startTime.replace(":", ""), 10);
     return timeA - timeB;
   });
 

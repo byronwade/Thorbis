@@ -69,7 +69,7 @@ export default function DevelopmentSettingsPage() {
   const [simulationMessage, setSimulationMessage] = useState(
     "Hi, I have a question about my recent order."
   );
-  const [simulationCallStatus, setSimulationCallStatus] = useState<
+  const [_simulationCallStatus, _setSimulationCallStatus] = useState<
     "incoming" | "missed" | "completed"
   >("incoming");
 
@@ -109,7 +109,7 @@ export default function DevelopmentSettingsPage() {
 
   // Get role config for display
   const currentRoleConfig = ROLE_CONFIGS[currentRole];
-  const selectedRoleConfig = ROLE_CONFIGS[selectedRole];
+  const _selectedRoleConfig = ROLE_CONFIGS[selectedRole];
 
   // Development-only roles for testing (exclude ADMIN)
   const testRoles: UserRole[] = [
@@ -541,16 +541,7 @@ export default function DevelopmentSettingsPage() {
           </p>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <Button
-              onClick={() => {
-                console.log("Zustand Stores:", {
-                  role: useRoleStore.getState(),
-                  communications: useCommunicationNotificationsStore.getState(),
-                });
-              }}
-              size="sm"
-              variant="outline"
-            >
+            <Button onClick={() => {}} size="sm" variant="outline">
               <Database className="mr-2 h-4 w-4" />
               Log Store State
             </Button>
@@ -571,7 +562,7 @@ export default function DevelopmentSettingsPage() {
             <Button
               onClick={() => {
                 if (typeof window !== "undefined") {
-                  const info = {
+                  const _info = {
                     userAgent: navigator.userAgent,
                     viewport: {
                       width: window.innerWidth,
@@ -588,7 +579,6 @@ export default function DevelopmentSettingsPage() {
                         }
                       : "Not available",
                   };
-                  console.log("Browser Info:", info);
                 }
               }}
               size="sm"

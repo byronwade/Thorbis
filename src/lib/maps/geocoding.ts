@@ -5,17 +5,17 @@
  * Used during customer creation, property creation, and company onboarding
  */
 
-interface GeocodeResult {
+type GeocodeResult = {
   lat: number;
   lon: number;
   formattedAddress?: string;
-}
+};
 
-interface GeocodeResponse {
+type GeocodeResponse = {
   success: boolean;
   coordinates?: GeocodeResult;
   error?: string;
-}
+};
 
 /**
  * Geocode an address to get GPS coordinates
@@ -42,7 +42,6 @@ export async function geocodeAddress(
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      console.error("Google Maps API key not found");
       return {
         success: false,
         error: "Geocoding API key not configured",
@@ -56,9 +55,6 @@ export async function geocodeAddress(
     const response = await fetch(url);
 
     if (!response.ok) {
-      console.error(
-        `Geocoding API error: ${response.status} ${response.statusText}`
-      );
       return {
         success: false,
         error: `Geocoding failed with status ${response.status}`,
@@ -82,21 +78,16 @@ export async function geocodeAddress(
       };
     }
     if (data.status === "ZERO_RESULTS") {
-      console.warn(`No geocoding results for address: ${fullAddress}`);
       return {
         success: false,
         error: "Address not found",
       };
     }
-    console.error(
-      `Geocoding error: ${data.status} - ${data.error_message || "Unknown error"}`
-    );
     return {
       success: false,
       error: data.error_message || `Geocoding failed: ${data.status}`,
     };
   } catch (error) {
-    console.error("Geocoding exception:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown geocoding error",
@@ -121,9 +112,7 @@ export async function geocodeAddressSilent(
   try {
     const result = await geocodeAddress(address, city, state, zipCode, country);
     return result.success && result.coordinates ? result.coordinates : null;
-  } catch (error) {
-    // Silent failure - log but don't throw
-    console.error("Silent geocoding failed:", error);
+  } catch (_error) {
     return null;
   }
 }

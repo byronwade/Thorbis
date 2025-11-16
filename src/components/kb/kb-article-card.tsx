@@ -18,11 +18,11 @@ import {
 import type { KBArticleWithRelations } from "@/lib/kb/types";
 import { cn } from "@/lib/utils";
 
-interface KBArticleCardProps {
+type KBArticleCardProps = {
   article: KBArticleWithRelations;
   featured?: boolean;
   className?: string;
-}
+};
 
 export function KBArticleCard({
   article,

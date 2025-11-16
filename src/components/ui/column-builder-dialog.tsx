@@ -79,7 +79,9 @@ export function ColumnBuilderDialog({
 
   // Submit handler
   const handleSubmit = () => {
-    if (!selectedField) return;
+    if (!selectedField) {
+      return;
+    }
 
     const newColumn: CustomColumn = {
       id: `custom-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,

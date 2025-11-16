@@ -2,24 +2,24 @@
 // CORE DATA TYPES
 // ============================================
 
-export interface Address {
+export type Address = {
   street: string;
   city: string;
   state: string;
   zip: string;
   country: string;
-}
+};
 
-export interface Location {
+export type Location = {
   address: Address;
   coordinates: {
     lat: number;
     lng: number;
   };
   placeId?: string; // Google Places ID
-}
+};
 
-export interface Customer {
+export type Customer = {
   id: string;
   name: string;
   email?: string;
@@ -29,9 +29,9 @@ export interface Customer {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
-export interface RecurrenceRule {
+export type RecurrenceRule = {
   frequency: "daily" | "weekly" | "monthly" | "yearly";
   interval: number; // Every N days/weeks/months/years
   endDate?: Date;
@@ -39,9 +39,9 @@ export interface RecurrenceRule {
   daysOfWeek?: number[]; // 0-6 (Sunday-Saturday)
   dayOfMonth?: number; // 1-31
   monthOfYear?: number; // 1-12
-}
+};
 
-export interface JobMetadata {
+export type JobMetadata = {
   estimatedDuration?: number; // minutes
   actualDuration?: number; // minutes
   materials?: string[];
@@ -50,11 +50,11 @@ export interface JobMetadata {
   attachments?: string[]; // URLs
   tags?: string[];
   customFields?: Record<string, any>;
-}
+};
 
 export type JobAssignmentRole = "primary" | "assistant" | "crew" | "supervisor";
 
-export interface JobAssignment {
+export type JobAssignment = {
   technicianId: string | null;
   teamMemberId?: string | null;
   displayName: string;
@@ -62,9 +62,9 @@ export interface JobAssignment {
   role: JobAssignmentRole;
   status?: Technician["status"];
   isActive: boolean;
-}
+};
 
-export interface Job {
+export type Job = {
   id: string; // Schedule ID
   jobId?: string; // Actual job ID (for linking to job details)
   technicianId: string; // Primary technician id (falls back to first assignment or empty string)
@@ -105,9 +105,9 @@ export interface Job {
   updatedAt: Date;
   createdBy?: string;
   updatedBy?: string;
-}
+};
 
-export interface TechnicianSchedule {
+export type TechnicianSchedule = {
   availableHours: {
     start: number; // 0-23
     end: number; // 0-23
@@ -117,9 +117,9 @@ export interface TechnicianSchedule {
     start: number; // minutes from day start
     end: number;
   }>;
-}
+};
 
-export interface Technician {
+export type Technician = {
   id: string;
   userId?: string;
   teamMemberId?: string;
@@ -146,14 +146,14 @@ export interface Technician {
   // Audit
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 // ============================================
 // LEGACY COMPATIBILITY (for migration)
 // ============================================
 
 /** @deprecated Use Job with Date objects instead */
-export interface LegacyJob {
+export type LegacyJob = {
   id: string;
   title: string;
   customer: string;
@@ -167,7 +167,7 @@ export interface LegacyJob {
   lng: number;
   description?: string;
   estimatedDuration?: string;
-}
+};
 
 // ============================================
 // MOCK DATA (Legacy - use generateMockScheduleData instead)

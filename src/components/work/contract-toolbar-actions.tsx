@@ -26,11 +26,11 @@ const CONTRACTS_OPTIONAL_COLUMNS = [
   { key: "validUntil", label: "Valid Until" },
 ];
 
-interface ContractToolbarActionsProps {
+type ContractToolbarActionsProps = {
   totalCount?: number;
   activeCount?: number;
   archivedCount?: number;
-}
+};
 
 export function ContractToolbarActions({
   totalCount = 0,

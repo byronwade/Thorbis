@@ -219,16 +219,12 @@ const bulkActions: BulkAction[] = [
   {
     label: "Export Selected",
     icon: <Download className="size-4" />,
-    onClick: (ids) => {
-      console.log("Export vendors:", ids);
-    },
+    onClick: (_ids) => {},
   },
   {
     label: "Mark as Inactive",
     icon: <Pause className="size-4" />,
-    onClick: (ids) => {
-      console.log("Deactivate vendors:", ids);
-    },
+    onClick: (_ids) => {},
     variant: "ghost",
   },
 ];

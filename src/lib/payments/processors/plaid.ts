@@ -20,16 +20,16 @@ import type {
   RefundPaymentResponse,
 } from "../processor-types";
 
-interface PlaidConfig {
+type PlaidConfig = {
   companyId: string;
   clientId: string;
   secret: string;
   environment: "sandbox" | "development" | "production";
-}
+};
 
 export class PlaidProcessor implements PaymentProcessor {
-  private config: PlaidConfig;
-  private apiUrl: string;
+  private readonly config: PlaidConfig;
+  private readonly apiUrl: string;
 
   constructor(config: PlaidConfig) {
     this.config = config;
@@ -75,7 +75,6 @@ export class PlaidProcessor implements PaymentProcessor {
           "ACH processing via Plaid requires integration with ACH processor (Adyen/ProfitStars)",
       };
     } catch (error) {
-      console.error("Plaid payment processing error:", error);
       return {
         success: false,
         status: "failed",
@@ -86,7 +85,7 @@ export class PlaidProcessor implements PaymentProcessor {
   }
 
   async refundPayment(
-    request: RefundPaymentRequest
+    _request: RefundPaymentRequest
   ): Promise<RefundPaymentResponse> {
     // ACH refunds are typically processed through the same ACH processor
     return {
@@ -97,7 +96,7 @@ export class PlaidProcessor implements PaymentProcessor {
     };
   }
 
-  async getPaymentStatus(transactionId: string): Promise<{
+  async getPaymentStatus(_transactionId: string): Promise<{
     status: string;
     amount: number;
     metadata?: Record<string, unknown>;
@@ -106,13 +105,12 @@ export class PlaidProcessor implements PaymentProcessor {
     throw new Error("Payment status must be retrieved from ACH processor");
   }
 
-  verifyWebhook(payload: string, signature: string): boolean {
+  verifyWebhook(_payload: string, _signature: string): boolean {
     // Plaid webhook verification
     try {
       // TODO: Implement proper Plaid webhook signature verification
       return true; // Placeholder
-    } catch (error) {
-      console.error("Plaid webhook verification error:", error);
+    } catch (_error) {
       return false;
     }
   }
@@ -144,13 +142,11 @@ export class PlaidProcessor implements PaymentProcessor {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Plaid link token creation error:", data);
         return null;
       }
 
       return { linkToken: data.link_token };
-    } catch (error) {
-      console.error("Plaid link token error:", error);
+    } catch (_error) {
       return null;
     }
   }
@@ -180,13 +176,11 @@ export class PlaidProcessor implements PaymentProcessor {
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("Plaid token exchange error:", data);
         return null;
       }
 
       return { accessToken: data.access_token };
-    } catch (error) {
-      console.error("Plaid token exchange error:", error);
+    } catch (_error) {
       return null;
     }
   }

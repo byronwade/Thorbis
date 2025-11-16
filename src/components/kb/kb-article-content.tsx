@@ -8,10 +8,10 @@
 import { markdownToHtml } from "@/lib/kb/markdown";
 import { cn } from "@/lib/utils";
 
-interface KBArticleContentProps {
+type KBArticleContentProps = {
   content: string;
   className?: string;
-}
+};
 
 export async function KBArticleContent({
   content,

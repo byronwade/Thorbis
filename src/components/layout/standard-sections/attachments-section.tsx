@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 
-interface AttachmentsSectionProps {
+type AttachmentsSectionProps = {
   attachments: any[];
   entityType?: string;
   entityId?: string;
   onUpload?: (files: FileList) => Promise<void>;
-}
+};
 
 export function AttachmentsSection({
   attachments,
@@ -24,7 +24,9 @@ export function AttachmentsSection({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      return;
+    }
 
     setIsUploading(true);
     try {
@@ -32,7 +34,7 @@ export function AttachmentsSection({
         await onUpload(files);
       }
       toast.success(`${files.length} file(s) uploaded successfully`);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to upload files");
     } finally {
       setIsUploading(false);

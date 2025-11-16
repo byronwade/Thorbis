@@ -37,7 +37,7 @@ export type CallDirection = "inbound" | "outbound";
 /**
  * WebRTC call information
  */
-export interface WebRTCCall {
+export type WebRTCCall = {
   id: string;
   state: CallState;
   direction: CallDirection;
@@ -49,24 +49,24 @@ export interface WebRTCCall {
   isMuted: boolean;
   isHeld: boolean;
   isRecording: boolean;
-}
+};
 
 /**
  * Hook options
  */
-export interface UseTelnyxWebRTCOptions {
+export type UseTelnyxWebRTCOptions = {
   username: string;
   password: string;
   autoConnect?: boolean;
   debug?: boolean;
   onIncomingCall?: (call: WebRTCCall) => void;
   onCallEnded?: (call: WebRTCCall) => void;
-}
+};
 
 /**
  * Hook return type
  */
-export interface UseTelnyxWebRTCReturn {
+export type UseTelnyxWebRTCReturn = {
   // Connection state
   isConnected: boolean;
   isConnecting: boolean;
@@ -92,7 +92,7 @@ export interface UseTelnyxWebRTCReturn {
   // Audio devices
   audioDevices: MediaDeviceInfo[];
   setAudioDevice: (deviceId: string) => Promise<void>;
-}
+};
 
 /**
  * Telnyx WebRTC Hook
@@ -275,33 +275,28 @@ export function useTelnyxWebRTC(
       if (!(clientRef.current && isConnected)) {
         throw new Error("Not connected to Telnyx");
       }
+      const call = await clientRef.current.newCall({
+        destinationNumber: destination,
+        callerNumber: callerIdNumber,
+      });
 
-      try {
-        const call = await clientRef.current.newCall({
-          destinationNumber: destination,
-          callerNumber: callerIdNumber,
-        });
+      activeCallRef.current = call;
 
-        activeCallRef.current = call;
+      // Set initial call state immediately
+      const callInfo: WebRTCCall = {
+        id: call.id,
+        state: "connecting",
+        direction: "outbound",
+        remoteNumber: destination,
+        localNumber: callerIdNumber || "",
+        duration: 0,
+        isMuted: false,
+        isHeld: false,
+        isRecording: false,
+      };
+      setCurrentCall(callInfo);
 
-        // Set initial call state immediately
-        const callInfo: WebRTCCall = {
-          id: call.id,
-          state: "connecting",
-          direction: "outbound",
-          remoteNumber: destination,
-          localNumber: callerIdNumber || "",
-          duration: 0,
-          isMuted: false,
-          isHeld: false,
-          isRecording: false,
-        };
-        setCurrentCall(callInfo);
-
-        return call;
-      } catch (error) {
-        throw error;
-      }
+      return call;
     },
     [isConnected]
   );
@@ -313,12 +308,7 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to answer");
     }
-
-    try {
-      await activeCallRef.current.answer();
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.answer();
   }, []);
 
   /**
@@ -328,14 +318,9 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to end");
     }
-
-    try {
-      await activeCallRef.current.hangup();
-      setCurrentCall(null);
-      activeCallRef.current = null;
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.hangup();
+    setCurrentCall(null);
+    activeCallRef.current = null;
   }, []);
 
   /**
@@ -345,13 +330,8 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to mute");
     }
-
-    try {
-      await activeCallRef.current.muteAudio();
-      setCurrentCall((prev) => (prev ? { ...prev, isMuted: true } : null));
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.muteAudio();
+    setCurrentCall((prev) => (prev ? { ...prev, isMuted: true } : null));
   }, []);
 
   /**
@@ -361,13 +341,8 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to unmute");
     }
-
-    try {
-      await activeCallRef.current.unmuteAudio();
-      setCurrentCall((prev) => (prev ? { ...prev, isMuted: false } : null));
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.unmuteAudio();
+    setCurrentCall((prev) => (prev ? { ...prev, isMuted: false } : null));
   }, []);
 
   /**
@@ -377,13 +352,8 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to hold");
     }
-
-    try {
-      await activeCallRef.current.hold();
-      setCurrentCall((prev) => (prev ? { ...prev, isHeld: true } : null));
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.hold();
+    setCurrentCall((prev) => (prev ? { ...prev, isHeld: true } : null));
   }, []);
 
   /**
@@ -393,13 +363,8 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call to unhold");
     }
-
-    try {
-      await activeCallRef.current.unhold();
-      setCurrentCall((prev) => (prev ? { ...prev, isHeld: false } : null));
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.unhold();
+    setCurrentCall((prev) => (prev ? { ...prev, isHeld: false } : null));
   }, []);
 
   /**
@@ -409,12 +374,7 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call");
     }
-
-    try {
-      await activeCallRef.current.dtmf(digit);
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.dtmf(digit);
   }, []);
 
   /**
@@ -424,12 +384,7 @@ export function useTelnyxWebRTC(
     if (!activeCallRef.current) {
       throw new Error("No active call");
     }
-
-    try {
-      await activeCallRef.current.setAudioOutDevice(deviceId);
-    } catch (error) {
-      throw error;
-    }
+    await activeCallRef.current.setAudioOutDevice(deviceId);
   }, []);
 
   /**
@@ -493,7 +448,10 @@ export function useTelnyxWebRTC(
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // ✅ Runs once on mount only - loadAudioDevices is stable (useCallback with no deps)
+  }, [
+    // Load audio devices on mount
+    loadAudioDevices,
+  ]); // ✅ Runs once on mount only - loadAudioDevices is stable (useCallback with no deps)
 
   /**
    * Separate effect for auto-connect to prevent dependency loop
@@ -507,7 +465,10 @@ export function useTelnyxWebRTC(
       // Cleanup on unmount
       disconnect();
     };
-  }, []); // ✅ Runs once - uses ref for options
+  }, [
+    connect, // Cleanup on unmount
+    disconnect,
+  ]); // ✅ Runs once - uses ref for options
 
   return {
     isConnected,

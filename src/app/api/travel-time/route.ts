@@ -213,7 +213,6 @@ export async function GET(request: NextRequest) {
       process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
     if (!apiKey) {
-      console.warn("[Travel Time API] Google Maps API key not configured");
       return NextResponse.json(
         {
           error: "Travel time calculation unavailable",
@@ -260,7 +259,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(result.data);
   } catch (error) {
-    console.error("[Travel Time API] Error:", error);
     return NextResponse.json(
       {
         error: "Failed to calculate travel time",

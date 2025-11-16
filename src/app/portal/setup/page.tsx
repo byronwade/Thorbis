@@ -156,8 +156,6 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
     });
 
     if (authError || !authData.user) {
-      // TODO: Return error to client
-      console.error("Failed to create user:", authError);
       return;
     }
 
@@ -168,8 +166,6 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
       .eq("id", customerData.id);
 
     if (updateError) {
-      // TODO: Handle error - maybe delete auth user?
-      console.error("Failed to link user to customer:", updateError);
       return;
     }
 

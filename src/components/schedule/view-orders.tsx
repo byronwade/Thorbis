@@ -47,7 +47,9 @@ export default function OrdersView({
       members.find((m) => m.id === id)?.name ?? "Unassigned";
 
     const map = new Map<string, OrderCard[]>();
-    for (const d of dayDates) map.set(d.toDateString(), []);
+    for (const d of dayDates) {
+      map.set(d.toDateString(), []);
+    }
 
     for (const d of dayDates) {
       const todays = assignments.filter((a) => isSameDay(new Date(a.start), d));

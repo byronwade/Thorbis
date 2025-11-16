@@ -15,7 +15,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { companyTrialWorkflow } from "@/workflows/company-trial";
 
-interface SaveCompanyRequest {
+type SaveCompanyRequest = {
   id?: string | null;
   name: string;
   legalName?: string | null;
@@ -34,7 +34,7 @@ interface SaveCompanyRequest {
   website?: string;
   taxId?: string;
   logo?: string | null;
-}
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -107,7 +107,6 @@ export async function POST(request: NextRequest) {
         .eq("owner_id", user.id); // Security: Only allow owners to update
 
       if (updateError) {
-        console.error("Error updating company:", updateError);
         return NextResponse.json(
           { error: `Failed to update company: ${updateError.message}` },
           { status: 500 }
@@ -238,7 +237,6 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (companyError || !newCompany) {
-        console.error("Error creating company:", companyError);
         return NextResponse.json(
           {
             error: `Failed to create company: ${
@@ -270,7 +268,6 @@ export async function POST(request: NextRequest) {
       });
 
       if (teamError) {
-        console.error("Error adding team member:", teamError);
         // Don't fail company creation if team member addition fails
         // User can be added manually later
       }
@@ -300,7 +297,6 @@ export async function POST(request: NextRequest) {
         });
 
       if (settingsError) {
-        console.error("Error creating company settings:", settingsError);
         // Don't fail company creation if settings creation fails
       }
     }
@@ -311,9 +307,7 @@ export async function POST(request: NextRequest) {
         await startWorkflow(companyTrialWorkflow, [
           { companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS },
         ]);
-      } catch (trialError) {
-        console.error("Failed to initialize company trial:", trialError);
-      }
+      } catch (_trialError) {}
     }
 
     return NextResponse.json({
@@ -321,7 +315,6 @@ export async function POST(request: NextRequest) {
       companyId,
     });
   } catch (error) {
-    console.error("Error in save-company API:", error);
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : "Internal server error",

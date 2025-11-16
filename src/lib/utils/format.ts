@@ -109,7 +109,9 @@ export function formatDate(
   format: "short" | "long" | "datetime" | "time" | "iso" = "short",
   fallback = "—"
 ): string {
-  if (!date) return fallback;
+  if (!date) {
+    return fallback;
+  }
 
   const dateObj = typeof date === "string" ? new Date(date) : date;
 
@@ -217,14 +219,24 @@ export function formatRelativeTime(
 
   if (includeSeconds && diffMins < 1) {
     const diffSecs = Math.floor(diffMs / 1000);
-    if (diffSecs < 10) return "Just now";
+    if (diffSecs < 10) {
+      return "Just now";
+    }
     return `${diffSecs}s ago`;
   }
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < maxDays) return `${diffDays}d ago`;
+  if (diffMins < 1) {
+    return "Just now";
+  }
+  if (diffMins < 60) {
+    return `${diffMins}m ago`;
+  }
+  if (diffHours < 24) {
+    return `${diffHours}h ago`;
+  }
+  if (diffDays < maxDays) {
+    return `${diffDays}d ago`;
+  }
 
   // Fall back to short date format
   return formatDate(dateObj, "short");

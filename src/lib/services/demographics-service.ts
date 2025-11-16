@@ -32,9 +32,11 @@ export const DemographicsSchema = z.object({
 export type Demographics = z.infer<typeof DemographicsSchema>;
 
 export class DemographicsService {
-  private cache: Map<string, { data: Demographics; timestamp: number }> =
-    new Map();
-  private cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days (census data updates quarterly)
+  private readonly cache: Map<
+    string,
+    { data: Demographics; timestamp: number }
+  > = new Map();
+  private readonly cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days (census data updates quarterly)
 
   async getDemographics(
     lat: number,
@@ -44,7 +46,6 @@ export class DemographicsService {
     const cached = this.cache.get(cacheKey);
 
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      console.log(`[Demographics] Using cached data for: ${lat}, ${lon}`);
       return cached.data;
     }
 
@@ -57,7 +58,6 @@ export class DemographicsService {
       });
 
       if (!geoRes.ok) {
-        console.log(`[Demographics] FCC geo lookup failed: ${geoRes.status}`);
         return null;
       }
 
@@ -67,7 +67,6 @@ export class DemographicsService {
       const tractCode = geoData.Block?.FIPS?.substring(0, 11); // First 11 digits = tract
 
       if (!(stateFips && countyFips && tractCode)) {
-        console.log("[Demographics] Could not determine census tract");
         return null;
       }
 
@@ -97,14 +96,12 @@ export class DemographicsService {
       });
 
       if (!censusRes.ok) {
-        console.log(`[Demographics] Census API failed: ${censusRes.status}`);
         return null;
       }
 
       // Check if response has content
       const text = await censusRes.text();
       if (!text || text.trim() === "") {
-        console.log("[Demographics] Census API returned empty response");
         return null;
       }
 
@@ -112,34 +109,29 @@ export class DemographicsService {
       let censusData: unknown;
       try {
         censusData = JSON.parse(text);
-      } catch (e) {
-        console.log(
-          "[Demographics] Census API returned invalid JSON:",
-          text.substring(0, 100)
-        );
+      } catch (_e) {
         return null;
       }
 
       if (!Array.isArray(censusData) || censusData.length < 2) {
-        console.log("[Demographics] No census data available");
         return null;
       }
 
       // Census API returns [headers, data]
       const values = censusData[1];
-      const population = Number.parseInt(values[0]) || 0;
-      const medianIncome = Number.parseInt(values[1]) || 0;
+      const population = Number.parseInt(values[0], 10) || 0;
+      const medianIncome = Number.parseInt(values[1], 10) || 0;
       const medianAge = Number.parseFloat(values[2]) || 0;
-      const bachelors = Number.parseInt(values[3]) || 0;
-      const masters = Number.parseInt(values[4]) || 0;
-      const professional = Number.parseInt(values[5]) || 0;
-      const doctorate = Number.parseInt(values[6]) || 0;
-      const totalEducation = Number.parseInt(values[7]) || 1;
-      const medianHomeValue = Number.parseInt(values[8]) || 0;
-      const povertyCount = Number.parseInt(values[9]) || 0;
-      const povertyTotal = Number.parseInt(values[10]) || 1;
-      const unemployed = Number.parseInt(values[11]) || 0;
-      const laborForce = Number.parseInt(values[12]) || 1;
+      const bachelors = Number.parseInt(values[3], 10) || 0;
+      const masters = Number.parseInt(values[4], 10) || 0;
+      const professional = Number.parseInt(values[5], 10) || 0;
+      const doctorate = Number.parseInt(values[6], 10) || 0;
+      const totalEducation = Number.parseInt(values[7], 10) || 1;
+      const medianHomeValue = Number.parseInt(values[8], 10) || 0;
+      const povertyCount = Number.parseInt(values[9], 10) || 0;
+      const povertyTotal = Number.parseInt(values[10], 10) || 1;
+      const unemployed = Number.parseInt(values[11], 10) || 0;
+      const laborForce = Number.parseInt(values[12], 10) || 1;
 
       const educationPercent =
         ((bachelors + masters + professional + doctorate) / totalEducation) *
@@ -160,13 +152,9 @@ export class DemographicsService {
       };
 
       this.cache.set(cacheKey, { data: demographics, timestamp: Date.now() });
-      console.log(
-        `[Demographics] Successfully fetched data for tract ${tractCode}`
-      );
 
       return demographics;
-    } catch (error) {
-      console.error("[Demographics] Error:", error);
+    } catch (_error) {
       return null;
     }
   }

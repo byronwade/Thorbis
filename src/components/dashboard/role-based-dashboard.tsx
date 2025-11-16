@@ -16,10 +16,10 @@ import { USER_ROLES } from "@/types/roles";
  * Uses Zustand for state management (no Context Provider needed)
  */
 
-interface RoleBasedDashboardProps {
+type RoleBasedDashboardProps = {
   dashboardData?: any;
   renderedAt?: number;
-}
+};
 
 export function RoleBasedDashboard({
   dashboardData,

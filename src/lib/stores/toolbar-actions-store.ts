@@ -8,7 +8,7 @@
 import type { ReactNode } from "react";
 import { create } from "zustand";
 
-interface ToolbarActionsState {
+type ToolbarActionsState = {
   /** Map of pathname to actions */
   actions: Record<string, ReactNode>;
 
@@ -20,7 +20,7 @@ interface ToolbarActionsState {
 
   /** Clear all actions */
   clearAll: () => void;
-}
+};
 
 export const useToolbarActionsStore = create<ToolbarActionsState>((set) => ({
   actions: {},

@@ -76,8 +76,12 @@ export function MaintenancePlansTable({
   // Filter plans based on archive status
   const filteredPlans = plans.filter((plan) => {
     const isArchived = Boolean(plan.archived_at || plan.deleted_at);
-    if (archiveFilter === "active") return !isArchived;
-    if (archiveFilter === "archived") return isArchived;
+    if (archiveFilter === "active") {
+      return !isArchived;
+    }
+    if (archiveFilter === "archived") {
+      return isArchived;
+    }
     return true; // "all"
   });
 
@@ -174,7 +178,7 @@ export function MaintenancePlansTable({
       header: "",
       width: "w-10",
       shrink: true,
-      render: (plan) => (
+      render: (_plan) => (
         <div data-no-row-click>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -209,23 +213,23 @@ export function MaintenancePlansTable({
     {
       label: "Schedule Visits",
       icon: <Calendar className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Schedule Visits:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Export",
       icon: <Download className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Export:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Archive",
       icon: <Archive className="h-4 w-4" />,
       variant: "destructive",
-      onClick: (selectedIds) => console.log("Archive:", selectedIds),
+      onClick: (_selectedIds) => {},
     },
     {
       label: "Cancel",
       icon: <Trash2 className="h-4 w-4" />,
-      onClick: (selectedIds) => console.log("Cancel:", selectedIds),
+      onClick: (_selectedIds) => {},
       variant: "destructive",
     },
   ];

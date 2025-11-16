@@ -182,7 +182,7 @@ const PERMISSION_INFO: Record<
   },
 };
 
-interface PermissionsEditorProps {
+type PermissionsEditorProps = {
   /** Current team member role */
   currentRole: UserRole;
 
@@ -200,7 +200,7 @@ interface PermissionsEditorProps {
 
   /** Whether this team member is the company owner (cannot change role/permissions) */
   isOwner?: boolean;
-}
+};
 
 export function PermissionsEditor({
   currentRole,

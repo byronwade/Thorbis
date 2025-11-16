@@ -26,8 +26,6 @@ export async function POST() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    console.log("Setting up test company for user:", user.id);
-
     // Check if user already has a company
     const { data: existingTeamMember } = await supabase
       .from("team_members")
@@ -55,14 +53,11 @@ export async function POST() {
       .single();
 
     if (companyError) {
-      console.error("Failed to create company:", companyError);
       return NextResponse.json(
         { error: "Failed to create company", details: companyError },
         { status: 500 }
       );
     }
-
-    console.log("Created company:", company.id);
 
     // Add user as team member
     const { data: teamMember, error: teamMemberError } = await supabase
@@ -77,14 +72,11 @@ export async function POST() {
       .single();
 
     if (teamMemberError) {
-      console.error("Failed to create team member:", teamMemberError);
       return NextResponse.json(
         { error: "Failed to create team member", details: teamMemberError },
         { status: 500 }
       );
     }
-
-    console.log("Added user as team member:", teamMember.id);
 
     // Create a test customer
     const { data: customer, error: customerError } = await supabase
@@ -103,7 +95,6 @@ export async function POST() {
       .single();
 
     if (customerError) {
-      console.error("Failed to create customer:", customerError);
       // Don't fail - customer is optional
     }
 
@@ -129,7 +120,6 @@ export async function POST() {
         .single();
 
       if (propertyError) {
-        console.error("Failed to create property:", propertyError);
       } else {
         property = prop;
       }
@@ -155,7 +145,6 @@ export async function POST() {
         .single();
 
       if (jobError) {
-        console.error("Failed to create job:", jobError);
       } else {
         job = testJob;
       }
@@ -199,7 +188,6 @@ export async function POST() {
           ],
     });
   } catch (error: any) {
-    console.error("Setup error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
       { status: 500 }

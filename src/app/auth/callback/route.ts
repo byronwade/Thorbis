@@ -20,13 +20,12 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next") || "/dashboard";
+  const _next = requestUrl.searchParams.get("next") || "/dashboard";
   const error = requestUrl.searchParams.get("error");
   const errorDescription = requestUrl.searchParams.get("error_description");
 
   // Handle OAuth errors
   if (error) {
-    console.error("Auth callback error:", error, errorDescription);
     return NextResponse.redirect(
       `${requestUrl.origin}/login?error=${encodeURIComponent(errorDescription || error)}`
     );
@@ -47,7 +46,6 @@ export async function GET(request: Request) {
         await supabase.auth.exchangeCodeForSession(code);
 
       if (exchangeError) {
-        console.error("Error exchanging code for session:", exchangeError);
         return NextResponse.redirect(
           `${requestUrl.origin}/login?error=${encodeURIComponent(exchangeError.message)}`
         );
@@ -61,25 +59,10 @@ export async function GET(request: Request) {
           .eq("id", data.user.id)
           .single();
 
-        console.log("📋 OAuth Callback - Profile check:", {
-          userId: data.user.id,
-          email: data.user.email,
-          hasProfile: !!profile,
-          profileError: profileError?.message,
-          phone: profile?.phone || "MISSING",
-          name: profile?.name || "MISSING",
-          isComplete: !!(profile?.phone && profile?.name),
-        });
-
         // If missing required fields, redirect to complete profile
         if (!(profile?.phone && profile?.name)) {
-          console.log(
-            "⚠️ Profile incomplete - redirecting to /complete-profile"
-          );
           return NextResponse.redirect(`${requestUrl.origin}/complete-profile`);
         }
-
-        console.log("✅ Profile complete - redirecting to dashboard");
       }
 
       // Successfully authenticated with complete profile
@@ -93,13 +76,9 @@ export async function GET(request: Request) {
         .maybeSingle();
 
       const redirectPath = hasCompany ? "/dashboard" : "/dashboard/welcome";
-      console.log(
-        `✅ Redirecting to ${redirectPath} (hasCompany: ${!!hasCompany})`
-      );
 
       return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
-    } catch (error) {
-      console.error("Unexpected error in auth callback:", error);
+    } catch (_error) {
       return NextResponse.redirect(
         `${requestUrl.origin}/login?error=${encodeURIComponent("An unexpected error occurred")}`
       );

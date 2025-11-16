@@ -5,7 +5,7 @@
  * Separated from server actions to comply with Next.js 16 "use server" restrictions.
  */
 
-export interface CustomerNote {
+export type CustomerNote = {
   id: string;
   company_id: string;
   customer_id: string;
@@ -20,4 +20,4 @@ export interface CustomerNote {
     email: string;
     avatar?: string;
   };
-}
+};

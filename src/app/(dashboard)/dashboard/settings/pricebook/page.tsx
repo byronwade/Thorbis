@@ -63,7 +63,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 // Constants
-const SIMULATED_API_DELAY = 1500;
+const _SIMULATED_API_DELAY = 1500;
 const DEFAULT_MARKUP_PERCENT = 50;
 const DEFAULT_MAX_DISCOUNT = 20;
 const DEFAULT_LOW_STOCK_THRESHOLD = 10;
@@ -132,7 +132,7 @@ export default function PriceBookSettingsPage() {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [_isSubmitting, _setIsSubmitting] = useState(false);
 
   const [laborRates, setLaborRates] = useState<LaborRate[]>([
     {
@@ -319,7 +319,7 @@ export default function PriceBookSettingsPage() {
             // Other fields can be extended as needed
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load pricebook settings");
       } finally {
         setIsLoading(false);

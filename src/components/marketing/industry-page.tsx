@@ -11,9 +11,9 @@ import { Button } from "@/components/ui/button";
 import type { MarketingIndustryContent } from "@/lib/marketing/types";
 import { getMarketingIcon } from "./marketing-icons";
 
-interface IndustryPageProps {
+type IndustryPageProps = {
   industry: MarketingIndustryContent;
-}
+};
 
 export function IndustryPage({ industry }: IndustryPageProps) {
   return (

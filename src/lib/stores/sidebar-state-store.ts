@@ -29,7 +29,7 @@ import { devtools, persist } from "zustand/middleware";
  */
 type SidebarStates = Record<string, boolean>;
 
-interface SidebarStateStore {
+type SidebarStateStore = {
   // Left sidebar state per route
   sidebarStates: SidebarStates;
 
@@ -49,7 +49,7 @@ interface SidebarStateStore {
   // Reset methods
   resetAllStates: () => void;
   resetRouteState: (route: string) => void;
-}
+};
 
 // ============================================================================
 // Initial State

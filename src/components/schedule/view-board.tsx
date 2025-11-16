@@ -31,7 +31,9 @@ export default function BoardView({
       const s = new Date(a.start);
       const k = startOfDay(s).toDateString();
       const arr = map.get(k);
-      if (arr) arr.push(a);
+      if (arr) {
+        arr.push(a);
+      }
     }
     return map;
   }, [assignments, dayDates]);

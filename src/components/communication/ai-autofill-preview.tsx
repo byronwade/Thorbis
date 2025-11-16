@@ -49,7 +49,7 @@ export function AIAutofillPreview() {
   const [editedCustomerInfo, setEditedCustomerInfo] = useState(
     extractedData.customerInfo
   );
-  const [approvedActionItems, setApprovedActionItems] = useState<Set<number>>(
+  const [_approvedActionItems, setApprovedActionItems] = useState<Set<number>>(
     new Set()
   );
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -75,22 +75,30 @@ export function AIAutofillPreview() {
   };
 
   // Handle action item approval
-  const handleApproveActionItem = (index: number) => {
+  const _handleApproveActionItem = (index: number) => {
     setApprovedActionItems((prev) => new Set([...prev, index]));
     // In production: create task in system
   };
 
   // Get confidence color
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return "text-success bg-success/30";
-    if (confidence >= 60) return "text-warning bg-warning/30";
+    if (confidence >= 80) {
+      return "text-success bg-success/30";
+    }
+    if (confidence >= 60) {
+      return "text-warning bg-warning/30";
+    }
     return "text-destructive bg-destructive/30";
   };
 
   // Get confidence text
   const getConfidenceText = (confidence: number) => {
-    if (confidence >= 80) return "High";
-    if (confidence >= 60) return "Medium";
+    if (confidence >= 80) {
+      return "High";
+    }
+    if (confidence >= 60) {
+      return "Medium";
+    }
     return "Low";
   };
 

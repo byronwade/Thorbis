@@ -137,7 +137,7 @@ export default function BankAccountsSettingsPage() {
         if (result.success && result.data) {
           setAccounts(result.data);
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to load bank accounts");
       } finally {
         setIsLoading(false);
@@ -226,7 +226,9 @@ export default function BankAccountsSettingsPage() {
   };
 
   const handleDelete = async () => {
-    if (!accountToDelete) return;
+    if (!accountToDelete) {
+      return;
+    }
 
     startTransition(async () => {
       const result = await deleteBankAccount(accountToDelete);

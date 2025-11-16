@@ -61,14 +61,14 @@ export type DataType =
   | "appointments"
   | "team";
 
-interface ImportExportDropdownProps {
+type ImportExportDropdownProps = {
   /** Type of data for import/export operations */
   dataType: DataType;
   /** Optional array of selected record IDs for bulk actions */
   selectedIds?: string[];
   /** Optional callback when bulk action is triggered */
   onBulkAction?: (action: string, ids: string[]) => void;
-}
+};
 
 export function ImportExportDropdown({
   dataType,

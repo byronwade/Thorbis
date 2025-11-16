@@ -89,7 +89,7 @@ export function PropertyPageContent({
   const propertyData = entityData;
   const router = useRouter();
   const { toast } = useToast();
-  const [mounted, setMounted] = useState(false);
+  const [_mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -111,7 +111,7 @@ export function PropertyPageContent({
   } = propertyData;
 
   // Get initials for avatar
-  const getInitials = (name: string) =>
+  const _getInitials = (name: string) =>
     name
       .split(" ")
       .map((n) => n[0])
@@ -128,7 +128,7 @@ export function PropertyPageContent({
     }).format(cents / 100);
 
   // Save handlers for inline editing
-  const handleSaveField = async (field: string, newValue: string) => {
+  const _handleSaveField = async (field: string, newValue: string) => {
     const formData = new FormData();
     formData.append(field, newValue);
 
@@ -286,7 +286,7 @@ export function PropertyPageContent({
     </div>
   );
 
-  const headerConfig: DetailPageHeaderConfig = {
+  const _headerConfig: DetailPageHeaderConfig = {
     title: property.name || property.address,
     subtitle: `${property.city}, ${property.state} ${property.zip_code}`,
     metadata: metadataItems,

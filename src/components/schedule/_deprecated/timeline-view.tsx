@@ -72,7 +72,7 @@ function timeStringToDate(
 // Convert Job to GanttFeature
 function jobToGanttFeature(
   job: Job,
-  technicianId: string,
+  _technicianId: string,
   viewMode: ViewMode,
   dayOffset = 0
 ): GanttFeature {
@@ -261,7 +261,9 @@ export function TimelineView() {
 
   // Maintain scroll position when switching views
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     // Small delay to allow Gantt to render
     const timer = setTimeout(() => {
@@ -269,14 +271,18 @@ export function TimelineView() {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [viewMode, mounted]);
+  }, [mounted, currentViewDate, scrollToDate]);
 
   // Track scroll position to update currentViewDate
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     const ganttElement = document.querySelector(".gantt");
-    if (!ganttElement) return;
+    if (!ganttElement) {
+      return;
+    }
 
     let scrollTimeout: NodeJS.Timeout;
 
@@ -344,7 +350,9 @@ export function TimelineView() {
   // Function to scroll to a specific date
   const scrollToDate = (targetDate: Date) => {
     const ganttElement = document.querySelector(".gantt");
-    if (!ganttElement) return;
+    if (!ganttElement) {
+      return;
+    }
 
     const columnWidth = 50; // Default Gantt column width
     const zoomLevel = getZoomLevel(viewMode);

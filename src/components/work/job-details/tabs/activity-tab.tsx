@@ -9,12 +9,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-interface ActivityTabProps {
+type ActivityTabProps = {
   job: any;
   activities: any[];
   communications: any[];
   customer: any;
-}
+};
 
 export function ActivityTab({
   job,

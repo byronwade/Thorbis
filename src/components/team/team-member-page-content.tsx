@@ -160,8 +160,7 @@ export function TeamMemberPageContent({
       toast.success("Team member updated successfully");
       setHasChanges(false);
       router.refresh();
-    } catch (error) {
-      console.error("Error saving team member:", error);
+    } catch (_error) {
       toast.error("Failed to update team member");
     } finally {
       setIsSaving(false);
@@ -319,15 +318,15 @@ export function TeamMemberPageContent({
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={() => console.log("Export")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Download className="mr-2 size-3.5" />
               Export to CSV
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Print")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Printer className="mr-2 size-3.5" />
               Print Profile
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Share")}>
+            <DropdownMenuItem onClick={() => {}}>
               <Share2 className="mr-2 size-3.5" />
               Share Profile Link
             </DropdownMenuItem>
@@ -336,7 +335,7 @@ export function TeamMemberPageContent({
 
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => console.log("Archive")}
+              onClick={() => {}}
             >
               <Archive className="mr-2 size-3.5" />
               Archive Member
@@ -352,7 +351,7 @@ export function TeamMemberPageContent({
     if (pathname) {
       setToolbarActions(pathname, getToolbarActions());
     }
-  }, [hasChanges, isSaving, pathname, setToolbarActions]);
+  }, [pathname, setToolbarActions, getToolbarActions]);
 
   const metadataItems: DetailPageHeaderConfig["metadata"] = [
     {
@@ -652,11 +651,7 @@ export function TeamMemberPageContent({
         icon: <Award className="size-4" />,
         count: certifications.length,
         actions: (
-          <Button
-            onClick={() => console.log("Add certification")}
-            size="sm"
-            variant="outline"
-          >
+          <Button onClick={() => {}} size="sm" variant="outline">
             <Plus className="mr-2 h-4 w-4" /> Add Certification
           </Button>
         ),
@@ -753,7 +748,9 @@ export function TeamMemberPageContent({
                 <TableBody>
                   {assignedJobs.map((assignment: any) => {
                     const job = assignment.job;
-                    if (!job) return null;
+                    if (!job) {
+                      return null;
+                    }
 
                     const customerName =
                       job.customer?.display_name ||

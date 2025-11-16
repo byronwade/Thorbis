@@ -152,7 +152,7 @@ export function TeamMemberPageContent({
       } else {
         toast.error(result.error || "Failed to archive team member");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to archive team member");
     } finally {
       setIsArchiving(false);
@@ -203,7 +203,7 @@ export function TeamMemberPageContent({
   ].filter(Boolean);
 
   // Save handlers for inline editing
-  const handleSavePhone = async (newValue: string) => {
+  const _handleSavePhone = async (newValue: string) => {
     const formData = new FormData();
     formData.append("phone", newValue);
     const result = await updateTeamMember(member.id, formData);
@@ -216,7 +216,7 @@ export function TeamMemberPageContent({
     return false;
   };
 
-  const handleSaveJobTitle = async (newValue: string) => {
+  const _handleSaveJobTitle = async (newValue: string) => {
     const formData = new FormData();
     formData.append("job_title", newValue);
     const result = await updateTeamMember(member.id, formData);

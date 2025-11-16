@@ -40,7 +40,7 @@ function formatRelative(
 
     const diffHours = Math.round(diffMinutes / 60);
     return relativeFormatter.format(diffHours, "hour");
-  } catch (error) {
+  } catch (_error) {
     // Fallback if Intl.RelativeTimeFormat is not available
     const now = referenceTime;
     const then = new Date(iso).getTime();

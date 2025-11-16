@@ -22,10 +22,10 @@ import {
   View,
 } from "@react-pdf/renderer";
 
-interface InvoicePDFProps {
+type InvoicePDFProps = {
   content: any; // TipTap JSON
   customization?: any; // From Zustand store
-}
+};
 
 const DEFAULT_COLORS = {
   background: "#fafafa",
@@ -50,7 +50,7 @@ const DEFAULT_COLORS = {
 const createStyles = (customization?: any) => {
   const colors = customization?.colors || {};
   const typography = customization?.typography || {};
-  const spacing = customization?.spacing || {};
+  const _spacing = customization?.spacing || {};
 
   return StyleSheet.create({
     page: {

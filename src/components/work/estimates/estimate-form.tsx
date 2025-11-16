@@ -109,7 +109,7 @@ export function EstimateForm({
 
   // Filter properties by selected customer
   const customerProperties = selectedCustomerId
-    ? properties.filter((p) => {
+    ? properties.filter((_p) => {
         // This is a simplified filter - in real implementation,
         // properties would have a customer_id foreign key
         return true;
@@ -397,7 +397,7 @@ export function EstimateForm({
 
           {/* Line Items List */}
           <div className="space-y-3">
-            {lineItems.map((item, index) => (
+            {lineItems.map((item, _index) => (
               <div
                 className="grid grid-cols-12 gap-3 rounded-lg border p-3"
                 key={item.id}

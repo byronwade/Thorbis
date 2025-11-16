@@ -68,10 +68,18 @@ export function InlinePropertyForm({
 
     // Client-side validation
     const newErrors: Record<string, string> = {};
-    if (!formData.address.trim()) newErrors.address = "Address is required";
-    if (!formData.city.trim()) newErrors.city = "City is required";
-    if (!formData.state.trim()) newErrors.state = "State is required";
-    if (!formData.zipCode.trim()) newErrors.zipCode = "ZIP code is required";
+    if (!formData.address.trim()) {
+      newErrors.address = "Address is required";
+    }
+    if (!formData.city.trim()) {
+      newErrors.city = "City is required";
+    }
+    if (!formData.state.trim()) {
+      newErrors.state = "State is required";
+    }
+    if (!formData.zipCode.trim()) {
+      newErrors.zipCode = "ZIP code is required";
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -84,12 +92,15 @@ export function InlinePropertyForm({
     serverFormData.append("customerId", customerId);
     serverFormData.append("name", formData.name || formData.address); // Use address as name if not provided
     serverFormData.append("address", formData.address);
-    if (formData.address2) serverFormData.append("address2", formData.address2);
+    if (formData.address2) {
+      serverFormData.append("address2", formData.address2);
+    }
     serverFormData.append("city", formData.city);
     serverFormData.append("state", formData.state);
     serverFormData.append("zipCode", formData.zipCode);
-    if (formData.accessNotes)
+    if (formData.accessNotes) {
       serverFormData.append("notes", formData.accessNotes);
+    }
 
     const result = await createProperty(serverFormData);
 

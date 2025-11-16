@@ -366,8 +366,7 @@ async function geocodePrimaryPropertyIfAvailable(
 ): Promise<{ lat: number | null; lon: number | null }> {
   if (
     !(
-      primaryProperty &&
-      primaryProperty.address &&
+      primaryProperty?.address &&
       primaryProperty.city &&
       primaryProperty.state &&
       primaryProperty.zipCode

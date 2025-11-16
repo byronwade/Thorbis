@@ -155,7 +155,7 @@ export type JobPageContentProps = {
   metrics?: any;
 };
 
-function formatCurrency(amount: number | null | undefined): string {
+function _formatCurrency(amount: number | null | undefined): string {
   if (amount === null || amount === undefined) {
     return "$0.00";
   }
@@ -253,7 +253,7 @@ export function JobPageContentUnified({
       } else {
         toast.error(result.error || "Failed to archive job");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to archive job");
     } finally {
       setIsArchiving(false);
@@ -344,7 +344,7 @@ export function JobPageContentUnified({
         } else {
           toast.error(result.error || "Failed to update customer");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to update customer");
       } finally {
         setIsUpdatingCustomer(false);
@@ -369,7 +369,7 @@ export function JobPageContentUnified({
       } else {
         toast.error(result.error || "Failed to remove customer");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove customer");
     } finally {
       setIsUpdatingCustomer(false);
@@ -402,7 +402,7 @@ export function JobPageContentUnified({
         } else {
           toast.error(result.error || "Failed to update property");
         }
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to update property");
       } finally {
         setIsUpdatingProperty(false);
@@ -425,7 +425,7 @@ export function JobPageContentUnified({
       } else {
         toast.error(result.error || "Failed to remove property");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove property");
     } finally {
       setIsUpdatingProperty(false);
@@ -1154,10 +1154,10 @@ export function JobPageContentUnified({
     schedules,
     photos,
     documents,
-    allProperties,
     updateField,
     isUpdatingCustomer,
     isUpdatingProperty,
+    router.push,
   ]);
 
   const relatedItems = useMemo(() => {

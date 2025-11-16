@@ -146,7 +146,7 @@ export function VendorPageContent({
       } else {
         toast.error(result.error || "Failed to link purchase order");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to link purchase order");
     } finally {
       setIsLinkingPO(false);
@@ -154,7 +154,9 @@ export function VendorPageContent({
   };
 
   const handleSave = useCallback(async () => {
-    if (!hasChanges) return;
+    if (!hasChanges) {
+      return;
+    }
 
     setIsSaving(true);
     const previousState = { ...vendor };
@@ -164,32 +166,61 @@ export function VendorPageContent({
       formData.append("name", vendor.name);
       formData.append("display_name", vendor.display_name);
       formData.append("vendor_number", vendor.vendor_number);
-      if (vendor.email) formData.append("email", vendor.email);
-      if (vendor.phone) formData.append("phone", vendor.phone);
-      if (vendor.secondary_phone)
+      if (vendor.email) {
+        formData.append("email", vendor.email);
+      }
+      if (vendor.phone) {
+        formData.append("phone", vendor.phone);
+      }
+      if (vendor.secondary_phone) {
         formData.append("secondary_phone", vendor.secondary_phone);
-      if (vendor.website) formData.append("website", vendor.website);
-      if (vendor.address) formData.append("address", vendor.address);
-      if (vendor.address2) formData.append("address2", vendor.address2);
-      if (vendor.city) formData.append("city", vendor.city);
-      if (vendor.state) formData.append("state", vendor.state);
-      if (vendor.zip_code) formData.append("zip_code", vendor.zip_code);
-      if (vendor.country) formData.append("country", vendor.country);
-      if (vendor.tax_id) formData.append("tax_id", vendor.tax_id);
-      if (vendor.payment_terms)
+      }
+      if (vendor.website) {
+        formData.append("website", vendor.website);
+      }
+      if (vendor.address) {
+        formData.append("address", vendor.address);
+      }
+      if (vendor.address2) {
+        formData.append("address2", vendor.address2);
+      }
+      if (vendor.city) {
+        formData.append("city", vendor.city);
+      }
+      if (vendor.state) {
+        formData.append("state", vendor.state);
+      }
+      if (vendor.zip_code) {
+        formData.append("zip_code", vendor.zip_code);
+      }
+      if (vendor.country) {
+        formData.append("country", vendor.country);
+      }
+      if (vendor.tax_id) {
+        formData.append("tax_id", vendor.tax_id);
+      }
+      if (vendor.payment_terms) {
         formData.append("payment_terms", vendor.payment_terms);
-      if (vendor.credit_limit)
+      }
+      if (vendor.credit_limit) {
         formData.append("credit_limit", (vendor.credit_limit / 100).toString());
-      if (vendor.preferred_payment_method)
+      }
+      if (vendor.preferred_payment_method) {
         formData.append(
           "preferred_payment_method",
           vendor.preferred_payment_method
         );
-      if (vendor.category) formData.append("category", vendor.category);
+      }
+      if (vendor.category) {
+        formData.append("category", vendor.category);
+      }
       formData.append("status", vendor.status);
-      if (vendor.notes) formData.append("notes", vendor.notes);
-      if (vendor.internal_notes)
+      if (vendor.notes) {
+        formData.append("notes", vendor.notes);
+      }
+      if (vendor.internal_notes) {
         formData.append("internal_notes", vendor.internal_notes);
+      }
 
       const result = await updateVendor(vendor.id, formData);
 
@@ -202,7 +233,7 @@ export function VendorPageContent({
         setHasChanges(false);
         toast.error(result.error || "Failed to save changes");
       }
-    } catch (error) {
+    } catch (_error) {
       setVendor(previousState);
       setHasChanges(false);
       toast.error("Failed to save changes");

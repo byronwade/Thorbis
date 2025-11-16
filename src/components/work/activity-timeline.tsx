@@ -57,10 +57,10 @@ import {
 } from "@/lib/utils/activity-tracker";
 import type { Activity, ActivityCategory } from "@/types/activity";
 
-interface ActivityTimelineProps {
+type ActivityTimelineProps = {
   activities: Activity[];
   isLoading?: boolean;
-}
+};
 
 export function ActivityTimeline({
   activities,
@@ -73,14 +73,14 @@ export function ActivityTimeline({
   // Get density settings from store
   const density = useActivityTimelineStore((state) => state.density);
   const applyDensity = useActivityTimelineStore((state) => state.applyDensity);
-  const itemSpacing = useActivityTimelineStore((state) => state.itemSpacing);
-  const showIcons = useActivityTimelineStore((state) => state.showIcons);
-  const showAvatars = useActivityTimelineStore((state) => state.showAvatars);
+  const _itemSpacing = useActivityTimelineStore((state) => state.itemSpacing);
+  const _showIcons = useActivityTimelineStore((state) => state.showIcons);
+  const _showAvatars = useActivityTimelineStore((state) => state.showAvatars);
   const showAttachmentPreviews = useActivityTimelineStore(
     (state) => state.showAttachmentPreviews
   );
   const showMetadata = useActivityTimelineStore((state) => state.showMetadata);
-  const iconSize = useActivityTimelineStore((state) => state.iconSize);
+  const _iconSize = useActivityTimelineStore((state) => state.iconSize);
   const textSize = useActivityTimelineStore((state) => state.textSize);
 
   const handleDensityChange = (newDensity: TimelineDensity) => {
@@ -441,7 +441,7 @@ function ActivityTimelineItem({
 /**
  * Get the icon component for an activity type
  */
-function getActivityIconComponent(activityType: Activity["activityType"]) {
+function _getActivityIconComponent(activityType: Activity["activityType"]) {
   const iconMap = {
     created: Sparkles,
     deleted: Zap,
@@ -466,7 +466,7 @@ function getActivityIconComponent(activityType: Activity["activityType"]) {
 /**
  * Get the color class for an activity category
  */
-function getActivityIconColorClass(category: ActivityCategory): string {
+function _getActivityIconColorClass(category: ActivityCategory): string {
   const colorMap = {
     system: "text-primary",
     user: "text-success",

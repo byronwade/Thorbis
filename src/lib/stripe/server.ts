@@ -24,9 +24,6 @@ function getStripeServer(): Stripe | null {
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
   if (!secretKey) {
-    console.error(
-      "Stripe secret key not configured. Set STRIPE_SECRET_KEY environment variable."
-    );
     return null;
   }
 
@@ -50,7 +47,9 @@ export async function getOrCreateStripeCustomer(
   email: string,
   name?: string
 ): Promise<string | null> {
-  if (!stripe) return null;
+  if (!stripe) {
+    return null;
+  }
 
   try {
     // Check if customer already exists
@@ -73,8 +72,7 @@ export async function getOrCreateStripeCustomer(
     });
 
     return customer.id;
-  } catch (error) {
-    console.error("Error creating Stripe customer:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -100,14 +98,15 @@ export async function createCheckoutSession({
   cancelUrl: string;
   phoneNumber?: string;
 }): Promise<string | null> {
-  if (!stripe) return null;
+  if (!stripe) {
+    return null;
+  }
 
   try {
     const basePriceId = process.env.STRIPE_PRICE_ID_BASE_PLAN;
     const additionalOrgPriceId = process.env.STRIPE_PRICE_ID_ADDITIONAL_ORG;
 
     if (!basePriceId) {
-      console.error("Stripe base plan price ID not configured");
       return null;
     }
 
@@ -146,8 +145,7 @@ export async function createCheckoutSession({
     });
 
     return session.url;
-  } catch (error) {
-    console.error("Error creating checkout session:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -161,7 +159,9 @@ export async function createBillingPortalSession(
   customerId: string,
   returnUrl: string
 ): Promise<string | null> {
-  if (!stripe) return null;
+  if (!stripe) {
+    return null;
+  }
 
   try {
     const session = await stripe.billingPortal.sessions.create({
@@ -170,8 +170,7 @@ export async function createBillingPortalSession(
     });
 
     return session.url;
-  } catch (error) {
-    console.error("Error creating billing portal session:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -184,7 +183,9 @@ export async function createBillingPortalSession(
 export async function cancelSubscription(
   subscriptionId: string
 ): Promise<boolean> {
-  if (!stripe) return false;
+  if (!stripe) {
+    return false;
+  }
 
   try {
     await stripe.subscriptions.update(subscriptionId, {
@@ -192,8 +193,7 @@ export async function cancelSubscription(
     });
 
     return true;
-  } catch (error) {
-    console.error("Error canceling subscription:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -206,7 +206,9 @@ export async function cancelSubscription(
 export async function reactivateSubscription(
   subscriptionId: string
 ): Promise<boolean> {
-  if (!stripe) return false;
+  if (!stripe) {
+    return false;
+  }
 
   try {
     await stripe.subscriptions.update(subscriptionId, {
@@ -214,8 +216,7 @@ export async function reactivateSubscription(
     });
 
     return true;
-  } catch (error) {
-    console.error("Error reactivating subscription:", error);
+  } catch (_error) {
     return false;
   }
 }
@@ -226,13 +227,14 @@ export async function reactivateSubscription(
 export async function getSubscription(
   subscriptionId: string
 ): Promise<Stripe.Subscription | null> {
-  if (!stripe) return null;
+  if (!stripe) {
+    return null;
+  }
 
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId);
     return subscription;
-  } catch (error) {
-    console.error("Error retrieving subscription:", error);
+  } catch (_error) {
     return null;
   }
 }
@@ -243,7 +245,9 @@ export async function getSubscription(
 export async function listCustomerSubscriptions(
   customerId: string
 ): Promise<Stripe.Subscription[]> {
-  if (!stripe) return [];
+  if (!stripe) {
+    return [];
+  }
 
   try {
     const subscriptions = await stripe.subscriptions.list({
@@ -252,8 +256,7 @@ export async function listCustomerSubscriptions(
     });
 
     return subscriptions.data;
-  } catch (error) {
-    console.error("Error listing subscriptions:", error);
+  } catch (_error) {
     return [];
   }
 }
@@ -268,7 +271,9 @@ export async function attachPaymentMethodToCustomer(
   paymentMethodId: string,
   customerId: string
 ): Promise<boolean> {
-  if (!stripe) return false;
+  if (!stripe) {
+    return false;
+  }
 
   try {
     // Attach payment method to customer
@@ -284,8 +289,7 @@ export async function attachPaymentMethodToCustomer(
     });
 
     return true;
-  } catch (error) {
-    console.error("Error attaching payment method:", error);
+  } catch (_error) {
     return false;
   }
 }

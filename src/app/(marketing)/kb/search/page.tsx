@@ -30,9 +30,9 @@ export const metadata = generateSEOMetadata({
   nofollow: true,
 });
 
-interface SearchPageProps {
+type SearchPageProps = {
   searchParams: Promise<{ q?: string; category?: string; tag?: string }>;
-}
+};
 
 function SearchResults({
   query,
@@ -47,7 +47,7 @@ function SearchResults({
     <Suspense
       fallback={
         <div className="space-y-4">
-          {[...Array(6)].map((_, i) => (
+          {[...new Array(6)].map((_, i) => (
             <Skeleton className="h-32 w-full" key={i} />
           ))}
         </div>

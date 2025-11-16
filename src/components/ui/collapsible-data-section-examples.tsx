@@ -26,7 +26,7 @@ export function BasicAccordionExample() {
         actions={
           <CollapsibleActionButton
             icon={<Plus className="size-4" />}
-            onClick={() => console.log("Add job")}
+            onClick={() => {}}
           >
             Add Job
           </CollapsibleActionButton>
@@ -43,7 +43,7 @@ export function BasicAccordionExample() {
         actions={
           <CollapsibleActionButton
             icon={<Plus className="size-4" />}
-            onClick={() => console.log("Add invoice")}
+            onClick={() => {}}
           >
             Add Invoice
           </CollapsibleActionButton>
@@ -70,7 +70,7 @@ export function StandaloneExample() {
       actions={
         <CollapsibleActionButton
           icon={<Plus className="size-4" />}
-          onClick={() => console.log("Add job")}
+          onClick={() => {}}
         >
           Add Job
         </CollapsibleActionButton>
@@ -93,14 +93,14 @@ export function StandaloneExample() {
  * Show a skeleton loader while data is being fetched
  */
 export function LoadingStateExample() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, _setIsLoading] = useState(true);
 
   return (
     <CollapsibleDataSection
       actions={
         <CollapsibleActionButton
           icon={<Plus className="size-4" />}
-          onClick={() => console.log("Add job")}
+          onClick={() => {}}
         >
           Add Job
         </CollapsibleActionButton>
@@ -128,7 +128,7 @@ export function ErrorStateExample() {
       actions={
         <CollapsibleActionButton
           icon={<Plus className="size-4" />}
-          onClick={() => console.log("Retry")}
+          onClick={() => {}}
         >
           Retry
         </CollapsibleActionButton>
@@ -149,9 +149,7 @@ export function ErrorStateExample() {
  * Show a helpful empty state when there's no data
  */
 export function EmptyStateExample() {
-  const handleAddJob = () => {
-    console.log("Add first job");
-  };
+  const handleAddJob = () => {};
 
   return (
     <CollapsibleDataSection
@@ -199,7 +197,7 @@ export function FullWidthContentExample() {
       actions={
         <CollapsibleActionButton
           icon={<Plus className="size-4" />}
-          onClick={() => console.log("Add job")}
+          onClick={() => {}}
         >
           Add Job
         </CollapsibleActionButton>
@@ -234,10 +232,9 @@ export function OptimisticUpdateExample() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       // Success - count is already updated
-    } catch (error) {
+    } catch (_error) {
       // Rollback on error
       setCount((prev) => prev - 1);
-      console.error("Failed to add job");
     } finally {
       setIsLoading(false);
     }
@@ -284,7 +281,7 @@ export function ControlledStateExample() {
         actions={
           <CollapsibleActionButton
             icon={<Plus className="size-4" />}
-            onClick={() => console.log("Add job")}
+            onClick={() => {}}
           >
             Add Job
           </CollapsibleActionButton>
@@ -312,15 +309,12 @@ export function MultipleActionsExample() {
     <CollapsibleDataSection
       actions={
         <>
-          <CollapsibleActionButton
-            onClick={() => console.log("Export")}
-            variant="outline"
-          >
+          <CollapsibleActionButton onClick={() => {}} variant="outline">
             Export
           </CollapsibleActionButton>
           <CollapsibleActionButton
             icon={<Plus className="size-4" />}
-            onClick={() => console.log("Add job")}
+            onClick={() => {}}
           >
             Add Job
           </CollapsibleActionButton>
@@ -371,7 +365,7 @@ export function ComplexRealWorldExample() {
           1000
         )
       );
-    } catch (err) {
+    } catch (_err) {
       // Rollback on error
       setJobs((prev) => prev.filter((j) => j.id !== tempId));
       setError("Failed to add job");

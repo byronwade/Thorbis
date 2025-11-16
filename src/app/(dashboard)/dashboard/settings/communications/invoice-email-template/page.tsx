@@ -109,7 +109,9 @@ export default function InvoiceEmailTemplatePage() {
     const textarea = document.getElementById(
       "email-body"
     ) as HTMLTextAreaElement;
-    if (!textarea) return;
+    if (!textarea) {
+      return;
+    }
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;

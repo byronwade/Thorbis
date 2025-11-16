@@ -41,7 +41,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface SettingsPageLayoutProps {
+type SettingsPageLayoutProps = {
   /** Page title (displayed as text-4xl) */
   title: string;
 
@@ -71,7 +71,7 @@ interface SettingsPageLayoutProps {
 
   /** Page content (Cards, forms, etc.) */
   children: ReactNode;
-}
+};
 
 export function SettingsPageLayout({
   title,
@@ -211,7 +211,7 @@ export function SettingsPageLayout({
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
-interface SettingsInfoBannerProps {
+type SettingsInfoBannerProps = {
   /** Icon to display (Lucide icon component) */
   icon: LucideIcon;
 
@@ -223,7 +223,7 @@ interface SettingsInfoBannerProps {
 
   /** Variant color (default: blue) */
   variant?: "blue" | "amber" | "red" | "green";
-}
+};
 
 export function SettingsInfoBanner({
   icon: Icon,

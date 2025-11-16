@@ -31,13 +31,13 @@ export const metadata = generateSEOMetadata({
   ],
 });
 
-interface BlogPageProps {
+type BlogPageProps = {
   searchParams?: {
     category?: string;
     tag?: string;
     page?: string;
   };
-}
+};
 
 function buildQuery({
   category,

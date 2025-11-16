@@ -189,7 +189,7 @@ export function EntityTags({
       } else {
         toast.error(result.error || "Failed to add tag");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to add tag");
     } finally {
       setIsSaving(false);
@@ -212,7 +212,7 @@ export function EntityTags({
       } else {
         toast.error(result.error || "Failed to remove tag");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to remove tag");
     } finally {
       setTagToRemove(null);

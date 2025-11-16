@@ -81,7 +81,9 @@ export function CustomPaymentForm({
   const isFormComplete = cardComplete && expiryComplete && cvcComplete;
 
   const handleSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
 
     if (!(stripe && elements)) {
       onError("Stripe has not loaded yet. Please try again.");

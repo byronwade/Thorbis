@@ -34,12 +34,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface PhoneNumberSearchModalProps {
+type PhoneNumberSearchModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: (phoneNumber: string) => void;
   companyId: string;
-}
+};
 
 export function PhoneNumberSearchModal({
   open,
@@ -59,7 +59,9 @@ export function PhoneNumberSearchModal({
     setSearching(true);
 
     const features: Array<"voice" | "sms" | "mms"> = [];
-    if (voiceEnabled) features.push("voice");
+    if (voiceEnabled) {
+      features.push("voice");
+    }
     if (smsEnabled) {
       features.push("sms");
       features.push("mms");

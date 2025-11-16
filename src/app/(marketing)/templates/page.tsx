@@ -22,9 +22,9 @@ export const metadata = generateSEOMetadata({
   ],
 });
 
-interface TemplatesPageProps {
+type TemplatesPageProps = {
   searchParams?: { tag?: string };
-}
+};
 
 export default async function TemplatesPage({
   searchParams,

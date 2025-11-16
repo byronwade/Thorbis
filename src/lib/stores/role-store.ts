@@ -130,7 +130,5 @@ export async function initializeRoleFromDatabase() {
     if (result.success && result.data) {
       useRoleStore.getState().setActualRole(result.data);
     }
-  } catch (error) {
-    console.error("Failed to initialize role from database:", error);
-  }
+  } catch (_error) {}
 }

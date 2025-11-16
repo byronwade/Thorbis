@@ -90,11 +90,17 @@ export function EstimatesTable({
     };
 
     for (const estimate of estimates) {
-      if (estimate.status === "draft") counts.draft++;
-      else if (estimate.status === "sent") counts.sent++;
-      else if (estimate.status === "accepted") counts.accepted++;
-      else if (estimate.status === "declined") counts.declined++;
-      else if (estimate.status === "expired") counts.expired++;
+      if (estimate.status === "draft") {
+        counts.draft++;
+      } else if (estimate.status === "sent") {
+        counts.sent++;
+      } else if (estimate.status === "accepted") {
+        counts.accepted++;
+      } else if (estimate.status === "declined") {
+        counts.declined++;
+      } else if (estimate.status === "expired") {
+        counts.expired++;
+      }
     }
 
     return counts;
@@ -107,8 +113,11 @@ export function EstimatesTable({
 
     for (const estimate of estimates) {
       const isArchived = Boolean(estimate.archived_at || estimate.deleted_at);
-      if (isArchived) archived++;
-      else active++;
+      if (isArchived) {
+        archived++;
+      } else {
+        active++;
+      }
     }
 
     return { all: estimates.length, active, archived };
@@ -153,8 +162,12 @@ export function EstimatesTable({
       // Filter by archive status
       const archiveFilter = activeFilters.Archive;
       const isArchived = Boolean(estimate.archived_at || estimate.deleted_at);
-      if (archiveFilter === "active" && isArchived) return false;
-      if (archiveFilter === "archived" && !isArchived) return false;
+      if (archiveFilter === "active" && isArchived) {
+        return false;
+      }
+      if (archiveFilter === "archived" && !isArchived) {
+        return false;
+      }
 
       return true;
     });
@@ -335,7 +348,9 @@ export function EstimatesTable({
       label: "Send",
       icon: <Send className="h-4 w-4" />,
       onClick: async (selectedIds) => {
-        if (isBulkSending) return;
+        if (isBulkSending) {
+          return;
+        }
 
         const estimatesToSend = filteredEstimates.filter((est) =>
           selectedIds.has(est.id)

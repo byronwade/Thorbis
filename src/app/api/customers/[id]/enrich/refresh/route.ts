@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
  * POST - Force refresh enrichment data
  */
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -48,8 +48,7 @@ export async function POST(
     }
 
     return NextResponse.json({ data: result.data }, { status: 200 });
-  } catch (error) {
-    console.error("Error refreshing enrichment:", error);
+  } catch (_error) {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

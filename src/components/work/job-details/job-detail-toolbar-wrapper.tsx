@@ -25,9 +25,7 @@ export function JobDetailToolbarWrapper() {
           const data = await response.json();
           setJobData(data);
         }
-      } catch (error) {
-        console.error("Failed to fetch job data for toolbar:", error);
-      }
+      } catch (_error) {}
     }
 
     if (jobId) {

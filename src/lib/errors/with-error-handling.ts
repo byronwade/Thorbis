@@ -74,19 +74,8 @@ export async function withErrorHandling<T>(
       if (isExpectedAuthError) {
         // Only log in development, or as a warning
         if (process.env.NODE_ENV === "development") {
-          console.warn(
-            `[ActionError ${error.code}]:`,
-            error.message,
-            error.details
-          );
         }
       } else {
-        // Log other errors normally
-        console.error(
-          `[ActionError ${error.code}]:`,
-          error.message,
-          error.details
-        );
       }
 
       return {
@@ -99,7 +88,6 @@ export async function withErrorHandling<T>(
 
     // Handle Zod validation errors
     if (error instanceof ZodError) {
-      console.error("[ValidationError]:", error.issues);
       return {
         success: false,
         error: error.issues[0]?.message || "Validation failed",
@@ -115,7 +103,6 @@ export async function withErrorHandling<T>(
 
     // Handle standard JavaScript errors
     if (error instanceof Error) {
-      console.error("[UnexpectedError]:", error.message, error.stack);
       return {
         success: false,
         error:
@@ -125,9 +112,6 @@ export async function withErrorHandling<T>(
         code: ERROR_CODES.INTERNAL_SERVER_ERROR,
       };
     }
-
-    // Handle unknown errors
-    console.error("[UnknownError]:", error);
     return {
       success: false,
       error: "An unexpected error occurred",

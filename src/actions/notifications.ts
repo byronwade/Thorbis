@@ -151,7 +151,6 @@ export async function getNotifications(
     const { data, error, count } = await query;
 
     if (error) {
-      console.error("Error fetching notifications:", error);
       return {
         success: false,
         error: "Failed to fetch notifications",
@@ -166,7 +165,6 @@ export async function getNotifications(
       count: count || 0,
     };
   } catch (error) {
-    console.error("Error in getNotifications:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -202,7 +200,6 @@ export async function getUnreadCount() {
     );
 
     if (error) {
-      console.error("Error fetching unread count:", error);
       return {
         success: false,
         error: "Failed to fetch unread count",
@@ -212,7 +209,6 @@ export async function getUnreadCount() {
 
     return { success: true, count: data || 0 };
   } catch (error) {
-    console.error("Error in getUnreadCount:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "An error occurred",
@@ -251,7 +247,6 @@ export async function createNotification(input: CreateNotificationInput) {
       .single();
 
     if (error) {
-      console.error("Error creating notification:", error);
       return { success: false, error: "Failed to create notification" };
     }
 
@@ -261,7 +256,6 @@ export async function createNotification(input: CreateNotificationInput) {
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error in createNotification:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -296,7 +290,6 @@ export async function markAsRead(notificationId: string) {
       .eq("user_id", userId); // Ensure user owns the notification
 
     if (error) {
-      console.error("Error marking notification as read:", error);
       return { success: false, error: "Failed to mark notification as read" };
     }
 
@@ -305,7 +298,6 @@ export async function markAsRead(notificationId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error in markAsRead:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -334,7 +326,6 @@ export async function markAllAsRead() {
     });
 
     if (error) {
-      console.error("Error marking all notifications as read:", error);
       return {
         success: false,
         error: "Failed to mark all notifications as read",
@@ -347,7 +338,6 @@ export async function markAllAsRead() {
 
     return { success: true, count: data || 0 };
   } catch (error) {
-    console.error("Error in markAllAsRead:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "An error occurred",
@@ -377,7 +367,6 @@ export async function markAsUnread(notificationId: string) {
       .eq("user_id", userId); // Ensure user owns the notification
 
     if (error) {
-      console.error("Error marking notification as unread:", error);
       return { success: false, error: "Failed to mark notification as unread" };
     }
 
@@ -386,7 +375,6 @@ export async function markAsUnread(notificationId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error in markAsUnread:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -421,7 +409,6 @@ export async function deleteNotification(notificationId: string) {
       .eq("user_id", userId); // Ensure user owns the notification
 
     if (error) {
-      console.error("Error deleting notification:", error);
       return { success: false, error: "Failed to delete notification" };
     }
 
@@ -430,7 +417,6 @@ export async function deleteNotification(notificationId: string) {
 
     return { success: true };
   } catch (error) {
-    console.error("Error in deleteNotification:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,
@@ -464,7 +450,6 @@ export async function getNotificationPreferences() {
       .eq("company_id", companyId);
 
     if (error) {
-      console.error("Error fetching notification preferences:", error);
       return {
         success: false,
         error: "Failed to fetch notification preferences",
@@ -474,7 +459,6 @@ export async function getNotificationPreferences() {
 
     return { success: true, data: data || [] };
   } catch (error) {
-    console.error("Error in getNotificationPreferences:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "An error occurred",
@@ -520,7 +504,6 @@ export async function updateNotificationPreferences(
       .insert(preferencesToInsert);
 
     if (error) {
-      console.error("Error updating notification preferences:", error);
       return {
         success: false,
         error: "Failed to update notification preferences",
@@ -531,7 +514,6 @@ export async function updateNotificationPreferences(
 
     return { success: true };
   } catch (error) {
-    console.error("Error in updateNotificationPreferences:", error);
     if (error instanceof z.ZodError) {
       return {
         success: false,

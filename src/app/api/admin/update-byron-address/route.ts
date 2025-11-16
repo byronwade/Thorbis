@@ -32,8 +32,6 @@ export async function POST() {
       .select("company_id, status, role")
       .eq("user_id", user.id);
 
-    console.log("Team members found:", teamMembers);
-
     if (!teamMembers || teamMembers.length === 0) {
       return NextResponse.json(
         {
@@ -49,8 +47,6 @@ export async function POST() {
     const activeTeamMember = teamMembers.find((tm) => tm.status === "active");
     const companyId = activeTeamMember?.company_id || teamMembers[0].company_id;
 
-    console.log("Using company ID:", companyId);
-
     // Get all properties for this company
     const { data: allProperties, error: propertiesError } = await supabase
       .from("properties")
@@ -63,8 +59,6 @@ export async function POST() {
         { status: 500 }
       );
     }
-
-    console.log(`Found ${allProperties?.length || 0} properties to update`);
 
     // New address data (without customer_id and company_id - they stay the same)
     const addressUpdate = {
@@ -92,8 +86,6 @@ export async function POST() {
       );
     }
 
-    console.log(`Updated ${updatedProperties?.length || 0} properties`);
-
     return NextResponse.json({
       success: true,
       message: `Successfully updated ${updatedProperties?.length || 0} properties!`,
@@ -106,7 +98,6 @@ export async function POST() {
           : undefined,
     });
   } catch (error: any) {
-    console.error("Update addresses error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
       { status: 500 }

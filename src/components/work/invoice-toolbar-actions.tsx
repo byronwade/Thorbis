@@ -23,9 +23,9 @@ import {
 } from "@/components/ui/tooltip";
 
 export function InvoiceToolbarActions() {
-  const [isSaving, setIsSaving] = useState(false);
+  const [_isSaving, setIsSaving] = useState(false);
 
-  const handleSave = async () => {
+  const _handleSave = async () => {
     setIsSaving(true);
     // TODO: Implement save logic
     setTimeout(() => {
@@ -33,20 +33,11 @@ export function InvoiceToolbarActions() {
     }, 1000);
   };
 
-  const handleExportPDF = () => {
-    // TODO: Implement PDF export
-    console.log("Export to PDF");
-  };
+  const handleExportPDF = () => {};
 
-  const handleSendEmail = () => {
-    // TODO: Implement email sending
-    console.log("Send email");
-  };
+  const handleSendEmail = () => {};
 
-  const handlePreview = () => {
-    // TODO: Implement preview
-    console.log("Preview invoice");
-  };
+  const handlePreview = () => {};
 
   return (
     <div className="flex items-center gap-1.5">

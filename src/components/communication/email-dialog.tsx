@@ -27,7 +27,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
-interface EmailDialogProps {
+type EmailDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   customerName: string;
@@ -41,7 +41,7 @@ interface EmailDialogProps {
   defaultSubject?: string;
   defaultBody?: string;
   onCommunicationCreated?: (record: CommunicationRecord) => void;
-}
+};
 
 export function EmailDialog({
   open,

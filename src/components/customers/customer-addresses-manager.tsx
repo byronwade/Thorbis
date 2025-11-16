@@ -208,7 +208,7 @@ export function CustomerAddressesManager({
           alert(result.error || "Failed to add address");
         }
       }
-    } catch (error) {
+    } catch (_error) {
       alert("An error occurred");
     } finally {
       setIsLoading(false);
@@ -236,7 +236,9 @@ export function CustomerAddressesManager({
   };
 
   const handleDelete = async (addressId: string) => {
-    if (!confirm("Are you sure you want to delete this address?")) return;
+    if (!confirm("Are you sure you want to delete this address?")) {
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -246,7 +248,7 @@ export function CustomerAddressesManager({
       } else {
         alert(result.error || "Failed to delete address");
       }
-    } catch (error) {
+    } catch (_error) {
       alert("An error occurred");
     } finally {
       setIsLoading(false);

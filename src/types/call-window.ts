@@ -31,7 +31,7 @@ export type Contract = {
 /**
  * Quick statistics for customer overview
  */
-export interface CustomerStats {
+export type CustomerStats = {
   totalJobs: number;
   activeJobs: number;
   totalRevenue: number;
@@ -39,24 +39,24 @@ export interface CustomerStats {
   openInvoicesAmount: number;
   lastContactDate: string | null;
   customerSince: string | null;
-}
+};
 
 /**
  * Telnyx caller enrichment data
  */
-export interface TelnyxEnrichmentData {
+export type TelnyxEnrichmentData = {
   callerName: string | null;
   callerType: string | null;
   lineType: string | null;
   carrier: string | null;
   country: string | null;
   nationalFormat: string | null;
-}
+};
 
 /**
  * Comprehensive customer data for call window
  */
-export interface CustomerCallData {
+export type CustomerCallData = {
   // Core customer info
   customer: Customer | null;
   isKnownCustomer: boolean;
@@ -76,12 +76,12 @@ export interface CustomerCallData {
 
   // Telnyx enrichment data (if available)
   telnyxData?: TelnyxEnrichmentData;
-}
+};
 
 /**
  * Call state for UI store
  */
-export interface CallState {
+export type CallState = {
   // Basic call info
   status: "idle" | "incoming" | "active" | "ended";
   caller: {
@@ -139,4 +139,4 @@ export interface CallState {
     isScreenSharing: boolean;
   }>;
   meetingLink: string;
-}
+};

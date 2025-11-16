@@ -677,7 +677,7 @@ function buildOverviewPayload(raw: RawSettingsData): SettingsOverviewData {
   const alerts = sections
     .filter((section) => section.status !== "ready")
     .map(
-      (section) => describeHealthStatus(section.status) + ": " + section.title
+      (section) => `${describeHealthStatus(section.status)}: ${section.title}`
     );
 
   return {
@@ -716,7 +716,6 @@ function buildSection(
       return buildFinanceSection(definition, raw);
     case "integrations":
       return buildIntegrationsSection(definition, raw);
-    case "analytics":
     default:
       return buildAnalyticsSection(definition, raw);
   }

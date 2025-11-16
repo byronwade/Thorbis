@@ -26,7 +26,9 @@ export const ARCHIVE_FILTER_OPTIONS = [
  * Applies greyed out, semi-transparent styling to archived items
  */
 export function getArchivedRowClassName(isArchived: boolean): string {
-  if (!isArchived) return "";
+  if (!isArchived) {
+    return "";
+  }
 
   return "opacity-50 bg-muted/30 hover:bg-muted/40 text-muted-foreground";
 }
@@ -83,7 +85,9 @@ export function getArchiveQueryFilter(filter: ArchiveFilter): {
 export function formatArchiveDate(
   archivedAt: string | null | undefined
 ): string {
-  if (!archivedAt) return "N/A";
+  if (!archivedAt) {
+    return "N/A";
+  }
 
   const date = new Date(archivedAt);
   return date.toLocaleDateString("en-US", {
