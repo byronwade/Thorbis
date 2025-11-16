@@ -39,7 +39,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
-import { updateProperty } from "@/actions/properties";
+import { _updateProperty as updateProperty } from "@/actions/properties";
 import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";

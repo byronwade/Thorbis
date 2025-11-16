@@ -130,7 +130,8 @@
       "Bash(kill:*)",
       "mcp__supabase__get_logs",
       "Bash(killall:*)",
-      "Bash(npx biome:*)"
+      "Bash(npx biome:*)",
+      "Bash(/Users/byronwade/Stratos/src/actions/properties.ts)"
     ],
     "deny": [],
     "ask": []

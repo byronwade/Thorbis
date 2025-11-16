@@ -742,3 +742,6 @@ export async function _setPrimaryProperty(customerId: string, propertyId: string
 		revalidatePath(`/dashboard/customers/${customerId}`);
 	});
 }
+
+// Alias for backward compatibility
+export { _updateProperty as updateProperty };
