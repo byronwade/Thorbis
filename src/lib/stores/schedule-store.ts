@@ -392,6 +392,7 @@ export const useScheduleStore = create<ScheduleState>()(
 			}),
 			{
 				name: "schedule-storage",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				// Don't persist the Maps directly, convert to arrays
 				partialize: (state) => ({
 					technicians: Array.from(state.technicians.values()),

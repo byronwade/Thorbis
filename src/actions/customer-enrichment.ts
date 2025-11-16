@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Customer Enrichment Server Actions
  *

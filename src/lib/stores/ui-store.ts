@@ -299,6 +299,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "1",
 										name: "Sarah Johnson",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: true,
@@ -307,6 +308,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "2",
 										name: "Michael Chen",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -315,6 +317,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "3",
 										name: "Emily Rodriguez",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: true,
 										isVideoEnabled: false,
 										isSpeaking: false,
@@ -323,6 +326,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "4",
 										name: "David Kim",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -331,6 +335,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "5",
 										name: "Lisa Anderson",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -339,6 +344,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "6",
 										name: "James Wilson",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: true,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -347,6 +353,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "7",
 										name: "Maria Garcia",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: false,
 										isSpeaking: false,
@@ -355,6 +362,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "8",
 										name: "Robert Taylor",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -363,6 +371,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "9",
 										name: "Jennifer Lee",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -656,6 +665,7 @@ export const useUIStore = create<UIStore>()(
 			})),
 			{
 				name: "ui-store",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					sidebarOpen: state.sidebarOpen,
 				}),

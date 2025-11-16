@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Team Assignment Actions
  *

@@ -45,6 +45,7 @@ export const useServiceTicketsFiltersStore = create<ServiceTicketsFiltersStore>(
 		}),
 		{
 			name: "service-tickets-filters",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 		}
 	)
 );

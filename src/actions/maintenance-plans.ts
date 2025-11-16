@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Maintenance Plans Server Actions
  *

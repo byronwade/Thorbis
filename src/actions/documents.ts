@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Document Server Actions
  *

@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
+import { ZustandHydration } from "@/components/providers/zustand-hydration";
 import { BotIdProvider } from "@/components/security/botid-provider";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 import "./globals.css";
@@ -93,6 +94,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className="font-sans antialiased">
 				<ThemeProvider>
+					<ZustandHydration />
 					<BotIdProvider />
 					<Suspense fallback={null}>
 						<AnalyticsProvider>{children}</AnalyticsProvider>

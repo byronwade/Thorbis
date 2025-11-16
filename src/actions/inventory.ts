@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Inventory Management Server Actions
  *

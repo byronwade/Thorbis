@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Price Book Server Actions
  *

@@ -43,6 +43,7 @@ export const useAppointmentsFiltersStore = create<AppointmentsFiltersStore>()(
 		}),
 		{
 			name: "appointments-filters",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 		}
 	)
 );

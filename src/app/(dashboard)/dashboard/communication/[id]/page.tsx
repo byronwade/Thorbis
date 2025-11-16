@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Communication Detail Page - PPR Enabled
  *

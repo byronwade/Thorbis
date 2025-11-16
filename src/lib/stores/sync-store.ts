@@ -183,6 +183,7 @@ export const useSyncStore = create<SyncState>()(
 		}),
 		{
 			name: "thorbis-sync-store",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 			partialize: (state) => ({
 				offlineQueue: state.offlineQueue,
 				// Don't persist operations or UI state

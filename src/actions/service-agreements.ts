@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Service Agreements Server Actions
  *

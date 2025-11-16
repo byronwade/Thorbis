@@ -105,6 +105,7 @@ export const useUserStore = create<UserStore>()(
 			})),
 			{
 				name: "user-store",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					user: state.user,
 					isAuthenticated: state.isAuthenticated,

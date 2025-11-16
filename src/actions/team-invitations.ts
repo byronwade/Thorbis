@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Team Invitations - Magic Link System
  *

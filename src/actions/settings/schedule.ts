@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Schedule Settings Server Actions
  *

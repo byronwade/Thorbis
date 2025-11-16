@@ -161,6 +161,7 @@ export const useJobEditorStore = create<JobEditorStore>()(
 			}),
 			{
 				name: "job-editor-storage", // localStorage key
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					activeTab: state.activeTab, // Persist active tab
 					isRightSidebarOpen: state.isRightSidebarOpen, // Persist sidebar state

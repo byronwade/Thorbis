@@ -40,6 +40,7 @@ export const useRecentCustomersStore = create<RecentCustomersStore>()(
 		}),
 		{
 			name: "recent-customers-storage",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 		}
 	)
 );

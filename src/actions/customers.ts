@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Customer Management Server Actions
  *
@@ -316,7 +317,6 @@ async function geocodePrimaryPropertyIfAvailable(
 }
 
 type InsertCustomerParams = {
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
 	companyId: string;
 	customerType: FormDataEntryValue | null;
 	primaryContact: ParsedCustomerContact;

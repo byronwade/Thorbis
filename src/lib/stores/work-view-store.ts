@@ -72,6 +72,7 @@ export const useWorkViewStore = create<WorkViewState>()(
 				partialize: (state) => ({
 					views: state.views,
 				}),
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16 Server Components
 			}
 		),
 		{ name: "WorkViewStore" }

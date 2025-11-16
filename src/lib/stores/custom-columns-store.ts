@@ -101,6 +101,7 @@ export const useCustomColumnsStore = create<CustomColumnsStore>()(
 		}),
 		{
 			name: "custom-columns-storage", // localStorage key
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 			version: 1,
 		}
 	)

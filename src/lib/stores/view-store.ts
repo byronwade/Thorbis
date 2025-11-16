@@ -221,6 +221,7 @@ export const useViewStore = create<ViewState>()(
 			}),
 			{
 				name: "view-storage",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					zoom: state.zoom,
 					sidebarCollapsed: state.sidebarCollapsed,

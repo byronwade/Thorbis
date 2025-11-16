@@ -47,6 +47,7 @@ export const useJobsFiltersStore = create<JobsFiltersStore>()(
 		}),
 		{
 			name: "jobs-filters",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 		}
 	)
 );

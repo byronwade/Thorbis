@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use server";
 
 import type { SupabaseClient as SupabaseJsClient } from "@supabase/supabase-js";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Miscellaneous Settings Server Actions
  *

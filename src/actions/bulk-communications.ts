@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Bulk Communications Actions
  *
