@@ -1,11 +1,16 @@
+import { cache } from "react";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 /**
  * Create a Supabase client for use in Server Components
  * This is useful for Supabase Auth, Storage, Realtime, etc.
+ *
+ * PERFORMANCE: Wrapped with React.cache() to prevent recreating
+ * the client on every component render. This dramatically improves
+ * performance by reusing the same client instance across the request.
  */
-export async function createClient() {
+export const createClient = cache(async () => {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -50,4 +55,4 @@ export async function createClient() {
       },
     },
   });
-}
+});
