@@ -30,7 +30,7 @@ export async function GET() {
 					onboarding_completed_at,
 					deleted_at
 				)
-			`
+			`,
 			)
 			.eq("user_id", user.id)
 			.eq("status", "active")
@@ -40,7 +40,7 @@ export async function GET() {
 			console.error("[get-user-companies] Database error:", error);
 			return NextResponse.json(
 				{ error: "Failed to fetch companies", details: error.message },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -61,16 +61,21 @@ export async function GET() {
 			const companyId = m.companies.id;
 			if (!companyMap.has(companyId)) {
 				const subscriptionStatus = m.companies.stripe_subscription_status;
-				const onboardingProgress = (m.companies.onboarding_progress as Record<string, unknown>) || null;
+				const onboardingProgress =
+					(m.companies.onboarding_progress as Record<string, unknown>) || null;
 				const onboardingComplete = isOnboardingComplete({
 					progress: onboardingProgress,
 					completedAt: m.companies.onboarding_completed_at ?? null,
 				});
-				const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+				const hasPayment =
+					subscriptionStatus === "active" || subscriptionStatus === "trialing";
 
 				let planLabel = "Active";
 				if (!(hasPayment && onboardingComplete)) {
-					planLabel = subscriptionStatus === "incomplete" ? "Incomplete Onboarding" : "Setup Required";
+					planLabel =
+						subscriptionStatus === "incomplete"
+							? "Incomplete Onboarding"
+							: "Setup Required";
 				}
 
 				companyMap.set(companyId, {
@@ -88,12 +93,16 @@ export async function GET() {
 		// Add cache-busting headers to prevent stale data
 		return NextResponse.json(companies, {
 			headers: {
-				"Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+				"Cache-Control":
+					"no-store, no-cache, must-revalidate, proxy-revalidate",
 				Pragma: "no-cache",
 				Expires: "0",
 			},
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

@@ -18,7 +18,11 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type SettingsComingSoonProps = {
 	/** Icon to display in the coming soon card */
@@ -92,9 +96,12 @@ export function SettingsComingSoon({
 						</div>
 
 						{/* Message */}
-						<h2 className="mb-2 font-semibold text-2xl">This Feature is Under Development</h2>
+						<h2 className="mb-2 font-semibold text-2xl">
+							This Feature is Under Development
+						</h2>
 						<p className="mb-8 max-w-md text-muted-foreground">
-							We're working hard to bring you powerful {title.toLowerCase()} capabilities. Check back soon for updates!
+							We're working hard to bring you powerful {title.toLowerCase()}{" "}
+							capabilities. Check back soon for updates!
 						</p>
 
 						{/* Back Button */}
@@ -116,8 +123,9 @@ export function SettingsComingSoon({
 								Want to be notified when this feature launches?
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Contact support to get added to our early access list for {title.toLowerCase()}. We'll notify you as
-								soon as it's available.
+								Contact support to get added to our early access list for{" "}
+								{title.toLowerCase()}. We'll notify you as soon as it's
+								available.
 							</p>
 						</div>
 					</CardContent>

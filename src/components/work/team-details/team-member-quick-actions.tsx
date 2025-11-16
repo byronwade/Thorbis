@@ -53,7 +53,12 @@ export function TeamMemberQuickActions({
 		<div className="flex items-center gap-2">
 			{/* Quick Email Button */}
 			{canSendEmail && !isArchived && (
-				<Button onClick={onEmail} size="sm" title="Send Email" variant="outline">
+				<Button
+					onClick={onEmail}
+					size="sm"
+					title="Send Email"
+					variant="outline"
+				>
 					<Mail className="size-4" />
 				</Button>
 			)}
@@ -98,7 +103,10 @@ export function TeamMemberQuickActions({
 							<DropdownMenuSeparator />
 						</>
 					)}
-					<DropdownMenuItem className={isArchived ? "text-success" : "text-destructive"} onClick={onArchive}>
+					<DropdownMenuItem
+						className={isArchived ? "text-success" : "text-destructive"}
+						onClick={onArchive}
+					>
 						<Archive className="mr-2 size-4" />
 						{isArchived ? "Unarchive" : "Archive"} Team Member
 					</DropdownMenuItem>

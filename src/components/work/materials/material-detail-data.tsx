@@ -16,7 +16,10 @@
 import { notFound, redirect } from "next/navigation";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { MaterialPageContent } from "@/components/work/materials/material-page-content";
-import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	isActiveCompanyOnboardingComplete,
+} from "@/lib/auth/company-context";
 import { generateMaterialStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,7 +27,9 @@ type MaterialDetailDataProps = {
 	materialId: string;
 };
 
-export async function MaterialDetailData({ materialId }: MaterialDetailDataProps) {
+export async function MaterialDetailData({
+	materialId,
+}: MaterialDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -66,7 +71,7 @@ export async function MaterialDetailData({ materialId }: MaterialDetailDataProps
         category,
         subcategory
       )
-    `
+    `,
 		)
 		.eq("id", materialId)
 		.eq("company_id", activeCompanyId)
@@ -78,28 +83,29 @@ export async function MaterialDetailData({ materialId }: MaterialDetailDataProps
 	}
 
 	// Fetch all related data in parallel
-	const [{ data: activities }, { data: notes }, { data: attachments }] = await Promise.all([
-		supabase
-			.from("activity_log")
-			.select("*, user:users!user_id(*)")
-			.eq("entity_type", "inventory")
-			.eq("entity_id", materialId)
-			.order("created_at", { ascending: false })
-			.limit(50),
-		supabase
-			.from("notes")
-			.select("*")
-			.eq("entity_type", "inventory")
-			.eq("entity_id", materialId)
-			.is("deleted_at", null)
-			.order("created_at", { ascending: false }),
-		supabase
-			.from("attachments")
-			.select("*")
-			.eq("entity_type", "inventory")
-			.eq("entity_id", materialId)
-			.order("created_at", { ascending: false }),
-	]);
+	const [{ data: activities }, { data: notes }, { data: attachments }] =
+		await Promise.all([
+			supabase
+				.from("activity_log")
+				.select("*, user:users!user_id(*)")
+				.eq("entity_type", "inventory")
+				.eq("entity_id", materialId)
+				.order("created_at", { ascending: false })
+				.limit(50),
+			supabase
+				.from("notes")
+				.select("*")
+				.eq("entity_type", "inventory")
+				.eq("entity_id", materialId)
+				.is("deleted_at", null)
+				.order("created_at", { ascending: false }),
+			supabase
+				.from("attachments")
+				.select("*")
+				.eq("entity_type", "inventory")
+				.eq("entity_id", materialId)
+				.order("created_at", { ascending: false }),
+		]);
 
 	const priceBookItem = Array.isArray(inventoryRow.price_book_item)
 		? inventoryRow.price_book_item[0]
@@ -108,9 +114,11 @@ export async function MaterialDetailData({ materialId }: MaterialDetailDataProps
 	const material = {
 		id: inventoryRow.id,
 		itemCode: priceBookItem?.sku || priceBookItem?.name || "Uncoded Item",
-		description: priceBookItem?.description || priceBookItem?.name || "Unnamed Material",
+		description:
+			priceBookItem?.description || priceBookItem?.name || "Unnamed Material",
 		category: priceBookItem?.category
-			? priceBookItem.category.charAt(0).toUpperCase() + priceBookItem.category.slice(1)
+			? priceBookItem.category.charAt(0).toUpperCase() +
+				priceBookItem.category.slice(1)
 			: "Uncategorized",
 		quantityOnHand: inventoryRow.quantity_on_hand ?? 0,
 		quantityAvailable: inventoryRow.quantity_available ?? 0,
@@ -125,7 +133,13 @@ export async function MaterialDetailData({ materialId }: MaterialDetailDataProps
 		lastPurchaseCost: inventoryRow.last_purchase_cost ?? 0,
 		warehouseLocation: inventoryRow.warehouse_location || "",
 		primaryLocation: inventoryRow.primary_location || "",
-		status: (inventoryRow.status as "in-stock" | "low-stock" | "out-of-stock" | "on-order" | "inactive") || "in-stock",
+		status:
+			(inventoryRow.status as
+				| "in-stock"
+				| "low-stock"
+				| "out-of-stock"
+				| "on-order"
+				| "inactive") || "in-stock",
 		isLowStock: inventoryRow.is_low_stock ?? false,
 		notes: inventoryRow.notes || "",
 		priceBookItem,

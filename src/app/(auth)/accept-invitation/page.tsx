@@ -7,7 +7,14 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, User } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle,
+	Eye,
+	EyeOff,
+	Loader2,
+	User,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -15,8 +22,22 @@ import { z } from "zod";
 import { acceptTeamInvitation } from "@/actions/accept-invitation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
@@ -87,7 +108,9 @@ function AcceptInvitationContent() {
 
 			try {
 				// Verify token and get invitation details
-				const response = await fetch(`/api/verify-invitation?token=${encodeURIComponent(token)}`);
+				const response = await fetch(
+					`/api/verify-invitation?token=${encodeURIComponent(token)}`,
+				);
 
 				if (!response.ok) {
 					throw new Error("Failed to verify invitation");
@@ -196,16 +219,27 @@ function AcceptInvitationContent() {
 				<Card className="w-full max-w-md">
 					<CardHeader>
 						<CardTitle className="text-center">Invalid Invitation</CardTitle>
-						<CardDescription className="text-center">This invitation link is invalid or has expired</CardDescription>
+						<CardDescription className="text-center">
+							This invitation link is invalid or has expired
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Alert variant="destructive">
 							<AlertCircle className="size-4" />
-							<AlertDescription>{tokenError || "The invitation token is invalid"}</AlertDescription>
+							<AlertDescription>
+								{tokenError || "The invitation token is invalid"}
+							</AlertDescription>
 						</Alert>
 						<div className="mt-6 space-y-2 text-center text-sm">
-							<p>If you believe this is an error, please contact the person who invited you.</p>
-							<Button className="mt-4 w-full" onClick={() => router.push("/login")} variant="outline">
+							<p>
+								If you believe this is an error, please contact the person who
+								invited you.
+							</p>
+							<Button
+								className="mt-4 w-full"
+								onClick={() => router.push("/login")}
+								variant="outline"
+							>
 								Go to Login
 							</Button>
 						</div>
@@ -221,7 +255,8 @@ function AcceptInvitationContent() {
 				<CardHeader>
 					<CardTitle>Accept Team Invitation</CardTitle>
 					<CardDescription>
-						You've been invited to join <strong>{invitationData?.companyName}</strong> as a{" "}
+						You've been invited to join{" "}
+						<strong>{invitationData?.companyName}</strong> as a{" "}
 						<strong>{invitationData?.role}</strong>
 					</CardDescription>
 				</CardHeader>
@@ -256,8 +291,15 @@ function AcceptInvitationContent() {
 									</div>
 								)}
 								<div className="flex-1">
-									<Input accept="image/*" className="cursor-pointer" onChange={handlePhotoChange} type="file" />
-									<p className="mt-1 text-muted-foreground text-xs">Profile photo (optional, max 5MB)</p>
+									<Input
+										accept="image/*"
+										className="cursor-pointer"
+										onChange={handlePhotoChange}
+										type="file"
+									/>
+									<p className="mt-1 text-muted-foreground text-xs">
+										Profile photo (optional, max 5MB)
+									</p>
 								</div>
 							</div>
 
@@ -300,9 +342,16 @@ function AcceptInvitationContent() {
 										<FormItem>
 											<FormLabel>Email *</FormLabel>
 											<FormControl>
-												<Input disabled placeholder="john@example.com" type="email" {...field} />
+												<Input
+													disabled
+													placeholder="john@example.com"
+													type="email"
+													{...field}
+												/>
 											</FormControl>
-											<FormDescription>This email cannot be changed</FormDescription>
+											<FormDescription>
+												This email cannot be changed
+											</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -314,7 +363,11 @@ function AcceptInvitationContent() {
 										<FormItem>
 											<FormLabel>Phone (Optional)</FormLabel>
 											<FormControl>
-												<Input placeholder="+1 (555) 123-4567" type="tel" {...field} />
+												<Input
+													placeholder="+1 (555) 123-4567"
+													type="tel"
+													{...field}
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -331,7 +384,11 @@ function AcceptInvitationContent() {
 										<FormLabel>Password *</FormLabel>
 										<FormControl>
 											<div className="relative">
-												<Input placeholder="••••••••" type={showPassword ? "text" : "password"} {...field} />
+												<Input
+													placeholder="••••••••"
+													type={showPassword ? "text" : "password"}
+													{...field}
+												/>
 												<Button
 													className="absolute top-0 right-0 h-full px-3"
 													onClick={() => setShowPassword(!showPassword)}
@@ -339,11 +396,18 @@ function AcceptInvitationContent() {
 													type="button"
 													variant="ghost"
 												>
-													{showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+													{showPassword ? (
+														<EyeOff className="size-4" />
+													) : (
+														<Eye className="size-4" />
+													)}
 												</Button>
 											</div>
 										</FormControl>
-										<FormDescription>At least 8 characters with uppercase, lowercase, and a number</FormDescription>
+										<FormDescription>
+											At least 8 characters with uppercase, lowercase, and a
+											number
+										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
@@ -358,15 +422,25 @@ function AcceptInvitationContent() {
 										<FormLabel>Confirm Password *</FormLabel>
 										<FormControl>
 											<div className="relative">
-												<Input placeholder="••••••••" type={showConfirmPassword ? "text" : "password"} {...field} />
+												<Input
+													placeholder="••••••••"
+													type={showConfirmPassword ? "text" : "password"}
+													{...field}
+												/>
 												<Button
 													className="absolute top-0 right-0 h-full px-3"
-													onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+													onClick={() =>
+														setShowConfirmPassword(!showConfirmPassword)
+													}
 													size="sm"
 													type="button"
 													variant="ghost"
 												>
-													{showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+													{showConfirmPassword ? (
+														<EyeOff className="size-4" />
+													) : (
+														<Eye className="size-4" />
+													)}
 												</Button>
 											</div>
 										</FormControl>

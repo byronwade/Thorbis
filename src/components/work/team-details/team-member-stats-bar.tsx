@@ -30,7 +30,12 @@ type TeamMemberStatsBarProps = {
 	compact?: boolean;
 };
 
-export function TeamMemberStatsBar({ metrics, memberName, status, compact = false }: TeamMemberStatsBarProps) {
+export function TeamMemberStatsBar({
+	metrics,
+	memberName,
+	status,
+	compact = false,
+}: TeamMemberStatsBarProps) {
 	const formatHours = (hours: number) => `${hours.toFixed(1)}h`;
 	const formatPercentage = (value: number) => `${value.toFixed(0)}%`;
 
@@ -40,29 +45,42 @@ export function TeamMemberStatsBar({ metrics, memberName, status, compact = fals
 	// Calculate hours vs average
 	const hoursVsAverage =
 		metrics.averageHoursPerMonth > 0
-			? (((metrics.hoursThisMonth - metrics.averageHoursPerMonth) / metrics.averageHoursPerMonth) * 100).toFixed(0)
+			? (
+					((metrics.hoursThisMonth - metrics.averageHoursPerMonth) /
+						metrics.averageHoursPerMonth) *
+					100
+				).toFixed(0)
 			: 0;
 
 	// Calculate completion rate
 	const completionRateCalc =
-		metrics.totalTasks > 0 ? ((metrics.totalTasksCompleted / metrics.totalTasks) * 100).toFixed(0) : 0;
+		metrics.totalTasks > 0
+			? ((metrics.totalTasksCompleted / metrics.totalTasks) * 100).toFixed(0)
+			: 0;
 
 	// Availability status
-	const availabilityStatus = metrics.availableHours > 0 ? "available" : "fully booked";
+	const availabilityStatus =
+		metrics.availableHours > 0 ? "available" : "fully booked";
 
 	const memberStats: StatCard[] = [
 		{
 			label: "Active Jobs",
 			value: metrics.activeJobsCount.toString(),
 			change: metrics.activeJobsCount > 0 ? Number(jobsChange) : undefined,
-			changeLabel: metrics.activeJobsCount > 0 ? "currently assigned" : "no active assignments",
+			changeLabel:
+				metrics.activeJobsCount > 0
+					? "currently assigned"
+					: "no active assignments",
 		},
 		{
 			label: "Hours This Month",
 			value: formatHours(metrics.hoursThisMonth),
-			change: metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
+			change:
+				metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
 			changeLabel:
-				metrics.averageHoursPerMonth > 0 ? `vs ${formatHours(metrics.averageHoursPerMonth)} avg` : "first month",
+				metrics.averageHoursPerMonth > 0
+					? `vs ${formatHours(metrics.averageHoursPerMonth)} avg`
+					: "first month",
 		},
 		{
 			label: "Completion Rate",

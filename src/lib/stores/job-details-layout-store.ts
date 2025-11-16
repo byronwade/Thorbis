@@ -141,7 +141,13 @@ export const WIDGET_METADATA: Record<
 		minSize: { width: number; height: number };
 		defaultSize: { width: number; height: number };
 		maxSize: { width: number; height: number };
-		category: "core" | "financial" | "project" | "documentation" | "analytics" | "industry";
+		category:
+			| "core"
+			| "financial"
+			| "project"
+			| "documentation"
+			| "analytics"
+			| "industry";
 		industries: IndustryType[]; // Which industries typically use this
 	}
 > = {
@@ -713,7 +719,10 @@ type JobDetailsLayoutStore = {
 	removeWidget: (widgetId: string) => void;
 	updateWidget: (widgetId: string, updates: Partial<JobWidget>) => void;
 	moveWidget: (widgetId: string, position: { x: number; y: number }) => void;
-	resizeWidget: (widgetId: string, size: { width: number; height: number }) => void;
+	resizeWidget: (
+		widgetId: string,
+		size: { width: number; height: number },
+	) => void;
 	toggleWidgetVisibility: (widgetId: string) => void;
 	toggleWidgetCollapse: (widgetId: string) => void;
 
@@ -938,7 +947,9 @@ export const useJobDetailsLayoutStore = create<JobDetailsLayoutStore>()(
 
 				updateWidget: (widgetId, updates) => {
 					set((state) => ({
-						widgets: state.widgets.map((w) => (w.id === widgetId ? { ...w, ...updates } : w)),
+						widgets: state.widgets.map((w) =>
+							w.id === widgetId ? { ...w, ...updates } : w,
+						),
 					}));
 				},
 
@@ -983,7 +994,8 @@ export const useJobDetailsLayoutStore = create<JobDetailsLayoutStore>()(
 					});
 				},
 
-				getWidgetById: (widgetId) => get().widgets.find((w) => w.id === widgetId),
+				getWidgetById: (widgetId) =>
+					get().widgets.find((w) => w.id === widgetId),
 
 				getVisibleWidgets: () => get().widgets.filter((w) => w.isVisible),
 			}),
@@ -1006,8 +1018,8 @@ export const useJobDetailsLayoutStore = create<JobDetailsLayoutStore>()(
 					}
 					return persistedState;
 				},
-			}
+			},
 		),
-		{ name: "JobDetailsLayoutStore" }
-	)
+		{ name: "JobDetailsLayoutStore" },
+	),
 );

@@ -18,7 +18,7 @@ export function scrollToWidget(
 		behavior: "smooth",
 		block: "start",
 		inline: "nearest",
-	}
+	},
 ): boolean {
 	const element = document.getElementById(`widget-${widgetId}`);
 
@@ -120,10 +120,12 @@ export function isWidgetInViewport(widgetId: string, threshold = 0.5): boolean {
 	}
 
 	const rect = element.getBoundingClientRect();
-	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+	const windowHeight =
+		window.innerHeight || document.documentElement.clientHeight;
 
 	// Calculate how much of the element is visible
-	const visibleHeight = Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
+	const visibleHeight =
+		Math.min(rect.bottom, windowHeight) - Math.max(rect.top, 0);
 	const visiblePercentage = visibleHeight / rect.height;
 
 	return visiblePercentage >= threshold;
@@ -136,7 +138,10 @@ export function isWidgetInViewport(widgetId: string, threshold = 0.5): boolean {
  * @param widgetIds - Array of all widget IDs in order
  * @returns boolean - True if scrolled to next widget, false if at end
  */
-export function scrollToNextWidget(currentWidgetId: string, widgetIds: string[]): boolean {
+export function scrollToNextWidget(
+	currentWidgetId: string,
+	widgetIds: string[],
+): boolean {
 	const currentIndex = widgetIds.indexOf(currentWidgetId);
 
 	if (currentIndex === -1 || currentIndex === widgetIds.length - 1) {
@@ -154,7 +159,10 @@ export function scrollToNextWidget(currentWidgetId: string, widgetIds: string[])
  * @param widgetIds - Array of all widget IDs in order
  * @returns boolean - True if scrolled to previous widget, false if at start
  */
-export function scrollToPreviousWidget(currentWidgetId: string, widgetIds: string[]): boolean {
+export function scrollToPreviousWidget(
+	currentWidgetId: string,
+	widgetIds: string[],
+): boolean {
 	const currentIndex = widgetIds.indexOf(currentWidgetId);
 
 	if (currentIndex <= 0) {

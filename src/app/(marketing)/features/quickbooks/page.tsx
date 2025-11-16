@@ -1,10 +1,25 @@
-import { ArrowLeftRight, CheckCircle2, DollarSign, FileText, RefreshCw, Shield, TrendingUp, Zap } from "lucide-react";
+import {
+	ArrowLeftRight,
+	CheckCircle2,
+	DollarSign,
+	FileText,
+	RefreshCw,
+	Shield,
+	TrendingUp,
+	Zap,
+} from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -30,7 +45,8 @@ export const metadata = generateSEOMetadata({
 export default function QuickBooksPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "QuickBooks Sync",
-		description: "Bidirectional accounting integration for seamless financial management",
+		description:
+			"Bidirectional accounting integration for seamless financial management",
 		offers: [
 			{
 				price: "100",
@@ -52,7 +68,7 @@ export default function QuickBooksPage() {
 								name: "QuickBooks Sync",
 								url: `${siteUrl}/features/quickbooks`,
 							},
-						])
+						]),
 					),
 				}}
 				id="quickbooks-breadcrumb-ld"
@@ -81,8 +97,9 @@ export default function QuickBooksPage() {
 							Your books, always in sync
 						</h1>
 						<p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-							Stop wasting hours on double entry. Thorbis syncs bidirectionally with QuickBooks in real-time, keeping
-							your financials accurate without the manual work.
+							Stop wasting hours on double entry. Thorbis syncs bidirectionally
+							with QuickBooks in real-time, keeping your financials accurate
+							without the manual work.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-lg shadow-primary/20" size="lg">
@@ -105,11 +122,15 @@ export default function QuickBooksPage() {
 								<div className="border-border/50 border-b bg-gradient-to-r from-primary/10 to-transparent px-6 py-4">
 									<div className="flex items-center gap-3">
 										<div className="flex size-10 items-center justify-center rounded-lg bg-primary">
-											<span className="font-bold text-primary-foreground text-xl">T</span>
+											<span className="font-bold text-primary-foreground text-xl">
+												T
+											</span>
 										</div>
 										<div>
 											<div className="font-semibold">Thorbis</div>
-											<div className="text-muted-foreground text-xs">Field Service Platform</div>
+											<div className="text-muted-foreground text-xs">
+												Field Service Platform
+											</div>
 										</div>
 									</div>
 								</div>
@@ -119,27 +140,39 @@ export default function QuickBooksPage() {
 											<div className="flex size-6 items-center justify-center rounded-full bg-green-500">
 												<CheckCircle2 className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Invoice Created</span>
+											<span className="font-semibold text-sm">
+												Invoice Created
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">INV-2024-0847 • $621.36</div>
+										<div className="text-muted-foreground text-xs">
+											INV-2024-0847 • $621.36
+										</div>
 									</div>
 									<div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-3">
 										<div className="mb-2 flex items-center gap-2">
 											<div className="flex size-6 items-center justify-center rounded-full bg-blue-500">
 												<DollarSign className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Payment Received</span>
+											<span className="font-semibold text-sm">
+												Payment Received
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">Credit Card • $621.36</div>
+										<div className="text-muted-foreground text-xs">
+											Credit Card • $621.36
+										</div>
 									</div>
 									<div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-3">
 										<div className="mb-2 flex items-center gap-2">
 											<div className="flex size-6 items-center justify-center rounded-full bg-purple-500">
 												<FileText className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Expense Logged</span>
+											<span className="font-semibold text-sm">
+												Expense Logged
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">Parts & Materials • $245.00</div>
+										<div className="text-muted-foreground text-xs">
+											Parts & Materials • $245.00
+										</div>
 									</div>
 								</div>
 							</div>
@@ -173,7 +206,9 @@ export default function QuickBooksPage() {
 										</div>
 										<div>
 											<div className="font-semibold">QuickBooks</div>
-											<div className="text-muted-foreground text-xs">Accounting Software</div>
+											<div className="text-muted-foreground text-xs">
+												Accounting Software
+											</div>
 										</div>
 									</div>
 								</div>
@@ -183,27 +218,39 @@ export default function QuickBooksPage() {
 											<div className="flex size-6 items-center justify-center rounded-full bg-green-500">
 												<CheckCircle2 className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Invoice Synced</span>
+											<span className="font-semibold text-sm">
+												Invoice Synced
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">Accounts Receivable Updated</div>
+										<div className="text-muted-foreground text-xs">
+											Accounts Receivable Updated
+										</div>
 									</div>
 									<div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-3">
 										<div className="mb-2 flex items-center gap-2">
 											<div className="flex size-6 items-center justify-center rounded-full bg-blue-500">
 												<DollarSign className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Payment Applied</span>
+											<span className="font-semibold text-sm">
+												Payment Applied
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">Bank Deposit Created</div>
+										<div className="text-muted-foreground text-xs">
+											Bank Deposit Created
+										</div>
 									</div>
 									<div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-3">
 										<div className="mb-2 flex items-center gap-2">
 											<div className="flex size-6 items-center justify-center rounded-full bg-purple-500">
 												<FileText className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Expense Recorded</span>
+											<span className="font-semibold text-sm">
+												Expense Recorded
+											</span>
 										</div>
-										<div className="text-muted-foreground text-xs">Cost of Goods Sold Updated</div>
+										<div className="text-muted-foreground text-xs">
+											Cost of Goods Sold Updated
+										</div>
 									</div>
 								</div>
 							</div>
@@ -212,16 +259,22 @@ export default function QuickBooksPage() {
 						{/* Sync Stats */}
 						<div className="mt-8 grid gap-4 sm:grid-cols-3">
 							<div className="rounded-xl border bg-background p-4 text-center">
-								<div className="mb-1 font-bold text-2xl text-primary">Real-time</div>
+								<div className="mb-1 font-bold text-2xl text-primary">
+									Real-time
+								</div>
 								<div className="text-muted-foreground text-sm">Sync Speed</div>
 							</div>
 							<div className="rounded-xl border bg-background p-4 text-center">
 								<div className="mb-1 font-bold text-2xl text-primary">100%</div>
-								<div className="text-muted-foreground text-sm">Data Accuracy</div>
+								<div className="text-muted-foreground text-sm">
+									Data Accuracy
+								</div>
 							</div>
 							<div className="rounded-xl border bg-background p-4 text-center">
 								<div className="mb-1 font-bold text-2xl text-primary">Zero</div>
-								<div className="text-muted-foreground text-sm">Manual Entry</div>
+								<div className="text-muted-foreground text-sm">
+									Manual Entry
+								</div>
 							</div>
 						</div>
 					</div>
@@ -234,19 +287,29 @@ export default function QuickBooksPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">15 hrs</div>
-							<div className="font-medium text-muted-foreground text-sm">Saved Per Month</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Saved Per Month
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">99.9%</div>
-							<div className="font-medium text-muted-foreground text-sm">Sync Accuracy</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Sync Accuracy
+							</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">&lt; 5 min</div>
-							<div className="font-medium text-muted-foreground text-sm">Setup Time</div>
+							<div className="mb-2 font-bold text-4xl text-primary">
+								&lt; 5 min
+							</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Setup Time
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">$0</div>
-							<div className="font-medium text-muted-foreground text-sm">Extra Integration Fees</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Extra Integration Fees
+							</div>
 						</div>
 					</div>
 				</div>
@@ -256,9 +319,12 @@ export default function QuickBooksPage() {
 			<section className="py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Everything syncs automatically</h2>
+						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+							Everything syncs automatically
+						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Comprehensive two-way sync keeps your financial data perfectly aligned
+							Comprehensive two-way sync keeps your financial data perfectly
+							aligned
 						</p>
 					</div>
 
@@ -268,11 +334,15 @@ export default function QuickBooksPage() {
 							<CardHeader className="bg-gradient-to-br from-primary/5 to-transparent">
 								<div className="mb-4 flex items-center gap-3">
 									<div className="flex size-12 items-center justify-center rounded-lg bg-primary">
-										<span className="font-bold text-primary-foreground text-xl">T</span>
+										<span className="font-bold text-primary-foreground text-xl">
+											T
+										</span>
 									</div>
 									<div>
 										<CardTitle>Thorbis → QuickBooks</CardTitle>
-										<CardDescription>Data flowing to your books</CardDescription>
+										<CardDescription>
+											Data flowing to your books
+										</CardDescription>
 									</div>
 								</div>
 							</CardHeader>
@@ -281,7 +351,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<FileText className="size-5 text-primary" />
-											<span className="font-semibold text-sm">Invoices & Estimates</span>
+											<span className="font-semibold text-sm">
+												Invoices & Estimates
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Customer invoices with line items</li>
@@ -294,7 +366,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<DollarSign className="size-5 text-primary" />
-											<span className="font-semibold text-sm">Payments & Deposits</span>
+											<span className="font-semibold text-sm">
+												Payments & Deposits
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Credit card payments</li>
@@ -307,7 +381,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<FileText className="size-5 text-primary" />
-											<span className="font-semibold text-sm">Expenses & Bills</span>
+											<span className="font-semibold text-sm">
+												Expenses & Bills
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Parts and materials costs</li>
@@ -320,7 +396,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<CheckCircle2 className="size-5 text-primary" />
-											<span className="font-semibold text-sm">Customers & Jobs</span>
+											<span className="font-semibold text-sm">
+												Customers & Jobs
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Customer profiles and contacts</li>
@@ -351,7 +429,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<FileText className="size-5 text-green-600" />
-											<span className="font-semibold text-sm">Chart of Accounts</span>
+											<span className="font-semibold text-sm">
+												Chart of Accounts
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Income accounts</li>
@@ -364,7 +444,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<DollarSign className="size-5 text-green-600" />
-											<span className="font-semibold text-sm">Products & Services</span>
+											<span className="font-semibold text-sm">
+												Products & Services
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Service items and pricing</li>
@@ -377,7 +459,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<CheckCircle2 className="size-5 text-green-600" />
-											<span className="font-semibold text-sm">Customer Updates</span>
+											<span className="font-semibold text-sm">
+												Customer Updates
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Customer information changes</li>
@@ -390,7 +474,9 @@ export default function QuickBooksPage() {
 									<div className="rounded-lg border bg-muted/30 p-4">
 										<div className="mb-2 flex items-center gap-2">
 											<TrendingUp className="size-5 text-green-600" />
-											<span className="font-semibold text-sm">Financial Data</span>
+											<span className="font-semibold text-sm">
+												Financial Data
+											</span>
 										</div>
 										<ul className="ml-7 space-y-1 text-muted-foreground text-sm">
 											<li>• Account balances</li>
@@ -410,9 +496,12 @@ export default function QuickBooksPage() {
 			<section className="border-t bg-muted/20 py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Integration that just works</h2>
+						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+							Integration that just works
+						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Built by accountants and field service experts who understand both worlds
+							Built by accountants and field service experts who understand both
+							worlds
 						</p>
 					</div>
 
@@ -423,7 +512,9 @@ export default function QuickBooksPage() {
 									<RefreshCw className="size-6 text-primary" />
 								</div>
 								<CardTitle>Real-Time Sync</CardTitle>
-								<CardDescription>Changes sync instantly, not on a schedule</CardDescription>
+								<CardDescription>
+									Changes sync instantly, not on a schedule
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -453,7 +544,9 @@ export default function QuickBooksPage() {
 									<ArrowLeftRight className="size-6 text-primary" />
 								</div>
 								<CardTitle>True Bidirectional</CardTitle>
-								<CardDescription>Data flows both ways, keeping everything in sync</CardDescription>
+								<CardDescription>
+									Data flows both ways, keeping everything in sync
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -483,7 +576,9 @@ export default function QuickBooksPage() {
 									<Zap className="size-6 text-primary" />
 								</div>
 								<CardTitle>5-Minute Setup</CardTitle>
-								<CardDescription>Connect in minutes, not hours or days</CardDescription>
+								<CardDescription>
+									Connect in minutes, not hours or days
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -513,7 +608,9 @@ export default function QuickBooksPage() {
 									<Shield className="size-6 text-primary" />
 								</div>
 								<CardTitle>Bank-Level Security</CardTitle>
-								<CardDescription>Your financial data is protected at every step</CardDescription>
+								<CardDescription>
+									Your financial data is protected at every step
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -543,7 +640,9 @@ export default function QuickBooksPage() {
 									<FileText className="size-6 text-primary" />
 								</div>
 								<CardTitle>Smart Field Mapping</CardTitle>
-								<CardDescription>Intelligent matching of data fields and accounts</CardDescription>
+								<CardDescription>
+									Intelligent matching of data fields and accounts
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -573,7 +672,9 @@ export default function QuickBooksPage() {
 									<TrendingUp className="size-6 text-primary" />
 								</div>
 								<CardTitle>Error Prevention</CardTitle>
-								<CardDescription>Catch issues before they become problems</CardDescription>
+								<CardDescription>
+									Catch issues before they become problems
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -612,13 +713,16 @@ export default function QuickBooksPage() {
 									</div>
 									<div>
 										<div className="font-semibold text-lg">Lisa Thompson</div>
-										<div className="text-muted-foreground text-sm">CFO, Thompson Electric</div>
+										<div className="text-muted-foreground text-sm">
+											CFO, Thompson Electric
+										</div>
 									</div>
 								</div>
 								<blockquote className="text-lg leading-relaxed">
-									"Before Thorbis, our bookkeeper spent 15 hours a month manually entering data into QuickBooks. Now
-									it's all automatic. Our books are always current, our accountant is happy, and we saved enough to hire
-									another technician."
+									"Before Thorbis, our bookkeeper spent 15 hours a month
+									manually entering data into QuickBooks. Now it's all
+									automatic. Our books are always current, our accountant is
+									happy, and we saved enough to hire another technician."
 								</blockquote>
 								<div className="mt-6 flex items-center gap-4">
 									<Badge variant="secondary">Electrical</Badge>
@@ -634,12 +738,19 @@ export default function QuickBooksPage() {
 			{/* CTA Section */}
 			<section className="bg-gradient-to-br from-primary via-primary to-primary/90 py-20 text-primary-foreground">
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Connect QuickBooks in 5 minutes</h2>
+					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+						Connect QuickBooks in 5 minutes
+					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-						Join service businesses saving 15+ hours per month on bookkeeping with Thorbis.
+						Join service businesses saving 15+ hours per month on bookkeeping
+						with Thorbis.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
-						<Button asChild className="bg-background text-foreground shadow-lg hover:bg-background/90" size="lg">
+						<Button
+							asChild
+							className="bg-background text-foreground shadow-lg hover:bg-background/90"
+							size="lg"
+						>
 							<Link href="/register">
 								Start 14-day Free Trial
 								<Zap className="ml-2 size-4" />

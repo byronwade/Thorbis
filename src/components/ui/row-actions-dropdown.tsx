@@ -53,7 +53,11 @@ type RowActionsDropdownProps = {
 /**
  * RowActionsDropdown - Generic dropdown menu for table row actions
  */
-export function RowActionsDropdown({ actions, label = "Actions", className }: RowActionsDropdownProps) {
+export function RowActionsDropdown({
+	actions,
+	label = "Actions",
+	className,
+}: RowActionsDropdownProps) {
 	return (
 		<div data-no-row-click>
 			<DropdownMenu>
@@ -80,7 +84,11 @@ export function RowActionsDropdown({ actions, label = "Actions", className }: Ro
 							</DropdownMenuItem>
 						) : (
 							<DropdownMenuItem
-								className={action.variant === "destructive" ? "text-destructive" : undefined}
+								className={
+									action.variant === "destructive"
+										? "text-destructive"
+										: undefined
+								}
 								key={index}
 								onClick={action.onClick}
 							>
@@ -90,7 +98,9 @@ export function RowActionsDropdown({ actions, label = "Actions", className }: Ro
 
 						return (
 							<div key={index}>
-								{action.separatorBefore && index > 0 && <DropdownMenuSeparator />}
+								{action.separatorBefore && index > 0 && (
+									<DropdownMenuSeparator />
+								)}
 								{menuItem}
 							</div>
 						);

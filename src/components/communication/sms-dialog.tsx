@@ -13,11 +13,26 @@
 import { MessageSquare, Send } from "lucide-react";
 import { useState, useTransition } from "react";
 import { sendTextMessage } from "@/actions/telnyx";
-import type { CommunicationRecord, CompanyPhone } from "@/components/communication/communication-page-client";
+import type {
+	CommunicationRecord,
+	CompanyPhone,
+} from "@/components/communication/communication-page-client";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -53,7 +68,9 @@ export function SMSDialog({
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [message, setMessage] = useState("");
-	const [selectedPhone, setSelectedPhone] = useState(companyPhones[0]?.number || "");
+	const [selectedPhone, setSelectedPhone] = useState(
+		companyPhones[0]?.number || "",
+	);
 
 	const charCount = message.length;
 	const maxChars = 1600; // SMS max length (multiple segments)
@@ -103,7 +120,9 @@ export function SMSDialog({
 						<MessageSquare className="size-5" />
 						Send Text Message
 					</DialogTitle>
-					<DialogDescription>Send an SMS message to {customerName}</DialogDescription>
+					<DialogDescription>
+						Send an SMS message to {customerName}
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -119,7 +138,9 @@ export function SMSDialog({
 							</div>
 							<div className="min-w-0 flex-1">
 								<div className="font-medium text-sm">{customerName}</div>
-								<div className="text-muted-foreground text-xs">{customerPhone}</div>
+								<div className="text-muted-foreground text-xs">
+									{customerPhone}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -143,7 +164,9 @@ export function SMSDialog({
 						</div>
 					) : (
 						<div className="rounded-lg border border-warning bg-warning p-4 text-center dark:border-warning dark:bg-warning">
-							<p className="text-sm text-warning dark:text-warning">No company phone numbers configured.</p>
+							<p className="text-sm text-warning dark:text-warning">
+								No company phone numbers configured.
+							</p>
 							<p className="mt-1 text-warning text-xs dark:text-warning">
 								Purchase or port a phone number from Settings → Phone Numbers
 							</p>
@@ -173,11 +196,20 @@ export function SMSDialog({
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-2">
-					<Button disabled={isPending} onClick={() => onOpenChange(false)} variant="outline">
+					<Button
+						disabled={isPending}
+						onClick={() => onOpenChange(false)}
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button
-						disabled={isPending || !message.trim() || !selectedPhone || companyPhones.length === 0}
+						disabled={
+							isPending ||
+							!message.trim() ||
+							!selectedPhone ||
+							companyPhones.length === 0
+						}
 						onClick={handleSend}
 					>
 						<Send className="mr-2 size-4" />

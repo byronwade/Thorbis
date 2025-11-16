@@ -96,7 +96,7 @@ export function CreditCardVisual({
 			<div
 				className={cn(
 					"group relative aspect-[1.586/1] w-full overflow-hidden rounded-xl border-2 border-border bg-gradient-to-br from-background via-muted/30 to-muted/50 p-6 shadow-md transition-all hover:shadow-lg",
-					className
+					className,
 				)}
 			>
 				{/* Background Pattern */}
@@ -116,7 +116,9 @@ export function CreditCardVisual({
 								<p className="font-semibold text-foreground text-sm">
 									{accountType === "checking" ? "Checking" : "Savings"}
 								</p>
-								<p className="text-muted-foreground text-xs">{bankName || "Bank Account"}</p>
+								<p className="text-muted-foreground text-xs">
+									{bankName || "Bank Account"}
+								</p>
 							</div>
 						</div>
 						{isDefault && (
@@ -142,8 +144,12 @@ export function CreditCardVisual({
 					<div className="flex items-end justify-between">
 						{nickname && (
 							<div>
-								<p className="text-[10px] text-muted-foreground uppercase tracking-wide">Nickname</p>
-								<p className="font-medium text-foreground text-sm">{nickname}</p>
+								<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+									Nickname
+								</p>
+								<p className="font-medium text-foreground text-sm">
+									{nickname}
+								</p>
 							</div>
 						)}
 						<ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
@@ -159,7 +165,7 @@ export function CreditCardVisual({
 			className={cn(
 				"group relative aspect-[1.586/1] w-full overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl",
 				`bg-gradient-to-br ${config.gradient}`,
-				className
+				className,
 			)}
 		>
 			{/* Background Pattern */}
@@ -169,12 +175,22 @@ export function CreditCardVisual({
 			</div>
 
 			{/* Content */}
-			<div className={cn("relative flex h-full flex-col justify-between p-6", config.textColor)}>
+			<div
+				className={cn(
+					"relative flex h-full flex-col justify-between p-6",
+					config.textColor,
+				)}
+			>
 				{/* Header */}
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-3">
 						{/* EMV Chip */}
-						<div className={cn("size-10 rounded-md shadow-inner", config.chipColor)}>
+						<div
+							className={cn(
+								"size-10 rounded-md shadow-inner",
+								config.chipColor,
+							)}
+						>
 							<div className="grid size-full grid-cols-3 grid-rows-3 gap-px p-1">
 								{Array.from({ length: 9 }).map((_, i) => (
 									<div className="rounded-[1px] bg-amber-500/40" key={i} />
@@ -193,7 +209,11 @@ export function CreditCardVisual({
 								Default
 							</Badge>
 						)}
-						{brandKey === "visa" && <div className="font-bold text-2xl italic tracking-wider">VISA</div>}
+						{brandKey === "visa" && (
+							<div className="font-bold text-2xl italic tracking-wider">
+								VISA
+							</div>
+						)}
 						{brandKey === "mastercard" && (
 							<div className="flex items-center gap-[-4px]">
 								<div className="size-7 rounded-full bg-red-500 opacity-90" />
@@ -228,14 +248,21 @@ export function CreditCardVisual({
 				<div className="flex items-end justify-between">
 					<div className="flex gap-6">
 						<div>
-							<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">Cardholder</p>
-							<p className="font-medium text-sm uppercase tracking-wide">{cardholderName || "CARD HOLDER"}</p>
+							<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">
+								Cardholder
+							</p>
+							<p className="font-medium text-sm uppercase tracking-wide">
+								{cardholderName || "CARD HOLDER"}
+							</p>
 						</div>
 						{expMonth && expYear && (
 							<div>
-								<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">Expires</p>
+								<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">
+									Expires
+								</p>
 								<p className="font-medium font-mono text-sm tracking-wide">
-									{String(expMonth).padStart(2, "0")}/{String(expYear).slice(-2)}
+									{String(expMonth).padStart(2, "0")}/
+									{String(expYear).slice(-2)}
 								</p>
 							</div>
 						)}

@@ -44,7 +44,11 @@ export async function UpaymentsStats() {
 		.limit(MAX_PAYMENTS_PER_PAGE);
 
 	if (error) {
-		const errorMessage = error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+		const errorMessage =
+			error.message ||
+			error.hint ||
+			JSON.stringify(error) ||
+			"Unknown database error";
 		throw new Error(`Failed to load payments: ${errorMessage}`);
 	}
 
@@ -57,15 +61,23 @@ export async function UpaymentsStats() {
 	}));
 
 	// Filter to active payments for stats calculations
-	const activePayments = payments.filter((p) => !(p.archived_at || p.deleted_at));
+	const activePayments = payments.filter(
+		(p) => !(p.archived_at || p.deleted_at),
+	);
 
 	// Calculate payment stats (from active payments only)
-	const completedCount = activePayments.filter((p) => p.status === "completed").length;
-	const pendingCount = activePayments.filter((p) => p.status === "pending").length;
-	const refundedCount = activePayments.filter(
-		(p) => p.status === "refunded" || p.status === "partially_refunded"
+	const completedCount = activePayments.filter(
+		(p) => p.status === "completed",
 	).length;
-	const failedCount = activePayments.filter((p) => p.status === "failed").length;
+	const pendingCount = activePayments.filter(
+		(p) => p.status === "pending",
+	).length;
+	const refundedCount = activePayments.filter(
+		(p) => p.status === "refunded" || p.status === "partially_refunded",
+	).length;
+	const failedCount = activePayments.filter(
+		(p) => p.status === "failed",
+	).length;
 
 	const paymentStats: StatCard[] = [
 		{
@@ -83,7 +95,8 @@ export async function UpaymentsStats() {
 		{
 			label: "Refunded",
 			value: refundedCount,
-			change: refundedCount > 0 ? REFUNDED_CHANGE_NEGATIVE : REFUNDED_CHANGE_POSITIVE,
+			change:
+				refundedCount > 0 ? REFUNDED_CHANGE_NEGATIVE : REFUNDED_CHANGE_POSITIVE,
 			changeLabel: "vs last month",
 		},
 		{

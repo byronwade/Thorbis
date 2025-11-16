@@ -123,16 +123,22 @@ export async function verifyCSRFToken(formData?: FormData): Promise<void> {
 
 	// Validate
 	if (!cookieToken) {
-		throw new CSRFError("CSRF token missing from cookies. Please refresh the page and try again.");
+		throw new CSRFError(
+			"CSRF token missing from cookies. Please refresh the page and try again.",
+		);
 	}
 
 	if (!submittedToken) {
-		throw new CSRFError("CSRF token missing from request. Please ensure the form includes a CSRF token.");
+		throw new CSRFError(
+			"CSRF token missing from request. Please ensure the form includes a CSRF token.",
+		);
 	}
 
 	// Constant-time comparison to prevent timing attacks
 	if (!constantTimeCompare(cookieToken, submittedToken)) {
-		throw new CSRFError("Invalid CSRF token. This request may be forged. Please refresh the page and try again.");
+		throw new CSRFError(
+			"Invalid CSRF token. This request may be forged. Please refresh the page and try again.",
+		);
 	}
 }
 
@@ -177,7 +183,9 @@ function constantTimeCompare(a: string, b: string): boolean {
  * );
  * ```
  */
-export function withCSRFProtection<T extends any[], R>(fn: (...args: T) => Promise<R>): (...args: T) => Promise<R> {
+export function withCSRFProtection<T extends any[], R>(
+	fn: (...args: T) => Promise<R>,
+): (...args: T) => Promise<R> {
 	return async (...args: T): Promise<R> => {
 		// Check if first argument is FormData
 		const formData = args[0] instanceof FormData ? args[0] : undefined;

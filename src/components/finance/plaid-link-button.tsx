@@ -47,7 +47,9 @@ export function PlaidLinkButton({
 		async function fetchLinkToken() {
 			try {
 				const result = await createPlaidLinkToken(companyId);
-				const errorMsg = result.success ? undefined : result.error || "Unknown error";
+				const errorMsg = result.success
+					? undefined
+					: result.error || "Unknown error";
 
 				if (result.success && result.data?.linkToken) {
 					setLinkToken(result.data.linkToken);
@@ -68,15 +70,21 @@ export function PlaidLinkButton({
 		onSuccess: async (publicToken, metadata) => {
 			setIsLoading(true);
 			try {
-				const result = await exchangePlaidToken(publicToken, companyId, metadata);
+				const result = await exchangePlaidToken(
+					publicToken,
+					companyId,
+					metadata,
+				);
 
 				if (result.success && result.data) {
 					toast.success(
-						`Successfully linked ${result.data.accountsLinked} bank account${result.data.accountsLinked > 1 ? "s" : ""}`
+						`Successfully linked ${result.data.accountsLinked} bank account${result.data.accountsLinked > 1 ? "s" : ""}`,
 					);
 					onSuccess?.();
 				} else {
-					const errorMsg = result.success ? "Unknown error" : result.error || "Unknown error";
+					const errorMsg = result.success
+						? "Unknown error"
+						: result.error || "Unknown error";
 					toast.error(errorMsg);
 				}
 			} catch (_error) {
@@ -109,10 +117,14 @@ export function PlaidLinkButton({
 			try {
 				open();
 			} catch (_error) {
-				toast.error("Failed to open bank connection dialog. Please refresh the page and try again.");
+				toast.error(
+					"Failed to open bank connection dialog. Please refresh the page and try again.",
+				);
 			}
 		} else {
-			toast.info("Bank connection is still initializing. Please wait a moment and try again.");
+			toast.info(
+				"Bank connection is still initializing. Please wait a moment and try again.",
+			);
 		}
 	};
 
@@ -126,7 +138,11 @@ export function PlaidLinkButton({
 			type="button"
 			variant={variant}
 		>
-			{isLoading ? <Loader2 className="mr-2 size-4 animate-spin" /> : <Building2 className="mr-2 size-4" />}
+			{isLoading ? (
+				<Loader2 className="mr-2 size-4 animate-spin" />
+			) : (
+				<Building2 className="mr-2 size-4" />
+			)}
 			{children || "Connect Bank Account"}
 		</Button>
 	);

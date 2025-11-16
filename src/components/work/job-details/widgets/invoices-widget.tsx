@@ -2,7 +2,13 @@ import { DollarSign } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function InvoicesWidget({ invoices, jobId }: { invoices: unknown[]; jobId: string }) {
+export function InvoicesWidget({
+	invoices,
+	jobId,
+}: {
+	invoices: unknown[];
+	jobId: string;
+}) {
 	return (
 		<div className="space-y-3">
 			<p className="text-sm">

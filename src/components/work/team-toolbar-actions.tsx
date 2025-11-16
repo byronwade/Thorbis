@@ -31,12 +31,20 @@ type TeamToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function TeamToolbarActions({ totalCount = 0, activeCount, archivedCount }: TeamToolbarActionsProps) {
+export function TeamToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: TeamToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<TeamFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<TeamFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={TEAM_OPTIONAL_COLUMNS}
 						criticalColumns={TEAM_CRITICAL_COLUMNS}

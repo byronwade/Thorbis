@@ -32,7 +32,11 @@ import {
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import { horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
+import {
+	horizontalListSortingStrategy,
+	SortableContext,
+	useSortable,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -50,7 +54,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { getColumnWidthClass, renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
+import {
+	getColumnWidthClass,
+	renderCustomColumn,
+} from "@/lib/datatable/custom-column-renderer";
 import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 import { useDataTableColumnsStore } from "@/lib/stores/datatable-columns-store";
 
@@ -109,7 +116,14 @@ function SortableColumnHeader<T>({
 		y: number;
 	} | null>(null);
 
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: column.key });
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: column.key });
 
 	const widthClass = column.width || "flex-1";
 	const shrinkClass = column.shrink ? "shrink-0" : "";
@@ -120,7 +134,8 @@ function SortableColumnHeader<T>({
 				? "justify-center text-center"
 				: "justify-start text-left";
 	const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
-	const cellBorder = colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
+	const cellBorder =
+		colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
 
 	const style: React.CSSProperties = {
 		transform: CSS.Transform.toString(transform),
@@ -270,16 +285,28 @@ export function FullWidthDataTable<T>({
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	// Column visibility and ordering from Zustand store
-	const _isColumnVisible = useDataTableColumnsStore((state) => state.isColumnVisible);
-	const getColumnOrder = useDataTableColumnsStore((state) => state.getColumnOrder);
-	const setColumnOrder = useDataTableColumnsStore((state) => state.setColumnOrder);
-	const initializeEntity = useDataTableColumnsStore((state) => state.initializeEntity);
+	const _isColumnVisible = useDataTableColumnsStore(
+		(state) => state.isColumnVisible,
+	);
+	const getColumnOrder = useDataTableColumnsStore(
+		(state) => state.getColumnOrder,
+	);
+	const setColumnOrder = useDataTableColumnsStore(
+		(state) => state.setColumnOrder,
+	);
+	const initializeEntity = useDataTableColumnsStore(
+		(state) => state.initializeEntity,
+	);
 
 	// Subscribe to column visibility state to trigger re-renders when columns are toggled
-	const columnVisibilityState = useDataTableColumnsStore((state) => (entity ? state.entities[entity] : null));
+	const columnVisibilityState = useDataTableColumnsStore((state) =>
+		entity ? state.entities[entity] : null,
+	);
 
 	// Subscribe to column order state to trigger re-renders when columns are reordered
-	const columnOrderState = useDataTableColumnsStore((state) => (entity ? state.columnOrder[entity] : null));
+	const columnOrderState = useDataTableColumnsStore((state) =>
+		entity ? state.columnOrder[entity] : null,
+	);
 
 	// Set client flag after mount to prevent hydration issues
 	useEffect(() => {
@@ -288,7 +315,10 @@ export function FullWidthDataTable<T>({
 
 	// Custom columns from Zustand store - use stable selector
 	const allCustomColumns = useCustomColumnsStore((state) => state.columns);
-	const customColumns = useMemo(() => (entity ? allCustomColumns[entity] || [] : []), [allCustomColumns, entity]);
+	const customColumns = useMemo(
+		() => (entity ? allCustomColumns[entity] || [] : []),
+		[allCustomColumns, entity],
+	);
 
 	// Measure toolbar height dynamically
 	useEffect(() => {
@@ -336,7 +366,7 @@ export function FullWidthDataTable<T>({
 		if (isClient && entity && allColumns.length > 0) {
 			initializeEntity(
 				entity,
-				allColumns.map((col) => col.key)
+				allColumns.map((col) => col.key),
 			);
 		}
 	}, [isClient, entity, allColumns, initializeEntity]);
@@ -396,12 +426,15 @@ export function FullWidthDataTable<T>({
 
 		// Ensure at least one column has flex-1 for intelligent spacing
 		// If no columns have flex-1, assign it to the first column without a specific width
-		const hasFlexColumn = filtered.some((col) => col.width === "flex-1" || !col.width);
+		const hasFlexColumn = filtered.some(
+			(col) => col.width === "flex-1" || !col.width,
+		);
 
 		if (!hasFlexColumn && filtered.length > 0) {
 			// Find the first column that doesn't have a fixed width or is the longest content column
 			const flexibleColumnIndex = filtered.findIndex(
-				(col) => !col.width || col.width === "flex-1" || !col.width.startsWith("w-")
+				(col) =>
+					!col.width || col.width === "flex-1" || !col.width.startsWith("w-"),
 			);
 
 			if (flexibleColumnIndex !== -1) {
@@ -422,7 +455,9 @@ export function FullWidthDataTable<T>({
 
 		// Filter by search query
 		if (searchQuery && searchFilter) {
-			filtered = filtered.filter((item) => searchFilter(item, searchQuery.toLowerCase()));
+			filtered = filtered.filter((item) =>
+				searchFilter(item, searchQuery.toLowerCase()),
+			);
 		}
 
 		// Filter archived items if showArchived is false
@@ -496,10 +531,18 @@ export function FullWidthDataTable<T>({
 		const start = (currentPage - 1) * itemsPerPage;
 		const end = start + itemsPerPage;
 		return sortedData.slice(start, end);
-	}, [sortedData, currentPage, itemsPerPage, showPagination, useVirtualization]);
+	}, [
+		sortedData,
+		currentPage,
+		itemsPerPage,
+		showPagination,
+		useVirtualization,
+	]);
 
 	// Get virtual items OUTSIDE of useMemo so it re-renders on scroll
-	const virtualItems = useVirtualization ? rowVirtualizer.getVirtualItems() : [];
+	const virtualItems = useVirtualization
+		? rowVirtualizer.getVirtualItems()
+		: [];
 
 	// Display data: either virtual items or paginated items
 	const displayData = useMemo(() => {
@@ -537,7 +580,11 @@ export function FullWidthDataTable<T>({
 	const handleRowClick = (item: T, event: React.MouseEvent) => {
 		// Prevent row click if clicking on checkbox or action buttons
 		const target = event.target as HTMLElement;
-		if (target.closest("[data-no-row-click]") || target.closest("button") || target.closest('[role="checkbox"]')) {
+		if (
+			target.closest("[data-no-row-click]") ||
+			target.closest("button") ||
+			target.closest('[role="checkbox"]')
+		) {
 			return;
 		}
 		onRowClick?.(item);
@@ -551,7 +598,8 @@ export function FullWidthDataTable<T>({
 		setCurrentPage((prev) => Math.min(totalPages, prev + 1));
 	};
 
-	const isAllSelected = selectedIds.size === paginatedData.length && paginatedData.length > 0;
+	const isAllSelected =
+		selectedIds.size === paginatedData.length && paginatedData.length > 0;
 
 	// Sort handler - click once = asc, twice = desc, third = clear
 	const handleSort = (columnKey: string) => {
@@ -584,7 +632,7 @@ export function FullWidthDataTable<T>({
 				tolerance: 5,
 			},
 		}),
-		useSensor(KeyboardSensor)
+		useSensor(KeyboardSensor),
 	);
 
 	// Track active drag column for overlay
@@ -652,7 +700,10 @@ export function FullWidthDataTable<T>({
 
 	return (
 		<div className="relative flex h-full flex-col overflow-hidden bg-background">
-			<div className="momentum-scroll flex-1 overflow-auto" ref={scrollContainerRef}>
+			<div
+				className="momentum-scroll flex-1 overflow-auto"
+				ref={scrollContainerRef}
+			>
 				{/* Sticky Top Toolbar */}
 				<div
 					className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-border/30 border-b bg-background px-4 py-2 sm:gap-2 sm:px-4 dark:bg-background"
@@ -662,7 +713,11 @@ export function FullWidthDataTable<T>({
 					<div className="flex items-center gap-1.5 sm:gap-2">
 						{enableSelection && (
 							<div className="touch-target flex items-center justify-center">
-								<Checkbox aria-label="Select all" checked={isAllSelected} onCheckedChange={handleSelectAll} />
+								<Checkbox
+									aria-label="Select all"
+									checked={isAllSelected}
+									onCheckedChange={handleSelectAll}
+								/>
 							</div>
 						)}
 
@@ -692,10 +747,14 @@ export function FullWidthDataTable<T>({
 											variant={action.variant || "ghost"}
 										>
 											{action.icon}
-											<span className="ml-2 hidden sm:inline">{action.label}</span>
+											<span className="ml-2 hidden sm:inline">
+												{action.label}
+											</span>
 										</Button>
 									))}
-									<span className="ml-1 font-medium text-muted-foreground text-xs">{selectedIds.size} selected</span>
+									<span className="ml-1 font-medium text-muted-foreground text-xs">
+										{selectedIds.size} selected
+									</span>
 								</div>
 							</>
 						)}
@@ -734,7 +793,8 @@ export function FullWidthDataTable<T>({
 										<ChevronLeft className="h-4 w-4" />
 									</Button>
 									<span className="text-nowrap font-medium text-muted-foreground text-xs tabular-nums">
-										{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, filteredData.length)}{" "}
+										{(currentPage - 1) * itemsPerPage + 1}-
+										{Math.min(currentPage * itemsPerPage, filteredData.length)}{" "}
 										of {filteredData.length.toLocaleString()}
 									</span>
 									<Button
@@ -777,7 +837,10 @@ export function FullWidthDataTable<T>({
 								{enableSelection && <div className="w-8 shrink-0" />}
 
 								{/* Column Headers with Drag & Drop */}
-								<SortableContext items={visibleColumns.map((col) => col.key)} strategy={horizontalListSortingStrategy}>
+								<SortableContext
+									items={visibleColumns.map((col) => col.key)}
+									strategy={horizontalListSortingStrategy}
+								>
 									{visibleColumns.map((column, colIndex) => {
 										const isSorted = sortBy === column.key;
 
@@ -807,8 +870,12 @@ export function FullWidthDataTable<T>({
 										}`}
 										style={{ width: `${activeColumn.width}px` }}
 									>
-										<span className="truncate">{activeColumn.column.header}</span>
-										{activeColumn.column.sortable && <ArrowUpDown className="size-3 shrink-0 opacity-50" />}
+										<span className="truncate">
+											{activeColumn.column.header}
+										</span>
+										{activeColumn.column.sortable && (
+											<ArrowUpDown className="size-3 shrink-0 opacity-50" />
+										)}
 									</div>
 								) : null}
 							</DragOverlay>
@@ -831,8 +898,13 @@ export function FullWidthDataTable<T>({
 										: column.align === "center"
 											? "justify-center text-center"
 											: "justify-start text-left";
-								const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
-								const cellBorder = colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
+								const hideClass = column.hideOnMobile
+									? "hidden md:flex"
+									: "flex";
+								const cellBorder =
+									colIndex < visibleColumns.length - 1
+										? "border-r border-border/30"
+										: "";
 
 								const isSorted = sortBy === column.key;
 
@@ -878,13 +950,20 @@ export function FullWidthDataTable<T>({
 								<h3 className="font-semibold text-lg">{emptyMessage}</h3>
 								{searchQuery && (
 									<p className="text-muted-foreground text-sm">
-										No results found for "{searchQuery}". Try adjusting your search terms.
+										No results found for "{searchQuery}". Try adjusting your
+										search terms.
 									</p>
 								)}
 								{!searchQuery && (
 									<>
-										<p className="text-muted-foreground text-sm">Get started by creating your first item.</p>
-										{emptyAction && <div className="flex justify-center pt-2">{emptyAction}</div>}
+										<p className="text-muted-foreground text-sm">
+											Get started by creating your first item.
+										</p>
+										{emptyAction && (
+											<div className="flex justify-center pt-2">
+												{emptyAction}
+											</div>
+										)}
 									</>
 								)}
 							</div>
@@ -911,10 +990,17 @@ export function FullWidthDataTable<T>({
 							const archived = isArchived?.(item);
 
 							// Excel-like styling
-							const highlightClass = highlighted ? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10" : "";
+							const highlightClass = highlighted
+								? getHighlightClass?.(item) ||
+									"bg-primary/30 dark:bg-primary/10"
+								: "";
 							const customRowClass = getRowClassName?.(item) || "";
-							const excelRowClass = isEvenRow ? "bg-background" : "bg-muted/30 dark:bg-muted/20";
-							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
+							const excelRowClass = isEvenRow
+								? "bg-background"
+								: "bg-muted/30 dark:bg-muted/20";
+							const selectedClass = isSelected
+								? "bg-blue-50 dark:bg-blue-950/50"
+								: "";
 							const archivedClass = archived
 								? "opacity-60 pointer-events-auto cursor-not-allowed bg-muted/40 line-through"
 								: "";
@@ -932,7 +1018,10 @@ export function FullWidthDataTable<T>({
 								>
 									{/* Selection Checkbox */}
 									{enableSelection && (
-										<div className="touch-target flex items-center justify-center" data-no-row-click>
+										<div
+											className="touch-target flex items-center justify-center"
+											data-no-row-click
+										>
 											<Checkbox
 												aria-label={`Select item ${itemId}`}
 												checked={isSelected}
@@ -951,9 +1040,14 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+										const hideClass = column.hideOnMobile
+											? "hidden md:flex"
+											: "flex";
 										// Excel-like cell borders
-										const cellBorder = colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
+										const cellBorder =
+											colIndex < visibleColumns.length - 1
+												? "border-r border-border/30"
+												: "";
 
 										return (
 											<div
@@ -982,9 +1076,13 @@ export function FullWidthDataTable<T>({
 							>
 								<div className="flex items-center gap-2">
 									<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-									<span className="font-semibold text-foreground text-lg">All Data Loaded</span>
+									<span className="font-semibold text-foreground text-lg">
+										All Data Loaded
+									</span>
 								</div>
-								<p className="text-muted-foreground text-sm">Showing all {filteredData.length.toLocaleString()} rows</p>
+								<p className="text-muted-foreground text-sm">
+									Showing all {filteredData.length.toLocaleString()} rows
+								</p>
 							</div>
 						)}
 					</div>
@@ -998,10 +1096,15 @@ export function FullWidthDataTable<T>({
 							const isEvenRow = rowIndex % 2 === 0;
 
 							// Modern clean styling
-							const highlightClass = highlighted ? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10" : "";
+							const highlightClass = highlighted
+								? getHighlightClass?.(item) ||
+									"bg-primary/30 dark:bg-primary/10"
+								: "";
 							const customRowClass = getRowClassName?.(item) || "";
 							const excelRowClass = isEvenRow ? "bg-card" : "bg-card/70";
-							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
+							const selectedClass = isSelected
+								? "bg-blue-50 dark:bg-blue-950/50"
+								: "";
 
 							return (
 								<div
@@ -1011,7 +1114,10 @@ export function FullWidthDataTable<T>({
 								>
 									{/* Selection Checkbox */}
 									{enableSelection && (
-										<div className="flex w-8 shrink-0 items-center justify-center" data-no-row-click>
+										<div
+											className="flex w-8 shrink-0 items-center justify-center"
+											data-no-row-click
+										>
 											<Checkbox
 												aria-label={`Select item ${itemId}`}
 												checked={isSelected}
@@ -1030,9 +1136,14 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+										const hideClass = column.hideOnMobile
+											? "hidden md:flex"
+											: "flex";
 										// Subtle cell dividers
-										const cellBorder = colIndex < visibleColumns.length - 1 ? "border-r border-border/20" : "";
+										const cellBorder =
+											colIndex < visibleColumns.length - 1
+												? "border-r border-border/20"
+												: "";
 
 										return (
 											<div
@@ -1054,10 +1165,13 @@ export function FullWidthDataTable<T>({
 									<>
 										<div className="flex items-center gap-2">
 											<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-											<span className="font-semibold text-foreground text-lg">All Data Loaded</span>
+											<span className="font-semibold text-foreground text-lg">
+												All Data Loaded
+											</span>
 										</div>
 										<p className="text-muted-foreground text-sm">
-											Page {currentPage} of {totalPages} • {filteredData.length.toLocaleString()} total rows
+											Page {currentPage} of {totalPages} •{" "}
+											{filteredData.length.toLocaleString()} total rows
 										</p>
 									</>
 								) : (
@@ -1067,7 +1181,9 @@ export function FullWidthDataTable<T>({
 												Page {currentPage} of {totalPages}
 											</span>
 										</div>
-										<p className="text-muted-foreground text-sm">Use pagination controls above to view more data</p>
+										<p className="text-muted-foreground text-sm">
+											Use pagination controls above to view more data
+										</p>
 									</>
 								)}
 							</div>

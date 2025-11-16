@@ -167,7 +167,11 @@ const templates: Record<string, any> = {
 	"welcome-customer": WelcomeCustomerEmail,
 };
 
-export default async function EmailPreviewPage({ params }: { params: Promise<{ template: string }> }) {
+export default async function EmailPreviewPage({
+	params,
+}: {
+	params: Promise<{ template: string }>;
+}) {
 	const { template } = await params;
 
 	// Check if template exists
@@ -186,7 +190,9 @@ export default async function EmailPreviewPage({ params }: { params: Promise<{ t
 			<div className="mx-auto max-w-4xl space-y-4">
 				<div className="rounded-lg bg-card p-4 shadow">
 					<h1 className="font-bold text-2xl">Email Preview: {template}</h1>
-					<p className="text-muted-foreground text-sm">Development preview - This email template uses sample data</p>
+					<p className="text-muted-foreground text-sm">
+						Development preview - This email template uses sample data
+					</p>
 				</div>
 
 				<div className="overflow-hidden rounded-lg bg-card shadow">

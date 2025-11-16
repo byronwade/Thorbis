@@ -64,10 +64,17 @@ export function SmartNotes() {
 							Saving...
 						</Badge>
 					) : lastSaved ? (
-						<span className="text-muted-foreground text-xs">Saved {lastSaved.toLocaleTimeString()}</span>
+						<span className="text-muted-foreground text-xs">
+							Saved {lastSaved.toLocaleTimeString()}
+						</span>
 					) : null}
 				</div>
-				<Button disabled={isSaving} onClick={saveNotes} size="sm" variant="ghost">
+				<Button
+					disabled={isSaving}
+					onClick={saveNotes}
+					size="sm"
+					variant="ghost"
+				>
 					<Save className="h-3 w-3" />
 				</Button>
 			</div>

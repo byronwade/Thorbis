@@ -61,7 +61,10 @@ export async function AppointmentsStats() {
 		{
 			label: "Cancelled",
 			value: cancelledCount,
-			change: cancelledCount > 0 ? CHANGE_PERCENTAGE_CANCELLED_NEGATIVE : CHANGE_PERCENTAGE_CANCELLED_POSITIVE,
+			change:
+				cancelledCount > 0
+					? CHANGE_PERCENTAGE_CANCELLED_NEGATIVE
+					: CHANGE_PERCENTAGE_CANCELLED_POSITIVE,
 			changeLabel: "vs last week",
 		},
 	];

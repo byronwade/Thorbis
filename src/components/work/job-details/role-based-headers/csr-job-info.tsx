@@ -5,9 +5,19 @@
 
 "use client";
 
-import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare } from "lucide-react";
+import {
+	AlertCircle,
+	Calendar,
+	CheckCircle,
+	Clock,
+	MessageSquare,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CSRJobInfoProps = {
@@ -66,11 +76,23 @@ export function CSRJobInfo({
 	};
 
 	const upcomingSchedules = schedules
-		.filter((s) => new Date(s.scheduled_start) >= new Date() && s.status !== "cancelled" && s.status !== "completed")
-		.sort((a, b) => new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime());
+		.filter(
+			(s) =>
+				new Date(s.scheduled_start) >= new Date() &&
+				s.status !== "cancelled" &&
+				s.status !== "completed",
+		)
+		.sort(
+			(a, b) =>
+				new Date(a.scheduled_start).getTime() -
+				new Date(b.scheduled_start).getTime(),
+		);
 
 	const recentCommunications = communications
-		.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+		.sort(
+			(a, b) =>
+				new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+		)
 		.slice(0, 5);
 
 	return (
@@ -88,16 +110,23 @@ export function CSRJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Upcoming Appointments</h4>
-								<p className="text-muted-foreground text-xs">Scheduled visits for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Scheduled visits for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{upcomingSchedules.map((schedule) => (
-									<div className="flex items-start justify-between rounded-md bg-muted/50 p-2" key={schedule.id}>
+									<div
+										className="flex items-start justify-between rounded-md bg-muted/50 p-2"
+										key={schedule.id}
+									>
 										<div className="flex flex-col gap-1">
 											<div className="flex items-center gap-2">
 												<Clock className="size-3.5 text-muted-foreground" />
-												<span className="font-medium text-sm">{formatDateTime(schedule.scheduled_start)}</span>
+												<span className="font-medium text-sm">
+													{formatDateTime(schedule.scheduled_start)}
+												</span>
 											</div>
 											{schedule.appointment_type && (
 												<span className="ml-5 text-muted-foreground text-xs capitalize">
@@ -107,7 +136,11 @@ export function CSRJobInfo({
 										</div>
 										<Badge
 											className="shrink-0 capitalize"
-											variant={schedule.status === "confirmed" ? "default" : "secondary"}
+											variant={
+												schedule.status === "confirmed"
+													? "default"
+													: "secondary"
+											}
 										>
 											{schedule.status}
 										</Badge>
@@ -132,7 +165,9 @@ export function CSRJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Recent Communications</h4>
-								<p className="text-muted-foreground text-xs">Latest interactions with customer</p>
+								<p className="text-muted-foreground text-xs">
+									Latest interactions with customer
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -142,9 +177,15 @@ export function CSRJobInfo({
 											<Badge className="capitalize" variant="secondary">
 												{comm.type}
 											</Badge>
-											<span className="text-muted-foreground text-xs">{formatDate(comm.created_at)}</span>
+											<span className="text-muted-foreground text-xs">
+												{formatDate(comm.created_at)}
+											</span>
 										</div>
-										{comm.content && <p className="mt-1 line-clamp-2 text-sm">{comm.content}</p>}
+										{comm.content && (
+											<p className="mt-1 line-clamp-2 text-sm">
+												{comm.content}
+											</p>
+										)}
 									</div>
 								))}
 							</div>
@@ -162,18 +203,24 @@ export function CSRJobInfo({
 							: "border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5"
 					}`}
 				>
-					{appointmentStatus === "confirmed" ? <CheckCircle className="size-4" /> : <AlertCircle className="size-4" />}
+					{appointmentStatus === "confirmed" ? (
+						<CheckCircle className="size-4" />
+					) : (
+						<AlertCircle className="size-4" />
+					)}
 					Next: {formatDate(nextAppointment)}
 				</button>
 			)}
 
 			{/* Needs Follow-up */}
-			{lastContact && Date.now() - new Date(lastContact).getTime() > 7 * 24 * 60 * 60 * 1000 && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
-					<AlertCircle className="size-4" />
-					Follow-up Needed
-				</button>
-			)}
+			{lastContact &&
+				Date.now() - new Date(lastContact).getTime() >
+					7 * 24 * 60 * 60 * 1000 && (
+					<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+						<AlertCircle className="size-4" />
+						Follow-up Needed
+					</button>
+				)}
 		</div>
 	);
 }

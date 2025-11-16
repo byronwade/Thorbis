@@ -42,7 +42,11 @@ import {
 	SidebarGroupLabel,
 	SidebarHeader,
 } from "@/components/ui/sidebar";
-import { type SupplierName, type SyncStatus, usePriceBookStore } from "@/lib/stores/pricebook-store";
+import {
+	type SupplierName,
+	type SyncStatus,
+	usePriceBookStore,
+} from "@/lib/stores/pricebook-store";
 
 // ============================================================================
 // Supplier Status Icon Component
@@ -53,9 +57,13 @@ function SupplierStatusIcon({ status }: { status: SyncStatus }) {
 		case "connected":
 			return <CheckCircle2 className="size-4 text-success dark:text-success" />;
 		case "syncing":
-			return <Loader2 className="size-4 animate-spin text-primary dark:text-primary" />;
+			return (
+				<Loader2 className="size-4 animate-spin text-primary dark:text-primary" />
+			);
 		case "error":
-			return <AlertCircle className="size-4 text-destructive dark:text-destructive" />;
+			return (
+				<AlertCircle className="size-4 text-destructive dark:text-destructive" />
+			);
 		case "warning":
 			return <AlertCircle className="size-4 text-warning dark:text-warning" />;
 		default:
@@ -100,7 +108,9 @@ function SupplierStatusCard({
 		}
 		if (status === "connected" && lastSyncAt) {
 			const now = new Date();
-			const diffHours = Math.floor((now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60));
+			const diffHours = Math.floor(
+				(now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60),
+			);
 			if (diffHours < 1) {
 				return "Just now";
 			}
@@ -123,7 +133,9 @@ function SupplierStatusCard({
 						<p className="font-medium text-sm leading-none">{displayName}</p>
 						<p className="text-muted-foreground text-xs">{getStatusText()}</p>
 						{status === "connected" && itemsImported > 0 && (
-							<p className="text-success text-xs dark:text-success">{itemsImported.toLocaleString()} items</p>
+							<p className="text-success text-xs dark:text-success">
+								{itemsImported.toLocaleString()} items
+							</p>
 						)}
 					</div>
 				</div>
@@ -134,12 +146,16 @@ function SupplierStatusCard({
 					size="icon"
 					variant="ghost"
 				>
-					<Loader2 className={`size-3 ${isLoading || status === "syncing" ? "animate-spin" : ""}`} />
+					<Loader2
+						className={`size-3 ${isLoading || status === "syncing" ? "animate-spin" : ""}`}
+					/>
 				</Button>
 			</div>
 			{status === "error" && errorMessage && (
 				<div className="mt-2 rounded-md bg-destructive p-2 dark:bg-destructive/20">
-					<p className="text-destructive text-xs dark:text-destructive">{errorMessage}</p>
+					<p className="text-destructive text-xs dark:text-destructive">
+						{errorMessage}
+					</p>
 				</div>
 			)}
 		</div>
@@ -155,25 +171,45 @@ function QuickActionsSection() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
 			<div className="space-y-2 px-2">
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/labor-calculator">
 						<Calculator className="size-3" />
 						Labor Calculator
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/mass-update">
 						<TrendingUp className="size-3" />
 						Mass Price Increase
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/import">
 						<Upload className="size-3" />
 						Bulk Import
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/export">
 						<Download className="size-3" />
 						Bulk Export
@@ -217,7 +253,11 @@ function CategoriesSection() {
 				type="button"
 			>
 				<SidebarGroupLabel>Categories</SidebarGroupLabel>
-				{collapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
+				{collapsed ? (
+					<ChevronRight className="size-4" />
+				) : (
+					<ChevronDown className="size-4" />
+				)}
 			</button>
 			{!collapsed && (
 				<div className="space-y-1 px-2 pt-2">
@@ -229,8 +269,16 @@ function CategoriesSection() {
 							type="button"
 						>
 							<span className="flex items-center gap-2">
-								{categories.includes(category.name) && <Check className="size-3 text-primary" />}
-								<span className={categories.includes(category.name) ? "font-medium" : ""}>{category.name}</span>
+								{categories.includes(category.name) && (
+									<Check className="size-3 text-primary" />
+								)}
+								<span
+									className={
+										categories.includes(category.name) ? "font-medium" : ""
+									}
+								>
+									{category.name}
+								</span>
 							</span>
 							<Badge className="text-xs" variant="secondary">
 								{category.count}
@@ -275,7 +323,12 @@ function ActiveFiltersSection() {
 		<SidebarGroup>
 			<div className="flex items-center justify-between px-2">
 				<SidebarGroupLabel>Active Filters</SidebarGroupLabel>
-				<Button className="h-auto p-0 text-xs" onClick={resetFilters} size="sm" variant="link">
+				<Button
+					className="h-auto p-0 text-xs"
+					onClick={resetFilters}
+					size="sm"
+					variant="link"
+				>
 					Clear all
 				</Button>
 			</div>
@@ -283,7 +336,11 @@ function ActiveFiltersSection() {
 				{filters.categories.map((category) => (
 					<Badge className="gap-1" key={category} variant="secondary">
 						{category}
-						<button className="ml-1 rounded-sm hover:bg-accent" onClick={() => removeCategory(category)} type="button">
+						<button
+							className="ml-1 rounded-sm hover:bg-accent"
+							onClick={() => removeCategory(category)}
+							type="button"
+						>
 							<X className="size-3" />
 						</button>
 					</Badge>
@@ -291,7 +348,11 @@ function ActiveFiltersSection() {
 				{filters.itemTypes.map((type) => (
 					<Badge className="gap-1" key={type} variant="outline">
 						{type}
-						<button className="ml-1 rounded-sm hover:bg-accent" onClick={() => removeItemType(type)} type="button">
+						<button
+							className="ml-1 rounded-sm hover:bg-accent"
+							onClick={() => removeItemType(type)}
+							type="button"
+						>
 							<X className="size-3" />
 						</button>
 					</Badge>
@@ -331,7 +392,11 @@ export function PriceBookSidebar() {
 						type="button"
 					>
 						<SidebarGroupLabel>API Integrations</SidebarGroupLabel>
-						{suppliersCollapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
+						{suppliersCollapsed ? (
+							<ChevronRight className="size-4" />
+						) : (
+							<ChevronDown className="size-4" />
+						)}
 					</button>
 					{!suppliersCollapsed && (
 						<div className="space-y-2 px-2 pt-2">

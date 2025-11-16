@@ -31,7 +31,9 @@ type ApprovalState = "pending" | "approved" | "rejected" | "edited";
 
 export function AIAutofillPreview() {
 	const { extractedData, isExtracting } = useAIExtraction();
-	const showAIConfidence = useCallPreferencesStore((state) => state.showAIConfidence);
+	const showAIConfidence = useCallPreferencesStore(
+		(state) => state.showAIConfidence,
+	);
 
 	// Check if any data exists
 	const hasData =
@@ -42,9 +44,14 @@ export function AIAutofillPreview() {
 		extractedData.jobDetails.description ||
 		extractedData.appointmentNeeds.preferredDate;
 
-	const [customerInfoState, setCustomerInfoState] = useState<ApprovalState>("pending");
-	const [editedCustomerInfo, setEditedCustomerInfo] = useState(extractedData.customerInfo);
-	const [_approvedActionItems, setApprovedActionItems] = useState<Set<number>>(new Set());
+	const [customerInfoState, setCustomerInfoState] =
+		useState<ApprovalState>("pending");
+	const [editedCustomerInfo, setEditedCustomerInfo] = useState(
+		extractedData.customerInfo,
+	);
+	const [_approvedActionItems, setApprovedActionItems] = useState<Set<number>>(
+		new Set(),
+	);
 	const [editingField, setEditingField] = useState<string | null>(null);
 
 	// Handle approval of customer info
@@ -102,13 +109,16 @@ export function AIAutofillPreview() {
 				<div className="flex items-center gap-2">
 					<Sparkles className="size-4 text-accent-foreground" />
 					<h3 className="font-semibold text-sm text-white">AI Auto-fill</h3>
-					{isExtracting && <div className="size-2 animate-pulse rounded-full bg-accent" />}
+					{isExtracting && (
+						<div className="size-2 animate-pulse rounded-full bg-accent" />
+					)}
 				</div>
 				{showAIConfidence && extractedData.overallConfidence > 0 && (
 					<div
 						className={`rounded-full px-2.5 py-1 font-semibold text-xs ${getConfidenceColor(extractedData.overallConfidence)}`}
 					>
-						{getConfidenceText(extractedData.overallConfidence)} ({extractedData.overallConfidence}%)
+						{getConfidenceText(extractedData.overallConfidence)} (
+						{extractedData.overallConfidence}%)
 					</div>
 				)}
 			</div>
@@ -145,15 +155,23 @@ export function AIAutofillPreview() {
 								</Button>
 							</div>
 						)}
-						{customerInfoState === "approved" && <Badge className="bg-success/50 text-success">Approved</Badge>}
-						{customerInfoState === "rejected" && <Badge className="bg-destructive/50 text-destructive">Rejected</Badge>}
+						{customerInfoState === "approved" && (
+							<Badge className="bg-success/50 text-success">Approved</Badge>
+						)}
+						{customerInfoState === "rejected" && (
+							<Badge className="bg-destructive/50 text-destructive">
+								Rejected
+							</Badge>
+						)}
 					</div>
 
 					<div className="space-y-2">
 						{/* Name */}
 						{(extractedData.customerInfo.name || editedCustomerInfo.name) && (
 							<div>
-								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Name</label>
+								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+									Name
+								</label>
 								{editingField === "name" ? (
 									<Input
 										autoFocus
@@ -165,7 +183,8 @@ export function AIAutofillPreview() {
 								) : (
 									<div className="flex items-center justify-between gap-2">
 										<span className="text-muted-foreground text-sm">
-											{editedCustomerInfo.name || extractedData.customerInfo.name}
+											{editedCustomerInfo.name ||
+												extractedData.customerInfo.name}
 										</span>
 										<Button
 											className="h-6 w-6 p-0"
@@ -189,7 +208,9 @@ export function AIAutofillPreview() {
 						{/* Email */}
 						{(extractedData.customerInfo.email || editedCustomerInfo.email) && (
 							<div>
-								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Email</label>
+								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+									Email
+								</label>
 								{editingField === "email" ? (
 									<Input
 										autoFocus
@@ -201,7 +222,8 @@ export function AIAutofillPreview() {
 								) : (
 									<div className="flex items-center justify-between gap-2">
 										<span className="text-muted-foreground text-sm">
-											{editedCustomerInfo.email || extractedData.customerInfo.email}
+											{editedCustomerInfo.email ||
+												extractedData.customerInfo.email}
 										</span>
 										<Button
 											className="h-6 w-6 p-0"
@@ -225,7 +247,9 @@ export function AIAutofillPreview() {
 						{/* Phone */}
 						{(extractedData.customerInfo.phone || editedCustomerInfo.phone) && (
 							<div>
-								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Phone</label>
+								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+									Phone
+								</label>
 								{editingField === "phone" ? (
 									<Input
 										autoFocus
@@ -237,7 +261,8 @@ export function AIAutofillPreview() {
 								) : (
 									<div className="flex items-center justify-between gap-2">
 										<span className="text-muted-foreground text-sm">
-											{editedCustomerInfo.phone || extractedData.customerInfo.phone}
+											{editedCustomerInfo.phone ||
+												extractedData.customerInfo.phone}
 										</span>
 										<Button
 											className="h-6 w-6 p-0"
@@ -259,9 +284,12 @@ export function AIAutofillPreview() {
 						)}
 
 						{/* Company */}
-						{(extractedData.customerInfo.company || editedCustomerInfo.company) && (
+						{(extractedData.customerInfo.company ||
+							editedCustomerInfo.company) && (
 							<div>
-								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Company</label>
+								<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+									Company
+								</label>
 								{editingField === "company" ? (
 									<Input
 										autoFocus
@@ -273,7 +301,8 @@ export function AIAutofillPreview() {
 								) : (
 									<div className="flex items-center justify-between gap-2">
 										<span className="text-muted-foreground text-sm">
-											{editedCustomerInfo.company || extractedData.customerInfo.company}
+											{editedCustomerInfo.company ||
+												extractedData.customerInfo.company}
 										</span>
 										<Button
 											className="h-6 w-6 p-0"
@@ -281,7 +310,8 @@ export function AIAutofillPreview() {
 												setEditingField("company");
 												setEditedCustomerInfo((prev) => ({
 													...prev,
-													company: prev.company || extractedData.customerInfo.company,
+													company:
+														prev.company || extractedData.customerInfo.company,
 												}));
 											}}
 											size="sm"
@@ -300,12 +330,17 @@ export function AIAutofillPreview() {
 							extractedData.customerInfo.phone ||
 							extractedData.customerInfo.company ||
 							extractedData.customerInfo.address.full
-						) && <p className="text-muted-foreground text-xs">No customer information extracted yet</p>}
+						) && (
+							<p className="text-muted-foreground text-xs">
+								No customer information extracted yet
+							</p>
+						)}
 					</div>
 				</div>
 
 				{/* Job Details */}
-				{(extractedData.jobDetails.title || extractedData.jobDetails.description) && (
+				{(extractedData.jobDetails.title ||
+					extractedData.jobDetails.description) && (
 					<div className="rounded-lg border border-border bg-foreground/50 p-4">
 						<div className="mb-3 flex items-center gap-2">
 							<Tag className="size-3.5 text-blue-500" />
@@ -314,19 +349,29 @@ export function AIAutofillPreview() {
 						<div className="space-y-2">
 							{extractedData.jobDetails.title && (
 								<div>
-									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Title</label>
-									<p className="text-muted-foreground text-sm">{extractedData.jobDetails.title}</p>
+									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+										Title
+									</label>
+									<p className="text-muted-foreground text-sm">
+										{extractedData.jobDetails.title}
+									</p>
 								</div>
 							)}
 							{extractedData.jobDetails.description && (
 								<div>
-									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Description</label>
-									<p className="text-muted-foreground text-sm">{extractedData.jobDetails.description}</p>
+									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+										Description
+									</label>
+									<p className="text-muted-foreground text-sm">
+										{extractedData.jobDetails.description}
+									</p>
 								</div>
 							)}
 							{extractedData.jobDetails.urgency && (
 								<div>
-									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Urgency</label>
+									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+										Urgency
+									</label>
 									<span
 										className={`inline-block rounded px-2 py-1 text-xs ${
 											extractedData.jobDetails.urgency === "emergency"
@@ -345,22 +390,31 @@ export function AIAutofillPreview() {
 				)}
 
 				{/* Appointment Needs */}
-				{(extractedData.appointmentNeeds.preferredDate || extractedData.appointmentNeeds.timePreference) && (
+				{(extractedData.appointmentNeeds.preferredDate ||
+					extractedData.appointmentNeeds.timePreference) && (
 					<div className="rounded-lg border border-border bg-foreground/50 p-4">
 						<div className="mb-3 flex items-center gap-2">
 							<Tag className="size-3.5 text-purple-500" />
-							<h4 className="font-semibold text-sm text-white">Appointment Preferences</h4>
+							<h4 className="font-semibold text-sm text-white">
+								Appointment Preferences
+							</h4>
 						</div>
 						<div className="space-y-2">
 							{extractedData.appointmentNeeds.preferredDate && (
 								<div>
-									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Preferred Date</label>
-									<p className="text-muted-foreground text-sm">{extractedData.appointmentNeeds.preferredDate}</p>
+									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+										Preferred Date
+									</label>
+									<p className="text-muted-foreground text-sm">
+										{extractedData.appointmentNeeds.preferredDate}
+									</p>
 								</div>
 							)}
 							{extractedData.appointmentNeeds.timePreference && (
 								<div>
-									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">Time Preference</label>
+									<label className="mb-1 block font-medium text-[10px] text-muted-foreground">
+										Time Preference
+									</label>
 									<p className="text-muted-foreground text-sm capitalize">
 										{extractedData.appointmentNeeds.timePreference}
 									</p>
@@ -373,8 +427,12 @@ export function AIAutofillPreview() {
 				{/* Call Summary */}
 				{extractedData.callSummary && (
 					<div className="rounded-lg border border-border bg-foreground/50 p-4">
-						<h4 className="mb-2 font-semibold text-sm text-white">Call Summary</h4>
-						<p className="text-muted-foreground text-sm leading-relaxed">{extractedData.callSummary}</p>
+						<h4 className="mb-2 font-semibold text-sm text-white">
+							Call Summary
+						</h4>
+						<p className="text-muted-foreground text-sm leading-relaxed">
+							{extractedData.callSummary}
+						</p>
 						<div className="mt-3 flex items-center gap-2">
 							<span className="text-muted-foreground text-xs">Sentiment:</span>
 							<Badge
@@ -387,15 +445,20 @@ export function AIAutofillPreview() {
 				)}
 
 				{/* No data yet */}
-				{!(hasData || extractedData.callSummary) && extractedData.customerInfo.confidence === 0 && (
-					<div className="flex h-full flex-col items-center justify-center py-12 text-center">
-						<div className="rounded-full bg-foreground p-4">
-							<Sparkles className="size-8 text-muted-foreground" />
+				{!(hasData || extractedData.callSummary) &&
+					extractedData.customerInfo.confidence === 0 && (
+						<div className="flex h-full flex-col items-center justify-center py-12 text-center">
+							<div className="rounded-full bg-foreground p-4">
+								<Sparkles className="size-8 text-muted-foreground" />
+							</div>
+							<p className="mt-4 font-medium text-muted-foreground text-sm">
+								AI is listening...
+							</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								Data will auto-fill as the conversation progresses
+							</p>
 						</div>
-						<p className="mt-4 font-medium text-muted-foreground text-sm">AI is listening...</p>
-						<p className="mt-1 text-muted-foreground text-xs">Data will auto-fill as the conversation progresses</p>
-					</div>
-				)}
+					)}
 			</div>
 		</div>
 	);

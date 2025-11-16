@@ -49,7 +49,7 @@ export async function getPaymentProcessor(
 		amount?: number;
 		channel?: PaymentChannel;
 		forceProcessor?: PaymentProcessorType;
-	}
+	},
 ): Promise<PaymentProcessor | null> {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -82,7 +82,9 @@ export async function getPaymentProcessor(
 
 	// If force processor specified, use it
 	if (options?.forceProcessor) {
-		const processor = processors.find((p) => p.processor_type === options.forceProcessor);
+		const processor = processors.find(
+			(p) => p.processor_type === options.forceProcessor,
+		);
 		if (processor) {
 			return createProcessorInstance(processor);
 		}
@@ -93,7 +95,10 @@ export async function getPaymentProcessor(
 	const channel = options?.channel || "online";
 
 	// High-value payments (>$10k) should use Adyen
-	if (amount > 1_000_000 && processors.some((p) => p.processor_type === "adyen")) {
+	if (
+		amount > 1_000_000 &&
+		processors.some((p) => p.processor_type === "adyen")
+	) {
 		const adyenProcessor = processors.find((p) => p.processor_type === "adyen");
 		if (adyenProcessor) {
 			return createProcessorInstance(adyenProcessor);
@@ -117,7 +122,9 @@ export async function getPaymentProcessor(
 		if (plaidProcessor) {
 			return createProcessorInstance(plaidProcessor);
 		}
-		const profitstarsProcessor = processors.find((p) => p.processor_type === "profitstars");
+		const profitstarsProcessor = processors.find(
+			(p) => p.processor_type === "profitstars",
+		);
 		if (profitstarsProcessor) {
 			return createProcessorInstance(profitstarsProcessor);
 		}
@@ -130,7 +137,9 @@ export async function getPaymentProcessor(
 /**
  * Create a processor instance from database configuration
  */
-async function createProcessorInstance(config: any): Promise<PaymentProcessor | null> {
+async function createProcessorInstance(
+	config: any,
+): Promise<PaymentProcessor | null> {
 	switch (config.processor_type) {
 		case "adyen": {
 			const { AdyenProcessor } = await import("./processors/adyen");
@@ -179,7 +188,7 @@ async function createProcessorInstance(config: any): Promise<PaymentProcessor | 
  */
 export async function calculatePaymentTrustScore(
 	companyId: string,
-	amount: number
+	amount: number,
 ): Promise<{
 	score: number;
 	allowed: boolean;
@@ -260,7 +269,11 @@ export async function calculatePaymentTrustScore(
 /**
  * Update trust score after payment
  */
-export async function updateTrustScoreAfterPayment(companyId: string, success: boolean, amount: number): Promise<void> {
+export async function updateTrustScoreAfterPayment(
+	companyId: string,
+	success: boolean,
+	amount: number,
+): Promise<void> {
 	const supabase = await createClient();
 	if (!supabase) {
 		return;
@@ -284,7 +297,8 @@ export async function updateTrustScoreAfterPayment(companyId: string, success: b
 	};
 
 	if (success) {
-		updates.successful_payments_count = (trustScore.successful_payments_count || 0) + 1;
+		updates.successful_payments_count =
+			(trustScore.successful_payments_count || 0) + 1;
 	} else {
 		updates.failed_payments_count = (trustScore.failed_payments_count || 0) + 1;
 	}
@@ -296,14 +310,22 @@ export async function updateTrustScoreAfterPayment(companyId: string, success: b
 
 	// Recalculate overall score
 	const totalPayments = updates.total_payments_count;
-	const successfulPayments = updates.successful_payments_count || trustScore.successful_payments_count || 0;
-	const _failedPayments = updates.failed_payments_count || trustScore.failed_payments_count || 0;
+	const successfulPayments =
+		updates.successful_payments_count ||
+		trustScore.successful_payments_count ||
+		0;
+	const _failedPayments =
+		updates.failed_payments_count || trustScore.failed_payments_count || 0;
 
 	// Success rate (0-100)
-	const successRate = totalPayments > 0 ? (successfulPayments / totalPayments) * 100 : 50;
+	const successRate =
+		totalPayments > 0 ? (successfulPayments / totalPayments) * 100 : 50;
 
 	// Volume factor (higher volume = higher trust, capped at 100)
-	const volumeFactor = Math.min(100, Math.log10((updates.total_payments_volume || 0) / 100 + 1) * 20);
+	const volumeFactor = Math.min(
+		100,
+		Math.log10((updates.total_payments_volume || 0) / 100 + 1) * 20,
+	);
 
 	// Account age factor (older accounts = higher trust)
 	const accountAgeDays = trustScore.account_age_days || 0;
@@ -320,7 +342,13 @@ export async function updateTrustScoreAfterPayment(companyId: string, success: b
 
 	updates.overall_score = Math.min(100, Math.max(0, overallScore));
 	updates.refund_rate =
-		totalPayments > 0 ? ((trustScore.refunded_amount || 0) / updates.total_payments_volume) * 100 : 0;
+		totalPayments > 0
+			? ((trustScore.refunded_amount || 0) / updates.total_payments_volume) *
+				100
+			: 0;
 
-	await supabase.from("payment_trust_scores").update(updates).eq("company_id", companyId);
+	await supabase
+		.from("payment_trust_scores")
+		.update(updates)
+		.eq("company_id", companyId);
 }

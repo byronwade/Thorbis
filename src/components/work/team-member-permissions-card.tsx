@@ -11,11 +11,26 @@ import { Shield, ShieldCheck } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getTeamMemberPermissions, updateTeamMemberPermissions } from "@/actions/team";
+import {
+	getTeamMemberPermissions,
+	updateTeamMemberPermissions,
+} from "@/actions/team";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 const AVAILABLE_ROLES = [
 	{ value: "owner", label: "Owner", description: "Full system access" },
@@ -123,7 +138,9 @@ export function TeamMemberPermissionsCard() {
 								{currentRole}
 							</Badge>
 						</div>
-						<p className="text-muted-foreground text-sm">Only owners and managers can modify permissions</p>
+						<p className="text-muted-foreground text-sm">
+							Only owners and managers can modify permissions
+						</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -139,7 +156,9 @@ export function TeamMemberPermissionsCard() {
 					<ShieldCheck className="size-5" />
 					Permissions & Access
 				</CardTitle>
-				<CardDescription>Manage role and permissions for this team member</CardDescription>
+				<CardDescription>
+					Manage role and permissions for this team member
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				{/* Role Selection */}
@@ -154,7 +173,9 @@ export function TeamMemberPermissionsCard() {
 								<SelectItem key={role.value} value={role.value}>
 									<div className="flex flex-col">
 										<span className="font-medium">{role.label}</span>
-										<span className="text-muted-foreground text-xs">{role.description}</span>
+										<span className="text-muted-foreground text-xs">
+											{role.description}
+										</span>
 									</div>
 								</SelectItem>
 							))}
@@ -176,12 +197,18 @@ export function TeamMemberPermissionsCard() {
 									</Badge>
 								))
 						) : (
-							<p className="text-muted-foreground text-sm">No permissions configured</p>
+							<p className="text-muted-foreground text-sm">
+								No permissions configured
+							</p>
 						)}
 					</div>
-					{Object.entries(permissions).filter(([, enabled]) => enabled).length > 6 && (
+					{Object.entries(permissions).filter(([, enabled]) => enabled).length >
+						6 && (
 						<p className="text-muted-foreground text-xs">
-							+{Object.entries(permissions).filter(([, enabled]) => enabled).length - 6} more permissions
+							+
+							{Object.entries(permissions).filter(([, enabled]) => enabled)
+								.length - 6}{" "}
+							more permissions
 						</p>
 					)}
 				</div>
@@ -189,7 +216,12 @@ export function TeamMemberPermissionsCard() {
 				{/* Save Button */}
 				{hasChanges && (
 					<div className="flex items-center justify-end gap-2 border-t pt-4">
-						<Button disabled={isSaving} onClick={() => setSelectedRole(currentRole)} size="sm" variant="outline">
+						<Button
+							disabled={isSaving}
+							onClick={() => setSelectedRole(currentRole)}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isSaving} onClick={handleSaveRole} size="sm">

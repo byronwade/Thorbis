@@ -10,7 +10,13 @@
  * - Currency formatting utilities
  */
 
-import { AlertCircle, CheckCircle2, Circle, Clock, DollarSign } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Circle,
+	Clock,
+	DollarSign,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -44,14 +50,24 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 			name: "Progress Payment",
 			amount: totalAmount * 0.4,
 			dueDate: job.scheduledStart,
-			status: paidAmount >= totalAmount * 0.7 ? "paid" : paidAmount >= totalAmount * 0.3 ? "due" : "upcoming",
+			status:
+				paidAmount >= totalAmount * 0.7
+					? "paid"
+					: paidAmount >= totalAmount * 0.3
+						? "due"
+						: "upcoming",
 		},
 		{
 			id: "3",
 			name: "Final Payment",
 			amount: totalAmount * 0.3,
 			dueDate: job.scheduledEnd,
-			status: paidAmount >= totalAmount ? "paid" : paidAmount >= totalAmount * 0.7 ? "due" : "upcoming",
+			status:
+				paidAmount >= totalAmount
+					? "paid"
+					: paidAmount >= totalAmount * 0.7
+						? "due"
+						: "upcoming",
 		},
 	];
 
@@ -61,7 +77,9 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 			<div>
 				<div className="mb-2 flex items-center justify-between">
 					<span className="font-semibold text-sm">Payment Progress</span>
-					<span className="font-bold text-base">{Math.round(percentagePaid)}%</span>
+					<span className="font-bold text-base">
+						{Math.round(percentagePaid)}%
+					</span>
 				</div>
 				<Progress className="h-3" value={percentagePaid} />
 			</div>
@@ -74,12 +92,16 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 				</div>
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">Paid:</span>
-					<span className="font-semibold text-success">{formatCurrency(paidAmount)}</span>
+					<span className="font-semibold text-success">
+						{formatCurrency(paidAmount)}
+					</span>
 				</div>
 				<Separator />
 				<div className="flex justify-between">
 					<span className="font-medium">Remaining:</span>
-					<span className="font-bold text-warning">{formatCurrency(remainingAmount)}</span>
+					<span className="font-bold text-warning">
+						{formatCurrency(remainingAmount)}
+					</span>
 				</div>
 			</div>
 
@@ -107,15 +129,24 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 									: "text-muted-foreground";
 
 						return (
-							<div className="flex items-start gap-2 text-sm" key={milestone.id}>
-								<StatusIcon className={`mt-0.5 size-4 shrink-0 ${statusColor}`} />
+							<div
+								className="flex items-start gap-2 text-sm"
+								key={milestone.id}
+							>
+								<StatusIcon
+									className={`mt-0.5 size-4 shrink-0 ${statusColor}`}
+								/>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center justify-between gap-2">
 										<span className="font-medium">{milestone.name}</span>
 										<Badge
 											className="text-xs"
 											variant={
-												milestone.status === "paid" ? "default" : milestone.status === "due" ? "destructive" : "outline"
+												milestone.status === "paid"
+													? "default"
+													: milestone.status === "due"
+														? "destructive"
+														: "outline"
 											}
 										>
 											{milestone.status}
@@ -130,7 +161,9 @@ export function PaymentTrackerWidget({ job }: PaymentTrackerWidgetProps) {
 													}).format(new Date(milestone.dueDate))
 												: "TBD"}
 										</span>
-										<span className="font-semibold">{formatCurrency(milestone.amount)}</span>
+										<span className="font-semibold">
+											{formatCurrency(milestone.amount)}
+										</span>
 									</div>
 								</div>
 							</div>

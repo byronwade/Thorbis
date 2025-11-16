@@ -9,7 +9,11 @@
  */
 
 import { DollarSign, TrendingDown, TrendingUp } from "lucide-react";
-import { formatCurrency, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatCurrency,
+	formatPercentage,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveFlex,
@@ -46,7 +50,10 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
 				{/* COMFORTABLE Stage: Abbreviated title */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="font-medium text-muted-foreground" variant="body">
+						<ResponsiveText
+							className="font-medium text-muted-foreground"
+							variant="body"
+						>
 							Avg Ticket
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -68,15 +75,21 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
 				<div className="flex flex-col @[120px]:items-start items-center justify-center">
 					<ResponsiveText className="font-bold" variant="display">
 						{/* Show with $ on all sizes */}
-						<span className="@[120px]:inline hidden">{formatCurrency(data.value, "comfortable")}</span>
-						<span className="@[120px]:hidden">{formatCurrency(data.value, "tiny")}</span>
+						<span className="@[120px]:inline hidden">
+							{formatCurrency(data.value, "comfortable")}
+						</span>
+						<span className="@[120px]:hidden">
+							{formatCurrency(data.value, "tiny")}
+						</span>
 					</ResponsiveText>
 
 					{/* Trend indicator */}
 					<div className="mt-1">
 						{/* FULL + COMFORTABLE: Full trend */}
 						<ShowAt stage="full-comfortable">
-							<span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+							<span
+								className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
+							>
 								<TrendIcon className="size-4" />
 								{isPositive ? "+" : ""}
 								{formatPercentage(data.change, "comfortable")}

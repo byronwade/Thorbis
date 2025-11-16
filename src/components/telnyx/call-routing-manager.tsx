@@ -11,7 +11,17 @@
  * - Enable/disable rules dynamically
  */
 
-import { ArrowDown, ArrowUp, Clock, Edit, Loader2, Plus, Save, Trash2, Users } from "lucide-react";
+import {
+	ArrowDown,
+	ArrowUp,
+	Clock,
+	Edit,
+	Loader2,
+	Plus,
+	Save,
+	Trash2,
+	Users,
+} from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import {
 	createRoutingRule,
@@ -22,7 +32,13 @@ import {
 } from "@/actions/voip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -33,9 +49,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 
 type RoutingRule = {
@@ -129,7 +158,9 @@ export function CallRoutingManager() {
 			}
 
 			if (result.success) {
-				toast.success(`Routing rule ${isCreating ? "created" : "updated"} successfully`);
+				toast.success(
+					`Routing rule ${isCreating ? "created" : "updated"} successfully`,
+				);
 				setIsEditDialogOpen(false);
 				loadRoutingRules();
 			} else {
@@ -192,7 +223,9 @@ export function CallRoutingManager() {
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<CardTitle>Call Routing Rules</CardTitle>
-							<CardDescription>Configure how incoming calls are routed to team members</CardDescription>
+							<CardDescription>
+								Configure how incoming calls are routed to team members
+							</CardDescription>
 						</div>
 						<Button onClick={openCreateDialog}>
 							<Plus className="mr-2 size-4" />
@@ -218,7 +251,8 @@ export function CallRoutingManager() {
 								{rules.length === 0 ? (
 									<TableRow>
 										<TableCell className="h-24 text-center" colSpan={7}>
-											No routing rules configured. Create your first rule to get started.
+											No routing rules configured. Create your first rule to get
+											started.
 										</TableCell>
 									</TableRow>
 								) : (
@@ -240,7 +274,9 @@ export function CallRoutingManager() {
 														<Button
 															className="h-4 w-4 p-0"
 															disabled={index === rules.length - 1 || isPending}
-															onClick={() => handleMovePriority(rule.id, "down")}
+															onClick={() =>
+																handleMovePriority(rule.id, "down")
+															}
 															size="sm"
 															variant="ghost"
 														>
@@ -261,7 +297,9 @@ export function CallRoutingManager() {
 												</div>
 											</TableCell>
 											<TableCell>
-												<Badge variant="outline">{getRoutingTypeLabel(rule.routing_type)}</Badge>
+												<Badge variant="outline">
+													{getRoutingTypeLabel(rule.routing_type)}
+												</Badge>
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-1 text-sm">
@@ -292,7 +330,11 @@ export function CallRoutingManager() {
 											</TableCell>
 											<TableCell className="text-right">
 												<div className="flex justify-end gap-2">
-													<Button onClick={() => openEditDialog(rule)} size="sm" variant="outline">
+													<Button
+														onClick={() => openEditDialog(rule)}
+														size="sm"
+														variant="outline"
+													>
 														<Edit className="mr-2 size-4" />
 														Edit
 													</Button>
@@ -320,8 +362,12 @@ export function CallRoutingManager() {
 			<Dialog onOpenChange={setIsEditDialogOpen} open={isEditDialogOpen}>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>{isCreating ? "Create Routing Rule" : "Edit Routing Rule"}</DialogTitle>
-						<DialogDescription>Configure how calls are routed to your team members</DialogDescription>
+						<DialogTitle>
+							{isCreating ? "Create Routing Rule" : "Edit Routing Rule"}
+						</DialogTitle>
+						<DialogDescription>
+							Configure how calls are routed to your team members
+						</DialogDescription>
 					</DialogHeader>
 
 					<div className="space-y-6">
@@ -329,7 +375,9 @@ export function CallRoutingManager() {
 							<Label htmlFor="ruleName">Rule Name *</Label>
 							<Input
 								id="ruleName"
-								onChange={(e) => setRuleForm({ ...ruleForm, name: e.target.value })}
+								onChange={(e) =>
+									setRuleForm({ ...ruleForm, name: e.target.value })
+								}
 								placeholder="Sales Team Routing"
 								value={ruleForm.name}
 							/>
@@ -338,19 +386,33 @@ export function CallRoutingManager() {
 						<div>
 							<Label htmlFor="routingType">Routing Type</Label>
 							<Select
-								onValueChange={(value) => setRuleForm({ ...ruleForm, routing_type: value })}
+								onValueChange={(value) =>
+									setRuleForm({ ...ruleForm, routing_type: value })
+								}
 								value={ruleForm.routing_type}
 							>
 								<SelectTrigger className="mt-2" id="routingType">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="direct">Direct - Route to specific agent</SelectItem>
-									<SelectItem value="round_robin">Round Robin - Distribute evenly</SelectItem>
-									<SelectItem value="simultaneous">Simultaneous - Ring all agents</SelectItem>
-									<SelectItem value="ivr">IVR Menu - Interactive menu</SelectItem>
-									<SelectItem value="business_hours">Business Hours - Time-based routing</SelectItem>
-									<SelectItem value="conditional">Conditional - Rule-based routing</SelectItem>
+									<SelectItem value="direct">
+										Direct - Route to specific agent
+									</SelectItem>
+									<SelectItem value="round_robin">
+										Round Robin - Distribute evenly
+									</SelectItem>
+									<SelectItem value="simultaneous">
+										Simultaneous - Ring all agents
+									</SelectItem>
+									<SelectItem value="ivr">
+										IVR Menu - Interactive menu
+									</SelectItem>
+									<SelectItem value="business_hours">
+										Business Hours - Time-based routing
+									</SelectItem>
+									<SelectItem value="conditional">
+										Conditional - Rule-based routing
+									</SelectItem>
 								</SelectContent>
 							</Select>
 						</div>
@@ -377,47 +439,65 @@ export function CallRoutingManager() {
 									<SelectItem value="90">90 seconds</SelectItem>
 								</SelectContent>
 							</Select>
-							<p className="mt-1 text-muted-foreground text-xs">Time to ring before moving to next rule or voicemail</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								Time to ring before moving to next rule or voicemail
+							</p>
 						</div>
 
 						<div className="space-y-4">
 							<div className="flex items-center justify-between">
 								<div>
 									<Label>Voicemail Enabled</Label>
-									<p className="text-muted-foreground text-xs">Allow voicemail if no one answers</p>
+									<p className="text-muted-foreground text-xs">
+										Allow voicemail if no one answers
+									</p>
 								</div>
 								<Switch
 									checked={ruleForm.voicemail_enabled}
-									onCheckedChange={(checked) => setRuleForm({ ...ruleForm, voicemail_enabled: checked })}
+									onCheckedChange={(checked) =>
+										setRuleForm({ ...ruleForm, voicemail_enabled: checked })
+									}
 								/>
 							</div>
 
 							<div className="flex items-center justify-between">
 								<div>
 									<Label>Record Calls</Label>
-									<p className="text-muted-foreground text-xs">Automatically record calls for this rule</p>
+									<p className="text-muted-foreground text-xs">
+										Automatically record calls for this rule
+									</p>
 								</div>
 								<Switch
 									checked={ruleForm.record_calls}
-									onCheckedChange={(checked) => setRuleForm({ ...ruleForm, record_calls: checked })}
+									onCheckedChange={(checked) =>
+										setRuleForm({ ...ruleForm, record_calls: checked })
+									}
 								/>
 							</div>
 
 							<div className="flex items-center justify-between">
 								<div>
 									<Label>Rule Enabled</Label>
-									<p className="text-muted-foreground text-xs">Enable or disable this routing rule</p>
+									<p className="text-muted-foreground text-xs">
+										Enable or disable this routing rule
+									</p>
 								</div>
 								<Switch
 									checked={ruleForm.enabled}
-									onCheckedChange={(checked) => setRuleForm({ ...ruleForm, enabled: checked })}
+									onCheckedChange={(checked) =>
+										setRuleForm({ ...ruleForm, enabled: checked })
+									}
 								/>
 							</div>
 						</div>
 					</div>
 
 					<DialogFooter>
-						<Button disabled={isPending} onClick={() => setIsEditDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isPending}
+							onClick={() => setIsEditDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isPending} onClick={handleSaveRule}>

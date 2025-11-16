@@ -12,7 +12,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import { InvoicePDFDocument } from "@/lib/pdf/invoice-pdf-generator";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+	_request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
+) {
 	try {
 		const { id: invoiceId } = await params;
 
@@ -20,7 +23,10 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json({ error: "Unable to connect to database" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Unable to connect to database" },
+				{ status: 500 },
+			);
 		}
 
 		const { data: invoice, error } = await supabase
@@ -52,7 +58,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
           state,
           postal_code
         )
-      `
+      `,
 			)
 			.eq("id", invoiceId)
 			.single();
@@ -62,11 +68,18 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 		}
 
 		// Normalize customer and company data
-		const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
-		const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+		const customer = Array.isArray(invoice.customer)
+			? invoice.customer[0]
+			: invoice.customer;
+		const company = Array.isArray(invoice.company)
+			? invoice.company[0]
+			: invoice.company;
 
 		if (!(customer && company)) {
-			return NextResponse.json({ error: "Invoice data incomplete" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Invoice data incomplete" },
+				{ status: 400 },
+			);
 		}
 
 		// Generate PDF
@@ -82,6 +95,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 			},
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Failed to generate PDF" },
+			{ status: 500 },
+		);
 	}
 }

@@ -22,13 +22,17 @@ type ResponsiveWidgetWrapperProps = {
 	stage?: ResponsiveStage; // Optional: force specific stage for testing
 };
 
-export function ResponsiveWidgetWrapper({ children, className, stage }: ResponsiveWidgetWrapperProps) {
+export function ResponsiveWidgetWrapper({
+	children,
+	className,
+	stage,
+}: ResponsiveWidgetWrapperProps) {
 	return (
 		<div
 			className={cn(
 				"relative h-full w-full rounded-lg border bg-background shadow-sm",
 				"@container", // Enable container queries
-				className
+				className,
 			)}
 			data-stage={stage}
 		>
@@ -41,7 +45,13 @@ export function ResponsiveWidgetWrapper({ children, className, stage }: Responsi
  * Responsive content container with intelligent padding
  * Padding scales based on container size
  */
-export function ResponsiveContent({ children, className }: { children: ReactNode; className?: string }) {
+export function ResponsiveContent({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return (
 		<div
 			className={cn(
@@ -51,7 +61,7 @@ export function ResponsiveContent({ children, className }: { children: ReactNode
 				"@[200px]:@[400px]:p-4", // Comfortable stage
 				"@[120px]:@[200px]:p-3", // Compact stage
 				"p-2", // Tiny stage (default)
-				className
+				className,
 			)}
 		>
 			{children}
@@ -79,20 +89,28 @@ export function ResponsiveText({
 		caption: "text-[clamp(0.625rem,2.5cqh,0.875rem)] text-muted-foreground",
 	};
 
-	return <div className={cn(variantClasses[variant], className)}>{children}</div>;
+	return (
+		<div className={cn(variantClasses[variant], className)}>{children}</div>
+	);
 }
 
 /**
  * Responsive icon that scales with container
  */
-export function ResponsiveIcon({ children, className }: { children: ReactNode; className?: string }) {
+export function ResponsiveIcon({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return (
 		<div
 			className={cn(
 				// Icon scales from 3cqh (tiny) to 8cqh (full)
 				"flex shrink-0 items-center justify-center",
 				"[&>svg]:size-[clamp(1rem,6cqh,2rem)]",
-				className
+				className,
 			)}
 		>
 			{children}
@@ -108,7 +126,13 @@ export function ShowAt({
 	stage,
 	children,
 }: {
-	stage: "full" | "comfortable" | "compact" | "tiny" | "full-comfortable" | "comfortable-compact";
+	stage:
+		| "full"
+		| "comfortable"
+		| "compact"
+		| "tiny"
+		| "full-comfortable"
+		| "comfortable-compact";
 	children: ReactNode;
 }) {
 	const stageClasses = {
@@ -126,7 +150,13 @@ export function ShowAt({
 /**
  * Responsive grid that adapts column count to container size
  */
-export function ResponsiveGrid({ children, className }: { children: ReactNode; className?: string }) {
+export function ResponsiveGrid({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return (
 		<div
 			className={cn(
@@ -138,7 +168,7 @@ export function ResponsiveGrid({ children, className }: { children: ReactNode; c
 				// Adaptive gap
 				"@[200px]:gap-3",
 				"@[400px]:gap-4",
-				className
+				className,
 			)}
 		>
 			{children}
@@ -149,7 +179,13 @@ export function ResponsiveGrid({ children, className }: { children: ReactNode; c
 /**
  * Responsive flex layout that switches direction based on size
  */
-export function ResponsiveFlex({ children, className }: { children: ReactNode; className?: string }) {
+export function ResponsiveFlex({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return (
 		<div
 			className={cn(
@@ -157,7 +193,7 @@ export function ResponsiveFlex({ children, className }: { children: ReactNode; c
 				// Column on tiny, row on larger
 				"@[200px]:flex-row flex-col @[200px]:items-center",
 				"@[200px]:gap-3",
-				className
+				className,
 			)}
 		>
 			{children}

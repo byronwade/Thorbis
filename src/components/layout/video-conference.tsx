@@ -182,19 +182,23 @@ export function VideoConferenceView({
 										"flex size-8 items-center justify-center rounded-full border transition-all",
 										call.isMuted
 											? "border-destructive/50 bg-destructive hover:bg-destructive"
-											: "border-border bg-foreground/80 hover:bg-foreground"
+											: "border-border bg-foreground/80 hover:bg-foreground",
 									)}
 									onClick={toggleMute}
 									type="button"
 								>
-									{call.isMuted ? <MicOff className="size-3.5 text-white" /> : <Mic className="size-3.5 text-white" />}
+									{call.isMuted ? (
+										<MicOff className="size-3.5 text-white" />
+									) : (
+										<Mic className="size-3.5 text-white" />
+									)}
 								</button>
 								<button
 									className={cn(
 										"flex size-8 items-center justify-center rounded-full border transition-all",
 										call.isLocalVideoEnabled
 											? "border-border bg-foreground/80 hover:bg-foreground"
-											: "border-destructive/50 bg-destructive hover:bg-destructive"
+											: "border-destructive/50 bg-destructive hover:bg-destructive",
 									)}
 									onClick={onToggleLocalVideo}
 									type="button"
@@ -229,13 +233,17 @@ export function VideoConferenceView({
 
 					{/* Name tag */}
 					<div className="absolute top-3 left-3 rounded-md border border-foreground/10 bg-background/80 px-2.5 py-1 backdrop-blur-md">
-						<p className="font-medium text-white text-xs">{caller.name || caller.number}</p>
+						<p className="font-medium text-white text-xs">
+							{caller.name || caller.number}
+						</p>
 					</div>
 
 					{/* Call duration */}
 					<div className="absolute top-3 right-3 flex items-center gap-1.5 rounded-md border border-foreground/10 bg-background/80 px-2.5 py-1 backdrop-blur-md">
 						<div className="size-1.5 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-						<span className="font-mono text-[11px] text-white tabular-nums">{callDuration}</span>
+						<span className="font-mono text-[11px] text-white tabular-nums">
+							{callDuration}
+						</span>
 					</div>
 				</div>
 			</div>
@@ -250,26 +258,34 @@ export function VideoConferenceView({
 				<div className="flex items-center gap-3">
 					<div className="flex items-center gap-2">
 						<div className="size-2 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-						<span className="font-mono text-muted-foreground text-sm tabular-nums">{callDuration}</span>
+						<span className="font-mono text-muted-foreground text-sm tabular-nums">
+							{callDuration}
+						</span>
 					</div>
 
 					{/* Recording Indicator */}
 					{call.isRecording && (
 						<div className="flex items-center gap-1.5 rounded-md border border-destructive/50 bg-destructive/20 px-2.5 py-1">
 							<Circle className="size-2 animate-pulse fill-current text-destructive" />
-							<span className="font-medium text-[11px] text-destructive">Recording</span>
+							<span className="font-medium text-[11px] text-destructive">
+								Recording
+							</span>
 						</div>
 					)}
 
 					{/* Connection Quality */}
 					<div className="flex items-center gap-1.5 rounded-md border border-white/10 bg-foreground/50 px-2.5 py-1">
 						{getConnectionIcon()}
-						<span className="font-medium text-[11px] text-muted-foreground capitalize">{call.connectionQuality}</span>
+						<span className="font-medium text-[11px] text-muted-foreground capitalize">
+							{call.connectionQuality}
+						</span>
 					</div>
 
 					{call.videoStatus === "connected" && (
 						<div className="rounded-md border border-white/10 bg-foreground/50 px-2.5 py-1">
-							<p className="font-medium text-[11px] text-muted-foreground">HD Quality</p>
+							<p className="font-medium text-[11px] text-muted-foreground">
+								HD Quality
+							</p>
 						</div>
 					)}
 				</div>
@@ -280,7 +296,7 @@ export function VideoConferenceView({
 							"rounded-md border px-3 py-1.5 font-medium text-xs transition-all",
 							viewMode === "speaker"
 								? "border-white/10 bg-card text-black shadow-sm"
-								: "border-white/10 bg-black text-muted-foreground hover:bg-foreground hover:text-white"
+								: "border-white/10 bg-black text-muted-foreground hover:bg-foreground hover:text-white",
 						)}
 						onClick={() => setViewMode("speaker")}
 						type="button"
@@ -292,7 +308,7 @@ export function VideoConferenceView({
 							"flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-medium text-xs transition-all",
 							viewMode === "gallery"
 								? "border-white/10 bg-card text-black shadow-sm"
-								: "border-white/10 bg-black text-muted-foreground hover:bg-foreground hover:text-white"
+								: "border-white/10 bg-black text-muted-foreground hover:bg-foreground hover:text-white",
 						)}
 						onClick={() => setViewMode("gallery")}
 						type="button"
@@ -314,7 +330,9 @@ export function VideoConferenceView({
 						{showShareMenu && (
 							<div className="absolute top-full right-0 mt-2 w-72 rounded-lg border border-white/10 bg-black p-4 shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-xl">
 								<div className="mb-3 flex items-center justify-between">
-									<h3 className="font-semibold text-sm text-white">Share Link</h3>
+									<h3 className="font-semibold text-sm text-white">
+										Share Link
+									</h3>
 									<button
 										className="rounded-md p-1 transition-colors hover:bg-foreground"
 										onClick={() => setShowShareMenu(false)}
@@ -325,20 +343,26 @@ export function VideoConferenceView({
 								</div>
 								<div className="flex gap-2">
 									<div className="flex-1 rounded-md border border-white/10 bg-foreground px-3 py-2">
-										<p className="truncate font-mono text-muted-foreground text-xs">{call.meetingLink}</p>
+										<p className="truncate font-mono text-muted-foreground text-xs">
+											{call.meetingLink}
+										</p>
 									</div>
 									<button
 										className={cn(
 											"flex size-10 items-center justify-center rounded-md border transition-all",
 											linkCopied
 												? "border-emerald-600/50 bg-emerald-600"
-												: "border-white/10 bg-foreground hover:bg-foreground"
+												: "border-white/10 bg-foreground hover:bg-foreground",
 										)}
 										onClick={copyMeetingLink}
 										title="Copy link"
 										type="button"
 									>
-										{linkCopied ? <Check className="size-4 text-white" /> : <Copy className="size-4 text-white" />}
+										{linkCopied ? (
+											<Check className="size-4 text-white" />
+										) : (
+											<Copy className="size-4 text-white" />
+										)}
 									</button>
 								</div>
 							</div>
@@ -371,7 +395,9 @@ export function VideoConferenceView({
 										</div>
 									</div>
 								</div>
-								<p className="font-semibold text-2xl text-white">Requesting video...</p>
+								<p className="font-semibold text-2xl text-white">
+									Requesting video...
+								</p>
 								<p className="mt-2 font-medium text-muted-foreground text-sm">
 									Waiting for {caller.name || caller.number} to accept
 								</p>
@@ -390,8 +416,12 @@ export function VideoConferenceView({
 										</div>
 									</div>
 								</div>
-								<p className="font-semibold text-2xl text-white">Connecting video...</p>
-								<p className="mt-2 font-medium text-muted-foreground text-sm">{caller.name || caller.number}</p>
+								<p className="font-semibold text-2xl text-white">
+									Connecting video...
+								</p>
+								<p className="mt-2 font-medium text-muted-foreground text-sm">
+									{caller.name || caller.number}
+								</p>
 							</div>
 						</div>
 					)}
@@ -405,13 +435,19 @@ export function VideoConferenceView({
 									<div className="group relative overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-zinc-900 to-black shadow-lg transition-all hover:border-[#0070F3]/50">
 										<div className="flex h-full items-center justify-center">
 											<Avatar className="size-16">
-												<AvatarFallback className="bg-[#0070F3] font-semibold text-white text-xl">You</AvatarFallback>
+												<AvatarFallback className="bg-[#0070F3] font-semibold text-white text-xl">
+													You
+												</AvatarFallback>
 											</Avatar>
 										</div>
 										<div className="absolute inset-x-2 bottom-2 rounded-md border border-foreground/10 bg-background/80 px-2 py-1 backdrop-blur-md">
 											<div className="flex items-center justify-between">
-												<span className="truncate font-medium text-white text-xs">You</span>
-												{call.isMuted && <MicOff className="size-3 text-destructive" />}
+												<span className="truncate font-medium text-white text-xs">
+													You
+												</span>
+												{call.isMuted && (
+													<MicOff className="size-3 text-destructive" />
+												)}
 											</div>
 										</div>
 										{call.isScreenSharing && (
@@ -426,7 +462,9 @@ export function VideoConferenceView({
 										<div
 											className={cn(
 												"group relative overflow-hidden rounded-lg border bg-gradient-to-br from-zinc-900 to-black shadow-lg transition-all hover:border-[#0070F3]/50",
-												participant.isSpeaking ? "border-[#0070F3] ring-2 ring-[#0070F3]/30" : "border-white/10"
+												participant.isSpeaking
+													? "border-[#0070F3] ring-2 ring-[#0070F3]/30"
+													: "border-white/10",
 											)}
 											key={participant.id}
 										>
@@ -458,8 +496,12 @@ export function VideoConferenceView({
 											)}
 											<div className="absolute inset-x-2 bottom-2 rounded-md border border-foreground/10 bg-background/80 px-2 py-1 backdrop-blur-md">
 												<div className="flex items-center justify-between">
-													<span className="truncate font-medium text-white text-xs">{participant.name}</span>
-													{participant.isMuted && <MicOff className="size-3 text-destructive" />}
+													<span className="truncate font-medium text-white text-xs">
+														{participant.name}
+													</span>
+													{participant.isMuted && (
+														<MicOff className="size-3 text-destructive" />
+													)}
 												</div>
 											</div>
 											{participant.isScreenSharing && (
@@ -516,7 +558,9 @@ export function VideoConferenceView({
 						{showParticipants && (
 							<div className="flex h-full flex-col p-6">
 								<div className="mb-6 flex items-center justify-between">
-									<h3 className="font-semibold text-sm text-white">Participants ({call.participants.length + 1})</h3>
+									<h3 className="font-semibold text-sm text-white">
+										Participants ({call.participants.length + 1})
+									</h3>
 									<button
 										className="rounded-md p-1 transition-colors hover:bg-foreground"
 										onClick={() => setShowParticipants(false)}
@@ -529,13 +573,19 @@ export function VideoConferenceView({
 									{/* You (current user) */}
 									<div className="flex items-center gap-3 rounded-md border border-foreground/10 bg-background/60 p-3 transition-colors hover:bg-background/70">
 										<Avatar className="size-8 bg-[#0070F3] ring-1 ring-white/10">
-											<AvatarFallback className="bg-[#0070F3] font-semibold text-white text-xs">You</AvatarFallback>
+											<AvatarFallback className="bg-[#0070F3] font-semibold text-white text-xs">
+												You
+											</AvatarFallback>
 										</Avatar>
 										<div className="flex-1">
 											<p className="font-medium text-sm text-white">You</p>
 											<div className="mt-0.5 flex items-center gap-2 text-muted-foreground text-xs">
-												{call.isMuted && <MicOff className="size-3 text-destructive" />}
-												{!call.isLocalVideoEnabled && <VideoOff className="size-3" />}
+												{call.isMuted && (
+													<MicOff className="size-3 text-destructive" />
+												)}
+												{!call.isLocalVideoEnabled && (
+													<VideoOff className="size-3" />
+												)}
 												<span>Host</span>
 											</div>
 										</div>
@@ -557,11 +607,19 @@ export function VideoConferenceView({
 												</AvatarFallback>
 											</Avatar>
 											<div className="flex-1">
-												<p className="font-medium text-sm text-white">{participant.name}</p>
+												<p className="font-medium text-sm text-white">
+													{participant.name}
+												</p>
 												<div className="mt-0.5 flex items-center gap-2 text-muted-foreground text-xs">
-													{participant.isMuted && <MicOff className="size-3 text-destructive" />}
-													{!participant.isVideoEnabled && <VideoOff className="size-3" />}
-													{participant.isSpeaking && <Volume2 className="size-3 text-emerald-400" />}
+													{participant.isMuted && (
+														<MicOff className="size-3 text-destructive" />
+													)}
+													{!participant.isVideoEnabled && (
+														<VideoOff className="size-3" />
+													)}
+													{participant.isSpeaking && (
+														<Volume2 className="size-3 text-emerald-400" />
+													)}
 												</div>
 											</div>
 										</div>
@@ -572,7 +630,9 @@ export function VideoConferenceView({
 						{showChat && (
 							<div className="flex h-full flex-col p-6">
 								<div className="mb-6 flex items-center justify-between">
-									<h3 className="font-semibold text-sm text-white">Chat ({call.chatMessages.length})</h3>
+									<h3 className="font-semibold text-sm text-white">
+										Chat ({call.chatMessages.length})
+									</h3>
 									<button
 										className="rounded-md p-1 transition-colors hover:bg-foreground"
 										onClick={() => setShowChat(false)}
@@ -586,12 +646,17 @@ export function VideoConferenceView({
 								<div className="mb-4 flex-1 space-y-3 overflow-y-auto">
 									{call.chatMessages.length === 0 ? (
 										<div className="flex h-full items-center justify-center">
-											<p className="font-medium text-muted-foreground text-sm">No messages yet</p>
+											<p className="font-medium text-muted-foreground text-sm">
+												No messages yet
+											</p>
 										</div>
 									) : (
 										call.chatMessages.map((msg) => (
 											<div
-												className={cn("flex flex-col gap-1", msg.sender === "me" ? "items-end" : "items-start")}
+												className={cn(
+													"flex flex-col gap-1",
+													msg.sender === "me" ? "items-end" : "items-start",
+												)}
 												key={msg.id}
 											>
 												<div
@@ -599,7 +664,7 @@ export function VideoConferenceView({
 														"max-w-[80%] rounded-lg px-3 py-2",
 														msg.sender === "me"
 															? "bg-[#0070F3] text-white"
-															: "border border-white/10 bg-foreground text-muted-foreground"
+															: "border border-white/10 bg-foreground text-muted-foreground",
 													)}
 												>
 													<p className="text-sm">{msg.message}</p>
@@ -654,13 +719,17 @@ export function VideoConferenceView({
 								"group flex size-12 items-center justify-center rounded-full border transition-all",
 								call.isMuted
 									? "border-destructive/50 bg-destructive shadow-sm hover:bg-destructive"
-									: "border-white/10 bg-foreground hover:bg-foreground"
+									: "border-white/10 bg-foreground hover:bg-foreground",
 							)}
 							onClick={toggleMute}
 							title="Mute/Unmute (Alt+A)"
 							type="button"
 						>
-							{call.isMuted ? <MicOff className="size-5 text-white" /> : <Mic className="size-5 text-white" />}
+							{call.isMuted ? (
+								<MicOff className="size-5 text-white" />
+							) : (
+								<Mic className="size-5 text-white" />
+							)}
 						</button>
 						<ChevronUp className="size-3.5 text-muted-foreground" />
 
@@ -669,7 +738,7 @@ export function VideoConferenceView({
 								"group flex size-12 items-center justify-center rounded-full border transition-all",
 								call.isLocalVideoEnabled
 									? "border-white/10 bg-foreground hover:bg-foreground"
-									: "border-destructive/50 bg-destructive shadow-sm hover:bg-destructive"
+									: "border-destructive/50 bg-destructive shadow-sm hover:bg-destructive",
 							)}
 							onClick={onToggleLocalVideo}
 							title="Start/Stop Video (Alt+V)"
@@ -692,7 +761,7 @@ export function VideoConferenceView({
 								"flex size-12 items-center justify-center rounded-full border transition-all",
 								call.isScreenSharing
 									? "border-emerald-600/50 bg-emerald-600 shadow-sm hover:bg-emerald-700"
-									: "border-white/10 bg-foreground hover:bg-foreground"
+									: "border-white/10 bg-foreground hover:bg-foreground",
 							)}
 							onClick={toggleScreenShare}
 							title="Screen Share (Ctrl+Shift+S)"
@@ -711,14 +780,19 @@ export function VideoConferenceView({
 								"flex size-12 items-center justify-center rounded-full border transition-all",
 								call.isRecording
 									? "border-destructive/50 bg-destructive shadow-sm hover:bg-destructive"
-									: "border-white/10 bg-foreground hover:bg-foreground"
+									: "border-white/10 bg-foreground hover:bg-foreground",
 							)}
 							onClick={toggleRecording}
 							title={call.isRecording ? "Stop Recording" : "Start Recording"}
 							type="button"
 						>
 							<Circle
-								className={cn("size-5", call.isRecording ? "animate-pulse fill-current text-white" : "text-white")}
+								className={cn(
+									"size-5",
+									call.isRecording
+										? "animate-pulse fill-current text-white"
+										: "text-white",
+								)}
 							/>
 						</button>
 
@@ -726,7 +800,9 @@ export function VideoConferenceView({
 						<button
 							className={cn(
 								"relative flex size-12 items-center justify-center rounded-full border transition-all",
-								showChat ? "border-white/20 bg-foreground" : "border-white/10 bg-foreground hover:bg-foreground"
+								showChat
+									? "border-white/20 bg-foreground"
+									: "border-white/10 bg-foreground hover:bg-foreground",
 							)}
 							onClick={() => setShowChat(!showChat)}
 							title="Chat"
@@ -745,7 +821,9 @@ export function VideoConferenceView({
 							<button
 								className={cn(
 									"flex size-12 items-center justify-center rounded-full border transition-all",
-									showReactions ? "border-white/20 bg-foreground" : "border-white/10 bg-foreground hover:bg-foreground"
+									showReactions
+										? "border-white/20 bg-foreground"
+										: "border-white/10 bg-foreground hover:bg-foreground",
 								)}
 								onClick={() => setShowReactions(!showReactions)}
 								title="Reactions"
@@ -806,7 +884,9 @@ export function VideoConferenceView({
 						<button
 							className={cn(
 								"flex size-12 items-center justify-center rounded-full border transition-all",
-								showParticipants ? "border-white/20 bg-foreground" : "border-white/10 bg-foreground hover:bg-foreground"
+								showParticipants
+									? "border-white/20 bg-foreground"
+									: "border-white/10 bg-foreground hover:bg-foreground",
 							)}
 							onClick={() => setShowParticipants(!showParticipants)}
 							title="Participants"

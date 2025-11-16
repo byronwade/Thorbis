@@ -39,8 +39,12 @@ export async function JobHistoryStats() {
 					<Archive className="size-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.totalJobs.toLocaleString()}</div>
-					<p className="text-muted-foreground text-xs">{stats.monthlyIncrease} this month</p>
+					<div className="font-bold text-2xl">
+						{stats.totalJobs.toLocaleString()}
+					</div>
+					<p className="text-muted-foreground text-xs">
+						{stats.monthlyIncrease} this month
+					</p>
 				</CardContent>
 			</Card>
 
@@ -50,8 +54,12 @@ export async function JobHistoryStats() {
 					<CheckCircle className="size-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.completed.toLocaleString()}</div>
-					<p className="text-muted-foreground text-xs">{stats.completionRate} completion rate</p>
+					<div className="font-bold text-2xl">
+						{stats.completed.toLocaleString()}
+					</div>
+					<p className="text-muted-foreground text-xs">
+						{stats.completionRate} completion rate
+					</p>
 				</CardContent>
 			</Card>
 

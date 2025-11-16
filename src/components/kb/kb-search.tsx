@@ -21,7 +21,11 @@ type KBSearchProps = {
 	showButton?: boolean;
 };
 
-export function KBSearch({ className, placeholder = "Search knowledge base...", showButton = true }: KBSearchProps) {
+export function KBSearch({
+	className,
+	placeholder = "Search knowledge base...",
+	showButton = true,
+}: KBSearchProps) {
 	const [query, setQuery] = useState("");
 	const [results, setResults] = useState<KBArticleWithRelations[]>([]);
 	const [isSearching, setIsSearching] = useState(false);
@@ -33,7 +37,10 @@ export function KBSearch({ className, placeholder = "Search knowledge base...", 
 	// Close results when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+			if (
+				searchRef.current &&
+				!searchRef.current.contains(event.target as Node)
+			) {
 				setShowResults(false);
 			}
 		};
@@ -109,14 +116,20 @@ export function KBSearch({ className, placeholder = "Search knowledge base...", 
 								<button
 									className="w-full rounded-md px-3 py-2 text-left text-sm transition-colors hover:bg-accent"
 									key={article.id}
-									onClick={() => handleResultClick(article.category.slug, article.slug)}
+									onClick={() =>
+										handleResultClick(article.category.slug, article.slug)
+									}
 									type="button"
 								>
 									<div className="font-medium">{article.title}</div>
 									{article.excerpt && (
-										<div className="line-clamp-1 text-muted-foreground text-xs">{article.excerpt}</div>
+										<div className="line-clamp-1 text-muted-foreground text-xs">
+											{article.excerpt}
+										</div>
 									)}
-									<div className="text-muted-foreground text-xs">{article.category.title}</div>
+									<div className="text-muted-foreground text-xs">
+										{article.category.title}
+									</div>
 								</button>
 							))}
 							<div className="border-t pt-2">

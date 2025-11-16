@@ -18,7 +18,9 @@ export default function AppointmentsPage() {
 	return (
 		<div className="flex h-full flex-col">
 			{/* Stats - Streams in first */}
-			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+			<Suspense
+				fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
+			>
 				<AppointmentsStats />
 			</Suspense>
 

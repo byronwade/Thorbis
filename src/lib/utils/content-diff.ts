@@ -45,7 +45,10 @@ const SECTION_LABELS: Record<string, string> = {
 /**
  * Extract changes from TipTap content
  */
-export function extractChanges(originalContent: any, newContent: any): Change[] {
+export function extractChanges(
+	originalContent: any,
+	newContent: any,
+): Change[] {
 	const changes: Change[] = [];
 
 	if (!(originalContent && newContent)) {

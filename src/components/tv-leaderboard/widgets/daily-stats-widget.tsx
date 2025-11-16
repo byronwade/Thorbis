@@ -128,7 +128,10 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText className="font-bold text-success" variant="display">
+						<ResponsiveText
+							className="font-bold text-success"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -137,7 +140,10 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-success" variant="display">
+						<ResponsiveText
+							className="font-bold text-success"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

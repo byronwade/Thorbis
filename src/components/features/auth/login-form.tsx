@@ -44,7 +44,10 @@ export function LoginForm() {
 			}
 			// If successful, the server action will redirect
 		} catch (caughtError) {
-			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
+			if (
+				caughtError instanceof Error &&
+				caughtError.message === "NEXT_REDIRECT"
+			) {
 				return;
 			}
 
@@ -69,12 +72,18 @@ export function LoginForm() {
 			// Keep loading spinner active during redirect
 		} catch (caughtError) {
 			// Ignore NEXT_REDIRECT errors - these are expected during successful OAuth
-			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
+			if (
+				caughtError instanceof Error &&
+				caughtError.message === "NEXT_REDIRECT"
+			) {
 				return; // Let the redirect happen, keep loading state
 			}
 
 			if (caughtError instanceof Error) {
-				setError(caughtError.message || "An unexpected error occurred. Please try again.");
+				setError(
+					caughtError.message ||
+						"An unexpected error occurred. Please try again.",
+				);
 			} else {
 				setError("An unexpected error occurred. Please try again.");
 			}
@@ -86,14 +95,22 @@ export function LoginForm() {
 		<div className="flex w-full max-w-lg flex-col gap-6">
 			{/* Logo */}
 			<div className="flex items-center gap-3">
-				<Image alt="Thorbis Logo" className="size-8.5" height={34} src="/ThorbisLogo.webp" width={34} />
+				<Image
+					alt="Thorbis Logo"
+					className="size-8.5"
+					height={34}
+					src="/ThorbisLogo.webp"
+					width={34}
+				/>
 				<span className="font-semibold text-xl">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
 				<h2 className="mb-1.5 font-semibold text-2xl">Welcome Back</h2>
-				<p className="text-muted-foreground">Welcome back! Access your field service dashboard:</p>
+				<p className="text-muted-foreground">
+					Welcome back! Access your field service dashboard:
+				</p>
 			</div>
 
 			{/* Error Alert */}
@@ -105,7 +122,12 @@ export function LoginForm() {
 			)}
 
 			{/* Social Login Button */}
-			<Button className="w-full" disabled={isLoading} onClick={() => handleOAuthLogin("google")} variant="outline">
+			<Button
+				className="w-full"
+				disabled={isLoading}
+				onClick={() => handleOAuthLogin("google")}
+				variant="outline"
+			>
 				{isLoading ? (
 					<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 				) : (
@@ -172,8 +194,14 @@ export function LoginForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-							<span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+							{showPassword ? (
+								<EyeOff className="h-4 w-4" />
+							) : (
+								<Eye className="h-4 w-4" />
+							)}
+							<span className="sr-only">
+								{showPassword ? "Hide password" : "Show password"}
+							</span>
 						</Button>
 					</div>
 				</div>

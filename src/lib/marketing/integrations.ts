@@ -77,12 +77,14 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			{
 				label: "Manual entry savings",
 				value: "-20 hrs",
-				description: "per week eliminated for accounting teams after syncing Thorbis and QuickBooks.",
+				description:
+					"per week eliminated for accounting teams after syncing Thorbis and QuickBooks.",
 			},
 			{
 				label: "Posting accuracy",
 				value: "99.8%",
-				description: "accuracy rate across invoices and payments after go-live.",
+				description:
+					"accuracy rate across invoices and payments after go-live.",
 			},
 		],
 		requirements: [
@@ -147,7 +149,11 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			title: "Thorbis + Stripe Payment Integration",
 			description:
 				"Accept credit cards, ACH, and digital wallets directly in Thorbis with Stripe. Offer autopay and reduce collections friction.",
-			keywords: ["thorbis stripe integration", "field service stripe payments", "stripe autopay maintenance plans"],
+			keywords: [
+				"thorbis stripe integration",
+				"field service stripe payments",
+				"stripe autopay maintenance plans",
+			],
 			image: "/images/integrations/stripe-og.png",
 		},
 		valueProps: [
@@ -159,12 +165,14 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			},
 			{
 				title: "Autopay & subscriptions",
-				description: "Save payment methods securely and automate recurring maintenance or membership billing.",
+				description:
+					"Save payment methods securely and automate recurring maintenance or membership billing.",
 				icon: "repeat",
 			},
 			{
 				title: "Instant reconciliation",
-				description: "Stripe payouts sync to Thorbis and QuickBooks automatically, providing end-to-end visibility.",
+				description:
+					"Stripe payouts sync to Thorbis and QuickBooks automatically, providing end-to-end visibility.",
 				icon: "line-chart",
 			},
 		],
@@ -184,7 +192,8 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			{
 				label: "Days sales outstanding",
 				value: "-9 days",
-				description: "average reduction once customers can pay immediately with Stripe in Thorbis.",
+				description:
+					"average reduction once customers can pay immediately with Stripe in Thorbis.",
 			},
 		],
 		requirements: [
@@ -206,7 +215,8 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 		faq: [
 			{
 				question: "Are there additional processing fees?",
-				answer: "Thorbis charges no extra fees. You pay Stripe’s standard processing rates or your negotiated pricing.",
+				answer:
+					"Thorbis charges no extra fees. You pay Stripe’s standard processing rates or your negotiated pricing.",
 			},
 			{
 				question: "Can I pass fees to customers?",
@@ -248,7 +258,11 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			title: "Thorbis + Zapier Integration",
 			description:
 				"Trigger no-code automations using Thorbis data with thousands of Zapier apps. Streamline marketing, reporting, and back-office work.",
-			keywords: ["thorbis zapier integration", "field service automation zapier", "thorbis workflows"],
+			keywords: [
+				"thorbis zapier integration",
+				"field service automation zapier",
+				"thorbis workflows",
+			],
 			image: "/images/integrations/zapier-og.png",
 		},
 		valueProps: [
@@ -260,7 +274,8 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			},
 			{
 				title: "5,000+ app connections",
-				description: "Sync Thorbis with CRMs, marketing platforms, spreadsheets, and BI tools instantly.",
+				description:
+					"Sync Thorbis with CRMs, marketing platforms, spreadsheets, and BI tools instantly.",
 				icon: "git-branch",
 			},
 			{
@@ -305,7 +320,8 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			},
 			{
 				question: "Can I build multi-step Zaps?",
-				answer: "Yes. Use filter, formatter, and path steps to build complex branching automations using Thorbis data.",
+				answer:
+					"Yes. Use filter, formatter, and path steps to build complex branching automations using Thorbis data.",
 			},
 			{
 				question: "Is there a limit on zap volume?",
@@ -320,11 +336,16 @@ export function getAllIntegrations(): MarketingIntegrationContent[] {
 	return INTEGRATIONS;
 }
 
-export function getIntegrationBySlug(slug: string): MarketingIntegrationContent | undefined {
+export function getIntegrationBySlug(
+	slug: string,
+): MarketingIntegrationContent | undefined {
 	return INTEGRATIONS.find((integration) => integration.slug === slug);
 }
 
-export function getRelatedIntegrations(slug: string, limit = 3): MarketingIntegrationContent[] {
+export function getRelatedIntegrations(
+	slug: string,
+	limit = 3,
+): MarketingIntegrationContent[] {
 	const current = getIntegrationBySlug(slug);
 	if (!current) {
 		return [];
@@ -333,19 +354,27 @@ export function getRelatedIntegrations(slug: string, limit = 3): MarketingIntegr
 	const related =
 		current.related
 			?.map((relatedSlug) => getIntegrationBySlug(relatedSlug))
-			.filter((integration): integration is MarketingIntegrationContent => Boolean(integration)) ?? [];
+			.filter((integration): integration is MarketingIntegrationContent =>
+				Boolean(integration),
+			) ?? [];
 
 	if (related.length >= limit) {
 		return related.slice(0, limit);
 	}
 
-	const others = INTEGRATIONS.filter((integration) => integration.slug !== slug).slice(0, limit - related.length);
+	const others = INTEGRATIONS.filter(
+		(integration) => integration.slug !== slug,
+	).slice(0, limit - related.length);
 
 	return [...related, ...others];
 }
 
-export function getFeaturedIntegrations(slugs: string[]): MarketingIntegrationContent[] {
+export function getFeaturedIntegrations(
+	slugs: string[],
+): MarketingIntegrationContent[] {
 	return slugs
 		.map((slug) => getIntegrationBySlug(slug))
-		.filter((integration): integration is MarketingIntegrationContent => Boolean(integration));
+		.filter((integration): integration is MarketingIntegrationContent =>
+			Boolean(integration),
+		);
 }

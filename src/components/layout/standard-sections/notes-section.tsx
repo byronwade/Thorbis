@@ -16,7 +16,12 @@ type NotesSectionProps = {
 	onAddNote?: (content: string) => Promise<void>;
 };
 
-export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSectionProps) {
+export function NotesSection({
+	notes,
+	entityType,
+	entityId,
+	onAddNote,
+}: NotesSectionProps) {
 	const { toast } = useToast();
 	const [isAdding, setIsAdding] = useState(false);
 	const [newNote, setNewNote] = useState("");
@@ -76,7 +81,12 @@ export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSe
 							</div>
 						</div>
 					) : (
-						<Button className="w-full" onClick={() => setIsAdding(true)} size="sm" variant="outline">
+						<Button
+							className="w-full"
+							onClick={() => setIsAdding(true)}
+							size="sm"
+							variant="outline"
+						>
 							<Plus className="mr-2 size-4" />
 							Add Note
 						</Button>
@@ -86,11 +96,16 @@ export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSe
 				{notes && notes.length > 0 ? (
 					<div className="space-y-3">
 						{notes.map((note: any) => (
-							<div className="rounded-lg border p-3 transition-colors hover:bg-muted/50" key={note.id}>
+							<div
+								className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+								key={note.id}
+							>
 								<div className="flex gap-3">
 									<Avatar className="size-8 flex-shrink-0">
 										<AvatarImage src={note.user?.avatar} />
-										<AvatarFallback>{note.user?.name?.charAt(0) || "?"}</AvatarFallback>
+										<AvatarFallback>
+											{note.user?.name?.charAt(0) || "?"}
+										</AvatarFallback>
 									</Avatar>
 									<div className="min-w-0 flex-1">
 										<div className="flex items-center justify-between gap-2">
@@ -101,7 +116,9 @@ export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSe
 												})}
 											</p>
 										</div>
-										<p className="mt-1 whitespace-pre-wrap break-words text-sm">{note.content || note.note}</p>
+										<p className="mt-1 whitespace-pre-wrap break-words text-sm">
+											{note.content || note.note}
+										</p>
 									</div>
 								</div>
 							</div>

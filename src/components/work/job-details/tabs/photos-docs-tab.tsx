@@ -69,12 +69,16 @@ export function PhotosDocsTab({
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 md:grid-cols-4">
-						{Object.entries(photosByCategory).map(([category, categoryPhotos]) => (
-							<div className="rounded-lg border p-4" key={category}>
-								<p className="mb-2 font-medium text-sm capitalize">{category}</p>
-								<p className="font-bold text-2xl">{categoryPhotos.length}</p>
-							</div>
-						))}
+						{Object.entries(photosByCategory).map(
+							([category, categoryPhotos]) => (
+								<div className="rounded-lg border p-4" key={category}>
+									<p className="mb-2 font-medium text-sm capitalize">
+										{category}
+									</p>
+									<p className="font-bold text-2xl">{categoryPhotos.length}</p>
+								</div>
+							),
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -89,7 +93,11 @@ export function PhotosDocsTab({
 							<Badge variant="secondary">{documents.length}</Badge>
 						</div>
 						{isEditMode && !showUploader && (
-							<Button onClick={() => setShowUploader(true)} size="sm" variant="outline">
+							<Button
+								onClick={() => setShowUploader(true)}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Upload
 							</Button>
@@ -100,7 +108,10 @@ export function PhotosDocsTab({
 					{documents.length > 0 ? (
 						<div className="space-y-2">
 							{documents.map((doc) => (
-								<div className="flex items-center justify-between rounded-lg border p-3" key={doc.id}>
+								<div
+									className="flex items-center justify-between rounded-lg border p-3"
+									key={doc.id}
+								>
 									<span className="text-sm">{doc.file_name}</span>
 									<Button size="sm" variant="ghost">
 										View
@@ -109,7 +120,9 @@ export function PhotosDocsTab({
 							))}
 						</div>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">No documents uploaded</div>
+						<div className="text-center text-muted-foreground text-sm">
+							No documents uploaded
+						</div>
 					)}
 				</CardContent>
 			</Card>
@@ -126,7 +139,11 @@ export function PhotosDocsTab({
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="rounded-lg border p-4">
 							<p className="mb-2 font-medium text-sm">Customer Signature</p>
-							{customerSignature ? <Badge variant="default">Signed</Badge> : <Badge variant="secondary">Pending</Badge>}
+							{customerSignature ? (
+								<Badge variant="default">Signed</Badge>
+							) : (
+								<Badge variant="secondary">Pending</Badge>
+							)}
 						</div>
 						<div className="rounded-lg border p-4">
 							<p className="mb-2 font-medium text-sm">Technician Signature</p>

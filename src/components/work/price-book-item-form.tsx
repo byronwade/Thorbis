@@ -7,10 +7,22 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPriceBookItem } from "@/actions/pricebook";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { LaborCalculatorModal } from "@/components/work/labor-calculator-modal";
@@ -59,11 +71,29 @@ const itemTypeOptions: { label: string; value: ItemType }[] = [
 	{ label: "Equipment", value: "equipment" },
 ];
 
-const unitOptions = ["each", "job", "hour", "linear_ft", "sq_ft", "lb", "gal", "set", "unit"];
+const unitOptions = [
+	"each",
+	"job",
+	"hour",
+	"linear_ft",
+	"sq_ft",
+	"lb",
+	"gal",
+	"set",
+	"unit",
+];
 
-const priceTierOptions: FormState["priceTier"][] = ["standard", "good", "better", "best"];
+const priceTierOptions: FormState["priceTier"][] = [
+	"standard",
+	"good",
+	"better",
+	"best",
+];
 
-const createInitialState = (defaultCategoryId: string, overrides?: Partial<FormState>): FormState => ({
+const createInitialState = (
+	defaultCategoryId: string,
+	overrides?: Partial<FormState>,
+): FormState => ({
 	itemType: "service",
 	name: "",
 	sku: "",
@@ -96,20 +126,26 @@ type PriceBookItemFormProps = {
 
 const toNumber = (value: string) => Number.parseFloat(value || "0") || 0;
 
-export function PriceBookItemForm({ categories, suppliers, initialData }: PriceBookItemFormProps) {
+export function PriceBookItemForm({
+	categories,
+	suppliers,
+	initialData,
+}: PriceBookItemFormProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const formRef = useRef<HTMLFormElement>(null);
 	const isEditing = Boolean(initialData);
 	const defaultCategoryId = initialData?.categoryId || categories[0]?.id || "";
-	const [formState, setFormState] = useState<FormState>(() => createInitialState(defaultCategoryId, initialData));
+	const [formState, setFormState] = useState<FormState>(() =>
+		createInitialState(defaultCategoryId, initialData),
+	);
 	const [tagInput, setTagInput] = useState("");
 	const [error, setError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const hasCategories = categories.length > 0;
 	const selectedCategory = useMemo(
 		() => categories.find((category) => category.id === formState.categoryId),
-		[categories, formState.categoryId]
+		[categories, formState.categoryId],
 	);
 
 	const calculateMarkup = (cost: string, price: string) => {
@@ -168,7 +204,10 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			...prev,
 			cost: (calculation.total / 100).toFixed(2),
 			price: (calculation.suggestedPrice / 100).toFixed(2),
-			markupPercent: ((calculation.suggestedMarkup / calculation.total) * 100).toFixed(1),
+			markupPercent: (
+				(calculation.suggestedMarkup / calculation.total) *
+				100
+			).toFixed(1),
 			name: prev.name || calculation.description || "Labor Service",
 			itemType: "service",
 		}));
@@ -207,7 +246,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 
 	const profitMargin =
 		formState.cost && formState.price
-			? ((toNumber(formState.price) - toNumber(formState.cost)) / toNumber(formState.price || "1")) * 100
+			? ((toNumber(formState.price) - toNumber(formState.cost)) /
+					toNumber(formState.price || "1")) *
+				100
 			: 0;
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -231,7 +272,10 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			payload.append("unit", formState.unit);
 			payload.append("cost", toNumber(formState.cost).toString());
 			payload.append("price", toNumber(formState.price).toString());
-			payload.append("markupPercent", toNumber(formState.markupPercent).toString());
+			payload.append(
+				"markupPercent",
+				toNumber(formState.markupPercent).toString(),
+			);
 			payload.append("minimumQuantity", formState.minimumQuantity || "0");
 			payload.append("isActive", String(formState.isActive));
 			payload.append("isTaxable", String(formState.isTaxable));
@@ -257,7 +301,11 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			toast.success("Price book item created.");
 			router.push(`/dashboard/work/pricebook/${result.data}`);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Something went wrong while saving the item.");
+			setError(
+				err instanceof Error
+					? err.message
+					: "Something went wrong while saving the item.",
+			);
 			setIsSubmitting(false);
 		}
 	};
@@ -267,7 +315,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			<div className="flex flex-col gap-3 rounded-lg border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p className="font-semibold text-sm">Keyboard Shortcuts</p>
-					<p className="text-muted-foreground text-xs">⌘/Ctrl + S to save • Esc to cancel</p>
+					<p className="text-muted-foreground text-xs">
+						⌘/Ctrl + S to save • Esc to cancel
+					</p>
 				</div>
 				<Button asChild size="sm" variant="ghost">
 					<Link href="/dashboard/work/pricebook">Back to Price Book</Link>
@@ -283,7 +333,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			<Card>
 				<CardHeader>
 					<CardTitle>Basic Information</CardTitle>
-					<CardDescription>Tell technicians and CSRs what this item is used for</CardDescription>
+					<CardDescription>
+						Tell technicians and CSRs what this item is used for
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{!hasCategories && (
@@ -296,7 +348,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 							<Label htmlFor="itemType">Item Type</Label>
 							<Select
 								disabled={!hasCategories}
-								onValueChange={(value: ItemType) => setFormState((prev) => ({ ...prev, itemType: value }))}
+								onValueChange={(value: ItemType) =>
+									setFormState((prev) => ({ ...prev, itemType: value }))
+								}
 								value={formState.itemType}
 							>
 								<SelectTrigger id="itemType">
@@ -368,12 +422,16 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 							<Label htmlFor="categoryId">
 								Category{" "}
 								{selectedCategory && (
-									<span className="text-muted-foreground text-xs">({selectedCategory.fullPath})</span>
+									<span className="text-muted-foreground text-xs">
+										({selectedCategory.fullPath})
+									</span>
 								)}
 							</Label>
 							<Select
 								disabled={!hasCategories}
-								onValueChange={(value) => setFormState((prev) => ({ ...prev, categoryId: value }))}
+								onValueChange={(value) =>
+									setFormState((prev) => ({ ...prev, categoryId: value }))
+								}
 								value={formState.categoryId}
 							>
 								<SelectTrigger id="categoryId">
@@ -412,7 +470,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 					<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<CardTitle>Pricing</CardTitle>
-							<CardDescription>Track cost, selling price, and markup for consistency</CardDescription>
+							<CardDescription>
+								Track cost, selling price, and markup for consistency
+							</CardDescription>
 						</div>
 						{formState.itemType === "service" && (
 							<LaborCalculatorModal
@@ -481,18 +541,29 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 						<div className="rounded-lg border bg-muted/20 p-4 text-sm">
 							<div className="grid gap-3 sm:grid-cols-3">
 								<div>
-									<p className="text-muted-foreground text-xs">Profit per unit</p>
+									<p className="text-muted-foreground text-xs">
+										Profit per unit
+									</p>
 									<p className="font-semibold text-emerald-600 dark:text-emerald-400">
-										${(toNumber(formState.price) - toNumber(formState.cost)).toFixed(2)}
+										$
+										{(
+											toNumber(formState.price) - toNumber(formState.cost)
+										).toFixed(2)}
 									</p>
 								</div>
 								<div>
 									<p className="text-muted-foreground text-xs">Profit margin</p>
-									<p className="font-semibold text-emerald-600 dark:text-emerald-400">{profitMargin.toFixed(1)}%</p>
+									<p className="font-semibold text-emerald-600 dark:text-emerald-400">
+										{profitMargin.toFixed(1)}%
+									</p>
 								</div>
 								<div>
-									<p className="text-muted-foreground text-xs">Markup over cost</p>
-									<p className="font-semibold">{formState.markupPercent || "0"}%</p>
+									<p className="text-muted-foreground text-xs">
+										Markup over cost
+									</p>
+									<p className="font-semibold">
+										{formState.markupPercent || "0"}%
+									</p>
 								</div>
 							</div>
 						</div>
@@ -503,7 +574,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 							<Label htmlFor="unit">Unit</Label>
 							<Select
 								disabled={!hasCategories}
-								onValueChange={(value) => setFormState((prev) => ({ ...prev, unit: value }))}
+								onValueChange={(value) =>
+									setFormState((prev) => ({ ...prev, unit: value }))
+								}
 								value={formState.unit}
 							>
 								<SelectTrigger id="unit">
@@ -541,7 +614,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			<Card>
 				<CardHeader>
 					<CardTitle>Supplier Details</CardTitle>
-					<CardDescription>Optional metadata for purchasing and vendor integrations</CardDescription>
+					<CardDescription>
+						Optional metadata for purchasing and vendor integrations
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -549,11 +624,19 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 							<Label htmlFor="supplierId">Supplier (optional)</Label>
 							<Select
 								disabled={!suppliers.length}
-								onValueChange={(value) => setFormState((prev) => ({ ...prev, supplierId: value }))}
+								onValueChange={(value) =>
+									setFormState((prev) => ({ ...prev, supplierId: value }))
+								}
 								value={formState.supplierId}
 							>
 								<SelectTrigger id="supplierId">
-									<SelectValue placeholder={suppliers.length ? "Select supplier" : "No suppliers connected"} />
+									<SelectValue
+										placeholder={
+											suppliers.length
+												? "Select supplier"
+												: "No suppliers connected"
+										}
+									/>
 								</SelectTrigger>
 								<SelectContent>
 									{suppliers.map((supplier) => (
@@ -585,7 +668,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			<Card>
 				<CardHeader>
 					<CardTitle>Pricing Strategy & Notes</CardTitle>
-					<CardDescription>Control visibility, tiers, flat-rate behavior, and documentation</CardDescription>
+					<CardDescription>
+						Control visibility, tiers, flat-rate behavior, and documentation
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -603,7 +688,9 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 								<SelectContent>
 									{priceTierOptions.map((tier) => (
 										<SelectItem key={tier} value={tier}>
-											{tier === "standard" ? "Standard" : tier.charAt(0).toUpperCase() + tier.slice(1)}
+											{tier === "standard"
+												? "Standard"
+												: tier.charAt(0).toUpperCase() + tier.slice(1)}
 										</SelectItem>
 									))}
 								</SelectContent>
@@ -630,36 +717,48 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 						<div className="flex items-center justify-between rounded-lg border bg-muted/20 p-4">
 							<div className="space-y-0.5">
 								<Label htmlFor="isActive">Active</Label>
-								<p className="text-muted-foreground text-xs">Hide inactive items from estimates/invoices</p>
+								<p className="text-muted-foreground text-xs">
+									Hide inactive items from estimates/invoices
+								</p>
 							</div>
 							<Switch
 								checked={formState.isActive}
 								id="isActive"
-								onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isActive: checked }))}
+								onCheckedChange={(checked) =>
+									setFormState((prev) => ({ ...prev, isActive: checked }))
+								}
 							/>
 						</div>
 
 						<div className="flex items-center justify-between rounded-lg border bg-muted/20 p-4">
 							<div className="space-y-0.5">
 								<Label htmlFor="isTaxable">Taxable</Label>
-								<p className="text-muted-foreground text-xs">Apply sales tax when invoiced</p>
+								<p className="text-muted-foreground text-xs">
+									Apply sales tax when invoiced
+								</p>
 							</div>
 							<Switch
 								checked={formState.isTaxable}
 								id="isTaxable"
-								onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isTaxable: checked }))}
+								onCheckedChange={(checked) =>
+									setFormState((prev) => ({ ...prev, isTaxable: checked }))
+								}
 							/>
 						</div>
 
 						<div className="flex items-center justify-between rounded-lg border bg-muted/20 p-4">
 							<div className="space-y-0.5">
 								<Label htmlFor="isFlatRate">Flat Rate</Label>
-								<p className="text-muted-foreground text-xs">Mark service as flat-rate (labor+materials included)</p>
+								<p className="text-muted-foreground text-xs">
+									Mark service as flat-rate (labor+materials included)
+								</p>
 							</div>
 							<Switch
 								checked={formState.isFlatRate}
 								id="isFlatRate"
-								onCheckedChange={(checked) => setFormState((prev) => ({ ...prev, isFlatRate: checked }))}
+								onCheckedChange={(checked) =>
+									setFormState((prev) => ({ ...prev, isFlatRate: checked }))
+								}
 							/>
 						</div>
 
@@ -698,7 +797,12 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 								placeholder="Seasonal, premium, add-on..."
 								value={tagInput}
 							/>
-							<Button onClick={handleAddTag} size="sm" type="button" variant="outline">
+							<Button
+								onClick={handleAddTag}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								<Plus className="size-4" />
 							</Button>
 						</div>
@@ -724,7 +828,12 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 
 			{/* Submit Actions */}
 			<div className="flex items-center justify-end gap-3">
-				<Button disabled={isSubmitting} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isSubmitting}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel
 				</Button>
 				<Button disabled={isSubmitting} type="submit">

@@ -24,7 +24,9 @@ export default function InvoicesPage() {
 	return (
 		<WorkPageLayout
 			stats={
-				<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+				<Suspense
+					fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
+				>
 					<InvoicesStats />
 				</Suspense>
 			}

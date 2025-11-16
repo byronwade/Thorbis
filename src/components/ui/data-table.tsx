@@ -1,10 +1,25 @@
 "use client";
 
-import { ChevronDown, ChevronLeft, ChevronRight, ChevronsUpDown, ChevronUp, Search, X } from "lucide-react";
+import {
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	ChevronsUpDown,
+	ChevronUp,
+	Search,
+	X,
+} from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 export type DataTableColumn<T> = {
 	key: string;
@@ -51,7 +66,7 @@ export function DataTable<T extends Record<string, unknown>>({
 						return false;
 					}
 					return String(value).toLowerCase().includes(searchTerm.toLowerCase());
-				})
+				}),
 			)
 		: data;
 
@@ -168,7 +183,10 @@ export function DataTable<T extends Record<string, unknown>>({
 					<TableBody>
 						{paginatedData.length === 0 ? (
 							<TableRow>
-								<TableCell className="h-24 text-center text-muted-foreground" colSpan={columns.length}>
+								<TableCell
+									className="h-24 text-center text-muted-foreground"
+									colSpan={columns.length}
+								>
 									{emptyMessage}
 								</TableCell>
 							</TableRow>
@@ -177,7 +195,9 @@ export function DataTable<T extends Record<string, unknown>>({
 								<TableRow key={String(item[keyField])}>
 									{columns.map((column) => (
 										<TableCell className={column.className} key={column.key}>
-											{column.render ? column.render(item) : String(item[column.key] ?? "")}
+											{column.render
+												? column.render(item)
+												: String(item[column.key] ?? "")}
 										</TableCell>
 									))}
 								</TableRow>
@@ -191,10 +211,16 @@ export function DataTable<T extends Record<string, unknown>>({
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between">
 					<div className="text-muted-foreground text-sm">
-						Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
+						Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)}{" "}
+						of {sortedData.length} results
 					</div>
 					<div className="flex items-center gap-2">
-						<Button disabled={currentPage === 1} onClick={() => goToPage(currentPage - 1)} size="sm" variant="outline">
+						<Button
+							disabled={currentPage === 1}
+							onClick={() => goToPage(currentPage - 1)}
+							size="sm"
+							variant="outline"
+						>
 							<ChevronLeft className="size-4" />
 							Previous
 						</Button>

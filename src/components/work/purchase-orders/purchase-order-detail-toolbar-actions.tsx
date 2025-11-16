@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function PurchaseOrderDetailToolbarActions() {
@@ -97,8 +102,15 @@ export function PurchaseOrderDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
-								<a href={`/dashboard/work/purchase-orders/new?cloneFrom=${poId}`}>
+							<Button
+								asChild
+								className="h-8 gap-1.5"
+								size="sm"
+								variant="outline"
+							>
+								<a
+									href={`/dashboard/work/purchase-orders/new?cloneFrom=${poId}`}
+								>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -139,14 +151,23 @@ export function PurchaseOrderDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Purchase Order</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this purchase order? Archived records can be restored within 90 days.
+							Are you sure you want to archive this purchase order? Archived
+							records can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive PO"}
 						</Button>
 					</DialogFooter>

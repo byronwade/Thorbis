@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback } from "react";
-import type { CommunicationRecord, CompanyPhone } from "@/components/communication/communication-page-client";
+import type {
+	CommunicationRecord,
+	CompanyPhone,
+} from "@/components/communication/communication-page-client";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 import { CallComposerDialog } from "./call-composer-dialog";
 import { EmailDialog } from "./email-dialog";

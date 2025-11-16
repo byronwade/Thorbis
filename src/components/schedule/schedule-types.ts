@@ -83,7 +83,14 @@ export type Job = {
 	allDay?: boolean; // For meetings, events
 
 	// Status
-	status: "scheduled" | "dispatched" | "arrived" | "in-progress" | "closed" | "completed" | "cancelled";
+	status:
+		| "scheduled"
+		| "dispatched"
+		| "arrived"
+		| "in-progress"
+		| "closed"
+		| "completed"
+		| "cancelled";
 	priority: "low" | "medium" | "high" | "urgent";
 
 	// Recurrence

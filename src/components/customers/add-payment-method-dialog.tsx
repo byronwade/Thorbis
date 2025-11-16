@@ -16,7 +16,13 @@ import { AlertCircle, CreditCard, Landmark } from "lucide-react";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -28,7 +34,12 @@ type AddPaymentMethodDialogProps = {
 	onSuccess?: () => void;
 };
 
-export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSuccess }: AddPaymentMethodDialogProps) {
+export function AddPaymentMethodDialog({
+	open,
+	onOpenChange,
+	customerId,
+	onSuccess,
+}: AddPaymentMethodDialogProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [paymentType, setPaymentType] = useState<"card" | "ach">("card");
@@ -58,13 +69,15 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			alert(
-				"Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods."
+				"Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods.",
 			);
 
 			onSuccess?.();
 			onOpenChange(false);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to add payment method");
+			setError(
+				err instanceof Error ? err.message : "Failed to add payment method",
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -75,7 +88,9 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
 					<DialogTitle>Add Payment Method</DialogTitle>
-					<DialogDescription>Securely add a payment method for invoices and recurring payments</DialogDescription>
+					<DialogDescription>
+						Securely add a payment method for invoices and recurring payments
+					</DialogDescription>
 				</DialogHeader>
 
 				<Tabs onValueChange={(v: any) => setPaymentType(v)} value={paymentType}>
@@ -95,7 +110,8 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 						<Alert>
 							<AlertCircle className="size-4" />
 							<AlertDescription className="text-xs">
-								<strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC, future date)
+								<strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC,
+								future date)
 							</AlertDescription>
 						</Alert>
 
@@ -153,10 +169,19 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 						)}
 
 						<div className="flex gap-2 pt-4">
-							<Button className="flex-1" disabled={isLoading} onClick={() => onOpenChange(false)} variant="outline">
+							<Button
+								className="flex-1"
+								disabled={isLoading}
+								onClick={() => onOpenChange(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
-							<Button className="flex-1" disabled={isLoading} onClick={handleAddTestCard}>
+							<Button
+								className="flex-1"
+								disabled={isLoading}
+								onClick={handleAddTestCard}
+							>
 								{isLoading ? "Adding..." : "Add Card"}
 							</Button>
 						</div>
@@ -194,7 +219,11 @@ export function AddPaymentMethodDialog({ open, onOpenChange, customerId, onSucce
 						)}
 
 						<div className="flex gap-2 pt-4">
-							<Button className="flex-1" onClick={() => onOpenChange(false)} variant="outline">
+							<Button
+								className="flex-1"
+								onClick={() => onOpenChange(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
 							<Button className="flex-1" disabled>

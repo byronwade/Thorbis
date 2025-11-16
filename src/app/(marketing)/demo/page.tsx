@@ -4,7 +4,11 @@ import Script from "next/script";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Get Started with Thorbis",
@@ -36,19 +40,22 @@ const GET_STARTED_STEPS = [
 const ONBOARDING_RESOURCES = [
 	{
 		title: "Migration checklist",
-		description: "Step-by-step guide covering exports, data cleanup, and go-live validation.",
+		description:
+			"Step-by-step guide covering exports, data cleanup, and go-live validation.",
 		href: "/templates?tag=migration",
 		cta: "Download checklist",
 	},
 	{
 		title: "Implementation playbook",
-		description: "Understand the 45-day rollout process that Thorbis success teams follow with new customers.",
+		description:
+			"Understand the 45-day rollout process that Thorbis success teams follow with new customers.",
 		href: "/implementation",
 		cta: "View playbook",
 	},
 	{
 		title: "Knowledge base",
-		description: "Read detailed guides for configuring scheduling, AI assistant, payments, and reporting.",
+		description:
+			"Read detailed guides for configuring scheduling, AI assistant, payments, and reporting.",
 		href: "/kb",
 		cta: "Browse articles",
 	},
@@ -63,7 +70,7 @@ export default function DemoPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Get Started", url: `${siteUrl}/demo` },
-						])
+						]),
 					),
 				}}
 				id="demo-breadcrumb-ld"
@@ -74,11 +81,14 @@ export default function DemoPage() {
 					<Badge className="uppercase tracking-wide" variant="secondary">
 						Self-serve signup
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Spin up your Thorbis account today</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Spin up your Thorbis account today
+					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Choose your plan, invite your team, and start automating operations without waiting for a sales call.
-						Thorbis costs $100/month for the base platform with pay-as-you-go usage—unlimited users, no contracts, no
-						lock-in.
+						Choose your plan, invite your team, and start automating operations
+						without waiting for a sales call. Thorbis costs $100/month for the
+						base platform with pay-as-you-go usage—unlimited users, no
+						contracts, no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -91,7 +101,9 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center font-semibold text-2xl">Three simple steps</h2>
+					<h2 className="text-center font-semibold text-2xl">
+						Three simple steps
+					</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{GET_STARTED_STEPS.map((step) => (
 							<Card className="bg-muted/40" key={step.title}>
@@ -99,7 +111,9 @@ export default function DemoPage() {
 									<CardTitle className="text-lg">{step.title}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{step.description}
+									</p>
 								</CardContent>
 							</Card>
 						))}
@@ -107,7 +121,9 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center font-semibold text-2xl">Resources to guide your rollout</h2>
+					<h2 className="text-center font-semibold text-2xl">
+						Resources to guide your rollout
+					</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{ONBOARDING_RESOURCES.map((resource) => (
 							<Card key={resource.title}>
@@ -127,8 +143,8 @@ export default function DemoPage() {
 
 				<section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
 					<p className="text-lg text-muted-foreground">
-						Already a customer? Visit the Help Center for training resources, live webinars, and office hours with our
-						success team.
+						Already a customer? Visit the Help Center for training resources,
+						live webinars, and office hours with our success team.
 					</p>
 					<Button asChild className="mt-6" variant="secondary">
 						<Link href="/help">Visit the Help Center</Link>

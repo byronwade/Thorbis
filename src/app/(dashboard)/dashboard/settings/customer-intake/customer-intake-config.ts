@@ -30,7 +30,9 @@ export const DEFAULT_CUSTOMER_INTAKE_SETTINGS: CustomerIntakeSettingsState = {
 	customQuestions: "[]",
 };
 
-export function mapCustomerIntakeSettings(row: CustomerIntakeRow): Partial<CustomerIntakeSettingsState> {
+export function mapCustomerIntakeSettings(
+	row: CustomerIntakeRow,
+): Partial<CustomerIntakeSettingsState> {
 	if (!row) {
 		return {};
 	}

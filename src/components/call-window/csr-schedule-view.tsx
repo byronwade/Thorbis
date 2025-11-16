@@ -25,12 +25,19 @@ import {
 	Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getTechnicianSchedules, type ScheduleAppointment, type TechnicianSchedule } from "@/actions/schedule";
+import {
+	getTechnicianSchedules,
+	type ScheduleAppointment,
+	type TechnicianSchedule,
+} from "@/actions/schedule";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UnifiedAccordion, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordion,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { cn } from "@/lib/utils";
 import { ScheduleTimeline } from "./schedule-timeline";
 
@@ -39,9 +46,14 @@ type CSRScheduleViewProps = {
 	companyId?: string;
 };
 
-export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) {
+export function CSRScheduleView({
+	className,
+	companyId,
+}: CSRScheduleViewProps) {
 	const [selectedDate, setSelectedDate] = useState(new Date());
-	const [selectedTechFilter, setSelectedTechFilter] = useState<string | null>(null);
+	const [selectedTechFilter, setSelectedTechFilter] = useState<string | null>(
+		null,
+	);
 	const [technicians, setTechnicians] = useState<TechnicianSchedule[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -100,7 +112,12 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 				<div className="text-center">
 					<AlertCircle className="mx-auto mb-4 h-8 w-8 text-destructive" />
 					<p className="font-medium text-sm">{error}</p>
-					<Button className="mt-4" onClick={() => window.location.reload()} size="sm" variant="outline">
+					<Button
+						className="mt-4"
+						onClick={() => window.location.reload()}
+						size="sm"
+						variant="outline"
+					>
 						Retry
 					</Button>
 				</div>
@@ -144,19 +161,28 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 		switch (status) {
 			case "completed":
 				return (
-					<Badge className="border-success/50 bg-success/10 text-[10px] text-success" variant="outline">
+					<Badge
+						className="border-success/50 bg-success/10 text-[10px] text-success"
+						variant="outline"
+					>
 						Completed
 					</Badge>
 				);
 			case "in_progress":
 				return (
-					<Badge className="border-warning/50 bg-warning/10 text-[10px] text-warning" variant="outline">
+					<Badge
+						className="border-warning/50 bg-warning/10 text-[10px] text-warning"
+						variant="outline"
+					>
 						In Progress
 					</Badge>
 				);
 			case "cancelled":
 				return (
-					<Badge className="border-destructive/50 bg-destructive/10 text-[10px] text-destructive" variant="outline">
+					<Badge
+						className="border-destructive/50 bg-destructive/10 text-[10px] text-destructive"
+						variant="outline"
+					>
 						Cancelled
 					</Badge>
 				);
@@ -183,107 +209,133 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 		: technicians;
 
 	// Calculate total appointments
-	const totalAppointments = technicians.reduce((sum, tech) => sum + tech.appointments.length, 0);
+	const totalAppointments = technicians.reduce(
+		(sum, tech) => sum + tech.appointments.length,
+		0,
+	);
 
 	// Build accordion sections for each technician
-	const sections: UnifiedAccordionSection[] = filteredTechnicians.map((tech) => ({
-		id: tech.id,
-		title: tech.name,
-		icon: (
-			<Avatar className="h-5 w-5">
-				<AvatarImage src={tech.avatar_url} />
-				<AvatarFallback className={cn("text-[10px] text-white", tech.color)}>{getInitials(tech.name)}</AvatarFallback>
-			</Avatar>
-		),
-		count: tech.appointments.length,
-		actions: (
-			<Badge className="text-[10px]" variant="secondary">
-				{tech.role.replace("_", " ")}
-			</Badge>
-		),
-		content: (
-			<div className="space-y-4 p-4">
-				{/* Timeline */}
-				<ScheduleTimeline
-					appointments={tech.appointments}
-					currentTime={currentTime}
-					technicianColor={tech.color}
-					workingHours={tech.working_hours}
-				/>
+	const sections: UnifiedAccordionSection[] = filteredTechnicians.map(
+		(tech) => ({
+			id: tech.id,
+			title: tech.name,
+			icon: (
+				<Avatar className="h-5 w-5">
+					<AvatarImage src={tech.avatar_url} />
+					<AvatarFallback className={cn("text-[10px] text-white", tech.color)}>
+						{getInitials(tech.name)}
+					</AvatarFallback>
+				</Avatar>
+			),
+			count: tech.appointments.length,
+			actions: (
+				<Badge className="text-[10px]" variant="secondary">
+					{tech.role.replace("_", " ")}
+				</Badge>
+			),
+			content: (
+				<div className="space-y-4 p-4">
+					{/* Timeline */}
+					<ScheduleTimeline
+						appointments={tech.appointments}
+						currentTime={currentTime}
+						technicianColor={tech.color}
+						workingHours={tech.working_hours}
+					/>
 
-				{/* Appointments List */}
-				{tech.appointments.length > 0 ? (
-					<div className="space-y-3">
-						{tech.appointments.map((appointment) => (
-							<div className="rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50" key={appointment.id}>
-								{/* Time & Status */}
-								<div className="mb-3 flex items-center justify-between">
-									<div className="flex items-center gap-2">
-										<Clock className="h-4 w-4 text-muted-foreground" />
-										<span className="font-semibold text-sm">
-											{formatTime(appointment.scheduled_start)} - {formatTime(appointment.scheduled_end)}
-										</span>
-										<Badge className="text-[10px]" variant="secondary">
-											{appointment.duration_hours}h window
-										</Badge>
-									</div>
-									{getStatusBadge(appointment.status)}
-								</div>
-
-								{/* Job Info */}
-								<div className="mb-3 space-y-1">
-									<div className="flex items-center gap-2">
-										<User className="h-3.5 w-3.5 text-muted-foreground" />
-										<span className="font-medium text-sm">{appointment.customer_name}</span>
-									</div>
-									<div className="flex items-center gap-2">
-										<MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-										<span className="text-muted-foreground text-xs">
-											{appointment.address}, {appointment.city}, {appointment.state}
-										</span>
-									</div>
-									<div className="flex items-center gap-2">
-										<Badge className="text-xs" variant="outline">
-											{appointment.job_type}
-										</Badge>
-										<span className="font-mono text-muted-foreground text-xs">#{appointment.job_number}</span>
-									</div>
-								</div>
-
-								{/* Assigned Technicians */}
-								{appointment.assigned_technicians.length > 1 && (
-									<div className="border-t pt-3">
+					{/* Appointments List */}
+					{tech.appointments.length > 0 ? (
+						<div className="space-y-3">
+							{tech.appointments.map((appointment) => (
+								<div
+									className="rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50"
+									key={appointment.id}
+								>
+									{/* Time & Status */}
+									<div className="mb-3 flex items-center justify-between">
 										<div className="flex items-center gap-2">
-											<Users className="h-3.5 w-3.5 text-muted-foreground" />
-											<span className="text-muted-foreground text-xs">Team:</span>
-											<div className="flex flex-wrap gap-1">
-												{appointment.assigned_technicians.map((assignedTech) => (
-													<Badge
-														className="text-[10px]"
-														key={assignedTech.id}
-														variant={assignedTech.is_lead ? "default" : "secondary"}
-													>
-														{assignedTech.name}
-														{assignedTech.is_lead && " (Lead)"}
-													</Badge>
-												))}
-											</div>
+											<Clock className="h-4 w-4 text-muted-foreground" />
+											<span className="font-semibold text-sm">
+												{formatTime(appointment.scheduled_start)} -{" "}
+												{formatTime(appointment.scheduled_end)}
+											</span>
+											<Badge className="text-[10px]" variant="secondary">
+												{appointment.duration_hours}h window
+											</Badge>
+										</div>
+										{getStatusBadge(appointment.status)}
+									</div>
+
+									{/* Job Info */}
+									<div className="mb-3 space-y-1">
+										<div className="flex items-center gap-2">
+											<User className="h-3.5 w-3.5 text-muted-foreground" />
+											<span className="font-medium text-sm">
+												{appointment.customer_name}
+											</span>
+										</div>
+										<div className="flex items-center gap-2">
+											<MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+											<span className="text-muted-foreground text-xs">
+												{appointment.address}, {appointment.city},{" "}
+												{appointment.state}
+											</span>
+										</div>
+										<div className="flex items-center gap-2">
+											<Badge className="text-xs" variant="outline">
+												{appointment.job_type}
+											</Badge>
+											<span className="font-mono text-muted-foreground text-xs">
+												#{appointment.job_number}
+											</span>
 										</div>
 									</div>
-								)}
-							</div>
-						))}
-					</div>
-				) : (
-					<div className="flex flex-col items-center justify-center py-8 text-center">
-						<Calendar className="mb-3 h-10 w-10 text-muted-foreground" />
-						<p className="text-muted-foreground text-sm">No appointments today</p>
-						<p className="text-muted-foreground text-xs">This technician is available</p>
-					</div>
-				)}
-			</div>
-		),
-	}));
+
+									{/* Assigned Technicians */}
+									{appointment.assigned_technicians.length > 1 && (
+										<div className="border-t pt-3">
+											<div className="flex items-center gap-2">
+												<Users className="h-3.5 w-3.5 text-muted-foreground" />
+												<span className="text-muted-foreground text-xs">
+													Team:
+												</span>
+												<div className="flex flex-wrap gap-1">
+													{appointment.assigned_technicians.map(
+														(assignedTech) => (
+															<Badge
+																className="text-[10px]"
+																key={assignedTech.id}
+																variant={
+																	assignedTech.is_lead ? "default" : "secondary"
+																}
+															>
+																{assignedTech.name}
+																{assignedTech.is_lead && " (Lead)"}
+															</Badge>
+														),
+													)}
+												</div>
+											</div>
+										</div>
+									)}
+								</div>
+							))}
+						</div>
+					) : (
+						<div className="flex flex-col items-center justify-center py-8 text-center">
+							<Calendar className="mb-3 h-10 w-10 text-muted-foreground" />
+							<p className="text-muted-foreground text-sm">
+								No appointments today
+							</p>
+							<p className="text-muted-foreground text-xs">
+								This technician is available
+							</p>
+						</div>
+					)}
+				</div>
+			),
+		}),
+	);
 
 	return (
 		<div className={cn("flex h-full flex-col", className)}>
@@ -291,14 +343,21 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 			<div className="space-y-3 border-b bg-card/50 p-4">
 				{/* Date Navigation */}
 				<div className="flex items-center justify-between">
-					<Button className="h-8 w-8" onClick={() => changeDate(-1)} size="icon" variant="ghost">
+					<Button
+						className="h-8 w-8"
+						onClick={() => changeDate(-1)}
+						size="icon"
+						variant="ghost"
+					>
 						<ChevronLeft className="h-4 w-4" />
 					</Button>
 
 					<div className="flex flex-col items-center">
 						<div className="flex items-center gap-2">
 							<Calendar className="h-4 w-4 text-muted-foreground" />
-							<span className="font-semibold text-sm">{formatDate(selectedDate)}</span>
+							<span className="font-semibold text-sm">
+								{formatDate(selectedDate)}
+							</span>
 						</div>
 						{isToday(selectedDate) && (
 							<Badge className="mt-1 text-[10px]" variant="secondary">
@@ -307,7 +366,12 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 						)}
 					</div>
 
-					<Button className="h-8 w-8" onClick={() => changeDate(1)} size="icon" variant="ghost">
+					<Button
+						className="h-8 w-8"
+						onClick={() => changeDate(1)}
+						size="icon"
+						variant="ghost"
+					>
 						<ChevronRight className="h-4 w-4" />
 					</Button>
 				</div>
@@ -316,9 +380,13 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 				<div className="flex items-center justify-between gap-2">
 					<div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-1.5">
 						<Users className="h-3.5 w-3.5 text-muted-foreground" />
-						<span className="text-muted-foreground text-xs">{filteredTechnicians.length} Techs</span>
+						<span className="text-muted-foreground text-xs">
+							{filteredTechnicians.length} Techs
+						</span>
 						<span className="text-muted-foreground">•</span>
-						<span className="font-medium text-xs">{totalAppointments} Appointments</span>
+						<span className="font-medium text-xs">
+							{totalAppointments} Appointments
+						</span>
 					</div>
 
 					<Button
@@ -350,7 +418,12 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 
 			{/* Quick Actions */}
 			<div className="border-t bg-card/50 p-3">
-				<Button className="w-full gap-2 text-xs" onClick={() => {}} size="sm" variant="default">
+				<Button
+					className="w-full gap-2 text-xs"
+					onClick={() => {}}
+					size="sm"
+					variant="default"
+				>
 					<Plus className="h-3.5 w-3.5" />
 					Book New Appointment
 				</Button>

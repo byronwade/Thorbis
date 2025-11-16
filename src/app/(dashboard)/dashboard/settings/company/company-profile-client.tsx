@@ -32,15 +32,34 @@ import { updateCompanyInfo } from "@/actions/company";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { DAYS_OF_WEEK, DEFAULT_HOURS } from "@/lib/company/hours";
 
@@ -77,17 +96,30 @@ const operatingHoursSchema = z.object({
 });
 
 const companyProfileSchema = z.object({
-	companyName: z.string().min(MIN_NAME_LENGTH, `Company name must be at least ${MIN_NAME_LENGTH} characters`),
+	companyName: z
+		.string()
+		.min(
+			MIN_NAME_LENGTH,
+			`Company name must be at least ${MIN_NAME_LENGTH} characters`,
+		),
 	legalName: z.string().optional(),
 	industry: z.string().min(1, "Please select an industry"),
 	email: z.string().email("Please enter a valid email address"),
-	phone: z.string().min(MIN_PHONE_LENGTH, `Phone number must be at least ${MIN_PHONE_LENGTH} digits`),
+	phone: z
+		.string()
+		.min(
+			MIN_PHONE_LENGTH,
+			`Phone number must be at least ${MIN_PHONE_LENGTH} digits`,
+		),
 	website: z.string().optional().or(z.literal("")),
 	taxId: z.string().optional(),
 	licenseNumber: z.string().optional(),
 	description: z
 		.string()
-		.max(MAX_DESCRIPTION_LENGTH, `Description must be less than ${MAX_DESCRIPTION_LENGTH} characters`)
+		.max(
+			MAX_DESCRIPTION_LENGTH,
+			`Description must be less than ${MAX_DESCRIPTION_LENGTH} characters`,
+		)
 		.optional(),
 	address: z.string().min(1, "Address is required"),
 	address2: z.string().optional(),
@@ -125,7 +157,7 @@ const cloneDefaultHours = () =>
 			...acc,
 			[day]: { ...DEFAULT_HOURS[day] },
 		}),
-		{} as CompanyProfileFormData["hoursOfOperation"]
+		{} as CompanyProfileFormData["hoursOfOperation"],
 	);
 
 const cloneHours = (hours?: CompanyProfileFormData["hoursOfOperation"]) =>
@@ -135,17 +167,21 @@ const cloneHours = (hours?: CompanyProfileFormData["hoursOfOperation"]) =>
 					...acc,
 					[day]: { ...hours[day] },
 				}),
-				{} as CompanyProfileFormData["hoursOfOperation"]
+				{} as CompanyProfileFormData["hoursOfOperation"],
 			)
 		: cloneDefaultHours();
 
-const cloneFormValues = (values: CompanyProfileFormData): CompanyProfileFormData => ({
+const cloneFormValues = (
+	values: CompanyProfileFormData,
+): CompanyProfileFormData => ({
 	...values,
 	serviceAreas: [...(values.serviceAreas || [])],
 	hoursOfOperation: cloneHours(values.hoursOfOperation),
 });
 
-export function CompanyProfileClient({ initialData }: CompanyProfileClientProps) {
+export function CompanyProfileClient({
+	initialData,
+}: CompanyProfileClientProps) {
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [hasChanges, setHasChanges] = useState(false);
@@ -156,8 +192,13 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 		closeTime: "17:00",
 	});
 
-	const memoizedInitialValues = useMemo(() => cloneFormValues(initialData), [initialData]);
-	const initialValuesRef = useRef<CompanyProfileFormData>(memoizedInitialValues);
+	const memoizedInitialValues = useMemo(
+		() => cloneFormValues(initialData),
+		[initialData],
+	);
+	const initialValuesRef = useRef<CompanyProfileFormData>(
+		memoizedInitialValues,
+	);
 
 	const form = useForm<CompanyProfileFormData>({
 		resolver: zodResolver(companyProfileSchema),
@@ -190,7 +231,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 			formData.append("serviceAreaType", values.serviceAreaType);
 			formData.append("serviceRadius", values.serviceRadius.toString());
 			formData.append("serviceAreas", JSON.stringify(values.serviceAreas));
-			formData.append("hoursOfOperation", JSON.stringify(values.hoursOfOperation));
+			formData.append(
+				"hoursOfOperation",
+				JSON.stringify(values.hoursOfOperation),
+			);
 			formData.append("description", values.description || "");
 
 			const result = await updateCompanyInfo(formData);
@@ -221,13 +265,15 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 		const currentAreas = form.getValues("serviceAreas") || [];
 		form.setValue(
 			"serviceAreas",
-			currentAreas.filter((_, i) => i !== index)
+			currentAreas.filter((_, i) => i !== index),
 		);
 		setHasChanges(true);
 	}
 
 	function applyBulkHours() {
-		const days = DAYS_OF_WEEK.filter((day) => form.watch(`hoursOfOperation.${day}.enabled`));
+		const days = DAYS_OF_WEEK.filter((day) =>
+			form.watch(`hoursOfOperation.${day}.enabled`),
+		);
 		for (const day of days) {
 			form.setValue(`hoursOfOperation.${day}.openTime`, bulkHours.openTime);
 			form.setValue(`hoursOfOperation.${day}.closeTime`, bulkHours.closeTime);
@@ -305,14 +351,17 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 												<h2 className="font-semibold text-xl">Company Logo</h2>
 												<Tooltip>
 													<TooltipTrigger asChild>
-														<button className="flex items-center justify-center" type="button">
+														<button
+															className="flex items-center justify-center"
+															type="button"
+														>
 															<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 														</button>
 													</TooltipTrigger>
 													<TooltipContent className="max-w-xs">
 														<p className="text-sm">
-															Your company logo appears on invoices, estimates, customer portal, and email
-															communications.
+															Your company logo appears on invoices, estimates,
+															customer portal, and email communications.
 														</p>
 													</TooltipContent>
 												</Tooltip>
@@ -334,7 +383,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 										</div>
 
 										<p className="text-muted-foreground text-xs">
-											Recommended: PNG or SVG format, max 2MB, at least 400x400 pixels for crisp display
+											Recommended: PNG or SVG format, max 2MB, at least 400x400
+											pixels for crisp display
 										</p>
 									</div>
 								</div>
@@ -345,21 +395,29 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 								<div className="mb-6 space-y-2">
 									<div className="flex items-center gap-2">
 										<Building2 className="h-5 w-5 text-muted-foreground" />
-										<h2 className="font-semibold text-xl">Company Information</h2>
+										<h2 className="font-semibold text-xl">
+											Company Information
+										</h2>
 										<Tooltip>
 											<TooltipTrigger asChild>
-												<button className="flex items-center justify-center" type="button">
+												<button
+													className="flex items-center justify-center"
+													type="button"
+												>
 													<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 												</button>
 											</TooltipTrigger>
 											<TooltipContent className="max-w-xs">
 												<p className="text-sm">
-													Essential business information for legal documents and customer communications.
+													Essential business information for legal documents and
+													customer communications.
 												</p>
 											</TooltipContent>
 										</Tooltip>
 									</div>
-									<p className="text-muted-foreground text-sm">Basic details about your business</p>
+									<p className="text-muted-foreground text-sm">
+										Basic details about your business
+									</p>
 								</div>
 
 								<div className="space-y-6">
@@ -380,7 +438,9 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</button>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs text-sm">Business name as customers see it</p>
+																<p className="max-w-xs text-sm">
+																	Business name as customers see it
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</FormLabel>
@@ -406,7 +466,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</button>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs text-sm">Official registered business name (LLC, Inc, etc.)</p>
+																<p className="max-w-xs text-sm">
+																	Official registered business name (LLC, Inc,
+																	etc.)
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</FormLabel>
@@ -435,12 +498,17 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Your primary industry or service type</p>
+															<p className="max-w-xs text-sm">
+																Your primary industry or service type
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
 												<FormControl>
-													<Input placeholder="Field Service Management" {...field} />
+													<Input
+														placeholder="Field Service Management"
+														{...field}
+													/>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -465,14 +533,23 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</button>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs text-sm">Main email for customer communications and invoices</p>
+																<p className="max-w-xs text-sm">
+																	Main email for customer communications and
+																	invoices
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</FormLabel>
 													<FormControl>
-														<Input placeholder="contact@company.com" type="email" {...field} />
+														<Input
+															placeholder="contact@company.com"
+															type="email"
+															{...field}
+														/>
 													</FormControl>
-													<FormDescription>Appears on all customer communications</FormDescription>
+													<FormDescription>
+														Appears on all customer communications
+													</FormDescription>
 													<FormMessage />
 												</FormItem>
 											)}
@@ -494,14 +571,22 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</button>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs text-sm">Main phone number for customer inquiries</p>
+																<p className="max-w-xs text-sm">
+																	Main phone number for customer inquiries
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</FormLabel>
 													<FormControl>
-														<Input placeholder="+1 (555) 123-4567" type="tel" {...field} />
+														<Input
+															placeholder="+1 (555) 123-4567"
+															type="tel"
+															{...field}
+														/>
 													</FormControl>
-													<FormDescription>Include country code for international</FormDescription>
+													<FormDescription>
+														Include country code for international
+													</FormDescription>
 													<FormMessage />
 												</FormItem>
 											)}
@@ -525,12 +610,18 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</button>
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs text-sm">Your company website URL</p>
+																<p className="max-w-xs text-sm">
+																	Your company website URL
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</FormLabel>
 													<FormControl>
-														<Input placeholder="https://yourcompany.com" type="url" {...field} />
+														<Input
+															placeholder="https://yourcompany.com"
+															type="url"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -552,7 +643,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															</TooltipTrigger>
 															<TooltipContent>
 																<p className="max-w-xs text-sm">
-																	Tax identification number for invoices and legal documents
+																	Tax identification number for invoices and
+																	legal documents
 																</p>
 															</TooltipContent>
 														</Tooltip>
@@ -582,7 +674,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														</TooltipTrigger>
 														<TooltipContent>
 															<p className="max-w-xs text-sm">
-																Brief description of your business and services offered
+																Brief description of your business and services
+																offered
 															</p>
 														</TooltipContent>
 													</Tooltip>
@@ -595,7 +688,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 													/>
 												</FormControl>
 												<FormDescription>
-													{field.value?.length || 0} / {MAX_DESCRIPTION_LENGTH} characters
+													{field.value?.length || 0} / {MAX_DESCRIPTION_LENGTH}{" "}
+													characters
 												</FormDescription>
 												<FormMessage />
 											</FormItem>
@@ -613,20 +707,26 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 											<h2 className="font-semibold text-xl">Service Areas</h2>
 											<Tooltip>
 												<TooltipTrigger asChild>
-													<button className="flex items-center justify-center" type="button">
+													<button
+														className="flex items-center justify-center"
+														type="button"
+													>
 														<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 													</button>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-xs">
 													<p className="text-sm">
-														Define the geographic areas where you provide services. This helps customers know if you
-														service their location.
+														Define the geographic areas where you provide
+														services. This helps customers know if you service
+														their location.
 													</p>
 												</TooltipContent>
 											</Tooltip>
 										</div>
 									</div>
-									<p className="text-muted-foreground text-sm">Define your service coverage area</p>
+									<p className="text-muted-foreground text-sm">
+										Define your service coverage area
+									</p>
 
 									{/* Service Area Type Toggle */}
 									<FormField
@@ -644,22 +744,38 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
 															htmlFor="radius"
 														>
-															<RadioGroupItem className="sr-only" id="radius" value="radius" />
+															<RadioGroupItem
+																className="sr-only"
+																id="radius"
+																value="radius"
+															/>
 															<Radius className="mb-3 h-6 w-6" />
 															<div className="space-y-1 text-center">
-																<p className="font-medium text-sm">Radius Coverage</p>
-																<p className="text-muted-foreground text-xs">Service area around your location</p>
+																<p className="font-medium text-sm">
+																	Radius Coverage
+																</p>
+																<p className="text-muted-foreground text-xs">
+																	Service area around your location
+																</p>
 															</div>
 														</Label>
 														<Label
 															className="flex cursor-pointer flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
 															htmlFor="locations"
 														>
-															<RadioGroupItem className="sr-only" id="locations" value="locations" />
+															<RadioGroupItem
+																className="sr-only"
+																id="locations"
+																value="locations"
+															/>
 															<MapPin className="mb-3 h-6 w-6" />
 															<div className="space-y-1 text-center">
-																<p className="font-medium text-sm">Specific Locations</p>
-																<p className="text-muted-foreground text-xs">List cities, counties, or ZIP codes</p>
+																<p className="font-medium text-sm">
+																	Specific Locations
+																</p>
+																<p className="text-muted-foreground text-xs">
+																	List cities, counties, or ZIP codes
+																</p>
 															</div>
 														</Label>
 													</RadioGroup>
@@ -678,7 +794,9 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 												render={({ field }) => (
 													<FormItem>
 														<div className="flex items-center justify-between">
-															<FormLabel className="font-semibold text-base">Service Radius</FormLabel>
+															<FormLabel className="font-semibold text-base">
+																Service Radius
+															</FormLabel>
 															<div className="rounded-md bg-primary px-3 py-1 font-bold text-primary-foreground text-sm">
 																{field.value} miles
 															</div>
@@ -696,7 +814,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															/>
 														</FormControl>
 														<FormDescription className="mt-4">
-															We will service customers within {field.value} miles of your business address
+															We will service customers within {field.value}{" "}
+															miles of your business address
 														</FormDescription>
 													</FormItem>
 												)}
@@ -712,7 +831,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														<div
 															className="absolute inset-0 rounded-full border-2 border-primary border-dashed opacity-50"
 															style={{
-																animation: "ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
+																animation:
+																	"ping 2s cubic-bezier(0, 0, 0.2, 1) infinite",
 															}}
 														/>
 														<div className="absolute inset-0 flex items-center justify-center">
@@ -753,15 +873,22 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 
 											{serviceAreas.length > 0 && (
 												<div className="space-y-2">
-													<p className="font-medium text-sm">Current Service Areas</p>
+													<p className="font-medium text-sm">
+														Current Service Areas
+													</p>
 													<div className="flex flex-wrap gap-2">
 														{serviceAreas.map((area) => (
-															<Badge className="gap-2 px-3 py-1.5" key={`service-area-${area}`} variant="secondary">
+															<Badge
+																className="gap-2 px-3 py-1.5"
+																key={`service-area-${area}`}
+																variant="secondary"
+															>
 																{area}
 																<button
 																	className="rounded-full hover:bg-destructive/20"
 																	onClick={() => {
-																		const currentAreas = form.getValues("serviceAreas") || [];
+																		const currentAreas =
+																			form.getValues("serviceAreas") || [];
 																		const index = currentAreas.indexOf(area);
 																		if (index > -1) {
 																			removeServiceArea(index);
@@ -778,7 +905,8 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 											)}
 
 											<p className="text-muted-foreground text-xs">
-												Add cities, counties, or ZIP codes where you provide services
+												Add cities, counties, or ZIP codes where you provide
+												services
 											</p>
 										</div>
 
@@ -790,25 +918,29 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														<MapPin className="h-12 w-12 text-primary dark:text-primary" />
 														<div className="text-center">
 															<p className="font-semibold text-lg">
-																{serviceAreas.length} Service {serviceAreas.length === 1 ? "Area" : "Areas"}
+																{serviceAreas.length} Service{" "}
+																{serviceAreas.length === 1 ? "Area" : "Areas"}
 															</p>
 															<p className="text-muted-foreground text-sm">
 																Map integration available with Google Maps API
 															</p>
 														</div>
 														<div className="mt-4 grid max-w-xs gap-2">
-															{serviceAreas.slice(0, MAX_PREVIEW_AREAS).map((area) => (
-																<div
-																	className="flex items-center gap-2 rounded-md bg-card/50 px-3 py-2 text-sm dark:bg-black/20"
-																	key={`map-area-${area}`}
-																>
-																	<div className="h-2 w-2 rounded-full bg-primary dark:bg-primary" />
-																	{area}
-																</div>
-															))}
+															{serviceAreas
+																.slice(0, MAX_PREVIEW_AREAS)
+																.map((area) => (
+																	<div
+																		className="flex items-center gap-2 rounded-md bg-card/50 px-3 py-2 text-sm dark:bg-black/20"
+																		key={`map-area-${area}`}
+																	>
+																		<div className="h-2 w-2 rounded-full bg-primary dark:bg-primary" />
+																		{area}
+																	</div>
+																))}
 															{serviceAreas.length > MAX_PREVIEW_AREAS && (
 																<p className="text-center text-muted-foreground text-xs">
-																	+{serviceAreas.length - MAX_PREVIEW_AREAS} more locations
+																	+{serviceAreas.length - MAX_PREVIEW_AREAS}{" "}
+																	more locations
 																</p>
 															)}
 														</div>
@@ -817,7 +949,9 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 													<div className="flex h-full items-center justify-center">
 														<div className="text-center">
 															<MapPin className="mx-auto mb-4 h-12 w-12 text-muted-foreground/50" />
-															<p className="text-muted-foreground text-sm">Add service areas to see map preview</p>
+															<p className="text-muted-foreground text-sm">
+																Add service areas to see map preview
+															</p>
 														</div>
 													</div>
 												)}
@@ -833,23 +967,33 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 									<div className="flex items-center justify-between">
 										<div className="flex items-center gap-2">
 											<Clock className="h-5 w-5 text-muted-foreground" />
-											<h2 className="font-semibold text-xl">Hours of Operation</h2>
+											<h2 className="font-semibold text-xl">
+												Hours of Operation
+											</h2>
 											<Tooltip>
 												<TooltipTrigger asChild>
-													<button className="flex items-center justify-center" type="button">
+													<button
+														className="flex items-center justify-center"
+														type="button"
+													>
 														<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 													</button>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-xs">
 													<p className="text-sm">
-														Set your business hours so customers know when you are available for service calls and
-														inquiries.
+														Set your business hours so customers know when you
+														are available for service calls and inquiries.
 													</p>
 												</TooltipContent>
 											</Tooltip>
 										</div>
 										<div className="flex gap-2">
-											<Button onClick={copyWeekdaysToWeekend} size="sm" type="button" variant="outline">
+											<Button
+												onClick={copyWeekdaysToWeekend}
+												size="sm"
+												type="button"
+												variant="outline"
+											>
 												<Copy className="mr-2 h-3 w-3" />
 												Copy to Weekend
 											</Button>
@@ -866,13 +1010,17 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 											</Button>
 										</div>
 									</div>
-									<p className="text-muted-foreground text-sm">When your business is available for service</p>
+									<p className="text-muted-foreground text-sm">
+										When your business is available for service
+									</p>
 
 									{/* Bulk Edit Mode */}
 									{bulkHoursMode && (
 										<div className="rounded-lg border bg-muted/30 p-4">
 											<div className="space-y-4">
-												<p className="font-medium text-sm">Apply hours to all enabled days</p>
+												<p className="font-medium text-sm">
+													Apply hours to all enabled days
+												</p>
 												<div className="flex items-center gap-4">
 													<Select
 														onValueChange={(val) => {
@@ -885,7 +1033,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														</SelectTrigger>
 														<SelectContent>
 															{TIME_OPTIONS.map((option) => (
-																<SelectItem key={option.value} value={option.value}>
+																<SelectItem
+																	key={option.value}
+																	value={option.value}
+																>
 																	{option.label}
 																</SelectItem>
 															))}
@@ -903,7 +1054,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														</SelectTrigger>
 														<SelectContent>
 															{TIME_OPTIONS.map((option) => (
-																<SelectItem key={option.value} value={option.value}>
+																<SelectItem
+																	key={option.value}
+																	value={option.value}
+																>
 																	{option.label}
 																</SelectItem>
 															))}
@@ -911,7 +1065,11 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 													</Select>
 												</div>
 												<div className="flex gap-2">
-													<Button className="flex-1" onClick={applyBulkHours} type="button">
+													<Button
+														className="flex-1"
+														onClick={applyBulkHours}
+														type="button"
+													>
 														Apply to Enabled Days
 													</Button>
 													<Button
@@ -931,9 +1089,15 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 
 								<div className="space-y-3">
 									{DAYS_OF_WEEK.map((day) => {
-										const isEnabled = form.watch(`hoursOfOperation.${day}.enabled`);
-										const openTime = form.watch(`hoursOfOperation.${day}.openTime`);
-										const closeTime = form.watch(`hoursOfOperation.${day}.closeTime`);
+										const isEnabled = form.watch(
+											`hoursOfOperation.${day}.enabled`,
+										);
+										const openTime = form.watch(
+											`hoursOfOperation.${day}.openTime`,
+										);
+										const closeTime = form.watch(
+											`hoursOfOperation.${day}.closeTime`,
+										);
 										return (
 											<div
 												className={`flex items-center gap-4 rounded-lg border p-4 transition-colors ${isEnabled ? "bg-muted/30" : "bg-background"}`}
@@ -946,12 +1110,17 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 														render={({ field }) => (
 															<FormItem className="space-y-0">
 																<FormControl>
-																	<Switch checked={field.value} onCheckedChange={field.onChange} />
+																	<Switch
+																		checked={field.value}
+																		onCheckedChange={field.onChange}
+																	/>
 																</FormControl>
 															</FormItem>
 														)}
 													/>
-													<FormLabel className="cursor-pointer font-semibold text-base">{capitalizeDay(day)}</FormLabel>
+													<FormLabel className="cursor-pointer font-semibold text-base">
+														{capitalizeDay(day)}
+													</FormLabel>
 												</div>
 
 												{isEnabled ? (
@@ -961,7 +1130,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															name={`hoursOfOperation.${day}.openTime`}
 															render={({ field }) => (
 																<FormItem className="flex-1 space-y-0">
-																	<Select onValueChange={field.onChange} value={field.value}>
+																	<Select
+																		onValueChange={field.onChange}
+																		value={field.value}
+																	>
 																		<FormControl>
 																			<SelectTrigger className="h-9">
 																				<SelectValue placeholder="Open" />
@@ -969,7 +1141,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																		</FormControl>
 																		<SelectContent>
 																			{TIME_OPTIONS.map((option) => (
-																				<SelectItem key={option.value} value={option.value}>
+																				<SelectItem
+																					key={option.value}
+																					value={option.value}
+																				>
 																					{option.label}
 																				</SelectItem>
 																			))}
@@ -979,13 +1154,18 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																</FormItem>
 															)}
 														/>
-														<span className="text-muted-foreground text-sm">-</span>
+														<span className="text-muted-foreground text-sm">
+															-
+														</span>
 														<FormField
 															control={form.control}
 															name={`hoursOfOperation.${day}.closeTime`}
 															render={({ field }) => (
 																<FormItem className="flex-1 space-y-0">
-																	<Select onValueChange={field.onChange} value={field.value}>
+																	<Select
+																		onValueChange={field.onChange}
+																		value={field.value}
+																	>
 																		<FormControl>
 																			<SelectTrigger className="h-9">
 																				<SelectValue placeholder="Close" />
@@ -993,7 +1173,10 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 																		</FormControl>
 																		<SelectContent>
 																			{TIME_OPTIONS.map((option) => (
-																				<SelectItem key={option.value} value={option.value}>
+																				<SelectItem
+																					key={option.value}
+																					value={option.value}
+																				>
 																					{option.label}
 																				</SelectItem>
 																			))}
@@ -1007,8 +1190,17 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 															<Badge variant="secondary">
 																{openTime && closeTime ? (
 																	<>
-																		{TIME_OPTIONS.find((t) => t.value === openTime)?.label.split(" ")[0]} -{" "}
-																		{TIME_OPTIONS.find((t) => t.value === closeTime)?.label.split(" ")[0]}
+																		{
+																			TIME_OPTIONS.find(
+																				(t) => t.value === openTime,
+																			)?.label.split(" ")[0]
+																		}{" "}
+																		-{" "}
+																		{
+																			TIME_OPTIONS.find(
+																				(t) => t.value === closeTime,
+																			)?.label.split(" ")[0]
+																		}
 																	</>
 																) : (
 																	"Set hours"
@@ -1037,18 +1229,24 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 										<h2 className="font-semibold text-xl">Business Address</h2>
 										<Tooltip>
 											<TooltipTrigger asChild>
-												<button className="flex items-center justify-center" type="button">
+												<button
+													className="flex items-center justify-center"
+													type="button"
+												>
 													<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 												</button>
 											</TooltipTrigger>
 											<TooltipContent className="max-w-xs">
 												<p className="text-sm">
-													Physical location of your business. Required for invoices and legal documents.
+													Physical location of your business. Required for
+													invoices and legal documents.
 												</p>
 											</TooltipContent>
 										</Tooltip>
 									</div>
-									<p className="text-muted-foreground text-sm">Your business location information</p>
+									<p className="text-muted-foreground text-sm">
+										Your business location information
+									</p>
 								</div>
 
 								<div className="space-y-6">
@@ -1076,9 +1274,14 @@ export function CompanyProfileClient({ initialData }: CompanyProfileClientProps)
 											<FormItem>
 												<FormLabel>Address Line 2</FormLabel>
 												<FormControl>
-													<Input placeholder="Suite, Unit, Building" {...field} />
+													<Input
+														placeholder="Suite, Unit, Building"
+														{...field}
+													/>
 												</FormControl>
-												<FormDescription>Optional: Suite, unit, or building number</FormDescription>
+												<FormDescription>
+													Optional: Suite, unit, or building number
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}

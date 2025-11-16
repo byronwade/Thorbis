@@ -29,10 +29,22 @@ import {
 import { useRef, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -160,7 +172,8 @@ export function VoicemailSettings() {
 						Voicemail Greeting
 					</CardTitle>
 					<CardDescription>
-						Configure the greeting message that callers hear when they reach your voicemail
+						Configure the greeting message that callers hear when they reach
+						your voicemail
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
@@ -168,7 +181,9 @@ export function VoicemailSettings() {
 					<div className="space-y-2">
 						<Label htmlFor="greetingType">Greeting Type</Label>
 						<Select
-							onValueChange={(value: VoicemailGreeting["type"]) => setGreeting({ ...greeting, type: value })}
+							onValueChange={(value: VoicemailGreeting["type"]) =>
+								setGreeting({ ...greeting, type: value })
+							}
 							value={greeting.type}
 						>
 							<SelectTrigger id="greetingType">
@@ -203,7 +218,8 @@ export function VoicemailSettings() {
 							<AlertCircle className="size-4" />
 							<AlertTitle>Default Greeting</AlertTitle>
 							<AlertDescription>
-								"You have reached the voicemail of [Your Business Name]. Please leave a message after the tone."
+								"You have reached the voicemail of [Your Business Name]. Please
+								leave a message after the tone."
 							</AlertDescription>
 						</Alert>
 					)}
@@ -215,17 +231,26 @@ export function VoicemailSettings() {
 								<Label htmlFor="ttsText">Greeting Text</Label>
 								<Textarea
 									id="ttsText"
-									onChange={(e) => setGreeting({ ...greeting, content: e.target.value })}
+									onChange={(e) =>
+										setGreeting({ ...greeting, content: e.target.value })
+									}
 									placeholder="Enter your custom greeting message..."
 									rows={4}
 									value={greeting.content || ""}
 								/>
-								<p className="text-muted-foreground text-xs">Keep it concise (15-30 seconds when spoken)</p>
+								<p className="text-muted-foreground text-xs">
+									Keep it concise (15-30 seconds when spoken)
+								</p>
 							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="ttsVoice">Voice</Label>
-								<Select onValueChange={(value) => setGreeting({ ...greeting, voice: value })} value={greeting.voice}>
+								<Select
+									onValueChange={(value) =>
+										setGreeting({ ...greeting, voice: value })
+									}
+									value={greeting.voice}
+								>
 									<SelectTrigger id="ttsVoice">
 										<SelectValue placeholder="Select voice" />
 									</SelectTrigger>
@@ -273,7 +298,11 @@ export function VoicemailSettings() {
 														{greeting.duration && ` • ${greeting.duration}s`}
 													</div>
 													<div className="mt-2 flex items-center gap-2">
-														<Button onClick={togglePlayback} size="sm" variant="outline">
+														<Button
+															onClick={togglePlayback}
+															size="sm"
+															variant="outline"
+														>
 															{isPlaying ? (
 																<>
 																	<Pause className="mr-2 size-3" />
@@ -289,7 +318,11 @@ export function VoicemailSettings() {
 													</div>
 												</div>
 											</div>
-											<Button onClick={removeGreeting} size="icon" variant="ghost">
+											<Button
+												onClick={removeGreeting}
+												size="icon"
+												variant="ghost"
+											>
 												<Trash2 className="size-4" />
 											</Button>
 										</div>
@@ -304,7 +337,11 @@ export function VoicemailSettings() {
 										ref={fileInputRef}
 										type="file"
 									/>
-									<Button className="w-full" onClick={() => fileInputRef.current?.click()} variant="outline">
+									<Button
+										className="w-full"
+										onClick={() => fileInputRef.current?.click()}
+										variant="outline"
+									>
 										<Upload className="mr-2 size-4" />
 										Upload Audio File
 									</Button>
@@ -353,7 +390,9 @@ export function VoicemailSettings() {
 						<Mail className="size-5" />
 						Notifications
 					</CardTitle>
-					<CardDescription>Get notified when you receive new voicemail messages</CardDescription>
+					<CardDescription>
+						Get notified when you receive new voicemail messages
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{/* Email Notifications */}
@@ -361,12 +400,16 @@ export function VoicemailSettings() {
 						<div className="flex items-center justify-between">
 							<div className="space-y-0.5">
 								<Label htmlFor="emailNotifications">Email Notifications</Label>
-								<p className="text-muted-foreground text-sm">Receive voicemail notifications via email</p>
+								<p className="text-muted-foreground text-sm">
+									Receive voicemail notifications via email
+								</p>
 							</div>
 							<Switch
 								checked={notifications.emailEnabled}
 								id="emailNotifications"
-								onCheckedChange={(checked) => setNotifications({ ...notifications, emailEnabled: checked })}
+								onCheckedChange={(checked) =>
+									setNotifications({ ...notifications, emailEnabled: checked })
+								}
 							/>
 						</div>
 
@@ -385,7 +428,9 @@ export function VoicemailSettings() {
 									type="email"
 									value={notifications.emailAddresses[0] || ""}
 								/>
-								<p className="text-muted-foreground text-xs">Separate multiple addresses with commas</p>
+								<p className="text-muted-foreground text-xs">
+									Separate multiple addresses with commas
+								</p>
 							</div>
 						)}
 					</div>
@@ -395,12 +440,16 @@ export function VoicemailSettings() {
 						<div className="flex items-center justify-between">
 							<div className="space-y-0.5">
 								<Label htmlFor="smsNotifications">SMS Notifications</Label>
-								<p className="text-muted-foreground text-sm">Receive voicemail notifications via text message</p>
+								<p className="text-muted-foreground text-sm">
+									Receive voicemail notifications via text message
+								</p>
 							</div>
 							<Switch
 								checked={notifications.smsEnabled}
 								id="smsNotifications"
-								onCheckedChange={(checked) => setNotifications({ ...notifications, smsEnabled: checked })}
+								onCheckedChange={(checked) =>
+									setNotifications({ ...notifications, smsEnabled: checked })
+								}
 							/>
 						</div>
 
@@ -427,7 +476,9 @@ export function VoicemailSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label htmlFor="transcription">Voicemail Transcription</Label>
-							<p className="text-muted-foreground text-sm">Automatically transcribe voicemail messages to text</p>
+							<p className="text-muted-foreground text-sm">
+								Automatically transcribe voicemail messages to text
+							</p>
 						</div>
 						<Switch
 							checked={notifications.transcriptionEnabled}
@@ -450,7 +501,9 @@ export function VoicemailSettings() {
 						<Clock className="size-5" />
 						Voicemail Box Settings
 					</CardTitle>
-					<CardDescription>Configure voicemail storage and security settings</CardDescription>
+					<CardDescription>
+						Configure voicemail storage and security settings
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -528,12 +581,16 @@ export function VoicemailSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label htmlFor="requirePin">Require PIN for Access</Label>
-							<p className="text-muted-foreground text-sm">Protect voicemail access with a PIN code</p>
+							<p className="text-muted-foreground text-sm">
+								Protect voicemail access with a PIN code
+							</p>
 						</div>
 						<Switch
 							checked={boxSettings.requirePin}
 							id="requirePin"
-							onCheckedChange={(checked) => setBoxSettings({ ...boxSettings, requirePin: checked })}
+							onCheckedChange={(checked) =>
+								setBoxSettings({ ...boxSettings, requirePin: checked })
+							}
 						/>
 					</div>
 
@@ -543,7 +600,9 @@ export function VoicemailSettings() {
 							<Input
 								id="pin"
 								maxLength={6}
-								onChange={(e) => setBoxSettings({ ...boxSettings, pin: e.target.value })}
+								onChange={(e) =>
+									setBoxSettings({ ...boxSettings, pin: e.target.value })
+								}
 								placeholder="Enter 4-6 digit PIN"
 								type="password"
 								value={boxSettings.pin || ""}

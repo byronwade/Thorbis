@@ -38,7 +38,10 @@ type InvoiceHeaderProps = {
 
 export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 	// Get overdue status
-	const overdueStatus = getOverdueStatus(invoice.due_date, invoice.balance_amount);
+	const overdueStatus = getOverdueStatus(
+		invoice.due_date,
+		invoice.balance_amount,
+	);
 	const isOverdue = overdueStatus.showBanner;
 
 	// Format dates for input
@@ -58,8 +61,12 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 				{/* Left Column */}
 				<div className="space-y-4">
 					<div>
-						<Label className="text-muted-foreground text-sm">Invoice Number</Label>
-						<div className="mt-1 font-bold font-mono text-2xl">{invoice.invoice_number}</div>
+						<Label className="text-muted-foreground text-sm">
+							Invoice Number
+						</Label>
+						<div className="mt-1 font-bold font-mono text-2xl">
+							{invoice.invoice_number}
+						</div>
 					</div>
 
 					<div>
@@ -75,7 +82,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 
 					{job && (
 						<div>
-							<Label className="text-muted-foreground text-sm">Linked Job</Label>
+							<Label className="text-muted-foreground text-sm">
+								Linked Job
+							</Label>
 							<div className="mt-1">
 								<Badge className="text-sm" variant="outline">
 									{job.job_number}: {job.title}
@@ -92,7 +101,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 							<Calendar className="h-4 w-4" />
 							Issue Date
 						</Label>
-						<div className="mt-1 text-sm">{formatDate(invoice.created_at, "long")}</div>
+						<div className="mt-1 text-sm">
+							{formatDate(invoice.created_at, "long")}
+						</div>
 					</div>
 
 					<div>
@@ -114,7 +125,11 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 							value={formatDateForInput(invoice.due_date)}
 						/>
 						{isOverdue && (
-							<p className={`mt-1 font-medium text-sm ${overdueStatus.colors.text}`}>{overdueStatus.message}</p>
+							<p
+								className={`mt-1 font-medium text-sm ${overdueStatus.colors.text}`}
+							>
+								{overdueStatus.message}
+							</p>
 						)}
 					</div>
 
@@ -124,7 +139,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 						>
 							{isOverdue ? "PAST DUE AMOUNT" : "Amount Due"}
 						</Label>
-						<div className={`mt-1 font-bold text-3xl ${isOverdue ? overdueStatus.colors.text : ""}`}>
+						<div
+							className={`mt-1 font-bold text-3xl ${isOverdue ? overdueStatus.colors.text : ""}`}
+						>
 							{formatCurrency(invoice.balance_amount || 0, { decimals: 2 })}
 						</div>
 					</div>

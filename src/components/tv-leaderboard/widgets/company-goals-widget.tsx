@@ -70,7 +70,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									style={{ width: `${Math.min(revenueProgress, 100)}%` }}
 								/>
 							</div>
-							<p className="text-muted-foreground text-xs">{formatPercentage(revenueProgress, "full")} achieved</p>
+							<p className="text-muted-foreground text-xs">
+								{formatPercentage(revenueProgress, "full")} achieved
+							</p>
 						</div>
 
 						{/* Avg Ticket */}
@@ -88,7 +90,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									style={{ width: `${Math.min(ticketProgress, 100)}%` }}
 								/>
 							</div>
-							<p className="text-muted-foreground text-xs">{formatPercentage(ticketProgress, "full")} achieved</p>
+							<p className="text-muted-foreground text-xs">
+								{formatPercentage(ticketProgress, "full")} achieved
+							</p>
 						</div>
 
 						{/* Rating */}
@@ -105,7 +109,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									style={{ width: `${Math.min(ratingProgress, 100)}%` }}
 								/>
 							</div>
-							<p className="text-muted-foreground text-xs">{formatPercentage(ratingProgress, "full")} achieved</p>
+							<p className="text-muted-foreground text-xs">
+								{formatPercentage(ratingProgress, "full")} achieved
+							</p>
 						</div>
 					</div>
 				</ShowAt>
@@ -153,7 +159,10 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText className="font-bold text-primary" variant="display">
+						<ResponsiveText
+							className="font-bold text-primary"
+							variant="display"
+						>
 							{formatPercentage(revenueProgress, "compact")}
 						</ResponsiveText>
 					</div>
@@ -162,7 +171,10 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-primary" variant="display">
+						<ResponsiveText
+							className="font-bold text-primary"
+							variant="display"
+						>
 							{Math.round(revenueProgress)}%
 						</ResponsiveText>
 					</div>

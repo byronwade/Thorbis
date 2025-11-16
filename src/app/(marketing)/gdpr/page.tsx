@@ -1,9 +1,14 @@
 import Script from "next/script";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis GDPR Commitment",
-	description: "Review Thorbis GDPR compliance, data processing agreements, and how we support EU data subjects.",
+	description:
+		"Review Thorbis GDPR compliance, data processing agreements, and how we support EU data subjects.",
 	path: "/gdpr",
 	section: "Legal",
 	keywords: ["thorbis gdpr", "thorbis dpa", "thorbis data protection"],
@@ -47,7 +52,7 @@ export default function GDPRPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "GDPR", url: `${siteUrl}/gdpr` },
-						])
+						]),
 					),
 				}}
 				id="gdpr-breadcrumb-ld"
@@ -55,17 +60,21 @@ export default function GDPRPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Thorbis & GDPR</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Thorbis & GDPR
+					</h1>
 					<p className="text-muted-foreground">
-						Thorbis is committed to meeting GDPR requirements and empowering customers with transparency and control
-						over personal data.
+						Thorbis is committed to meeting GDPR requirements and empowering
+						customers with transparency and control over personal data.
 					</p>
 				</header>
 				<article className="space-y-8">
 					{SECTIONS.map((section) => (
 						<section className="space-y-2" key={section.heading}>
 							<h2 className="font-semibold text-xl">{section.heading}</h2>
-							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">{section.body}</p>
+							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+								{section.body}
+							</p>
 						</section>
 					))}
 				</article>

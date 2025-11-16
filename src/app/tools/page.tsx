@@ -41,7 +41,13 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 type ResourceCategory = {
 	title: string;
@@ -68,7 +74,8 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Google Business Profile",
-				description: "Claim and optimize your Google Business listing to appear in local searches",
+				description:
+					"Claim and optimize your Google Business listing to appear in local searches",
 				href: "/tools/marketing/google-business",
 				icon: Search,
 				badge: "Essential",
@@ -76,7 +83,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Google Local Services Ads",
-				description: "Get verified and appear at the top of Google search results",
+				description:
+					"Get verified and appear at the top of Google search results",
 				href: "/tools/marketing/local-services",
 				icon: BadgeCheck,
 				badge: "Recommended",
@@ -103,7 +111,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "LinkedIn Company Page",
-				description: "Build professional network and attract commercial clients",
+				description:
+					"Build professional network and attract commercial clients",
 				href: "/tools/marketing/linkedin",
 				icon: Linkedin,
 			},
@@ -123,14 +132,16 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Licensing & Permits",
-				description: "State and local license requirements for trade contractors",
+				description:
+					"State and local license requirements for trade contractors",
 				href: "/tools/business/licensing",
 				icon: FileText,
 				badge: "Required",
 			},
 			{
 				title: "Business Insurance",
-				description: "General liability, workers comp, and commercial auto insurance",
+				description:
+					"General liability, workers comp, and commercial auto insurance",
 				href: "/tools/business/insurance",
 				icon: Shield,
 				badge: "Essential",
@@ -138,7 +149,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Banking & Payroll",
-				description: "Business banking, payroll services, and accounting software",
+				description:
+					"Business banking, payroll services, and accounting software",
 				href: "/tools/business/banking",
 				icon: Landmark,
 			},
@@ -157,7 +169,8 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Consumer Financing",
-				description: "Offer customer financing through Wisetack, GreenSky, or Synchrony",
+				description:
+					"Offer customer financing through Wisetack, GreenSky, or Synchrony",
 				href: "/tools/financing/consumer",
 				icon: CreditCard,
 				badge: "Popular",
@@ -165,7 +178,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Business Loans & Lines of Credit",
-				description: "Working capital loans, equipment financing, and SBA loans",
+				description:
+					"Working capital loans, equipment financing, and SBA loans",
 				href: "/tools/financing/business-loans",
 				icon: TrendingUp,
 			},
@@ -177,7 +191,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Credit Card Processing",
-				description: "Accept payments with Square, Stripe, or merchant services",
+				description:
+					"Accept payments with Square, Stripe, or merchant services",
 				href: "/tools/financing/credit-card",
 				icon: CreditCard,
 			},
@@ -190,7 +205,8 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Nexstar Network",
-				description: "The largest network of home service contractors in North America",
+				description:
+					"The largest network of home service contractors in North America",
 				href: "/tools/networks/nexstar",
 				icon: Network,
 				badge: "Premium",
@@ -205,7 +221,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "ACCA - HVAC Excellence",
-				description: "Air Conditioning Contractors of America trade association",
+				description:
+					"Air Conditioning Contractors of America trade association",
 				href: "/tools/networks/acca",
 				icon: Zap,
 			},
@@ -230,7 +247,8 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Trade Certifications",
-				description: "State licensing, master certifications, and specialty credentials",
+				description:
+					"State licensing, master certifications, and specialty credentials",
 				href: "/tools/training/certifications",
 				icon: BadgeCheck,
 			},
@@ -243,13 +261,15 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "EPA Certifications",
-				description: "EPA 608 refrigerant handling and environmental certifications",
+				description:
+					"EPA 608 refrigerant handling and environmental certifications",
 				href: "/tools/training/epa",
 				icon: Shield,
 			},
 			{
 				title: "Business Management Training",
-				description: "Operations, sales, customer service, and leadership courses",
+				description:
+					"Operations, sales, customer service, and leadership courses",
 				href: "/tools/training/business",
 				icon: GraduationCap,
 			},
@@ -257,12 +277,14 @@ const resourceCategories: ResourceCategory[] = [
 	},
 	{
 		title: "Business Calculators",
-		description: "Essential calculators for pricing, profit, and growth planning",
+		description:
+			"Essential calculators for pricing, profit, and growth planning",
 		icon: Calculator,
 		items: [
 			{
 				title: "Hourly Rate Calculator",
-				description: "Calculate what to charge per hour based on your costs and target profit",
+				description:
+					"Calculate what to charge per hour based on your costs and target profit",
 				href: "/tools/calculators/hourly-rate",
 				icon: DollarSign,
 				badge: "Popular",
@@ -270,7 +292,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Job Pricing Calculator",
-				description: "Price jobs accurately with material, labor, and overhead costs",
+				description:
+					"Price jobs accurately with material, labor, and overhead costs",
 				href: "/tools/calculators/job-pricing",
 				icon: Calculator,
 				badge: "Essential",
@@ -278,7 +301,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Profit & Loss Calculator",
-				description: "Track revenue, expenses, and calculate your net profit margins",
+				description:
+					"Track revenue, expenses, and calculate your net profit margins",
 				href: "/tools/calculators/profit-loss",
 				icon: TrendingUp,
 				badge: "Popular",
@@ -298,7 +322,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Industry Pricing Standards",
-				description: "Compare your pricing against industry benchmarks and averages",
+				description:
+					"Compare your pricing against industry benchmarks and averages",
 				href: "/tools/calculators/industry-pricing",
 				icon: BarChart,
 				badge: "Premium",
@@ -324,7 +349,8 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Emergency Services Info",
-				description: "After-hours support, emergency dispatch, and on-call resources",
+				description:
+					"After-hours support, emergency dispatch, and on-call resources",
 				href: "/tools/resources/emergency",
 				icon: AlertTriangle,
 			},
@@ -339,8 +365,12 @@ export default function ToolsPage() {
 			<div className="space-y-6">
 				<div className="flex items-center justify-between">
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">Tools & Resources</h1>
-						<p className="mt-2 text-lg text-muted-foreground">Everything you need to grow your trade business</p>
+						<h1 className="font-bold text-4xl tracking-tight">
+							Tools & Resources
+						</h1>
+						<p className="mt-2 text-lg text-muted-foreground">
+							Everything you need to grow your trade business
+						</p>
 					</div>
 				</div>
 			</div>
@@ -355,7 +385,9 @@ export default function ToolsPage() {
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Business Calculators</CardTitle>
-								<CardDescription className="text-sm">Price jobs and calculate profit</CardDescription>
+								<CardDescription className="text-sm">
+									Price jobs and calculate profit
+								</CardDescription>
 							</div>
 						</div>
 					</CardHeader>
@@ -377,7 +409,9 @@ export default function ToolsPage() {
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Google Business</CardTitle>
-								<CardDescription className="text-sm">Get found in local searches</CardDescription>
+								<CardDescription className="text-sm">
+									Get found in local searches
+								</CardDescription>
 							</div>
 						</div>
 					</CardHeader>
@@ -399,7 +433,9 @@ export default function ToolsPage() {
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Consumer Financing</CardTitle>
-								<CardDescription className="text-sm">Help customers afford big jobs</CardDescription>
+								<CardDescription className="text-sm">
+									Help customers afford big jobs
+								</CardDescription>
 							</div>
 						</div>
 					</CardHeader>
@@ -426,8 +462,12 @@ export default function ToolsPage() {
 									<CategoryIcon className="size-6 text-primary" />
 								</div>
 								<div>
-									<h2 className="font-semibold text-xl tracking-tight">{category.title}</h2>
-									<p className="text-muted-foreground text-sm">{category.description}</p>
+									<h2 className="font-semibold text-xl tracking-tight">
+										{category.title}
+									</h2>
+									<p className="text-muted-foreground text-sm">
+										{category.description}
+									</p>
 								</div>
 							</div>
 
@@ -454,7 +494,9 @@ export default function ToolsPage() {
 																	Popular
 																</Badge>
 															)}
-															{item.external && <ExternalLink className="size-4 text-muted-foreground" />}
+															{item.external && (
+																<ExternalLink className="size-4 text-muted-foreground" />
+															)}
 														</div>
 													</div>
 													<div className="space-y-1.5">
@@ -484,7 +526,10 @@ export default function ToolsPage() {
 						<BookOpen className="size-5" />
 						Need Help Getting Started?
 					</CardTitle>
-					<CardDescription>Our team can help you set up any of these resources for your business</CardDescription>
+					<CardDescription>
+						Our team can help you set up any of these resources for your
+						business
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">
 					<Button asChild variant="outline">

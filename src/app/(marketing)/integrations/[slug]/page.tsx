@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 
 import { IntegrationPage } from "@/components/marketing/integration-page";
-import { getAllIntegrations, getIntegrationBySlug, getRelatedIntegrations } from "@/lib/marketing/integrations";
+import {
+	getAllIntegrations,
+	getIntegrationBySlug,
+	getRelatedIntegrations,
+} from "@/lib/marketing/integrations";
 import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
@@ -39,7 +43,9 @@ export async function generateMetadata({ params }: IntegrationPageProps) {
 	});
 }
 
-export default async function IntegrationDetailPage({ params }: IntegrationPageProps) {
+export default async function IntegrationDetailPage({
+	params,
+}: IntegrationPageProps) {
 	const { slug } = await params;
 	const integration = getIntegrationBySlug(slug);
 

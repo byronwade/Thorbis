@@ -14,7 +14,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 /**
@@ -42,7 +48,12 @@ type AddPropertyDialogProps = {
 	};
 };
 
-export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, customerAddress }: AddPropertyDialogProps) {
+export function AddPropertyDialog({
+	customerId,
+	onPropertyCreated,
+	trigger,
+	customerAddress,
+}: AddPropertyDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -68,7 +79,9 @@ export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, cust
 
 		if (propertiesResult.success && propertiesResult.data) {
 			// Find the newly created property
-			const newProperty = propertiesResult.data.find((p) => p.id === result.data);
+			const newProperty = propertiesResult.data.find(
+				(p) => p.id === result.data,
+			);
 
 			if (newProperty) {
 				// Notify parent component with full property data
@@ -99,7 +112,8 @@ export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, cust
 						<DialogTitle>Add New Property</DialogTitle>
 					</div>
 					<DialogDescription>
-						Add a new service location for this customer. All fields marked with * are required.
+						Add a new service location for this customer. All fields marked with
+						* are required.
 						{customerAddress?.address && (
 							<span className="mt-2 block font-medium text-success">
 								✓ Address fields pre-filled from customer profile
@@ -120,14 +134,18 @@ export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, cust
 					<div className="space-y-2">
 						<Label htmlFor="name">Property Name *</Label>
 						<Input
-							defaultValue={customerAddress?.address ? "Primary Location" : undefined}
+							defaultValue={
+								customerAddress?.address ? "Primary Location" : undefined
+							}
 							disabled={isLoading}
 							id="name"
 							name="name"
 							placeholder="e.g., Main Office, Home, Warehouse #1"
 							required
 						/>
-						<p className="text-muted-foreground text-xs">A friendly name to identify this location</p>
+						<p className="text-muted-foreground text-xs">
+							A friendly name to identify this location
+						</p>
 					</div>
 
 					{/* Address */}
@@ -142,14 +160,21 @@ export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, cust
 							required
 						/>
 						{customerAddress?.address && (
-							<p className="text-muted-foreground text-xs">Pre-filled from customer profile</p>
+							<p className="text-muted-foreground text-xs">
+								Pre-filled from customer profile
+							</p>
 						)}
 					</div>
 
 					{/* Address Line 2 */}
 					<div className="space-y-2">
 						<Label htmlFor="address2">Address Line 2 (Optional)</Label>
-						<Input disabled={isLoading} id="address2" name="address2" placeholder="Suite 100, Apt 4B, etc." />
+						<Input
+							disabled={isLoading}
+							id="address2"
+							name="address2"
+							placeholder="Suite 100, Apt 4B, etc."
+						/>
 					</div>
 
 					{/* City, State, ZIP */}
@@ -249,7 +274,12 @@ export function AddPropertyDialog({ customerId, onPropertyCreated, trigger, cust
 
 					{/* Form Actions */}
 					<div className="flex justify-end gap-3 pt-4">
-						<Button disabled={isLoading} onClick={() => setOpen(false)} type="button" variant="outline">
+						<Button
+							disabled={isLoading}
+							onClick={() => setOpen(false)}
+							type="button"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isLoading} type="submit">

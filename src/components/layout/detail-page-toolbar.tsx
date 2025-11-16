@@ -54,7 +54,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -151,7 +156,7 @@ export function DetailPageToolbar({
 		<div
 			className={cn(
 				"sticky top-0 z-40 flex w-full flex-col border-border/50 border-b bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90",
-				className
+				className,
 			)}
 		>
 			{/* Main Toolbar Row - Fixed height for consistency */}
@@ -186,14 +191,22 @@ export function DetailPageToolbar({
 							<h1 className="truncate font-semibold text-base text-foreground leading-tight tracking-tight md:text-lg">
 								{title}
 							</h1>
-							{subtitle && <p className="truncate text-muted-foreground text-sm leading-tight">{subtitle}</p>}
+							{subtitle && (
+								<p className="truncate text-muted-foreground text-sm leading-tight">
+									{subtitle}
+								</p>
+							)}
 						</div>
 
 						{/* Status Badge */}
 						{status && (
 							<Badge
 								className="shrink-0 font-medium"
-								variant={status.variant === "success" || status.variant === "warning" ? "default" : status.variant}
+								variant={
+									status.variant === "success" || status.variant === "warning"
+										? "default"
+										: status.variant
+								}
 							>
 								{status.label}
 							</Badge>
@@ -225,12 +238,19 @@ export function DetailPageToolbar({
 									<ActionButton action={action} ghost key={action.id} />
 								))}
 							</div>
-							{contextActions.length > 0 && <Separator className="hidden h-8 md:block" orientation="vertical" />}
+							{contextActions.length > 0 && (
+								<Separator
+									className="hidden h-8 md:block"
+									orientation="vertical"
+								/>
+							)}
 						</>
 					)}
 
 					{/* Context Menu (Ellipsis) */}
-					{contextActions.length > 0 && <ContextMenu actions={contextActions} />}
+					{contextActions.length > 0 && (
+						<ContextMenu actions={contextActions} />
+					)}
 
 					{/* Custom Content */}
 					{customContent}
@@ -247,7 +267,13 @@ export function DetailPageToolbar({
 /**
  * Action Button - Individual action button with tooltip
  */
-function ActionButton({ action, ghost = false }: { action: DetailToolbarAction; ghost?: boolean }) {
+function ActionButton({
+	action,
+	ghost = false,
+}: {
+	action: DetailToolbarAction;
+	ghost?: boolean;
+}) {
 	const buttonVariant = ghost
 		? "ghost"
 		: action.variant === "primary"
@@ -259,14 +285,16 @@ function ActionButton({ action, ghost = false }: { action: DetailToolbarAction; 
 	const buttonClasses = cn(
 		"h-9 gap-2", // Fixed height for consistency
 		ghost && "hover:bg-background",
-		!ghost && action.variant === "primary" && "bg-primary text-primary-foreground hover:bg-primary/90",
+		!ghost &&
+			action.variant === "primary" &&
+			"bg-primary text-primary-foreground hover:bg-primary/90",
 		!ghost &&
 			action.variant === "destructive" &&
 			"border-destructive/20 text-destructive hover:border-destructive/30 hover:bg-destructive/10",
 		!ghost &&
 			action.variant === "success" &&
 			"border-success/20 bg-success/5 text-success hover:border-success/30 hover:bg-success/10 dark:text-success",
-		action.desktopOnly && "hidden md:flex"
+		action.desktopOnly && "hidden md:flex",
 	);
 
 	const button = (
@@ -339,7 +367,8 @@ function ContextMenu({ actions }: { actions: DetailToolbarContextAction[] }) {
 						<DropdownMenuItem
 							className={cn(
 								"cursor-pointer gap-2",
-								action.variant === "destructive" && "text-destructive focus:text-destructive"
+								action.variant === "destructive" &&
+									"text-destructive focus:text-destructive",
 							)}
 							disabled={action.disabled}
 							onClick={action.onClick}

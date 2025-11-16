@@ -31,7 +31,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
@@ -43,10 +50,22 @@ type FinancialsTabProps = {
 	isEditMode: boolean;
 };
 
-export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }: FinancialsTabProps) {
+export function FinancialsTab({
+	job,
+	invoices,
+	estimates,
+	metrics,
+	isEditMode,
+}: FinancialsTabProps) {
 	// Calculate totals
-	const totalInvoiced = invoices.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
-	const totalPaid = invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0);
+	const totalInvoiced = invoices.reduce(
+		(sum, inv) => sum + (inv.total_amount || 0),
+		0,
+	);
+	const totalPaid = invoices.reduce(
+		(sum, inv) => sum + (inv.paid_amount || 0),
+		0,
+	);
 	const totalOutstanding = totalInvoiced - totalPaid;
 
 	// Get invoice status badge color
@@ -74,7 +93,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Job Value</p>
-								<p className="font-bold text-2xl">{formatCurrency(job.total_amount || 0, { decimals: 2 })}</p>
+								<p className="font-bold text-2xl">
+									{formatCurrency(job.total_amount || 0, { decimals: 2 })}
+								</p>
 							</div>
 							<DollarSign className="h-8 w-8 text-muted-foreground" />
 						</div>
@@ -86,7 +107,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Paid</p>
-								<p className="font-bold text-2xl text-success">{formatCurrency(totalPaid, { decimals: 2 })}</p>
+								<p className="font-bold text-2xl text-success">
+									{formatCurrency(totalPaid, { decimals: 2 })}
+								</p>
 							</div>
 							<CreditCard className="h-8 w-8 text-success" />
 						</div>
@@ -98,7 +121,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Outstanding</p>
-								<p className="font-bold text-2xl text-warning">{formatCurrency(totalOutstanding, { decimals: 2 })}</p>
+								<p className="font-bold text-2xl text-warning">
+									{formatCurrency(totalOutstanding, { decimals: 2 })}
+								</p>
 							</div>
 							<Receipt className="h-8 w-8 text-warning" />
 						</div>
@@ -115,7 +140,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 										decimals: 2,
 									})}
 								</p>
-								<p className="text-muted-foreground text-xs">{metrics.profitMargin.toFixed(2)}% margin</p>
+								<p className="text-muted-foreground text-xs">
+									{metrics.profitMargin.toFixed(2)}% margin
+								</p>
 							</div>
 							<TrendingUp className="h-8 w-8 text-primary" />
 						</div>
@@ -157,8 +184,12 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 							<TableBody>
 								{invoices.map((invoice) => (
 									<TableRow key={invoice.id}>
-										<TableCell className="font-medium">{invoice.invoice_number}</TableCell>
-										<TableCell className="text-sm">{formatDate(invoice.created_at, "short")}</TableCell>
+										<TableCell className="font-medium">
+											{invoice.invoice_number}
+										</TableCell>
+										<TableCell className="text-sm">
+											{formatDate(invoice.created_at, "short")}
+										</TableCell>
 										<TableCell className="font-medium">
 											{formatCurrency(invoice.total_amount || 0, {
 												decimals: 2,
@@ -172,13 +203,23 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 										<TableCell
 											className={cn(
 												"font-medium",
-												(invoice.total_amount || 0) - (invoice.paid_amount || 0) > 0 ? "text-warning" : "text-success"
+												(invoice.total_amount || 0) -
+													(invoice.paid_amount || 0) >
+													0
+													? "text-warning"
+													: "text-success",
 											)}
 										>
-											{formatCurrency((invoice.total_amount || 0) - (invoice.paid_amount || 0), { decimals: 2 })}
+											{formatCurrency(
+												(invoice.total_amount || 0) -
+													(invoice.paid_amount || 0),
+												{ decimals: 2 },
+											)}
 										</TableCell>
 										<TableCell>
-											<Badge variant={getStatusColor(invoice.status)}>{invoice.status?.toUpperCase()}</Badge>
+											<Badge variant={getStatusColor(invoice.status)}>
+												{invoice.status?.toUpperCase()}
+											</Badge>
 										</TableCell>
 										<TableCell>
 											<div className="flex gap-1">
@@ -243,18 +284,26 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 							<TableBody>
 								{estimates.map((estimate) => (
 									<TableRow key={estimate.id}>
-										<TableCell className="font-medium">{estimate.estimate_number}</TableCell>
-										<TableCell className="text-sm">{formatDate(estimate.created_at, "short")}</TableCell>
+										<TableCell className="font-medium">
+											{estimate.estimate_number}
+										</TableCell>
+										<TableCell className="text-sm">
+											{formatDate(estimate.created_at, "short")}
+										</TableCell>
 										<TableCell className="font-medium">
 											{formatCurrency(estimate.total_amount || 0, {
 												decimals: 2,
 											})}
 										</TableCell>
 										<TableCell className="text-sm">
-											{estimate.valid_until ? formatDate(estimate.valid_until, "short") : "N/A"}
+											{estimate.valid_until
+												? formatDate(estimate.valid_until, "short")
+												: "N/A"}
 										</TableCell>
 										<TableCell>
-											<Badge variant={getStatusColor(estimate.status)}>{estimate.status?.toUpperCase()}</Badge>
+											<Badge variant={getStatusColor(estimate.status)}>
+												{estimate.status?.toUpperCase()}
+											</Badge>
 										</TableCell>
 										<TableCell>
 											<div className="flex gap-1">
@@ -301,17 +350,27 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground text-sm">Revenue</span>
-								<span className="font-medium">{formatCurrency(metrics.totalAmount)}</span>
+								<span className="font-medium">
+									{formatCurrency(metrics.totalAmount)}
+								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">Materials Cost</span>
-								<span className="font-medium">{formatCurrency(metrics.materialsCost)}</span>
+								<span className="text-muted-foreground text-sm">
+									Materials Cost
+								</span>
+								<span className="font-medium">
+									{formatCurrency(metrics.materialsCost)}
+								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">Labor Hours</span>
-								<span className="font-medium">{metrics.totalLaborHours.toFixed(2)}h</span>
+								<span className="text-muted-foreground text-sm">
+									Labor Hours
+								</span>
+								<span className="font-medium">
+									{metrics.totalLaborHours.toFixed(2)}h
+								</span>
 							</div>
 
 							<Separator />
@@ -325,7 +384,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 
 							<div className="flex items-center justify-between">
 								<span className="font-semibold text-sm">Profit Margin</span>
-								<span className="font-bold text-lg text-primary">{metrics.profitMargin.toFixed(2)}%</span>
+								<span className="font-bold text-lg text-primary">
+									{metrics.profitMargin.toFixed(2)}%
+								</span>
 							</div>
 						</div>
 
@@ -335,7 +396,13 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 								<div>
 									<div className="mb-1 flex justify-between text-xs">
 										<span>Materials</span>
-										<span>{((metrics.materialsCost / metrics.totalAmount) * 100).toFixed(2)}%</span>
+										<span>
+											{(
+												(metrics.materialsCost / metrics.totalAmount) *
+												100
+											).toFixed(2)}
+											%
+										</span>
 									</div>
 									<div className="h-2 overflow-hidden rounded-full bg-muted">
 										<div
@@ -353,7 +420,10 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 										<span>{metrics.profitMargin.toFixed(2)}%</span>
 									</div>
 									<div className="h-2 overflow-hidden rounded-full bg-muted">
-										<div className="h-full bg-success" style={{ width: `${metrics.profitMargin}%` }} />
+										<div
+											className="h-full bg-success"
+											style={{ width: `${metrics.profitMargin}%` }}
+										/>
 									</div>
 								</div>
 							</div>
@@ -367,7 +437,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 						{job.payment_terms && (
 							<div>
 								<p className="font-medium text-sm">Payment Terms</p>
-								<p className="text-muted-foreground text-sm">{job.payment_terms}</p>
+								<p className="text-muted-foreground text-sm">
+									{job.payment_terms}
+								</p>
 							</div>
 						)}
 
@@ -375,7 +447,9 @@ export function FinancialsTab({ job, invoices, estimates, metrics, isEditMode }:
 							<div>
 								<p className="font-medium text-sm">Deposit</p>
 								<div className="flex items-center gap-2">
-									<p className="text-muted-foreground text-sm">{formatCurrency(job.deposit_amount)}</p>
+									<p className="text-muted-foreground text-sm">
+										{formatCurrency(job.deposit_amount)}
+									</p>
 									{job.deposit_paid_at && (
 										<Badge className="text-xs" variant="default">
 											Paid {formatDate(job.deposit_paid_at)}

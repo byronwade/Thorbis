@@ -15,8 +15,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 		getKBCategories(),
 	]);
 
-	const articles = articlesResult.success && articlesResult.articles ? articlesResult.articles : [];
-	const categories = categoriesResult.success ? categoriesResult.categories : [];
+	const articles =
+		articlesResult.success && articlesResult.articles
+			? articlesResult.articles
+			: [];
+	const categories = categoriesResult.success
+		? categoriesResult.categories
+		: [];
 
 	// Generate sitemap entries for articles
 	const articleEntries: MetadataRoute.Sitemap = articles.map((article) => ({

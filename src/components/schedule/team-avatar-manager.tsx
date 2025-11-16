@@ -21,15 +21,29 @@ export function TeamAvatar({
 	const textSize = size === "md" ? "text-[10px]" : "text-[8px]";
 
 	return (
-		<div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+		<div
+			className="relative"
+			onMouseEnter={() => setIsHovered(true)}
+			onMouseLeave={() => setIsHovered(false)}
+		>
 			<Avatar
-				className={cn(sizeClasses, "border-2 border-card transition-all", isHovered && "ring-2 ring-primary")}
+				className={cn(
+					sizeClasses,
+					"border-2 border-card transition-all",
+					isHovered && "ring-2 ring-primary",
+				)}
 				title={assignment.displayName}
 			>
 				{assignment.avatar && (
-					<img alt={assignment.displayName} className="size-full object-cover" src={assignment.avatar} />
+					<img
+						alt={assignment.displayName}
+						className="size-full object-cover"
+						src={assignment.avatar}
+					/>
 				)}
-				<AvatarFallback className={cn("bg-muted font-bold text-foreground", textSize)}>
+				<AvatarFallback
+					className={cn("bg-muted font-bold text-foreground", textSize)}
+				>
 					{assignment.displayName
 						.split(" ")
 						.map((n) => n[0])
@@ -71,7 +85,9 @@ export function TeamAvatarGroup({
 	jobId?: string;
 }) {
 	const [showAll, setShowAll] = useState(false);
-	const visibleAssignments = showAll ? assignments : assignments.slice(0, maxVisible);
+	const visibleAssignments = showAll
+		? assignments
+		: assignments.slice(0, maxVisible);
 	const remainingCount = assignments.length - maxVisible;
 
 	return (
@@ -81,7 +97,11 @@ export function TeamAvatarGroup({
 					<TeamAvatar
 						assignment={assignment}
 						key={idx}
-						onRemove={onRemove ? () => onRemove(assignment.technicianId || "") : undefined}
+						onRemove={
+							onRemove
+								? () => onRemove(assignment.technicianId || "")
+								: undefined
+						}
 						size={size}
 					/>
 				))}

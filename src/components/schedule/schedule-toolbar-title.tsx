@@ -4,7 +4,11 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +20,8 @@ export function ScheduleToolbarTitle() {
 		setMounted(true);
 	}, []);
 
-	const dateObj = currentDate instanceof Date ? currentDate : new Date(currentDate);
+	const dateObj =
+		currentDate instanceof Date ? currentDate : new Date(currentDate);
 
 	const getDateFormat = () => {
 		switch (viewMode) {
@@ -37,10 +42,15 @@ export function ScheduleToolbarTitle() {
 		<Popover>
 			<PopoverTrigger asChild>
 				<button
-					className={cn("group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors", "hover:bg-accent/50")}
+					className={cn(
+						"group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors",
+						"hover:bg-accent/50",
+					)}
 					type="button"
 				>
-					<span className="font-semibold text-foreground text-xl tracking-tight">{getDateFormat()}</span>
+					<span className="font-semibold text-foreground text-xl tracking-tight">
+						{getDateFormat()}
+					</span>
 					<CalendarIcon className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
 				</button>
 			</PopoverTrigger>

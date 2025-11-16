@@ -31,7 +31,12 @@ type ScheduleState = {
 	setJobs: (jobs: Job[]) => void;
 	addJob: (job: Job) => void;
 	updateJob: (jobId: string, updates: Partial<Job>) => void;
-	moveJob: (jobId: string, newTechnicianId: string, newStartTime: Date, newEndTime: Date) => void;
+	moveJob: (
+		jobId: string,
+		newTechnicianId: string,
+		newStartTime: Date,
+		newEndTime: Date,
+	) => void;
 	deleteJob: (jobId: string) => void;
 	duplicateJob: (jobId: string, newStartTime: Date) => void;
 
@@ -40,7 +45,9 @@ type ScheduleState = {
 	selectTechnician: (technicianId: string | null) => void;
 
 	// Actions - Bulk operations
-	bulkUpdateJobs: (updates: Array<{ jobId: string; updates: Partial<Job> }>) => void;
+	bulkUpdateJobs: (
+		updates: Array<{ jobId: string; updates: Partial<Job> }>,
+	) => void;
 	bulkDeleteJobs: (jobIds: string[]) => void;
 
 	// Actions - Sync
@@ -56,7 +63,12 @@ type ScheduleState = {
 	getJobsByDateRange: (startDate: Date, endDate: Date) => Job[];
 	getTechnicianById: (id: string) => Technician | undefined;
 	getJobById: (id: string) => Job | undefined;
-	hasConflict: (technicianId: string, startTime: Date, endTime: Date, excludeJobId?: string) => boolean;
+	hasConflict: (
+		technicianId: string,
+		startTime: Date,
+		endTime: Date,
+		excludeJobId?: string,
+	) => boolean;
 	getUnassignedJobs: () => Job[];
 	getJobsGroupedByTechnician: () => Record<string, Job[]>;
 	hydrateFromServer: (payload: ScheduleHydrationPayload) => void;
@@ -109,14 +121,18 @@ export const useScheduleStore = create<ScheduleState>()(
 
 						const newJobs = new Map(state.jobs);
 						for (const [jobId, job] of newJobs) {
-							const filteredAssignments = job.assignments.filter((assignment) => assignment.technicianId !== id);
+							const filteredAssignments = job.assignments.filter(
+								(assignment) => assignment.technicianId !== id,
+							);
 
 							if (filteredAssignments.length !== job.assignments.length) {
 								newJobs.set(jobId, {
 									...job,
 									assignments: filteredAssignments,
 									technicianId:
-										filteredAssignments.find((assignment) => assignment.role === "primary")?.technicianId ?? "",
+										filteredAssignments.find(
+											(assignment) => assignment.role === "primary",
+										)?.technicianId ?? "",
 									isUnassigned: filteredAssignments.length === 0,
 								});
 							}
@@ -125,7 +141,10 @@ export const useScheduleStore = create<ScheduleState>()(
 						return {
 							technicians: newTechnicians,
 							jobs: newJobs,
-							selectedTechnicianId: state.selectedTechnicianId === id ? null : state.selectedTechnicianId,
+							selectedTechnicianId:
+								state.selectedTechnicianId === id
+									? null
+									: state.selectedTechnicianId,
 						};
 					});
 				},
@@ -169,12 +188,14 @@ export const useScheduleStore = create<ScheduleState>()(
 														...assignment,
 														technicianId: newTechnicianId,
 														teamMemberId: technician?.teamMemberId,
-														displayName: technician?.name || assignment.displayName,
-														avatar: technician?.avatar ?? assignment.avatar ?? null,
+														displayName:
+															technician?.name || assignment.displayName,
+														avatar:
+															technician?.avatar ?? assignment.avatar ?? null,
 														status: technician?.status ?? assignment.status,
 														isActive: technician?.isActive ?? true,
 													}
-												: assignment
+												: assignment,
 										)
 									: [
 											{
@@ -207,7 +228,8 @@ export const useScheduleStore = create<ScheduleState>()(
 						newJobs.delete(jobId);
 						return {
 							jobs: newJobs,
-							selectedJobId: state.selectedJobId === jobId ? null : state.selectedJobId,
+							selectedJobId:
+								state.selectedJobId === jobId ? null : state.selectedJobId,
 						};
 					});
 				},
@@ -239,7 +261,8 @@ export const useScheduleStore = create<ScheduleState>()(
 
 				// Selection actions
 				selectJob: (jobId) => set({ selectedJobId: jobId }),
-				selectTechnician: (technicianId) => set({ selectedTechnicianId: technicianId }),
+				selectTechnician: (technicianId) =>
+					set({ selectedTechnicianId: technicianId }),
 
 				// Bulk operations
 				bulkUpdateJobs: (updates) => {
@@ -261,7 +284,9 @@ export const useScheduleStore = create<ScheduleState>()(
 						jobIds.forEach((id) => newJobs.delete(id));
 						return {
 							jobs: newJobs,
-							selectedJobId: jobIds.includes(state.selectedJobId || "") ? null : state.selectedJobId,
+							selectedJobId: jobIds.includes(state.selectedJobId || "")
+								? null
+								: state.selectedJobId,
 						};
 					});
 				},
@@ -269,7 +294,9 @@ export const useScheduleStore = create<ScheduleState>()(
 				hydrateFromServer: (payload) => {
 					set((state) => {
 						const jobMap = new Map(payload.jobs.map((job) => [job.id, job]));
-						const technicianMap = new Map(payload.technicians.map((tech) => [tech.id, tech]));
+						const technicianMap = new Map(
+							payload.technicians.map((tech) => [tech.id, tech]),
+						);
 
 						return {
 							...state,
@@ -345,11 +372,15 @@ export const useScheduleStore = create<ScheduleState>()(
 				// Helpers
 				getJobsByTechnician: (technicianId) =>
 					Array.from(get().jobs.values()).filter((job) =>
-						job.assignments.some((assignment) => assignment.technicianId === technicianId)
+						job.assignments.some(
+							(assignment) => assignment.technicianId === technicianId,
+						),
 					),
 
 				getJobsByDateRange: (startDate, endDate) =>
-					Array.from(get().jobs.values()).filter((job) => job.startTime <= endDate && job.endTime >= startDate),
+					Array.from(get().jobs.values()).filter(
+						(job) => job.startTime <= endDate && job.endTime >= startDate,
+					),
 
 				getTechnicianById: (id) => get().technicians.get(id),
 
@@ -372,7 +403,8 @@ export const useScheduleStore = create<ScheduleState>()(
 					});
 				},
 
-				getUnassignedJobs: () => Array.from(get().jobs.values()).filter((job) => job.isUnassigned),
+				getUnassignedJobs: () =>
+					Array.from(get().jobs.values()).filter((job) => job.isUnassigned),
 
 				getJobsGroupedByTechnician: () => {
 					const grouped: Record<string, Job[]> = {};
@@ -392,7 +424,7 @@ export const useScheduleStore = create<ScheduleState>()(
 			}),
 			{
 				name: "schedule-storage",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				// Don't persist the Maps directly, convert to arrays
 				partialize: (state) => ({
 					technicians: Array.from(state.technicians.values()),
@@ -402,7 +434,9 @@ export const useScheduleStore = create<ScheduleState>()(
 				// Rehydrate arrays back to Maps
 				merge: (persistedState: any, currentState) => {
 					const technicians = persistedState?.technicians
-						? new Map(persistedState.technicians.map((t: Technician) => [t.id, t]))
+						? new Map(
+								persistedState.technicians.map((t: Technician) => [t.id, t]),
+							)
 						: currentState.technicians;
 
 					const jobs = persistedState?.jobs
@@ -416,7 +450,7 @@ export const useScheduleStore = create<ScheduleState>()(
 						jobs,
 					};
 				},
-			}
-		)
-	)
+			},
+		),
+	),
 );

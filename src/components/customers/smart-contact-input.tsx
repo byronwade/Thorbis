@@ -30,14 +30,18 @@ type SmartContactInputProps = {
 	showAiHelper?: boolean;
 };
 
-export function SmartContactInput({ onContactChange, initialContact, showAiHelper = true }: SmartContactInputProps) {
+export function SmartContactInput({
+	onContactChange,
+	initialContact,
+	showAiHelper = true,
+}: SmartContactInputProps) {
 	const [contact, setContact] = useState<ContactData>(
 		initialContact || {
 			firstName: "",
 			lastName: "",
 			email: "",
 			phone: "",
-		}
+		},
 	);
 	const [pasteText, setPasteText] = useState("");
 	const [showPasteHelper, setShowPasteHelper] = useState(false);
@@ -73,9 +77,14 @@ export function SmartContactInput({ onContactChange, initialContact, showAiHelpe
 	};
 
 	// Extract name from text
-	const extractName = (text: string): { first: string; last: string } | null => {
+	const extractName = (
+		text: string,
+	): { first: string; last: string } | null => {
 		// Remove email and phone
-		let cleaned = text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "");
+		let cleaned = text.replace(
+			/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+			"",
+		);
 		cleaned = cleaned.replace(/[\d()\-\s.]+/g, " ");
 		cleaned = cleaned.trim();
 
@@ -158,7 +167,9 @@ export function SmartContactInput({ onContactChange, initialContact, showAiHelpe
 							<Textarea
 								className="min-h-[100px] font-mono text-sm"
 								onChange={(e) => setPasteText(e.target.value)}
-								placeholder={"Paste contact info here, like:\n\nJohn Smith\njohn@example.com\n(555) 123-4567"}
+								placeholder={
+									"Paste contact info here, like:\n\nJohn Smith\njohn@example.com\n(555) 123-4567"
+								}
 								value={pasteText}
 							/>
 							<div className="flex gap-2">
@@ -185,10 +196,14 @@ export function SmartContactInput({ onContactChange, initialContact, showAiHelpe
 					) : (
 						<div>
 							<p className="mb-3 text-muted-foreground text-sm">
-								Paste contact info from anywhere (email signature, business card, text message) and we'll auto-fill the
-								fields.
+								Paste contact info from anywhere (email signature, business
+								card, text message) and we'll auto-fill the fields.
 							</p>
-							<button className="text-primary text-sm underline" onClick={() => setShowPasteHelper(true)} type="button">
+							<button
+								className="text-primary text-sm underline"
+								onClick={() => setShowPasteHelper(true)}
+								type="button"
+							>
 								Try it now →
 							</button>
 						</div>
@@ -249,7 +264,9 @@ export function SmartContactInput({ onContactChange, initialContact, showAiHelpe
 						type="email"
 						value={contact.email}
 					/>
-					{contact.email && validationState.email && <Check className="absolute top-3 right-3 size-4 text-success" />}
+					{contact.email && validationState.email && (
+						<Check className="absolute top-3 right-3 size-4 text-success" />
+					)}
 				</div>
 			</div>
 
@@ -269,7 +286,9 @@ export function SmartContactInput({ onContactChange, initialContact, showAiHelpe
 						type="tel"
 						value={contact.phone}
 					/>
-					{contact.phone && validationState.phone && <Check className="absolute top-3 right-3 size-4 text-success" />}
+					{contact.phone && validationState.phone && (
+						<Check className="absolute top-3 right-3 size-4 text-success" />
+					)}
 				</div>
 			</div>
 		</div>

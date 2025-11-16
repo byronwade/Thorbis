@@ -24,20 +24,27 @@ export async function lookupCallerInfo(phoneNumber: string) {
 	}
 
 	try {
-		const response = await fetch(`${TELNYX_API_BASE}/number_lookup/${encodeURIComponent(phoneNumber)}`, {
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${apiKey}`,
+		const response = await fetch(
+			`${TELNYX_API_BASE}/number_lookup/${encodeURIComponent(phoneNumber)}`,
+			{
+				method: "GET",
+				headers: {
+					Authorization: `Bearer ${apiKey}`,
+				},
+				cache: "no-store",
 			},
-			cache: "no-store",
-		});
+		);
 
 		if (!response.ok) {
-			const errorPayload = await response.json().catch(() => ({ errors: [{ detail: response.statusText }] }));
+			const errorPayload = await response
+				.json()
+				.catch(() => ({ errors: [{ detail: response.statusText }] }));
 
 			return {
 				success: false,
-				error: errorPayload?.errors?.[0]?.detail || `Telnyx lookup failed (${response.status})`,
+				error:
+					errorPayload?.errors?.[0]?.detail ||
+					`Telnyx lookup failed (${response.status})`,
 			};
 		}
 
@@ -50,7 +57,8 @@ export async function lookupCallerInfo(phoneNumber: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Unknown error during lookup",
+			error:
+				error instanceof Error ? error.message : "Unknown error during lookup",
 		};
 	}
 }

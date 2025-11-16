@@ -24,7 +24,13 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export type FilterOperator =
 	| "equals"
@@ -114,7 +120,12 @@ const SELECT_OPERATORS: { value: FilterOperator; label: string }[] = [
 	{ value: "is_not_empty", label: "Is not empty" },
 ];
 
-export function AdvancedFilters({ fields, conditions, onChange, onClear }: AdvancedFiltersProps) {
+export function AdvancedFilters({
+	fields,
+	conditions,
+	onChange,
+	onClear,
+}: AdvancedFiltersProps) {
 	const [_isOpen, _setIsOpen] = useState(false);
 
 	const addCondition = (fieldId: string) => {
@@ -133,7 +144,9 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 	};
 
 	const updateCondition = (id: string, updates: Partial<FilterCondition>) => {
-		const newConditions = conditions.map((c) => (c.id === id ? { ...c, ...updates } : c));
+		const newConditions = conditions.map((c) =>
+			c.id === id ? { ...c, ...updates } : c,
+		);
 		onChange(newConditions);
 	};
 
@@ -163,7 +176,8 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 		}
 	};
 
-	const needsValueInput = (operator: FilterOperator) => operator !== "is_empty" && operator !== "is_not_empty";
+	const needsValueInput = (operator: FilterOperator) =>
+		operator !== "is_empty" && operator !== "is_not_empty";
 
 	return (
 		<div className="space-y-2">
@@ -180,12 +194,21 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 						const showValueInput = needsValueInput(condition.operator);
 
 						return (
-							<div className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3" key={condition.id}>
-								{index > 0 && <span className="font-medium text-muted-foreground text-xs">AND</span>}
+							<div
+								className="flex items-center gap-2 rounded-lg border bg-muted/50 p-3"
+								key={condition.id}
+							>
+								{index > 0 && (
+									<span className="font-medium text-muted-foreground text-xs">
+										AND
+									</span>
+								)}
 
 								{/* Field Selector */}
 								<Select
-									onValueChange={(value) => updateCondition(condition.id, { field: value })}
+									onValueChange={(value) =>
+										updateCondition(condition.id, { field: value })
+									}
 									value={condition.field}
 								>
 									<SelectTrigger className="h-8 w-[140px]">
@@ -226,7 +249,9 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 									<>
 										{field.type === "select" && field.options ? (
 											<Select
-												onValueChange={(value) => updateCondition(condition.id, { value })}
+												onValueChange={(value) =>
+													updateCondition(condition.id, { value })
+												}
 												value={String(condition.value)}
 											>
 												<SelectTrigger className="h-8 w-[140px]">
@@ -280,7 +305,9 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 										{/* Second value for "between" operator */}
 										{condition.operator === "between" && (
 											<>
-												<span className="text-muted-foreground text-xs">and</span>
+												<span className="text-muted-foreground text-xs">
+													and
+												</span>
 												<Input
 													className="h-8 w-[140px]"
 													onChange={(e) =>
@@ -328,7 +355,10 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						{fields.map((field) => (
-							<DropdownMenuItem key={field.id} onClick={() => addCondition(field.id)}>
+							<DropdownMenuItem
+								key={field.id}
+								onClick={() => addCondition(field.id)}
+							>
 								{field.label}
 							</DropdownMenuItem>
 						))}
@@ -356,7 +386,10 @@ export function AdvancedFilters({ fields, conditions, onChange, onClear }: Advan
 /**
  * Helper function to apply filter conditions to data
  */
-export function applyFilters<T extends Record<string, any>>(data: T[], conditions: FilterCondition[]): T[] {
+export function applyFilters<T extends Record<string, any>>(
+	data: T[],
+	conditions: FilterCondition[],
+): T[] {
 	if (conditions.length === 0) {
 		return data;
 	}
@@ -375,7 +408,11 @@ export function applyFilters<T extends Record<string, any>>(data: T[], condition
 			}
 
 			// Skip filters with empty values (except for is_empty/is_not_empty which we handled above)
-			if (filterValue === "" || filterValue === null || filterValue === undefined) {
+			if (
+				filterValue === "" ||
+				filterValue === null ||
+				filterValue === undefined
+			) {
 				return true; // Don't filter out items if the filter value is empty
 			}
 
@@ -418,15 +455,26 @@ export function applyFilters<T extends Record<string, any>>(data: T[], condition
 				case "less_than_or_equal":
 					return Number(value) <= Number(filterValue);
 				case "between":
-					return Number(value) >= Number(filterValue) && Number(value) <= Number(condition.value2 || 0);
+					return (
+						Number(value) >= Number(filterValue) &&
+						Number(value) <= Number(condition.value2 || 0)
+					);
 				case "before":
-					return dateValue !== null && dateFilterValue !== null ? dateValue < dateFilterValue : false;
+					return dateValue !== null && dateFilterValue !== null
+						? dateValue < dateFilterValue
+						: false;
 				case "after":
-					return dateValue !== null && dateFilterValue !== null ? dateValue > dateFilterValue : false;
+					return dateValue !== null && dateFilterValue !== null
+						? dateValue > dateFilterValue
+						: false;
 				case "on_or_before":
-					return dateValue !== null && dateFilterValue !== null ? dateValue <= dateFilterValue : false;
+					return dateValue !== null && dateFilterValue !== null
+						? dateValue <= dateFilterValue
+						: false;
 				case "on_or_after":
-					return dateValue !== null && dateFilterValue !== null ? dateValue >= dateFilterValue : false;
+					return dateValue !== null && dateFilterValue !== null
+						? dateValue >= dateFilterValue
+						: false;
 				default:
 					return true;
 			}

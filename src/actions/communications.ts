@@ -30,7 +30,9 @@ type SendCustomerEmailActionResult = {
 	data?: Record<string, unknown>;
 };
 
-export async function sendCustomerEmailAction(input: SendCustomerEmailInput): Promise<SendCustomerEmailActionResult> {
+export async function sendCustomerEmailAction(
+	input: SendCustomerEmailInput,
+): Promise<SendCustomerEmailActionResult> {
 	const payload = sendCustomerEmailSchema.parse(input);
 	const supabase = await createClient();
 

@@ -2,7 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import { InvoicesKanban } from "@/components/work/invoices-kanban";
 import { type Invoice, InvoicesTable } from "@/components/work/invoices-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	isActiveCompanyOnboardingComplete,
+} from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 // Configuration constants
@@ -61,12 +64,15 @@ export async function InvoicesData() {
 		.limit(MAX_INVOICES_PER_PAGE);
 
 	if (error) {
-		const errorMessage = error.message || JSON.stringify(error) || "Unknown database error";
+		const errorMessage =
+			error.message || JSON.stringify(error) || "Unknown database error";
 		throw new Error(`Failed to load invoices: ${errorMessage}`);
 	}
 
 	// Map database statuses to display statuses
-	const mapStatus = (dbStatus: string): "paid" | "pending" | "draft" | "overdue" => {
+	const mapStatus = (
+		dbStatus: string,
+	): "paid" | "pending" | "draft" | "overdue" => {
 		switch (dbStatus) {
 			case "draft":
 				return "draft";
@@ -113,7 +119,13 @@ export async function InvoicesData() {
 		<WorkDataView
 			kanban={<InvoicesKanban invoices={invoices} />}
 			section="invoices"
-			table={<InvoicesTable enableVirtualization={true} invoices={invoices} itemsPerPage={50} />}
+			table={
+				<InvoicesTable
+					enableVirtualization={true}
+					invoices={invoices}
+					itemsPerPage={50}
+				/>
+			}
 		/>
 	);
 }

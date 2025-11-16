@@ -22,7 +22,8 @@ export async function OperationalReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Technician Productivity</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor job completion rates, time efficiency, and revenue per technician
+							Monitor job completion rates, time efficiency, and revenue per
+							technician
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function OperationalReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Schedule Efficiency</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze route optimization, appointment adherence, and technician utilization
+							Analyze route optimization, appointment adherence, and technician
+							utilization
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function OperationalReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Job Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track completion times, callback rates, and first-time-fix percentages
+							Track completion times, callback rates, and first-time-fix
+							percentages
 						</p>
 					</div>
 
@@ -52,14 +55,17 @@ export async function OperationalReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Resource Utilization</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Optimize equipment usage, parts consumption, and workforce allocation
+							Optimize equipment usage, parts consumption, and workforce
+							allocation
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Optimize Operations</h3>
-					<p className="mb-6 text-muted-foreground">Identify bottlenecks and improve efficiency</p>
+					<p className="mb-6 text-muted-foreground">
+						Identify bottlenecks and improve efficiency
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

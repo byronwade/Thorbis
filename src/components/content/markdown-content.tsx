@@ -10,7 +10,10 @@ type MarkdownContentProps = {
  * Generic server component for converting markdown into styled HTML prose.
  * Uses the shared knowledge base markdown pipeline for consistent rendering.
  */
-export async function MarkdownContent({ content, className }: MarkdownContentProps) {
+export async function MarkdownContent({
+	content,
+	className,
+}: MarkdownContentProps) {
 	const html = await markdownToHtml(content);
 
 	return (
@@ -27,7 +30,7 @@ export async function MarkdownContent({ content, className }: MarkdownContentPro
 				"prose-img:rounded-lg prose-img:border prose-img:border-border",
 				"prose-table:border-collapse prose-th:bg-muted prose-th:font-semibold",
 				"prose-ol:list-decimal prose-ul:list-disc",
-				className
+				className,
 			)}
 			dangerouslySetInnerHTML={{ __html: html }}
 		/>

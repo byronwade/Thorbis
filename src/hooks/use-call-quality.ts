@@ -80,13 +80,16 @@ async function getQualityMetrics(call: Call): Promise<QualityMetrics | null> {
 			if (report.type === "inbound-rtp" && report.kind === "audio") {
 				const packetsLost = report.packetsLost || 0;
 				const packetsReceived = report.packetsReceived || 1;
-				metrics.packetLoss = (packetsLost / (packetsLost + packetsReceived)) * 100;
+				metrics.packetLoss =
+					(packetsLost / (packetsLost + packetsReceived)) * 100;
 				metrics.jitter = (report.jitter || 0) * 1000; // Convert to ms
 			}
 
 			// Candidate pair stats (RTT)
 			if (report.type === "candidate-pair" && report.state === "succeeded") {
-				metrics.rtt = report.currentRoundTripTime ? report.currentRoundTripTime * 1000 : 0;
+				metrics.rtt = report.currentRoundTripTime
+					? report.currentRoundTripTime * 1000
+					: 0;
 			}
 
 			// Media source stats (audio level)

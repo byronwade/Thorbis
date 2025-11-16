@@ -5,9 +5,21 @@
 
 "use client";
 
-import { AlertCircle, Camera, CheckCircle, FileText, Package, StickyNote, Wrench } from "lucide-react";
+import {
+	AlertCircle,
+	Camera,
+	CheckCircle,
+	FileText,
+	Package,
+	StickyNote,
+	Wrench,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TechJobInfoProps = {
@@ -86,17 +98,30 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Equipment on Site</h4>
-								<p className="text-muted-foreground text-xs">Units to service on this job</p>
+								<p className="text-muted-foreground text-xs">
+									Units to service on this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{equipment.map((eq) => (
-									<div className="flex items-start justify-between rounded-md bg-muted/50 p-2" key={eq.id}>
+									<div
+										className="flex items-start justify-between rounded-md bg-muted/50 p-2"
+										key={eq.id}
+									>
 										<div className="flex flex-col gap-0.5">
-											<span className="font-medium text-sm">{eq.equipment_type || "Equipment"}</span>
-											{eq.model && <span className="text-muted-foreground text-xs">Model: {eq.model}</span>}
+											<span className="font-medium text-sm">
+												{eq.equipment_type || "Equipment"}
+											</span>
+											{eq.model && (
+												<span className="text-muted-foreground text-xs">
+													Model: {eq.model}
+												</span>
+											)}
 											{eq.serial_number && (
-												<span className="text-muted-foreground text-xs">S/N: {eq.serial_number}</span>
+												<span className="text-muted-foreground text-xs">
+													S/N: {eq.serial_number}
+												</span>
 											)}
 										</div>
 										{eq.status && (
@@ -125,12 +150,17 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Materials List</h4>
-								<p className="text-muted-foreground text-xs">Items needed for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Items needed for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-1">
 								{materials.map((material) => (
-									<div className="flex items-center justify-between text-sm" key={material.id}>
+									<div
+										className="flex items-center justify-between text-sm"
+										key={material.id}
+									>
 										<span>{material.material_name}</span>
 										<span className="text-muted-foreground">
 											{material.quantity} {material.unit}
@@ -156,12 +186,17 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Important Notes</h4>
-								<p className="text-muted-foreground text-xs">Critical information for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Critical information for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{importantNotes.map((note) => (
-									<div className="rounded-md border-destructive border-l-2 bg-destructive/10 p-2" key={note.id}>
+									<div
+										className="rounded-md border-destructive border-l-2 bg-destructive/10 p-2"
+										key={note.id}
+									>
 										<p className="text-sm">{note.content}</p>
 										{note.note_type && (
 											<Badge className="mt-1 capitalize" variant="outline">
@@ -201,12 +236,13 @@ export function TechJobInfo({
 			)}
 
 			{/* Completion Status */}
-			{jobEquipment.length > 0 && jobEquipment.every((je) => je.action === "completed") && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 font-medium text-green-700 text-sm transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
-					<CheckCircle className="size-4" />
-					All Tasks Complete
-				</button>
-			)}
+			{jobEquipment.length > 0 &&
+				jobEquipment.every((je) => je.action === "completed") && (
+					<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 font-medium text-green-700 text-sm transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
+						<CheckCircle className="size-4" />
+						All Tasks Complete
+					</button>
+				)}
 		</div>
 	);
 }

@@ -87,7 +87,7 @@ const TableRowInner = function TableRow<T>({
 		(_checked: boolean) => {
 			onSelectItem((item as any).id || "");
 		},
-		[item, onSelectItem]
+		[item, onSelectItem],
 	);
 
 	const handleClick = useCallback(() => {
@@ -111,7 +111,11 @@ const TableRowInner = function TableRow<T>({
 			{columns.map((column) => (
 				<td
 					className={`px-4 py-3 ${column.hideOnMobile ? "hidden md:table-cell" : ""} ${
-						column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : ""
+						column.align === "right"
+							? "text-right"
+							: column.align === "center"
+								? "text-center"
+								: ""
 					}`}
 					key={column.key}
 					style={{ width: column.width }}
@@ -179,7 +183,7 @@ export function OptimizedDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[paginatedData, getItemId]
+		[paginatedData, getItemId],
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -205,8 +209,12 @@ export function OptimizedDataTable<T>({
 		setCurrentPage(1); // Reset to first page on search
 	}, []);
 
-	const allSelected = paginatedData.length > 0 && paginatedData.every((item) => selectedIds.has(getItemId(item)));
-	const _someSelected = paginatedData.some((item) => selectedIds.has(getItemId(item)));
+	const allSelected =
+		paginatedData.length > 0 &&
+		paginatedData.every((item) => selectedIds.has(getItemId(item)));
+	const _someSelected = paginatedData.some((item) =>
+		selectedIds.has(getItemId(item)),
+	);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -265,7 +273,11 @@ export function OptimizedDataTable<T>({
 							<tr>
 								{enableSelection && (
 									<th className="w-12 px-4 py-3">
-										<Checkbox aria-label="Select all" checked={allSelected} onCheckedChange={handleSelectAll} />
+										<Checkbox
+											aria-label="Select all"
+											checked={allSelected}
+											onCheckedChange={handleSelectAll}
+										/>
 									</th>
 								)}
 								{columns.map((column) => (
@@ -284,7 +296,10 @@ export function OptimizedDataTable<T>({
 						<tbody className="divide-y divide-border/60">
 							{paginatedData.length === 0 ? (
 								<tr>
-									<td className="py-12 text-center" colSpan={columns.length + (enableSelection ? 1 : 0)}>
+									<td
+										className="py-12 text-center"
+										colSpan={columns.length + (enableSelection ? 1 : 0)}
+									>
 										<div className="flex flex-col items-center gap-4">
 											{emptyIcon}
 											<p className="text-muted-foreground">{emptyMessage}</p>
@@ -321,7 +336,8 @@ export function OptimizedDataTable<T>({
 				<div className="flex items-center justify-between">
 					<div className="text-muted-foreground text-sm">
 						Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-						{Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} results
+						{Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
+						{filteredData.length} results
 					</div>
 					<div className="flex items-center gap-2">
 						<Button
@@ -353,4 +369,6 @@ export function OptimizedDataTable<T>({
 }
 
 // Export memoized version for when parent props don't change often
-export const MemoizedOptimizedDataTable = memo(OptimizedDataTable) as typeof OptimizedDataTable;
+export const MemoizedOptimizedDataTable = memo(
+	OptimizedDataTable,
+) as typeof OptimizedDataTable;

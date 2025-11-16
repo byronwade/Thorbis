@@ -22,7 +22,13 @@ import {
 	XAxis,
 	YAxis,
 } from "@/components/lazy/chart";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient } from "@/lib/supabase/client";
 
@@ -94,7 +100,9 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
 
 				if (comm.type === "phone") {
 					entry.calls += 1;
-					const minutes = comm.duration_seconds ? Math.ceil(comm.duration_seconds / 60) : 0;
+					const minutes = comm.duration_seconds
+						? Math.ceil(comm.duration_seconds / 60)
+						: 0;
 					entry.callMinutes += minutes;
 					entry.cost += minutes * 0.012;
 				} else if (comm.type === "sms" && comm.direction === "outbound") {
@@ -128,7 +136,7 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
 
 			// Convert to array and sort by date
 			const chartData = Array.from(dateMap.values()).sort(
-				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
 			);
 
 			setData(chartData);
@@ -160,9 +168,14 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
 				<div className="flex items-center justify-between">
 					<div>
 						<CardTitle>Usage Trends</CardTitle>
-						<CardDescription>Daily usage over selected time period</CardDescription>
+						<CardDescription>
+							Daily usage over selected time period
+						</CardDescription>
 					</div>
-					<Tabs onValueChange={(v) => setTimeRange(v as TimeRange)} value={timeRange}>
+					<Tabs
+						onValueChange={(v) => setTimeRange(v as TimeRange)}
+						value={timeRange}
+					>
 						<TabsList>
 							<TabsTrigger value="7d">7 Days</TabsTrigger>
 							<TabsTrigger value="30d">30 Days</TabsTrigger>
@@ -192,9 +205,27 @@ export function UsageTrendsChart({ companyId }: { companyId: string }) {
 									}}
 								/>
 								<Legend />
-								<Line dataKey="calls" name="Calls" stroke="#3b82f6" strokeWidth={2} type="monotone" />
-								<Line dataKey="sms" name="SMS" stroke="#10b981" strokeWidth={2} type="monotone" />
-								<Line dataKey="voicemails" name="Voicemails" stroke="#8b5cf6" strokeWidth={2} type="monotone" />
+								<Line
+									dataKey="calls"
+									name="Calls"
+									stroke="#3b82f6"
+									strokeWidth={2}
+									type="monotone"
+								/>
+								<Line
+									dataKey="sms"
+									name="SMS"
+									stroke="#10b981"
+									strokeWidth={2}
+									type="monotone"
+								/>
+								<Line
+									dataKey="voicemails"
+									name="Voicemails"
+									stroke="#8b5cf6"
+									strokeWidth={2}
+									type="monotone"
+								/>
 							</LazyLineChart>
 						</ResponsiveContainer>
 					</TabsContent>

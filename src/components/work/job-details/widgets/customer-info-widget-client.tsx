@@ -6,7 +6,14 @@
  * Adds interactive "Change Customer" functionality
  */
 
-import { Building2, ExternalLink, Mail, Phone, RefreshCw, User } from "lucide-react";
+import {
+	Building2,
+	ExternalLink,
+	Mail,
+	Phone,
+	RefreshCw,
+	User,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -79,7 +86,11 @@ const mockCustomers: CustomerData[] = [
 	},
 ];
 
-export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: CustomerInfoWidgetClientProps) {
+export function CustomerInfoWidgetClient({
+	customer,
+	jobId,
+	onCustomerChange,
+}: CustomerInfoWidgetClientProps) {
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isChanging, setIsChanging] = useState(false);
@@ -89,7 +100,7 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 			c.id !== customer.id &&
 			(c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				c.company?.toLowerCase().includes(searchQuery.toLowerCase()))
+				c.company?.toLowerCase().includes(searchQuery.toLowerCase())),
 	);
 
 	async function handleCustomerChange(customerId: string) {
@@ -131,7 +142,10 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 				<Mail className="mt-0.5 size-4 text-muted-foreground" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Email</div>
-					<Link className="text-sm hover:underline" href={`mailto:${customer.email}`}>
+					<Link
+						className="text-sm hover:underline"
+						href={`mailto:${customer.email}`}
+					>
 						{customer.email}
 					</Link>
 				</div>
@@ -143,7 +157,10 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 						<Phone className="mt-0.5 size-4 text-muted-foreground" />
 						<div className="flex-1">
 							<div className="text-muted-foreground text-xs">Phone</div>
-							<Link className="text-sm hover:underline" href={`tel:${customer.phone}`}>
+							<Link
+								className="text-sm hover:underline"
+								href={`tel:${customer.phone}`}
+							>
 								{customer.phone}
 							</Link>
 						</div>
@@ -185,7 +202,9 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 					<DialogContent className="max-w-2xl">
 						<DialogHeader>
 							<DialogTitle>Change Customer</DialogTitle>
-							<DialogDescription>Search and select a different customer for this job</DialogDescription>
+							<DialogDescription>
+								Search and select a different customer for this job
+							</DialogDescription>
 						</DialogHeader>
 
 						<div className="space-y-4">
@@ -202,7 +221,9 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 							<ScrollArea className="h-[400px] rounded-md border p-4">
 								<div className="space-y-2">
 									{filteredCustomers.length === 0 ? (
-										<div className="py-8 text-center text-muted-foreground text-sm">No customers found</div>
+										<div className="py-8 text-center text-muted-foreground text-sm">
+											No customers found
+										</div>
 									) : (
 										filteredCustomers.map((c) => (
 											<button
@@ -221,16 +242,22 @@ export function CustomerInfoWidgetClient({ customer, jobId, onCustomerChange }: 
 														{c.company ? (
 															<div className="flex items-center gap-2">
 																<Building2 className="size-4 text-muted-foreground" />
-																<span className="text-muted-foreground text-sm">{c.company}</span>
+																<span className="text-muted-foreground text-sm">
+																	{c.company}
+																</span>
 															</div>
 														) : null}
 														<div className="flex items-center gap-2">
 															<Mail className="size-4 text-muted-foreground" />
-															<span className="text-muted-foreground text-sm">{c.email}</span>
+															<span className="text-muted-foreground text-sm">
+																{c.email}
+															</span>
 														</div>
 														<div className="flex items-center gap-2">
 															<Phone className="size-4 text-muted-foreground" />
-															<span className="text-muted-foreground text-sm">{c.phone}</span>
+															<span className="text-muted-foreground text-sm">
+																{c.phone}
+															</span>
 														</div>
 													</div>
 													<Button disabled={isChanging} size="sm" type="button">

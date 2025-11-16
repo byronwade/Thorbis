@@ -37,9 +37,15 @@ export function DataTablePageHeader({
 	size = "default",
 	padding = "default",
 }: DataTablePageHeaderProps) {
-	const paddingClass = padding === "large" ? "px-6 py-8" : padding === "none" ? "" : "px-4 py-3 md:py-6";
+	const paddingClass =
+		padding === "large"
+			? "px-6 py-8"
+			: padding === "none"
+				? ""
+				: "px-4 py-3 md:py-6";
 
-	const titleSize = size === "large" ? "text-3xl font-bold" : "text-2xl font-semibold";
+	const titleSize =
+		size === "large" ? "text-3xl font-bold" : "text-2xl font-semibold";
 
 	return (
 		<div className={`border-b bg-background shadow-sm ${paddingClass}`}>
@@ -47,10 +53,14 @@ export function DataTablePageHeader({
 				{/* Hide title/description on mobile to avoid duplication with AppToolbar */}
 				<div className="hidden space-y-1 md:block">
 					<h1 className={`tracking-tight ${titleSize}`}>{title}</h1>
-					{description && <p className="text-muted-foreground text-sm">{description}</p>}
+					{description && (
+						<p className="text-muted-foreground text-sm">{description}</p>
+					)}
 				</div>
 				{actions && (
-					<div className="flex w-full shrink-0 flex-wrap items-center gap-2 md:ml-auto md:w-auto">{actions}</div>
+					<div className="flex w-full shrink-0 flex-wrap items-center gap-2 md:ml-auto md:w-auto">
+						{actions}
+					</div>
 				)}
 			</div>
 

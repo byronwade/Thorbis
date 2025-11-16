@@ -42,7 +42,14 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { getWebRTCCredentials } from "@/actions/telnyx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -51,8 +58,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useDialerCustomers } from "@/hooks/use-dialer-customers";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
@@ -79,7 +96,11 @@ type PhoneDropdownProps = {
 	incomingCallsCount?: number;
 };
 
-export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCount }: PhoneDropdownProps) {
+export function PhoneDropdown({
+	companyId,
+	companyPhones = [],
+	incomingCallsCount,
+}: PhoneDropdownProps) {
 	const { toast } = useToast();
 	const [mounted, setMounted] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -92,7 +113,9 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 	// Dialer state
 	const [toNumber, setToNumber] = useState("");
 	const [fromNumber, setFromNumber] = useState(companyPhones[0]?.number || "");
-	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+		null,
+	);
 	const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
 
 	// WebRTC state for browser calling
@@ -138,8 +161,10 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 	// Prevents creating connections on every page load (was hitting Telnyx 5-connection limit)
 	// This was causing 2-8 second timeouts on EVERY page!
 	const webrtc = useTelnyxWebRTC({
-		username: open && webrtcCredentials?.username ? webrtcCredentials.username : "",
-		password: open && webrtcCredentials?.password ? webrtcCredentials.password : "",
+		username:
+			open && webrtcCredentials?.username ? webrtcCredentials.username : "",
+		password:
+			open && webrtcCredentials?.password ? webrtcCredentials.password : "",
 		autoConnect: false,
 		disabled: !open, // Don't initialize WebRTC unless dropdown is open
 		debug: true,
@@ -149,11 +174,21 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 
 	// Manually connect when credentials become available AND dropdown is open
 	useEffect(() => {
-		if (open && webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
+		if (
+			open &&
+			webrtcCredentials &&
+			!webrtc.isConnected &&
+			!webrtc.isConnecting
+		) {
 			webrtc.connect().catch((error) => {
 				// Handle 403 account limit errors gracefully
-				if (error?.message?.includes("403") || error?.message?.includes("limit")) {
-					console.warn("[WebRTC] Account connection limit reached. Close other connections.");
+				if (
+					error?.message?.includes("403") ||
+					error?.message?.includes("limit")
+				) {
+					console.warn(
+						"[WebRTC] Account connection limit reached. Close other connections.",
+					);
 				}
 			});
 		}
@@ -196,7 +231,9 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 	// Handle call initiation using WebRTC for browser audio
 	const handleStartCall = useCallback(async () => {
 		if (!companyId) {
-			toast.error("No company selected. Please select a company to make calls.");
+			toast.error(
+				"No company selected. Please select a company to make calls.",
+			);
 			return;
 		}
 
@@ -248,7 +285,9 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 				setSelectedCustomer(null);
 			} catch (error) {
 				if (error instanceof Error && error.message.includes("permission")) {
-					toast.error("Microphone access denied. Please allow microphone access to make calls.");
+					toast.error(
+						"Microphone access denied. Please allow microphone access to make calls.",
+					);
 				} else {
 					toast.error("Failed to initiate call. Please try again.");
 				}
@@ -256,12 +295,24 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 		} else {
 			toast.error("Your browser does not support audio calling.");
 		}
-	}, [toNumber, fromNumber, companyId, selectedCustomer, isPending, toast, webrtc]);
+	}, [
+		toNumber,
+		fromNumber,
+		companyId,
+		selectedCustomer,
+		isPending,
+		toast,
+		webrtc,
+	]);
 
 	// Calculate values needed for rendering (before any returns)
 	const hasIncomingCalls = displayCount > 0;
 	const canCall = Boolean(
-		toNumber.trim() && fromNumber && companyPhones.length > 0 && webrtc.isConnected && !isLoadingWebRTC
+		toNumber.trim() &&
+			fromNumber &&
+			companyPhones.length > 0 &&
+			webrtc.isConnected &&
+			!isLoadingWebRTC,
 	);
 
 	// Debug button state - MUST be before any conditional returns
@@ -299,7 +350,11 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 					title={hasIncomingCalls ? "Incoming Call" : "Phone Dialer"}
 					type="button"
 				>
-					{hasIncomingCalls ? <PhoneIncoming className="size-4" /> : <Phone className="size-4" />}
+					{hasIncomingCalls ? (
+						<PhoneIncoming className="size-4" />
+					) : (
+						<Phone className="size-4" />
+					)}
 					<span className="sr-only">Phone Dialer</span>
 					{hasIncomingCalls && (
 						<Badge
@@ -319,7 +374,9 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 							<PhoneCall className="size-5 text-primary" />
 							<div>
 								<h3 className="font-semibold text-sm">Make a Call</h3>
-								<p className="text-muted-foreground text-xs">Browser audio calling</p>
+								<p className="text-muted-foreground text-xs">
+									Browser audio calling
+								</p>
 							</div>
 						</div>
 						{/* WebRTC Status Indicator */}
@@ -329,24 +386,33 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 							) : webrtc.isConnected ? (
 								<>
 									<Mic className="size-3 text-green-600 dark:text-green-400" />
-									<span className="font-medium text-green-600 text-xs dark:text-green-400">Ready</span>
+									<span className="font-medium text-green-600 text-xs dark:text-green-400">
+										Ready
+									</span>
 								</>
 							) : webrtc.connectionError ? (
 								<>
 									<AlertCircle className="size-3 text-red-600 dark:text-red-400" />
-									<span className="font-medium text-red-600 text-xs dark:text-red-400" title={webrtc.connectionError}>
+									<span
+										className="font-medium text-red-600 text-xs dark:text-red-400"
+										title={webrtc.connectionError}
+									>
 										Error
 									</span>
 								</>
 							) : webrtc.isConnecting ? (
 								<>
 									<Loader2 className="size-3 animate-spin text-yellow-600 dark:text-yellow-400" />
-									<span className="font-medium text-xs text-yellow-600 dark:text-yellow-400">Connecting...</span>
+									<span className="font-medium text-xs text-yellow-600 dark:text-yellow-400">
+										Connecting...
+									</span>
 								</>
 							) : (
 								<>
 									<WifiOff className="size-3 text-gray-600 dark:text-gray-400" />
-									<span className="font-medium text-gray-600 text-xs dark:text-gray-400">Disconnected</span>
+									<span className="font-medium text-gray-600 text-xs dark:text-gray-400">
+										Disconnected
+									</span>
 								</>
 							)}
 						</div>
@@ -359,8 +425,12 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 								<div className="flex items-center gap-2">
 									<PhoneIncoming className="size-4 animate-pulse text-destructive" />
 									<div className="flex-1">
-										<p className="font-semibold text-destructive text-sm">Incoming Call</p>
-										<p className="text-destructive/80 text-xs">{caller?.name || caller?.number || "Unknown"}</p>
+										<p className="font-semibold text-destructive text-sm">
+											Incoming Call
+										</p>
+										<p className="text-destructive/80 text-xs">
+											{caller?.name || caller?.number || "Unknown"}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -371,7 +441,10 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 					{/* Customer Search */}
 					<div className="space-y-2">
 						<Label className="text-xs">Customer (Optional)</Label>
-						<Popover onOpenChange={setCustomerSearchOpen} open={customerSearchOpen}>
+						<Popover
+							onOpenChange={setCustomerSearchOpen}
+							open={customerSearchOpen}
+						>
 							<PopoverTrigger asChild>
 								<Button
 									className="w-full justify-start text-left font-normal"
@@ -403,9 +476,13 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 															{customer.first_name} {customer.last_name}
 														</span>
 														{customer.company_name && (
-															<span className="text-muted-foreground text-xs">{customer.company_name}</span>
+															<span className="text-muted-foreground text-xs">
+																{customer.company_name}
+															</span>
 														)}
-														<span className="text-muted-foreground text-xs">{customer.phone || customer.email}</span>
+														<span className="text-muted-foreground text-xs">
+															{customer.phone || customer.email}
+														</span>
 													</div>
 												</CommandItem>
 											))}
@@ -415,7 +492,12 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 							</PopoverContent>
 						</Popover>
 						{selectedCustomer && (
-							<Button className="h-6 text-xs" onClick={() => handleCustomerSelect(null)} size="sm" variant="ghost">
+							<Button
+								className="h-6 text-xs"
+								onClick={() => handleCustomerSelect(null)}
+								size="sm"
+								variant="ghost"
+							>
 								Clear selection
 							</Button>
 						)}
@@ -440,7 +522,11 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 						<Label className="text-xs" htmlFor="from-number">
 							From (Company Line)
 						</Label>
-						<Select disabled={companyPhones.length === 0 || isPending} onValueChange={setFromNumber} value={fromNumber}>
+						<Select
+							disabled={companyPhones.length === 0 || isPending}
+							onValueChange={setFromNumber}
+							value={fromNumber}
+						>
 							<SelectTrigger id="from-number">
 								<SelectValue placeholder="Select a company line" />
 							</SelectTrigger>
@@ -453,12 +539,18 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 							</SelectContent>
 						</Select>
 						{companyPhones.length === 0 && (
-							<p className="text-muted-foreground text-xs">No company phone numbers configured</p>
+							<p className="text-muted-foreground text-xs">
+								No company phone numbers configured
+							</p>
 						)}
 					</div>
 
 					{/* Call Button */}
-					<Button className="w-full" disabled={!canCall || isPending} onClick={handleStartCall}>
+					<Button
+						className="w-full"
+						disabled={!canCall || isPending}
+						onClick={handleStartCall}
+					>
 						{isPending ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />

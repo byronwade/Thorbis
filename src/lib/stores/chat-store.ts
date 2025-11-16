@@ -130,7 +130,10 @@ export const useChatStore = create<ChatStore>()(
 				state.chats = uniqueChats;
 
 				// If active chat was removed due to duplication, set to first chat or null
-				if (state.activeChatId && !uniqueChats.some((chat) => chat.id === state.activeChatId)) {
+				if (
+					state.activeChatId &&
+					!uniqueChats.some((chat) => chat.id === state.activeChatId)
+				) {
 					state.activeChatId = uniqueChats[0]?.id ?? null;
 				}
 			});
@@ -207,13 +210,14 @@ export const useChatStore = create<ChatStore>()(
 		reset: () => {
 			set(initialState);
 		},
-	}))
+	})),
 );
 
 // Selectors
 export const chatSelectors = {
 	chats: (state: ChatStore) => state.chats,
-	activeChat: (state: ChatStore) => state.chats.find((c) => c.id === state.activeChatId) ?? null,
+	activeChat: (state: ChatStore) =>
+		state.chats.find((c) => c.id === state.activeChatId) ?? null,
 	activeChatId: (state: ChatStore) => state.activeChatId,
 	messages: (state: ChatStore) => {
 		const activeChat = state.chats.find((c) => c.id === state.activeChatId);

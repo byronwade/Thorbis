@@ -21,7 +21,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -48,7 +54,12 @@ type PaymentFormProps = {
 	preselectedCustomerId?: string;
 };
 
-export function PaymentForm({ customers, invoices, preselectedInvoiceId, preselectedCustomerId }: PaymentFormProps) {
+export function PaymentForm({
+	customers,
+	invoices,
+	preselectedInvoiceId,
+	preselectedCustomerId,
+}: PaymentFormProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const formRef = useRef<HTMLFormElement>(null);
@@ -56,12 +67,12 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | undefined>(
-		preselectedInvoiceId || searchParams?.get("invoiceId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedInvoiceId, setSelectedInvoiceId] = useState<
+		string | undefined
+	>(preselectedInvoiceId || searchParams?.get("invoiceId") || undefined);
 	const [paymentMethod, setPaymentMethod] = useState("stripe");
 	const [paymentAmount, setPaymentAmount] = useState(0);
 
@@ -69,7 +80,9 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 	const selectedInvoice = invoices.find((inv) => inv.id === selectedInvoiceId);
 
 	// Calculate amount due
-	const amountDue = selectedInvoice ? (selectedInvoice.total_amount - selectedInvoice.paid_amount) / 100 : 0;
+	const amountDue = selectedInvoice
+		? (selectedInvoice.total_amount - selectedInvoice.paid_amount) / 100
+		: 0;
 
 	// Filter invoices by customer
 	const customerInvoices = selectedCustomerId
@@ -145,14 +158,20 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -164,7 +183,12 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 							<Label htmlFor="invoice-select">
 								Invoice <span className="text-destructive">*</span>
 							</Label>
-							<Select name="invoiceId" onValueChange={setSelectedInvoiceId} required value={selectedInvoiceId}>
+							<Select
+								name="invoiceId"
+								onValueChange={setSelectedInvoiceId}
+								required
+								value={selectedInvoiceId}
+							>
 								<SelectTrigger id="invoice-select">
 									<SelectValue placeholder="Select invoice" />
 								</SelectTrigger>
@@ -173,7 +197,11 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 										.filter((inv) => inv.status !== "paid")
 										.map((invoice) => (
 											<SelectItem key={invoice.id} value={invoice.id}>
-												{invoice.invoice_number} - ${((invoice.total_amount - invoice.paid_amount) / 100).toFixed(2)}{" "}
+												{invoice.invoice_number} - $
+												{(
+													(invoice.total_amount - invoice.paid_amount) /
+													100
+												).toFixed(2)}{" "}
 												due
 											</SelectItem>
 										))}
@@ -186,11 +214,15 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 						<div className="rounded-lg border bg-blue-50/50 p-4">
 							<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">Invoice Total:</span>
-								<span className="font-medium">${(selectedInvoice.total_amount / 100).toFixed(2)}</span>
+								<span className="font-medium">
+									${(selectedInvoice.total_amount / 100).toFixed(2)}
+								</span>
 							</div>
 							<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">Already Paid:</span>
-								<span className="font-medium">${(selectedInvoice.paid_amount / 100).toFixed(2)}</span>
+								<span className="font-medium">
+									${(selectedInvoice.paid_amount / 100).toFixed(2)}
+								</span>
 							</div>
 							<div className="flex justify-between border-t pt-2 font-bold">
 								<span>Amount Due:</span>
@@ -218,7 +250,9 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 							id="amount"
 							min="0.01"
 							name="amount"
-							onChange={(e) => setPaymentAmount(Number.parseFloat(e.target.value) || 0)}
+							onChange={(e) =>
+								setPaymentAmount(Number.parseFloat(e.target.value) || 0)
+							}
 							placeholder="0.00"
 							required
 							step="0.01"
@@ -227,7 +261,8 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 						/>
 						{selectedInvoice && paymentAmount > amountDue && (
 							<p className="text-amber-600 text-sm">
-								⚠️ Amount exceeds balance due by ${(paymentAmount - amountDue).toFixed(2)}
+								⚠️ Amount exceeds balance due by $
+								{(paymentAmount - amountDue).toFixed(2)}
 							</p>
 						)}
 					</div>
@@ -257,12 +292,19 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 						<Label htmlFor="paymentMethod">
 							Method <span className="text-destructive">*</span>
 						</Label>
-						<Select name="paymentMethod" onValueChange={setPaymentMethod} required value={paymentMethod}>
+						<Select
+							name="paymentMethod"
+							onValueChange={setPaymentMethod}
+							required
+							value={paymentMethod}
+						>
 							<SelectTrigger id="paymentMethod">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="stripe">Credit/Debit Card (Stripe)</SelectItem>
+								<SelectItem value="stripe">
+									Credit/Debit Card (Stripe)
+								</SelectItem>
 								<SelectItem value="cash">Cash</SelectItem>
 								<SelectItem value="check">Check</SelectItem>
 								<SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -274,20 +316,34 @@ export function PaymentForm({ customers, invoices, preselectedInvoiceId, presele
 					{paymentMethod === "check" && (
 						<div className="space-y-2">
 							<Label htmlFor="checkNumber">Check Number</Label>
-							<Input id="checkNumber" name="checkNumber" placeholder="e.g., 1234" />
+							<Input
+								id="checkNumber"
+								name="checkNumber"
+								placeholder="e.g., 1234"
+							/>
 						</div>
 					)}
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Notes (Optional)</Label>
-						<Textarea id="notes" name="notes" placeholder="Reference number, transaction ID, etc." rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Reference number, transaction ID, etc."
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading || !selectedInvoiceId} type="submit">

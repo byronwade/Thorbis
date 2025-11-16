@@ -15,7 +15,14 @@
 
 "use client";
 
-import { Check, ChevronsUpDown, Loader2, UserPlus, Users, X } from "lucide-react";
+import {
+	Check,
+	ChevronsUpDown,
+	Loader2,
+	UserPlus,
+	Users,
+	X,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -28,8 +35,19 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "@/components/ui/command";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type TeamMemberSelectorProps = {
@@ -51,7 +69,10 @@ type TeamMember = {
 };
 
 // eslint-disable-next-line complexity
-export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProps) {
+export function TeamMemberSelector({
+	jobId,
+	isEditMode,
+}: TeamMemberSelectorProps) {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [availableMembers, setAvailableMembers] = useState<TeamMember[]>([]);
@@ -105,7 +126,8 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 	const getFullName = (firstName: string | null, lastName: string | null) =>
 		`${firstName || ""} ${lastName || ""}`.trim() || "Unknown";
 
-	const isAssigned = (teamMemberId: string) => assignments.some((a) => a.teamMemberId === teamMemberId);
+	const isAssigned = (teamMemberId: string) =>
+		assignments.some((a) => a.teamMemberId === teamMemberId);
 
 	// Handle assignment
 	const handleAssign = async (teamMemberId: string) => {
@@ -199,7 +221,10 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 		const MAX_VISIBLE_AVATARS = 5;
 		const visibleAssignments = assignments.slice(0, MAX_VISIBLE_AVATARS);
-		const remainingCount = Math.max(0, assignments.length - MAX_VISIBLE_AVATARS);
+		const remainingCount = Math.max(
+			0,
+			assignments.length - MAX_VISIBLE_AVATARS,
+		);
 
 		return (
 			<div className="space-y-2">
@@ -210,14 +235,23 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 							<Avatar
 								className="h-8 w-8 border-2 border-background ring-1 ring-muted transition-transform hover:z-10 hover:scale-110"
 								key={assignment.id}
-								title={getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+								title={getFullName(
+									assignment.teamMember.user.firstName,
+									assignment.teamMember.user.lastName,
+								)}
 							>
 								<AvatarImage
-									alt={getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									alt={getFullName(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 									src={assignment.teamMember.user.avatarUrl || undefined}
 								/>
 								<AvatarFallback className="text-xs">
-									{getInitials(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getInitials(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</AvatarFallback>
 							</Avatar>
 						))}
@@ -248,18 +282,30 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 				{showAll && (
 					<div className="flex flex-wrap gap-2">
 						{assignments.map((assignment) => (
-							<div className="flex items-center gap-2 rounded-md border bg-muted/30 px-2 py-1" key={assignment.id}>
+							<div
+								className="flex items-center gap-2 rounded-md border bg-muted/30 px-2 py-1"
+								key={assignment.id}
+							>
 								<Avatar className="h-6 w-6">
 									<AvatarImage
-										alt={getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+										alt={getFullName(
+											assignment.teamMember.user.firstName,
+											assignment.teamMember.user.lastName,
+										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
-										{getInitials(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+										{getInitials(
+											assignment.teamMember.user.firstName,
+											assignment.teamMember.user.lastName,
+										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
-									{getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getFullName(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</span>
 								{assignment.role === "primary" && (
 									<Badge className="text-xs" variant="secondary">
@@ -276,7 +322,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 	// Edit mode: Show selector with assigned members (compact for many members)
 	const MAX_VISIBLE_IN_EDIT = 10;
-	const visibleInEdit = showAllEdit ? assignments : assignments.slice(0, MAX_VISIBLE_IN_EDIT);
+	const visibleInEdit = showAllEdit
+		? assignments
+		: assignments.slice(0, MAX_VISIBLE_IN_EDIT);
 	const remainingInEdit = Math.max(0, assignments.length - MAX_VISIBLE_IN_EDIT);
 
 	return (
@@ -309,15 +357,24 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 							>
 								<Avatar className="h-6 w-6">
 									<AvatarImage
-										alt={getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+										alt={getFullName(
+											assignment.teamMember.user.firstName,
+											assignment.teamMember.user.lastName,
+										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
-										{getInitials(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+										{getInitials(
+											assignment.teamMember.user.firstName,
+											assignment.teamMember.user.lastName,
+										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
-									{getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getFullName(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</span>
 								{assignment.role === "primary" && (
 									<Badge className="text-xs" variant="secondary">
@@ -350,7 +407,13 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 			{/* Add Team Member Popover */}
 			<Popover onOpenChange={setOpen} open={open}>
 				<PopoverTrigger asChild>
-					<Button aria-expanded={open} className="w-fit gap-2" role="combobox" size="sm" variant="outline">
+					<Button
+						aria-expanded={open}
+						className="w-fit gap-2"
+						role="combobox"
+						size="sm"
+						variant="outline"
+					>
 						<UserPlus className="h-4 w-4" />
 						<span>Add Team Member</span>
 						<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -361,7 +424,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 						<CommandInput placeholder="Search team members..." />
 						<CommandList className="max-h-[400px]">
 							<CommandEmpty>No team members found.</CommandEmpty>
-							<CommandGroup heading={`Available Team Members (${availableMembers.length})`}>
+							<CommandGroup
+								heading={`Available Team Members (${availableMembers.length})`}
+							>
 								{availableMembers.map((member) => {
 									const assigned = isAssigned(member.id);
 									const processing = processingIds.has(member.id);
@@ -378,7 +443,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 											<div
 												className={cn(
 													"flex h-4 w-4 items-center justify-center rounded-sm border",
-													assigned ? "border-primary bg-primary text-primary-foreground" : "border-muted-foreground"
+													assigned
+														? "border-primary bg-primary text-primary-foreground"
+														: "border-muted-foreground",
 												)}
 											>
 												{assigned && <Check className="h-3 w-3" />}
@@ -387,22 +454,39 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 											{/* Avatar */}
 											<Avatar className="h-6 w-6">
 												<AvatarImage
-													alt={getFullName(member.user.firstName, member.user.lastName)}
+													alt={getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 													src={member.user.avatarUrl || undefined}
 												/>
 												<AvatarFallback className="text-[10px]">
-													{getInitials(member.user.firstName, member.user.lastName)}
+													{getInitials(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 												</AvatarFallback>
 											</Avatar>
 
 											{/* Name and Title */}
 											<div className="flex flex-1 flex-col">
-												<span className="text-sm">{getFullName(member.user.firstName, member.user.lastName)}</span>
-												{member.jobTitle && <span className="text-muted-foreground text-xs">{member.jobTitle}</span>}
+												<span className="text-sm">
+													{getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
+												</span>
+												{member.jobTitle && (
+													<span className="text-muted-foreground text-xs">
+														{member.jobTitle}
+													</span>
+												)}
 											</div>
 
 											{/* Loading spinner */}
-											{processing && <Loader2 className="h-4 w-4 animate-spin" />}
+											{processing && (
+												<Loader2 className="h-4 w-4 animate-spin" />
+											)}
 										</CommandItem>
 									);
 								})}

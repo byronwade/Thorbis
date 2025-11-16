@@ -7,10 +7,22 @@
  * - ISR with 1 hour revalidation
  */
 
-import { BarChart, Calculator, ChevronRight, DollarSign, TrendingUp } from "lucide-react";
+import {
+	BarChart,
+	Calculator,
+	ChevronRight,
+	DollarSign,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 type CalculatorTool = {
 	title: string;
@@ -26,7 +38,8 @@ type CalculatorTool = {
 const calculators: CalculatorTool[] = [
 	{
 		title: "Hourly Rate Calculator",
-		description: "Comprehensive calculator to determine your honest hourly rate for trades businesses",
+		description:
+			"Comprehensive calculator to determine your honest hourly rate for trades businesses",
 		detailedDescription:
 			"Calculate your honest hourly rate by factoring in all expenses, capacity constraints, and profit margins. Includes work schedule, operating expenses, growth investments, and daily break-even analysis. Perfect for plumbers, HVAC technicians, electricians, and all service trades.",
 		href: "/tools/calculators/hourly-rate",
@@ -43,7 +56,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Job Pricing Calculator",
-		description: "Price jobs accurately with material, labor, and overhead costs",
+		description:
+			"Price jobs accurately with material, labor, and overhead costs",
 		detailedDescription:
 			"Build accurate job quotes by calculating material costs, labor hours, equipment usage, and overhead. Ensure profitable pricing on every project.",
 		href: "/tools/calculators/job-pricing",
@@ -59,7 +73,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Profit & Loss Calculator",
-		description: "Track revenue, expenses, and calculate your net profit margins",
+		description:
+			"Track revenue, expenses, and calculate your net profit margins",
 		detailedDescription:
 			"Monitor your business financial health with detailed P&L tracking. Calculate gross profit, operating profit, and net profit margins to understand your bottom line.",
 		href: "/tools/calculators/profit-loss",
@@ -103,7 +118,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Industry Pricing Standards",
-		description: "Compare your pricing against industry benchmarks and averages",
+		description:
+			"Compare your pricing against industry benchmarks and averages",
 		detailedDescription:
 			"Access industry-specific pricing data and benchmarks. Compare your rates to regional and national averages to ensure competitive pricing.",
 		href: "/tools/calculators/industry-pricing",
@@ -128,7 +144,9 @@ export default function CalculatorsPage() {
 						<Calculator className="size-6 text-primary" />
 					</div>
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">Business Calculators</h1>
+						<h1 className="font-bold text-4xl tracking-tight">
+							Business Calculators
+						</h1>
 						<p className="mt-1 text-lg text-muted-foreground">
 							Essential tools for pricing, profit analysis, and growth planning
 						</p>
@@ -136,9 +154,10 @@ export default function CalculatorsPage() {
 				</div>
 
 				<p className="max-w-3xl text-muted-foreground">
-					Make data-driven decisions with our suite of business calculators. From pricing jobs and calculating hourly
-					rates to analyzing profit margins and planning commissions, these tools help you run a more profitable trade
-					business.
+					Make data-driven decisions with our suite of business calculators.
+					From pricing jobs and calculating hourly rates to analyzing profit
+					margins and planning commissions, these tools help you run a more
+					profitable trade business.
 				</p>
 			</div>
 
@@ -149,7 +168,9 @@ export default function CalculatorsPage() {
 						<TrendingUp className="size-5" />
 						Why Use Business Calculators?
 					</CardTitle>
-					<CardDescription className="text-base">Professional calculators help you:</CardDescription>
+					<CardDescription className="text-base">
+						Professional calculators help you:
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<ul className="grid gap-2 sm:grid-cols-2">
@@ -175,7 +196,9 @@ export default function CalculatorsPage() {
 
 			{/* Calculator Tools Grid */}
 			<div className="space-y-4">
-				<h2 className="font-semibold text-2xl tracking-tight">Available Calculators</h2>
+				<h2 className="font-semibold text-2xl tracking-tight">
+					Available Calculators
+				</h2>
 				<div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
 					{calculators.map((calculator) => {
 						const Icon = calculator.icon;
@@ -212,12 +235,19 @@ export default function CalculatorsPage() {
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-2">
-											<p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Key Features:</p>
+											<p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+												Key Features:
+											</p>
 											<ul className="space-y-1">
 												{calculator.features.slice(0, 3).map((feature, idx) => (
-													<li className="flex items-start gap-2 text-sm" key={idx}>
+													<li
+														className="flex items-start gap-2 text-sm"
+														key={idx}
+													>
 														<span className="mt-0.5 text-primary">•</span>
-														<span className="text-muted-foreground">{feature}</span>
+														<span className="text-muted-foreground">
+															{feature}
+														</span>
 													</li>
 												))}
 											</ul>
@@ -238,7 +268,8 @@ export default function CalculatorsPage() {
 						Need Help Using These Calculators?
 					</CardTitle>
 					<CardDescription>
-						Our team can help you understand your numbers and make the right pricing decisions for your business
+						Our team can help you understand your numbers and make the right
+						pricing decisions for your business
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">

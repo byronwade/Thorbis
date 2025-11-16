@@ -19,7 +19,8 @@ import { useNetworkStatus } from "@/lib/offline/network-status";
 import { cn } from "@/lib/utils";
 
 export function OfflineIndicator() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } =
+		useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -44,7 +45,9 @@ export function OfflineIndicator() {
 				<WifiOff className="size-4" />
 				<span className="hidden sm:inline">Offline Mode</span>
 				{pendingOperations > 0 && (
-					<span className="rounded-full bg-warning/20 px-2 py-0.5 font-medium text-xs">{pendingOperations}</span>
+					<span className="rounded-full bg-warning/20 px-2 py-0.5 font-medium text-xs">
+						{pendingOperations}
+					</span>
 				)}
 			</div>
 		);
@@ -57,7 +60,9 @@ export function OfflineIndicator() {
 				<RefreshCw className="size-4 animate-spin" />
 				<span className="hidden sm:inline">Syncing...</span>
 				{pendingOperations > 0 && (
-					<span className="rounded-full bg-primary/20 px-2 py-0.5 font-medium text-xs">{pendingOperations}</span>
+					<span className="rounded-full bg-primary/20 px-2 py-0.5 font-medium text-xs">
+						{pendingOperations}
+					</span>
 				)}
 			</div>
 		);
@@ -91,7 +96,8 @@ export function OfflineIndicator() {
  * Detailed sync status for settings/debug pages
  */
 export function SyncStatusDetail() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } =
+		useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -131,8 +137,12 @@ export function SyncStatusDetail() {
 			</div>
 
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">Pending Operations</span>
-				<span className="font-medium text-sm">{pendingOperations === 0 ? "None" : `${pendingOperations}`}</span>
+				<span className="text-muted-foreground text-sm">
+					Pending Operations
+				</span>
+				<span className="font-medium text-sm">
+					{pendingOperations === 0 ? "None" : `${pendingOperations}`}
+				</span>
 			</div>
 
 			{isSyncing && (
@@ -148,7 +158,9 @@ export function SyncStatusDetail() {
 			{lastSync && (
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Last Sync</span>
-					<span className="font-medium text-sm">{new Date(lastSync).toLocaleTimeString()}</span>
+					<span className="font-medium text-sm">
+						{new Date(lastSync).toLocaleTimeString()}
+					</span>
 				</div>
 			)}
 		</div>
@@ -180,10 +192,14 @@ export function OfflineBadge() {
 		<div
 			className={cn(
 				"flex size-6 items-center justify-center rounded-full font-bold text-xs",
-				isOnline ? "bg-warning text-white" : "bg-warning text-white"
+				isOnline ? "bg-warning text-white" : "bg-warning text-white",
 			)}
 		>
-			{pendingOperations > 0 ? pendingOperations : <WifiOff className="size-3" />}
+			{pendingOperations > 0 ? (
+				pendingOperations
+			) : (
+				<WifiOff className="size-3" />
+			)}
 		</div>
 	);
 }

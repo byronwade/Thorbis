@@ -11,7 +11,11 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function PaymentsDetailLayout({ children }: { children: ReactNode }) {
+export default function PaymentsDetailLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -27,7 +31,9 @@ export default function PaymentsDetailLayout({ children }: { children: ReactNode
 		},
 		toolbar: {
 			show: true,
-			back: <DetailBackButton href="/dashboard/work/payments" label="Payments" />,
+			back: (
+				<DetailBackButton href="/dashboard/work/payments" label="Payments" />
+			),
 			// TODO: Create PaymentDetailToolbar component
 			// actions: <PaymentDetailToolbar />,
 		},

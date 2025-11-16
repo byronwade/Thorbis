@@ -23,14 +23,23 @@ type CategoryCardProps = {
 	variant?: "default" | "add";
 };
 
-export function CategoryCard({ name, count, description, imageUrl, onClick, variant = "default" }: CategoryCardProps) {
+export function CategoryCard({
+	name,
+	count,
+	description,
+	imageUrl,
+	onClick,
+	variant = "default",
+}: CategoryCardProps) {
 	const hasImage = imageUrl && variant === "default";
 
 	return (
 		<Card
 			className={cn(
 				"group relative h-40 cursor-pointer overflow-hidden transition-all hover:shadow-xl",
-				variant === "add" ? "border-dashed hover:border-primary/50" : "hover:border-primary/50"
+				variant === "add"
+					? "border-dashed hover:border-primary/50"
+					: "hover:border-primary/50",
 			)}
 			onClick={onClick}
 		>
@@ -50,7 +59,9 @@ export function CategoryCard({ name, count, description, imageUrl, onClick, vari
 				<div
 					className={cn(
 						"absolute inset-0 bg-gradient-to-br transition-opacity",
-						variant === "add" ? "from-muted/50 to-muted/30" : "from-primary/10 via-primary/5 to-background"
+						variant === "add"
+							? "from-muted/50 to-muted/30"
+							: "from-primary/10 via-primary/5 to-background",
 					)}
 				/>
 			)}
@@ -60,14 +71,31 @@ export function CategoryCard({ name, count, description, imageUrl, onClick, vari
 				{/* Text and Arrow */}
 				<div className="flex items-end justify-between gap-4">
 					<div className="flex-1">
-						<h3 className={cn("mb-1 font-semibold text-lg leading-tight", hasImage ? "text-white" : "text-foreground")}>
+						<h3
+							className={cn(
+								"mb-1 font-semibold text-lg leading-tight",
+								hasImage ? "text-white" : "text-foreground",
+							)}
+						>
 							{name}
 						</h3>
 						{description ? (
-							<p className={cn("text-sm", hasImage ? "text-white/80" : "text-muted-foreground")}>{description}</p>
+							<p
+								className={cn(
+									"text-sm",
+									hasImage ? "text-white/80" : "text-muted-foreground",
+								)}
+							>
+								{description}
+							</p>
 						) : (
 							variant === "default" && (
-								<p className={cn("text-sm", hasImage ? "text-white/80" : "text-muted-foreground")}>
+								<p
+									className={cn(
+										"text-sm",
+										hasImage ? "text-white/80" : "text-muted-foreground",
+									)}
+								>
 									{count} {count === 1 ? "item" : "items"}
 								</p>
 							)
@@ -78,7 +106,7 @@ export function CategoryCard({ name, count, description, imageUrl, onClick, vari
 					<ChevronRight
 						className={cn(
 							"size-6 shrink-0 transition-transform group-hover:translate-x-1",
-							hasImage ? "text-white/80" : "text-muted-foreground"
+							hasImage ? "text-white/80" : "text-muted-foreground",
 						)}
 					/>
 				</div>

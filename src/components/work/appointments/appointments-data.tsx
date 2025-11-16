@@ -36,7 +36,9 @@ export async function AppointmentsData() {
 		<WorkDataView
 			kanban={<AppointmentsKanban appointments={appointments} />}
 			section="appointments"
-			table={<AppointmentsTable appointments={appointments} itemsPerPage={50} />}
+			table={
+				<AppointmentsTable appointments={appointments} itemsPerPage={50} />
+			}
 		/>
 	);
 }

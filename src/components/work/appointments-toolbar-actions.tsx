@@ -39,7 +39,11 @@ export function AppointmentsToolbarActions({
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<AppointmentsFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<AppointmentsFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={APPOINTMENTS_OPTIONAL_COLUMNS}
 						criticalColumns={APPOINTMENTS_CRITICAL_COLUMNS}

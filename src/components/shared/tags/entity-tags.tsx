@@ -23,8 +23,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import type { ActionResult } from "@/lib/errors/with-error-handling";
 
 export type TagWithColor = {
@@ -47,7 +57,10 @@ type EntityTagsProps = {
 		| "material"
 		| "vendor";
 	tags: EntityTag[];
-	onUpdateTags: (entityId: string, tags: EntityTag[]) => Promise<ActionResult<unknown>>;
+	onUpdateTags: (
+		entityId: string,
+		tags: EntityTag[],
+	) => Promise<ActionResult<unknown>>;
 	readOnly?: boolean;
 };
 
@@ -55,7 +68,8 @@ const PRESET_COLORS = [
 	{
 		name: "Red",
 		value: "red",
-		class: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
+		class:
+			"bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
 	},
 	{
 		name: "Orange",
@@ -90,12 +104,14 @@ const PRESET_COLORS = [
 	{
 		name: "Teal",
 		value: "teal",
-		class: "bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30",
+		class:
+			"bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30",
 	},
 	{
 		name: "Blue",
 		value: "blue",
-		class: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30",
+		class:
+			"bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30",
 	},
 	{
 		name: "Indigo",
@@ -112,21 +128,29 @@ const PRESET_COLORS = [
 	{
 		name: "Pink",
 		value: "pink",
-		class: "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30",
+		class:
+			"bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30",
 	},
 	{
 		name: "Gray",
 		value: "gray",
-		class: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
+		class:
+			"bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
 	},
 ];
 
 const COLOR_CLASSES: Record<string, string> = PRESET_COLORS.reduce(
 	(acc, color) => ({ ...acc, [color.value]: color.class }),
-	{}
+	{},
 );
 
-export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly = false }: EntityTagsProps) {
+export function EntityTags({
+	entityId,
+	entityType,
+	tags,
+	onUpdateTags,
+	readOnly = false,
+}: EntityTagsProps) {
 	const router = useRouter();
 	const [isAddOpen, setIsAddOpen] = useState(false);
 	const [tagLabel, setTagLabel] = useState("");
@@ -134,9 +158,11 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 	const [isSaving, setIsSaving] = useState(false);
 	const [tagToRemove, setTagToRemove] = useState<EntityTag | null>(null);
 
-	const getTagLabel = (tag: EntityTag): string => (typeof tag === "string" ? tag : tag.label);
+	const getTagLabel = (tag: EntityTag): string =>
+		typeof tag === "string" ? tag : tag.label;
 
-	const getTagColor = (tag: EntityTag): string | undefined => (typeof tag === "string" ? undefined : tag.color);
+	const getTagColor = (tag: EntityTag): string | undefined =>
+		typeof tag === "string" ? undefined : tag.color;
 
 	const handleAddTag = async () => {
 		if (!tagLabel.trim()) {
@@ -202,7 +228,10 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 				{tags.map((tag, index) => {
 					const label = getTagLabel(tag);
 					const color = getTagColor(tag);
-					const colorClass = color && COLOR_CLASSES[color] ? COLOR_CLASSES[color] : COLOR_CLASSES.blue;
+					const colorClass =
+						color && COLOR_CLASSES[color]
+							? COLOR_CLASSES[color]
+							: COLOR_CLASSES.blue;
 
 					return (
 						<div
@@ -238,7 +267,9 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 							<div className="space-y-4">
 								<div>
 									<h4 className="font-semibold text-sm">Create Custom Tag</h4>
-									<p className="text-muted-foreground text-xs">Add a custom tag for this {entityType}</p>
+									<p className="text-muted-foreground text-xs">
+										Add a custom tag for this {entityType}
+									</p>
 								</div>
 
 								{/* Tag Label Input */}
@@ -265,7 +296,9 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 											<SelectValue>
 												{selectedColor && (
 													<div className="flex items-center gap-2">
-														<div className={`h-4 w-4 rounded-full ${selectedColor.class}`} />
+														<div
+															className={`h-4 w-4 rounded-full ${selectedColor.class}`}
+														/>
 														<span>{selectedColor.name}</span>
 													</div>
 												)}
@@ -275,7 +308,9 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 											{PRESET_COLORS.map((color) => (
 												<SelectItem key={color.value} value={color.value}>
 													<div className="flex items-center gap-2">
-														<div className={`h-4 w-4 rounded-full ${color.class}`} />
+														<div
+															className={`h-4 w-4 rounded-full ${color.class}`}
+														/>
 														<span>{color.name}</span>
 													</div>
 												</SelectItem>
@@ -299,10 +334,18 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 
 								{/* Action Buttons */}
 								<div className="flex gap-2">
-									<Button className="flex-1" onClick={() => setIsAddOpen(false)} variant="outline">
+									<Button
+										className="flex-1"
+										onClick={() => setIsAddOpen(false)}
+										variant="outline"
+									>
 										Cancel
 									</Button>
-									<Button className="flex-1" disabled={isSaving || !tagLabel.trim()} onClick={handleAddTag}>
+									<Button
+										className="flex-1"
+										disabled={isSaving || !tagLabel.trim()}
+										onClick={handleAddTag}
+									>
 										{isSaving ? "Saving..." : "Add Tag"}
 									</Button>
 								</div>
@@ -313,13 +356,17 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 			</div>
 
 			{/* Remove Confirmation Dialog */}
-			<AlertDialog onOpenChange={() => setTagToRemove(null)} open={!!tagToRemove}>
+			<AlertDialog
+				onOpenChange={() => setTagToRemove(null)}
+				open={!!tagToRemove}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove Tag</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to remove the tag "{tagToRemove ? getTagLabel(tagToRemove) : ""}"? This action
-							cannot be undone.
+							Are you sure you want to remove the tag "
+							{tagToRemove ? getTagLabel(tagToRemove) : ""}"? This action cannot
+							be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

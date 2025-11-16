@@ -13,9 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type CustomersFilters, useCustomersFiltersStore } from "@/lib/stores/customers-filters-store";
+import {
+	type CustomersFilters,
+	useCustomersFiltersStore,
+} from "@/lib/stores/customers-filters-store";
 
 type CustomersFilterDropdownProps = {
 	activeCount?: number;
@@ -23,7 +32,11 @@ type CustomersFilterDropdownProps = {
 	totalCount?: number;
 };
 
-export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount }: CustomersFilterDropdownProps) {
+export function CustomersFilterDropdown({
+	activeCount,
+	archivedCount,
+	totalCount,
+}: CustomersFilterDropdownProps) {
 	const globalFilters = useCustomersFiltersStore((state) => state.filters);
 	const setFilters = useCustomersFiltersStore((state) => state.setFilters);
 	const resetFilters = useCustomersFiltersStore((state) => state.resetFilters);
@@ -81,7 +94,10 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 					<Filter className="size-4" />
 					<span className="ml-2">Filters</span>
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 h-5 w-5 justify-center p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 h-5 w-5 justify-center p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -92,7 +108,12 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Filter Customers</span>
 					{activeFilterCount > 0 && (
-						<Button className="h-6 px-2 text-xs" onClick={handleClear} size="sm" variant="ghost">
+						<Button
+							className="h-6 px-2 text-xs"
+							onClick={handleClear}
+							size="sm"
+							variant="ghost"
+						>
 							Clear all
 						</Button>
 					)}
@@ -104,17 +125,27 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Archive Status</Label>
 						<Select
-							onValueChange={(value) => handleLocalChange("archiveStatus", value as CustomersFilters["archiveStatus"])}
+							onValueChange={(value) =>
+								handleLocalChange(
+									"archiveStatus",
+									value as CustomersFilters["archiveStatus"],
+								)
+							}
 							value={localFilters.archiveStatus}
 						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="active">Active Only {activeCount !== undefined && `(${activeCount})`}</SelectItem>
-								<SelectItem value="all">All Customers {totalCount !== undefined && `(${totalCount})`}</SelectItem>
+								<SelectItem value="active">
+									Active Only {activeCount !== undefined && `(${activeCount})`}
+								</SelectItem>
+								<SelectItem value="all">
+									All Customers {totalCount !== undefined && `(${totalCount})`}
+								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 							</SelectContent>
 						</Select>
@@ -125,7 +156,10 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 					{/* Customer Type */}
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Customer Type</Label>
-						<Select onValueChange={(value) => handleLocalChange("type", value)} value={localFilters.type}>
+						<Select
+							onValueChange={(value) => handleLocalChange("type", value)}
+							value={localFilters.type}
+						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
@@ -142,7 +176,10 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 					{/* Status */}
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Status</Label>
-						<Select onValueChange={(value) => handleLocalChange("status", value)} value={localFilters.status}>
+						<Select
+							onValueChange={(value) => handleLocalChange("status", value)}
+							value={localFilters.status}
+						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
@@ -200,7 +237,12 @@ export function CustomersFilterDropdown({ activeCount, archivedCount, totalCount
 				<DropdownMenuSeparator />
 
 				<div className="flex gap-2 p-3">
-					<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+					<Button
+						className="flex-1"
+						onClick={() => setIsOpen(false)}
+						size="sm"
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button className="flex-1" onClick={handleApply} size="sm">

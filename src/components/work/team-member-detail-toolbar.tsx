@@ -6,7 +6,13 @@
  * Shows actions like Send Email, Edit, etc.
  */
 
-import { Archive, KeyRound, MoreHorizontal, UserCheck, UserX } from "lucide-react";
+import {
+	Archive,
+	KeyRound,
+	MoreHorizontal,
+	UserCheck,
+	UserX,
+} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -78,7 +84,11 @@ export function TeamMemberDetailToolbar() {
 	};
 
 	const handleArchiveMember = async () => {
-		if (!confirm("Are you sure you want to permanently archive this team member? This action cannot be undone.")) {
+		if (
+			!confirm(
+				"Are you sure you want to permanently archive this team member? This action cannot be undone.",
+			)
+		) {
 			return;
 		}
 
@@ -138,7 +148,10 @@ export function TeamMemberDetailToolbar() {
 						<UserCheck className="mr-2 size-4" />
 						Activate Member
 					</DropdownMenuItem>
-					<DropdownMenuItem className="text-destructive" onClick={handleSuspendMember}>
+					<DropdownMenuItem
+						className="text-destructive"
+						onClick={handleSuspendMember}
+					>
 						<UserX className="mr-2 size-4" />
 						Suspend Member
 					</DropdownMenuItem>
@@ -147,7 +160,10 @@ export function TeamMemberDetailToolbar() {
 					{canManage && (
 						<>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem className="text-destructive" onClick={handleArchiveMember}>
+							<DropdownMenuItem
+								className="text-destructive"
+								onClick={handleArchiveMember}
+							>
 								<Archive className="mr-2 size-4" />
 								Archive Member
 							</DropdownMenuItem>

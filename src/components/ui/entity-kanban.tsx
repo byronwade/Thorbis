@@ -54,13 +54,20 @@ export type EntityKanbanProps<TEntity, TStatus extends string> = {
 	renderCard: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
 
 	/** Render drag overlay */
-	renderDragOverlay?: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
+	renderDragOverlay?: (
+		item: KanbanItemBase & { entity: TEntity },
+	) => React.ReactNode;
 
 	/** Calculate column metadata (count, totals) */
-	calculateColumnMeta?: (columnId: TStatus, items: (KanbanItemBase & { entity: TEntity })[]) => ColumnMeta;
+	calculateColumnMeta?: (
+		columnId: TStatus,
+		items: (KanbanItemBase & { entity: TEntity })[],
+	) => ColumnMeta;
 
 	/** Handle item move event */
-	onItemMove?: (event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>) => void | Promise<void>;
+	onItemMove?: (
+		event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>,
+	) => void | Promise<void>;
 
 	/** Entity name for empty states (e.g., "jobs", "invoices") */
 	entityName?: string;
@@ -89,7 +96,9 @@ export function EntityKanban<TEntity, TStatus extends string>({
 	showTotals = false,
 	formatTotal,
 }: EntityKanbanProps<TEntity, TStatus>) {
-	const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(() => data.map(mapToKanbanItem));
+	const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(
+		() => data.map(mapToKanbanItem),
+	);
 
 	useEffect(() => {
 		setItems(data.map(mapToKanbanItem));
@@ -101,7 +110,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 				next.map((item) => ({
 					...item,
 					entity: updateEntityStatus(item.entity, item.columnId as TStatus),
-				}))
+				})),
 			);
 		} else {
 			setItems(next);
@@ -110,7 +119,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 
 	const defaultCalculateColumnMeta = (
 		columnId: TStatus,
-		items: (KanbanItemBase & { entity: TEntity })[]
+		items: (KanbanItemBase & { entity: TEntity })[],
 	): ColumnMeta => {
 		const columnItems = items.filter((item) => item.columnId === columnId);
 		return { count: columnItems.length };
@@ -133,10 +142,11 @@ export function EntityKanban<TEntity, TStatus extends string>({
 				name: col.name,
 				accentColor: col.accentColor,
 			})),
-		[columns]
+		[columns],
 	);
 
-	const defaultEmptyState = (columnName: string) => `No ${entityName} in ${columnName}`;
+	const defaultEmptyState = (columnName: string) =>
+		`No ${entityName} in ${columnName}`;
 
 	const getEmptyStateMessage = emptyStateMessage || defaultEmptyState;
 
@@ -171,7 +181,9 @@ export function EntityKanban<TEntity, TStatus extends string>({
 									className="h-2.5 w-2.5 rounded-full"
 									style={{ backgroundColor: column.accentColor }}
 								/>
-								<span className="font-semibold text-foreground text-sm">{column.name}</span>
+								<span className="font-semibold text-foreground text-sm">
+									{column.name}
+								</span>
 								<Badge
 									className="rounded-full bg-muted px-2 py-0 font-medium text-muted-foreground text-xs"
 									variant="secondary"
@@ -179,10 +191,14 @@ export function EntityKanban<TEntity, TStatus extends string>({
 									{meta.count} {entityName}
 								</Badge>
 								{showTotals && meta.total !== undefined && formatTotal && (
-									<span className="text-muted-foreground text-xs">{formatTotal(meta.total)}</span>
+									<span className="text-muted-foreground text-xs">
+										{formatTotal(meta.total)}
+									</span>
 								)}
 								{showTotals && meta.value !== undefined && formatTotal && (
-									<span className="text-muted-foreground text-xs">{formatTotal(meta.value)}</span>
+									<span className="text-muted-foreground text-xs">
+										{formatTotal(meta.value)}
+									</span>
 								)}
 							</div>
 						</KanbanHeader>

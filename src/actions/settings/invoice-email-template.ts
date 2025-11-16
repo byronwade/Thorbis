@@ -24,7 +24,9 @@ type ActionResult<T> = {
 /**
  * Load the invoice email template for the current company
  */
-export async function loadInvoiceEmailTemplate(): Promise<ActionResult<InvoiceEmailTemplate>> {
+export async function loadInvoiceEmailTemplate(): Promise<
+	ActionResult<InvoiceEmailTemplate>
+> {
 	try {
 		const supabase = await createClient();
 
@@ -104,7 +106,8 @@ Thank you for your business!
 
 Best regards,
 {{company_name}}`,
-				footer: "This is an automated message. Please do not reply to this email.",
+				footer:
+					"This is an automated message. Please do not reply to this email.",
 			},
 		};
 	} catch (error) {
@@ -118,7 +121,9 @@ Best regards,
 /**
  * Save the invoice email template for the current company
  */
-export async function saveInvoiceEmailTemplate(template: InvoiceEmailTemplate): Promise<ActionResult<void>> {
+export async function saveInvoiceEmailTemplate(
+	template: InvoiceEmailTemplate,
+): Promise<ActionResult<void>> {
 	try {
 		const supabase = await createClient();
 
@@ -202,7 +207,9 @@ export async function saveInvoiceEmailTemplate(template: InvoiceEmailTemplate): 
 			}
 		} else {
 			// Insert new template
-			const { error } = await supabase.from("communication_templates").insert(templateData);
+			const { error } = await supabase
+				.from("communication_templates")
+				.insert(templateData);
 
 			if (error) {
 				return {

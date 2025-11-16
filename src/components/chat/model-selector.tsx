@@ -8,7 +8,13 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CheckCircleFillIcon, ChevronDownIcon, LogoAnthropic, LogoGoogle, LogoOpenAI } from "./icons";
+import {
+	CheckCircleFillIcon,
+	ChevronDownIcon,
+	LogoAnthropic,
+	LogoGoogle,
+	LogoOpenAI,
+} from "./icons";
 
 type Model = {
 	id: string;
@@ -55,7 +61,10 @@ type ModelSelectorProps = {
 	onValueChange?: (modelId: string) => void;
 };
 
-export function ModelSelector({ value = "gpt-4o", onValueChange }: ModelSelectorProps) {
+export function ModelSelector({
+	value = "gpt-4o",
+	onValueChange,
+}: ModelSelectorProps) {
 	const [selectedModel, setSelectedModel] = useState(value);
 	const currentModel = models.find((m) => m.id === selectedModel) ?? models[0];
 
@@ -80,10 +89,14 @@ export function ModelSelector({ value = "gpt-4o", onValueChange }: ModelSelector
 						key={model.id}
 						onClick={() => handleSelect(model.id)}
 					>
-						<div className="flex size-6 items-center justify-center">{model.icon}</div>
+						<div className="flex size-6 items-center justify-center">
+							{model.icon}
+						</div>
 						<div className="flex flex-1 flex-col">
 							<div className="font-medium">{model.name}</div>
-							<div className="text-muted-foreground text-xs">{model.provider}</div>
+							<div className="text-muted-foreground text-xs">
+								{model.provider}
+							</div>
 						</div>
 						{model.id === selectedModel && (
 							<div className="text-primary">

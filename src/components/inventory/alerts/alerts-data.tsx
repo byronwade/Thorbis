@@ -6,7 +6,13 @@
  * allowing future expansion to data-driven alert management.
  */
 
-import { AlertTriangle, Bell, Mail, MessageSquare, TrendingDown } from "lucide-react";
+import {
+	AlertTriangle,
+	Bell,
+	Mail,
+	MessageSquare,
+	TrendingDown,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function AlertsData() {
@@ -30,7 +36,8 @@ export async function AlertsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Real-Time Alerts</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Instantly know when parts fall below minimum stock levels before you run out
+							Instantly know when parts fall below minimum stock levels before
+							you run out
 						</p>
 					</div>
 
@@ -39,9 +46,12 @@ export async function AlertsData() {
 						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
 							<MessageSquare className="size-6 text-primary" />
 						</div>
-						<h3 className="font-semibold text-lg">Multi-Channel Notifications</h3>
+						<h3 className="font-semibold text-lg">
+							Multi-Channel Notifications
+						</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Receive alerts via email, SMS, and in-app notifications so you never miss a critical update
+							Receive alerts via email, SMS, and in-app notifications so you
+							never miss a critical update
 						</p>
 					</div>
 
@@ -52,7 +62,8 @@ export async function AlertsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Customizable Thresholds</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Set different minimum stock levels for each item based on usage patterns and lead times
+							Set different minimum stock levels for each item based on usage
+							patterns and lead times
 						</p>
 					</div>
 
@@ -63,7 +74,8 @@ export async function AlertsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Automated Ordering</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Automatically generate purchase orders when stock levels trigger reorder points
+							Automatically generate purchase orders when stock levels trigger
+							reorder points
 						</p>
 					</div>
 				</div>
@@ -71,7 +83,9 @@ export async function AlertsData() {
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Never Run Out of Parts</h3>
-					<p className="mb-6 text-muted-foreground">Stay ahead of stockouts with intelligent alerts</p>
+					<p className="mb-6 text-muted-foreground">
+						Stay ahead of stockouts with intelligent alerts
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

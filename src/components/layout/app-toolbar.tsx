@@ -27,12 +27,22 @@ type AppToolbarProps = {
 	showRightSidebar?: boolean;
 };
 
-export function AppToolbar({ pathname, config, showLeftSidebar = true, showRightSidebar = false }: AppToolbarProps) {
+export function AppToolbar({
+	pathname,
+	config,
+	showLeftSidebar = true,
+	showRightSidebar = false,
+}: AppToolbarProps) {
 	const safePathname = pathname || "/dashboard";
 	const actionsJustify =
-		config.actionsJustify ?? (config.title || config.breadcrumbs || config.back ? "flex-end" : "space-between");
+		config.actionsJustify ??
+		(config.title || config.breadcrumbs || config.back
+			? "flex-end"
+			: "space-between");
 	const actionsClassName =
-		actionsJustify === "space-between" ? "flex flex-1 items-center gap-1.5" : "ml-auto flex items-center gap-1.5";
+		actionsJustify === "space-between"
+			? "flex flex-1 items-center gap-1.5"
+			: "ml-auto flex items-center gap-1.5";
 
 	return (
 		<header className="sticky top-0 z-40 flex w-full shrink-0 border-border/50 border-b bg-background/90 backdrop-blur-md md:rounded-t-2xl">
@@ -55,7 +65,11 @@ export function AppToolbar({ pathname, config, showLeftSidebar = true, showRight
 								) : (
 									<div className="font-semibold text-lg">{config.title}</div>
 								))}
-							{config.subtitle && <p className="hidden text-muted-foreground text-sm md:block">{config.subtitle}</p>}
+							{config.subtitle && (
+								<p className="hidden text-muted-foreground text-sm md:block">
+									{config.subtitle}
+								</p>
+							)}
 						</div>
 					)
 				)}
@@ -74,7 +88,11 @@ export function AppToolbar({ pathname, config, showLeftSidebar = true, showRight
 					<OfflineIndicator />
 
 					{/* Custom Action Buttons */}
-					{config.actions && <div data-toolbar-default-actions={safePathname}>{config.actions}</div>}
+					{config.actions && (
+						<div data-toolbar-default-actions={safePathname}>
+							{config.actions}
+						</div>
+					)}
 					<ToolbarClientActions pathname={safePathname} />
 
 					{/* Right Sidebar Toggle Button */}

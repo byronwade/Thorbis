@@ -30,7 +30,10 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json({ success: true }, { status: 200 });
 	} catch (_error) {
-		return NextResponse.json({ success: false, error: "Internal error" }, { status: 500 });
+		return NextResponse.json(
+			{ success: false, error: "Internal error" },
+			{ status: 500 },
+		);
 	}
 }
 
@@ -58,7 +61,8 @@ async function handleTranscriptionCompleted(payload: any) {
 
 	// Update all matching communications (should typically be just one)
 	for (const communication of communications) {
-		const existingMetadata = (communication.metadata as Record<string, any>) || {};
+		const existingMetadata =
+			(communication.metadata as Record<string, any>) || {};
 
 		await supabase
 			.from("communications")
@@ -70,13 +74,18 @@ async function handleTranscriptionCompleted(payload: any) {
 					assemblyai_status: "completed",
 					transcription_confidence: payload.confidence,
 					transcription_words: payload.words?.length || 0,
-					transcription_speakers: payload.utterances ? new Set(payload.utterances.map((u: any) => u.speaker)).size : 0,
+					transcription_speakers: payload.utterances
+						? new Set(payload.utterances.map((u: any) => u.speaker)).size
+						: 0,
 				},
 			})
 			.eq("id", communication.id);
 
 		// Log first 200 chars of transcript
-		const _preview = formattedTranscript?.substring(0, 200) || payload.text?.substring(0, 200) || "";
+		const _preview =
+			formattedTranscript?.substring(0, 200) ||
+			payload.text?.substring(0, 200) ||
+			"";
 	}
 }
 
@@ -101,7 +110,8 @@ async function handleTranscriptionFailed(payload: any) {
 
 	// Update metadata with error status
 	for (const communication of communications) {
-		const existingMetadata = (communication.metadata as Record<string, any>) || {};
+		const existingMetadata =
+			(communication.metadata as Record<string, any>) || {};
 
 		await supabase
 			.from("communications")

@@ -9,13 +9,23 @@
  * - Apple Pay / Google Pay support via Express Checkout
  */
 
-import { Elements, ExpressCheckoutElement, useStripe } from "@stripe/react-stripe-js";
+import {
+	Elements,
+	ExpressCheckoutElement,
+	useStripe,
+} from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { Apple, CheckCircle2, CreditCard, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { CustomPaymentForm } from "./custom-payment-form";
 
 type PaymentMethod = {
@@ -32,7 +42,11 @@ type PaymentMethodSelectorProps = {
 	onError: (error: string) => void;
 };
 
-function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onError }: PaymentMethodSelectorProps) {
+function PaymentMethodSelectorInner({
+	customerId,
+	onPaymentMethodSelected,
+	onError,
+}: PaymentMethodSelectorProps) {
 	const stripe = useStripe();
 	const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
 	const [selectedMethod, setSelectedMethod] = useState<string>("");
@@ -52,7 +66,9 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 			setIsLoading(true);
 			try {
 				// Call API to fetch payment methods
-				const response = await fetch(`/api/payments/methods?customerId=${customerId}`);
+				const response = await fetch(
+					`/api/payments/methods?customerId=${customerId}`,
+				);
 				if (response.ok) {
 					const data = await response.json();
 					setPaymentMethods(data.paymentMethods || []);
@@ -112,7 +128,10 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 		<div className="space-y-4">
 			{/* Always show dropdown with all payment options */}
 			<div className="space-y-2">
-				<Label className="font-semibold text-foreground" htmlFor="payment-method">
+				<Label
+					className="font-semibold text-foreground"
+					htmlFor="payment-method"
+				>
 					Select Payment Method
 				</Label>
 				<Select onValueChange={handleMethodSelect} value={selectedMethod}>
@@ -121,7 +140,9 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 						disabled={isLoading}
 						id="payment-method"
 					>
-						<SelectValue placeholder={isLoading ? "Loading..." : "Choose payment method"} />
+						<SelectValue
+							placeholder={isLoading ? "Loading..." : "Choose payment method"}
+						/>
 					</SelectTrigger>
 					<SelectContent>
 						{/* Existing payment methods from primary org */}
@@ -202,7 +223,11 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 							Cancel
 						</Button>
 					</div>
-					<CustomPaymentForm onError={onError} onSuccess={handleNewCardSuccess} showButton={false} />
+					<CustomPaymentForm
+						onError={onError}
+						onSuccess={handleNewCardSuccess}
+						showButton={false}
+					/>
 				</div>
 			)}
 
@@ -211,7 +236,12 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 				<div className="space-y-4 rounded-lg border bg-muted/30 p-4">
 					<div className="flex items-center justify-between">
 						<h4 className="font-medium text-sm">Apple Pay</h4>
-						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
+						<Button
+							onClick={() => setSelectedMethod("")}
+							size="sm"
+							type="button"
+							variant="ghost"
+						>
 							Cancel
 						</Button>
 					</div>
@@ -231,7 +261,9 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 							},
 						}}
 					/>
-					<p className="text-muted-foreground text-xs">Click the Apple Pay button above to complete payment</p>
+					<p className="text-muted-foreground text-xs">
+						Click the Apple Pay button above to complete payment
+					</p>
 				</div>
 			)}
 
@@ -240,7 +272,12 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 				<div className="space-y-4 rounded-lg border bg-muted/30 p-4">
 					<div className="flex items-center justify-between">
 						<h4 className="font-medium text-sm">Google Pay</h4>
-						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
+						<Button
+							onClick={() => setSelectedMethod("")}
+							size="sm"
+							type="button"
+							variant="ghost"
+						>
 							Cancel
 						</Button>
 					</div>
@@ -260,7 +297,9 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 							},
 						}}
 					/>
-					<p className="text-muted-foreground text-xs">Click the Google Pay button above to complete payment</p>
+					<p className="text-muted-foreground text-xs">
+						Click the Google Pay button above to complete payment
+					</p>
 				</div>
 			)}
 		</div>
@@ -268,11 +307,15 @@ function PaymentMethodSelectorInner({ customerId, onPaymentMethodSelected, onErr
 }
 
 // Wrapper component with Stripe Elements provider
-export function PaymentMethodSelector(props: PaymentMethodSelectorProps & { stripe: Stripe | null }) {
+export function PaymentMethodSelector(
+	props: PaymentMethodSelectorProps & { stripe: Stripe | null },
+) {
 	if (!props.stripe) {
 		return (
 			<div className="rounded-lg border border-warning bg-warning p-4 text-warning dark:border-warning dark:bg-warning dark:text-warning">
-				<p className="text-sm">Payment system is not configured. Please contact support.</p>
+				<p className="text-sm">
+					Payment system is not configured. Please contact support.
+				</p>
 			</div>
 		);
 	}

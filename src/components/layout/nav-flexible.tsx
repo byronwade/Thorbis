@@ -3,7 +3,11 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -46,7 +50,12 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 			// If has sub-items, render as collapsible
 			if (linkItem.items && linkItem.items.length > 0) {
 				return (
-					<Collapsible asChild className="group/collapsible" defaultOpen={isActive} key={linkItem.url}>
+					<Collapsible
+						asChild
+						className="group/collapsible"
+						defaultOpen={isActive}
+						key={linkItem.url}
+					>
 						<SidebarMenuItem>
 							<CollapsibleTrigger asChild>
 								<SidebarMenuButton tooltip={linkItem.title}>
@@ -79,7 +88,11 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 			// Regular link item
 			return (
 				<SidebarMenuItem key={linkItem.url}>
-					<SidebarMenuButton asChild isActive={isActive} tooltip={linkItem.title}>
+					<SidebarMenuButton
+						asChild
+						isActive={isActive}
+						tooltip={linkItem.title}
+					>
 						<Link href={linkItem.url}>
 							{linkItem.icon && <linkItem.icon />}
 							<span>{linkItem.title}</span>
@@ -98,7 +111,8 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 		if (item.mode === "tab") {
 			const tabItem = item as TabSidebarItem;
 			const isActive =
-				activeValue === tabItem.value || (activeValue === undefined && config?.defaultValue === tabItem.value);
+				activeValue === tabItem.value ||
+				(activeValue === undefined && config?.defaultValue === tabItem.value);
 
 			return (
 				<SidebarMenuItem key={tabItem.value}>
@@ -123,7 +137,9 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 		if (item.mode === "filter") {
 			const filterItem = item as FilterSidebarItem;
 			const isActive =
-				activeValue === filterItem.value || (activeValue === undefined && config?.defaultValue === filterItem.value);
+				activeValue === filterItem.value ||
+				(activeValue === undefined &&
+					config?.defaultValue === filterItem.value);
 
 			return (
 				<SidebarMenuItem key={filterItem.value}>
@@ -135,7 +151,9 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 						{filterItem.icon && <filterItem.icon />}
 						<span>{filterItem.title}</span>
 						{filterItem.count !== undefined && (
-							<span className="ml-auto text-muted-foreground text-xs">{filterItem.count}</span>
+							<span className="ml-auto text-muted-foreground text-xs">
+								{filterItem.count}
+							</span>
 						)}
 					</SidebarMenuButton>
 				</SidebarMenuItem>

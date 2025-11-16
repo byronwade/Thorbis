@@ -16,7 +16,13 @@ import { SettingsSearch } from "@/components/settings/settings-search";
 import { SettingsSection } from "@/components/settings/settings-section";
 import { SettingsShell } from "@/components/settings/settings-shell";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getSettingsOverviewData } from "@/lib/settings/overview-data";
 
 type PageProps = {
@@ -31,23 +37,35 @@ async function SettingsData({ searchParams }: PageProps) {
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const sections = normalizedQuery
 		? overview.sections.filter((section) => {
-				const matchesTitle = section.title.toLowerCase().includes(normalizedQuery);
-				const matchesDescription = section.description.toLowerCase().includes(normalizedQuery);
+				const matchesTitle = section.title
+					.toLowerCase()
+					.includes(normalizedQuery);
+				const matchesDescription = section.description
+					.toLowerCase()
+					.includes(normalizedQuery);
 				const matchesLink = section.links.some(
 					(link) =>
 						link.title.toLowerCase().includes(normalizedQuery) ||
-						link.description.toLowerCase().includes(normalizedQuery)
+						link.description.toLowerCase().includes(normalizedQuery),
 				);
 				return matchesTitle || matchesDescription || matchesLink;
 			})
 		: overview.sections;
 
-	const generatedAtLabel = formatDistanceToNow(new Date(overview.meta.generatedAt), {
-		addSuffix: true,
-	});
+	const generatedAtLabel = formatDistanceToNow(
+		new Date(overview.meta.generatedAt),
+		{
+			addSuffix: true,
+		},
+	);
 	const planStatus = overview.meta.subscriptionStatus ?? "unknown";
-	const planBadgeVariant = planStatus === "active" || planStatus === "trialing" ? "default" : "destructive";
-	const analyticsSection = overview.sections.find((section) => section.slug === "analytics");
+	const planBadgeVariant =
+		planStatus === "active" || planStatus === "trialing"
+			? "default"
+			: "destructive";
+	const analyticsSection = overview.sections.find(
+		(section) => section.slug === "analytics",
+	);
 
 	return (
 		<div className="space-y-12">
@@ -55,7 +73,9 @@ async function SettingsData({ searchParams }: PageProps) {
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
 						<h1 className="font-bold text-4xl tracking-tight">Settings</h1>
-						<p className="text-muted-foreground">Workspace controls, advanced configuration, and telemetry</p>
+						<p className="text-muted-foreground">
+							Workspace controls, advanced configuration, and telemetry
+						</p>
 					</div>
 					<div className="w-full max-w-md">
 						<Suspense fallback={null}>
@@ -70,7 +90,9 @@ async function SettingsData({ searchParams }: PageProps) {
 							<CardDescription>Active workspace members</CardDescription>
 						</CardHeader>
 						<CardContent className="flex items-baseline gap-2">
-							<span className="font-semibold text-3xl tracking-tight">{overview.meta.teamCount}</span>
+							<span className="font-semibold text-3xl tracking-tight">
+								{overview.meta.teamCount}
+							</span>
 							<span className="text-muted-foreground text-sm">active</span>
 						</CardContent>
 					</Card>
@@ -80,7 +102,11 @@ async function SettingsData({ searchParams }: PageProps) {
 								<CardTitle className="text-base">Alerts</CardTitle>
 								<CardDescription>Clusters needing attention</CardDescription>
 							</div>
-							<Badge variant={overview.meta.alerts.length ? "destructive" : "secondary"}>
+							<Badge
+								variant={
+									overview.meta.alerts.length ? "destructive" : "secondary"
+								}
+							>
 								{overview.meta.alerts.length}
 							</Badge>
 						</CardHeader>
@@ -105,16 +131,23 @@ async function SettingsData({ searchParams }: PageProps) {
 							</div>
 							<Badge variant={planBadgeVariant}>{planStatus}</Badge>
 						</CardHeader>
-						<CardContent className="text-muted-foreground text-sm">Last refreshed {generatedAtLabel}</CardContent>
+						<CardContent className="text-muted-foreground text-sm">
+							Last refreshed {generatedAtLabel}
+						</CardContent>
 					</Card>
-					<POSystemToggle enabled={overview.meta.poSystemEnabled} lastEnabledAt={overview.meta.poSystemLastEnabledAt} />
+					<POSystemToggle
+						enabled={overview.meta.poSystemEnabled}
+						lastEnabledAt={overview.meta.poSystemLastEnabledAt}
+					/>
 				</div>
 				{analyticsSection && analyticsSection.metrics.length > 0 && (
 					<Card className="border-primary/30 bg-primary/5">
 						<CardHeader className="flex flex-wrap items-center justify-between gap-3">
 							<div>
 								<CardTitle className="text-base">Telemetry snapshot</CardTitle>
-								<CardDescription>Live signals from automation, activity, and communications</CardDescription>
+								<CardDescription>
+									Live signals from automation, activity, and communications
+								</CardDescription>
 							</div>
 							<Badge variant="outline">Last 7 days</Badge>
 						</CardHeader>
@@ -124,9 +157,17 @@ async function SettingsData({ searchParams }: PageProps) {
 									className="rounded-xl border border-primary/20 bg-background/80 p-4 shadow-sm"
 									key={`${analyticsSection.slug}-${metric.key}-snapshot`}
 								>
-									<p className="font-semibold text-primary text-xs uppercase tracking-wide">{metric.label}</p>
-									<p className="mt-1 font-semibold text-2xl tracking-tight">{metric.value}</p>
-									{metric.helper && <p className="text-muted-foreground text-sm">{metric.helper}</p>}
+									<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+										{metric.label}
+									</p>
+									<p className="mt-1 font-semibold text-2xl tracking-tight">
+										{metric.value}
+									</p>
+									{metric.helper && (
+										<p className="text-muted-foreground text-sm">
+											{metric.helper}
+										</p>
+									)}
 								</div>
 							))}
 						</CardContent>
@@ -138,8 +179,12 @@ async function SettingsData({ searchParams }: PageProps) {
 				{sections.length === 0 ? (
 					<Card className="py-12">
 						<CardContent className="flex flex-col items-center gap-3 text-center">
-							<p className="font-semibold text-lg">No settings match “{searchQuery}”.</p>
-							<p className="text-muted-foreground text-sm">Try another query or clear the search bar.</p>
+							<p className="font-semibold text-lg">
+								No settings match “{searchQuery}”.
+							</p>
+							<p className="text-muted-foreground text-sm">
+								Try another query or clear the search bar.
+							</p>
 						</CardContent>
 					</Card>
 				) : (
@@ -162,7 +207,9 @@ function SettingsSkeleton() {
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
 						<h1 className="font-bold text-4xl tracking-tight">Settings</h1>
-						<p className="text-muted-foreground">Workspace controls, advanced configuration, and telemetry</p>
+						<p className="text-muted-foreground">
+							Workspace controls, advanced configuration, and telemetry
+						</p>
 					</div>
 					<div className="w-full max-w-md">
 						<Suspense fallback={null}>

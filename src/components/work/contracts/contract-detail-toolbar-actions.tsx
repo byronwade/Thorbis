@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function ContractDetailToolbarActions() {
@@ -94,7 +99,9 @@ export function ContractDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}>
+								<a
+									href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}
+								>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -135,14 +142,23 @@ export function ContractDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Contract</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this contract? Archived contracts can be restored within 90 days.
+							Are you sure you want to archive this contract? Archived contracts
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Contract"}
 						</Button>
 					</DialogFooter>

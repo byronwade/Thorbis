@@ -15,7 +15,9 @@ export function JobsShell({ children }: JobsShellProps) {
 		<div className="space-y-6">
 			<div>
 				<h1 className="font-bold text-3xl tracking-tight">Active Jobs</h1>
-				<p className="text-muted-foreground">Manage active work orders, job assignments, and technician tasks</p>
+				<p className="text-muted-foreground">
+					Manage active work orders, job assignments, and technician tasks
+				</p>
 			</div>
 
 			{children}

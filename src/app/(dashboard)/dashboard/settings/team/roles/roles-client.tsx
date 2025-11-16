@@ -1,6 +1,16 @@
 "use client";
 
-import { ArrowLeft, Crown, MoreVertical, Plus, Shield, ShieldCheck, Trash2, User, UserCog } from "lucide-react";
+import {
+	ArrowLeft,
+	Crown,
+	MoreVertical,
+	Plus,
+	Shield,
+	ShieldCheck,
+	Trash2,
+	User,
+	UserCog,
+} from "lucide-react";
 import Link from "next/link";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +23,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -55,7 +71,10 @@ function getRoleIcon(role: RoleRecord) {
 }
 
 export function RolesClient({ roles }: RolesClientProps) {
-	const totalMembers = roles.reduce((sum, role) => sum + (role.member_count ?? 0), 0);
+	const totalMembers = roles.reduce(
+		(sum, role) => sum + (role.member_count ?? 0),
+		0,
+	);
 
 	return (
 		<SettingsPageLayout
@@ -77,7 +96,9 @@ export function RolesClient({ roles }: RolesClientProps) {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/team">Team & Permissions</Link>
+									<Link href="/dashboard/settings/team">
+										Team & Permissions
+									</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -124,7 +145,9 @@ export function RolesClient({ roles }: RolesClientProps) {
 								</p>
 							</div>
 							<Button asChild>
-								<Link href="/dashboard/settings/team/roles/new">Create role</Link>
+								<Link href="/dashboard/settings/team/roles/new">
+									Create role
+								</Link>
 							</Button>
 						</CardContent>
 					</Card>
@@ -136,7 +159,10 @@ export function RolesClient({ roles }: RolesClientProps) {
 							const memberCount = role.member_count ?? 0;
 
 							return (
-								<Card className="group transition-all hover:shadow-md" key={role.id}>
+								<Card
+									className="group transition-all hover:shadow-md"
+									key={role.id}
+								>
 									<CardHeader>
 										<div className="flex items-start justify-between">
 											<div className="flex items-start gap-3">
@@ -176,19 +202,32 @@ export function RolesClient({ roles }: RolesClientProps) {
 													{!role.is_system && (
 														<>
 															<DropdownMenuItem asChild>
-																<Link href={`/dashboard/settings/team/roles/${role.id}`}>Edit Role</Link>
+																<Link
+																	href={`/dashboard/settings/team/roles/${role.id}`}
+																>
+																	Edit Role
+																</Link>
 															</DropdownMenuItem>
-															<DropdownMenuItem disabled>Duplicate Role</DropdownMenuItem>
+															<DropdownMenuItem disabled>
+																Duplicate Role
+															</DropdownMenuItem>
 															<DropdownMenuSeparator />
 														</>
 													)}
 													<DropdownMenuItem asChild>
-														<Link href={`/dashboard/settings/team/roles/${role.id}`}>View permissions</Link>
+														<Link
+															href={`/dashboard/settings/team/roles/${role.id}`}
+														>
+															View permissions
+														</Link>
 													</DropdownMenuItem>
 													{!role.is_system && (
 														<>
 															<DropdownMenuSeparator />
-															<DropdownMenuItem className="text-destructive" disabled>
+															<DropdownMenuItem
+																className="text-destructive"
+																disabled
+															>
 																<Trash2 className="mr-2 size-4" />
 																Delete role
 															</DropdownMenuItem>
@@ -199,11 +238,15 @@ export function RolesClient({ roles }: RolesClientProps) {
 										</div>
 									</CardHeader>
 									<CardContent>
-										<p className="text-muted-foreground text-sm">{role.description || "No description provided."}</p>
+										<p className="text-muted-foreground text-sm">
+											{role.description || "No description provided."}
+										</p>
 										<div className="mt-4">
 											<Link href={`/dashboard/settings/team/roles/${role.id}`}>
 												<Button className="w-full" size="sm" variant="outline">
-													{role.is_system ? "View permissions" : "Edit permissions"}
+													{role.is_system
+														? "View permissions"
+														: "Edit permissions"}
 												</Button>
 											</Link>
 										</div>

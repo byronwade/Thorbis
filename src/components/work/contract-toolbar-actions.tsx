@@ -32,12 +32,20 @@ type ContractToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function ContractToolbarActions({ totalCount = 0, activeCount, archivedCount }: ContractToolbarActionsProps) {
+export function ContractToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: ContractToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<ContractsFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<ContractsFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={CONTRACTS_OPTIONAL_COLUMNS}
 						criticalColumns={CONTRACTS_CRITICAL_COLUMNS}

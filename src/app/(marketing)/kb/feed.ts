@@ -39,7 +39,10 @@ export async function GET() {
       <pubDate>${pubDate}</pubDate>
       <category><![CDATA[${article.category.title}]]></category>
       ${article.tags
-				?.map((tag) => `<category><![CDATA[${String((tag as { name?: string }).name || "")}]]></category>`)
+				?.map(
+					(tag) =>
+						`<category><![CDATA[${String((tag as { name?: string }).name || "")}]]></category>`,
+				)
 				.join("\n      ")}
     </item>`;
 			})

@@ -73,10 +73,10 @@ export const useWorkViewStore = create<WorkViewState>()(
 					views: state.views,
 				}),
 				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16 Server Components
-			}
+			},
 		),
-		{ name: "WorkViewStore" }
-	)
+		{ name: "WorkViewStore" },
+	),
 );
 
 export function useWorkView(section: WorkSection): WorkViewMode {

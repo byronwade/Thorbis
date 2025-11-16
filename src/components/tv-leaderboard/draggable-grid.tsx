@@ -38,8 +38,20 @@ type SortableWidgetProps = {
 	onRemove: () => void;
 };
 
-function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetProps) {
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+function SortableWidget({
+	widget,
+	data,
+	isEditMode,
+	onRemove,
+}: SortableWidgetProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
 		id: widget.id,
 		disabled: !isEditMode,
 	});
@@ -59,7 +71,12 @@ function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetPr
 		>
 			{isEditMode && (
 				<div className="absolute top-2 right-2 z-10 flex gap-2">
-					<Button className="cursor-grab active:cursor-grabbing" size="icon" variant="secondary" {...listeners}>
+					<Button
+						className="cursor-grab active:cursor-grabbing"
+						size="icon"
+						variant="secondary"
+						{...listeners}
+					>
 						<GripVertical className="size-4" />
 					</Button>
 					<Button onClick={onRemove} size="icon" variant="destructive">
@@ -72,12 +89,17 @@ function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetPr
 	);
 }
 
-export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: DraggableGridProps) {
+export function DraggableGrid({
+	widgets,
+	onWidgetsChange,
+	data,
+	isEditMode,
+}: DraggableGridProps) {
 	const sensors = useSensors(
 		useSensor(PointerSensor),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		})
+		}),
 	);
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -95,8 +117,15 @@ export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: Dr
 	}
 
 	return (
-		<DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
-			<SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
+		<DndContext
+			collisionDetection={closestCenter}
+			onDragEnd={handleDragEnd}
+			sensors={sensors}
+		>
+			<SortableContext
+				items={widgets.map((w) => w.id)}
+				strategy={rectSortingStrategy}
+			>
 				<div className="grid h-full w-full auto-rows-[minmax(80px,1fr)] grid-cols-4 gap-6 p-6">
 					{widgets.map((widget) => (
 						<SortableWidget

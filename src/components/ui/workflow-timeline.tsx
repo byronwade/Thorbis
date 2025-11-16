@@ -43,9 +43,12 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 										<div
 											className={cn(
 												"flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors",
-												stage.status === "completed" && "border-success bg-success text-white",
-												stage.status === "current" && "border-primary bg-primary text-primary-foreground",
-												stage.status === "pending" && "border-muted-foreground/30 bg-muted text-muted-foreground"
+												stage.status === "completed" &&
+													"border-success bg-success text-white",
+												stage.status === "current" &&
+													"border-primary bg-primary text-primary-foreground",
+												stage.status === "pending" &&
+													"border-muted-foreground/30 bg-muted text-muted-foreground",
 											)}
 										>
 											{stage.status === "completed" ? (
@@ -58,11 +61,20 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 										{/* Stage Label */}
 										<div className="text-center">
 											{stage.href ? (
-												<Link className="font-medium text-sm hover:text-primary hover:underline" href={stage.href}>
+												<Link
+													className="font-medium text-sm hover:text-primary hover:underline"
+													href={stage.href}
+												>
 													{stage.label}
 												</Link>
 											) : (
-												<p className={cn("font-medium text-sm", stage.status === "pending" && "text-muted-foreground")}>
+												<p
+													className={cn(
+														"font-medium text-sm",
+														stage.status === "pending" &&
+															"text-muted-foreground",
+													)}
+												>
 													{stage.label}
 												</p>
 											)}
@@ -75,7 +87,11 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 													})}
 												</p>
 											)}
-											{stage.description && <p className="mt-1 text-muted-foreground text-xs">{stage.description}</p>}
+											{stage.description && (
+												<p className="mt-1 text-muted-foreground text-xs">
+													{stage.description}
+												</p>
+											)}
 										</div>
 									</div>
 
@@ -85,9 +101,10 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 											<div
 												className={cn(
 													"h-0.5 w-full transition-colors",
-													stages[index + 1].status === "completed" || stages[index + 1].status === "current"
+													stages[index + 1].status === "completed" ||
+														stages[index + 1].status === "current"
 														? "bg-success"
-														: "bg-muted-foreground/20"
+														: "bg-muted-foreground/20",
 												)}
 											/>
 										</div>
@@ -111,9 +128,12 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 									<div
 										className={cn(
 											"flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-											stage.status === "completed" && "border-success bg-success text-white",
-											stage.status === "current" && "border-primary bg-primary text-primary-foreground",
-											stage.status === "pending" && "border-muted-foreground/30 bg-muted text-muted-foreground"
+											stage.status === "completed" &&
+												"border-success bg-success text-white",
+											stage.status === "current" &&
+												"border-primary bg-primary text-primary-foreground",
+											stage.status === "pending" &&
+												"border-muted-foreground/30 bg-muted text-muted-foreground",
 										)}
 									>
 										{stage.status === "completed" ? (
@@ -126,11 +146,19 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 									{/* Stage Content */}
 									<div className="flex-1 pb-8">
 										{stage.href ? (
-											<Link className="font-medium hover:text-primary hover:underline" href={stage.href}>
+											<Link
+												className="font-medium hover:text-primary hover:underline"
+												href={stage.href}
+											>
 												{stage.label}
 											</Link>
 										) : (
-											<p className={cn("font-medium", stage.status === "pending" && "text-muted-foreground")}>
+											<p
+												className={cn(
+													"font-medium",
+													stage.status === "pending" && "text-muted-foreground",
+												)}
+											>
 												{stage.label}
 											</p>
 										)}
@@ -143,7 +171,11 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 												})}
 											</p>
 										)}
-										{stage.description && <p className="mt-1 text-muted-foreground text-sm">{stage.description}</p>}
+										{stage.description && (
+											<p className="mt-1 text-muted-foreground text-sm">
+												{stage.description}
+											</p>
+										)}
 									</div>
 								</div>
 							))}

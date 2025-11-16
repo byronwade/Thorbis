@@ -6,7 +6,11 @@ type WorkFormStateProps = {
 	action?: ReactNode;
 };
 
-export function WorkFormState({ title, description, action }: WorkFormStateProps) {
+export function WorkFormState({
+	title,
+	description,
+	action,
+}: WorkFormStateProps) {
 	return (
 		<div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
 			<div>

@@ -24,7 +24,11 @@ const MATERIALS_COLUMNS = [
 	{ key: "cost", label: "Cost" },
 ];
 
-export function MaterialsToolbarActions({ totalCount = 0 }: { totalCount?: number }) {
+export function MaterialsToolbarActions({
+	totalCount = 0,
+}: {
+	totalCount?: number;
+}) {
 	const _archiveFilter = useArchiveStore((state) => state.filters.materials);
 
 	// Calculate counts (will be passed from page)
@@ -41,7 +45,10 @@ export function MaterialsToolbarActions({ totalCount = 0 }: { totalCount?: numbe
 						entity="materials"
 						totalCount={totalCount}
 					/>
-					<ColumnVisibilityMenu columns={MATERIALS_COLUMNS} entity="materials" />
+					<ColumnVisibilityMenu
+						columns={MATERIALS_COLUMNS}
+						entity="materials"
+					/>
 				</div>
 			}
 			importExportDataType="materials"

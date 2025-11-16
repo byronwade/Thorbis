@@ -28,7 +28,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function AppointmentDetailToolbarActions() {
@@ -98,8 +103,15 @@ export function AppointmentDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
-								<a href={`/dashboard/work/appointments/new?cloneFrom=${appointmentId}`}>
+							<Button
+								asChild
+								className="h-8 gap-1.5"
+								size="sm"
+								variant="outline"
+							>
+								<a
+									href={`/dashboard/work/appointments/new?cloneFrom=${appointmentId}`}
+								>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -143,14 +155,23 @@ export function AppointmentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Appointment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this appointment? Archived appointments can be restored within 90 days.
+							Are you sure you want to archive this appointment? Archived
+							appointments can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Appointment"}
 						</Button>
 					</DialogFooter>

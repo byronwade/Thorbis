@@ -57,7 +57,11 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 		}
 
 		// Fetch user profile from public.users table (with RLS)
-		const { data: profile, error } = await supabase.from("users").select("*").eq("id", user.id).single();
+		const { data: profile, error } = await supabase
+			.from("users")
+			.select("*")
+			.eq("id", user.id)
+			.single();
 
 		if (error) {
 			return getUserProfileFromAuth(user);
@@ -66,9 +70,16 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 		// Merge auth data with profile data
 		return {
 			id: user.id,
-			name: profile?.name || user.user_metadata?.name || user.email?.split("@")[0] || "User",
+			name:
+				profile?.name ||
+				user.user_metadata?.name ||
+				user.email?.split("@")[0] ||
+				"User",
 			email: user.email || profile?.email || "",
-			avatar: profile?.avatar || user.user_metadata?.avatar_url || generateAvatar(user.email || profile?.email),
+			avatar:
+				profile?.avatar ||
+				user.user_metadata?.avatar_url ||
+				generateAvatar(user.email || profile?.email),
 			bio: profile?.bio || undefined,
 			phone: profile?.phone || undefined,
 			status: (profile?.status as UserStatus) || "online",
@@ -201,7 +212,7 @@ export const getUserCompanies = cache(
           onboarding_completed_at,
           deleted_at
         )
-      `
+      `,
 				)
 				.eq("user_id", user.id)
 				.eq("status", "active")
@@ -228,16 +239,23 @@ export const getUserCompanies = cache(
 				const companyId = m.companies.id;
 				if (!companyMap.has(companyId)) {
 					const subscriptionStatus = m.companies.stripe_subscription_status;
-					const onboardingProgress = (m.companies.onboarding_progress as Record<string, unknown>) || null;
+					const onboardingProgress =
+						(m.companies.onboarding_progress as Record<string, unknown>) ||
+						null;
 					const onboardingComplete = isOnboardingComplete({
 						progress: onboardingProgress,
 						completedAt: m.companies.onboarding_completed_at ?? null,
 					});
-					const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+					const hasPayment =
+						subscriptionStatus === "active" ||
+						subscriptionStatus === "trialing";
 
 					let planLabel = "Active";
 					if (!(hasPayment && onboardingComplete)) {
-						planLabel = subscriptionStatus === "incomplete" ? "Incomplete Onboarding" : "Setup Required";
+						planLabel =
+							subscriptionStatus === "incomplete"
+								? "Incomplete Onboarding"
+								: "Setup Required";
 					}
 
 					companyMap.set(companyId, {
@@ -254,7 +272,7 @@ export const getUserCompanies = cache(
 		} catch (_error) {
 			return [];
 		}
-	}
+	},
 );
 
 /**
@@ -302,7 +320,12 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
  * RLS ensures users can only update their own profile
  */
 export async function updateUserProfile(
-	updates: Partial<{ name: string; bio: string; phone: string; avatar: string }>
+	updates: Partial<{
+		name: string;
+		bio: string;
+		phone: string;
+		avatar: string;
+	}>,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const user = await getCurrentUser();

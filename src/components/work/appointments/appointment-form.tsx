@@ -23,7 +23,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -84,14 +90,14 @@ export function AppointmentForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [selectedJobId, setSelectedJobId] = useState<string | undefined>(
-		preselectedJobId || searchParams?.get("jobId") || undefined
+		preselectedJobId || searchParams?.get("jobId") || undefined,
 	);
 	const [appointmentType, setAppointmentType] = useState("service");
 	const [priority, setPriority] = useState("normal");
@@ -113,7 +119,9 @@ export function AppointmentForm({
 		? properties.filter((_p) => true) // Simplified
 		: properties;
 
-	const customerJobs = selectedCustomerId ? jobs.filter((j) => j.customer_id === selectedCustomerId) : jobs;
+	const customerJobs = selectedCustomerId
+		? jobs.filter((j) => j.customer_id === selectedCustomerId)
+		: jobs;
 
 	// Keyboard shortcuts
 	useEffect(() => {
@@ -183,14 +191,21 @@ export function AppointmentForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select name="customerId" onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							name="customerId"
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -201,7 +216,11 @@ export function AppointmentForm({
 						<>
 							<div className="space-y-2">
 								<Label htmlFor="property-select">Property (Optional)</Label>
-								<Select name="propertyId" onValueChange={setSelectedPropertyId} value={selectedPropertyId}>
+								<Select
+									name="propertyId"
+									onValueChange={setSelectedPropertyId}
+									value={selectedPropertyId}
+								>
 									<SelectTrigger id="property-select">
 										<SelectValue placeholder="Select property" />
 									</SelectTrigger>
@@ -217,7 +236,11 @@ export function AppointmentForm({
 
 							<div className="space-y-2">
 								<Label htmlFor="job-select">Link to Job (Optional)</Label>
-								<Select name="jobId" onValueChange={setSelectedJobId} value={selectedJobId}>
+								<Select
+									name="jobId"
+									onValueChange={setSelectedJobId}
+									value={selectedJobId}
+								>
 									<SelectTrigger id="job-select">
 										<SelectValue placeholder="Select job" />
 									</SelectTrigger>
@@ -245,18 +268,32 @@ export function AppointmentForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., Annual HVAC Maintenance" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., Annual HVAC Maintenance"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="description">Description</Label>
-						<Textarea id="description" name="description" placeholder="Details about the appointment" rows={3} />
+						<Textarea
+							id="description"
+							name="description"
+							placeholder="Details about the appointment"
+							rows={3}
+						/>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="type">Type</Label>
-							<Select name="type" onValueChange={setAppointmentType} value={appointmentType}>
+							<Select
+								name="type"
+								onValueChange={setAppointmentType}
+								value={appointmentType}
+							>
 								<SelectTrigger id="type">
 									<SelectValue />
 								</SelectTrigger>
@@ -274,7 +311,11 @@ export function AppointmentForm({
 
 						<div className="space-y-2">
 							<Label htmlFor="priority">Priority</Label>
-							<Select name="priority" onValueChange={setPriority} value={priority}>
+							<Select
+								name="priority"
+								onValueChange={setPriority}
+								value={priority}
+							>
 								<SelectTrigger id="priority">
 									<SelectValue />
 								</SelectTrigger>
@@ -357,7 +398,9 @@ export function AppointmentForm({
 							step="5"
 							type="number"
 						/>
-						<p className="text-muted-foreground text-xs">Estimated travel time to reach the location</p>
+						<p className="text-muted-foreground text-xs">
+							Estimated travel time to reach the location
+						</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -397,14 +440,24 @@ export function AppointmentForm({
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Special instructions, customer preferences, etc." rows={3} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Special instructions, customer preferences, etc."
+							rows={3}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

@@ -492,7 +492,10 @@ export function ReportingSidebar() {
 	return (
 		<nav className="flex flex-col gap-2 py-2">
 			{sidebarGroups.map((group) => (
-				<div className="relative flex w-full min-w-0 flex-col p-2" key={group.label}>
+				<div
+					className="relative flex w-full min-w-0 flex-col p-2"
+					key={group.label}
+				>
 					<div className="flex h-8 shrink-0 items-center rounded-md px-2 font-medium text-muted-foreground text-xs">
 						{group.label}
 					</div>
@@ -507,12 +510,18 @@ export function ReportingSidebar() {
 											"focus-visible:ring-2 focus-visible:ring-ring",
 											"hover:bg-accent hover:text-accent-foreground",
 											"h-[30px] w-full border border-transparent font-medium text-[0.8rem]",
-											isActive && "border-accent bg-accent font-medium text-accent-foreground"
+											isActive &&
+												"border-accent bg-accent font-medium text-accent-foreground",
 										)}
 										href={item.href}
 									>
 										{item.title}
-										{item.badge && <span className="ml-auto flex size-2 rounded-full bg-primary" title={item.badge} />}
+										{item.badge && (
+											<span
+												className="ml-auto flex size-2 rounded-full bg-primary"
+												title={item.badge}
+											/>
+										)}
 									</Link>
 								</li>
 							);

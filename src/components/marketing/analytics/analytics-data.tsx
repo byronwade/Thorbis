@@ -6,7 +6,13 @@
  * allowing future expansion to data-driven analytics.
  */
 
-import { BarChart3, DollarSign, MousePointerClick, TrendingUp, Users } from "lucide-react";
+import {
+	BarChart3,
+	DollarSign,
+	MousePointerClick,
+	TrendingUp,
+	Users,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function MarketingAnalyticsData() {
@@ -30,7 +36,8 @@ export async function MarketingAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">ROI Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Measure return on investment for every marketing channel and campaign to maximize profitability
+							Measure return on investment for every marketing channel and
+							campaign to maximize profitability
 						</p>
 					</div>
 
@@ -41,7 +48,8 @@ export async function MarketingAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Conversion Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track lead-to-customer conversion rates and identify bottlenecks in your sales funnel
+							Track lead-to-customer conversion rates and identify bottlenecks
+							in your sales funnel
 						</p>
 					</div>
 
@@ -52,7 +60,8 @@ export async function MarketingAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Customer Acquisition</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze customer acquisition costs (CAC) and lifetime value (LTV) by marketing channel
+							Analyze customer acquisition costs (CAC) and lifetime value (LTV)
+							by marketing channel
 						</p>
 					</div>
 
@@ -63,7 +72,8 @@ export async function MarketingAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Performance Trends</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Identify trends and patterns in your marketing data to forecast future performance
+							Identify trends and patterns in your marketing data to forecast
+							future performance
 						</p>
 					</div>
 				</div>
@@ -71,7 +81,9 @@ export async function MarketingAnalyticsData() {
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Data-Driven Marketing</h3>
-					<p className="mb-6 text-muted-foreground">Make informed decisions with comprehensive marketing analytics</p>
+					<p className="mb-6 text-muted-foreground">
+						Make informed decisions with comprehensive marketing analytics
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

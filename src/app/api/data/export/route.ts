@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database not configured" },
+				{ status: 500 },
+			);
 		}
 
 		// Parse request body
@@ -32,13 +35,19 @@ export async function POST(request: NextRequest) {
 		const { dataType, format, filters, fields } = body;
 
 		if (!(dataType && format)) {
-			return NextResponse.json({ error: "dataType and format are required" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "dataType and format are required" },
+				{ status: 400 },
+			);
 		}
 
 		// Validate format
 		const allowedFormats = ["xlsx", "csv", "pdf"];
 		if (!allowedFormats.includes(format)) {
-			return NextResponse.json({ error: "Invalid format. Allowed: xlsx, csv, pdf" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Invalid format. Allowed: xlsx, csv, pdf" },
+				{ status: 400 },
+			);
 		}
 
 		// Get active company ID
@@ -46,7 +55,10 @@ export async function POST(request: NextRequest) {
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			return NextResponse.json({ error: "No active company found" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "No active company found" },
+				{ status: 400 },
+			);
 		}
 
 		// TODO: Implement actual data export with xlsx library
@@ -73,7 +85,10 @@ export async function POST(request: NextRequest) {
 			.single();
 
 		if (insertError) {
-			return NextResponse.json({ error: "Failed to create export record" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create export record" },
+				{ status: 500 },
+			);
 		}
 
 		return NextResponse.json({
@@ -85,6 +100,9 @@ export async function POST(request: NextRequest) {
 			expiresAt: exportRecord.expires_at,
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

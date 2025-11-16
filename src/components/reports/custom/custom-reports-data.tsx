@@ -22,7 +22,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Drag & Drop Builder</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Create custom reports with an intuitive drag-and-drop interface - no technical skills required
+							Create custom reports with an intuitive drag-and-drop interface -
+							no technical skills required
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Advanced Filtering</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Filter data by date range, customer, technician, service type, and more
+							Filter data by date range, customer, technician, service type, and
+							more
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Multiple Formats</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Export to PDF, Excel, CSV, or share interactive dashboards with your team
+							Export to PDF, Excel, CSV, or share interactive dashboards with
+							your team
 						</p>
 					</div>
 
@@ -59,7 +62,9 @@ export async function CustomReportsData() {
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Your Data, Your Way</h3>
-					<p className="mb-6 text-muted-foreground">Build reports tailored to your specific needs</p>
+					<p className="mb-6 text-muted-foreground">
+						Build reports tailored to your specific needs
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

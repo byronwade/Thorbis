@@ -1,13 +1,25 @@
 "use client";
 
-import { BarChart3, Calculator, DollarSign, Info, TrendingUp, Zap } from "lucide-react";
+import {
+	BarChart3,
+	Calculator,
+	DollarSign,
+	Info,
+	TrendingUp,
+	Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAnalytics, useFeatureTracking } from "@/lib/analytics";
 
 const CALCULATION_TRACKING_DEBOUNCE_MS = 1000;
@@ -79,7 +91,10 @@ export function RoiCalculator() {
 
 	// Track calculator completion when a valid calculation is made
 	useEffect(() => {
-		if (Number.isFinite(results.netMonthlyImpact) && results.netMonthlyImpact > 0) {
+		if (
+			Number.isFinite(results.netMonthlyImpact) &&
+			results.netMonthlyImpact > 0
+		) {
 			const timeoutId = setTimeout(() => {
 				track({
 					name: "calculator.used",
@@ -111,13 +126,15 @@ export function RoiCalculator() {
 		track,
 	]);
 
-	const handleChange = (field: keyof RoiInputs) => (event: React.ChangeEvent<HTMLInputElement>) => {
-		const value = Number.parseFloat(event.target.value);
-		setInputs((prev) => ({
-			...prev,
-			[field]: Number.isFinite(value) ? value : 0,
-		}));
-	};
+	const handleChange =
+		(field: keyof RoiInputs) =>
+		(event: React.ChangeEvent<HTMLInputElement>) => {
+			const value = Number.parseFloat(event.target.value);
+			setInputs((prev) => ({
+				...prev,
+				[field]: Number.isFinite(value) ? value : 0,
+			}));
+		};
 
 	const handleReset = () => {
 		setInputs(DEFAULT_VALUES);
@@ -126,20 +143,38 @@ export function RoiCalculator() {
 	const handleExport = () => {
 		const csvRows = [
 			["Metric", "Monthly Value", "Annual Value"],
-			["Labor time saved", results.laborSavingsMonthly.toFixed(2), results.laborSavingsAnnual.toFixed(2)],
+			[
+				"Labor time saved",
+				results.laborSavingsMonthly.toFixed(2),
+				results.laborSavingsAnnual.toFixed(2),
+			],
 			[
 				"Additional revenue from higher close rate",
 				results.additionalRevenueMonthly.toFixed(2),
 				results.additionalRevenueAnnual.toFixed(2),
 			],
-			["Total impact", results.totalMonthlyImpact.toFixed(2), results.totalAnnualImpact.toFixed(2)],
+			[
+				"Total impact",
+				results.totalMonthlyImpact.toFixed(2),
+				results.totalAnnualImpact.toFixed(2),
+			],
 			[
 				"Thorbis platform cost",
 				(inputs.thorbisPlanCost - inputs.currentSoftwareSpend).toFixed(2),
-				((inputs.thorbisPlanCost - inputs.currentSoftwareSpend) * 12).toFixed(2),
+				((inputs.thorbisPlanCost - inputs.currentSoftwareSpend) * 12).toFixed(
+					2,
+				),
 			],
-			["Net ROI", results.netMonthlyImpact.toFixed(2), results.netAnnualImpact.toFixed(2)],
-			["ROI multiple", results.roiMultiple.toFixed(2), results.roiMultiple.toFixed(2)],
+			[
+				"Net ROI",
+				results.netMonthlyImpact.toFixed(2),
+				results.netAnnualImpact.toFixed(2),
+			],
+			[
+				"ROI multiple",
+				results.roiMultiple.toFixed(2),
+				results.roiMultiple.toFixed(2),
+			],
 		];
 
 		const csvContent = csvRows.map((row) => row.join(",")).join("\n");
@@ -154,7 +189,15 @@ export function RoiCalculator() {
 		URL.revokeObjectURL(url);
 	};
 
-	const LabelWithTooltip = ({ htmlFor, label, tooltip }: { htmlFor: string; label: string; tooltip: string }) => (
+	const LabelWithTooltip = ({
+		htmlFor,
+		label,
+		tooltip,
+	}: {
+		htmlFor: string;
+		label: string;
+		tooltip: string;
+	}) => (
 		<div className="flex items-center gap-1.5">
 			<Label className="font-medium text-sm" htmlFor={htmlFor}>
 				{label}
@@ -185,8 +228,9 @@ export function RoiCalculator() {
 								Calculate Your Thorbis ROI
 							</h1>
 							<p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground leading-relaxed">
-								See how much you can save and earn by switching to Thorbis. Use your real numbers to project labor
-								savings, revenue lift, and net ROI after replacing your legacy field service stack.
+								See how much you can save and earn by switching to Thorbis. Use
+								your real numbers to project labor savings, revenue lift, and
+								net ROI after replacing your legacy field service stack.
 							</p>
 						</div>
 					</div>
@@ -205,14 +249,17 @@ export function RoiCalculator() {
 									Your Business Metrics
 								</h2>
 								<p className="mt-2 text-muted-foreground text-sm">
-									Enter your current operations data to calculate potential savings
+									Enter your current operations data to calculate potential
+									savings
 								</p>
 							</div>
 
 							<div className="space-y-6 rounded-lg bg-background p-6">
 								{/* Team & Operations */}
 								<div>
-									<h3 className="mb-3 font-semibold text-foreground text-sm">Team & Operations</h3>
+									<h3 className="mb-3 font-semibold text-foreground text-sm">
+										Team & Operations
+									</h3>
 									<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 										<div className="space-y-2">
 											<LabelWithTooltip
@@ -267,7 +314,9 @@ export function RoiCalculator() {
 
 								{/* Efficiency Gains */}
 								<div>
-									<h3 className="mb-3 font-semibold text-foreground text-sm">Expected Efficiency Gains with Thorbis</h3>
+									<h3 className="mb-3 font-semibold text-foreground text-sm">
+										Expected Efficiency Gains with Thorbis
+									</h3>
 									<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 										<div className="space-y-2">
 											<LabelWithTooltip
@@ -322,7 +371,9 @@ export function RoiCalculator() {
 
 								{/* Software Costs */}
 								<div>
-									<h3 className="mb-3 font-semibold text-foreground text-sm">Software Costs</h3>
+									<h3 className="mb-3 font-semibold text-foreground text-sm">
+										Software Costs
+									</h3>
 									<div className="grid gap-4 sm:grid-cols-2">
 										<div className="space-y-2">
 											<LabelWithTooltip
@@ -369,13 +420,16 @@ export function RoiCalculator() {
 														Monthly Jobs
 														<Info className="size-3" />
 													</p>
-													<p className="mt-1 font-semibold text-2xl">{formatNumber(results.monthlyJobs)}</p>
+													<p className="mt-1 font-semibold text-2xl">
+														{formatNumber(results.monthlyJobs)}
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Technicians × Jobs/Day × 22 Working Days
-													<br />= {inputs.technicianCount} × {inputs.jobsPerTechPerDay} × 22
+													<br />= {inputs.technicianCount} ×{" "}
+													{inputs.jobsPerTechPerDay} × 22
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -388,13 +442,16 @@ export function RoiCalculator() {
 														Hours Saved / Month
 														<Info className="size-3" />
 													</p>
-													<p className="mt-1 font-semibold text-2xl">{formatNumber(results.hoursSavedMonthly)}</p>
+													<p className="mt-1 font-semibold text-2xl">
+														{formatNumber(results.hoursSavedMonthly)}
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: (Minutes Saved × Monthly Jobs) ÷ 60
-													<br />= ({inputs.minutesSavedPerJob} × {formatNumber(results.monthlyJobs)}) ÷ 60
+													<br />= ({inputs.minutesSavedPerJob} ×{" "}
+													{formatNumber(results.monthlyJobs)}) ÷ 60
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -408,14 +465,18 @@ export function RoiCalculator() {
 														<Info className="size-3" />
 													</p>
 													<p className="mt-1 font-semibold text-2xl text-green-600 dark:text-green-500">
-														{formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100))}
+														{formatNumber(
+															results.monthlyJobs *
+																(inputs.closeRateLift / 100),
+														)}
 													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Monthly Jobs × (Close Rate Lift ÷ 100)
-													<br />= {formatNumber(results.monthlyJobs)} × ({inputs.closeRateLift}% ÷ 100)
+													<br />= {formatNumber(results.monthlyJobs)} × (
+													{inputs.closeRateLift}% ÷ 100)
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -423,14 +484,20 @@ export function RoiCalculator() {
 								</div>
 
 								<div className="flex flex-wrap gap-3">
-									<Button onClick={handleExport} type="button" variant="outline">
+									<Button
+										onClick={handleExport}
+										type="button"
+										variant="outline"
+									>
 										Export results (CSV)
 									</Button>
 									<Button onClick={handleReset} type="button" variant="ghost">
 										Reset to defaults
 									</Button>
 									<Button asChild type="button" variant="ghost">
-										<Link href="/tools/calculators/hourly-rate">Calculate hourly rate →</Link>
+										<Link href="/tools/calculators/hourly-rate">
+											Calculate hourly rate →
+										</Link>
 									</Button>
 								</div>
 							</div>
@@ -460,8 +527,12 @@ export function RoiCalculator() {
 												<DollarSign className="size-5 text-blue-600" />
 											</div>
 											<div>
-												<h3 className="font-semibold text-lg">Labor Time Savings</h3>
-												<p className="text-muted-foreground text-sm">Efficiency gains from streamlined workflows</p>
+												<h3 className="font-semibold text-lg">
+													Labor Time Savings
+												</h3>
+												<p className="text-muted-foreground text-sm">
+													Efficiency gains from streamlined workflows
+												</p>
 											</div>
 										</div>
 										<div className="space-y-4">
@@ -473,8 +544,8 @@ export function RoiCalculator() {
 													{formatCurrency(results.laborSavingsMonthly)}
 												</p>
 												<p className="mt-2 text-muted-foreground text-sm">
-													{formatNumber(results.hoursSavedMonthly)} hours saved ×{" "}
-													{formatCurrency(inputs.hourlyLaborCost)}/hr
+													{formatNumber(results.hoursSavedMonthly)} hours saved
+													× {formatCurrency(inputs.hourlyLaborCost)}/hr
 												</p>
 											</div>
 											<div className="rounded-lg border bg-muted/30 p-4">
@@ -485,7 +556,8 @@ export function RoiCalculator() {
 													{formatCurrency(results.laborSavingsAnnual)}
 												</p>
 												<p className="mt-2 text-muted-foreground text-sm">
-													{formatNumber(results.hoursSavedMonthly * 12)} hours saved annually
+													{formatNumber(results.hoursSavedMonthly * 12)} hours
+													saved annually
 												</p>
 											</div>
 										</div>
@@ -498,8 +570,12 @@ export function RoiCalculator() {
 												<TrendingUp className="size-5 text-green-600" />
 											</div>
 											<div>
-												<h3 className="font-semibold text-lg">Additional Revenue</h3>
-												<p className="text-muted-foreground text-sm">From higher close rates and automation</p>
+												<h3 className="font-semibold text-lg">
+													Additional Revenue
+												</h3>
+												<p className="text-muted-foreground text-sm">
+													From higher close rates and automation
+												</p>
 											</div>
 										</div>
 										<div className="space-y-4">
@@ -511,7 +587,10 @@ export function RoiCalculator() {
 													{formatCurrency(results.additionalRevenueMonthly)}
 												</p>
 												<p className="mt-2 text-muted-foreground text-sm">
-													{formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100))} additional jobs ×{" "}
+													{formatNumber(
+														results.monthlyJobs * (inputs.closeRateLift / 100),
+													)}{" "}
+													additional jobs ×{" "}
 													{formatCurrency(inputs.averageTicket)}
 												</p>
 											</div>
@@ -523,8 +602,12 @@ export function RoiCalculator() {
 													{formatCurrency(results.additionalRevenueAnnual)}
 												</p>
 												<p className="mt-2 text-muted-foreground text-sm">
-													{formatNumber(results.monthlyJobs * (inputs.closeRateLift / 100) * 12)} additional jobs
-													annually
+													{formatNumber(
+														results.monthlyJobs *
+															(inputs.closeRateLift / 100) *
+															12,
+													)}{" "}
+													additional jobs annually
 												</p>
 											</div>
 										</div>
@@ -538,8 +621,12 @@ export function RoiCalculator() {
 											<BarChart3 className="size-5 text-primary" />
 										</div>
 										<div>
-											<h3 className="font-semibold text-lg">Net Monthly Impact</h3>
-											<p className="text-muted-foreground text-sm">After platform cost</p>
+											<h3 className="font-semibold text-lg">
+												Net Monthly Impact
+											</h3>
+											<p className="text-muted-foreground text-sm">
+												After platform cost
+											</p>
 										</div>
 									</div>
 									<div className="grid gap-6 lg:grid-cols-3">
@@ -547,23 +634,33 @@ export function RoiCalculator() {
 											<p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
 												Total Monthly Impact
 											</p>
-											<p className="font-bold text-3xl">{formatCurrency(results.totalMonthlyImpact)}</p>
-											<p className="mt-2 text-muted-foreground text-sm">Savings + Revenue Lift</p>
+											<p className="font-bold text-3xl">
+												{formatCurrency(results.totalMonthlyImpact)}
+											</p>
+											<p className="mt-2 text-muted-foreground text-sm">
+												Savings + Revenue Lift
+											</p>
 										</div>
 										<div className="rounded-lg bg-background/80 p-4">
 											<p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
 												Platform Cost Difference
 											</p>
 											<p className="font-bold text-3xl">
-												{formatCurrency(inputs.thorbisPlanCost - inputs.currentSoftwareSpend)}
+												{formatCurrency(
+													inputs.thorbisPlanCost - inputs.currentSoftwareSpend,
+												)}
 											</p>
-											<p className="mt-2 text-muted-foreground text-sm">Thorbis vs. Current Stack</p>
+											<p className="mt-2 text-muted-foreground text-sm">
+												Thorbis vs. Current Stack
+											</p>
 										</div>
 										<div className="rounded-lg bg-primary/10 p-4">
 											<p className="mb-1 font-medium text-muted-foreground text-xs uppercase tracking-wide">
 												Net Monthly ROI
 											</p>
-											<p className="font-bold text-4xl text-primary">{formatCurrency(results.netMonthlyImpact)}</p>
+											<p className="font-bold text-4xl text-primary">
+												{formatCurrency(results.netMonthlyImpact)}
+											</p>
 											<p className="mt-2 text-muted-foreground text-sm">
 												{results.roiMultiple.toFixed(1)}x ROI multiple
 											</p>
@@ -574,28 +671,44 @@ export function RoiCalculator() {
 								{/* Annual Projections */}
 								<div className="rounded-lg bg-background p-6">
 									<div className="mb-4">
-										<h3 className="font-semibold text-lg">12-Month Projections</h3>
-										<p className="text-muted-foreground text-sm">Full year impact at current rates</p>
+										<h3 className="font-semibold text-lg">
+											12-Month Projections
+										</h3>
+										<p className="text-muted-foreground text-sm">
+											Full year impact at current rates
+										</p>
 									</div>
 									<div className="overflow-hidden rounded-lg bg-muted/30">
 										<table className="w-full">
 											<thead className="bg-muted/50">
 												<tr>
-													<th className="px-4 py-3 text-left font-medium text-sm">Metric</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Monthly</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Annual</th>
+													<th className="px-4 py-3 text-left font-medium text-sm">
+														Metric
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Monthly
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Annual
+													</th>
 												</tr>
 											</thead>
 											<tbody className="divide-y divide-border/30">
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Labor Savings</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Labor Savings
+													</td>
 													<td className="px-4 py-3 text-right text-sm">
 														{formatCurrency(results.laborSavingsMonthly)}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{formatCurrency(results.laborSavingsAnnual)}</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{formatCurrency(results.laborSavingsAnnual)}
+													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Additional Revenue</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Additional Revenue
+													</td>
 													<td className="px-4 py-3 text-right text-sm">
 														{formatCurrency(results.additionalRevenueMonthly)}
 													</td>
@@ -604,7 +717,9 @@ export function RoiCalculator() {
 													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Total Impact</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Total Impact
+													</td>
 													<td className="px-4 py-3 text-right font-semibold text-sm">
 														{formatCurrency(results.totalMonthlyImpact)}
 													</td>
@@ -613,12 +728,21 @@ export function RoiCalculator() {
 													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Platform Cost Difference</td>
-													<td className="px-4 py-3 text-right text-sm">
-														{formatCurrency(inputs.thorbisPlanCost - inputs.currentSoftwareSpend)}
+													<td className="px-4 py-3 font-medium text-sm">
+														Platform Cost Difference
 													</td>
 													<td className="px-4 py-3 text-right text-sm">
-														{formatCurrency((inputs.thorbisPlanCost - inputs.currentSoftwareSpend) * 12)}
+														{formatCurrency(
+															inputs.thorbisPlanCost -
+																inputs.currentSoftwareSpend,
+														)}
+													</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{formatCurrency(
+															(inputs.thorbisPlanCost -
+																inputs.currentSoftwareSpend) *
+																12,
+														)}
 													</td>
 												</tr>
 												<tr className="bg-muted/50 font-semibold">
@@ -638,10 +762,13 @@ export function RoiCalculator() {
 								{/* CTA */}
 								<div className="rounded-lg bg-gradient-to-br from-primary/10 to-transparent p-6 text-center">
 									<div className="mx-auto max-w-2xl">
-										<h3 className="mb-2 font-semibold text-xl">Ready to achieve these results?</h3>
+										<h3 className="mb-2 font-semibold text-xl">
+											Ready to achieve these results?
+										</h3>
 										<p className="mb-6 text-muted-foreground">
-											Join service businesses saving an average of {formatCurrency(results.netMonthlyImpact)} per month
-											with Thorbis.
+											Join service businesses saving an average of{" "}
+											{formatCurrency(results.netMonthlyImpact)} per month with
+											Thorbis.
 										</p>
 										<div className="flex flex-wrap justify-center gap-3">
 											<Button asChild size="lg">
@@ -685,7 +812,8 @@ function calculateROI({
 	const minutesSavedPerJobHours = minutesSavedPerJob / 60;
 	const hoursSavedMonthly = (minutesSavedPerJob * monthlyJobs) / 60;
 	const laborSavingsMonthly = hoursSavedMonthly * hourlyLaborCost;
-	const additionalRevenueMonthly = monthlyJobs * (closeRateLift / 100) * averageTicket;
+	const additionalRevenueMonthly =
+		monthlyJobs * (closeRateLift / 100) * averageTicket;
 	const totalMonthlyImpact = laborSavingsMonthly + additionalRevenueMonthly;
 
 	const thorbisIncrementalSpend = thorbisPlanCost - currentSoftwareSpend;
@@ -695,7 +823,8 @@ function calculateROI({
 	const additionalRevenueAnnual = additionalRevenueMonthly * 12;
 	const totalAnnualImpact = totalMonthlyImpact * 12;
 	const netAnnualImpact = netMonthlyImpact * 12;
-	const roiMultiple = thorbisPlanCost > 0 ? totalMonthlyImpact / thorbisPlanCost : 0;
+	const roiMultiple =
+		thorbisPlanCost > 0 ? totalMonthlyImpact / thorbisPlanCost : 0;
 
 	return {
 		monthlyJobs,

@@ -8,7 +8,14 @@
 import { Download, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type JobDocumentsProps = {
 	documents: any[];
@@ -51,7 +58,9 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<FileText className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Documents</h3>
-				<p className="text-muted-foreground text-sm">No documents have been attached to this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No documents have been attached to this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -75,7 +84,9 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 								<TableCell>
 									<div className="flex items-center gap-2">
 										{getFileIcon(doc.file_type || doc.type)}
-										<span className="font-medium">{doc.name || doc.file_name || "Untitled"}</span>
+										<span className="font-medium">
+											{doc.name || doc.file_name || "Untitled"}
+										</span>
 									</div>
 								</TableCell>
 								<TableCell>
@@ -87,12 +98,21 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 										"—"
 									)}
 								</TableCell>
-								<TableCell>{formatFileSize(doc.file_size || doc.size)}</TableCell>
-								<TableCell>{formatDate(doc.created_at || doc.uploaded_at)}</TableCell>
+								<TableCell>
+									{formatFileSize(doc.file_size || doc.size)}
+								</TableCell>
+								<TableCell>
+									{formatDate(doc.created_at || doc.uploaded_at)}
+								</TableCell>
 								<TableCell className="text-right">
 									{(doc.url || doc.file_url) && (
 										<Button asChild size="sm" variant="ghost">
-											<a download href={doc.url || doc.file_url} rel="noopener noreferrer" target="_blank">
+											<a
+												download
+												href={doc.url || doc.file_url}
+												rel="noopener noreferrer"
+												target="_blank"
+											>
 												<Download className="mr-1 size-4" />
 												Download
 											</a>
@@ -116,7 +136,12 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 					</div>
 					<div className="text-right">
 						<p className="font-medium text-sm">
-							{formatFileSize(documents.reduce((sum, doc) => sum + (doc.file_size || doc.size || 0), 0))}
+							{formatFileSize(
+								documents.reduce(
+									(sum, doc) => sum + (doc.file_size || doc.size || 0),
+									0,
+								),
+							)}
 						</p>
 						<p className="text-muted-foreground text-xs">Total Size</p>
 					</div>

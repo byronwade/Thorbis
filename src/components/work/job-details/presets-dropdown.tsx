@@ -36,7 +36,7 @@ export function PresetsDropdown() {
 						"flex w-full items-center justify-between gap-2 rounded-md px-2 py-2",
 						"font-medium text-sm transition-colors",
 						"hover:bg-accent hover:text-accent-foreground",
-						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+						"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
 					)}
 					type="button"
 				>
@@ -44,7 +44,9 @@ export function PresetsDropdown() {
 						<Grid3x3 className="h-4 w-4" />
 						<span>Presets</span>
 					</div>
-					<ChevronRight className={cn("h-4 w-4 transition-transform", open && "rotate-90")} />
+					<ChevronRight
+						className={cn("h-4 w-4 transition-transform", open && "rotate-90")}
+					/>
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start" className="w-[320px]" side="right">
@@ -66,24 +68,35 @@ export function PresetsDropdown() {
 									"flex flex-col gap-1 rounded-md p-3 text-left outline-hidden transition-all",
 									"hover:bg-accent hover:text-accent-foreground",
 									"min-h-[44px] w-full border",
-									industry === preset.industry ? "border-primary bg-primary/5" : "border-transparent"
+									industry === preset.industry
+										? "border-primary bg-primary/5"
+										: "border-transparent",
 								)}
 								key={preset.id}
 								onClick={() => handleLoadPreset(preset.id)}
 								type="button"
 							>
 								<div className="flex items-center justify-between gap-2">
-									<span className="font-medium text-[0.8rem]">{preset.name}</span>
+									<span className="font-medium text-[0.8rem]">
+										{preset.name}
+									</span>
 									{industry === preset.industry ? (
-										<Badge className="h-5 px-1.5 text-[0.65rem]" variant="default">
+										<Badge
+											className="h-5 px-1.5 text-[0.65rem]"
+											variant="default"
+										>
 											Current
 										</Badge>
 									) : null}
 								</div>
-								<span className="text-[0.7rem] text-muted-foreground">{preset.description}</span>
+								<span className="text-[0.7rem] text-muted-foreground">
+									{preset.description}
+								</span>
 								<div className="flex items-center gap-1.5 text-[0.65rem]">
 									<Blocks className="h-3 w-3 text-muted-foreground" />
-									<span className="text-muted-foreground">{preset.widgets.length} widgets</span>
+									<span className="text-muted-foreground">
+										{preset.widgets.length} widgets
+									</span>
 								</div>
 							</button>
 						))}
@@ -93,7 +106,8 @@ export function PresetsDropdown() {
 				{/* Footer */}
 				<DropdownMenuSeparator />
 				<div className="p-2 text-center text-muted-foreground text-xs">
-					{ALL_PRESETS.length} preset{ALL_PRESETS.length !== 1 ? "s" : ""} available
+					{ALL_PRESETS.length} preset{ALL_PRESETS.length !== 1 ? "s" : ""}{" "}
+					available
 				</div>
 			</DropdownMenuContent>
 		</DropdownMenu>

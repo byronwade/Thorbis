@@ -205,7 +205,10 @@ export interface PortalInvitationProps extends BaseEmailProps {
 }
 
 // Validation Schemas
-export const emailAddressSchema = z.string().email("Invalid email address").min(1, "Email is required");
+export const emailAddressSchema = z
+	.string()
+	.email("Invalid email address")
+	.min(1, "Email is required");
 
 export const emailSendSchema = z.object({
 	to: z.union([emailAddressSchema, z.array(emailAddressSchema)]),

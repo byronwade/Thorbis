@@ -52,7 +52,12 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 	} catch (error) {
 		// Catch any unexpected errors (network issues, etc.)
 		// The error might be thrown instead of returned in some cases
-		if (error && typeof error === "object" && "name" in error && error.name === "AuthSessionMissingError") {
+		if (
+			error &&
+			typeof error === "object" &&
+			"name" in error &&
+			error.name === "AuthSessionMissingError"
+		) {
 			return null;
 		}
 		return null;
@@ -136,7 +141,9 @@ export async function isAuthenticated(): Promise<boolean> {
  * Returns user metadata from Supabase Auth.
  * Useful for accessing additional user properties stored in auth.users.
  */
-export async function getUserMetadata<T = Record<string, any>>(): Promise<T | null> {
+export async function getUserMetadata<
+	T = Record<string, any>,
+>(): Promise<T | null> {
 	const user = await getCurrentUser();
 
 	if (!user) {

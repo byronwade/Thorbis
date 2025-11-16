@@ -4,7 +4,13 @@
  * Displays key usage metrics in card format
  */
 
-import { DollarSign, Hash, MessageSquare, Phone, Voicemail } from "lucide-react";
+import {
+	DollarSign,
+	Hash,
+	MessageSquare,
+	Phone,
+	Voicemail,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type UsageMetrics = {
@@ -25,7 +31,13 @@ type Costs = {
 	totalCost: number;
 };
 
-export function UsageMetricsCards({ metrics, costs }: { metrics: UsageMetrics; costs: Costs }) {
+export function UsageMetricsCards({
+	metrics,
+	costs,
+}: {
+	metrics: UsageMetrics;
+	costs: Costs;
+}) {
 	const cards = [
 		{
 			title: "Call Minutes",
@@ -80,7 +92,9 @@ export function UsageMetricsCards({ metrics, costs }: { metrics: UsageMetrics; c
 					<CardContent>
 						<div className="font-bold text-2xl">{card.value}</div>
 						<p className="text-muted-foreground text-xs">{card.description}</p>
-						<p className="mt-1 font-medium text-muted-foreground text-xs">{card.cost}</p>
+						<p className="mt-1 font-medium text-muted-foreground text-xs">
+							{card.cost}
+						</p>
 					</CardContent>
 				</Card>
 			))}

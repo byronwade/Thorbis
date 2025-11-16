@@ -10,11 +10,22 @@
  * - Assignment info
  */
 
-import { AlertCircle, Archive, CheckCircle, Clock, MessageSquare, Ticket, User } from "lucide-react";
+import {
+	AlertCircle,
+	Archive,
+	CheckCircle,
+	Clock,
+	MessageSquare,
+	Ticket,
+	User,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -42,8 +53,12 @@ type TicketsViewProps = {
 export function TicketsView({ messages }: TicketsViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
 
 	const handleOpenMessage = (message: TicketMessage) => {
 		setSelectedMessageId(message.id);
@@ -145,7 +160,9 @@ export function TicketsView({ messages }: TicketsViewProps) {
 					</div>
 					<div className="flex flex-col">
 						<span className="font-semibold text-sm">#{message.id}</span>
-						<span className="text-muted-foreground text-xs">{message.from}</span>
+						<span className="text-muted-foreground text-xs">
+							{message.from}
+						</span>
 					</div>
 				</div>
 			),
@@ -157,17 +174,27 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			render: (message) => (
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-						<span className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+						<span
+							className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+						>
 							{message.subject || "Support Request"}
 						</span>
-						<Badge className="text-xs" variant={getStatusVariant(message.ticketStatus)}>
+						<Badge
+							className="text-xs"
+							variant={getStatusVariant(message.ticketStatus)}
+						>
 							{getStatusLabel(message.ticketStatus)}
 						</Badge>
-						<Badge className="text-xs" variant={getPriorityColor(message.priority)}>
+						<Badge
+							className="text-xs"
+							variant={getPriorityColor(message.priority)}
+						>
 							{message.priority}
 						</Badge>
 					</div>
-					<p className="line-clamp-2 text-muted-foreground text-xs">{message.preview}</p>
+					<p className="line-clamp-2 text-muted-foreground text-xs">
+						{message.preview}
+					</p>
 				</div>
 			),
 		},
@@ -198,7 +225,11 @@ export function TicketsView({ messages }: TicketsViewProps) {
 				message.tags && message.tags.length > 0 ? (
 					<div className="flex flex-wrap gap-1">
 						{message.tags.slice(0, 2).map((tag) => (
-							<Badge className="text-xs" key={`${message.id}-${tag}`} variant="outline">
+							<Badge
+								className="text-xs"
+								key={`${message.id}-${tag}`}
+								variant="outline"
+							>
 								{tag}
 							</Badge>
 						))}
@@ -218,7 +249,11 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			width: "w-32",
 			align: "right",
 			sortable: true,
-			render: (message) => <span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>,
+			render: (message) => (
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
+			),
 		},
 	];
 
@@ -242,7 +277,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			const noun = selectedIds.size === 1 ? "ticket" : "tickets";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast]
+		[toast],
 	);
 
 	const bulkActions = [

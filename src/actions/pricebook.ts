@@ -13,7 +13,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -27,7 +31,10 @@ import { createClient } from "@/lib/supabase/server";
 // ============================================================================
 
 const categorySchema = z.object({
-	name: z.string().min(1, "Category name is required").max(100, "Name too long"),
+	name: z
+		.string()
+		.min(1, "Category name is required")
+		.max(100, "Name too long"),
 	slug: z
 		.string()
 		.min(1, "Slug is required")
@@ -67,7 +74,13 @@ const priceBookItemSchema = z.object({
 
 const bulkUpdatePriceSchema = z.object({
 	itemIds: z.array(z.string().uuid()).min(1, "At least one item required"),
-	updateType: z.enum(["increase_price", "decrease_price", "set_markup", "increase_markup", "decrease_markup"]),
+	updateType: z.enum([
+		"increase_price",
+		"decrease_price",
+		"set_markup",
+		"increase_markup",
+		"decrease_markup",
+	]),
 	value: z.number().min(0, "Value must be positive"), // Percentage or amount based on updateType
 	isPercentage: z.boolean().default(true),
 	reason: z.string().optional(),
@@ -86,11 +99,16 @@ const moveCategorySchema = z.object({
 /**
  * Create a new price book category
  */
-export async function createCategory(formData: FormData): Promise<ActionResult<string>> {
+export async function createCategory(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user and company
@@ -106,7 +124,11 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Validate input
@@ -115,10 +137,14 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 			slug: formData.get("slug"),
 			description: formData.get("description") || undefined,
 			parentId: formData.get("parentId") || null,
-			sortOrder: formData.get("sortOrder") ? Number(formData.get("sortOrder")) : 0,
+			sortOrder: formData.get("sortOrder")
+				? Number(formData.get("sortOrder"))
+				: 0,
 			icon: formData.get("icon") || undefined,
 			color: formData.get("color") || undefined,
-			isActive: formData.get("isActive") ? formData.get("isActive") === "true" : true,
+			isActive: formData.get("isActive")
+				? formData.get("isActive") === "true"
+				: true,
 		});
 
 		// Check if slug already exists for this company
@@ -130,7 +156,10 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 			.single();
 
 		if (existingSlug) {
-			throw new ActionError("A category with this slug already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+			throw new ActionError(
+				"A category with this slug already exists",
+				ERROR_CODES.DB_DUPLICATE_ENTRY,
+			);
 		}
 
 		// Calculate level and path
@@ -148,7 +177,11 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 			assertExists(parent, "Parent category");
 
 			if (parent.company_id !== teamMember.company_id) {
-				throw new ActionError("Parent category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+				throw new ActionError(
+					"Parent category not found",
+					ERROR_CODES.AUTH_FORBIDDEN,
+					403,
+				);
 			}
 
 			level = parent.level + 1;
@@ -177,7 +210,10 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 			.single();
 
 		if (createError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("create category"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create category"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/pricebook");
@@ -189,11 +225,17 @@ export async function createCategory(formData: FormData): Promise<ActionResult<s
 /**
  * Update an existing category
  */
-export async function updateCategory(categoryId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updateCategory(
+	categoryId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -208,7 +250,11 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify category exists and belongs to company
@@ -221,7 +267,11 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
 		assertExists(category, "Category");
 
 		if (category.company_id !== teamMember.company_id) {
-			throw new ActionError("Category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"Category not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Validate input (excluding parentId - use moveCategory for that)
@@ -229,10 +279,14 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
 			name: formData.get("name"),
 			slug: formData.get("slug"),
 			description: formData.get("description") || undefined,
-			sortOrder: formData.get("sortOrder") ? Number(formData.get("sortOrder")) : 0,
+			sortOrder: formData.get("sortOrder")
+				? Number(formData.get("sortOrder"))
+				: 0,
 			icon: formData.get("icon") || undefined,
 			color: formData.get("color") || undefined,
-			isActive: formData.get("isActive") ? formData.get("isActive") === "true" : true,
+			isActive: formData.get("isActive")
+				? formData.get("isActive") === "true"
+				: true,
 		});
 
 		// Check if slug already exists (excluding current category)
@@ -246,7 +300,10 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
 				.single();
 
 			if (existingSlug) {
-				throw new ActionError("A category with this slug already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+				throw new ActionError(
+					"A category with this slug already exists",
+					ERROR_CODES.DB_DUPLICATE_ENTRY,
+				);
 			}
 		}
 
@@ -265,7 +322,10 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
 			.eq("id", categoryId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update category"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update category"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/pricebook");
@@ -277,11 +337,16 @@ export async function updateCategory(categoryId: string, formData: FormData): Pr
  * Move a category to a new parent or reorder within same level
  * This updates the materialized path for the category and all descendants
  */
-export async function moveCategory(formData: FormData): Promise<ActionResult<void>> {
+export async function moveCategory(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -296,13 +361,19 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		const data = moveCategorySchema.parse({
 			categoryId: formData.get("categoryId"),
 			newParentId: formData.get("newParentId") || null,
-			newSortOrder: formData.get("newSortOrder") ? Number(formData.get("newSortOrder")) : undefined,
+			newSortOrder: formData.get("newSortOrder")
+				? Number(formData.get("newSortOrder"))
+				: undefined,
 		});
 
 		// Get the category being moved
@@ -315,7 +386,11 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 		assertExists(category, "Category");
 
 		if (category.company_id !== teamMember.company_id) {
-			throw new ActionError("Category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"Category not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Prevent moving a category to one of its descendants (creates circular reference)
@@ -329,12 +404,19 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 			assertExists(newParent, "New parent category");
 
 			if (newParent.company_id !== teamMember.company_id) {
-				throw new ActionError("Parent category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+				throw new ActionError(
+					"Parent category not found",
+					ERROR_CODES.AUTH_FORBIDDEN,
+					403,
+				);
 			}
 
 			// Check if newParent is a descendant of category
 			if (newParent.path.includes(data.categoryId)) {
-				throw new ActionError("Cannot move a category to one of its descendants", ERROR_CODES.BUSINESS_RULE_VIOLATION);
+				throw new ActionError(
+					"Cannot move a category to one of its descendants",
+					ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				);
 			}
 		}
 
@@ -352,7 +434,9 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 			assertExists(parent, "Parent category");
 
 			newLevel = parent.level + 1;
-			newPath = parent.path ? `${parent.path}.${data.newParentId}` : data.newParentId;
+			newPath = parent.path
+				? `${parent.path}.${data.newParentId}`
+				: data.newParentId;
 		}
 
 		const oldPath = category.path;
@@ -376,7 +460,10 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 			.eq("id", data.categoryId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("move category"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("move category"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Update all descendants (if any)
@@ -392,7 +479,9 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 			for (const descendant of descendants) {
 				// Replace the old path prefix with the new path
 				const descendantPathSuffix = descendant.path.substring(oldPath.length);
-				const newDescendantPath = newPath ? `${newPath}${descendantPathSuffix}` : descendantPathSuffix.substring(1); // Remove leading dot
+				const newDescendantPath = newPath
+					? `${newPath}${descendantPathSuffix}`
+					: descendantPathSuffix.substring(1); // Remove leading dot
 				const newDescendantLevel = descendant.level + levelDiff;
 
 				await supabase
@@ -413,11 +502,16 @@ export async function moveCategory(formData: FormData): Promise<ActionResult<voi
 /**
  * Delete a category (only if it has no items and no child categories)
  */
-export async function deleteCategory(categoryId: string): Promise<ActionResult<void>> {
+export async function deleteCategory(
+	categoryId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -432,7 +526,11 @@ export async function deleteCategory(categoryId: string): Promise<ActionResult<v
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify category exists and belongs to company
@@ -445,14 +543,18 @@ export async function deleteCategory(categoryId: string): Promise<ActionResult<v
 		assertExists(category, "Category");
 
 		if (category.company_id !== teamMember.company_id) {
-			throw new ActionError("Category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"Category not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Check if category has items
 		if (category.item_count > 0) {
 			throw new ActionError(
 				"Cannot delete category with items. Move or delete items first.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION
+				ERROR_CODES.BUSINESS_RULE_VIOLATION,
 			);
 		}
 
@@ -466,15 +568,21 @@ export async function deleteCategory(categoryId: string): Promise<ActionResult<v
 		if (children && children.length > 0) {
 			throw new ActionError(
 				"Cannot delete category with subcategories. Delete or move subcategories first.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION
+				ERROR_CODES.BUSINESS_RULE_VIOLATION,
 			);
 		}
 
 		// Delete the category
-		const { error: deleteError } = await supabase.from("price_book_categories").delete().eq("id", categoryId);
+		const { error: deleteError } = await supabase
+			.from("price_book_categories")
+			.delete()
+			.eq("id", categoryId);
 
 		if (deleteError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete category"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete category"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/pricebook");
@@ -489,7 +597,10 @@ export async function getCategoryTree(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -504,7 +615,11 @@ export async function getCategoryTree(): Promise<ActionResult<any[]>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Get all categories ordered by path (this naturally orders the tree)
@@ -516,7 +631,10 @@ export async function getCategoryTree(): Promise<ActionResult<any[]>> {
 			.order("path", { ascending: true });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch categories"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch categories"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return categories || [];
@@ -530,11 +648,16 @@ export async function getCategoryTree(): Promise<ActionResult<any[]>> {
 /**
  * Create a new price book item
  */
-export async function createPriceBookItem(formData: FormData): Promise<ActionResult<string>> {
+export async function createPriceBookItem(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -549,7 +672,11 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Parse tags if provided
@@ -572,11 +699,19 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 			sku: formData.get("sku") || undefined,
 			cost: formData.get("cost") ? Number(formData.get("cost")) : 0,
 			price: formData.get("price") ? Number(formData.get("price")) : 0,
-			markupPercent: formData.get("markupPercent") ? Number(formData.get("markupPercent")) : 0,
+			markupPercent: formData.get("markupPercent")
+				? Number(formData.get("markupPercent"))
+				: 0,
 			unit: formData.get("unit") || "each",
-			minimumQuantity: formData.get("minimumQuantity") ? Number(formData.get("minimumQuantity")) : 1,
-			isActive: formData.get("isActive") ? formData.get("isActive") === "true" : true,
-			isTaxable: formData.get("isTaxable") ? formData.get("isTaxable") === "true" : true,
+			minimumQuantity: formData.get("minimumQuantity")
+				? Number(formData.get("minimumQuantity"))
+				: 1,
+			isActive: formData.get("isActive")
+				? formData.get("isActive") === "true"
+				: true,
+			isTaxable: formData.get("isTaxable")
+				? formData.get("isTaxable") === "true"
+				: true,
 			supplierId: formData.get("supplierId") || null,
 			supplierSku: formData.get("supplierSku") || undefined,
 			imageUrl: formData.get("imageUrl") || null,
@@ -594,7 +729,11 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 		assertExists(category, "Category");
 
 		if (category.company_id !== teamMember.company_id) {
-			throw new ActionError("Category not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"Category not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Check if SKU already exists (if provided)
@@ -607,7 +746,10 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 				.single();
 
 			if (existingSku) {
-				throw new ActionError("An item with this SKU already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+				throw new ActionError(
+					"An item with this SKU already exists",
+					ERROR_CODES.DB_DUPLICATE_ENTRY,
+				);
 			}
 		}
 
@@ -638,7 +780,10 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 			.single();
 
 		if (createError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("create item"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create item"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Update category item count
@@ -654,11 +799,17 @@ export async function createPriceBookItem(formData: FormData): Promise<ActionRes
 /**
  * Update an existing price book item
  */
-export async function updatePriceBookItem(itemId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updatePriceBookItem(
+	itemId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -673,7 +824,11 @@ export async function updatePriceBookItem(itemId: string, formData: FormData): P
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify item exists and belongs to company
@@ -709,11 +864,19 @@ export async function updatePriceBookItem(itemId: string, formData: FormData): P
 			sku: formData.get("sku") || undefined,
 			cost: formData.get("cost") ? Number(formData.get("cost")) : 0,
 			price: formData.get("price") ? Number(formData.get("price")) : 0,
-			markupPercent: formData.get("markupPercent") ? Number(formData.get("markupPercent")) : 0,
+			markupPercent: formData.get("markupPercent")
+				? Number(formData.get("markupPercent"))
+				: 0,
 			unit: formData.get("unit") || "each",
-			minimumQuantity: formData.get("minimumQuantity") ? Number(formData.get("minimumQuantity")) : 1,
-			isActive: formData.get("isActive") ? formData.get("isActive") === "true" : true,
-			isTaxable: formData.get("isTaxable") ? formData.get("isTaxable") === "true" : true,
+			minimumQuantity: formData.get("minimumQuantity")
+				? Number(formData.get("minimumQuantity"))
+				: 1,
+			isActive: formData.get("isActive")
+				? formData.get("isActive") === "true"
+				: true,
+			isTaxable: formData.get("isTaxable")
+				? formData.get("isTaxable") === "true"
+				: true,
 			supplierId: formData.get("supplierId") || null,
 			supplierSku: formData.get("supplierSku") || undefined,
 			imageUrl: formData.get("imageUrl") || null,
@@ -732,13 +895,18 @@ export async function updatePriceBookItem(itemId: string, formData: FormData): P
 				.single();
 
 			if (existingSku) {
-				throw new ActionError("An item with this SKU already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+				throw new ActionError(
+					"An item with this SKU already exists",
+					ERROR_CODES.DB_DUPLICATE_ENTRY,
+				);
 			}
 		}
 
 		// Track price changes for history
 		const priceChanged =
-			data.cost !== item.cost || data.price !== item.price || data.markupPercent !== item.markup_percent;
+			data.cost !== item.cost ||
+			data.price !== item.price ||
+			data.markupPercent !== item.markup_percent;
 
 		// Update item
 		const { error: updateError } = await supabase
@@ -765,7 +933,10 @@ export async function updatePriceBookItem(itemId: string, formData: FormData): P
 			.eq("id", itemId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update item"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update item"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// If category changed, update item counts
@@ -804,11 +975,16 @@ export async function updatePriceBookItem(itemId: string, formData: FormData): P
 /**
  * Delete a price book item
  */
-export async function deletePriceBookItem(itemId: string): Promise<ActionResult<void>> {
+export async function deletePriceBookItem(
+	itemId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -823,7 +999,11 @@ export async function deletePriceBookItem(itemId: string): Promise<ActionResult<
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify item exists and belongs to company
@@ -843,10 +1023,16 @@ export async function deletePriceBookItem(itemId: string): Promise<ActionResult<
 		// For now, we'll allow deletion but this should be restricted in production
 
 		// Delete the item
-		const { error: deleteError } = await supabase.from("price_book_items").delete().eq("id", itemId);
+		const { error: deleteError } = await supabase
+			.from("price_book_items")
+			.delete()
+			.eq("id", itemId);
 
 		if (deleteError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete item"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete item"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Update category item count
@@ -865,11 +1051,16 @@ export async function deletePriceBookItem(itemId: string): Promise<ActionResult<
 /**
  * Bulk update prices for multiple items
  */
-export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult<number>> {
+export async function bulkUpdatePrices(
+	formData: FormData,
+): Promise<ActionResult<number>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -884,7 +1075,11 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Parse item IDs
@@ -893,7 +1088,10 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 		try {
 			itemIds = JSON.parse(itemIdsString);
 		} catch {
-			throw new ActionError("Invalid item IDs format", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"Invalid item IDs format",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
 		// Validate input
@@ -901,7 +1099,9 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 			itemIds,
 			updateType: formData.get("updateType"),
 			value: Number(formData.get("value")),
-			isPercentage: formData.get("isPercentage") ? formData.get("isPercentage") === "true" : true,
+			isPercentage: formData.get("isPercentage")
+				? formData.get("isPercentage") === "true"
+				: true,
 			reason: formData.get("reason") || undefined,
 		});
 
@@ -913,11 +1113,17 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 			.in("id", data.itemIds);
 
 		if (fetchError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch items"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch items"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		if (!items || items.length === 0) {
-			throw new ActionError("No items found to update", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"No items found to update",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		// Update each item based on update type
@@ -955,7 +1161,10 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 					break;
 
 				case "decrease_markup":
-					newMarkup = Math.max(0, item.markup_percent - Math.round(data.value * 100));
+					newMarkup = Math.max(
+						0,
+						item.markup_percent - Math.round(data.value * 100),
+					);
 					newPrice = Math.round(item.cost * (1 + newMarkup / 10_000));
 					break;
 			}
@@ -1000,11 +1209,17 @@ export async function bulkUpdatePrices(formData: FormData): Promise<ActionResult
 /**
  * Bulk activate/deactivate items
  */
-export async function bulkToggleActiveStatus(itemIds: string[], isActive: boolean): Promise<ActionResult<number>> {
+export async function bulkToggleActiveStatus(
+	itemIds: string[],
+	isActive: boolean,
+): Promise<ActionResult<number>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1019,7 +1234,11 @@ export async function bulkToggleActiveStatus(itemIds: string[], isActive: boolea
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		if (!itemIds || itemIds.length === 0) {
@@ -1035,8 +1254,10 @@ export async function bulkToggleActiveStatus(itemIds: string[], isActive: boolea
 
 		if (updateError) {
 			throw new ActionError(
-				ERROR_MESSAGES.operationFailed(`${isActive ? "activate" : "deactivate"} items`),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_MESSAGES.operationFailed(
+					`${isActive ? "activate" : "deactivate"} items`,
+				),
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -1048,11 +1269,16 @@ export async function bulkToggleActiveStatus(itemIds: string[], isActive: boolea
 /**
  * Bulk delete items
  */
-export async function bulkDeleteItems(itemIds: string[]): Promise<ActionResult<number>> {
+export async function bulkDeleteItems(
+	itemIds: string[],
+): Promise<ActionResult<number>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1067,7 +1293,11 @@ export async function bulkDeleteItems(itemIds: string[]): Promise<ActionResult<n
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		if (!itemIds || itemIds.length === 0) {
@@ -1082,7 +1312,10 @@ export async function bulkDeleteItems(itemIds: string[]): Promise<ActionResult<n
 			.in("id", itemIds);
 
 		if (!items || items.length === 0) {
-			throw new ActionError("No items found to delete", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"No items found to delete",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		// Delete items
@@ -1093,13 +1326,18 @@ export async function bulkDeleteItems(itemIds: string[]): Promise<ActionResult<n
 			.in("id", itemIds);
 
 		if (deleteError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete items"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete items"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Update category counts
 		const categoryIds = [...new Set(items.map((item) => item.category_id))];
 		for (const categoryId of categoryIds) {
-			const itemCount = items.filter((item) => item.category_id === categoryId).length;
+			const itemCount = items.filter(
+				(item) => item.category_id === categoryId,
+			).length;
 			for (let i = 0; i < itemCount; i++) {
 				await supabase.rpc("decrement_category_item_count", {
 					category_id: categoryId,

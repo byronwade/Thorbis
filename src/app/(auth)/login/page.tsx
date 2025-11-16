@@ -7,7 +7,8 @@ import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 export const metadata = generateSEOMetadata({
 	title: "Log In",
 	section: "Account",
-	description: "Access your Thorbis field service dashboard to manage technicians, jobs, and customer communications.",
+	description:
+		"Access your Thorbis field service dashboard to manage technicians, jobs, and customer communications.",
 	path: "/login",
 	imageAlt: "Thorbis login form",
 	keywords: ["login", "field service dashboard", "thorbis account"],

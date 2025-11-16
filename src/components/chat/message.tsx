@@ -22,7 +22,8 @@ export function ChatMessage({ message, isLoading = false }: MessageProps) {
 
 	// Handle tool calls
 	const toolInvocations = (message as any).toolInvocations || [];
-	const hasContent = (message as any).content && (message as any).content.trim().length > 0;
+	const hasContent =
+		(message as any).content && (message as any).content.trim().length > 0;
 
 	return (
 		<div className="group/message relative mx-auto flex w-full max-w-3xl items-start gap-3 px-4 py-4 md:gap-4 md:px-8 md:py-6">
@@ -30,7 +31,7 @@ export function ChatMessage({ message, isLoading = false }: MessageProps) {
 			<div
 				className={cn(
 					"flex size-8 shrink-0 select-none items-center justify-center rounded-full",
-					isUser ? "bg-primary text-white" : "bg-secondary dark:bg-foreground"
+					isUser ? "bg-primary text-white" : "bg-secondary dark:bg-foreground",
 				)}
 			>
 				{isUser ? <UserIcon /> : <BotIcon />}
@@ -41,7 +42,9 @@ export function ChatMessage({ message, isLoading = false }: MessageProps) {
 				{/* Text content */}
 				{hasContent && (
 					<div className="prose dark:prose-invert max-w-none break-words text-sm leading-relaxed">
-						<div className="whitespace-pre-wrap">{(message as any).content}</div>
+						<div className="whitespace-pre-wrap">
+							{(message as any).content}
+						</div>
 					</div>
 				)}
 
@@ -56,11 +59,20 @@ export function ChatMessage({ message, isLoading = false }: MessageProps) {
 
 						if (toolName === "createDocument") {
 							return (
-								<div className="not-prose rounded-xl border bg-secondary p-4 dark:bg-foreground" key={toolCallId}>
-									<div className="mb-2 font-medium">Document Created: {result.title}</div>
+								<div
+									className="not-prose rounded-xl border bg-secondary p-4 dark:bg-foreground"
+									key={toolCallId}
+								>
+									<div className="mb-2 font-medium">
+										Document Created: {result.title}
+									</div>
 									<div className="rounded bg-secondary p-3 font-mono text-xs dark:bg-foreground">
-										<div className="text-muted-foreground">Type: {result.kind}</div>
-										<div className="mt-2 max-h-40 overflow-auto">{result.content}</div>
+										<div className="text-muted-foreground">
+											Type: {result.kind}
+										</div>
+										<div className="mt-2 max-h-40 overflow-auto">
+											{result.content}
+										</div>
 									</div>
 								</div>
 							);

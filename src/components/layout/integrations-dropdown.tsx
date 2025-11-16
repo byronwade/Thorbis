@@ -5,7 +5,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { integrations } from "@/lib/data/integrations";
 import { cn } from "@/lib/utils";
@@ -22,11 +26,15 @@ export function IntegrationsDropdown() {
 	const filteredIntegrations = integrations.filter(
 		(integration) =>
 			integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			integration.description.toLowerCase().includes(searchQuery.toLowerCase())
+			integration.description.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
-	const connectedIntegrations = filteredIntegrations.filter((integration) => integration.isConnected);
-	const availableIntegrations = filteredIntegrations.filter((integration) => !integration.isConnected);
+	const connectedIntegrations = filteredIntegrations.filter(
+		(integration) => integration.isConnected,
+	);
+	const availableIntegrations = filteredIntegrations.filter(
+		(integration) => !integration.isConnected,
+	);
 
 	// Prevent SSR hydration mismatch with Radix UI IDs
 	if (!mounted) {
@@ -97,13 +105,20 @@ export function IntegrationsDropdown() {
 										{/* Icon */}
 										<Avatar className="size-12 rounded-lg">
 											<AvatarImage src={integration.icon} />
-											<AvatarFallback className={cn("rounded-lg font-semibold text-sm text-white", integration.color)}>
+											<AvatarFallback
+												className={cn(
+													"rounded-lg font-semibold text-sm text-white",
+													integration.color,
+												)}
+											>
 												{integration.name.slice(0, 2).toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
 
 										{/* Name */}
-										<span className="line-clamp-1 text-center font-medium text-xs">{integration.name}</span>
+										<span className="line-clamp-1 text-center font-medium text-xs">
+											{integration.name}
+										</span>
 									</button>
 								))}
 							</div>
@@ -113,7 +128,9 @@ export function IntegrationsDropdown() {
 					{/* Available Integrations */}
 					{availableIntegrations.length > 0 && (
 						<div>
-							{connectedIntegrations.length > 0 && <div className="mb-4 h-px bg-border" />}
+							{connectedIntegrations.length > 0 && (
+								<div className="mb-4 h-px bg-border" />
+							)}
 							<h3 className="mb-3 px-1 font-medium text-muted-foreground text-xs uppercase tracking-wider">
 								Available ({availableIntegrations.length})
 							</h3>
@@ -127,7 +144,12 @@ export function IntegrationsDropdown() {
 										{/* Icon */}
 										<Avatar className="size-12 rounded-lg opacity-60 transition-opacity group-hover:opacity-100">
 											<AvatarImage src={integration.icon} />
-											<AvatarFallback className={cn("rounded-lg font-semibold text-sm text-white", integration.color)}>
+											<AvatarFallback
+												className={cn(
+													"rounded-lg font-semibold text-sm text-white",
+													integration.color,
+												)}
+											>
 												{integration.name.slice(0, 2).toUpperCase()}
 											</AvatarFallback>
 										</Avatar>
@@ -151,7 +173,9 @@ export function IntegrationsDropdown() {
 					{filteredIntegrations.length === 0 && (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Zap className="mb-3 size-10 text-muted-foreground/50" />
-							<p className="text-muted-foreground text-sm">No integrations found</p>
+							<p className="text-muted-foreground text-sm">
+								No integrations found
+							</p>
 						</div>
 					)}
 				</div>
@@ -159,7 +183,12 @@ export function IntegrationsDropdown() {
 				{/* Footer - Manage integrations */}
 				<div className="border-t p-2">
 					<Link href="/dashboard/settings/integrations">
-						<Button className="w-full justify-start gap-2" onClick={() => setOpen(false)} size="sm" variant="ghost">
+						<Button
+							className="w-full justify-start gap-2"
+							onClick={() => setOpen(false)}
+							size="sm"
+							variant="ghost"
+						>
 							<Settings className="size-4" />
 							Manage integrations
 						</Button>

@@ -7,16 +7,37 @@
 
 "use client";
 
-import { Check, ChevronRight, CreditCard, Download, Eye, FileText, Globe, Mail, Palette, Settings } from "lucide-react";
+import {
+	Check,
+	ChevronRight,
+	CreditCard,
+	Download,
+	Eye,
+	FileText,
+	Globe,
+	Mail,
+	Palette,
+	Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
 	Sidebar,
@@ -106,7 +127,10 @@ export function InvoiceOptionsSidebar() {
 	]);
 
 	// Payment settings
-	const [enabledPaymentOptions, setEnabledPaymentOptions] = useState(["online-payment", "payment-methods"]);
+	const [enabledPaymentOptions, setEnabledPaymentOptions] = useState([
+		"online-payment",
+		"payment-methods",
+	]);
 
 	// Email settings
 	const [sendEmailOnCreate, setSendEmailOnCreate] = useState(false);
@@ -121,12 +145,18 @@ export function InvoiceOptionsSidebar() {
 	};
 
 	const toggleOption = (optionId: string) => {
-		setEnabledOptions((prev) => (prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]));
+		setEnabledOptions((prev) =>
+			prev.includes(optionId)
+				? prev.filter((id) => id !== optionId)
+				: [...prev, optionId],
+		);
 	};
 
 	const togglePaymentOption = (optionId: string) => {
 		setEnabledPaymentOptions((prev) =>
-			prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+			prev.includes(optionId)
+				? prev.filter((id) => id !== optionId)
+				: [...prev, optionId],
 		);
 	};
 
@@ -144,7 +174,9 @@ export function InvoiceOptionsSidebar() {
 				<div className="flex items-center justify-between p-4">
 					<div>
 						<h2 className="font-semibold text-sm">Customer View</h2>
-						<p className="mt-0.5 text-muted-foreground text-xs">Customize what customers see</p>
+						<p className="mt-0.5 text-muted-foreground text-xs">
+							Customize what customers see
+						</p>
 					</div>
 					<Button onClick={handlePreview} size="icon" variant="ghost">
 						<Eye className="size-4" />
@@ -168,7 +200,8 @@ export function InvoiceOptionsSidebar() {
 									<Card
 										className={cn(
 											"group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
-											selectedLayout === layout.id && "border-primary bg-primary/5"
+											selectedLayout === layout.id &&
+												"border-primary bg-primary/5",
 										)}
 										key={layout.id}
 										onClick={() => handleLayoutChange(layout.id)}
@@ -178,10 +211,16 @@ export function InvoiceOptionsSidebar() {
 												<layout.icon className="size-4 text-muted-foreground" />
 											</div>
 											<div className="flex-1 space-y-1">
-												<p className="font-medium text-sm leading-none">{layout.name}</p>
-												<p className="text-muted-foreground text-xs">{layout.description}</p>
+												<p className="font-medium text-sm leading-none">
+													{layout.name}
+												</p>
+												<p className="text-muted-foreground text-xs">
+													{layout.description}
+												</p>
 											</div>
-											{selectedLayout === layout.id && <Check className="size-4 text-primary" />}
+											{selectedLayout === layout.id && (
+												<Check className="size-4 text-primary" />
+											)}
 										</div>
 									</Card>
 								))}
@@ -234,7 +273,9 @@ export function InvoiceOptionsSidebar() {
 										step={10}
 										value={logoOpacity}
 									/>
-									<p className="text-muted-foreground text-xs">{logoOpacity[0]}%</p>
+									<p className="text-muted-foreground text-xs">
+										{logoOpacity[0]}%
+									</p>
 								</div>
 
 								<div className="space-y-2">
@@ -282,9 +323,19 @@ export function InvoiceOptionsSidebar() {
 										>
 											<span className="flex items-center gap-2">
 												{isEnabled && <Check className="size-3 text-primary" />}
-												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>{option.label}</span>
+												<span
+													className={cn(
+														"text-xs",
+														isEnabled ? "font-medium" : "",
+													)}
+												>
+													{option.label}
+												</span>
 											</span>
-											<Switch checked={isEnabled} onCheckedChange={() => toggleOption(option.id)} />
+											<Switch
+												checked={isEnabled}
+												onCheckedChange={() => toggleOption(option.id)}
+											/>
 										</button>
 									);
 								})}
@@ -320,9 +371,19 @@ export function InvoiceOptionsSidebar() {
 										>
 											<span className="flex items-center gap-2">
 												{isEnabled && <Check className="size-3 text-primary" />}
-												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>{option.label}</span>
+												<span
+													className={cn(
+														"text-xs",
+														isEnabled ? "font-medium" : "",
+													)}
+												>
+													{option.label}
+												</span>
 											</span>
-											<Switch checked={isEnabled} onCheckedChange={() => togglePaymentOption(option.id)} />
+											<Switch
+												checked={isEnabled}
+												onCheckedChange={() => togglePaymentOption(option.id)}
+											/>
 										</button>
 									);
 								})}
@@ -351,13 +412,23 @@ export function InvoiceOptionsSidebar() {
 									<div className="flex items-center justify-between">
 										<div className="space-y-0.5">
 											<p className="font-medium text-xs">Auto-send on Create</p>
-											<p className="text-[10px] text-muted-foreground">Automatically email invoice to customer</p>
+											<p className="text-[10px] text-muted-foreground">
+												Automatically email invoice to customer
+											</p>
 										</div>
-										<Switch checked={sendEmailOnCreate} onCheckedChange={setSendEmailOnCreate} />
+										<Switch
+											checked={sendEmailOnCreate}
+											onCheckedChange={setSendEmailOnCreate}
+										/>
 									</div>
 								</Card>
 
-								<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+								<Button
+									asChild
+									className="w-full justify-start gap-2 text-xs"
+									size="sm"
+									variant="outline"
+								>
 									<Link href="/dashboard/settings/email-templates">
 										<Mail className="size-3" />
 										Customize Email Template
@@ -387,20 +458,32 @@ export function InvoiceOptionsSidebar() {
 								<Card
 									className={cn(
 										"group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
-										enablePortal && "border-primary bg-primary/5"
+										enablePortal && "border-primary bg-primary/5",
 									)}
 									onClick={() => setEnablePortal(!enablePortal)}
 								>
 									<div className="flex items-start justify-between gap-2">
 										<div className="flex-1 space-y-1">
-											<p className="font-medium text-sm leading-none">Portal Access</p>
-											<p className="text-muted-foreground text-xs">{enablePortal ? "Enabled" : "Disabled"}</p>
+											<p className="font-medium text-sm leading-none">
+												Portal Access
+											</p>
+											<p className="text-muted-foreground text-xs">
+												{enablePortal ? "Enabled" : "Disabled"}
+											</p>
 										</div>
-										<Switch checked={enablePortal} onCheckedChange={setEnablePortal} />
+										<Switch
+											checked={enablePortal}
+											onCheckedChange={setEnablePortal}
+										/>
 									</div>
 								</Card>
 
-								<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+								<Button
+									asChild
+									className="w-full justify-start gap-2 text-xs"
+									size="sm"
+									variant="outline"
+								>
 									<Link href="/dashboard/settings/customer-portal">
 										<Settings className="size-3" />
 										Configure Portal Settings
@@ -419,14 +502,21 @@ export function InvoiceOptionsSidebar() {
 					<div className="space-y-2 px-2">
 						<Button
 							className="w-full justify-start gap-2 text-xs"
-							onClick={() => window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")}
+							onClick={() =>
+								window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")
+							}
 							size="sm"
 							variant="outline"
 						>
 							<Download className="size-3" />
 							Download PDF
 						</Button>
-						<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+						<Button
+							asChild
+							className="w-full justify-start gap-2 text-xs"
+							size="sm"
+							variant="outline"
+						>
 							<Link href={`/invoices/${invoiceId}/preview`}>
 								<Eye className="size-3" />
 								Preview Customer View
@@ -437,7 +527,12 @@ export function InvoiceOptionsSidebar() {
 			</SidebarContent>
 
 			<SidebarFooter className="border-t p-3">
-				<Button className="w-full gap-2" onClick={handleSave} size="sm" variant="default">
+				<Button
+					className="w-full gap-2"
+					onClick={handleSave}
+					size="sm"
+					variant="default"
+				>
 					<Settings className="size-4" />
 					Save Settings
 				</Button>

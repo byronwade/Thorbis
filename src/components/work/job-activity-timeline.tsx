@@ -17,7 +17,10 @@ type JobActivityTimelineProps = {
 	entityType?: "job" | "customer" | "invoice" | "estimate";
 };
 
-export function JobActivityTimeline({ jobId, entityType = "job" }: JobActivityTimelineProps) {
+export function JobActivityTimeline({
+	jobId,
+	entityType = "job",
+}: JobActivityTimelineProps) {
 	const [activities, setActivities] = useState<Activity[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -37,7 +40,9 @@ export function JobActivityTimeline({ jobId, entityType = "job" }: JobActivityTi
 					setError(result.error || "Failed to load activities");
 				}
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Failed to load activities");
+				setError(
+					err instanceof Error ? err.message : "Failed to load activities",
+				);
 			} finally {
 				setIsLoading(false);
 			}
@@ -50,7 +55,9 @@ export function JobActivityTimeline({ jobId, entityType = "job" }: JobActivityTi
 		return (
 			<div className="flex h-96 items-center justify-center">
 				<div className="text-center">
-					<p className="font-semibold text-destructive">Error loading activities</p>
+					<p className="font-semibold text-destructive">
+						Error loading activities
+					</p>
 					<p className="mt-2 text-muted-foreground text-sm">{error}</p>
 				</div>
 			</div>

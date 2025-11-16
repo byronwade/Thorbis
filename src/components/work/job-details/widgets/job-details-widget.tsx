@@ -14,11 +14,14 @@ type JobDetailsWidgetProps = {
 };
 
 export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
-	const jobNumber = job.jobNumber != null ? String(job.jobNumber) : "Not assigned";
+	const jobNumber =
+		job.jobNumber != null ? String(job.jobNumber) : "Not assigned";
 	const jobStatus = (job.status ?? "unknown").toString().replace(/_/g, " ");
 	const jobType = (job.jobType ?? "service").toString();
 	const jobPriority = (job.priority ?? "medium").toString();
-	const jobDescription = (job.description as string | null | undefined) ?? "No description provided.";
+	const jobDescription =
+		(job.description as string | null | undefined) ??
+		"No description provided.";
 	const jobNotes = (job.notes as string | null | undefined) ?? null;
 
 	return (
@@ -43,7 +46,13 @@ export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
 					<div className="text-muted-foreground text-xs">Priority</div>
 					<Badge
 						className="text-xs"
-						variant={jobPriority === "high" ? "destructive" : jobPriority === "medium" ? "secondary" : "outline"}
+						variant={
+							jobPriority === "high"
+								? "destructive"
+								: jobPriority === "medium"
+									? "secondary"
+									: "outline"
+						}
 					>
 						{jobPriority}
 					</Badge>
@@ -58,7 +67,9 @@ export function JobDetailsWidget({ job }: JobDetailsWidgetProps) {
 				<div className="space-y-2 text-xs">
 					<div className="flex items-center justify-between">
 						<span className="text-muted-foreground">Scheduled Start</span>
-						<span className="font-medium">{formatDate(job.scheduledStart)}</span>
+						<span className="font-medium">
+							{formatDate(job.scheduledStart)}
+						</span>
 					</div>
 					<div className="flex items-center justify-between">
 						<span className="text-muted-foreground">Scheduled End</span>

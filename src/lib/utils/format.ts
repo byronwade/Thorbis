@@ -17,7 +17,7 @@ export function formatCurrency(
 		decimals?: number;
 		showSymbol?: boolean;
 		currency?: string;
-	}
+	},
 ): string {
 	const { decimals = 2, showSymbol = true, currency = "USD" } = options ?? {};
 
@@ -43,7 +43,7 @@ export function formatCurrencyFromDollars(
 		decimals?: number;
 		showSymbol?: boolean;
 		currency?: string;
-	}
+	},
 ): string {
 	if (amount == null || Number.isNaN(amount)) {
 		return "$0";
@@ -69,7 +69,7 @@ export function formatCurrencyFromDollars(
  */
 export function formatCurrencyCompact(
 	value: number,
-	stage: "full" | "comfortable" | "compact" | "tiny" = "full"
+	stage: "full" | "comfortable" | "compact" | "tiny" = "full",
 ): string {
 	if (stage === "tiny" || stage === "compact") {
 		// Ultra-compact: use K/M abbreviations
@@ -107,7 +107,7 @@ export function formatCurrencyCompact(
 export function formatDate(
 	date: string | Date | null | undefined,
 	format: "short" | "long" | "datetime" | "time" | "iso" = "short",
-	fallback = "—"
+	fallback = "—",
 ): string {
 	if (!date) {
 		return fallback;
@@ -176,7 +176,10 @@ export function formatDate(
  * @param fallback - Fallback text when date is null/undefined
  * @returns Formatted date with time string
  */
-export function formatDateTime(date: string | Date | null | undefined, fallback = "—"): string {
+export function formatDateTime(
+	date: string | Date | null | undefined,
+	fallback = "—",
+): string {
 	return formatDate(date, "datetime", fallback);
 }
 
@@ -186,7 +189,10 @@ export function formatDateTime(date: string | Date | null | undefined, fallback 
  * @param fallback - Fallback text when date is null/undefined
  * @returns Formatted time string
  */
-export function formatTime(date: string | Date | null | undefined, fallback = "—"): string {
+export function formatTime(
+	date: string | Date | null | undefined,
+	fallback = "—",
+): string {
 	return formatDate(date, "time", fallback);
 }
 
@@ -201,7 +207,7 @@ export function formatRelativeTime(
 	options?: {
 		includeSeconds?: boolean;
 		maxDays?: number;
-	}
+	},
 ): string {
 	const { includeSeconds = false, maxDays = 7 } = options ?? {};
 	const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -264,9 +270,13 @@ export function formatNumber(
 		minimumFractionDigits?: number;
 		maximumFractionDigits?: number;
 		useGrouping?: boolean;
-	}
+	},
 ): string {
-	const { minimumFractionDigits = 0, maximumFractionDigits = 2, useGrouping = true } = options ?? {};
+	const {
+		minimumFractionDigits = 0,
+		maximumFractionDigits = 2,
+		useGrouping = true,
+	} = options ?? {};
 
 	return new Intl.NumberFormat("en-US", {
 		minimumFractionDigits,
@@ -293,7 +303,7 @@ export function formatPercentage(value: number, decimals = 1): string {
  */
 export function formatPercentageCompact(
 	value: number,
-	stage: "full" | "comfortable" | "compact" | "tiny" = "full"
+	stage: "full" | "comfortable" | "compact" | "tiny" = "full",
 ): string {
 	if (stage === "tiny" || stage === "compact") {
 		return `${Math.round(value)}%`;

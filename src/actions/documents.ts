@@ -55,7 +55,7 @@ export type UploadDocumentResult = {
  */
 async function verifyCompanyAccess(
 	companyId: string,
-	requiredRole?: string[]
+	requiredRole?: string[],
 ): Promise<{ userId: string; role: string } | null> {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -96,7 +96,7 @@ async function logDocumentAction(
 	companyId: string,
 	userId: string,
 	action: string,
-	details: Record<string, unknown>
+	details: Record<string, unknown>,
 ): Promise<void> {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -120,9 +120,19 @@ async function logDocumentAction(
 /**
  * Upload a single document
  */
-export async function uploadDocument(formData: FormData): Promise<ActionResult<UploadDocumentResult>> {
+export async function uploadDocument(
+	formData: FormData,
+): Promise<ActionResult<UploadDocumentResult>> {
 	try {
-		const { file, companyId, contextType, contextId, folder, description, tagsRaw } = extractUploadFormData(formData);
+		const {
+			file,
+			companyId,
+			contextType,
+			contextId,
+			folder,
+			description,
+			tagsRaw,
+		} = extractUploadFormData(formData);
 
 		const validateResult = await validateUploadInputs(file, contextType);
 		if (validateResult) {
@@ -222,7 +232,7 @@ function extractUploadFormData(formData: FormData): UploadFormData {
 
 function validateUploadInputs(
 	file: File | undefined,
-	contextType: UploadContextType | undefined
+	contextType: UploadContextType | undefined,
 ): ActionResult<UploadDocumentResult> | undefined {
 	if (!(file && contextType)) {
 		return {
@@ -248,7 +258,7 @@ function parseTags(tagsRaw?: string): string[] | undefined {
 
 async function validateJobContext(
 	contextId: string,
-	activeCompanyId: string
+	activeCompanyId: string,
 ): Promise<{ companyId: string } | ActionResult<UploadDocumentResult>> {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -258,7 +268,11 @@ async function validateJobContext(
 		};
 	}
 
-	const { data: job, error: jobError } = await supabase.from("jobs").select("company_id").eq("id", contextId).single();
+	const { data: job, error: jobError } = await supabase
+		.from("jobs")
+		.select("company_id")
+		.eq("id", contextId)
+		.single();
 
 	if (jobError || !job) {
 		return {
@@ -277,8 +291,13 @@ async function validateJobContext(
 	return { companyId: job.company_id };
 }
 
-async function handleJobDocumentUpload(params: JobUploadParams): Promise<ActionResult<UploadDocumentResult>> {
-	const validationResult = await validateJobContext(params.contextId, params.activeCompanyId);
+async function handleJobDocumentUpload(
+	params: JobUploadParams,
+): Promise<ActionResult<UploadDocumentResult>> {
+	const validationResult = await validateJobContext(
+		params.contextId,
+		params.activeCompanyId,
+	);
 
 	if ("success" in validationResult && !validationResult.success) {
 		return validationResult;
@@ -290,7 +309,8 @@ async function handleJobDocumentUpload(params: JobUploadParams): Promise<ActionR
 	if (!access) {
 		return {
 			success: false,
-			error: "Access denied - You must be an active member of this company to upload files",
+			error:
+				"Access denied - You must be an active member of this company to upload files",
 		};
 	}
 
@@ -349,12 +369,15 @@ async function handleJobDocumentUpload(params: JobUploadParams): Promise<ActionR
 	};
 }
 
-async function handleNonJobDocumentUpload(params: NonJobUploadParams): Promise<ActionResult<UploadDocumentResult>> {
+async function handleNonJobDocumentUpload(
+	params: NonJobUploadParams,
+): Promise<ActionResult<UploadDocumentResult>> {
 	const access = await verifyCompanyAccess(params.targetCompanyId);
 	if (!access) {
 		return {
 			success: false,
-			error: "Access denied - You must be an active member of this company to upload files",
+			error:
+				"Access denied - You must be an active member of this company to upload files",
 		};
 	}
 
@@ -398,12 +421,17 @@ async function handleNonJobDocumentUpload(params: NonJobUploadParams): Promise<A
 		};
 	}
 
-	await logDocumentAction(params.targetCompanyId, access.userId, "document_uploaded", {
-		attachmentId: result.attachmentId,
-		fileName: params.file.name,
-		fileSize: params.file.size,
-		context,
-	});
+	await logDocumentAction(
+		params.targetCompanyId,
+		access.userId,
+		"document_uploaded",
+		{
+			attachmentId: result.attachmentId,
+			fileName: params.file.name,
+			fileSize: params.file.size,
+			context,
+		},
+	);
 
 	revalidatePath("/dashboard/documents");
 	if (params.contextType === "customer" && params.contextId) {
@@ -427,7 +455,9 @@ async function handleNonJobDocumentUpload(params: NonJobUploadParams): Promise<A
 /**
  * Upload multiple documents
  */
-export async function uploadDocuments(formData: FormData): Promise<ActionResult<UploadDocumentResult[]>> {
+export async function uploadDocuments(
+	formData: FormData,
+): Promise<ActionResult<UploadDocumentResult[]>> {
 	try {
 		const files = formData.getAll("files") as File[];
 		const companyId = formData.get("companyId") as string;
@@ -480,11 +510,16 @@ export async function uploadDocuments(formData: FormData): Promise<ActionResult<
 		});
 
 		// Log action
-		await logDocumentAction(companyId, access.userId, "documents_bulk_uploaded", {
-			count: successfulUploads.length,
-			failed: errors.length,
-			context,
-		});
+		await logDocumentAction(
+			companyId,
+			access.userId,
+			"documents_bulk_uploaded",
+			{
+				count: successfulUploads.length,
+				failed: errors.length,
+				context,
+			},
+		);
 
 		revalidatePath("/dashboard/documents");
 
@@ -515,7 +550,9 @@ export async function uploadDocuments(formData: FormData): Promise<ActionResult<
 /**
  * Get download URL for document
  */
-export async function getDocumentDownloadUrl(attachmentId: string): Promise<ActionResult<string>> {
+export async function getDocumentDownloadUrl(
+	attachmentId: string,
+): Promise<ActionResult<string>> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -554,10 +591,15 @@ export async function getDocumentDownloadUrl(attachmentId: string): Promise<Acti
 		}
 
 		// Log download
-		await logDocumentAction(attachment.company_id, access.userId, "document_downloaded", {
-			attachmentId,
-			fileName: attachment.file_name,
-		});
+		await logDocumentAction(
+			attachment.company_id,
+			access.userId,
+			"document_downloaded",
+			{
+				attachmentId,
+				fileName: attachment.file_name,
+			},
+		);
 
 		if (!result.url) {
 			return {
@@ -573,7 +615,8 @@ export async function getDocumentDownloadUrl(attachmentId: string): Promise<Acti
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to get download URL",
+			error:
+				error instanceof Error ? error.message : "Failed to get download URL",
 		};
 	}
 }
@@ -585,7 +628,9 @@ export async function getDocumentDownloadUrl(attachmentId: string): Promise<Acti
 /**
  * Delete document
  */
-export async function deleteDocument(attachmentId: string): Promise<ActionResult> {
+export async function deleteDocument(
+	attachmentId: string,
+): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -605,7 +650,11 @@ export async function deleteDocument(attachmentId: string): Promise<ActionResult
 			};
 		}
 
-		const access = await verifyCompanyAccess(attachment.company_id, ["owner", "admin", "manager"]);
+		const access = await verifyCompanyAccess(attachment.company_id, [
+			"owner",
+			"admin",
+			"manager",
+		]);
 		if (!access) {
 			return {
 				success: false,
@@ -623,10 +672,15 @@ export async function deleteDocument(attachmentId: string): Promise<ActionResult
 		}
 
 		// Log deletion
-		await logDocumentAction(attachment.company_id, access.userId, "document_deleted", {
-			attachmentId,
-			fileName: attachment.file_name,
-		});
+		await logDocumentAction(
+			attachment.company_id,
+			access.userId,
+			"document_deleted",
+			{
+				attachmentId,
+				fileName: attachment.file_name,
+			},
+		);
 
 		// Revalidate paths
 		revalidatePath("/dashboard/documents");
@@ -649,7 +703,7 @@ export async function deleteDocument(attachmentId: string): Promise<ActionResult
  * Bulk delete documents
  */
 export async function bulkDeleteDocuments(
-	attachmentIds: string[]
+	attachmentIds: string[],
 ): Promise<ActionResult<{ deleted: number; failed: number }>> {
 	try {
 		let deleted = 0;
@@ -691,7 +745,7 @@ export async function updateDocument(
 		isPublic?: boolean;
 		isInternal?: boolean;
 		isFavorite?: boolean;
-	}
+	},
 ): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
@@ -730,11 +784,16 @@ export async function updateDocument(
 		}
 
 		// Log update
-		await logDocumentAction(attachment.company_id, access.userId, "document_updated", {
-			attachmentId,
-			fileName: attachment.file_name,
-			updates,
-		});
+		await logDocumentAction(
+			attachment.company_id,
+			access.userId,
+			"document_updated",
+			{
+				attachmentId,
+				fileName: attachment.file_name,
+				updates,
+			},
+		);
 
 		revalidatePath("/dashboard/documents");
 
@@ -750,7 +809,10 @@ export async function updateDocument(
 /**
  * Move document to different folder
  */
-export async function moveDocument(attachmentId: string, newFolderPath: string): Promise<ActionResult> {
+export async function moveDocument(
+	attachmentId: string,
+	newFolderPath: string,
+): Promise<ActionResult> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -788,12 +850,17 @@ export async function moveDocument(attachmentId: string, newFolderPath: string):
 		}
 
 		// Log move
-		await logDocumentAction(attachment.company_id, access.userId, "document_moved", {
-			attachmentId,
-			fileName: attachment.file_name,
-			from: attachment.folder_path,
-			to: newFolderPath,
-		});
+		await logDocumentAction(
+			attachment.company_id,
+			access.userId,
+			"document_moved",
+			{
+				attachmentId,
+				fileName: attachment.file_name,
+				from: attachment.folder_path,
+				to: newFolderPath,
+			},
+		);
 
 		revalidatePath("/dashboard/documents");
 
@@ -814,7 +881,7 @@ export async function moveDocument(attachmentId: string, newFolderPath: string):
  * List documents with filters
  */
 export async function listDocuments(
-	options: ListFilesOptions
+	options: ListFilesOptions,
 ): Promise<ActionResult<Awaited<ReturnType<typeof listDocumentsService>>>> {
 	try {
 		const access = await verifyCompanyAccess(options.companyId);
@@ -861,7 +928,9 @@ type CreateFolderParams = {
 	contextId?: string;
 };
 
-export async function createFolder(params: CreateFolderParams): Promise<ActionResult<{ folderId: string }>> {
+export async function createFolder(
+	params: CreateFolderParams,
+): Promise<ActionResult<{ folderId: string }>> {
 	try {
 		const access = await verifyCompanyAccess(params.companyId);
 		if (!access) {
@@ -881,7 +950,11 @@ export async function createFolder(params: CreateFolderParams): Promise<ActionRe
 		// Generate path
 		let path = "/";
 		if (parentId) {
-			const { data: parent } = await supabase.from("document_folders").select("path").eq("id", parentId).single();
+			const { data: parent } = await supabase
+				.from("document_folders")
+				.select("path")
+				.eq("id", parentId)
+				.single();
 
 			if (parent) {
 				path = `${parent.path}/${name.toLowerCase().replace(/\s+/g, "-")}`;
@@ -963,7 +1036,10 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
 			};
 		}
 
-		const access = await verifyCompanyAccess(folder.company_id, ["owner", "admin"]);
+		const access = await verifyCompanyAccess(folder.company_id, [
+			"owner",
+			"admin",
+		]);
 		if (!access) {
 			return {
 				success: false,
@@ -971,7 +1047,10 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
 			};
 		}
 
-		const { error } = await supabase.from("document_folders").delete().eq("id", folderId);
+		const { error } = await supabase
+			.from("document_folders")
+			.delete()
+			.eq("id", folderId);
 
 		if (error) {
 			return {
@@ -981,10 +1060,15 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
 		}
 
 		// Log deletion
-		await logDocumentAction(folder.company_id, access.userId, "folder_deleted", {
-			folderId,
-			name: folder.name,
-		});
+		await logDocumentAction(
+			folder.company_id,
+			access.userId,
+			"folder_deleted",
+			{
+				folderId,
+				name: folder.name,
+			},
+		);
 
 		revalidatePath("/dashboard/documents");
 
@@ -1005,7 +1089,7 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
  * Get document statistics
  */
 export async function getDocumentStatistics(
-	companyId: string
+	companyId: string,
 ): Promise<ActionResult<Awaited<ReturnType<typeof getDocumentStatsService>>>> {
 	try {
 		const access = await verifyCompanyAccess(companyId);
@@ -1032,7 +1116,8 @@ export async function getDocumentStatistics(
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to get statistics",
+			error:
+				error instanceof Error ? error.message : "Failed to get statistics",
 		};
 	}
 }

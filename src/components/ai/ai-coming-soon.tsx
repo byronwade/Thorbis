@@ -77,16 +77,20 @@ export function AIComingSoon() {
 						</span>
 					</h1>
 					<p className="mx-auto max-w-3xl text-foreground/60 text-lg leading-relaxed">
-						An intelligent assistant that can do anything you can do in the system. Ask it to send invoices, create
-						quotes, update customers, schedule jobs, and more - all through natural conversation. Plus, it monitors your
-						business 24/7 to catch errors before they become problems.
+						An intelligent assistant that can do anything you can do in the
+						system. Ask it to send invoices, create quotes, update customers,
+						schedule jobs, and more - all through natural conversation. Plus, it
+						monitors your business 24/7 to catch errors before they become
+						problems.
 					</p>
 				</div>
 
 				{/* PRIMARY: AI Chat Assistant Capabilities */}
 				<div className="mx-auto max-w-5xl space-y-8 pt-4">
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Ask Anything, Get It Done</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Ask Anything, Get It Done
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 							<div className="group hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-5 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
 								<div className="mb-4 flex justify-center">
@@ -94,9 +98,12 @@ export function AIComingSoon() {
 										<MessageSquare className="size-6 text-primary dark:text-primary" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Send invoice to John&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Send invoice to John&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									AI finds John&apos;s job, creates invoice, and sends it via email and SMS
+									AI finds John&apos;s job, creates invoice, and sends it via
+									email and SMS
 								</p>
 							</div>
 
@@ -106,9 +113,12 @@ export function AIComingSoon() {
 										<DollarSign className="size-6 text-success dark:text-success" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;What&apos;s my profit today?&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;What&apos;s my profit today?&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									AI calculates revenue minus costs and shows profit breakdown by job
+									AI calculates revenue minus costs and shows profit breakdown
+									by job
 								</p>
 							</div>
 
@@ -118,7 +128,9 @@ export function AIComingSoon() {
 										<FileText className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Create 3 quote options&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Create 3 quote options&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
 									AI generates good/better/best pricing options ready to send
 								</p>
@@ -130,7 +142,9 @@ export function AIComingSoon() {
 										<Calendar className="size-6 text-warning dark:text-warning" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Schedule Sarah tomorrow at 2pm&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Schedule Sarah tomorrow at 2pm&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
 									AI finds best tech, creates appointment, notifies everyone
 								</p>
@@ -142,9 +156,12 @@ export function AIComingSoon() {
 										<Users className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Update Mike&apos;s phone number&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Update Mike&apos;s phone number&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									AI finds customer record and updates contact information instantly
+									AI finds customer record and updates contact information
+									instantly
 								</p>
 							</div>
 
@@ -154,7 +171,9 @@ export function AIComingSoon() {
 										<Search className="size-6 text-teal-600 dark:text-teal-400" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Show unpaid invoices&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Show unpaid invoices&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
 									AI finds all outstanding invoices and shows aging breakdown
 								</p>
@@ -166,7 +185,9 @@ export function AIComingSoon() {
 										<Phone className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Call all pending quotes&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Call all pending quotes&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
 									AI creates call list with context for follow-up conversations
 								</p>
@@ -178,7 +199,9 @@ export function AIComingSoon() {
 										<BarChart3 className="size-6 text-warning dark:text-warning" />
 									</div>
 								</div>
-								<h3 className="mb-2 font-semibold text-base">&quot;Compare this month vs last&quot;</h3>
+								<h3 className="mb-2 font-semibold text-base">
+									&quot;Compare this month vs last&quot;
+								</h3>
 								<p className="text-muted-foreground text-sm">
 									AI analyzes revenue, jobs, and trends with visual charts
 								</p>
@@ -188,14 +211,18 @@ export function AIComingSoon() {
 
 					{/* Complete System Access */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Complete System Access</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Complete System Access
+						</h2>
 						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
 								<div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
 									<Users className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Customers</span>
-								<span className="text-center text-muted-foreground text-xs">Create, update, search</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Create, update, search
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -203,7 +230,9 @@ export function AIComingSoon() {
 									<Wrench className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Jobs</span>
-								<span className="text-center text-muted-foreground text-xs">Schedule, assign, update</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Schedule, assign, update
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -211,7 +240,9 @@ export function AIComingSoon() {
 									<FileText className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Invoices</span>
-								<span className="text-center text-muted-foreground text-xs">Create, send, track</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Create, send, track
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -219,7 +250,9 @@ export function AIComingSoon() {
 									<CreditCard className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Payments</span>
-								<span className="text-center text-muted-foreground text-xs">Process, refund, track</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Process, refund, track
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -227,7 +260,9 @@ export function AIComingSoon() {
 									<Calendar className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Schedule</span>
-								<span className="text-center text-muted-foreground text-xs">Book, reschedule, optimize</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Book, reschedule, optimize
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -235,7 +270,9 @@ export function AIComingSoon() {
 									<BarChart3 className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Reports</span>
-								<span className="text-center text-muted-foreground text-xs">Generate, analyze, export</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Generate, analyze, export
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -243,7 +280,9 @@ export function AIComingSoon() {
 									<TrendingUp className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Marketing</span>
-								<span className="text-center text-muted-foreground text-xs">Campaigns, ads, tracking</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Campaigns, ads, tracking
+								</span>
 							</div>
 
 							<div className="flex flex-col items-center gap-2 rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-4">
@@ -251,14 +290,18 @@ export function AIComingSoon() {
 									<Database className="size-5 text-primary" />
 								</div>
 								<span className="font-medium text-sm">Everything</span>
-								<span className="text-center text-muted-foreground text-xs">Complete business context</span>
+								<span className="text-center text-muted-foreground text-xs">
+									Complete business context
+								</span>
 							</div>
 						</div>
 					</div>
 
 					{/* Intelligent Monitoring System */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">24/7 Intelligent Monitoring</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							24/7 Intelligent Monitoring
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2">
 							<div className="rounded-xl border border-destructive/20 bg-gradient-to-br from-red-500/10 to-transparent p-5 text-left">
 								<div className="mb-4 flex items-center gap-3">
@@ -267,12 +310,14 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Price Changes</h3>
-										<p className="text-muted-foreground text-sm">Catches unauthorized discounts</p>
+										<p className="text-muted-foreground text-sm">
+											Catches unauthorized discounts
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Technician changed $1,250 HVAC repair to $800. This is 30% below price book. Would you like to
-									review?&quot;
+									&quot;Technician changed $1,250 HVAC repair to $800. This is
+									30% below price book. Would you like to review?&quot;
 								</p>
 								<div className="flex items-center gap-1 text-destructive text-xs dark:text-destructive">
 									<Bell className="size-3" />
@@ -287,11 +332,14 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Missing Photos</h3>
-										<p className="text-muted-foreground text-sm">Ensures documentation quality</p>
+										<p className="text-muted-foreground text-sm">
+											Ensures documentation quality
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Job #1247 completed but no before/after photos uploaded. Sending reminder to technician.&quot;
+									&quot;Job #1247 completed but no before/after photos uploaded.
+									Sending reminder to technician.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
 									<Zap className="size-3" />
@@ -306,12 +354,14 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Late Jobs</h3>
-										<p className="text-muted-foreground text-sm">Tracks efficiency issues</p>
+										<p className="text-muted-foreground text-sm">
+											Tracks efficiency issues
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Tech #3 is 45 minutes over scheduled time on current job. Next appointment may be
-									affected.&quot;
+									&quot;Tech #3 is 45 minutes over scheduled time on current
+									job. Next appointment may be affected.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
 									<TrendingUp className="size-3" />
@@ -326,12 +376,14 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Inconsistencies</h3>
-										<p className="text-muted-foreground text-sm">Finds data mismatches</p>
+										<p className="text-muted-foreground text-sm">
+											Finds data mismatches
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Invoice total doesn&apos;t match work order. Line items add to $1,450 but total shows
-									$1,350.&quot;
+									&quot;Invoice total doesn&apos;t match work order. Line items
+									add to $1,450 but total shows $1,350.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
 									<CheckCircle2 className="size-3" />
@@ -346,12 +398,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Low Inventory</h3>
-										<p className="text-muted-foreground text-sm">Auto-orders materials</p>
+										<p className="text-muted-foreground text-sm">
+											Auto-orders materials
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Truck #2 has only 3 HVAC filters left (below 10-unit threshold). Warehouse stock also low at 8
-									units. Auto-ordering 50 units from supplier.&quot;
+									&quot;Truck #2 has only 3 HVAC filters left (below 10-unit
+									threshold). Warehouse stock also low at 8 units. Auto-ordering
+									50 units from supplier.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<Zap className="size-3" />
@@ -366,12 +421,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Smart Savings</h3>
-										<p className="text-muted-foreground text-sm">Optimizes cash flow</p>
+										<p className="text-muted-foreground text-sm">
+											Optimizes cash flow
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Your savings is getting low. Transferring $13,450 from checking account. We noticed you had this
-									to spare after reviewing bills and existing totals.&quot;
+									&quot;Your savings is getting low. Transferring $13,450 from
+									checking account. We noticed you had this to spare after
+									reviewing bills and existing totals.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-success text-xs dark:text-success">
 									<TrendingUp className="size-3" />
@@ -386,12 +444,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">No-Show Patterns</h3>
-										<p className="text-muted-foreground text-sm">Identifies risky customers</p>
+										<p className="text-muted-foreground text-sm">
+											Identifies risky customers
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Customer Sarah M. has missed 3 appointments in the past 2 months. Recommend requiring deposit
-									for future bookings.&quot;
+									&quot;Customer Sarah M. has missed 3 appointments in the past
+									2 months. Recommend requiring deposit for future
+									bookings.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-cyan-600 text-xs dark:text-cyan-400">
 									<Shield className="size-3" />
@@ -406,12 +467,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Warranty Expiring</h3>
-										<p className="text-muted-foreground text-sm">Catches revenue opportunities</p>
+										<p className="text-muted-foreground text-sm">
+											Catches revenue opportunities
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;HVAC system installed for Johnson family expires in 14 days. Extended warranty conversion rate
-									is 67%. Should we reach out?&quot;
+									&quot;HVAC system installed for Johnson family expires in 14
+									days. Extended warranty conversion rate is 67%. Should we
+									reach out?&quot;
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<TrendingUp className="size-3" />
@@ -426,12 +490,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Payment Failures</h3>
-										<p className="text-muted-foreground text-sm">Prevents revenue loss</p>
+										<p className="text-muted-foreground text-sm">
+											Prevents revenue loss
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Card ending in 4523 declined for monthly maintenance plan ($89). Customer&apos;s card may have
-									expired. Sending update request.&quot;
+									&quot;Card ending in 4523 declined for monthly maintenance
+									plan ($89). Customer&apos;s card may have expired. Sending
+									update request.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<Bell className="size-3" />
@@ -446,12 +513,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Unusual Activity</h3>
-										<p className="text-muted-foreground text-sm">Detects anomalies</p>
+										<p className="text-muted-foreground text-sm">
+											Detects anomalies
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Tech #5 has completed 12 jobs today vs usual average of 6. Job quality may be compromised.
-									Running quality check.&quot;
+									&quot;Tech #5 has completed 12 jobs today vs usual average of
+									6. Job quality may be compromised. Running quality
+									check.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-teal-600 text-xs dark:text-teal-400">
 									<AlertCircle className="size-3" />
@@ -466,12 +536,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Missed Follow-ups</h3>
-										<p className="text-muted-foreground text-sm">Tracks communication gaps</p>
+										<p className="text-muted-foreground text-sm">
+											Tracks communication gaps
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Quote #892 sent 5 days ago with no follow-up call. Close rate drops 40% after 3 days. Creating
-									follow-up task for you.&quot;
+									&quot;Quote #892 sent 5 days ago with no follow-up call. Close
+									rate drops 40% after 3 days. Creating follow-up task for
+									you.&quot;
 								</p>
 								<div className="flex items-center gap-1 text-rose-600 text-xs dark:text-rose-400">
 									<Zap className="size-3" />
@@ -486,12 +559,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Duplicate Records</h3>
-										<p className="text-muted-foreground text-sm">Maintains data integrity</p>
+										<p className="text-muted-foreground text-sm">
+											Maintains data integrity
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									&quot;Found 3 customer records with same phone number (555-0123). Names: John Smith, J. Smith,
-									Jonathan Smith. Should we merge?&quot;
+									&quot;Found 3 customer records with same phone number
+									(555-0123). Names: John Smith, J. Smith, Jonathan Smith.
+									Should we merge?&quot;
 								</p>
 								<div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
 									<CheckCircle2 className="size-3" />
@@ -503,7 +579,9 @@ export function AIComingSoon() {
 
 					{/* Automation Features (Secondary) */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Smart Automation Built-In</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Smart Automation Built-In
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-3">
 							<div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
 								<div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -511,7 +589,8 @@ export function AIComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">24/7 AI Answering</h3>
 								<p className="text-muted-foreground text-sm">
-									AI handles calls, books appointments, answers questions - never miss a lead
+									AI handles calls, books appointments, answers questions -
+									never miss a lead
 								</p>
 							</div>
 
@@ -521,7 +600,8 @@ export function AIComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Auto Follow-ups</h3>
 								<p className="text-muted-foreground text-sm">
-									Automatically send reminders, confirmations, and thank you messages
+									Automatically send reminders, confirmations, and thank you
+									messages
 								</p>
 							</div>
 
@@ -531,7 +611,8 @@ export function AIComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Smart Dispatch</h3>
 								<p className="text-muted-foreground text-sm">
-									AI assigns jobs to best-fit techs based on skills, location, availability
+									AI assigns jobs to best-fit techs based on skills, location,
+									availability
 								</p>
 							</div>
 						</div>
@@ -539,7 +620,9 @@ export function AIComingSoon() {
 
 					{/* AI Phone System - Outbound Calling */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">AI-Initiated Outbound Calling</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							AI-Initiated Outbound Calling
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 							<div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-blue-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-primary/20 hover:shadow-blue-500/10 hover:shadow-lg">
 								<div className="mb-4 flex items-center gap-3">
@@ -547,13 +630,18 @@ export function AIComingSoon() {
 										<PhoneOutgoing className="size-6 text-primary dark:text-primary" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Proactive Follow-ups</h3>
-										<p className="text-muted-foreground text-xs">AI calls customers automatically</p>
+										<h3 className="font-semibold text-lg">
+											Proactive Follow-ups
+										</h3>
+										<p className="text-muted-foreground text-xs">
+											AI calls customers automatically
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI automatically calls customers who received quotes 3+ days ago, asks about their decision, answers
-									questions, and schedules appointments - all without human intervention.
+									AI automatically calls customers who received quotes 3+ days
+									ago, asks about their decision, answers questions, and
+									schedules appointments - all without human intervention.
 								</p>
 								<div className="flex items-center gap-1 text-primary text-xs dark:text-primary">
 									<CheckCircle2 className="size-3" />
@@ -567,13 +655,18 @@ export function AIComingSoon() {
 										<Calendar className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Appointment Reminders</h3>
-										<p className="text-muted-foreground text-xs">Reduce no-shows by 80%</p>
+										<h3 className="font-semibold text-lg">
+											Appointment Reminders
+										</h3>
+										<p className="text-muted-foreground text-xs">
+											Reduce no-shows by 80%
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI calls customers 24 hours before scheduled appointments to confirm, reschedule if needed, and
-									provide technician details. Natural conversation that feels personal.
+									AI calls customers 24 hours before scheduled appointments to
+									confirm, reschedule if needed, and provide technician details.
+									Natural conversation that feels personal.
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<Clock className="size-3" />
@@ -587,13 +680,18 @@ export function AIComingSoon() {
 										<UserCheck className="size-6 text-success dark:text-success" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Payment Collection</h3>
-										<p className="text-muted-foreground text-xs">Recover overdue payments</p>
+										<h3 className="font-semibold text-lg">
+											Payment Collection
+										</h3>
+										<p className="text-muted-foreground text-xs">
+											Recover overdue payments
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI calls customers with overdue invoices, politely requests payment, offers payment plan options, and
-									processes payments over the phone - recovering revenue automatically.
+									AI calls customers with overdue invoices, politely requests
+									payment, offers payment plan options, and processes payments
+									over the phone - recovering revenue automatically.
 								</p>
 								<div className="flex items-center gap-1 text-success text-xs dark:text-success">
 									<DollarSign className="size-3" />
@@ -605,7 +703,9 @@ export function AIComingSoon() {
 
 					{/* AI Phone System - Inbound Handling */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">24/7 Intelligent Call Handling</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							24/7 Intelligent Call Handling
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 							<div className="hover:-translate-y-1 rounded-xl border border-primary/10 bg-gradient-to-br from-cyan-500/5 to-transparent p-6 text-left transition-all duration-300 hover:border-cyan-500/20 hover:shadow-cyan-500/10 hover:shadow-lg">
 								<div className="mb-4 flex items-center gap-3">
@@ -614,12 +714,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">After-Hours Calls</h3>
-										<p className="text-muted-foreground text-xs">Never miss emergency leads</p>
+										<p className="text-muted-foreground text-xs">
+											Never miss emergency leads
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI answers every call after hours, identifies emergencies, books urgent appointments, quotes pricing
-									for standard jobs, and captures lead information - available 24/7/365.
+									AI answers every call after hours, identifies emergencies,
+									books urgent appointments, quotes pricing for standard jobs,
+									and captures lead information - available 24/7/365.
 								</p>
 								<div className="flex items-center gap-1 text-cyan-600 text-xs dark:text-cyan-400">
 									<Clock className="size-3" />
@@ -633,13 +736,19 @@ export function AIComingSoon() {
 										<PhoneForwarded className="size-6 text-warning dark:text-warning" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Smart Call Routing</h3>
-										<p className="text-muted-foreground text-xs">Escalate when needed</p>
+										<h3 className="font-semibold text-lg">
+											Smart Call Routing
+										</h3>
+										<p className="text-muted-foreground text-xs">
+											Escalate when needed
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI handles routine calls independently but intelligently escalates complex issues to CSR or managers.
-									Knows when human intervention is needed and transfers seamlessly with full context.
+									AI handles routine calls independently but intelligently
+									escalates complex issues to CSR or managers. Knows when human
+									intervention is needed and transfers seamlessly with full
+									context.
 								</p>
 								<div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
 									<PhoneForwarded className="size-3" />
@@ -653,13 +762,18 @@ export function AIComingSoon() {
 										<HeadphonesIcon className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Homeowner Questions</h3>
-										<p className="text-muted-foreground text-xs">Instant, accurate answers</p>
+										<h3 className="font-semibold text-lg">
+											Homeowner Questions
+										</h3>
+										<p className="text-muted-foreground text-xs">
+											Instant, accurate answers
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI answers pricing questions, provides service availability, explains warranty terms, and accesses
-									customer history to give personalized responses - just like talking to your best CSR.
+									AI answers pricing questions, provides service availability,
+									explains warranty terms, and accesses customer history to give
+									personalized responses - just like talking to your best CSR.
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<Brain className="size-3" />
@@ -671,7 +785,9 @@ export function AIComingSoon() {
 
 					{/* Advanced AI Calling Features */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Advanced Calling Intelligence</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Advanced Calling Intelligence
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2">
 							<div className="rounded-xl border border-border/20 bg-gradient-to-br from-indigo-500/10 to-transparent p-6 text-left">
 								<div className="mb-4 flex items-center gap-3">
@@ -680,12 +796,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Campaign Calling</h3>
-										<p className="text-muted-foreground text-sm">Automated marketing outreach</p>
+										<p className="text-muted-foreground text-sm">
+											Automated marketing outreach
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI initiates targeted calling campaigns for seasonal services, warranty renewals, or maintenance
-									reminders. Personalizes each conversation based on customer history and preferences.
+									AI initiates targeted calling campaigns for seasonal services,
+									warranty renewals, or maintenance reminders. Personalizes each
+									conversation based on customer history and preferences.
 								</p>
 								<div className="flex items-center gap-1 text-accent-foreground text-xs dark:text-accent-foreground">
 									<TrendingUp className="size-3" />
@@ -699,13 +818,18 @@ export function AIComingSoon() {
 										<MessageSquare className="size-6 text-teal-600 dark:text-teal-400" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Voicemail Intelligence</h3>
-										<p className="text-muted-foreground text-sm">AI processes and responds</p>
+										<h3 className="font-semibold text-lg">
+											Voicemail Intelligence
+										</h3>
+										<p className="text-muted-foreground text-sm">
+											AI processes and responds
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									When customers leave voicemails, AI transcribes, categorizes urgency, extracts key information, and
-									automatically calls them back with relevant information or schedules callbacks.
+									When customers leave voicemails, AI transcribes, categorizes
+									urgency, extracts key information, and automatically calls
+									them back with relevant information or schedules callbacks.
 								</p>
 								<div className="flex items-center gap-1 text-teal-600 text-xs dark:text-teal-400">
 									<Zap className="size-3" />
@@ -719,13 +843,18 @@ export function AIComingSoon() {
 										<Bell className="size-6 text-rose-600 dark:text-rose-400" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Emergency Detection</h3>
-										<p className="text-muted-foreground text-sm">Prioritize urgent situations</p>
+										<h3 className="font-semibold text-lg">
+											Emergency Detection
+										</h3>
+										<p className="text-muted-foreground text-sm">
+											Prioritize urgent situations
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI recognizes emergency keywords in conversations, immediately prioritizes the call, dispatches the
-									nearest available technician, and alerts on-call managers - all within seconds.
+									AI recognizes emergency keywords in conversations, immediately
+									prioritizes the call, dispatches the nearest available
+									technician, and alerts on-call managers - all within seconds.
 								</p>
 								<div className="flex items-center gap-1 text-rose-600 text-xs dark:text-rose-400">
 									<AlertCircle className="size-3" />
@@ -740,12 +869,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Call Analytics</h3>
-										<p className="text-muted-foreground text-sm">Track performance metrics</p>
+										<p className="text-muted-foreground text-sm">
+											Track performance metrics
+										</p>
 									</div>
 								</div>
 								<p className="mb-3 text-muted-foreground text-sm">
-									AI analyzes every conversation, tracks conversion rates, identifies common objections, measures
-									customer sentiment, and provides insights to improve your sales process.
+									AI analyzes every conversation, tracks conversion rates,
+									identifies common objections, measures customer sentiment, and
+									provides insights to improve your sales process.
 								</p>
 								<div className="flex items-center gap-1 text-warning text-xs dark:text-warning">
 									<TrendingUp className="size-3" />
@@ -757,7 +889,9 @@ export function AIComingSoon() {
 
 					{/* Multi-Channel Communication */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Omnichannel Communication Hub</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Omnichannel Communication Hub
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-3">
 							<div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
 								<div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -765,7 +899,8 @@ export function AIComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Voice Calls</h3>
 								<p className="text-muted-foreground text-sm">
-									AI handles incoming and outgoing calls with natural conversation
+									AI handles incoming and outgoing calls with natural
+									conversation
 								</p>
 							</div>
 
@@ -785,7 +920,8 @@ export function AIComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Email Follow-ups</h3>
 								<p className="text-muted-foreground text-sm">
-									Smart email sequences based on customer actions and preferences
+									Smart email sequences based on customer actions and
+									preferences
 								</p>
 							</div>
 						</div>
@@ -801,8 +937,12 @@ export function AIComingSoon() {
 										<TrendingUp className="size-6 text-success dark:text-success" />
 									</div>
 								</div>
-								<div className="mb-1 font-bold text-2xl text-success dark:text-success">35%</div>
-								<p className="text-muted-foreground text-sm">More leads converted</p>
+								<div className="mb-1 font-bold text-2xl text-success dark:text-success">
+									35%
+								</div>
+								<p className="text-muted-foreground text-sm">
+									More leads converted
+								</p>
 							</div>
 
 							<div className="rounded-xl border border-primary/20 bg-gradient-to-br from-blue-500/10 to-transparent p-5 text-center">
@@ -811,7 +951,9 @@ export function AIComingSoon() {
 										<Clock className="size-6 text-primary dark:text-primary" />
 									</div>
 								</div>
-								<div className="mb-1 font-bold text-2xl text-primary dark:text-primary">80%</div>
+								<div className="mb-1 font-bold text-2xl text-primary dark:text-primary">
+									80%
+								</div>
 								<p className="text-muted-foreground text-sm">Fewer no-shows</p>
 							</div>
 
@@ -821,8 +963,12 @@ export function AIComingSoon() {
 										<DollarSign className="size-6 text-accent-foreground dark:text-accent-foreground" />
 									</div>
 								</div>
-								<div className="mb-1 font-bold text-2xl text-accent-foreground dark:text-accent-foreground">$15K</div>
-								<p className="text-muted-foreground text-sm">Average monthly recovery</p>
+								<div className="mb-1 font-bold text-2xl text-accent-foreground dark:text-accent-foreground">
+									$15K
+								</div>
+								<p className="text-muted-foreground text-sm">
+									Average monthly recovery
+								</p>
 							</div>
 
 							<div className="rounded-xl border border-warning/20 bg-gradient-to-br from-orange-500/10 to-transparent p-5 text-center">
@@ -831,15 +977,21 @@ export function AIComingSoon() {
 										<Phone className="size-6 text-warning dark:text-warning" />
 									</div>
 								</div>
-								<div className="mb-1 font-bold text-2xl text-warning dark:text-warning">24/7</div>
-								<p className="text-muted-foreground text-sm">Never miss a call</p>
+								<div className="mb-1 font-bold text-2xl text-warning dark:text-warning">
+									24/7
+								</div>
+								<p className="text-muted-foreground text-sm">
+									Never miss a call
+								</p>
 							</div>
 						</div>
 					</div>
 
 					{/* Call Quality Assurance */}
 					<div>
-						<h2 className="mb-5 font-semibold text-xl">Enterprise-Grade Call Quality</h2>
+						<h2 className="mb-5 font-semibold text-xl">
+							Enterprise-Grade Call Quality
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2">
 							<div className="rounded-xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent p-6 text-left">
 								<div className="mb-4 flex items-center gap-3">
@@ -848,12 +1000,15 @@ export function AIComingSoon() {
 									</div>
 									<div>
 										<h3 className="font-semibold text-lg">Brand Consistency</h3>
-										<p className="text-muted-foreground text-sm">Every call matches your voice</p>
+										<p className="text-muted-foreground text-sm">
+											Every call matches your voice
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground text-sm">
-									AI is trained on your company values, tone, and messaging. Every conversation represents your brand
-									perfectly - no off days, no script deviations, just consistent excellence.
+									AI is trained on your company values, tone, and messaging.
+									Every conversation represents your brand perfectly - no off
+									days, no script deviations, just consistent excellence.
 								</p>
 							</div>
 
@@ -863,13 +1018,18 @@ export function AIComingSoon() {
 										<Database className="size-6 text-primary" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">Full Recording & Transcription</h3>
-										<p className="text-muted-foreground text-sm">Complete audit trail</p>
+										<h3 className="font-semibold text-lg">
+											Full Recording & Transcription
+										</h3>
+										<p className="text-muted-foreground text-sm">
+											Complete audit trail
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground text-sm">
-									Every call is recorded, transcribed, and searchable. Review conversations, train your team on best
-									practices, and have complete documentation for compliance and quality assurance.
+									Every call is recorded, transcribed, and searchable. Review
+									conversations, train your team on best practices, and have
+									complete documentation for compliance and quality assurance.
 								</p>
 							</div>
 						</div>
@@ -882,41 +1042,58 @@ export function AIComingSoon() {
 								<Brain className="size-8 text-primary" />
 							</div>
 						</div>
-						<h2 className="mb-4 font-semibold text-2xl">Why This Changes Everything</h2>
+						<h2 className="mb-4 font-semibold text-2xl">
+							Why This Changes Everything
+						</h2>
 						<div className="mx-auto max-w-3xl space-y-3 text-left text-muted-foreground">
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
 								<p className="text-sm">
-									<span className="font-medium text-foreground">Natural Language Commands:</span> No more clicking
-									through menus. Just tell the AI what you want and it handles everything
+									<span className="font-medium text-foreground">
+										Natural Language Commands:
+									</span>{" "}
+									No more clicking through menus. Just tell the AI what you want
+									and it handles everything
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
 								<p className="text-sm">
-									<span className="font-medium text-foreground">Complete Business Context:</span> AI knows your
-									customers, jobs, payments, inventory, ads - even banking info. It understands your business completely
+									<span className="font-medium text-foreground">
+										Complete Business Context:
+									</span>{" "}
+									AI knows your customers, jobs, payments, inventory, ads - even
+									banking info. It understands your business completely
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
 								<p className="text-sm">
-									<span className="font-medium text-foreground">Both Assistant AND Monitor:</span> While you ask it to
-									do things, it&apos;s also watching for errors, inconsistencies, and problems
+									<span className="font-medium text-foreground">
+										Both Assistant AND Monitor:
+									</span>{" "}
+									While you ask it to do things, it&apos;s also watching for
+									errors, inconsistencies, and problems
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
 								<p className="text-sm">
-									<span className="font-medium text-foreground">Catches Expensive Mistakes:</span> Unauthorized
-									discounts, missing documentation, billing errors - AI alerts you before they cost you money
+									<span className="font-medium text-foreground">
+										Catches Expensive Mistakes:
+									</span>{" "}
+									Unauthorized discounts, missing documentation, billing errors
+									- AI alerts you before they cost you money
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success dark:text-success" />
 								<p className="text-sm">
-									<span className="font-medium text-foreground">Works Like a Team Member:</span> If you can do it in the
-									system, the AI can do it. Create, update, delete, search, analyze - unlimited capabilities
+									<span className="font-medium text-foreground">
+										Works Like a Team Member:
+									</span>{" "}
+									If you can do it in the system, the AI can do it. Create,
+									update, delete, search, analyze - unlimited capabilities
 								</p>
 							</div>
 						</div>
@@ -926,7 +1103,9 @@ export function AIComingSoon() {
 				{/* Call to action */}
 				<div className="flex items-center justify-center gap-2 pt-4 text-muted-foreground text-sm">
 					<Sparkles className="size-4" />
-					<p>In the meantime, explore the platform and reach out if you need help</p>
+					<p>
+						In the meantime, explore the platform and reach out if you need help
+					</p>
 				</div>
 			</div>
 		</div>

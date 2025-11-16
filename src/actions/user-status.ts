@@ -34,7 +34,10 @@ export async function updateUserStatus(status: UserStatus) {
 		}
 
 		// Update user status
-		const { error: updateError } = await supabase.from("users").update({ status }).eq("id", user.id);
+		const { error: updateError } = await supabase
+			.from("users")
+			.update({ status })
+			.eq("id", user.id);
 
 		if (updateError) {
 			return {

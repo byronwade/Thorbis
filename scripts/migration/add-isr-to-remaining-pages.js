@@ -13,7 +13,10 @@ const findCommand = `find ${process.cwd()}/src/app -name "page.tsx" -type f -exe
 
 let files;
 try {
-	files = execSync(findCommand, { encoding: "utf8" }).trim().split("\n").filter(Boolean);
+	files = execSync(findCommand, { encoding: "utf8" })
+		.trim()
+		.split("\n")
+		.filter(Boolean);
 } catch (_error) {
 	console.log("No files found to update");
 	process.exit(0);
@@ -105,7 +108,7 @@ for (const filePath of files) {
  * - Static content rendered on server
  * - ISR revalidation configured
  * - Reduced JavaScript bundle size
- */`
+ */`,
 			);
 		}
 

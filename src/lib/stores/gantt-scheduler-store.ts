@@ -44,9 +44,11 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
 
 			setStatusFilter: (status) => set({ statusFilter: status }),
 
-			toggleHighlightUnassigned: () => set((state) => ({ highlightUnassigned: !state.highlightUnassigned })),
+			toggleHighlightUnassigned: () =>
+				set((state) => ({ highlightUnassigned: !state.highlightUnassigned })),
 
-			toggleShowOverloadedOnly: () => set((state) => ({ showOverloadedOnly: !state.showOverloadedOnly })),
+			toggleShowOverloadedOnly: () =>
+				set((state) => ({ showOverloadedOnly: !state.showOverloadedOnly })),
 
 			handlePrevious: () => {
 				const { currentDate, view } = get();
@@ -78,6 +80,6 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
 
 			handleToday: () => set({ currentDate: new Date() }),
 		}),
-		{ name: "GanttSchedulerStore" }
-	)
+		{ name: "GanttSchedulerStore" },
+	),
 );

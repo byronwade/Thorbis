@@ -22,7 +22,8 @@ export async function TechnicianAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Revenue per Technician</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track revenue generation, job value averages, and upsell performance
+							Track revenue generation, job value averages, and upsell
+							performance
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function TechnicianAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Customer Satisfaction</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor customer ratings, reviews, and feedback for each technician
+							Monitor customer ratings, reviews, and feedback for each
+							technician
 						</p>
 					</div>
 
@@ -58,8 +60,12 @@ export async function TechnicianAnalyticsData() {
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Optimize Team Performance</h3>
-					<p className="mb-6 text-muted-foreground">Data-driven insights to improve technician productivity</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Optimize Team Performance
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Data-driven insights to improve technician productivity
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

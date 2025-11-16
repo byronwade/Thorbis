@@ -1,6 +1,14 @@
 "use client";
 
-import { Archive, Download, MoreHorizontal, Plus, Settings, Truck, Wrench } from "lucide-react";
+import {
+	Archive,
+	Download,
+	MoreHorizontal,
+	Plus,
+	Settings,
+	Truck,
+	Wrench,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +19,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
@@ -45,7 +57,8 @@ const EQUIPMENT_STATUS_CONFIG = {
 		label: "Maintenance",
 	},
 	retired: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Retired",
 	},
 	active: {
@@ -70,7 +83,13 @@ const EQUIPMENT_STATUS_CONFIG = {
 	},
 } as const;
 
-export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Equipment[]; itemsPerPage?: number }) {
+export function EquipmentTable({
+	equipment,
+	itemsPerPage = 50,
+}: {
+	equipment: Equipment[];
+	itemsPerPage?: number;
+}) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.equipment);
 
@@ -114,12 +133,19 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 					href={`/dashboard/work/equipment/${item.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">{item.name}</div>
+					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+						{item.name}
+					</div>
 					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
 						{item.classificationLabel}
-						{item.typeLabel && item.typeLabel.toLowerCase() !== item.classificationLabel.toLowerCase() && (
-							<span className="text-muted-foreground/80"> • {item.typeLabel}</span>
-						)}
+						{item.typeLabel &&
+							item.typeLabel.toLowerCase() !==
+								item.classificationLabel.toLowerCase() && (
+								<span className="text-muted-foreground/80">
+									{" "}
+									• {item.typeLabel}
+								</span>
+							)}
 					</div>
 				</Link>
 			),
@@ -131,7 +157,9 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			shrink: true,
 			hideOnMobile: true,
 			sortable: true,
-			render: (item) => <span className="text-foreground text-sm">{item.assignedTo}</span>,
+			render: (item) => (
+				<span className="text-foreground text-sm">{item.assignedTo}</span>
+			),
 		},
 		{
 			key: "lastService",
@@ -140,7 +168,11 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			shrink: true,
 			hideOnMobile: true,
 			sortable: true,
-			render: (item) => <span className="text-muted-foreground text-sm tabular-nums">{item.lastService}</span>,
+			render: (item) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{item.lastService}
+				</span>
+			),
 		},
 		{
 			key: "nextService",
@@ -149,7 +181,11 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			shrink: true,
 			hideOnMobile: true,
 			sortable: true,
-			render: (item) => <span className="text-muted-foreground text-sm tabular-nums">{item.nextService}</span>,
+			render: (item) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{item.nextService}
+				</span>
+			),
 		},
 		{
 			key: "status",
@@ -158,7 +194,11 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			shrink: true,
 			sortable: true,
 			render: (item) => (
-				<GenericStatusBadge config={EQUIPMENT_STATUS_CONFIG} defaultStatus="available" status={item.status} />
+				<GenericStatusBadge
+					config={EQUIPMENT_STATUS_CONFIG}
+					defaultStatus="available"
+					status={item.status}
+				/>
 			),
 		},
 		{
@@ -236,7 +276,12 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			columns={columns}
 			data={filteredEquipment}
 			emptyAction={
-				<Button onClick={() => (window.location.href = "/dashboard/work/equipment/new")} size="sm">
+				<Button
+					onClick={() =>
+						(window.location.href = "/dashboard/work/equipment/new")
+					}
+					size="sm"
+				>
 					<Plus className="mr-2 size-4" />
 					Add Equipment
 				</Button>
@@ -251,7 +296,9 @@ export function EquipmentTable({ equipment, itemsPerPage = 50 }: { equipment: Eq
 			isHighlighted={(item) => item.status === "maintenance"}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
-			onRowClick={(item) => (window.location.href = `/dashboard/work/equipment/${item.id}`)}
+			onRowClick={(item) =>
+				(window.location.href = `/dashboard/work/equipment/${item.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
 			showArchived={archiveFilter !== "active"}

@@ -74,14 +74,17 @@ export function ChangesConfirmationDialog({
 						Confirm Changes
 					</DialogTitle>
 					<DialogDescription>
-						Review the changes below before saving. This helps prevent unwanted edits.
+						Review the changes below before saving. This helps prevent unwanted
+						edits.
 					</DialogDescription>
 				</DialogHeader>
 
 				<ScrollArea className="max-h-[400px] pr-4">
 					<div className="space-y-3">
 						{changes.length === 0 ? (
-							<p className="py-8 text-center text-muted-foreground text-sm">No changes detected</p>
+							<p className="py-8 text-center text-muted-foreground text-sm">
+								No changes detected
+							</p>
 						) : (
 							changes.map((change, index) => (
 								<div className="rounded-lg border bg-muted/30 p-4" key={index}>
@@ -90,18 +93,24 @@ export function ChangesConfirmationDialog({
 											<Badge className="text-xs" variant="outline">
 												{change.section}
 											</Badge>
-											<span className="font-medium text-sm">{change.field}</span>
+											<span className="font-medium text-sm">
+												{change.field}
+											</span>
 										</div>
 									</div>
 									<div className="flex items-center gap-2 text-sm">
 										<div className="flex-1 rounded bg-destructive/10 px-3 py-2">
 											<p className="text-muted-foreground text-xs">Old Value</p>
-											<p className="mt-1 font-mono text-destructive">{formatValue(change.oldValue)}</p>
+											<p className="mt-1 font-mono text-destructive">
+												{formatValue(change.oldValue)}
+											</p>
 										</div>
 										<ArrowRight className="size-4 shrink-0 text-muted-foreground" />
 										<div className="flex-1 rounded bg-success/10 px-3 py-2">
 											<p className="text-muted-foreground text-xs">New Value</p>
-											<p className="mt-1 font-mono text-success">{formatValue(change.newValue)}</p>
+											<p className="mt-1 font-mono text-success">
+												{formatValue(change.newValue)}
+											</p>
 										</div>
 									</div>
 								</div>
@@ -114,8 +123,13 @@ export function ChangesConfirmationDialog({
 					<Button disabled={isLoading} onClick={onCancel} variant="outline">
 						Cancel
 					</Button>
-					<Button disabled={isLoading || changes.length === 0} onClick={onConfirm}>
-						{isLoading ? "Saving..." : `Confirm & Save ${changes.length} Change${changes.length === 1 ? "" : "s"}`}
+					<Button
+						disabled={isLoading || changes.length === 0}
+						onClick={onConfirm}
+					>
+						{isLoading
+							? "Saving..."
+							: `Confirm & Save ${changes.length} Change${changes.length === 1 ? "" : "s"}`}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

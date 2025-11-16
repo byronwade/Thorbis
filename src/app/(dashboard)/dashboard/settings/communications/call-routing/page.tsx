@@ -53,7 +53,9 @@ export default function CallRoutingPage() {
 						<div className="flex items-center justify-between border-b bg-muted/30 px-6 py-4">
 							<div>
 								<h3 className="font-medium text-sm">Routing Rules</h3>
-								<p className="text-muted-foreground text-sm">Define how incoming calls are distributed to your team</p>
+								<p className="text-muted-foreground text-sm">
+									Define how incoming calls are distributed to your team
+								</p>
 							</div>
 							<Button size="sm">
 								<Plus className="mr-2 h-4 w-4" />
@@ -76,7 +78,9 @@ export default function CallRoutingPage() {
 					<TabsContent className="mt-0 flex-1 p-6" value="after-hours">
 						{/* After-hours routing will be added here */}
 						<div className="rounded-lg border border-dashed p-12 text-center">
-							<h3 className="mb-2 font-semibold text-lg">After Hours Routing</h3>
+							<h3 className="mb-2 font-semibold text-lg">
+								After Hours Routing
+							</h3>
 							<p className="mb-4 text-muted-foreground">
 								Configure what happens when calls come in outside business hours
 							</p>
@@ -88,7 +92,9 @@ export default function CallRoutingPage() {
 						{/* Holiday exceptions will be added here */}
 						<div className="rounded-lg border border-dashed p-12 text-center">
 							<h3 className="mb-2 font-semibold text-lg">Holiday Exceptions</h3>
-							<p className="mb-4 text-muted-foreground">Set special routing for holidays and company closures</p>
+							<p className="mb-4 text-muted-foreground">
+								Set special routing for holidays and company closures
+							</p>
 							<Button variant="outline">Add Holiday</Button>
 						</div>
 					</TabsContent>

@@ -5,8 +5,21 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type Costs = {
 	callCost: number;
@@ -24,7 +37,13 @@ type PhoneNumber = {
 	features: string[];
 };
 
-export function CostBreakdownTable({ costs, phoneNumbers }: { costs: Costs; phoneNumbers: PhoneNumber[] }) {
+export function CostBreakdownTable({
+	costs,
+	phoneNumbers,
+}: {
+	costs: Costs;
+	phoneNumbers: PhoneNumber[];
+}) {
 	const serviceRows = [
 		{
 			service: "Voice Calls",
@@ -80,13 +99,21 @@ export function CostBreakdownTable({ costs, phoneNumbers }: { costs: Costs; phon
 									<TableCell>
 										<div>
 											<div className="font-medium">{row.service}</div>
-											<div className="text-muted-foreground text-xs">{row.description}</div>
+											<div className="text-muted-foreground text-xs">
+												{row.description}
+											</div>
 										</div>
 									</TableCell>
-									<TableCell className="text-muted-foreground text-xs">{row.rate}</TableCell>
-									<TableCell className="text-right font-medium">${row.cost.toFixed(2)}</TableCell>
+									<TableCell className="text-muted-foreground text-xs">
+										{row.rate}
+									</TableCell>
+									<TableCell className="text-right font-medium">
+										${row.cost.toFixed(2)}
+									</TableCell>
 									<TableCell className="text-right">
-										<Badge variant="outline">{row.percentage.toFixed(1)}%</Badge>
+										<Badge variant="outline">
+											{row.percentage.toFixed(1)}%
+										</Badge>
 									</TableCell>
 								</TableRow>
 							))}
@@ -94,7 +121,9 @@ export function CostBreakdownTable({ costs, phoneNumbers }: { costs: Costs; phon
 								<TableCell className="font-bold" colSpan={2}>
 									Total
 								</TableCell>
-								<TableCell className="text-right font-bold">${costs.totalCost.toFixed(2)}</TableCell>
+								<TableCell className="text-right font-bold">
+									${costs.totalCost.toFixed(2)}
+								</TableCell>
 								<TableCell className="text-right">
 									<Badge>100%</Badge>
 								</TableCell>
@@ -127,7 +156,9 @@ export function CostBreakdownTable({ costs, phoneNumbers }: { costs: Costs; phon
 							<TableBody>
 								{phoneNumbers.map((number) => (
 									<TableRow key={number.id}>
-										<TableCell className="font-medium">{number.formatted_number || number.phone_number}</TableCell>
+										<TableCell className="font-medium">
+											{number.formatted_number || number.phone_number}
+										</TableCell>
 										<TableCell>
 											<Badge className="capitalize" variant="secondary">
 												{number.number_type}
@@ -140,7 +171,9 @@ export function CostBreakdownTable({ costs, phoneNumbers }: { costs: Costs; phon
 									<TableCell className="font-bold" colSpan={2}>
 										Total ({phoneNumbers.length} numbers)
 									</TableCell>
-									<TableCell className="text-right font-bold">${costs.phoneNumberCost.toFixed(2)}</TableCell>
+									<TableCell className="text-right font-bold">
+										${costs.phoneNumberCost.toFixed(2)}
+									</TableCell>
 								</TableRow>
 							</TableBody>
 						</Table>

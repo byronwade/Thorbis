@@ -110,7 +110,10 @@ export type JobEnrichment = z.infer<typeof JobEnrichmentSchema>;
 // ============================================================================
 
 // Cache for enrichment results (5 minute TTL)
-const enrichmentCache = new Map<string, { data: JobEnrichment; expires: number }>();
+const enrichmentCache = new Map<
+	string,
+	{ data: JobEnrichment; expires: number }
+>();
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 export class JobEnrichmentService {
@@ -206,7 +209,14 @@ export class JobEnrichmentService {
 				traffic,
 			] = await Promise.all([
 				propertyDataService
-					.getPropertyData(job.address, job.city, job.state, job.zipCode, lat, lon)
+					.getPropertyData(
+						job.address,
+						job.city,
+						job.state,
+						job.zipCode,
+						lat,
+						lon,
+					)
 					.catch((_e) => null),
 				buildingDataService.getBuildingData(lat, lon).catch((_e) => null),
 				weatherService.getWeatherData(lat, lon).catch((_e) => null),
@@ -234,7 +244,9 @@ export class JobEnrichmentService {
 				googleStreetViewService
 					.getStreetView(lat, lon, `${job.address}, ${job.city}, ${job.state}`)
 					.catch((_e) => null),
-				googlePlacesService.findNearbySuppliers(lat, lon, 8000).catch((_e) => null),
+				googlePlacesService
+					.findNearbySuppliers(lat, lon, 8000)
+					.catch((_e) => null),
 				timeZoneService.getTimeZone(lat, lon).catch((_e) => null),
 				trafficService.getTrafficIncidents(lat, lon).catch((_e) => null),
 			]);
@@ -293,7 +305,10 @@ export class JobEnrichmentService {
 				// Step 3: Generate recommendations
 				// Weather-based recommendations
 				const highestAlert = weather.alerts[0];
-				if (weather.highestSeverity === "Extreme" || weather.highestSeverity === "Severe") {
+				if (
+					weather.highestSeverity === "Extreme" ||
+					weather.highestSeverity === "Severe"
+				) {
 					shouldReschedule = true;
 					rescheduleReason = `Severe weather alert: ${highestAlert.headline}`;
 					safetyWarnings.push(highestAlert.headline);
@@ -306,14 +321,16 @@ export class JobEnrichmentService {
 				// Check outdoor work suitability
 				const suitability = weatherService.isSuitableForOutdoorWork(weather);
 				if (!suitability.suitable) {
-					safetyWarnings.push(suitability.reason || "Weather may impact outdoor work");
+					safetyWarnings.push(
+						suitability.reason || "Weather may impact outdoor work",
+					);
 				}
 			}
 
 			if (waterQuality?.recommendations?.shouldInstallSoftener) {
 				// Water quality upsell
 				upsellOpportunities.push(
-					`Water Softener: ${waterQuality.recommendations.reason} (Save $${(waterQuality.recommendations.estimatedAnnualSavings || 0) / 100}/year)`
+					`Water Softener: ${waterQuality.recommendations.reason} (Save $${(waterQuality.recommendations.estimatedAnnualSavings || 0) / 100}/year)`,
 				);
 			}
 
@@ -327,14 +344,20 @@ export class JobEnrichmentService {
 
 			if (addressValidation && !addressValidation.isValid) {
 				// Address validation warning
-				safetyWarnings.push(`Address validation failed: ${addressValidation.error || "Invalid address"}`);
+				safetyWarnings.push(
+					`Address validation failed: ${addressValidation.error || "Invalid address"}`,
+				);
 			}
 
 			if (propertyData) {
 				// Property data-based upsells
-				const estimates = propertyDataService.estimateCharacteristics(propertyData);
+				const estimates =
+					propertyDataService.estimateCharacteristics(propertyData);
 
-				if (estimates.recommendMaintenance && estimates.recommendMaintenance.length > 0) {
+				if (
+					estimates.recommendMaintenance &&
+					estimates.recommendMaintenance.length > 0
+				) {
 					// Add maintenance recommendations as upsell opportunities
 					for (const maintenance of estimates.recommendMaintenance) {
 						upsellOpportunities.push(maintenance);
@@ -416,7 +439,10 @@ export class JobEnrichmentService {
 	/**
 	 * Calculate travel time from tech location to job
 	 */
-	async getTravelTime(from: { lat: number; lon: number }, to: { lat: number; lon: number }) {
+	async getTravelTime(
+		from: { lat: number; lon: number },
+		to: { lat: number; lon: number },
+	) {
 		try {
 			return await routingService.getRoute(from, to);
 		} catch (_error) {

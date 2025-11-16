@@ -25,7 +25,11 @@ const EQUIPMENT_COLUMNS = [
 	{ key: "status", label: "Status" },
 ];
 
-export function EquipmentToolbarActions({ totalCount = 0 }: { totalCount?: number }) {
+export function EquipmentToolbarActions({
+	totalCount = 0,
+}: {
+	totalCount?: number;
+}) {
 	const _archiveFilter = useArchiveStore((state) => state.filters.equipment);
 
 	// Calculate counts (will be passed from page)
@@ -42,7 +46,10 @@ export function EquipmentToolbarActions({ totalCount = 0 }: { totalCount?: numbe
 						entity="equipment"
 						totalCount={totalCount}
 					/>
-					<ColumnVisibilityMenu columns={EQUIPMENT_COLUMNS} entity="equipment" />
+					<ColumnVisibilityMenu
+						columns={EQUIPMENT_COLUMNS}
+						entity="equipment"
+					/>
 				</div>
 			}
 			importExportDataType="equipment"

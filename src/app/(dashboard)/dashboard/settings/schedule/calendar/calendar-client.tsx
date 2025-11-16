@@ -3,7 +3,10 @@
 import { CalendarDays, Palette, PlugZap, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
-import { getCalendarSettings, updateCalendarSettings } from "@/actions/settings";
+import {
+	getCalendarSettings,
+	updateCalendarSettings,
+} from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
@@ -14,41 +17,81 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
-import { type CalendarSettingsState, DEFAULT_CALENDAR_SETTINGS, mapCalendarSettings } from "./calendar-config";
+import {
+	type CalendarSettingsState,
+	DEFAULT_CALENDAR_SETTINGS,
+	mapCalendarSettings,
+} from "./calendar-config";
 
 type CalendarSettingsClientProps = {
 	initialSettings: Partial<CalendarSettingsState> | null;
 };
 
-export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<CalendarSettingsState>({
-			getter: getCalendarSettings,
-			setter: updateCalendarSettings,
-			initialState: DEFAULT_CALENDAR_SETTINGS,
-			settingsName: "schedule calendar",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapCalendarSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("defaultView", state.defaultView);
-				formData.append("startDayOfWeek", state.startDayOfWeek === "sunday" ? "0" : "1");
-				formData.append("timeSlotDurationMinutes", state.timeSlotDurationMinutes.toString());
-				formData.append("showTechnicianColors", state.showTechnicianColors.toString());
-				formData.append("showJobStatusColors", state.showJobStatusColors.toString());
-				formData.append("showTravelTime", state.showTravelTime.toString());
-				formData.append("showCustomerName", state.showCustomerName.toString());
-				formData.append("showJobType", state.showJobType.toString());
-				formData.append("syncWithGoogleCalendar", state.syncWithGoogleCalendar.toString());
-				formData.append("syncWithOutlook", state.syncWithOutlook.toString());
-				return formData;
-			},
-		});
+export function CalendarSettingsClient({
+	initialSettings,
+}: CalendarSettingsClientProps) {
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<CalendarSettingsState>({
+		getter: getCalendarSettings,
+		setter: updateCalendarSettings,
+		initialState: DEFAULT_CALENDAR_SETTINGS,
+		settingsName: "schedule calendar",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapCalendarSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("defaultView", state.defaultView);
+			formData.append(
+				"startDayOfWeek",
+				state.startDayOfWeek === "sunday" ? "0" : "1",
+			);
+			formData.append(
+				"timeSlotDurationMinutes",
+				state.timeSlotDurationMinutes.toString(),
+			);
+			formData.append(
+				"showTechnicianColors",
+				state.showTechnicianColors.toString(),
+			);
+			formData.append(
+				"showJobStatusColors",
+				state.showJobStatusColors.toString(),
+			);
+			formData.append("showTravelTime", state.showTravelTime.toString());
+			formData.append("showCustomerName", state.showCustomerName.toString());
+			formData.append("showJobType", state.showJobType.toString());
+			formData.append(
+				"syncWithGoogleCalendar",
+				state.syncWithGoogleCalendar.toString(),
+			);
+			formData.append("syncWithOutlook", state.syncWithOutlook.toString());
+			return formData;
+		},
+	});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {});
@@ -107,7 +150,12 @@ export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClie
 					<div>
 						<Label>Calendar view</Label>
 						<Select
-							onValueChange={(value) => updateSetting("defaultView", value as CalendarSettingsState["defaultView"])}
+							onValueChange={(value) =>
+								updateSetting(
+									"defaultView",
+									value as CalendarSettingsState["defaultView"],
+								)
+							}
 							value={settings.defaultView}
 						>
 							<SelectTrigger className="mt-2">
@@ -123,7 +171,9 @@ export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClie
 					<div>
 						<Label>First day of week</Label>
 						<Select
-							onValueChange={(value) => updateSetting("startDayOfWeek", value as "sunday" | "monday")}
+							onValueChange={(value) =>
+								updateSetting("startDayOfWeek", value as "sunday" | "monday")
+							}
 							value={settings.startDayOfWeek}
 						>
 							<SelectTrigger className="mt-2">
@@ -144,13 +194,20 @@ export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClie
 						<UserCircle2 className="size-4" />
 						Time slots
 					</CardTitle>
-					<CardDescription>Control spacing between bookable times</CardDescription>
+					<CardDescription>
+						Control spacing between bookable times
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="grid gap-4 md:grid-cols-2">
 					<div>
 						<Label>Slot duration</Label>
 						<Select
-							onValueChange={(value) => updateSetting("timeSlotDurationMinutes", Number.parseInt(value, 10))}
+							onValueChange={(value) =>
+								updateSetting(
+									"timeSlotDurationMinutes",
+									Number.parseInt(value, 10),
+								)
+							}
 							value={settings.timeSlotDurationMinutes.toString()}
 						>
 							<SelectTrigger className="mt-2">
@@ -203,14 +260,26 @@ export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClie
 							description: "Show the job category/bundle on each event.",
 						},
 					].map((item) => (
-						<div className="flex items-center justify-between rounded-lg border p-3" key={item.key}>
+						<div
+							className="flex items-center justify-between rounded-lg border p-3"
+							key={item.key}
+						>
 							<div>
 								<p className="font-medium text-sm">{item.label}</p>
-								<p className="text-muted-foreground text-xs">{item.description}</p>
+								<p className="text-muted-foreground text-xs">
+									{item.description}
+								</p>
 							</div>
 							<Switch
-								checked={settings[item.key as keyof CalendarSettingsState] as boolean}
-								onCheckedChange={(checked) => updateSetting(item.key as keyof CalendarSettingsState, checked)}
+								checked={
+									settings[item.key as keyof CalendarSettingsState] as boolean
+								}
+								onCheckedChange={(checked) =>
+									updateSetting(
+										item.key as keyof CalendarSettingsState,
+										checked,
+									)
+								}
 							/>
 						</div>
 					))}
@@ -223,27 +292,37 @@ export function CalendarSettingsClient({ initialSettings }: CalendarSettingsClie
 						<PlugZap className="size-4" />
 						Integrations
 					</CardTitle>
-					<CardDescription>Keep Thorbis in sync with your external calendars</CardDescription>
+					<CardDescription>
+						Keep Thorbis in sync with your external calendars
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between rounded-lg border p-3">
 						<div>
 							<p className="font-medium text-sm">Sync with Google Calendar</p>
-							<p className="text-muted-foreground text-xs">Push job updates to connected Google calendars.</p>
+							<p className="text-muted-foreground text-xs">
+								Push job updates to connected Google calendars.
+							</p>
 						</div>
 						<Switch
 							checked={settings.syncWithGoogleCalendar}
-							onCheckedChange={(checked) => updateSetting("syncWithGoogleCalendar", checked)}
+							onCheckedChange={(checked) =>
+								updateSetting("syncWithGoogleCalendar", checked)
+							}
 						/>
 					</div>
 					<div className="flex items-center justify-between rounded-lg border p-3">
 						<div>
 							<p className="font-medium text-sm">Sync with Outlook</p>
-							<p className="text-muted-foreground text-xs">Mirror events to Microsoft 365 or Exchange calendars.</p>
+							<p className="text-muted-foreground text-xs">
+								Mirror events to Microsoft 365 or Exchange calendars.
+							</p>
 						</div>
 						<Switch
 							checked={settings.syncWithOutlook}
-							onCheckedChange={(checked) => updateSetting("syncWithOutlook", checked)}
+							onCheckedChange={(checked) =>
+								updateSetting("syncWithOutlook", checked)
+							}
 						/>
 					</div>
 				</CardContent>

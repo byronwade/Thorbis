@@ -30,7 +30,11 @@ export type PurchaseOrderStatsBarProps = {
 	compact?: boolean;
 };
 
-export function PurchaseOrderStatsBar({ entityId, metrics, compact = false }: PurchaseOrderStatsBarProps) {
+export function PurchaseOrderStatsBar({
+	entityId,
+	metrics,
+	compact = false,
+}: PurchaseOrderStatsBarProps) {
 	const stats: StatCard[] = [
 		{
 			label: "Total Amount",

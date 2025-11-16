@@ -32,7 +32,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
  * User roles in the system
  * Matches the user_role ENUM in database
  */
-export type UserRole = "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr";
+export type UserRole =
+	| "owner"
+	| "admin"
+	| "manager"
+	| "dispatcher"
+	| "technician"
+	| "csr";
 
 /**
  * Permission keys for fine-grained access control
@@ -87,7 +93,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
 	owner: {
 		id: "owner",
 		label: "Owner",
-		description: "Full system access with focus on business financials and growth",
+		description:
+			"Full system access with focus on business financials and growth",
 		permissions: [
 			"view_reports",
 			"manage_team",
@@ -142,12 +149,18 @@ export const ROLES: Record<UserRole, RoleConfig> = {
 			"delete_jobs",
 			"delete_customers",
 		],
-		dashboardFeatures: ["system-settings", "user-management", "integrations", "audit-logs"],
+		dashboardFeatures: [
+			"system-settings",
+			"user-management",
+			"integrations",
+			"audit-logs",
+		],
 	},
 	manager: {
 		id: "manager",
 		label: "Manager",
-		description: "Oversee team performance, customer satisfaction, and operations",
+		description:
+			"Oversee team performance, customer satisfaction, and operations",
 		permissions: [
 			"view_reports",
 			"manage_team",
@@ -179,7 +192,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
 	dispatcher: {
 		id: "dispatcher",
 		label: "Dispatcher",
-		description: "Manage technician schedules, job assignments, and real-time operations",
+		description:
+			"Manage technician schedules, job assignments, and real-time operations",
 		permissions: [
 			"view_reports",
 			"dispatch_jobs",
@@ -205,7 +219,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
 	technician: {
 		id: "technician",
 		label: "Technician",
-		description: "View assigned jobs, update job status, and track personal performance",
+		description:
+			"View assigned jobs, update job status, and track personal performance",
 		permissions: [
 			"update_job_status",
 			"create_invoices",
@@ -226,7 +241,8 @@ export const ROLES: Record<UserRole, RoleConfig> = {
 	csr: {
 		id: "csr",
 		label: "Customer Service Rep",
-		description: "Handle customer calls, schedule appointments, and manage customer relationships",
+		description:
+			"Handle customer calls, schedule appointments, and manage customer relationships",
 		permissions: [
 			"create_jobs",
 			"schedule_appointments",
@@ -272,7 +288,7 @@ export async function hasRole(
 	supabase: SupabaseClient,
 	userId: string,
 	role: UserRole,
-	companyId: string
+	companyId: string,
 ): Promise<boolean> {
 	const { data, error } = await supabase.rpc("has_role", {
 		user_uuid: userId,
@@ -310,7 +326,7 @@ export async function hasAnyRole(
 	supabase: SupabaseClient,
 	userId: string,
 	roles: UserRole[],
-	companyId: string
+	companyId: string,
 ): Promise<boolean> {
 	const { data, error } = await supabase.rpc("has_any_role", {
 		user_uuid: userId,
@@ -342,7 +358,7 @@ export async function hasAnyRole(
 export async function getUserRole(
 	supabase: SupabaseClient,
 	userId: string,
-	companyId: string
+	companyId: string,
 ): Promise<UserRole | null> {
 	const { data, error } = await supabase.rpc("get_user_role", {
 		user_uuid: userId,
@@ -377,7 +393,7 @@ export async function hasPermission(
 	supabase: SupabaseClient,
 	userId: string,
 	permission: Permission,
-	companyId: string
+	companyId: string,
 ): Promise<boolean> {
 	const { data, error } = await supabase.rpc("has_permission", {
 		user_uuid: userId,
@@ -408,7 +424,11 @@ export async function hasPermission(
  * }
  * ```
  */
-export async function isCompanyOwner(supabase: SupabaseClient, userId: string, companyId: string): Promise<boolean> {
+export async function isCompanyOwner(
+	supabase: SupabaseClient,
+	userId: string,
+	companyId: string,
+): Promise<boolean> {
 	const { data, error } = await supabase.rpc("is_company_owner", {
 		user_uuid: userId,
 		company_uuid: companyId,
@@ -453,7 +473,10 @@ export function getRolePermissions(role: UserRole): Permission[] {
  * const canDelete = roleHasPermission("manager", "delete_jobs");
  * ```
  */
-export function roleHasPermission(role: UserRole, permission: Permission): boolean {
+export function roleHasPermission(
+	role: UserRole,
+	permission: Permission,
+): boolean {
 	return ROLES[role]?.permissions.includes(permission);
 }
 

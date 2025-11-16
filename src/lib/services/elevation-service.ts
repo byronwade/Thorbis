@@ -23,7 +23,8 @@ export const ElevationSchema = z.object({
 export type Elevation = z.infer<typeof ElevationSchema>;
 
 export class ElevationService {
-	private readonly cache: Map<string, { data: Elevation; timestamp: number }> = new Map();
+	private readonly cache: Map<string, { data: Elevation; timestamp: number }> =
+		new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 365; // 1 year (elevation doesn't change)
 
 	async getElevation(lat: number, lon: number): Promise<Elevation | null> {

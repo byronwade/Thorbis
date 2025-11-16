@@ -7,16 +7,28 @@
 
 import type { Metadata } from "next";
 import { SEO_URLS } from "@/lib/seo/config";
-import { generateMetadata as generateSEOMetadata, siteName } from "@/lib/seo/metadata";
-import { createArticleSchema, createBreadcrumbSchema, createFAQSchema } from "@/lib/seo/structured-data";
+import {
+	generateMetadata as generateSEOMetadata,
+	siteName,
+} from "@/lib/seo/metadata";
+import {
+	createArticleSchema,
+	createBreadcrumbSchema,
+	createFAQSchema,
+} from "@/lib/seo/structured-data";
 import type { KBArticleWithRelations } from "./types";
 
 /**
  * Generate metadata for an article page
  */
-export function generateArticleMetadata(article: KBArticleWithRelations): Metadata {
+export function generateArticleMetadata(
+	article: KBArticleWithRelations,
+): Metadata {
 	const title = article.metaTitle || article.title;
-	const description = article.metaDescription || article.excerpt || `${article.title} - ${siteName}`;
+	const description =
+		article.metaDescription ||
+		article.excerpt ||
+		`${article.title} - ${siteName}`;
 	const path = `/kb/${article.category.slug}/${article.slug}`;
 	const image = article.featured_image
 		? article.featured_image.startsWith("http")
@@ -31,8 +43,12 @@ export function generateArticleMetadata(article: KBArticleWithRelations): Metada
 		path,
 		image,
 		type: "article",
-		publishedTime: article.published_at ? new Date(article.published_at).toISOString() : undefined,
-		modifiedTime: article.updated_at ? new Date(article.updated_at).toISOString() : undefined,
+		publishedTime: article.published_at
+			? new Date(article.published_at).toISOString()
+			: undefined,
+		modifiedTime: article.updated_at
+			? new Date(article.updated_at).toISOString()
+			: undefined,
 		authors: article.author ? [article.author] : undefined,
 		tags: article.tags?.map((tag: { name: string }) => tag.name) || [],
 		keywords: Array.isArray(article.keywords) ? article.keywords : undefined,
@@ -44,15 +60,23 @@ export function generateArticleMetadata(article: KBArticleWithRelations): Metada
 /**
  * Generate structured data (JSON-LD) for an article
  */
-export function generateArticleStructuredData(article: KBArticleWithRelations): object {
+export function generateArticleStructuredData(
+	article: KBArticleWithRelations,
+): object {
 	const url = `${SEO_URLS.site}/kb/${article.category.slug}/${article.slug}`;
-	const words = article.content ? article.content.trim().split(/\s+/).length : undefined;
-	const readMinutes = typeof words === "number" ? Math.max(1, Math.round(words / 220)) : undefined;
+	const words = article.content
+		? article.content.trim().split(/\s+/).length
+		: undefined;
+	const readMinutes =
+		typeof words === "number"
+			? Math.max(1, Math.round(words / 220))
+			: undefined;
 	const toISOString = (value?: string | Date | null) => {
 		if (!value) {
 			return;
 		}
-		const date = value instanceof Date ? value : new Date(value as string | number);
+		const date =
+			value instanceof Date ? value : new Date(value as string | number);
 		return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 	};
 
@@ -61,8 +85,10 @@ export function generateArticleStructuredData(article: KBArticleWithRelations): 
 		description: article.excerpt || article.metaDescription || "",
 		url,
 		image: article.featured_image,
-		publishedTime: toISOString(article.published_at) ?? toISOString(article.createdAt),
-		modifiedTime: toISOString(article.updated_at) ?? toISOString(article.createdAt),
+		publishedTime:
+			toISOString(article.published_at) ?? toISOString(article.createdAt),
+		modifiedTime:
+			toISOString(article.updated_at) ?? toISOString(article.createdAt),
 		authorName: article.author || siteName,
 		tags: Array.isArray(article.keywords) ? article.keywords : undefined,
 		section: article.category.title,
@@ -76,7 +102,7 @@ export function generateArticleStructuredData(article: KBArticleWithRelations): 
  */
 export function generateBreadcrumbStructuredData(
 	category: { slug: string; title: string },
-	article?: { slug: string; title: string }
+	article?: { slug: string; title: string },
 ): object {
 	const items = [
 		{ name: "Home", url: SEO_URLS.site },
@@ -97,7 +123,9 @@ export function generateBreadcrumbStructuredData(
 /**
  * Generate FAQ structured data
  */
-export function generateFAQStructuredData(questions: Array<{ question: string; answer: string }>): object {
+export function generateFAQStructuredData(
+	questions: Array<{ question: string; answer: string }>,
+): object {
 	return createFAQSchema(questions);
 }
 
@@ -127,7 +155,11 @@ export function generateKBHomeMetadata(): Metadata {
 /**
  * Generate metadata for category page
  */
-export function generateCategoryMetadata(category: { title: string; description?: string; slug: string }): Metadata {
+export function generateCategoryMetadata(category: {
+	title: string;
+	description?: string;
+	slug: string;
+}): Metadata {
 	return generateSEOMetadata({
 		title: `${category.title} - Knowledge Base`,
 		description:
@@ -136,6 +168,12 @@ export function generateCategoryMetadata(category: { title: string; description?
 		path: `/kb/${category.slug}`,
 		section: "Knowledge Base",
 		imageAlt: `${category.title} knowledge base resources`,
-		keywords: [category.title.toLowerCase(), "documentation", "guides", "tutorials", "help"],
+		keywords: [
+			category.title.toLowerCase(),
+			"documentation",
+			"guides",
+			"tutorials",
+			"help",
+		],
 	});
 }

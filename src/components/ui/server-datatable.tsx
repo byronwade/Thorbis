@@ -39,7 +39,13 @@ import { memo, useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import type { UseServerPaginationReturn } from "@/lib/hooks/use-server-pagination";
 
 export type ServerColumnDef<T> = {
@@ -119,7 +125,7 @@ const TableRowInner = function TableRow<T>({
 		(_checked: boolean) => {
 			onSelectItem(itemId);
 		},
-		[itemId, onSelectItem]
+		[itemId, onSelectItem],
 	);
 
 	const handleClick = useCallback(() => {
@@ -143,7 +149,11 @@ const TableRowInner = function TableRow<T>({
 			{columns.map((column) => (
 				<td
 					className={`px-4 py-3 ${column.hideOnMobile ? "hidden md:table-cell" : ""} ${
-						column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : ""
+						column.align === "right"
+							? "text-right"
+							: column.align === "center"
+								? "text-center"
+								: ""
 					}`}
 					key={column.key}
 					style={{ width: column.width }}
@@ -177,7 +187,15 @@ export function ServerDataTable<T>({
 }: ServerDataTableProps<T>) {
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-	const { data, isLoading, error, pagination: paginationState, sorting, search, refetch } = pagination;
+	const {
+		data,
+		isLoading,
+		error,
+		pagination: paginationState,
+		sorting,
+		search,
+		refetch,
+	} = pagination;
 
 	// Selection handlers
 	const handleSelectAll = useCallback(
@@ -188,7 +206,7 @@ export function ServerDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[data, getItemId]
+		[data, getItemId],
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -214,7 +232,8 @@ export function ServerDataTable<T>({
 		return <ChevronDown className="ml-2 size-3.5" />;
 	};
 
-	const allSelected = data.length > 0 && data.every((item) => selectedIds.has(getItemId(item)));
+	const allSelected =
+		data.length > 0 && data.every((item) => selectedIds.has(getItemId(item)));
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -242,8 +261,15 @@ export function ServerDataTable<T>({
 				</div>
 
 				{/* Refresh */}
-				<Button disabled={isLoading} onClick={refetch} size="sm" variant="outline">
-					<RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
+				<Button
+					disabled={isLoading}
+					onClick={refetch}
+					size="sm"
+					variant="outline"
+				>
+					<RefreshCw
+						className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+					/>
 					Refresh
 				</Button>
 
@@ -323,7 +349,10 @@ export function ServerDataTable<T>({
 						<tbody className="divide-y divide-border/60">
 							{isLoading ? (
 								<tr>
-									<td className="py-12 text-center" colSpan={columns.length + (enableSelection ? 1 : 0)}>
+									<td
+										className="py-12 text-center"
+										colSpan={columns.length + (enableSelection ? 1 : 0)}
+									>
 										<div className="flex flex-col items-center gap-4">
 											<Loader2 className="size-8 animate-spin text-muted-foreground" />
 											<p className="text-muted-foreground">Loading...</p>
@@ -332,7 +361,10 @@ export function ServerDataTable<T>({
 								</tr>
 							) : data.length === 0 ? (
 								<tr>
-									<td className="py-12 text-center" colSpan={columns.length + (enableSelection ? 1 : 0)}>
+									<td
+										className="py-12 text-center"
+										colSpan={columns.length + (enableSelection ? 1 : 0)}
+									>
 										<div className="flex flex-col items-center gap-4">
 											{emptyIcon}
 											<p className="text-muted-foreground">{emptyMessage}</p>
@@ -369,16 +401,27 @@ export function ServerDataTable<T>({
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-4">
 					<div className="text-muted-foreground text-sm">
-						Showing {data.length === 0 ? 0 : (paginationState.page - 1) * paginationState.pageSize + 1} to{" "}
-						{Math.min(paginationState.page * paginationState.pageSize, pagination.totalCount)} of{" "}
-						{pagination.totalCount.toLocaleString()} results
+						Showing{" "}
+						{data.length === 0
+							? 0
+							: (paginationState.page - 1) * paginationState.pageSize + 1}{" "}
+						to{" "}
+						{Math.min(
+							paginationState.page * paginationState.pageSize,
+							pagination.totalCount,
+						)}{" "}
+						of {pagination.totalCount.toLocaleString()} results
 					</div>
 
 					{showPageSizeSelector && (
 						<div className="flex items-center gap-2">
-							<span className="text-muted-foreground text-sm">Rows per page:</span>
+							<span className="text-muted-foreground text-sm">
+								Rows per page:
+							</span>
 							<Select
-								onValueChange={(value) => paginationState.setPageSize(Number(value))}
+								onValueChange={(value) =>
+									paginationState.setPageSize(Number(value))
+								}
 								value={paginationState.pageSize.toString()}
 							>
 								<SelectTrigger className="w-20">
@@ -410,7 +453,9 @@ export function ServerDataTable<T>({
 						Page {paginationState.page} of {paginationState.totalPages}
 					</span>
 					<Button
-						disabled={paginationState.page === paginationState.totalPages || isLoading}
+						disabled={
+							paginationState.page === paginationState.totalPages || isLoading
+						}
 						onClick={paginationState.nextPage}
 						size="sm"
 						variant="outline"
@@ -425,4 +470,6 @@ export function ServerDataTable<T>({
 }
 
 // Export memoized version
-export const MemoizedServerDataTable = memo(ServerDataTable) as typeof ServerDataTable;
+export const MemoizedServerDataTable = memo(
+	ServerDataTable,
+) as typeof ServerDataTable;

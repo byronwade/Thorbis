@@ -2,7 +2,13 @@ import { Paperclip } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function DocumentsWidget({ documents, jobId }: { documents: unknown[]; jobId: string }) {
+export function DocumentsWidget({
+	documents,
+	jobId,
+}: {
+	documents: unknown[];
+	jobId: string;
+}) {
 	return (
 		<div className="space-y-3">
 			<p className="text-sm">

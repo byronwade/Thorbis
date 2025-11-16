@@ -16,7 +16,9 @@ export function FinanceShell({ children }: FinanceShellProps) {
 			{/* Header */}
 			<div>
 				<h1 className="font-semibold text-2xl">Finance Dashboard</h1>
-				<p className="text-muted-foreground">Manage accounts, allocate funds, and track financial goals</p>
+				<p className="text-muted-foreground">
+					Manage accounts, allocate funds, and track financial goals
+				</p>
 			</div>
 
 			{children}

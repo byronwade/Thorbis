@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { PaymentDetailData } from "@/components/work/payments/payment-detail-data";
 import { PaymentDetailSkeleton } from "@/components/work/payments/payment-detail-skeleton";
 
-export default async function PaymentDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PaymentDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: paymentId } = await params;
 
 	return (

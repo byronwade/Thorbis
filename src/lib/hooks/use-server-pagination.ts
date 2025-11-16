@@ -134,8 +134,11 @@ export function useServerPagination<T>({
 	const [page, setPage] = useState(initialPage);
 	const [currentPageSize, setCurrentPageSize] = useState(pageSize);
 	const [sortBy, setSortBy] = useState<string | undefined>(initialSort?.column);
-	const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(initialSort?.direction);
-	const [filterConfig, setFilterConfig] = useState<FilterConfig>(initialFilters);
+	const [sortDirection, setSortDirection] = useState<SortDirection | undefined>(
+		initialSort?.direction,
+	);
+	const [filterConfig, setFilterConfig] =
+		useState<FilterConfig>(initialFilters);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -175,7 +178,15 @@ export function useServerPagination<T>({
 		} finally {
 			setIsLoading(false);
 		}
-	}, [page, currentPageSize, sortBy, sortDirection, filterConfig, debouncedSearch, fetchFn]);
+	}, [
+		page,
+		currentPageSize,
+		sortBy,
+		sortDirection,
+		filterConfig,
+		debouncedSearch,
+		fetchFn,
+	]);
 
 	// Auto-fetch when params change
 	useEffect(() => {
@@ -191,7 +202,7 @@ export function useServerPagination<T>({
 		(newPage: number) => {
 			setPage(Math.max(1, Math.min(newPage, totalPages || 1)));
 		},
-		[totalPages]
+		[totalPages],
 	);
 
 	const nextPage = useCallback(() => {
@@ -227,7 +238,7 @@ export function useServerPagination<T>({
 			}
 			setPage(1);
 		},
-		[sortBy, sortDirection]
+		[sortBy, sortDirection],
 	);
 
 	const clearSort = useCallback(() => {

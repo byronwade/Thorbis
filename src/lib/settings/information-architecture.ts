@@ -1,5 +1,13 @@
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, Building2, CreditCard, MessageSquare, Settings2, User, Zap } from "lucide-react";
+import {
+	BarChart3,
+	Building2,
+	CreditCard,
+	MessageSquare,
+	Settings2,
+	User,
+	Zap,
+} from "lucide-react";
 
 export type SettingsClusterSlug =
 	| "account"
@@ -34,7 +42,12 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 		title: "Account",
 		description: "Personal identity, authentication, preferences, and alerts",
 		icon: User,
-		supabaseSources: ["users", "profiles", "user_preferences", "user_notification_preferences"],
+		supabaseSources: [
+			"users",
+			"profiles",
+			"user_preferences",
+			"user_notification_preferences",
+		],
 		links: [
 			{
 				title: "Personal Information",
@@ -95,7 +108,12 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				title: "Team & Permissions",
 				description: "Members, invites, departments, and roles",
 				href: "/dashboard/settings/team",
-				supabaseSources: ["team_members", "team_invitations", "custom_roles", "departments"],
+				supabaseSources: [
+					"team_members",
+					"team_invitations",
+					"custom_roles",
+					"departments",
+				],
 			},
 			{
 				title: "API Keys",
@@ -151,7 +169,10 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				title: "Notification Defaults",
 				description: "Job, customer, invoice, and queue health",
 				href: "/dashboard/settings/communications/notifications",
-				supabaseSources: ["communication_notification_settings", "notification_queue"],
+				supabaseSources: [
+					"communication_notification_settings",
+					"notification_queue",
+				],
 			},
 			{
 				title: "10DLC & Compliance",
@@ -191,7 +212,8 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 			},
 			{
 				title: "Job Configuration",
-				description: "Job types, statuses, numbering, and completion requirements",
+				description:
+					"Job types, statuses, numbering, and completion requirements",
 				href: "/dashboard/settings/jobs",
 				supabaseSources: ["job_settings"],
 			},
@@ -211,7 +233,11 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				title: "Scheduling",
 				description: "Team rules, dispatch policies, calendar defaults",
 				href: "/dashboard/settings/schedule",
-				supabaseSources: ["schedule_calendar_settings", "schedule_dispatch_rules", "schedule_team_rules"],
+				supabaseSources: [
+					"schedule_calendar_settings",
+					"schedule_dispatch_rules",
+					"schedule_team_rules",
+				],
 			},
 			{
 				title: "Loyalty & Rewards",
@@ -257,19 +283,29 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 				title: "Virtual Buckets",
 				description: "Profit-first allocations and automation",
 				href: "/dashboard/settings/finance/virtual-buckets",
-				supabaseSources: ["finance_virtual_bucket_settings", "finance_virtual_buckets"],
+				supabaseSources: [
+					"finance_virtual_bucket_settings",
+					"finance_virtual_buckets",
+				],
 			},
 			{
 				title: "Gift & Debit Cards",
 				description: "Spend controls, expiration policies, redemption data",
 				href: "/dashboard/settings/finance/gift-cards",
-				supabaseSources: ["finance_gift_card_settings", "finance_gift_cards", "finance_debit_cards"],
+				supabaseSources: [
+					"finance_gift_card_settings",
+					"finance_gift_cards",
+					"finance_debit_cards",
+				],
 			},
 			{
 				title: "Financing Programs",
 				description: "Consumer and business financing eligibility",
 				href: "/dashboard/settings/finance/business-financing",
-				supabaseSources: ["finance_business_financing_settings", "finance_consumer_financing_settings"],
+				supabaseSources: [
+					"finance_business_financing_settings",
+					"finance_consumer_financing_settings",
+				],
 			},
 		],
 	},
@@ -325,7 +361,14 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 		title: "Analytics & Telemetry",
 		description: "Usage insights, automation health, and alerting",
 		icon: BarChart3,
-		supabaseSources: ["activities", "notifications", "call_logs", "jobs", "customers", "invoices"],
+		supabaseSources: [
+			"activities",
+			"notifications",
+			"call_logs",
+			"jobs",
+			"customers",
+			"invoices",
+		],
 		links: [
 			{
 				title: "Mission Control",
@@ -360,8 +403,12 @@ export const SETTINGS_INFORMATION_ARCHITECTURE: SettingsClusterDefinition[] = [
 	},
 ];
 
-const SETTINGS_CLUSTER_LOOKUP = new Map(SETTINGS_INFORMATION_ARCHITECTURE.map((cluster) => [cluster.slug, cluster]));
+const SETTINGS_CLUSTER_LOOKUP = new Map(
+	SETTINGS_INFORMATION_ARCHITECTURE.map((cluster) => [cluster.slug, cluster]),
+);
 
-export function getSettingsClusterDefinition(slug: SettingsClusterSlug): SettingsClusterDefinition | undefined {
+export function getSettingsClusterDefinition(
+	slug: SettingsClusterSlug,
+): SettingsClusterDefinition | undefined {
 	return SETTINGS_CLUSTER_LOOKUP.get(slug);
 }

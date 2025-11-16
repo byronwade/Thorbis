@@ -9,7 +9,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Let an AI dispatcher capture every opportunity",
 		heroDescription:
 			"Route inbound calls, website chats, and text messages through a conversational AI assistant that sounds like your best coordinator. Thorbis captures service details, books jobs, and updates the CRM before a human ever lifts a finger.",
-		heroImage: "https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Thorbis AI Assistant blends natural language processing with your pricebook, technician roster, and schedule commitments to keep the board full without adding headcount.",
 		primaryCta: {
@@ -78,17 +79,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Call coverage",
 				value: "98%",
-				description: "of inbound calls answered across business hours and after-hours.",
+				description:
+					"of inbound calls answered across business hours and after-hours.",
 			},
 			{
 				label: "Booking speed",
 				value: "3 min",
-				description: "average time to log, qualify, and schedule a job from new leads.",
+				description:
+					"average time to log, qualify, and schedule a job from new leads.",
 			},
 			{
 				label: "CSR efficiency",
 				value: "40%",
-				description: "reduction in manual intake and follow-up tasks for your office staff.",
+				description:
+					"reduction in manual intake and follow-up tasks for your office staff.",
 			},
 		],
 		integrations: ["OpenAI", "Twilio Voice", "Stripe", "Google Calendar"],
@@ -124,7 +128,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Give every dispatcher the full customer story",
 		heroDescription:
 			"Thorbis CRM unifies service history, communication logs, and billing status so your team knows exactly how to take care of every account.",
-		heroImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Replace fragmented spreadsheets with a CRM designed for high-volume service operations. Track households, properties, and commercial accounts in one workspace.",
 		primaryCta: {
@@ -139,7 +144,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Field Service CRM Software | Thorbis",
 			description:
 				"Centralize customer profiles, job history, and communication logs with Thorbis CRM. Empower office staff and technicians with unified insights.",
-			keywords: ["field service crm", "service business customer database", "contractor crm software"],
+			keywords: [
+				"field service crm",
+				"service business customer database",
+				"contractor crm software",
+			],
 		},
 		painPoints: [
 			"Customer data is spread between spreadsheets, QuickBooks, and personal notes.",
@@ -187,17 +196,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Duplicate records",
 				value: "-92%",
-				description: "reduction after migrating to Thorbis automated import tools.",
+				description:
+					"reduction after migrating to Thorbis automated import tools.",
 			},
 			{
 				label: "Technician prep time",
 				value: "-15 min",
-				description: "saved before each visit thanks to consolidated job history.",
+				description:
+					"saved before each visit thanks to consolidated job history.",
 			},
 			{
 				label: "Campaign ROI",
 				value: "3.4x",
-				description: "increase from targeted upsell segments built in Thorbis CRM.",
+				description:
+					"increase from targeted upsell segments built in Thorbis CRM.",
 			},
 		],
 		integrations: ["QuickBooks Online", "HubSpot", "Mailchimp", "Zapier"],
@@ -229,11 +241,13 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "online-booking",
 		name: "Online Booking",
-		heroEyebrow: "Self-Service Scheduling • Smart Capacity • Instant Confirmation",
+		heroEyebrow:
+			"Self-Service Scheduling • Smart Capacity • Instant Confirmation",
 		heroTitle: "Turn website visitors into scheduled jobs 24/7",
 		heroDescription:
 			"Embed a branded scheduler that lets homeowners pick times, attach photos, and pay deposits without calling the office.",
-		heroImage: "https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1545239351-1141bd82e8a6?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Thorbis online booking brings the convenience of consumer apps to your service company—safely respecting technician capacity and travel buffers.",
 		primaryCta: {
@@ -248,7 +262,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Online Booking Software for Contractors | Thorbis",
 			description:
 				"Allow customers to schedule service, choose technicians, and pay deposits from any device. Thorbis online booking syncs directly with your dispatch board.",
-			keywords: ["online booking for contractors", "self service scheduling", "field service booking portal"],
+			keywords: [
+				"online booking for contractors",
+				"self service scheduling",
+				"field service booking portal",
+			],
 		},
 		painPoints: [
 			"Website forms collect requests but leave the office calling back to confirm availability.",
@@ -258,17 +276,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Real-time availability",
-				description: "Expose only the slots that work with technician skills, drive time, and existing commitments.",
+				description:
+					"Expose only the slots that work with technician skills, drive time, and existing commitments.",
 				icon: "clock",
 			},
 			{
 				title: "Customizable intake forms",
-				description: "Capture service type, equipment details, urgency, and photos so techs arrive prepared.",
+				description:
+					"Capture service type, equipment details, urgency, and photos so techs arrive prepared.",
 				icon: "clipboard-list",
 			},
 			{
 				title: "Automatic confirmations & reminders",
-				description: "Send branded emails and SMS updates as soon as the customer books, plus pre-visit reminders.",
+				description:
+					"Send branded emails and SMS updates as soon as the customer books, plus pre-visit reminders.",
 				icon: "bell",
 			},
 		],
@@ -288,17 +309,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Conversion rate",
 				value: "+38%",
-				description: "increase in scheduled jobs after enabling self-service booking.",
+				description:
+					"increase in scheduled jobs after enabling self-service booking.",
 			},
 			{
 				label: "Call volume",
 				value: "-27%",
-				description: "reduction in manual scheduling calls handled by office staff.",
+				description:
+					"reduction in manual scheduling calls handled by office staff.",
 			},
 			{
 				label: "Deposit capture",
 				value: "68%",
-				description: "of bookings secure a pre-visit deposit through the portal.",
+				description:
+					"of bookings secure a pre-visit deposit through the portal.",
 			},
 		],
 		integrations: ["WordPress", "Webflow", "Squarespace", "Zapier"],
@@ -334,7 +358,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Run campaigns that fill the board automatically",
 		heroDescription:
 			"Thorbis marketing automation keeps your brand top-of-mind with seasonal promotions, service reminders, and review requests—all tied to revenue attribution.",
-		heroImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Trigger intelligent campaigns using customer behavior, equipment age, and plan renewals so every contact receives the right message at the right time.",
 		primaryCta: {
@@ -349,7 +374,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Marketing Automation for Service Businesses | Thorbis",
 			description:
 				"Automate review requests, service reminders, and promotional campaigns with Thorbis marketing automation. Track revenue from every touch.",
-			keywords: ["service business marketing automation", "field service email campaigns", "review request automation"],
+			keywords: [
+				"service business marketing automation",
+				"field service email campaigns",
+				"review request automation",
+			],
 		},
 		painPoints: [
 			"Manual spreadsheets and generic email blasts deliver poor engagement.",
@@ -371,7 +400,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Revenue attribution",
-				description: "Trace booked jobs, estimates, and collected revenue back to specific campaigns and automations.",
+				description:
+					"Trace booked jobs, estimates, and collected revenue back to specific campaigns and automations.",
 				icon: "line-chart",
 			},
 		],
@@ -383,7 +413,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Review + referral loop",
-				description: "Send review requests after completed jobs, then trigger referral incentives for promoters.",
+				description:
+					"Send review requests after completed jobs, then trigger referral incentives for promoters.",
 			},
 		],
 		stats: [
@@ -395,12 +426,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Review response rate",
 				value: "74%",
-				description: "of completed jobs generate a public review within 24 hours.",
+				description:
+					"of completed jobs generate a public review within 24 hours.",
 			},
 			{
 				label: "Dormant customer reactivation",
 				value: "32%",
-				description: "of dormant accounts rebook within 60 days of an automation journey.",
+				description:
+					"of dormant accounts rebook within 60 days of an automation journey.",
 			},
 		],
 		integrations: ["Mailchimp", "Constant Contact", "Meta Ads", "Google Ads"],
@@ -418,11 +451,13 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				question: "Is texting compliant?",
-				answer: "Thorbis manages opt-ins, quiet hours, and autoresponder keywords to comply with TCPA regulations.",
+				answer:
+					"Thorbis manages opt-ins, quiet hours, and autoresponder keywords to comply with TCPA regulations.",
 			},
 			{
 				question: "Do you support postcards?",
-				answer: "Yes. Launch targeted direct-mail campaigns with dynamic QR codes that sync responses back to Thorbis.",
+				answer:
+					"Yes. Launch targeted direct-mail campaigns with dynamic QR codes that sync responses back to Thorbis.",
 			},
 		],
 	},
@@ -434,7 +469,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Provide a modern portal customers actually use",
 		heroDescription:
 			"Thorbis gives homeowners and facility managers a secure branded portal to track jobs, approve estimates, pay invoices, and communicate with your team.",
-		heroImage: "https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1526948128573-703ee1aeb6fa?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Deliver a white-glove experience without additional staff. Customers log in from any device to view history, upcoming visits, and documents.",
 		primaryCta: {
@@ -449,7 +485,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Customer Portal for Field Service Companies | Thorbis",
 			description:
 				"Offer customers an on-brand portal with job tracking, document storage, and payments. Improve transparency and speed up cash flow.",
-			keywords: ["customer portal for contractors", "field service client portal", "service business payments portal"],
+			keywords: [
+				"customer portal for contractors",
+				"field service client portal",
+				"service business payments portal",
+			],
 		},
 		painPoints: [
 			"Customers constantly call to request updates, copy invoices, or ask about technician arrival times.",
@@ -459,7 +499,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Real-time job tracking",
-				description: "Share technician ETAs, status updates, and photos as soon as teams are en route or onsite.",
+				description:
+					"Share technician ETAs, status updates, and photos as soon as teams are en route or onsite.",
 				icon: "map-pin",
 			},
 			{
@@ -524,7 +565,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				question: "Do customers need separate logins per property?",
-				answer: "No. Residential customers manage multiple properties and contacts within a single account.",
+				answer:
+					"No. Residential customers manage multiple properties and contacts within a single account.",
 			},
 		],
 	},
@@ -536,7 +578,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Keep the board balanced while technicians stay on time",
 		heroDescription:
 			"Thorbis scheduling brings together drag-and-drop dispatch, AI-assisted capacity planning, and live technician tracking.",
-		heroImage: "https://images.unsplash.com/photo-1525186402429-b4ff38bedbec?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1525186402429-b4ff38bedbec?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"See every crew, truck, and commitment on one responsive board. Adjust on the fly with travel times and skill requirements built in.",
 		primaryCta: {
@@ -551,7 +594,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Scheduling Software for Service Dispatchers | Thorbis",
 			description:
 				"Balance workload, reduce windshield time, and keep technicians on schedule with Thorbis drag-and-drop dispatch board.",
-			keywords: ["field service scheduling", "dispatch board software", "contractor scheduling app"],
+			keywords: [
+				"field service scheduling",
+				"dispatch board software",
+				"contractor scheduling app",
+			],
 		},
 		painPoints: [
 			"Whiteboards and spreadsheets make it impossible to rebalance the schedule in real time.",
@@ -567,12 +614,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Live technician map",
-				description: "Track en route, onsite, and completed statuses. Automatically adjust ETAs and notify customers.",
+				description:
+					"Track en route, onsite, and completed statuses. Automatically adjust ETAs and notify customers.",
 				icon: "navigation",
 			},
 			{
 				title: "Exception alerts",
-				description: "Detect overlaps, overtime risks, or SLA violations before they become customer issues.",
+				description:
+					"Detect overlaps, overtime risks, or SLA violations before they become customer issues.",
 				icon: "alert-triangle",
 			},
 		],
@@ -584,7 +633,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Crew scheduling",
-				description: "Build multi-tech jobs with shared tasks, staging, and equipment dependencies.",
+				description:
+					"Build multi-tech jobs with shared tasks, staging, and equipment dependencies.",
 			},
 		],
 		stats: [
@@ -614,15 +664,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Can I customize the board?",
-				answer: "Yes. Create views by team, region, revenue, or job status. Save filters per dispatcher.",
+				answer:
+					"Yes. Create views by team, region, revenue, or job status. Save filters per dispatcher.",
 			},
 			{
 				question: "Does it sync with technician mobile apps?",
-				answer: "Technicians receive instant updates, route directions, and job notes through the Thorbis mobile app.",
+				answer:
+					"Technicians receive instant updates, route directions, and job notes through the Thorbis mobile app.",
 			},
 			{
 				question: "Do you support recurring jobs?",
-				answer: "Generate recurring visits with seasonal rules, service plan commitments, and auto-assigned techs.",
+				answer:
+					"Generate recurring visits with seasonal rules, service plan commitments, and auto-assigned techs.",
 			},
 		],
 	},
@@ -634,7 +687,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Equip technicians with everything they need on-site",
 		heroDescription:
 			"Thorbis mobile app keeps jobs, checklists, and customer information at technicians’ fingertips—even without signal.",
-		heroImage: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Deliver a digital job folder with workflows, parts availability, and payment collection to turn every visit into a five-star experience.",
 		primaryCta: {
@@ -649,7 +703,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Technician Mobile App for Field Service | Thorbis",
 			description:
 				"Provide technicians with digital checklists, parts availability, photos, and payments. Thorbis mobile app works offline and syncs instantly.",
-			keywords: ["field service mobile app", "technician workflow app", "contractor mobile software"],
+			keywords: [
+				"field service mobile app",
+				"technician workflow app",
+				"contractor mobile software",
+			],
 		},
 		painPoints: [
 			"Technicians rely on paper forms and duplicate entry after returning to the shop.",
@@ -659,12 +717,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Offline workflows",
-				description: "Download jobs, checklists, and asset history before arriving. Sync automatically once connected.",
+				description:
+					"Download jobs, checklists, and asset history before arriving. Sync automatically once connected.",
 				icon: "download",
 			},
 			{
 				title: "Visual documentation",
-				description: "Capture photos, videos, and notes that flow directly into job history and customer portals.",
+				description:
+					"Capture photos, videos, and notes that flow directly into job history and customer portals.",
 				icon: "camera",
 			},
 			{
@@ -677,11 +737,13 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		workflows: [
 			{
 				title: "Guided checklists",
-				description: "Enforce safety steps, equipment diagnostics, and quality checks with required photos.",
+				description:
+					"Enforce safety steps, equipment diagnostics, and quality checks with required photos.",
 			},
 			{
 				title: "Instant invoicing",
-				description: "Generate invoices, collect signatures, and process payments before leaving the driveway.",
+				description:
+					"Generate invoices, collect signatures, and process payments before leaving the driveway.",
 			},
 		],
 		stats: [
@@ -698,7 +760,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Photo documentation",
 				value: "12",
-				description: "average rich media files captured per job for proof and training.",
+				description:
+					"average rich media files captured per job for proof and training.",
 			},
 		],
 		integrations: ["Stripe Terminal", "Sunbit", "GreenSky", "CompanyCam"],
@@ -711,11 +774,13 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Which devices are supported?",
-				answer: "Thorbis mobile runs on iOS and Android phones or tablets. We provide rugged device recommendations.",
+				answer:
+					"Thorbis mobile runs on iOS and Android phones or tablets. We provide rugged device recommendations.",
 			},
 			{
 				question: "Can I restrict what techs see?",
-				answer: "Role-based controls hide financial data or limit editing while still granting job context.",
+				answer:
+					"Role-based controls hide financial data or limit editing while still granting job context.",
 			},
 			{
 				question: "How do updates deploy?",
@@ -732,7 +797,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Turn chaotic routes into profitable days",
 		heroDescription:
 			"Thorbis optimizes routes across technicians, considering urgency, skills, traffic, and parts availability to cut windshield time.",
-		heroImage: "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Keep every truck moving efficiently with dynamic routing algorithms tuned for service businesses, not parcel delivery.",
 		primaryCta: {
@@ -747,7 +813,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Route Optimization for Field Service | Thorbis",
 			description:
 				"Reduce drive time, lower fuel spend, and hit SLAs with Thorbis route optimization. Adapt to emergencies in real time.",
-			keywords: ["field service routing", "technician route optimization", "contractor fleet routing"],
+			keywords: [
+				"field service routing",
+				"technician route optimization",
+				"contractor fleet routing",
+			],
 		},
 		painPoints: [
 			"Manual routing ignores traffic and technician skills, causing delays and callbacks.",
@@ -757,17 +827,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "AI-powered sequencing",
-				description: "Optimize across technicians using service windows, drive times, and promised SLAs.",
+				description:
+					"Optimize across technicians using service windows, drive times, and promised SLAs.",
 				icon: "route",
 			},
 			{
 				title: "Live re-routing",
-				description: "Drag-and-drop emergencies into the schedule and let Thorbis adjust every route instantly.",
+				description:
+					"Drag-and-drop emergencies into the schedule and let Thorbis adjust every route instantly.",
 				icon: "refresh-cw",
 			},
 			{
 				title: "Fleet analytics",
-				description: "Track drive time vs. on-site time, mileage, and fuel impact per technician or crew.",
+				description:
+					"Track drive time vs. on-site time, mileage, and fuel impact per technician or crew.",
 				icon: "gauge",
 			},
 		],
@@ -810,15 +883,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Does Thorbis consider technician skills?",
-				answer: "Yes. Routes respect skill tags, certifications, and equipment requirements you define.",
+				answer:
+					"Yes. Routes respect skill tags, certifications, and equipment requirements you define.",
 			},
 			{
 				question: "How often can routes refresh?",
-				answer: "Routes recalculate in seconds whenever jobs are added, canceled, or technicians change status.",
+				answer:
+					"Routes recalculate in seconds whenever jobs are added, canceled, or technicians change status.",
 			},
 			{
 				question: "Can technicians override routes?",
-				answer: "Permissions allow technicians to request swaps. Dispatchers approve changes with full visibility.",
+				answer:
+					"Permissions allow technicians to request swaps. Dispatchers approve changes with full visibility.",
 			},
 		],
 	},
@@ -830,7 +906,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Keep the right part on every truck, every time",
 		heroDescription:
 			"Thorbis tracks parts across warehouses, trucks, and vendor orders so you always know what’s on hand and what needs replenishment.",
-		heroImage: "https://images.unsplash.com/photo-1604933762019-d4b3fea8b1b8?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1604933762019-d4b3fea8b1b8?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Eliminate callbacks caused by missing parts. Track serialized equipment, automate reorder points, and push purchase orders to vendors instantly.",
 		primaryCta: {
@@ -845,7 +922,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Inventory Management for Service Contractors | Thorbis",
 			description:
 				"Manage truck stock, warehouses, purchase orders, and serialized assets with Thorbis inventory. Integrates directly with job costing.",
-			keywords: ["field service inventory", "truck stock management", "purchase order software contractor"],
+			keywords: [
+				"field service inventory",
+				"truck stock management",
+				"purchase order software contractor",
+			],
 		},
 		painPoints: [
 			"Technicians arrive without parts, forcing return trips and unplanned labor.",
@@ -867,7 +948,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Serialized asset tracking",
-				description: "Record warranties, install dates, and maintenance history for high-value equipment.",
+				description:
+					"Record warranties, install dates, and maintenance history for high-value equipment.",
 				icon: "scan",
 			},
 		],
@@ -887,7 +969,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Stockouts",
 				value: "-60%",
-				description: "reduction after implementing Thorbis inventory automation.",
+				description:
+					"reduction after implementing Thorbis inventory automation.",
 			},
 			{
 				label: "Truck roll-backs",
@@ -897,7 +980,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Inventory reconciliation",
 				value: "2 hrs",
-				description: "average weekly time to validate counts across all locations.",
+				description:
+					"average weekly time to validate counts across all locations.",
 			},
 		],
 		integrations: ["QuickBooks", "SOS Inventory", "Unleashed", "Ferguson"],
@@ -910,15 +994,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Can we barcode scan parts?",
-				answer: "Yes. The mobile app scans manufacturer barcodes or Thorbis-generated labels for transfers and counts.",
+				answer:
+					"Yes. The mobile app scans manufacturer barcodes or Thorbis-generated labels for transfers and counts.",
 			},
 			{
 				question: "Do you support vendor integrations?",
-				answer: "We integrate with major distributors for electronic purchase orders and pricing updates.",
+				answer:
+					"We integrate with major distributors for electronic purchase orders and pricing updates.",
 			},
 			{
 				question: "How do adjustments work?",
-				answer: "Thorbis tracks cycle counts, adjustments, and reasons so you maintain clean audit trails.",
+				answer:
+					"Thorbis tracks cycle counts, adjustments, and reasons so you maintain clean audit trails.",
 			},
 		],
 	},
@@ -927,10 +1014,12 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		slug: "team-management",
 		name: "Team Management & Scheduling",
 		heroEyebrow: "Availability • Certifications • Performance Insights",
-		heroTitle: "Manage every technician, apprentice, and coordinator in one hub",
+		heroTitle:
+			"Manage every technician, apprentice, and coordinator in one hub",
 		heroDescription:
 			"Thorbis team management keeps credentials current, tracks availability, and highlights coaching opportunities.",
-		heroImage: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Centralize HR essentials for field teams—onboarding checklists, certifications, PTO, and productivity metrics.",
 		primaryCta: {
@@ -945,7 +1034,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Team Management for Field Service Companies | Thorbis",
 			description:
 				"Track technician credentials, availability, and performance with Thorbis team management. Align HR and operations in one system.",
-			keywords: ["field service workforce management", "technician scheduling hr", "service business team management"],
+			keywords: [
+				"field service workforce management",
+				"technician scheduling hr",
+				"service business team management",
+			],
 		},
 		painPoints: [
 			"Certification expirations catch teams off guard, causing compliance headaches.",
@@ -955,7 +1048,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Centralized roster",
-				description: "Work from one roster with contact info, pay rates, skills, and shift preferences.",
+				description:
+					"Work from one roster with contact info, pay rates, skills, and shift preferences.",
 				icon: "users",
 			},
 			{
@@ -966,25 +1060,29 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Performance dashboards",
-				description: "Compare revenue, callback rate, customer satisfaction, and upsells per technician.",
+				description:
+					"Compare revenue, callback rate, customer satisfaction, and upsells per technician.",
 				icon: "trophy",
 			},
 		],
 		workflows: [
 			{
 				title: "Onboarding program",
-				description: "Assign tasks, track equipment issued, and monitor progress for new hires across departments.",
+				description:
+					"Assign tasks, track equipment issued, and monitor progress for new hires across departments.",
 			},
 			{
 				title: "Availability sync",
-				description: "PTO requests, training days, and certifications automatically update scheduling rules.",
+				description:
+					"PTO requests, training days, and certifications automatically update scheduling rules.",
 			},
 		],
 		stats: [
 			{
 				label: "Compliance violations",
 				value: "-95%",
-				description: "reduction in missed license renewals with automated reminders.",
+				description:
+					"reduction in missed license renewals with automated reminders.",
 			},
 			{
 				label: "Technician retention",
@@ -994,7 +1092,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Leadership visibility",
 				value: "100%",
-				description: "of managers review technician scorecards weekly inside Thorbis.",
+				description:
+					"of managers review technician scorecards weekly inside Thorbis.",
 			},
 		],
 		integrations: ["BambooHR", "ADP Workforce Now", "Gusto", "Trainual"],
@@ -1007,11 +1106,13 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Does Thorbis handle timesheets?",
-				answer: "Timesheets feed into payroll exports, with configurable rules for overtime and shift differentials.",
+				answer:
+					"Timesheets feed into payroll exports, with configurable rules for overtime and shift differentials.",
 			},
 			{
 				question: "Can technicians request PTO?",
-				answer: "Yes. Requests flow through an approval process and update scheduling once approved.",
+				answer:
+					"Yes. Requests flow through an approval process and update scheduling once approved.",
 			},
 			{
 				question: "How granular are roles?",
@@ -1028,7 +1129,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Collect revenue faster with frictionless invoicing",
 		heroDescription:
 			"Thorbis generates accurate invoices, offers flexible payment options, and syncs payments back to accounting automatically.",
-		heroImage: "https://images.unsplash.com/photo-1581622554612-7eb89c7518d0?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1581622554612-7eb89c7518d0?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Create professional invoices onsite or in the office, support progress billing, and let customers pay the way they prefer.",
 		primaryCta: {
@@ -1043,7 +1145,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Invoicing Software for Service Contractors | Thorbis",
 			description:
 				"Generate invoices, collect payments, and sync to QuickBooks automatically with Thorbis invoicing. Reduce DSO and eliminate manual entry.",
-			keywords: ["service business invoicing", "field service payments", "contractor billing software"],
+			keywords: [
+				"service business invoicing",
+				"field service payments",
+				"contractor billing software",
+			],
 		},
 		painPoints: [
 			"Invoices hit the accounting system days after work is complete, delaying cash flow.",
@@ -1053,28 +1159,33 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Instant invoice creation",
-				description: "Pull parts, labor, and discounts directly from jobs. Generate invoices with one click.",
+				description:
+					"Pull parts, labor, and discounts directly from jobs. Generate invoices with one click.",
 				icon: "file-text",
 			},
 			{
 				title: "Flexible payment options",
-				description: "Accept ACH, credit card, stored payment methods, and subscription billing with autopay.",
+				description:
+					"Accept ACH, credit card, stored payment methods, and subscription billing with autopay.",
 				icon: "wallet",
 			},
 			{
 				title: "Automated reminders",
-				description: "Follow up on outstanding balances with smart reminders that stop when payment is received.",
+				description:
+					"Follow up on outstanding balances with smart reminders that stop when payment is received.",
 				icon: "mail",
 			},
 		],
 		workflows: [
 			{
 				title: "Progress billing",
-				description: "Split large projects into deposit, progress, and final invoices with retention tracking.",
+				description:
+					"Split large projects into deposit, progress, and final invoices with retention tracking.",
 			},
 			{
 				title: "On-site payment capture",
-				description: "Technicians present invoices, collect signatures, and process payments via mobile card readers.",
+				description:
+					"Technicians present invoices, collect signatures, and process payments via mobile card readers.",
 			},
 		],
 		stats: [
@@ -1104,15 +1215,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Do you support multi-tax jurisdictions?",
-				answer: "Yes. Configure tax codes per location, service, or customer and Thorbis calculates automatically.",
+				answer:
+					"Yes. Configure tax codes per location, service, or customer and Thorbis calculates automatically.",
 			},
 			{
 				question: "Can customers set up autopay?",
-				answer: "Customers enroll in autopay for recurring invoices and maintenance plans directly from the portal.",
+				answer:
+					"Customers enroll in autopay for recurring invoices and maintenance plans directly from the portal.",
 			},
 			{
 				question: "Does Thorbis handle surcharges?",
-				answer: "Configure convenience fees or automatically discount ACH to offset processing costs.",
+				answer:
+					"Configure convenience fees or automatically discount ACH to offset processing costs.",
 			},
 		],
 	},
@@ -1124,7 +1238,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Keep operations and accounting perfectly in sync",
 		heroDescription:
 			"Thorbis integrates deeply with QuickBooks Online to sync customers, invoices, payments, and items in near real-time.",
-		heroImage: "https://images.unsplash.com/photo-1586880244502-311a4aa06d3a?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1586880244502-311a4aa06d3a?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Empower your finance team with accurate, timely data while letting operations run in Thorbis without double entry.",
 		primaryCta: {
@@ -1136,10 +1251,15 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			href: "/kb/user-guides",
 		},
 		seo: {
-			title: "QuickBooks Integration for Thorbis | Field Service Accounting Sync",
+			title:
+				"QuickBooks Integration for Thorbis | Field Service Accounting Sync",
 			description:
 				"Sync customers, invoices, payments, and items between Thorbis and QuickBooks. Maintain accurate books without manual entry.",
-			keywords: ["quickbooks field service integration", "thorbis quickbooks sync", "contractor accounting software"],
+			keywords: [
+				"quickbooks field service integration",
+				"thorbis quickbooks sync",
+				"contractor accounting software",
+			],
 		},
 		painPoints: [
 			"Operations updates don’t make it to accounting until days later.",
@@ -1169,7 +1289,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		workflows: [
 			{
 				title: "Daily sync reconciliation",
-				description: "Review sync dashboards highlighting exceptions, then resolve with guided tools.",
+				description:
+					"Review sync dashboards highlighting exceptions, then resolve with guided tools.",
 			},
 			{
 				title: "Vendor bill processing",
@@ -1186,12 +1307,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Posting accuracy",
 				value: "99.8%",
-				description: "accuracy rate across payments and invoices after go-live.",
+				description:
+					"accuracy rate across payments and invoices after go-live.",
 			},
 			{
 				label: "Job costing speed",
 				value: "Same day",
-				description: "visibility into job profitability without waiting for month-end.",
+				description:
+					"visibility into job profitability without waiting for month-end.",
 			},
 		],
 		integrations: ["QuickBooks Online", "QuickBooks Desktop (connector)"],
@@ -1204,15 +1327,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Do you support QuickBooks Desktop?",
-				answer: "We provide a secure connector for QuickBooks Desktop Enterprise if you’re not ready for Online.",
+				answer:
+					"We provide a secure connector for QuickBooks Desktop Enterprise if you’re not ready for Online.",
 			},
 			{
 				question: "Can we map custom fields?",
-				answer: "Yes. Map Thorbis fields to QuickBooks custom fields, classes, or locations during onboarding.",
+				answer:
+					"Yes. Map Thorbis fields to QuickBooks custom fields, classes, or locations during onboarding.",
 			},
 			{
 				question: "How often does data sync?",
-				answer: "You control sync frequency. Most teams choose every five minutes or hourly schedules.",
+				answer:
+					"You control sync frequency. Most teams choose every five minutes or hourly schedules.",
 			},
 		],
 	},
@@ -1224,8 +1350,10 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Close more deals with professional proposals",
 		heroDescription:
 			"Thorbis empowers technicians and sales reps to build polished proposals with pricing, photos, and financing options on the spot.",
-		heroImage: "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80",
-		summary: "Present tiered recommendations, upsell accessories, and capture signatures instantly from any device.",
+		heroImage:
+			"https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1600&q=80",
+		summary:
+			"Present tiered recommendations, upsell accessories, and capture signatures instantly from any device.",
 		primaryCta: {
 			label: "Build a proposal",
 			href: "/register",
@@ -1238,7 +1366,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Estimating Software for Service Contractors | Thorbis",
 			description:
 				"Create professional proposals with pricing, photos, and financing. Thorbis estimates help service companies close more deals faster.",
-			keywords: ["field service estimating", "contractor proposal software", "good better best proposals"],
+			keywords: [
+				"field service estimating",
+				"contractor proposal software",
+				"good better best proposals",
+			],
 		},
 		painPoints: [
 			"Technicians scribble prices on paper or rely on spreadsheets that create inconsistency.",
@@ -1248,17 +1380,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Tiered proposals",
-				description: "Offer good-better-best packages with dynamic pricing tied to your pricebook.",
+				description:
+					"Offer good-better-best packages with dynamic pricing tied to your pricebook.",
 				icon: "layers",
 			},
 			{
 				title: "Visual storytelling",
-				description: "Embed product photos, videos, and comparison charts to justify premium options.",
+				description:
+					"Embed product photos, videos, and comparison charts to justify premium options.",
 				icon: "image",
 			},
 			{
 				title: "Instant approvals",
-				description: "Capture e-signatures and convert winning proposals directly into jobs with deposits collected.",
+				description:
+					"Capture e-signatures and convert winning proposals directly into jobs with deposits collected.",
 				icon: "check-circle",
 			},
 		],
@@ -1270,7 +1405,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Commercial bidding",
-				description: "Attach scope documents, schedule milestones, and create approval routing for facility managers.",
+				description:
+					"Attach scope documents, schedule milestones, and create approval routing for facility managers.",
 			},
 		],
 		stats: [
@@ -1300,15 +1436,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Can I standardize templates?",
-				answer: "Yes. Build reusable templates with recommended upsells and branded content for your teams.",
+				answer:
+					"Yes. Build reusable templates with recommended upsells and branded content for your teams.",
 			},
 			{
 				question: "Do you track follow-ups?",
-				answer: "Thorbis notifies reps of open proposals and automates follow-up sequences by email or SMS.",
+				answer:
+					"Thorbis notifies reps of open proposals and automates follow-up sequences by email or SMS.",
 			},
 			{
 				question: "What about multi-phase jobs?",
-				answer: "Break proposals into phases or alternates and convert each accepted phase into its own job plan.",
+				answer:
+					"Break proposals into phases or alternates and convert each accepted phase into its own job plan.",
 			},
 		],
 	},
@@ -1320,7 +1459,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Give customers flexible financing without leaving Thorbis",
 		heroDescription:
 			"Integrate leading financing providers to present offers, capture approvals, and close upgrades on-site.",
-		heroImage: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Thorbis makes it simple to embed financing into every estimate, increasing conversion and average ticket value.",
 		primaryCta: {
@@ -1335,7 +1475,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Customer Financing for Service Businesses | Thorbis",
 			description:
 				"Present instant financing offers, track approvals, and close high-ticket jobs with Thorbis financing integrations.",
-			keywords: ["service business financing", "contractor financing solutions", "hvac customer financing"],
+			keywords: [
+				"service business financing",
+				"contractor financing solutions",
+				"hvac customer financing",
+			],
 		},
 		painPoints: [
 			"Customers hesitate on premium solutions because financing is an afterthought.",
@@ -1345,12 +1489,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Embedded application workflow",
-				description: "Submit financing applications directly from proposals or invoices with customer consent.",
+				description:
+					"Submit financing applications directly from proposals or invoices with customer consent.",
 				icon: "clipboard-check",
 			},
 			{
 				title: "Offer comparison",
-				description: "Show multiple plans—same-as-cash, low monthly payment, or revolving credit—in a single view.",
+				description:
+					"Show multiple plans—same-as-cash, low monthly payment, or revolving credit—in a single view.",
 				icon: "scale",
 			},
 			{
@@ -1386,27 +1532,32 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Team adoption",
 				value: "95%",
-				description: "of technicians present financing in Thorbis without additional training.",
+				description:
+					"of technicians present financing in Thorbis without additional training.",
 			},
 		],
 		integrations: ["Sunbit", "GreenSky", "GoodLeap", "Synchrony"],
 		testimonial: {
-			quote: "Financing used to be awkward. Now Thorbis bakes it into every proposal and our close rate skyrocketed.",
+			quote:
+				"Financing used to be awkward. Now Thorbis bakes it into every proposal and our close rate skyrocketed.",
 			attribution: "Brian Foster",
 			role: "Sales Director, Precision Home Services",
 		},
 		faq: [
 			{
 				question: "Which lenders are supported?",
-				answer: "We partner with national providers like Sunbit, GreenSky, GoodLeap, and regional credit unions.",
+				answer:
+					"We partner with national providers like Sunbit, GreenSky, GoodLeap, and regional credit unions.",
 			},
 			{
 				question: "Do homeowners complete a hard credit check?",
-				answer: "Most partners start with a soft pull. Customers authorize the process through Thorbis for compliance.",
+				answer:
+					"Most partners start with a soft pull. Customers authorize the process through Thorbis for compliance.",
 			},
 			{
 				question: "Can I track funding status?",
-				answer: "Yes. Thorbis records application status, funded amounts, and automatically updates invoices.",
+				answer:
+					"Yes. Thorbis records application status, funded amounts, and automatically updates invoices.",
 			},
 		],
 	},
@@ -1418,7 +1569,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		heroTitle: "Pay technicians accurately without spreadsheets",
 		heroDescription:
 			"Thorbis collects time entries, job premiums, and spiffs automatically to produce accurate payroll exports.",
-		heroImage: "https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=1600&q=80",
+		heroImage:
+			"https://images.unsplash.com/photo-1454165205744-3b78555e5572?auto=format&fit=crop&w=1600&q=80",
 		summary:
 			"Simplify payroll for hourly techs, spiff-driven sales reps, and salaried coordinators while maintaining compliance.",
 		primaryCta: {
@@ -1433,7 +1585,11 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			title: "Payroll and Commission Tracking for Service Teams | Thorbis",
 			description:
 				"Track time, premiums, and commissions for technicians automatically. Export accurate payroll files from Thorbis in minutes.",
-			keywords: ["field service payroll", "technician commission tracking", "service business payroll software"],
+			keywords: [
+				"field service payroll",
+				"technician commission tracking",
+				"service business payroll software",
+			],
 		},
 		painPoints: [
 			"Payroll admins chase technicians for time sheets and manual adjustments.",
@@ -1455,7 +1611,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				title: "Commission statements",
-				description: "Generate itemized commission reports tied to invoices, gross margin, or product lines.",
+				description:
+					"Generate itemized commission reports tied to invoices, gross margin, or product lines.",
 				icon: "file-text",
 			},
 		],
@@ -1498,15 +1655,18 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Can we export to our payroll provider?",
-				answer: "Yes. Thorbis produces mapped CSV exports for ADP, Gusto, Paychex, UKG, and more.",
+				answer:
+					"Yes. Thorbis produces mapped CSV exports for ADP, Gusto, Paychex, UKG, and more.",
 			},
 			{
 				question: "Do you support union rules?",
-				answer: "Configure union rates, multi-tier premiums, and reporting requirements per contract.",
+				answer:
+					"Configure union rates, multi-tier premiums, and reporting requirements per contract.",
 			},
 			{
 				question: "How are edits handled?",
-				answer: "All edits require approvals and leave an audit trail for compliance.",
+				answer:
+					"All edits require approvals and leave an audit trail for compliance.",
 			},
 		],
 	},
@@ -1516,6 +1676,8 @@ export function getAllFeatures(): MarketingFeatureContent[] {
 	return FEATURE_CONTENT;
 }
 
-export function getFeatureBySlug(slug: string): MarketingFeatureContent | undefined {
+export function getFeatureBySlug(
+	slug: string,
+): MarketingFeatureContent | undefined {
 	return FEATURE_CONTENT.find((feature) => feature.slug === slug);
 }

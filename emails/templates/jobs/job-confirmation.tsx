@@ -32,7 +32,10 @@ export default function JobConfirmationEmail({
 
 			<Text style={paragraph}>Hi {customerName},</Text>
 
-			<Text style={paragraph}>Great news! Your {jobType} service has been scheduled. Here are the details:</Text>
+			<Text style={paragraph}>
+				Great news! Your {jobType} service has been scheduled. Here are the
+				details:
+			</Text>
 
 			<Card style={detailsCard}>
 				<div style={detailRow}>
@@ -64,9 +67,15 @@ export default function JobConfirmationEmail({
 			<Card style={infoCard}>
 				<Heading level={3}>What to expect</Heading>
 				<ul style={list}>
-					<li style={listItem}>We'll send you a reminder 24 hours before your appointment</li>
-					<li style={listItem}>You'll receive a notification when the technician is on the way</li>
-					<li style={listItem}>Our technician will arrive during the scheduled time window</li>
+					<li style={listItem}>
+						We'll send you a reminder 24 hours before your appointment
+					</li>
+					<li style={listItem}>
+						You'll receive a notification when the technician is on the way
+					</li>
+					<li style={listItem}>
+						Our technician will arrive during the scheduled time window
+					</li>
 				</ul>
 			</Card>
 

@@ -30,8 +30,9 @@ export default function WelcomeCustomerEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				Thank you for choosing Thorbis for your service needs! We're thrilled to have you as a customer and look forward
-				to providing you with excellent service.
+				Thank you for choosing Thorbis for your service needs! We're thrilled to
+				have you as a customer and look forward to providing you with excellent
+				service.
 			</Text>
 
 			<Card style={welcomeCard}>
@@ -47,19 +48,23 @@ export default function WelcomeCustomerEmail({
 				<Heading level={3}>What you can do with your account:</Heading>
 				<ul style={list}>
 					<li style={listItem}>
-						<strong>Track services:</strong> View all your service history in one place
+						<strong>Track services:</strong> View all your service history in
+						one place
 					</li>
 					<li style={listItem}>
-						<strong>Schedule appointments:</strong> Book services at your convenience
+						<strong>Schedule appointments:</strong> Book services at your
+						convenience
 					</li>
 					<li style={listItem}>
 						<strong>Manage invoices:</strong> View and pay invoices online
 					</li>
 					<li style={listItem}>
-						<strong>Get updates:</strong> Receive real-time notifications about your services
+						<strong>Get updates:</strong> Receive real-time notifications about
+						your services
 					</li>
 					<li style={listItem}>
-						<strong>Save time:</strong> Store your property details for faster booking
+						<strong>Save time:</strong> Store your property details for faster
+						booking
 					</li>
 				</ul>
 			</Card>
@@ -67,7 +72,8 @@ export default function WelcomeCustomerEmail({
 			<Card style={supportCard}>
 				<Heading level={3}>We're here to help</Heading>
 				<Text style={supportText}>
-					Our customer support team is ready to assist you with any questions or concerns.
+					Our customer support team is ready to assist you with any questions or
+					concerns.
 				</Text>
 				<div style={contactGrid}>
 					<div style={contactMethod}>
@@ -88,15 +94,24 @@ export default function WelcomeCustomerEmail({
 			<Card style={tipsCard}>
 				<Heading level={3}>Pro Tips for New Customers</Heading>
 				<ul style={tipsList}>
-					<li style={tipItem}>Set up your profile to save time on future bookings</li>
-					<li style={tipItem}>Add your property details for more accurate service quotes</li>
-					<li style={tipItem}>Enable notifications to stay updated on service appointments</li>
-					<li style={tipItem}>Save our contact info for quick access when you need us</li>
+					<li style={tipItem}>
+						Set up your profile to save time on future bookings
+					</li>
+					<li style={tipItem}>
+						Add your property details for more accurate service quotes
+					</li>
+					<li style={tipItem}>
+						Enable notifications to stay updated on service appointments
+					</li>
+					<li style={tipItem}>
+						Save our contact info for quick access when you need us
+					</li>
 				</ul>
 			</Card>
 
 			<Text style={thankYouText}>
-				Once again, welcome to Thorbis! We're committed to providing you with exceptional service every step of the way.
+				Once again, welcome to Thorbis! We're committed to providing you with
+				exceptional service every step of the way.
 			</Text>
 		</BaseLayout>
 	);
@@ -110,7 +125,8 @@ const paragraph = {
 };
 
 const welcomeCard = {
-	background: "linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
+	background:
+		"linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
 	borderRadius: "12px",
 	padding: "40px",
 	margin: "24px 0",

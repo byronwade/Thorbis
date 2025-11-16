@@ -16,14 +16,32 @@
 
 "use client";
 
-import { Calendar, Clock, Mail, MapPin, Phone, Play, Shield, Square, TrendingUp, Users } from "lucide-react";
+import {
+	Calendar,
+	Clock,
+	Mail,
+	MapPin,
+	Phone,
+	Play,
+	Shield,
+	Square,
+	TrendingUp,
+	Users,
+} from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
 type TeamScheduleTabProps = {
@@ -34,7 +52,13 @@ type TeamScheduleTabProps = {
 	isEditMode: boolean;
 };
 
-export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUser, isEditMode }: TeamScheduleTabProps) {
+export function TeamScheduleTab({
+	job,
+	teamAssignments,
+	timeEntries,
+	assignedUser,
+	isEditMode,
+}: TeamScheduleTabProps) {
 	const [isClockingIn, setIsClockingIn] = useState(false);
 
 	// Format duration
@@ -45,7 +69,10 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 	};
 
 	// Calculate total hours
-	const totalHours = timeEntries.reduce((sum, entry) => sum + (entry.total_hours || 0), 0);
+	const totalHours = timeEntries.reduce(
+		(sum, entry) => sum + (entry.total_hours || 0),
+		0,
+	);
 
 	// Get active time entry (not clocked out)
 	const activeEntry = timeEntries.find((e) => !e.clock_out);
@@ -100,13 +127,19 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 									<p className="font-semibold">{assignedUser.name}</p>
 									<div className="flex gap-4 text-muted-foreground text-sm">
 										{assignedUser.email && (
-											<a className="flex items-center gap-1 hover:text-primary" href={`mailto:${assignedUser.email}`}>
+											<a
+												className="flex items-center gap-1 hover:text-primary"
+												href={`mailto:${assignedUser.email}`}
+											>
 												<Mail className="h-3 w-3" />
 												{assignedUser.email}
 											</a>
 										)}
 										{assignedUser.phone && (
-											<a className="flex items-center gap-1 hover:text-primary" href={`tel:${assignedUser.phone}`}>
+											<a
+												className="flex items-center gap-1 hover:text-primary"
+												href={`tel:${assignedUser.phone}`}
+											>
 												<Phone className="h-3 w-3" />
 												{assignedUser.phone}
 											</a>
@@ -133,7 +166,9 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 							<Clock className="h-5 w-5 text-muted-foreground" />
 							<CardTitle>Time Clock</CardTitle>
 						</div>
-						<Badge variant={activeEntry ? "default" : "secondary"}>{activeEntry ? "Clocked In" : "Clocked Out"}</Badge>
+						<Badge variant={activeEntry ? "default" : "secondary"}>
+							{activeEntry ? "Clocked In" : "Clocked Out"}
+						</Badge>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-4">
@@ -141,8 +176,12 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 						<div className="rounded-lg border border-success bg-success p-4">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="font-medium text-sm text-success">Currently Working</p>
-									<p className="text-success text-xs">Clocked in at {formatDateTime(activeEntry.clock_in)}</p>
+									<p className="font-medium text-sm text-success">
+										Currently Working
+									</p>
+									<p className="text-success text-xs">
+										Clocked in at {formatDateTime(activeEntry.clock_in)}
+									</p>
 								</div>
 								<Button onClick={handleClockOut} variant="destructive">
 									<Square className="mr-2 h-4 w-4" />
@@ -154,9 +193,15 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 						<div className="flex items-center justify-between rounded-lg border p-4">
 							<div>
 								<p className="font-medium text-sm">Ready to start work?</p>
-								<p className="text-muted-foreground text-xs">Clock in to begin tracking time</p>
+								<p className="text-muted-foreground text-xs">
+									Clock in to begin tracking time
+								</p>
 							</div>
-							<Button disabled={isClockingIn} onClick={handleClockIn} variant="default">
+							<Button
+								disabled={isClockingIn}
+								onClick={handleClockIn}
+								variant="default"
+							>
 								<Play className="mr-2 h-4 w-4" />
 								{isClockingIn ? "Clocking In..." : "Clock In"}
 							</Button>
@@ -173,7 +218,9 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 						<div className="rounded-lg border p-3">
 							<p className="text-muted-foreground text-xs">Estimated</p>
 							<p className="font-bold text-2xl">
-								{job.estimated_labor_hours ? formatHours(job.estimated_labor_hours) : "N/A"}
+								{job.estimated_labor_hours
+									? formatHours(job.estimated_labor_hours)
+									: "N/A"}
 							</p>
 						</div>
 
@@ -182,10 +229,14 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 							<p
 								className={cn(
 									"font-bold text-2xl",
-									totalHours > (job.estimated_labor_hours || 0) ? "text-warning" : "text-success"
+									totalHours > (job.estimated_labor_hours || 0)
+										? "text-warning"
+										: "text-success",
 								)}
 							>
-								{job.estimated_labor_hours ? formatHours(totalHours - job.estimated_labor_hours) : "N/A"}
+								{job.estimated_labor_hours
+									? formatHours(totalHours - job.estimated_labor_hours)
+									: "N/A"}
 							</p>
 						</div>
 					</div>
@@ -212,10 +263,15 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 						<div className="space-y-3">
 							{teamAssignments.map((assignment) => {
 								const member = assignment.team_member;
-								const user = Array.isArray(member?.users) ? member.users[0] : member?.users;
+								const user = Array.isArray(member?.users)
+									? member.users[0]
+									: member?.users;
 
 								return (
-									<div className="flex items-center justify-between rounded-lg border p-3" key={assignment.id}>
+									<div
+										className="flex items-center justify-between rounded-lg border p-3"
+										key={assignment.id}
+									>
 										<div className="flex items-center gap-3">
 											<Avatar>
 												<AvatarImage src={user?.avatar} />
@@ -228,12 +284,16 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 											</Avatar>
 											<div>
 												<p className="font-medium">{user?.name}</p>
-												<p className="text-muted-foreground text-xs">{member?.job_title || "Team Member"}</p>
+												<p className="text-muted-foreground text-xs">
+													{member?.job_title || "Team Member"}
+												</p>
 											</div>
 										</div>
 
 										<div className="flex items-center gap-2">
-											<Badge variant="outline">{assignment.role || "Assigned"}</Badge>
+											<Badge variant="outline">
+												{assignment.role || "Assigned"}
+											</Badge>
 											{isEditMode && (
 												<Button size="sm" variant="ghost">
 													Remove
@@ -281,7 +341,9 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 							</TableHeader>
 							<TableBody>
 								{timeEntries.map((entry) => {
-									const user = Array.isArray(entry.user) ? entry.user[0] : entry.user;
+									const user = Array.isArray(entry.user)
+										? entry.user[0]
+										: entry.user;
 
 									return (
 										<TableRow key={entry.id}>
@@ -299,20 +361,37 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 													{user?.name}
 												</div>
 											</TableCell>
-											<TableCell className="text-sm">{formatDateTime(entry.clock_in)}</TableCell>
 											<TableCell className="text-sm">
-												{entry.clock_out ? formatDateTime(entry.clock_out) : "-"}
+												{formatDateTime(entry.clock_in)}
 											</TableCell>
-											<TableCell className="text-sm">{entry.break_minutes ? `${entry.break_minutes}m` : "-"}</TableCell>
+											<TableCell className="text-sm">
+												{entry.clock_out
+													? formatDateTime(entry.clock_out)
+													: "-"}
+											</TableCell>
+											<TableCell className="text-sm">
+												{entry.break_minutes ? `${entry.break_minutes}m` : "-"}
+											</TableCell>
 											<TableCell className="font-medium">
-												{entry.total_hours ? formatHours(entry.total_hours) : "-"}
+												{entry.total_hours
+													? formatHours(entry.total_hours)
+													: "-"}
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-1">
-													<Badge className="text-xs" variant={entry.entry_type === "gps" ? "default" : "secondary"}>
+													<Badge
+														className="text-xs"
+														variant={
+															entry.entry_type === "gps"
+																? "default"
+																: "secondary"
+														}
+													>
 														{entry.entry_type}
 													</Badge>
-													{entry.gps_verified && <MapPin className="h-3 w-3 text-success" />}
+													{entry.gps_verified && (
+														<MapPin className="h-3 w-3 text-success" />
+													)}
 												</div>
 											</TableCell>
 											<TableCell>
@@ -328,7 +407,9 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 							</TableBody>
 						</Table>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">No time entries recorded yet</div>
+						<div className="text-center text-muted-foreground text-sm">
+							No time entries recorded yet
+						</div>
 					)}
 				</CardContent>
 			</Card>
@@ -346,14 +427,18 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 						<div>
 							<p className="text-muted-foreground text-xs">Scheduled Start</p>
 							<p className="font-medium text-sm">
-								{job.scheduled_start ? formatDateTime(job.scheduled_start) : "Not scheduled"}
+								{job.scheduled_start
+									? formatDateTime(job.scheduled_start)
+									: "Not scheduled"}
 							</p>
 						</div>
 
 						<div>
 							<p className="text-muted-foreground text-xs">Scheduled End</p>
 							<p className="font-medium text-sm">
-								{job.scheduled_end ? formatDateTime(job.scheduled_end) : "Not scheduled"}
+								{job.scheduled_end
+									? formatDateTime(job.scheduled_end)
+									: "Not scheduled"}
 							</p>
 						</div>
 					</div>
@@ -369,15 +454,21 @@ export function TeamScheduleTab({ job, teamAssignments, timeEntries, assignedUse
 
 					{job.travel_time_minutes && (
 						<div>
-							<p className="text-muted-foreground text-xs">Estimated Travel Time</p>
-							<p className="font-medium text-sm">{job.travel_time_minutes} minutes</p>
+							<p className="text-muted-foreground text-xs">
+								Estimated Travel Time
+							</p>
+							<p className="font-medium text-sm">
+								{job.travel_time_minutes} minutes
+							</p>
 						</div>
 					)}
 
 					{job.route_order && (
 						<div>
 							<p className="text-muted-foreground text-xs">Route Order</p>
-							<p className="font-medium text-sm">Position #{job.route_order} in route</p>
+							<p className="font-medium text-sm">
+								Position #{job.route_order} in route
+							</p>
 						</div>
 					)}
 				</CardContent>

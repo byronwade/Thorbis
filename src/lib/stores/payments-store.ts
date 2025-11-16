@@ -184,7 +184,9 @@ export const usePaymentsStore = create<PaymentsStore>()(
 						filters: {
 							...state.filters,
 							showReconciledOnly: value,
-							showUnreconciledOnly: value ? false : state.filters.showUnreconciledOnly,
+							showUnreconciledOnly: value
+								? false
+								: state.filters.showUnreconciledOnly,
 						},
 					})),
 
@@ -193,7 +195,9 @@ export const usePaymentsStore = create<PaymentsStore>()(
 						filters: {
 							...state.filters,
 							showUnreconciledOnly: value,
-							showReconciledOnly: value ? false : state.filters.showReconciledOnly,
+							showReconciledOnly: value
+								? false
+								: state.filters.showReconciledOnly,
 						},
 					})),
 
@@ -222,7 +226,8 @@ export const usePaymentsStore = create<PaymentsStore>()(
 				},
 
 				// Sidebar Actions
-				toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+				toggleSidebar: () =>
+					set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
 				setActiveSection: (section) => set({ activeSection: section }),
 
@@ -239,8 +244,8 @@ export const usePaymentsStore = create<PaymentsStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "PaymentsStore" }
-	)
+		{ name: "PaymentsStore" },
+	),
 );

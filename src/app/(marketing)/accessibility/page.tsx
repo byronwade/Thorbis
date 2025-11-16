@@ -1,12 +1,21 @@
 import Script from "next/script";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Accessibility Statement",
-	description: "Learn about Thorbis’ commitment to accessibility and how to report issues or request accommodations.",
+	description:
+		"Learn about Thorbis’ commitment to accessibility and how to report issues or request accommodations.",
 	path: "/accessibility",
 	section: "Legal",
-	keywords: ["thorbis accessibility", "accessible field service software", "thorbis ada compliance"],
+	keywords: [
+		"thorbis accessibility",
+		"accessible field service software",
+		"thorbis ada compliance",
+	],
 });
 
 const SECTIONS = [
@@ -36,7 +45,7 @@ export default function AccessibilityPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Accessibility", url: `${siteUrl}/accessibility` },
-						])
+						]),
 					),
 				}}
 				id="accessibility-breadcrumb-ld"
@@ -44,17 +53,21 @@ export default function AccessibilityPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Accessibility Statement</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Accessibility Statement
+					</h1>
 					<p className="text-muted-foreground">
-						Thorbis strives to deliver inclusive experiences across our platform and customer touchpoints. Accessibility
-						is an ongoing priority.
+						Thorbis strives to deliver inclusive experiences across our platform
+						and customer touchpoints. Accessibility is an ongoing priority.
 					</p>
 				</header>
 				<article className="space-y-8">
 					{SECTIONS.map((section) => (
 						<section className="space-y-2" key={section.heading}>
 							<h2 className="font-semibold text-xl">{section.heading}</h2>
-							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">{section.body}</p>
+							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+								{section.body}
+							</p>
 						</section>
 					))}
 				</article>

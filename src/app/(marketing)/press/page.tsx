@@ -2,8 +2,18 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Newsroom & Press Kit",
@@ -33,7 +43,8 @@ const NEWS = [
 		title: "Thorbis secures $30M Series B to accelerate AI roadmap",
 		date: "September 2024",
 		link: "#",
-		description: "Funding fuels product development, customer success, and global expansion across North America.",
+		description:
+			"Funding fuels product development, customer success, and global expansion across North America.",
 	},
 ];
 
@@ -60,7 +71,7 @@ export default function PressPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Press", url: `${siteUrl}/press` },
-						])
+						]),
 					),
 				}}
 				id="press-breadcrumb-ld"
@@ -82,8 +93,8 @@ export default function PressPage() {
 						The latest on Thorbis, our customers, and our product
 					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Journalists, analysts, and partners can access press releases, brand assets, and executive spokespeople.
-						Reach out—we respond quickly.
+						Journalists, analysts, and partners can access press releases, brand
+						assets, and executive spokespeople. Reach out—we respond quickly.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
@@ -105,7 +116,9 @@ export default function PressPage() {
 									<CardDescription>{item.date}</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{item.description}
+									</p>
 									<Button asChild className="px-0" variant="link">
 										<a href={item.link}>Read release</a>
 									</Button>
@@ -118,26 +131,33 @@ export default function PressPage() {
 				<section className="mt-16 space-y-4" id="brand-assets">
 					<h2 className="font-semibold text-2xl">Brand & media assets</h2>
 					<p className="text-muted-foreground text-sm">
-						Download logos, product screenshots, and executive headshots. For custom assets, email press@thorbis.com.
+						Download logos, product screenshots, and executive headshots. For
+						custom assets, email press@thorbis.com.
 					</p>
 					<div className="grid gap-4 md:grid-cols-3">
 						<div className="rounded-xl border bg-muted/20 p-4">
 							<h3 className="font-semibold">Logos</h3>
-							<p className="text-muted-foreground text-sm">PNG, SVG, and monochrome variations.</p>
+							<p className="text-muted-foreground text-sm">
+								PNG, SVG, and monochrome variations.
+							</p>
 							<Button className="mt-3" size="sm" variant="outline">
 								Download
 							</Button>
 						</div>
 						<div className="rounded-xl border bg-muted/20 p-4">
 							<h3 className="font-semibold">Product screenshots</h3>
-							<p className="text-muted-foreground text-sm">High-resolution UI shots for web and print.</p>
+							<p className="text-muted-foreground text-sm">
+								High-resolution UI shots for web and print.
+							</p>
 							<Button className="mt-3" size="sm" variant="outline">
 								Download
 							</Button>
 						</div>
 						<div className="rounded-xl border bg-muted/20 p-4">
 							<h3 className="font-semibold">Executive bios</h3>
-							<p className="text-muted-foreground text-sm">Headshots and biographies for spokespeople.</p>
+							<p className="text-muted-foreground text-sm">
+								Headshots and biographies for spokespeople.
+							</p>
 							<Button className="mt-3" size="sm" variant="outline">
 								Download
 							</Button>
@@ -148,8 +168,12 @@ export default function PressPage() {
 				<section className="mt-16 space-y-3">
 					<h2 className="font-semibold text-2xl">Media contacts</h2>
 					<p className="text-muted-foreground text-sm leading-relaxed">
-						For interviews, speaking opportunities, or data requests, reach out to
-						<a className="text-primary underline-offset-4 hover:underline" href="mailto:press@thorbis.com">
+						For interviews, speaking opportunities, or data requests, reach out
+						to
+						<a
+							className="text-primary underline-offset-4 hover:underline"
+							href="mailto:press@thorbis.com"
+						>
 							{" "}
 							press@thorbis.com
 						</a>{" "}

@@ -31,17 +31,32 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type CustomerContactsTableProps = {
 	customerId: string;
 	triggerAdd?: number;
 };
 
-export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContactsTableProps) {
+export function CustomerContactsTable({
+	customerId,
+	triggerAdd,
+}: CustomerContactsTableProps) {
 	const [contacts, setContacts] = useState<CustomerContact[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [showAddDialog, setShowAddDialog] = useState(false);
@@ -129,7 +144,11 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 	};
 
 	if (isLoading) {
-		return <div className="p-8 text-center text-muted-foreground text-sm">Loading contacts...</div>;
+		return (
+			<div className="p-8 text-center text-muted-foreground text-sm">
+				Loading contacts...
+			</div>
+		);
 	}
 
 	return (
@@ -153,7 +172,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 								<TableCell className="h-24 text-center" colSpan={6}>
 									<div className="flex flex-col items-center gap-2">
 										<User className="size-8 text-muted-foreground/50" />
-										<p className="text-muted-foreground text-sm">No additional contacts</p>
+										<p className="text-muted-foreground text-sm">
+											No additional contacts
+										</p>
 									</div>
 								</TableCell>
 							</TableRow>
@@ -163,13 +184,21 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 									<TableCell className="font-medium">
 										{contact.first_name} {contact.last_name}
 										{contact.is_primary && (
-											<Star className="ml-1 inline-block size-3 text-warning" fill="currentColor" />
+											<Star
+												className="ml-1 inline-block size-3 text-warning"
+												fill="currentColor"
+											/>
 										)}
 									</TableCell>
-									<TableCell className="text-sm">{contact.title || "—"}</TableCell>
+									<TableCell className="text-sm">
+										{contact.title || "—"}
+									</TableCell>
 									<TableCell className="text-sm">
 										{contact.email ? (
-											<a className="text-primary hover:underline" href={`mailto:${contact.email}`}>
+											<a
+												className="text-primary hover:underline"
+												href={`mailto:${contact.email}`}
+											>
 												{contact.email}
 											</a>
 										) : (
@@ -178,7 +207,10 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 									</TableCell>
 									<TableCell className="text-sm">
 										{contact.phone ? (
-											<a className="text-primary hover:underline" href={`tel:${contact.phone}`}>
+											<a
+												className="text-primary hover:underline"
+												href={`tel:${contact.phone}`}
+											>
 												{contact.phone}
 											</a>
 										) : (
@@ -230,7 +262,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>First Name *</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, firstName: e.target.value })
+									}
 									placeholder="John"
 									value={formData.firstName}
 								/>
@@ -238,7 +272,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>Last Name *</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, lastName: e.target.value })
+									}
 									placeholder="Smith"
 									value={formData.lastName}
 								/>
@@ -246,7 +282,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>Title</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, title: e.target.value })
+									}
 									placeholder="Mr., Ms., Dr., etc."
 									value={formData.title}
 								/>
@@ -254,7 +292,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>Email</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, email: e.target.value })
+									}
 									placeholder="john@example.com"
 									type="email"
 									value={formData.email}
@@ -263,7 +303,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>Phone</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, phone: e.target.value })
+									}
 									placeholder="(555) 123-4567"
 									type="tel"
 									value={formData.phone}
@@ -272,7 +314,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 							<div className="space-y-2">
 								<Label>Secondary Phone</Label>
 								<Input
-									onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, secondaryPhone: e.target.value })
+									}
 									placeholder="(555) 987-6543"
 									type="tel"
 									value={formData.secondaryPhone}
@@ -287,7 +331,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 									<Checkbox
 										checked={formData.isPrimary}
 										id="isPrimary"
-										onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: !!checked })}
+										onCheckedChange={(checked) =>
+											setFormData({ ...formData, isPrimary: !!checked })
+										}
 									/>
 									<label className="cursor-pointer text-sm" htmlFor="isPrimary">
 										Primary Contact
@@ -297,7 +343,9 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 									<Checkbox
 										checked={formData.isBillingContact}
 										id="isBilling"
-										onCheckedChange={(checked) => setFormData({ ...formData, isBillingContact: !!checked })}
+										onCheckedChange={(checked) =>
+											setFormData({ ...formData, isBillingContact: !!checked })
+										}
 									/>
 									<label className="cursor-pointer text-sm" htmlFor="isBilling">
 										Billing Contact
@@ -314,7 +362,10 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 											})
 										}
 									/>
-									<label className="cursor-pointer text-sm" htmlFor="isEmergency">
+									<label
+										className="cursor-pointer text-sm"
+										htmlFor="isEmergency"
+									>
 										Emergency Contact
 									</label>
 								</div>
@@ -322,7 +373,11 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 						</div>
 
 						<div className="flex gap-2 pt-4">
-							<Button className="flex-1" onClick={() => setShowAddDialog(false)} variant="outline">
+							<Button
+								className="flex-1"
+								onClick={() => setShowAddDialog(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
 							<Button className="flex-1" onClick={handleAddContact}>
@@ -335,13 +390,16 @@ export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContac
 			</Dialog>
 
 			{/* Archive Contact Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Contact?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This contact will be archived and can be restored within 90 days. After 90 days, it will be permanently
-							deleted.
+							This contact will be archived and can be restored within 90 days.
+							After 90 days, it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

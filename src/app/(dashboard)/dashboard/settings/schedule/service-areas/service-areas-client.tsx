@@ -3,7 +3,12 @@
 import { MapPin, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { createServiceArea, deleteServiceArea, type getServiceAreas, updateServiceArea } from "@/actions/settings";
+import {
+	createServiceArea,
+	deleteServiceArea,
+	type getServiceAreas,
+	updateServiceArea,
+} from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
@@ -14,12 +19,22 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { buildServiceAreaFormData, mapServiceAreaRows, type ServiceAreaForm } from "./service-areas-config";
+import {
+	buildServiceAreaFormData,
+	mapServiceAreaRows,
+	type ServiceAreaForm,
+} from "./service-areas-config";
 
 type ServiceAreasResult = Awaited<ReturnType<typeof getServiceAreas>>;
 type ExtractData<T> = T extends { data: infer D } ? D : never;
@@ -32,12 +47,25 @@ type ServiceAreasClientProps = {
 export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
-	const [serviceAreas, setServiceAreas] = useState<ServiceAreaForm[]>(mapServiceAreaRows(initialAreas ?? []));
+	const [serviceAreas, setServiceAreas] = useState<ServiceAreaForm[]>(
+		mapServiceAreaRows(initialAreas ?? []),
+	);
 
-	const hasUnsavedChanges = useMemo(() => serviceAreas.some((area) => area.id.startsWith("temp-")), [serviceAreas]);
+	const hasUnsavedChanges = useMemo(
+		() => serviceAreas.some((area) => area.id.startsWith("temp-")),
+		[serviceAreas],
+	);
 
-	const handleFieldChange = (id: string, field: keyof ServiceAreaForm, value: string | number | boolean | null) => {
-		setServiceAreas((prev) => prev.map((area) => (area.id === id ? { ...area, [field]: value as never } : area)));
+	const handleFieldChange = (
+		id: string,
+		field: keyof ServiceAreaForm,
+		value: string | number | boolean | null,
+	) => {
+		setServiceAreas((prev) =>
+			prev.map((area) =>
+				area.id === id ? { ...area, [field]: value as never } : area,
+			),
+		);
 	};
 
 	const handleSaveArea = (area: ServiceAreaForm) => {
@@ -55,7 +83,11 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 			toast.success(`${area.areaName || "Service area"} saved successfully`);
 			const newId = result.data;
 			if (typeof newId === "string") {
-				setServiceAreas((prev) => prev.map((record) => (record.id === area.id ? { ...record, id: newId } : record)));
+				setServiceAreas((prev) =>
+					prev.map((record) =>
+						record.id === area.id ? { ...record, id: newId } : record,
+					),
+				);
 			}
 		});
 	};
@@ -141,14 +173,22 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<MapPin className="size-4" />
 								{area.areaName || "Untitled Service Area"}
 							</CardTitle>
-							<CardDescription>Configure coverage and pricing logic for this zone.</CardDescription>
+							<CardDescription>
+								Configure coverage and pricing logic for this zone.
+							</CardDescription>
 						</div>
 						<div className="flex items-center gap-2">
 							<Switch
 								checked={area.isActive}
-								onCheckedChange={(checked) => handleFieldChange(area.id, "isActive", checked)}
+								onCheckedChange={(checked) =>
+									handleFieldChange(area.id, "isActive", checked)
+								}
 							/>
-							<Button onClick={() => handleDeleteArea(area.id)} size="icon" variant="ghost">
+							<Button
+								onClick={() => handleDeleteArea(area.id)}
+								size="icon"
+								variant="ghost"
+							>
 								<Trash2 className="size-4" />
 							</Button>
 						</div>
@@ -159,7 +199,9 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Label>Area name</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => handleFieldChange(area.id, "areaName", event.target.value)}
+									onChange={(event) =>
+										handleFieldChange(area.id, "areaName", event.target.value)
+									}
 									placeholder="Downtown Core"
 									value={area.areaName}
 								/>
@@ -168,7 +210,9 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Label>ZIP codes / postal codes</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => handleFieldChange(area.id, "zipCodes", event.target.value)}
+									onChange={(event) =>
+										handleFieldChange(area.id, "zipCodes", event.target.value)
+									}
 									placeholder="12345, 12346"
 									value={area.zipCodes}
 								/>
@@ -181,7 +225,13 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Input
 									className="mt-2"
 									min={0}
-									onChange={(event) => handleFieldChange(area.id, "minimumJobAmount", Number(event.target.value))}
+									onChange={(event) =>
+										handleFieldChange(
+											area.id,
+											"minimumJobAmount",
+											Number(event.target.value),
+										)
+									}
 									type="number"
 									value={area.minimumJobAmount ?? 0}
 								/>
@@ -191,7 +241,13 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Input
 									className="mt-2"
 									min={0}
-									onChange={(event) => handleFieldChange(area.id, "serviceFee", Number(event.target.value))}
+									onChange={(event) =>
+										handleFieldChange(
+											area.id,
+											"serviceFee",
+											Number(event.target.value),
+										)
+									}
 									type="number"
 									value={area.serviceFee}
 								/>

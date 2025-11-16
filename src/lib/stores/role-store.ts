@@ -93,16 +93,18 @@ export const useRoleStore = create<RoleStore>()(
 			}),
 			{
 				name: "thorbis_dev_role", // localStorage key
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					// Only persist in development mode
 					role: isDevelopment ? state.role : undefined,
-					isDevelopmentOverride: isDevelopment ? state.isDevelopmentOverride : false,
+					isDevelopmentOverride: isDevelopment
+						? state.isDevelopmentOverride
+						: false,
 				}),
-			}
+			},
 		),
-		{ name: "RoleStore" } // DevTools name
-	)
+		{ name: "RoleStore" }, // DevTools name
+	),
 );
 
 /**

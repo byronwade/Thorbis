@@ -8,7 +8,12 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { clearActiveCompany, getActiveCompany, getUserCompanies, setActiveCompany } from "@/lib/auth/company-context";
+import {
+	clearActiveCompany,
+	getActiveCompany,
+	getUserCompanies,
+	setActiveCompany,
+} from "@/lib/auth/company-context";
 
 /**
  * Action Result Type
@@ -33,7 +38,9 @@ type ActionResult<T = void> =
  * @param companyId - Company ID to switch to
  * @returns ActionResult indicating success or failure
  */
-export async function switchCompany(companyId: string): Promise<ActionResult<void>> {
+export async function switchCompany(
+	companyId: string,
+): Promise<ActionResult<void>> {
 	try {
 		await setActiveCompany(companyId);
 
@@ -47,7 +54,8 @@ export async function switchCompany(companyId: string): Promise<ActionResult<voi
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to switch company",
+			error:
+				error instanceof Error ? error.message : "Failed to switch company",
 		};
 	}
 }
@@ -72,7 +80,10 @@ export async function clearCompany(): Promise<ActionResult<void>> {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to clear company context",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to clear company context",
 		};
 	}
 }
@@ -85,7 +96,9 @@ export async function clearCompany(): Promise<ActionResult<void>> {
  *
  * @returns ActionResult with array of companies
  */
-export async function getCompanies(): Promise<ActionResult<Array<{ id: string; name: string; logo?: string | null }>>> {
+export async function getCompanies(): Promise<
+	ActionResult<Array<{ id: string; name: string; logo?: string | null }>>
+> {
 	try {
 		const companies = await getUserCompanies();
 
@@ -121,7 +134,8 @@ export async function getActiveCompanyDetails(): Promise<
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to get active company",
+			error:
+				error instanceof Error ? error.message : "Failed to get active company",
 		};
 	}
 }

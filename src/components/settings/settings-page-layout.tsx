@@ -35,7 +35,11 @@ import { Check, HelpCircle, Loader2, Save } from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type SettingsPageLayoutProps = {
 	/** Page title (displayed as text-4xl) */
@@ -110,7 +114,11 @@ export function SettingsPageLayout({
 							</Tooltip>
 						)}
 					</div>
-					{hasChanges && <Badge className="bg-warning hover:bg-warning">Unsaved Changes</Badge>}
+					{hasChanges && (
+						<Badge className="bg-warning hover:bg-warning">
+							Unsaved Changes
+						</Badge>
+					)}
 				</div>
 				<p className="text-lg text-muted-foreground">{description}</p>
 			</div>
@@ -130,7 +138,9 @@ export function SettingsPageLayout({
 								</div>
 								<div>
 									<p className="font-medium text-sm">Unsaved Changes</p>
-									<p className="text-muted-foreground text-xs">Save your changes or discard them</p>
+									<p className="text-muted-foreground text-xs">
+										Save your changes or discard them
+									</p>
 								</div>
 							</>
 						) : (
@@ -140,7 +150,9 @@ export function SettingsPageLayout({
 								</div>
 								<div>
 									<p className="font-medium text-sm">All Changes Saved</p>
-									<p className="text-muted-foreground text-xs">Your settings are up to date</p>
+									<p className="text-muted-foreground text-xs">
+										Your settings are up to date
+									</p>
 								</div>
 							</>
 						)}
@@ -156,7 +168,11 @@ export function SettingsPageLayout({
 						>
 							Cancel
 						</Button>
-						<Button disabled={isPending || !hasChanges} onClick={onSave} type="button">
+						<Button
+							disabled={isPending || !hasChanges}
+							onClick={onSave}
+							type="button"
+						>
 							{isPending ? (
 								<>
 									<Loader2 className="mr-2 size-4 animate-spin" />
@@ -209,7 +225,12 @@ type SettingsInfoBannerProps = {
 	variant?: "blue" | "amber" | "red" | "green";
 };
 
-export function SettingsInfoBanner({ icon: Icon, title, description, variant = "blue" }: SettingsInfoBannerProps) {
+export function SettingsInfoBanner({
+	icon: Icon,
+	title,
+	description,
+	variant = "blue",
+}: SettingsInfoBannerProps) {
 	const variantStyles = {
 		blue: {
 			card: "border-primary/50 bg-primary/5",

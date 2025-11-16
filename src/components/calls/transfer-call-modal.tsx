@@ -98,7 +98,9 @@ export function TransferCallModal({
 						<ArrowRightLeft className="size-5" />
 						Transfer Call
 					</DialogTitle>
-					<DialogDescription>Enter the phone number you want to transfer this call to.</DialogDescription>
+					<DialogDescription>
+						Enter the phone number you want to transfer this call to.
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -117,7 +119,9 @@ export function TransferCallModal({
 								value={destinationNumber}
 							/>
 						</div>
-						<p className="text-muted-foreground text-xs">Enter number with country code (e.g., +1 for US)</p>
+						<p className="text-muted-foreground text-xs">
+							Enter number with country code (e.g., +1 for US)
+						</p>
 					</div>
 
 					{error && (
@@ -127,7 +131,9 @@ export function TransferCallModal({
 					)}
 
 					<div className="rounded-lg border bg-muted/50 p-3">
-						<p className="font-medium text-sm">What happens when you transfer?</p>
+						<p className="font-medium text-sm">
+							What happens when you transfer?
+						</p>
 						<ul className="mt-2 space-y-1 text-muted-foreground text-xs">
 							<li>• The caller will be connected to the destination number</li>
 							<li>• You will be disconnected from the call</li>
@@ -138,10 +144,17 @@ export function TransferCallModal({
 				</div>
 
 				<DialogFooter className="sm:space-x-2">
-					<Button disabled={isTransferring} onClick={handleClose} variant="outline">
+					<Button
+						disabled={isTransferring}
+						onClick={handleClose}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={isTransferring || !destinationNumber} onClick={handleTransfer}>
+					<Button
+						disabled={isTransferring || !destinationNumber}
+						onClick={handleTransfer}
+					>
 						{isTransferring ? (
 							<>
 								<div className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

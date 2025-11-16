@@ -11,7 +11,11 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function MaterialsDetailLayout({ children }: { children: ReactNode }) {
+export default function MaterialsDetailLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -27,7 +31,9 @@ export default function MaterialsDetailLayout({ children }: { children: ReactNod
 		},
 		toolbar: {
 			show: true,
-			back: <DetailBackButton href="/dashboard/work/materials" label="Materials" />,
+			back: (
+				<DetailBackButton href="/dashboard/work/materials" label="Materials" />
+			),
 			// TODO: Create MaterialDetailToolbar component
 			// actions: <MaterialDetailToolbar />,
 		},

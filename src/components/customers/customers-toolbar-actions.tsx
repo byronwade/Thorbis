@@ -29,12 +29,20 @@ type CustomersToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function CustomersToolbarActions({ totalCount = 0, activeCount, archivedCount }: CustomersToolbarActionsProps) {
+export function CustomersToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: CustomersToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<CustomersFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<CustomersFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={CUSTOMERS_OPTIONAL_COLUMNS}
 						criticalColumns={CUSTOMERS_CRITICAL_COLUMNS}

@@ -31,5 +31,7 @@ export const TELNYX_CONFIG = {
 	connectionId: process.env.NEXT_PUBLIC_TELNYX_CONNECTION_ID || "",
 	publicKey: process.env.TELNYX_PUBLIC_KEY || "",
 	messagingProfileId:
-		process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID || process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID || "",
+		process.env.TELNYX_DEFAULT_MESSAGING_PROFILE_ID ||
+		process.env.NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID ||
+		"",
 } as const;

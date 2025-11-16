@@ -17,7 +17,9 @@ import { UequipmentStats } from "@/components/work/equipment/equipment-stats";
 export default function UequipmentPage() {
 	return (
 		<>
-			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+			<Suspense
+				fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
+			>
 				<UequipmentStats />
 			</Suspense>
 			<Suspense fallback={<EquipmentSkeleton />}>

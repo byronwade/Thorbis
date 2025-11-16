@@ -15,7 +15,11 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -141,11 +145,16 @@ export function CollapsibleDataSection({
 					</div>
 				)}
 				<div className="space-y-2">
-					<h3 className="font-semibold text-lg">{emptyState?.title || "No items found"}</h3>
+					<h3 className="font-semibold text-lg">
+						{emptyState?.title || "No items found"}
+					</h3>
 					<p className="text-muted-foreground text-sm">
-						{emptyState?.description || "Get started by creating your first item."}
+						{emptyState?.description ||
+							"Get started by creating your first item."}
 					</p>
-					{emptyState?.action && <div className="flex justify-center pt-2">{emptyState.action}</div>}
+					{emptyState?.action && (
+						<div className="flex justify-center pt-2">{emptyState.action}</div>
+					)}
 				</div>
 			</div>
 		</div>
@@ -162,7 +171,11 @@ export function CollapsibleDataSection({
 		if (showEmptyState) {
 			return renderEmptyState();
 		}
-		return fullWidthContent ? <div>{children}</div> : <div className="space-y-4">{children}</div>;
+		return fullWidthContent ? (
+			<div>{children}</div>
+		) : (
+			<div className="space-y-4">{children}</div>
+		);
 	};
 
 	// Standalone mode (not within Accordion)
@@ -178,7 +191,9 @@ export function CollapsibleDataSection({
 						{/* Icon with Background */}
 						{icon && (
 							<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
+									{icon}
+								</span>
 							</div>
 						)}
 
@@ -192,7 +207,11 @@ export function CollapsibleDataSection({
 								)}
 								{badge}
 							</div>
-							{summary && !isOpen && <p className="mt-0.5 text-muted-foreground text-xs">{summary}</p>}
+							{summary && !isOpen && (
+								<p className="mt-0.5 text-muted-foreground text-xs">
+									{summary}
+								</p>
+							)}
 						</div>
 
 						{/* Collapse/Expand Chevron */}
@@ -205,7 +224,10 @@ export function CollapsibleDataSection({
 
 					{/* Action Buttons - Always visible on far right */}
 					{actions && (
-						<div className="flex shrink-0 items-center gap-2" onClick={(e) => e.stopPropagation()}>
+						<div
+							className="flex shrink-0 items-center gap-2"
+							onClick={(e) => e.stopPropagation()}
+						>
 							{actions}
 						</div>
 					)}
@@ -216,7 +238,7 @@ export function CollapsibleDataSection({
 					<div
 						className={cn(
 							"fade-in slide-in-from-top-2 animate-in border-t p-6 duration-200",
-							fullWidthContent && "p-0"
+							fullWidthContent && "p-0",
 						)}
 					>
 						{renderContent()}
@@ -232,18 +254,23 @@ export function CollapsibleDataSection({
 			className={cn(
 				"rounded-lg bg-card shadow-sm",
 				fullWidthContent ? "overflow-hidden border-0" : "border",
-				className
+				className,
 			)}
 			value={value}
 		>
 			<div
-				className={cn("flex items-center justify-between gap-4 py-3.5", fullWidthContent ? "border-b px-6" : "px-6")}
+				className={cn(
+					"flex items-center justify-between gap-4 py-3.5",
+					fullWidthContent ? "border-b px-6" : "px-6",
+				)}
 			>
 				<AccordionTrigger className="flex-1 hover:no-underline">
 					<div className="flex items-center gap-3">
 						{icon && (
 							<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
+									{icon}
+								</span>
 							</div>
 						)}
 						<span className="font-medium text-sm">{title}</span>
@@ -265,7 +292,9 @@ export function CollapsibleDataSection({
 					</div>
 				)}
 			</div>
-			<AccordionContent className={cn(fullWidthContent ? "p-0" : "px-6 pb-6")}>{renderContent()}</AccordionContent>
+			<AccordionContent className={cn(fullWidthContent ? "p-0" : "px-6 pb-6")}>
+				{renderContent()}
+			</AccordionContent>
 		</AccordionItem>
 	);
 }
@@ -327,7 +356,12 @@ export function EmptyStateActionButton({
 	className,
 }: EmptyStateActionButtonProps) {
 	return (
-		<Button className={cn("gap-2", className)} disabled={disabled} onClick={onClick} size="sm">
+		<Button
+			className={cn("gap-2", className)}
+			disabled={disabled}
+			onClick={onClick}
+			size="sm"
+		>
 			{icon}
 			{children}
 		</Button>

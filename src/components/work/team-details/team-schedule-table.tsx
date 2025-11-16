@@ -1,6 +1,14 @@
 "use client";
 
-import { Calendar, CheckCircle, Clock, Eye, MapPin, MoreHorizontal, User } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle,
+	Clock,
+	Eye,
+	MapPin,
+	MoreHorizontal,
+	User,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +20,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type Schedule = {
 	id: string;
@@ -58,7 +69,10 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			statusColors[status.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const formatDuration = (minutes?: number) => {
@@ -119,8 +133,13 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 				render: (schedule) => {
 					const job = schedule.job;
 					return job ? (
-						<Link className="flex flex-col gap-1 hover:underline" href={`/dashboard/work/${job.id}`}>
-							<span className="font-medium font-mono text-sm">#{job.job_number}</span>
+						<Link
+							className="flex flex-col gap-1 hover:underline"
+							href={`/dashboard/work/${job.id}`}
+						>
+							<span className="font-medium font-mono text-sm">
+								#{job.job_number}
+							</span>
 							<span className="text-sm">{job.title}</span>
 						</Link>
 					) : schedule.title ? (
@@ -181,7 +200,9 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 				header: "Duration",
 				width: "w-24",
 				shrink: true,
-				render: (schedule) => <span className="text-sm">{formatDuration(schedule.duration)}</span>,
+				render: (schedule) => (
+					<span className="text-sm">{formatDuration(schedule.duration)}</span>
+				),
 			},
 			{
 				key: "status",
@@ -225,7 +246,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 				),
 			},
 		],
-		[formatDuration, getStatusColor]
+		[formatDuration, getStatusColor],
 	);
 
 	return (

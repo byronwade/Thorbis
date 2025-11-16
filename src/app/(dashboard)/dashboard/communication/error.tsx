@@ -30,8 +30,14 @@ export default function CommunicationError({
 
 				<div className="space-y-2">
 					<h2 className="font-semibold text-2xl">Communication Error</h2>
-					<p className="text-muted-foreground">{error.message || "An error occurred in the communication section."}</p>
-					{error.digest && <p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>}
+					<p className="text-muted-foreground">
+						{error.message || "An error occurred in the communication section."}
+					</p>
+					{error.digest && (
+						<p className="font-mono text-muted-foreground text-xs">
+							Error ID: {error.digest}
+						</p>
+					)}
 				</div>
 
 				<div className="flex justify-center gap-3">
@@ -39,7 +45,10 @@ export default function CommunicationError({
 						<RefreshCw className="mr-2 size-4" />
 						Try Again
 					</Button>
-					<Button onClick={() => (window.location.href = "/dashboard")} variant="outline">
+					<Button
+						onClick={() => (window.location.href = "/dashboard")}
+						variant="outline"
+					>
 						<Home className="mr-2 size-4" />
 						Dashboard
 					</Button>

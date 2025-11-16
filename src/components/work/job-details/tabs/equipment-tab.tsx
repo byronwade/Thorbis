@@ -8,7 +8,14 @@ import { Calendar, Plus, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type EquipmentTabProps = {
 	job: any;
@@ -17,7 +24,12 @@ type EquipmentTabProps = {
 	isEditMode: boolean;
 };
 
-export function EquipmentTab({ job, equipment, property, isEditMode }: EquipmentTabProps) {
+export function EquipmentTab({
+	job,
+	equipment,
+	property,
+	isEditMode,
+}: EquipmentTabProps) {
 	const formatDate = (date: string | null) => {
 		if (!date) {
 			return "N/A";
@@ -68,7 +80,9 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
 										<TableCell>{item.type}</TableCell>
 										<TableCell>{item.manufacturer || "N/A"}</TableCell>
 										<TableCell>{item.model || "N/A"}</TableCell>
-										<TableCell className="font-mono text-sm">{item.serial_number || "N/A"}</TableCell>
+										<TableCell className="font-mono text-sm">
+											{item.serial_number || "N/A"}
+										</TableCell>
 										<TableCell>{formatDate(item.last_service_date)}</TableCell>
 										{isEditMode && (
 											<TableCell>
@@ -108,7 +122,9 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
 							{job.equipment_serviced.map((item: any, index: number) => (
 								<div className="rounded-lg border p-3" key={index}>
 									<p className="font-medium">{item.name}</p>
-									<p className="text-muted-foreground text-sm">{item.service_performed}</p>
+									<p className="text-muted-foreground text-sm">
+										{item.service_performed}
+									</p>
 								</div>
 							))}
 						</div>

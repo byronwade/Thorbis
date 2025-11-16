@@ -20,7 +20,10 @@ const rootDir = join(__dirname, "..");
 config({ path: join(rootDir, ".env.local") });
 
 // Use non-pooling connection for DDL operations
-const DATABASE_URL = process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL || process.env.DATABASE_URL;
+const DATABASE_URL =
+	process.env.POSTGRES_URL_NON_POOLING ||
+	process.env.POSTGRES_URL ||
+	process.env.DATABASE_URL;
 
 console.log("========================================");
 console.log("🌱 Thorbis Database Seeding");
@@ -28,8 +31,12 @@ console.log("========================================\n");
 
 if (!DATABASE_URL) {
 	console.error("❌ DATABASE_URL not found in .env.local");
-	console.error("Please add DATABASE_URL or POSTGRES_URL_NON_POOLING to your .env.local");
-	console.error("Get it from: Supabase Dashboard > Project Settings > Database > Connection string > URI\n");
+	console.error(
+		"Please add DATABASE_URL or POSTGRES_URL_NON_POOLING to your .env.local",
+	);
+	console.error(
+		"Get it from: Supabase Dashboard > Project Settings > Database > Connection string > URI\n",
+	);
 	process.exit(1);
 }
 
@@ -55,7 +62,9 @@ const seedFiles = [
 
 async function runSQLFile(filepath) {
 	try {
-		const { stdout, stderr } = await execAsync(`psql "${DATABASE_URL}" -f "${filepath}"`);
+		const { stdout, stderr } = await execAsync(
+			`psql "${DATABASE_URL}" -f "${filepath}"`,
+		);
 		if (stderr?.includes("ERROR")) {
 			console.error("  ❌ Error:", stderr);
 			throw new Error(stderr);
@@ -79,16 +88,20 @@ async function seed() {
 		const setupEndIndex = mainSeed.indexOf(setupEndMarker);
 
 		if (setupEndIndex === -1) {
-			throw new Error("Could not find end of setup section in seed-minimal.sql");
+			throw new Error(
+				"Could not find end of setup section in seed-minimal.sql",
+			);
 		}
 
 		const setupSQL = mainSeed.substring(0, setupEndIndex).trim();
 
 		// Build combined SQL with setup + all seed files
 		let combinedSQL = "BEGIN;\n\n";
-		combinedSQL += "-- ============================================================================\n";
+		combinedSQL +=
+			"-- ============================================================================\n";
 		combinedSQL += "-- SETUP: User and Company Detection\n";
-		combinedSQL += "-- ============================================================================\n\n";
+		combinedSQL +=
+			"-- ============================================================================\n\n";
 		combinedSQL += setupSQL;
 		combinedSQL += "\n\n";
 
@@ -105,9 +118,11 @@ async function seed() {
 			console.log(`📄 Adding: ${filename}`);
 
 			const seedContent = readFileSync(fullPath, "utf-8");
-			combinedSQL += "-- ============================================================================\n";
+			combinedSQL +=
+				"-- ============================================================================\n";
 			combinedSQL += `-- ${filename}\n`;
-			combinedSQL += "-- ============================================================================\n\n";
+			combinedSQL +=
+				"-- ============================================================================\n\n";
 			combinedSQL += seedContent;
 			combinedSQL += "\n\n";
 		}

@@ -1,6 +1,13 @@
 "use client";
 
-import { AlertCircle, Building2, ExternalLink, Loader2, Search, Tag as TagIcon } from "lucide-react";
+import {
+	AlertCircle,
+	Building2,
+	ExternalLink,
+	Loader2,
+	Search,
+	Tag as TagIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -8,10 +15,22 @@ import { createVendor, updateVendor } from "@/actions/vendors";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { VendorSelect } from "@/lib/validations/database-schemas";
 
@@ -90,7 +109,10 @@ const statusOptions: Array<{ value: "active" | "inactive"; label: string }> = [
 	{ value: "inactive", label: "Inactive" },
 ];
 
-export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps) {
+export function WorkVendorForm({
+	vendor,
+	mode = "create",
+}: WorkVendorFormProps) {
 	const router = useRouter();
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -110,7 +132,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 		country: vendor?.country ?? "USA",
 		tax_id: vendor?.tax_id ?? "",
 		payment_terms: vendor?.payment_terms ?? "net_30",
-		credit_limit: vendor?.credit_limit ? (vendor.credit_limit / 100).toString() : "0",
+		credit_limit: vendor?.credit_limit
+			? (vendor.credit_limit / 100).toString()
+			: "0",
 		preferred_payment_method: vendor?.preferred_payment_method ?? "",
 		category: vendor?.category ?? "",
 		status: (vendor?.status as "active" | "inactive") ?? "active",
@@ -120,16 +144,31 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 	const [tags, setTags] = useState<string[]>(vendor?.tags ?? []);
 	const [tagInput, setTagInput] = useState("");
 	const [customFields, setCustomFields] = useState<CustomFieldsState>({
-		account_manager_name: (vendor?.custom_fields as Record<string, string> | null)?.account_manager_name || "",
-		account_manager_email: (vendor?.custom_fields as Record<string, string> | null)?.account_manager_email || "",
-		procurement_portal_url: (vendor?.custom_fields as Record<string, string> | null)?.procurement_portal_url || "",
-		emergency_line: (vendor?.custom_fields as Record<string, string> | null)?.emergency_line || "",
-		preferred_carrier: (vendor?.custom_fields as Record<string, string> | null)?.preferred_carrier || "",
+		account_manager_name:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.account_manager_name || "",
+		account_manager_email:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.account_manager_email || "",
+		procurement_portal_url:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.procurement_portal_url || "",
+		emergency_line:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.emergency_line || "",
+		preferred_carrier:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.preferred_carrier || "",
 		typical_lead_time_days: String(
-			(vendor?.custom_fields as Record<string, string | number> | null)?.typical_lead_time_days ?? ""
+			(vendor?.custom_fields as Record<string, string | number> | null)
+				?.typical_lead_time_days ?? "",
 		),
-		preferred_brands: (vendor?.custom_fields as Record<string, string> | null)?.preferred_brands || "",
-		notes_private: (vendor?.custom_fields as Record<string, string> | null)?.notes_private || "",
+		preferred_brands:
+			(vendor?.custom_fields as Record<string, string> | null)
+				?.preferred_brands || "",
+		notes_private:
+			(vendor?.custom_fields as Record<string, string> | null)?.notes_private ||
+			"",
 	});
 	const [lookupQuery, setLookupQuery] = useState("");
 	const [lookupResults, setLookupResults] = useState<CompanySuggestion[]>([]);
@@ -149,14 +188,20 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 		setTags((prev) => prev.filter((t) => t !== tag));
 	};
 
-	const handleInputChange = (field: keyof VendorFormState, value: VendorFormState[keyof VendorFormState]) => {
+	const handleInputChange = (
+		field: keyof VendorFormState,
+		value: VendorFormState[keyof VendorFormState],
+	) => {
 		setFormData((prev) => ({
 			...prev,
 			[field]: value,
 		}));
 	};
 
-	const handleCustomFieldChange = (field: keyof CustomFieldsState, value: string) => {
+	const handleCustomFieldChange = (
+		field: keyof CustomFieldsState,
+		value: string,
+	) => {
 		setCustomFields((prev) => ({
 			...prev,
 			[field]: value,
@@ -173,7 +218,7 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			setIsLookupLoading(true);
 			setLookupError(null);
 			const response = await fetch(
-				`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(lookupQuery.trim())}`
+				`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(lookupQuery.trim())}`,
 			);
 			if (!response.ok) {
 				throw new Error("Directory lookup failed. Try again shortly.");
@@ -181,7 +226,11 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			const payload = (await response.json()) as CompanySuggestion[];
 			setLookupResults(payload.slice(0, 6));
 		} catch (err) {
-			setLookupError(err instanceof Error ? err.message : "Unable to reach company directory.");
+			setLookupError(
+				err instanceof Error
+					? err.message
+					: "Unable to reach company directory.",
+			);
 		} finally {
 			setIsLookupLoading(false);
 		}
@@ -193,10 +242,13 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 		if (suggestion.domain) {
 			handleInputChange("website", `https://${suggestion.domain}`);
 			const normalizedTag = suggestion.domain.split(".")[0];
-			setTags((prev) => (prev.includes(normalizedTag) ? prev : [...prev, normalizedTag]));
+			setTags((prev) =>
+				prev.includes(normalizedTag) ? prev : [...prev, normalizedTag],
+			);
 			setCustomFields((prev) => ({
 				...prev,
-				procurement_portal_url: prev.procurement_portal_url || `https://${suggestion.domain}`,
+				procurement_portal_url:
+					prev.procurement_portal_url || `https://${suggestion.domain}`,
 			}));
 		}
 		if (!formData.notes && suggestion.description) {
@@ -206,7 +258,7 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 
 	const isFormValid = useMemo(
 		() => Boolean(formData.name.trim() && formData.display_name.trim()),
-		[formData.display_name, formData.name]
+		[formData.display_name, formData.name],
 	);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -263,7 +315,10 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			payload.append("credit_limit", formData.credit_limit);
 		}
 		if (formData.preferred_payment_method) {
-			payload.append("preferred_payment_method", formData.preferred_payment_method);
+			payload.append(
+				"preferred_payment_method",
+				formData.preferred_payment_method,
+			);
 		}
 		if (formData.category) {
 			payload.append("category", formData.category);
@@ -283,11 +338,13 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 		const cleanedCustomFields = Object.fromEntries(
 			Object.entries(customFields)
 				.map(([key, value]) => [key, value.trim()])
-				.filter(([, value]) => value !== "")
+				.filter(([, value]) => value !== ""),
 		);
 
 		if (cleanedCustomFields.typical_lead_time_days) {
-			cleanedCustomFields.typical_lead_time_days = String(Number(cleanedCustomFields.typical_lead_time_days));
+			cleanedCustomFields.typical_lead_time_days = String(
+				Number(cleanedCustomFields.typical_lead_time_days),
+			);
 		}
 
 		if (Object.keys(cleanedCustomFields).length > 0) {
@@ -308,7 +365,10 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 				return;
 			}
 
-			const vendorId = mode === "create" && "data" in result ? (result.data as string | undefined) : vendor?.id;
+			const vendorId =
+				mode === "create" && "data" in result
+					? (result.data as string | undefined)
+					: vendor?.id;
 
 			if (vendorId) {
 				router.push(`/dashboard/work/vendors/${vendorId}`);
@@ -317,7 +377,11 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			}
 			router.refresh();
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Unexpected error. Please try again.");
+			setError(
+				err instanceof Error
+					? err.message
+					: "Unexpected error. Please try again.",
+			);
 			setIsSubmitting(false);
 		}
 	};
@@ -338,7 +402,8 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 						Company Lookup
 					</CardTitle>
 					<CardDescription>
-						Pull public info from Clearbit to reduce manual entry. Choose a company to prefill the basics.
+						Pull public info from Clearbit to reduce manual entry. Choose a
+						company to prefill the basics.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
@@ -349,7 +414,12 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							placeholder="Ferguson, Winsupply, etc."
 							value={lookupQuery}
 						/>
-						<Button className="md:w-40" disabled={isLookupLoading} onClick={handleCompanyLookup} type="button">
+						<Button
+							className="md:w-40"
+							disabled={isLookupLoading}
+							onClick={handleCompanyLookup}
+							type="button"
+						>
 							{isLookupLoading ? (
 								<>
 									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -360,7 +430,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							)}
 						</Button>
 					</div>
-					{lookupError && <p className="text-destructive text-sm">{lookupError}</p>}
+					{lookupError && (
+						<p className="text-destructive text-sm">{lookupError}</p>
+					)}
 					{lookupResults.length > 0 && (
 						<div className="grid gap-3 md:grid-cols-2">
 							{lookupResults.map((suggestion) => (
@@ -372,7 +444,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								>
 									<div>
 										<p className="font-medium">{suggestion.name}</p>
-										<p className="text-muted-foreground text-xs">{suggestion.domain || "Domain unavailable"}</p>
+										<p className="text-muted-foreground text-xs">
+											{suggestion.domain || "Domain unavailable"}
+										</p>
 									</div>
 									<TagIcon className="h-3.5 w-3.5 text-muted-foreground" />
 								</button>
@@ -395,7 +469,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							</Label>
 							<Input
 								id="name"
-								onChange={(event) => handleInputChange("name", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("name", event.target.value)
+								}
 								placeholder="Ferguson Enterprises"
 								required
 								value={formData.name}
@@ -407,7 +483,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							</Label>
 							<Input
 								id="display_name"
-								onChange={(event) => handleInputChange("display_name", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("display_name", event.target.value)
+								}
 								placeholder="Ferguson Plumbing Supply"
 								required
 								value={formData.display_name}
@@ -417,7 +495,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="vendor_number">Vendor Number</Label>
 							<Input
 								id="vendor_number"
-								onChange={(event) => handleInputChange("vendor_number", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("vendor_number", event.target.value)
+								}
 								placeholder="VND-2025-PL-004"
 								value={formData.vendor_number}
 							/>
@@ -426,7 +506,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="website">Website</Label>
 							<Input
 								id="website"
-								onChange={(event) => handleInputChange("website", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("website", event.target.value)
+								}
 								placeholder="https://vendor.com"
 								type="url"
 								value={formData.website}
@@ -455,7 +537,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 						<div className="space-y-2">
 							<Label>Payment Terms</Label>
 							<Select
-								onValueChange={(value) => handleInputChange("payment_terms", value)}
+								onValueChange={(value) =>
+									handleInputChange("payment_terms", value)
+								}
 								value={formData.payment_terms}
 							>
 								<SelectTrigger>
@@ -473,7 +557,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 						<div className="space-y-2">
 							<Label>Status</Label>
 							<Select
-								onValueChange={(value: "active" | "inactive") => handleInputChange("status", value)}
+								onValueChange={(value: "active" | "inactive") =>
+									handleInputChange("status", value)
+								}
 								value={formData.status}
 							>
 								<SelectTrigger>
@@ -541,7 +627,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="email">Email</Label>
 							<Input
 								id="email"
-								onChange={(event) => handleInputChange("email", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("email", event.target.value)
+								}
 								placeholder="purchasing@vendor.com"
 								type="email"
 								value={formData.email}
@@ -552,7 +640,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								<Label htmlFor="phone">Main Phone</Label>
 								<Input
 									id="phone"
-									onChange={(event) => handleInputChange("phone", event.target.value)}
+									onChange={(event) =>
+										handleInputChange("phone", event.target.value)
+									}
 									placeholder="+1 (555) 123-4567"
 									value={formData.phone}
 								/>
@@ -561,7 +651,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								<Label htmlFor="secondary_phone">Secondary / After-hours</Label>
 								<Input
 									id="secondary_phone"
-									onChange={(event) => handleInputChange("secondary_phone", event.target.value)}
+									onChange={(event) =>
+										handleInputChange("secondary_phone", event.target.value)
+									}
 									placeholder="+1 (555) 987-6543"
 									value={formData.secondary_phone}
 								/>
@@ -571,7 +663,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="tax_id">Tax ID</Label>
 							<Input
 								id="tax_id"
-								onChange={(event) => handleInputChange("tax_id", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("tax_id", event.target.value)
+								}
 								placeholder="XX-XXXXXXX"
 								value={formData.tax_id}
 							/>
@@ -582,7 +676,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 				<Card>
 					<CardHeader>
 						<CardTitle>Procurement Controls</CardTitle>
-						<CardDescription>Terms, limits, and payment routing.</CardDescription>
+						<CardDescription>
+							Terms, limits, and payment routing.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
@@ -590,7 +686,12 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Input
 								id="credit_limit"
 								min={0}
-								onChange={(event) => handleInputChange("credit_limit", event.target.value.replace(/[^0-9.]/g, ""))}
+								onChange={(event) =>
+									handleInputChange(
+										"credit_limit",
+										event.target.value.replace(/[^0-9.]/g, ""),
+									)
+								}
 								type="number"
 								value={formData.credit_limit}
 							/>
@@ -598,7 +699,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 						<div className="space-y-2">
 							<Label>Preferred Payment Method</Label>
 							<Select
-								onValueChange={(value) => handleInputChange("preferred_payment_method", value)}
+								onValueChange={(value) =>
+									handleInputChange("preferred_payment_method", value)
+								}
 								value={formData.preferred_payment_method || undefined}
 							>
 								<SelectTrigger>
@@ -620,7 +723,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			<Card>
 				<CardHeader>
 					<CardTitle>Logistics & Ship-to</CardTitle>
-					<CardDescription>Warehouse or fulfillment locations for this vendor.</CardDescription>
+					<CardDescription>
+						Warehouse or fulfillment locations for this vendor.
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-2">
@@ -628,7 +733,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="address">Address</Label>
 							<Input
 								id="address"
-								onChange={(event) => handleInputChange("address", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("address", event.target.value)
+								}
 								placeholder="123 Supply Chain Way"
 								value={formData.address}
 							/>
@@ -637,7 +744,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="address2">Suite / Building</Label>
 							<Input
 								id="address2"
-								onChange={(event) => handleInputChange("address2", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("address2", event.target.value)
+								}
 								placeholder="Suite 200"
 								value={formData.address2}
 							/>
@@ -648,7 +757,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="city">City</Label>
 							<Input
 								id="city"
-								onChange={(event) => handleInputChange("city", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("city", event.target.value)
+								}
 								value={formData.city}
 							/>
 						</div>
@@ -656,7 +767,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="state">State / Region</Label>
 							<Input
 								id="state"
-								onChange={(event) => handleInputChange("state", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("state", event.target.value)
+								}
 								value={formData.state}
 							/>
 						</div>
@@ -664,7 +777,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="zip_code">Postal Code</Label>
 							<Input
 								id="zip_code"
-								onChange={(event) => handleInputChange("zip_code", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("zip_code", event.target.value)
+								}
 								value={formData.zip_code}
 							/>
 						</div>
@@ -672,7 +787,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="country">Country</Label>
 							<Input
 								id="country"
-								onChange={(event) => handleInputChange("country", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("country", event.target.value)
+								}
 								value={formData.country}
 							/>
 						</div>
@@ -684,7 +801,10 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 				<Card>
 					<CardHeader>
 						<CardTitle>Portal & Escalations</CardTitle>
-						<CardDescription>Store account manager contacts, portal links, and escalation paths.</CardDescription>
+						<CardDescription>
+							Store account manager contacts, portal links, and escalation
+							paths.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -692,7 +812,12 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								<Label htmlFor="account_manager_name">Account Manager</Label>
 								<Input
 									id="account_manager_name"
-									onChange={(event) => handleCustomFieldChange("account_manager_name", event.target.value)}
+									onChange={(event) =>
+										handleCustomFieldChange(
+											"account_manager_name",
+											event.target.value,
+										)
+									}
 									placeholder="Jane Smith"
 									value={customFields.account_manager_name}
 								/>
@@ -701,7 +826,12 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								<Label htmlFor="account_manager_email">Manager Email</Label>
 								<Input
 									id="account_manager_email"
-									onChange={(event) => handleCustomFieldChange("account_manager_email", event.target.value)}
+									onChange={(event) =>
+										handleCustomFieldChange(
+											"account_manager_email",
+											event.target.value,
+										)
+									}
 									placeholder="jane.smith@vendor.com"
 									type="email"
 									value={customFields.account_manager_email}
@@ -712,7 +842,12 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="procurement_portal_url">Procurement Portal</Label>
 							<Input
 								id="procurement_portal_url"
-								onChange={(event) => handleCustomFieldChange("procurement_portal_url", event.target.value)}
+								onChange={(event) =>
+									handleCustomFieldChange(
+										"procurement_portal_url",
+										event.target.value,
+									)
+								}
 								placeholder="https://portal.vendor.com"
 								value={customFields.procurement_portal_url}
 							/>
@@ -722,17 +857,29 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 								<Label htmlFor="preferred_carrier">Preferred Carrier</Label>
 								<Input
 									id="preferred_carrier"
-									onChange={(event) => handleCustomFieldChange("preferred_carrier", event.target.value)}
+									onChange={(event) =>
+										handleCustomFieldChange(
+											"preferred_carrier",
+											event.target.value,
+										)
+									}
 									placeholder="UPS Freight, Old Dominion, etc."
 									value={customFields.preferred_carrier}
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="typical_lead_time_days">Typical Lead Time (days)</Label>
+								<Label htmlFor="typical_lead_time_days">
+									Typical Lead Time (days)
+								</Label>
 								<Input
 									id="typical_lead_time_days"
 									min={0}
-									onChange={(event) => handleCustomFieldChange("typical_lead_time_days", event.target.value)}
+									onChange={(event) =>
+										handleCustomFieldChange(
+											"typical_lead_time_days",
+											event.target.value,
+										)
+									}
 									type="number"
 									value={customFields.typical_lead_time_days}
 								/>
@@ -742,16 +889,25 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="preferred_brands">Preferred Brands / Lines</Label>
 							<Input
 								id="preferred_brands"
-								onChange={(event) => handleCustomFieldChange("preferred_brands", event.target.value)}
+								onChange={(event) =>
+									handleCustomFieldChange(
+										"preferred_brands",
+										event.target.value,
+									)
+								}
 								placeholder="Uponor, Delta, Milwaukee"
 								value={customFields.preferred_brands}
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label htmlFor="emergency_line">Emergency / After-hours Line</Label>
+							<Label htmlFor="emergency_line">
+								Emergency / After-hours Line
+							</Label>
 							<Input
 								id="emergency_line"
-								onChange={(event) => handleCustomFieldChange("emergency_line", event.target.value)}
+								onChange={(event) =>
+									handleCustomFieldChange("emergency_line", event.target.value)
+								}
 								placeholder="+1 (555) 444-1212"
 								value={customFields.emergency_line}
 							/>
@@ -762,14 +918,18 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 				<Card>
 					<CardHeader>
 						<CardTitle>Notes & Internal Briefing</CardTitle>
-						<CardDescription>External notes are visible on POs. Internal notes stay private.</CardDescription>
+						<CardDescription>
+							External notes are visible on POs. Internal notes stay private.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
 							<Label htmlFor="notes">Customer-facing Notes</Label>
 							<Textarea
 								id="notes"
-								onChange={(event) => handleInputChange("notes", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("notes", event.target.value)
+								}
 								placeholder="Add delivery instructions, key contacts, or pricing agreements."
 								rows={4}
 								value={formData.notes}
@@ -779,7 +939,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="internal_notes">Internal Notes</Label>
 							<Textarea
 								id="internal_notes"
-								onChange={(event) => handleInputChange("internal_notes", event.target.value)}
+								onChange={(event) =>
+									handleInputChange("internal_notes", event.target.value)
+								}
 								placeholder="Escalation steps, rebate schedules, sensitive information."
 								rows={4}
 								value={formData.internal_notes}
@@ -789,7 +951,9 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 							<Label htmlFor="notes_private">Escalation / Private Notes</Label>
 							<Textarea
 								id="notes_private"
-								onChange={(event) => handleCustomFieldChange("notes_private", event.target.value)}
+								onChange={(event) =>
+									handleCustomFieldChange("notes_private", event.target.value)
+								}
 								placeholder="List executive contacts or special approvals."
 								rows={3}
 								value={customFields.notes_private}

@@ -74,95 +74,106 @@ export type AppointmentWithRelations = Schedule & {
  * This query is shared by both AppointmentsStats and AppointmentsData
  * to eliminate duplicate database round trips.
  */
-export const getAppointmentsWithRelations = cache(async (): Promise<AppointmentWithRelations[] | null> => {
-	const supabase = await createClient();
-	if (!supabase) {
-		return null;
-	}
-
-	// Parallel auth checks instead of sequential (saves 50-100ms)
-	const [
-		{
-			data: { user },
-		},
-		activeCompanyId,
-	] = await Promise.all([supabase.auth.getUser(), getActiveCompanyId()]);
-
-	if (!(user && activeCompanyId)) {
-		return null;
-	}
-
-	// Parallel queries instead of JOINs (saves 400-700ms)
-	// 4 simple indexed queries in parallel vs 1 complex query with 3 JOINs
-	const [schedulesResult, customersResult, propertiesResult, usersResult] = await Promise.all([
-		// Main schedules query - uses idx_schedules_type_company composite index
-		supabase
-			.from("schedules")
-			.select("*")
-			.eq("company_id", activeCompanyId)
-			.eq("type", "appointment")
-			.order("start_time", { ascending: true })
-			.limit(MAX_APPOINTMENTS),
-
-		// Customers lookup - simple indexed query
-		supabase
-			.from("customers")
-			.select("id, first_name, last_name, display_name, company_name")
-			.eq("company_id", activeCompanyId)
-			.is("deleted_at", null),
-
-		// Properties lookup - simple indexed query
-		supabase
-			.from("properties")
-			.select("id, address, city, state, zip_code")
-			.eq("company_id", activeCompanyId)
-			.is("deleted_at", null),
-
-		// Users lookup - no company filter needed (global)
-		supabase
-			.from("users")
-			.select("id, name, email"),
-	]);
-
-	if (schedulesResult.error) {
-		throw new Error(`Failed to load appointments: ${schedulesResult.error.message}`);
-	}
-
-	const schedules = schedulesResult.data || [];
-
-	// Early return if no appointments
-	if (schedules.length === 0) {
-		return [];
-	}
-
-	// Build hash maps for O(1) lookups (instead of O(n) per schedule)
-	const customerMap = new Map<string, Customer>();
-	customersResult.data?.forEach((c) => customerMap.set(c.id, c));
-
-	const propertyMap = new Map<string, Property>();
-	propertiesResult.data?.forEach((p) => propertyMap.set(p.id, p));
-
-	const userMap = new Map<string, User>();
-	usersResult.data?.forEach((u) => userMap.set(u.id, u));
-
-	// Join in JavaScript with O(n) complexity
-	// Single pass with reduce (filter + map combined)
-	return schedules.reduce<AppointmentWithRelations[]>((acc, apt) => {
-		// Skip appointments without start time
-		if (!apt.start_time) {
-			return acc;
+export const getAppointmentsWithRelations = cache(
+	async (): Promise<AppointmentWithRelations[] | null> => {
+		const supabase = await createClient();
+		if (!supabase) {
+			return null;
 		}
 
-		acc.push({
-			...apt,
-			customer: apt.customer_id ? customerMap.get(apt.customer_id) || null : null,
-			property: apt.property_id ? propertyMap.get(apt.property_id) || null : null,
-			assigned_user: apt.assigned_to ? userMap.get(apt.assigned_to) || null : null,
-		});
+		// Parallel auth checks instead of sequential (saves 50-100ms)
+		const [
+			{
+				data: { user },
+			},
+			activeCompanyId,
+		] = await Promise.all([supabase.auth.getUser(), getActiveCompanyId()]);
 
-		return acc;
-	}, []);
-});
+		if (!(user && activeCompanyId)) {
+			return null;
+		}
+
+		// Parallel queries instead of JOINs (saves 400-700ms)
+		// 4 simple indexed queries in parallel vs 1 complex query with 3 JOINs
+		const [schedulesResult, customersResult, propertiesResult, usersResult] =
+			await Promise.all([
+				// Main schedules query - uses idx_schedules_type_company composite index
+				supabase
+					.from("schedules")
+					.select("*")
+					.eq("company_id", activeCompanyId)
+					.eq("type", "appointment")
+					.order("start_time", { ascending: true })
+					.limit(MAX_APPOINTMENTS),
+
+				// Customers lookup - simple indexed query
+				supabase
+					.from("customers")
+					.select("id, first_name, last_name, display_name, company_name")
+					.eq("company_id", activeCompanyId)
+					.is("deleted_at", null),
+
+				// Properties lookup - simple indexed query
+				supabase
+					.from("properties")
+					.select("id, address, city, state, zip_code")
+					.eq("company_id", activeCompanyId)
+					.is("deleted_at", null),
+
+				// Users lookup - no company filter needed (global)
+				supabase
+					.from("users")
+					.select("id, name, email"),
+			]);
+
+		if (schedulesResult.error) {
+			throw new Error(
+				`Failed to load appointments: ${schedulesResult.error.message}`,
+			);
+		}
+
+		const schedules = schedulesResult.data || [];
+
+		// Early return if no appointments
+		if (schedules.length === 0) {
+			return [];
+		}
+
+		// Build hash maps for O(1) lookups (instead of O(n) per schedule)
+		const customerMap = new Map<string, Customer>();
+		customersResult.data?.forEach((c) => customerMap.set(c.id, c));
+
+		const propertyMap = new Map<string, Property>();
+		propertiesResult.data?.forEach((p) => propertyMap.set(p.id, p));
+
+		const userMap = new Map<string, User>();
+		usersResult.data?.forEach((u) => userMap.set(u.id, u));
+
+		// Join in JavaScript with O(n) complexity
+		// Single pass with reduce (filter + map combined)
+		return schedules.reduce<AppointmentWithRelations[]>((acc, apt) => {
+			// Skip appointments without start time
+			if (!apt.start_time) {
+				return acc;
+			}
+
+			acc.push({
+				...apt,
+				customer: apt.customer_id
+					? customerMap.get(apt.customer_id) || null
+					: null,
+				property: apt.property_id
+					? propertyMap.get(apt.property_id) || null
+					: null,
+				assigned_user: apt.assigned_to
+					? userMap.get(apt.assigned_to) || null
+					: null,
+			});
+
+			return acc;
+		}, []);
+	},
+);
 
 /**
  * Get appointment statistics

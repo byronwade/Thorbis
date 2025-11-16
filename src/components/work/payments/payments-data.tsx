@@ -38,7 +38,11 @@ export async function UpaymentsData() {
 		.limit(MAX_PAYMENTS_PER_PAGE);
 
 	if (error) {
-		const errorMessage = error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+		const errorMessage =
+			error.message ||
+			error.hint ||
+			JSON.stringify(error) ||
+			"Unknown database error";
 		throw new Error(`Failed to load payments: ${errorMessage}`);
 	}
 
@@ -52,7 +56,9 @@ export async function UpaymentsData() {
 		processed_at: payment.processed_at ? new Date(payment.processed_at) : null,
 		created_at: new Date(payment.created_at),
 		updated_at: new Date(payment.updated_at),
-		customer: Array.isArray(payment.customers) ? payment.customers[0] : payment.customers,
+		customer: Array.isArray(payment.customers)
+			? payment.customers[0]
+			: payment.customers,
 		invoice_id: payment.invoice_id,
 		job_id: payment.job_id,
 		customer_id: payment.customer_id,

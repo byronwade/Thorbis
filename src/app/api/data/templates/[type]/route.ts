@@ -47,11 +47,15 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 		// Return file
 		return new NextResponse(buffer, {
 			headers: {
-				"Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Content-Type":
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Content-Disposition": `attachment; filename="${type}_import_template.xlsx"`,
 			},
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

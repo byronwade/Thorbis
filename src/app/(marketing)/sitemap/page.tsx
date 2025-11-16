@@ -1,13 +1,22 @@
 import Link from "next/link";
 import Script from "next/script";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis HTML Sitemap",
-	description: "Browse Thorbis marketing, product, and support pages from a single sitemap.",
+	description:
+		"Browse Thorbis marketing, product, and support pages from a single sitemap.",
 	path: "/sitemap",
 	section: "Company",
-	keywords: ["thorbis sitemap", "thorbis site map", "field service software pages"],
+	keywords: [
+		"thorbis sitemap",
+		"thorbis site map",
+		"field service software pages",
+	],
 });
 
 const LINK_SECTIONS = [
@@ -87,7 +96,7 @@ export default function SitemapPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Sitemap", url: `${siteUrl}/sitemap` },
-						])
+						]),
 					),
 				}}
 				id="sitemap-breadcrumb-ld"
@@ -95,10 +104,12 @@ export default function SitemapPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Thorbis Sitemap</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Thorbis Sitemap
+					</h1>
 					<p className="text-muted-foreground">
-						Quickly browse major Thorbis pages. For XML sitemaps used by search engines, visit /kb/sitemap.xml and
-						/seo/thorbis-sitemap.xml.
+						Quickly browse major Thorbis pages. For XML sitemaps used by search
+						engines, visit /kb/sitemap.xml and /seo/thorbis-sitemap.xml.
 					</p>
 				</header>
 				<div className="grid gap-8 md:grid-cols-3">
@@ -108,7 +119,10 @@ export default function SitemapPage() {
 							<ul className="space-y-2 text-muted-foreground text-sm">
 								{section.links.map((link) => (
 									<li key={link.href}>
-										<Link className="text-primary underline-offset-4 hover:underline" href={link.href}>
+										<Link
+											className="text-primary underline-offset-4 hover:underline"
+											href={link.href}
+										>
 											{link.label}
 										</Link>
 									</li>

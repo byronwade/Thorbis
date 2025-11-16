@@ -21,7 +21,12 @@ type KBFeedbackProps = {
 	className?: string;
 };
 
-export function KBFeedback({ articleId, helpfulCount, notHelpfulCount, className }: KBFeedbackProps) {
+export function KBFeedback({
+	articleId,
+	helpfulCount,
+	notHelpfulCount,
+	className,
+}: KBFeedbackProps) {
 	const [helpful, setHelpful] = useState<boolean | null>(null);
 	const [comment, setComment] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +45,9 @@ export function KBFeedback({ articleId, helpfulCount, notHelpfulCount, className
 
 		if (result.success) {
 			setHelpful(value);
-			toast.success("Thank you! Your feedback helps us improve our documentation.");
+			toast.success(
+				"Thank you! Your feedback helps us improve our documentation.",
+			);
 		} else {
 			toast.error(result.error || "Failed to submit feedback");
 		}
@@ -70,7 +77,9 @@ export function KBFeedback({ articleId, helpfulCount, notHelpfulCount, className
 	return (
 		<div className={cn("space-y-4 border-t pt-6", className)}>
 			<div>
-				<h3 className="mb-2 font-semibold text-sm">Was this article helpful?</h3>
+				<h3 className="mb-2 font-semibold text-sm">
+					Was this article helpful?
+				</h3>
 				<div className="flex items-center gap-4">
 					<Button
 						disabled={isSubmitting || helpful === true}
@@ -94,7 +103,9 @@ export function KBFeedback({ articleId, helpfulCount, notHelpfulCount, className
 			</div>
 
 			<div>
-				<h3 className="mb-2 font-semibold text-sm">Have a comment or suggestion?</h3>
+				<h3 className="mb-2 font-semibold text-sm">
+					Have a comment or suggestion?
+				</h3>
 				<div className="space-y-2">
 					<Textarea
 						className="resize-none"
@@ -103,7 +114,11 @@ export function KBFeedback({ articleId, helpfulCount, notHelpfulCount, className
 						rows={3}
 						value={comment}
 					/>
-					<Button disabled={!comment.trim() || isSubmitting} onClick={handleCommentSubmit} size="sm">
+					<Button
+						disabled={!comment.trim() || isSubmitting}
+						onClick={handleCommentSubmit}
+						size="sm"
+					>
 						<MessageSquare className="mr-2 size-4" />
 						Submit Comment
 					</Button>

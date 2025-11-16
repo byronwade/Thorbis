@@ -7,7 +7,11 @@
 
 import { Calculator, Receipt, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type ManagerJobMetricsProps = {
@@ -47,9 +51,11 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 	const totalRevenue = metrics.totalInvoiced || 0;
 	const totalCosts = (metrics.laborCosts || 0) + (metrics.materialCosts || 0);
 	const grossProfit = totalRevenue - totalCosts;
-	const profitMargin = totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : "0";
+	const profitMargin =
+		totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : "0";
 
-	const outstandingBalance = (metrics.totalInvoiced || 0) - (metrics.totalPaid || 0);
+	const outstandingBalance =
+		(metrics.totalInvoiced || 0) - (metrics.totalPaid || 0);
 
 	return (
 		<div className="flex flex-wrap items-center gap-3">
@@ -67,7 +73,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="flex items-start justify-between">
 							<div>
 								<h4 className="font-semibold text-base">Job Financials</h4>
-								<p className="text-muted-foreground text-xs">Complete financial overview</p>
+								<p className="text-muted-foreground text-xs">
+									Complete financial overview
+								</p>
 							</div>
 							<div
 								className={`rounded-full px-3 py-1 font-semibold text-xs ${
@@ -86,11 +94,15 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 
 						{/* Revenue Section */}
 						<div className="space-y-2">
-							<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Revenue</h5>
+							<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+								Revenue
+							</h5>
 							<div className="space-y-2 rounded-lg bg-muted/50 p-3">
 								<div className="flex items-center justify-between">
 									<span className="text-sm">Total Invoiced</span>
-									<span className="font-semibold text-base">{formatCurrency(metrics.totalInvoiced)}</span>
+									<span className="font-semibold text-base">
+										{formatCurrency(metrics.totalInvoiced)}
+									</span>
 								</div>
 								<div className="flex items-center justify-between">
 									<span className="text-sm">Total Paid</span>
@@ -111,15 +123,21 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 
 						{/* Costs Section */}
 						<div className="space-y-2">
-							<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Costs</h5>
+							<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+								Costs
+							</h5>
 							<div className="space-y-2 rounded-lg bg-muted/50 p-3">
 								<div className="flex items-center justify-between text-sm">
 									<span>Labor Costs</span>
-									<span className="font-medium">{formatCurrency(metrics.laborCosts)}</span>
+									<span className="font-medium">
+										{formatCurrency(metrics.laborCosts)}
+									</span>
 								</div>
 								<div className="flex items-center justify-between text-sm">
 									<span>Material Costs</span>
-									<span className="font-medium">{formatCurrency(metrics.materialCosts)}</span>
+									<span className="font-medium">
+										{formatCurrency(metrics.materialCosts)}
+									</span>
 								</div>
 								<div className="flex items-center justify-between border-border border-t pt-2">
 									<span className="font-medium text-sm">Total Costs</span>
@@ -134,10 +152,14 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-3">
 							<div className="flex items-center justify-between">
 								<div>
-									<span className="block text-muted-foreground text-xs">Gross Profit</span>
+									<span className="block text-muted-foreground text-xs">
+										Gross Profit
+									</span>
 									<span
 										className={`block font-bold text-xl ${
-											grossProfit >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+											grossProfit >= 0
+												? "text-green-600 dark:text-green-400"
+												: "text-red-600 dark:text-red-400"
 										}`}
 									>
 										{formatCurrency(grossProfit)}
@@ -145,7 +167,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 								</div>
 								<TrendingUp
 									className={`size-8 ${
-										grossProfit >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+										grossProfit >= 0
+											? "text-green-600 dark:text-green-400"
+											: "text-red-600 dark:text-red-400"
 									}`}
 								/>
 							</div>
@@ -162,7 +186,8 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 							<Receipt className="size-4" />
 							<span>
 								{metrics.estimateCount} Estimate
-								{metrics.estimateCount !== 1 ? "s" : ""} • {formatCurrency(metrics.estimatesTotal)}
+								{metrics.estimateCount !== 1 ? "s" : ""} •{" "}
+								{formatCurrency(metrics.estimatesTotal)}
 							</span>
 						</button>
 					</HoverCardTrigger>
@@ -170,16 +195,22 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="space-y-2">
 							<div>
 								<h4 className="font-semibold text-sm">Estimates</h4>
-								<p className="text-muted-foreground text-xs">Total estimated value for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Total estimated value for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="flex items-center justify-between">
 								<span className="text-sm">Total Estimated</span>
-								<span className="font-semibold text-sm">{formatCurrency(metrics.estimatesTotal)}</span>
+								<span className="font-semibold text-sm">
+									{formatCurrency(metrics.estimatesTotal)}
+								</span>
 							</div>
 							<div className="flex items-center justify-between">
 								<span className="text-sm">Number of Estimates</span>
-								<span className="font-medium text-sm">{metrics.estimateCount}</span>
+								<span className="font-medium text-sm">
+									{metrics.estimateCount}
+								</span>
 							</div>
 						</div>
 					</HoverCardContent>
@@ -202,24 +233,37 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="space-y-3">
 							<div>
 								<h4 className="font-semibold text-sm">Progress Payments</h4>
-								<p className="text-muted-foreground text-xs">Milestone-based payment schedule</p>
+								<p className="text-muted-foreground text-xs">
+									Milestone-based payment schedule
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{metrics.progressPayments.map((payment, index) => (
-									<div className="flex items-center justify-between rounded-md bg-muted/50 p-2" key={payment.id}>
+									<div
+										className="flex items-center justify-between rounded-md bg-muted/50 p-2"
+										key={payment.id}
+									>
 										<div className="flex items-center gap-2">
-											<span className="font-medium text-sm">Payment {index + 1}</span>
+											<span className="font-medium text-sm">
+												Payment {index + 1}
+											</span>
 											<Badge
 												className="capitalize"
 												variant={
-													payment.status === "paid" ? "default" : payment.status === "pending" ? "secondary" : "outline"
+													payment.status === "paid"
+														? "default"
+														: payment.status === "pending"
+															? "secondary"
+															: "outline"
 												}
 											>
 												{payment.status}
 											</Badge>
 										</div>
-										<span className="font-semibold text-sm">{formatCurrency(payment.amount)}</span>
+										<span className="font-semibold text-sm">
+											{formatCurrency(payment.amount)}
+										</span>
 									</div>
 								))}
 							</div>

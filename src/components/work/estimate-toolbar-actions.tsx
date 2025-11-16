@@ -31,12 +31,20 @@ type EstimateToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function EstimateToolbarActions({ totalCount = 0, activeCount, archivedCount }: EstimateToolbarActionsProps) {
+export function EstimateToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: EstimateToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<EstimatesFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<EstimatesFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={ESTIMATES_OPTIONAL_COLUMNS}
 						criticalColumns={ESTIMATES_CRITICAL_COLUMNS}

@@ -21,13 +21,22 @@ export async function CustomersStats() {
 	}
 
 	// Filter to active customers for stats calculations
-	const activeCustomersData = dbCustomers.filter((c) => !(c.archived_at || c.deleted_at));
+	const activeCustomersData = dbCustomers.filter(
+		(c) => !(c.archived_at || c.deleted_at),
+	);
 
 	// Calculate statistics from real data
 	const totalCustomers = activeCustomersData.length;
-	const activeCustomers = activeCustomersData.filter((c) => c.status === "active").length;
-	const prospectCustomers = activeCustomersData.filter((c) => c.status === "prospect").length;
-	const totalRevenue = activeCustomersData.reduce((sum, c) => sum + c.total_revenue, 0);
+	const activeCustomers = activeCustomersData.filter(
+		(c) => c.status === "active",
+	).length;
+	const prospectCustomers = activeCustomersData.filter(
+		(c) => c.status === "prospect",
+	).length;
+	const totalRevenue = activeCustomersData.reduce(
+		(sum, c) => sum + c.total_revenue,
+		0,
+	);
 
 	// Constants for revenue calculation and stat changes
 	const CENTS_PER_DOLLAR = 100;

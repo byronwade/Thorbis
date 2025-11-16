@@ -21,14 +21,18 @@ export function hasTimeConflict(
 	job1Start: Date | string,
 	job1End: Date | string,
 	job2Start: Date | string,
-	job2End: Date | string
+	job2End: Date | string,
 ): boolean {
 	const start1 = job1Start instanceof Date ? job1Start : new Date(job1Start);
 	const end1 = job1End instanceof Date ? job1End : new Date(job1End);
 	const start2 = job2Start instanceof Date ? job2Start : new Date(job2Start);
 	const end2 = job2End instanceof Date ? job2End : new Date(job2End);
 
-	return (start1 >= start2 && start1 < end2) || (end1 > start2 && end1 <= end2) || (start1 <= start2 && end1 >= end2);
+	return (
+		(start1 >= start2 && start1 < end2) ||
+		(end1 > start2 && end1 <= end2) ||
+		(start1 <= start2 && end1 >= end2)
+	);
 }
 
 export function findConflictingJobs(
@@ -36,7 +40,7 @@ export function findConflictingJobs(
 	technicianId: string,
 	startTime: Date,
 	endTime: Date,
-	excludeJobId?: string
+	excludeJobId?: string,
 ): Job[] {
 	return jobs.filter((job) => {
 		if (excludeJobId && job.id === excludeJobId) {
@@ -138,7 +142,10 @@ export function legacyJobToJob(legacy: LegacyJob, technicianId: string): Job {
 // TIME CALCULATIONS
 // ============================================
 
-export function calculateDuration(startTime: Date | string, endTime: Date | string): number {
+export function calculateDuration(
+	startTime: Date | string,
+	endTime: Date | string,
+): number {
 	const start = startTime instanceof Date ? startTime : new Date(startTime);
 	const end = endTime instanceof Date ? endTime : new Date(endTime);
 	return Math.round((end.getTime() - start.getTime()) / (1000 * 60)); // minutes
@@ -166,7 +173,7 @@ export function addMinutes(date: Date, minutes: number): Date {
 export function calculateWorkload(
 	jobs: Job[],
 	technicianSchedule: TechnicianSchedule,
-	date: Date
+	date: Date,
 ): {
 	totalMinutes: number;
 	availableMinutes: number;
@@ -183,13 +190,17 @@ export function calculateWorkload(
 	// Calculate total job duration for this day
 	const totalMinutes = jobs.reduce((sum, job) => {
 		// Check if job is on this date
-		if (job.startTime.toDateString() === date.toDateString() || job.endTime.toDateString() === date.toDateString()) {
+		if (
+			job.startTime.toDateString() === date.toDateString() ||
+			job.endTime.toDateString() === date.toDateString()
+		) {
 			return sum + calculateDuration(job.startTime, job.endTime);
 		}
 		return sum;
 	}, 0);
 
-	const utilizationRate = availableMinutes > 0 ? (totalMinutes / availableMinutes) * 100 : 0;
+	const utilizationRate =
+		availableMinutes > 0 ? (totalMinutes / availableMinutes) * 100 : 0;
 
 	return {
 		totalMinutes,
@@ -230,13 +241,22 @@ export function endOfDay(date: Date): Date {
 // RECURRING JOBS
 // ============================================
 
-export function generateRecurringJobInstances(baseJob: Job, startDate: Date, endDate: Date): Job[] {
+export function generateRecurringJobInstances(
+	baseJob: Job,
+	startDate: Date,
+	endDate: Date,
+): Job[] {
 	if (!baseJob.recurrence) {
 		return [baseJob];
 	}
 
 	const instances: Job[] = [];
-	const { frequency, interval, count, endDate: recurrenceEndDate } = baseJob.recurrence;
+	const {
+		frequency,
+		interval,
+		count,
+		endDate: recurrenceEndDate,
+	} = baseJob.recurrence;
 
 	const currentDate = new Date(baseJob.startTime);
 	let instanceCount = 0;
@@ -298,25 +318,35 @@ export function filterJobs(
 		statuses?: Job["status"][];
 		priorities?: Job["priority"][];
 		searchQuery?: string;
-	}
+	},
 ): Job[] {
 	return jobs.filter((job) => {
 		// Filter by technician
 		if (
 			filters.technicianIds &&
 			filters.technicianIds.length > 0 &&
-			!filters.technicianIds.some((technicianId) => jobHasTechnician(job, technicianId))
+			!filters.technicianIds.some((technicianId) =>
+				jobHasTechnician(job, technicianId),
+			)
 		) {
 			return false;
 		}
 
 		// Filter by status
-		if (filters.statuses && filters.statuses.length > 0 && !filters.statuses.includes(job.status)) {
+		if (
+			filters.statuses &&
+			filters.statuses.length > 0 &&
+			!filters.statuses.includes(job.status)
+		) {
 			return false;
 		}
 
 		// Filter by priority
-		if (filters.priorities && filters.priorities.length > 0 && !filters.priorities.includes(job.priority)) {
+		if (
+			filters.priorities &&
+			filters.priorities.length > 0 &&
+			!filters.priorities.includes(job.priority)
+		) {
 			return false;
 		}
 
@@ -343,8 +373,10 @@ export function filterJobs(
 export function sortJobsByStartTime(jobs: Job[]): Job[] {
 	return [...jobs].sort((a, b) => {
 		// Ensure dates are Date objects
-		const aTime = a.startTime instanceof Date ? a.startTime : new Date(a.startTime);
-		const bTime = b.startTime instanceof Date ? b.startTime : new Date(b.startTime);
+		const aTime =
+			a.startTime instanceof Date ? a.startTime : new Date(a.startTime);
+		const bTime =
+			b.startTime instanceof Date ? b.startTime : new Date(b.startTime);
 		return aTime.getTime() - bTime.getTime();
 	});
 }
@@ -359,7 +391,7 @@ export function sortTechniciansByName(technicians: Technician[]): Technician[] {
 
 export function validateJobTimes(
 	startTime: Date,
-	endTime: Date
+	endTime: Date,
 ): {
 	valid: boolean;
 	error?: string;
@@ -392,7 +424,9 @@ export function validateJob(job: Partial<Job>): {
 		errors.push("Title is required");
 	}
 
-	const hasTechnician = !!job.technicianId || job.assignments?.some((assignment) => assignment.technicianId);
+	const hasTechnician =
+		!!job.technicianId ||
+		job.assignments?.some((assignment) => assignment.technicianId);
 
 	if (!hasTechnician) {
 		errors.push("Technician must be assigned");
@@ -424,5 +458,7 @@ function jobHasTechnician(job: Job, technicianId: string): boolean {
 		return true;
 	}
 
-	return job.assignments.some((assignment) => assignment.technicianId === technicianId);
+	return job.assignments.some(
+		(assignment) => assignment.technicianId === technicianId,
+	);
 }

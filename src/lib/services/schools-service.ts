@@ -38,10 +38,17 @@ export type School = z.infer<typeof SchoolSchema>;
 export type SchoolsData = z.infer<typeof SchoolsDataSchema>;
 
 export class SchoolsService {
-	private readonly cache: Map<string, { data: SchoolsData; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: SchoolsData; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days
 
-	async getNearbySchools(lat: number, lon: number, radius = 5000): Promise<SchoolsData | null> {
+	async getNearbySchools(
+		lat: number,
+		lon: number,
+		radius = 5000,
+	): Promise<SchoolsData | null> {
 		const cacheKey = `schools:${lat.toFixed(4)},${lon.toFixed(4)}`;
 		const cached = this.cache.get(cacheKey);
 
@@ -151,14 +158,21 @@ export class SchoolsService {
 		return "School";
 	}
 
-	private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+	private calculateDistance(
+		lat1: number,
+		lon1: number,
+		lat2: number,
+		lon2: number,
+	): number {
 		const R = 6_371_000; // Earth's radius in meters
 		const φ1 = (lat1 * Math.PI) / 180;
 		const φ2 = (lat2 * Math.PI) / 180;
 		const Δφ = ((lat2 - lat1) * Math.PI) / 180;
 		const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-		const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+		const a =
+			Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+			Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
 		return R * c;

@@ -31,8 +31,9 @@ export default function ReviewRequestEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				We hope you're enjoying your recently completed service! Your feedback is incredibly valuable to us and helps
-				other customers make informed decisions.
+				We hope you're enjoying your recently completed service! Your feedback
+				is incredibly valuable to us and helps other customers make informed
+				decisions.
 			</Text>
 
 			<Card style={serviceCard}>
@@ -57,8 +58,12 @@ export default function ReviewRequestEmail({
 				<div style={starsContainer}>
 					<Text style={starsText}>⭐ ⭐ ⭐ ⭐ ⭐</Text>
 				</div>
-				<Text style={reviewPrompt}>Did {technicianName} provide excellent service?</Text>
-				<Text style={reviewSubtext}>It only takes a minute to share your experience</Text>
+				<Text style={reviewPrompt}>
+					Did {technicianName} provide excellent service?
+				</Text>
+				<Text style={reviewSubtext}>
+					It only takes a minute to share your experience
+				</Text>
 			</Card>
 
 			<div style={buttonContainer}>
@@ -70,12 +75,17 @@ export default function ReviewRequestEmail({
 				<ul style={list}>
 					<li style={listItem}>Recognize and reward our best technicians</li>
 					<li style={listItem}>Improve our services based on your feedback</li>
-					<li style={listItem}>Help neighbors find reliable service providers</li>
+					<li style={listItem}>
+						Help neighbors find reliable service providers
+					</li>
 					<li style={listItem}>Grow our small business in the community</li>
 				</ul>
 			</Card>
 
-			<Text style={thankYouText}>Thank you for choosing Thorbis and for taking the time to share your experience!</Text>
+			<Text style={thankYouText}>
+				Thank you for choosing Thorbis and for taking the time to share your
+				experience!
+			</Text>
 		</BaseLayout>
 	);
 }
@@ -128,7 +138,8 @@ const detailValue = {
 };
 
 const reviewCard = {
-	background: "linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
+	background:
+		"linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
 	borderRadius: "12px",
 	padding: "40px",
 	margin: "24px 0",

@@ -3,7 +3,10 @@
 import { ClipboardList, Users, Workflow } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
-import { getTeamSchedulingRules, updateTeamSchedulingRules } from "@/actions/settings";
+import {
+	getTeamSchedulingRules,
+	updateTeamSchedulingRules,
+} from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
@@ -14,7 +17,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -29,30 +38,51 @@ type TeamSchedulingClientProps = {
 	initialSettings: Partial<TeamSchedulingSettingsState> | null;
 };
 
-export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<TeamSchedulingSettingsState>({
-			getter: getTeamSchedulingRules,
-			setter: updateTeamSchedulingRules,
-			initialState: DEFAULT_TEAM_SCHEDULING_SETTINGS,
-			settingsName: "team scheduling",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapTeamSchedulingSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("maxJobsPerDay", state.maxJobsPerDay.toString());
-				formData.append("maxJobsPerWeek", state.maxJobsPerWeek.toString());
-				formData.append("allowOvertime", state.allowOvertime.toString());
-				formData.append("preferSameTechnician", state.preferSameTechnician.toString());
-				formData.append("balanceWorkload", state.balanceWorkload.toString());
-				formData.append("optimizeForTravelTime", state.optimizeForTravelTime.toString());
-				formData.append("maxTravelTimeMinutes", state.maxTravelTimeMinutes.toString());
-				formData.append("requireBreaks", state.requireBreaks.toString());
-				formData.append("breakAfterHours", state.breakAfterHours.toString());
-				formData.append("breakDurationMinutes", state.breakDurationMinutes.toString());
-				return formData;
-			},
-		});
+export function TeamSchedulingClient({
+	initialSettings,
+}: TeamSchedulingClientProps) {
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<TeamSchedulingSettingsState>({
+		getter: getTeamSchedulingRules,
+		setter: updateTeamSchedulingRules,
+		initialState: DEFAULT_TEAM_SCHEDULING_SETTINGS,
+		settingsName: "team scheduling",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapTeamSchedulingSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("maxJobsPerDay", state.maxJobsPerDay.toString());
+			formData.append("maxJobsPerWeek", state.maxJobsPerWeek.toString());
+			formData.append("allowOvertime", state.allowOvertime.toString());
+			formData.append(
+				"preferSameTechnician",
+				state.preferSameTechnician.toString(),
+			);
+			formData.append("balanceWorkload", state.balanceWorkload.toString());
+			formData.append(
+				"optimizeForTravelTime",
+				state.optimizeForTravelTime.toString(),
+			);
+			formData.append(
+				"maxTravelTimeMinutes",
+				state.maxTravelTimeMinutes.toString(),
+			);
+			formData.append("requireBreaks", state.requireBreaks.toString());
+			formData.append("breakAfterHours", state.breakAfterHours.toString());
+			formData.append(
+				"breakDurationMinutes",
+				state.breakDurationMinutes.toString(),
+			);
+			return formData;
+		},
+	});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {});
@@ -113,7 +143,9 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 						<Input
 							className="mt-2"
 							min={1}
-							onChange={(event) => updateSetting("maxJobsPerDay", Number(event.target.value))}
+							onChange={(event) =>
+								updateSetting("maxJobsPerDay", Number(event.target.value))
+							}
 							type="number"
 							value={settings.maxJobsPerDay}
 						/>
@@ -123,7 +155,9 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 						<Input
 							className="mt-2"
 							min={1}
-							onChange={(event) => updateSetting("maxJobsPerWeek", Number(event.target.value))}
+							onChange={(event) =>
+								updateSetting("maxJobsPerWeek", Number(event.target.value))
+							}
 							type="number"
 							value={settings.maxJobsPerWeek}
 						/>
@@ -131,11 +165,15 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 					<div className="flex items-center justify-between rounded-lg border p-3 md:col-span-2">
 						<div>
 							<p className="font-medium text-sm">Allow overtime</p>
-							<p className="text-muted-foreground text-xs">Permit scheduling beyond weekly cap when necessary.</p>
+							<p className="text-muted-foreground text-xs">
+								Permit scheduling beyond weekly cap when necessary.
+							</p>
 						</div>
 						<Switch
 							checked={settings.allowOvertime}
-							onCheckedChange={(checked) => updateSetting("allowOvertime", checked)}
+							onCheckedChange={(checked) =>
+								updateSetting("allowOvertime", checked)
+							}
 						/>
 					</div>
 				</CardContent>
@@ -147,7 +185,9 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 						<Workflow className="size-4" />
 						Assignment preferences
 					</CardTitle>
-					<CardDescription>Guide dispatch on who gets the next job</CardDescription>
+					<CardDescription>
+						Guide dispatch on who gets the next job
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{[
@@ -167,14 +207,28 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 							description: "Favor assignments that minimize drive time.",
 						},
 					].map((pref) => (
-						<div className="flex items-center justify-between rounded-lg border p-3" key={pref.key}>
+						<div
+							className="flex items-center justify-between rounded-lg border p-3"
+							key={pref.key}
+						>
 							<div>
 								<p className="font-medium text-sm">{pref.label}</p>
-								<p className="text-muted-foreground text-xs">{pref.description}</p>
+								<p className="text-muted-foreground text-xs">
+									{pref.description}
+								</p>
 							</div>
 							<Switch
-								checked={settings[pref.key as keyof TeamSchedulingSettingsState] as boolean}
-								onCheckedChange={(checked) => updateSetting(pref.key as keyof TeamSchedulingSettingsState, checked)}
+								checked={
+									settings[
+										pref.key as keyof TeamSchedulingSettingsState
+									] as boolean
+								}
+								onCheckedChange={(checked) =>
+									updateSetting(
+										pref.key as keyof TeamSchedulingSettingsState,
+										checked,
+									)
+								}
 							/>
 						</div>
 					))}
@@ -183,7 +237,12 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 						<Input
 							className="mt-2 w-32"
 							min={0}
-							onChange={(event) => updateSetting("maxTravelTimeMinutes", Number(event.target.value))}
+							onChange={(event) =>
+								updateSetting(
+									"maxTravelTimeMinutes",
+									Number(event.target.value),
+								)
+							}
 							type="number"
 							value={settings.maxTravelTimeMinutes}
 						/>
@@ -203,11 +262,15 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 					<div className="flex items-center justify-between rounded-lg border p-3">
 						<div>
 							<p className="font-medium text-sm">Require breaks</p>
-							<p className="text-muted-foreground text-xs">Automatically insert breaks into heavy schedules.</p>
+							<p className="text-muted-foreground text-xs">
+								Automatically insert breaks into heavy schedules.
+							</p>
 						</div>
 						<Switch
 							checked={settings.requireBreaks}
-							onCheckedChange={(checked) => updateSetting("requireBreaks", checked)}
+							onCheckedChange={(checked) =>
+								updateSetting("requireBreaks", checked)
+							}
 						/>
 					</div>
 					{settings.requireBreaks && (
@@ -217,7 +280,9 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 								<Input
 									className="mt-2 w-32"
 									min={1}
-									onChange={(event) => updateSetting("breakAfterHours", Number(event.target.value))}
+									onChange={(event) =>
+										updateSetting("breakAfterHours", Number(event.target.value))
+									}
 									type="number"
 									value={settings.breakAfterHours}
 								/>
@@ -227,7 +292,12 @@ export function TeamSchedulingClient({ initialSettings }: TeamSchedulingClientPr
 								<Input
 									className="mt-2 w-32"
 									min={5}
-									onChange={(event) => updateSetting("breakDurationMinutes", Number(event.target.value))}
+									onChange={(event) =>
+										updateSetting(
+											"breakDurationMinutes",
+											Number(event.target.value),
+										)
+									}
 									type="number"
 									value={settings.breakDurationMinutes}
 								/>

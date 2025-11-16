@@ -20,7 +20,12 @@ import { Phone, PhoneOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 type CallIndicatorBadgeProps = {
@@ -95,7 +100,10 @@ export function CallIndicatorBadge({
 
 	return (
 		<div
-			className={cn("fixed z-50 transition-all duration-200", positionClasses[position])}
+			className={cn(
+				"fixed z-50 transition-all duration-200",
+				positionClasses[position],
+			)}
 			onContextMenu={handleContextMenu}
 		>
 			<TooltipProvider>
@@ -107,7 +115,7 @@ export function CallIndicatorBadge({
 								"rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5",
 								"shadow-lg shadow-primary/20 backdrop-blur-sm",
 								"transition-all duration-300 hover:scale-105 hover:border-primary/50 hover:shadow-primary/30 hover:shadow-xl",
-								"animate-pulse-slow"
+								"animate-pulse-slow",
 							)}
 							onClick={onFocusPopOut}
 						>
@@ -123,9 +131,15 @@ export function CallIndicatorBadge({
 
 								{/* Call info */}
 								<div className="flex flex-col gap-1">
-									<div className="font-semibold text-foreground text-sm">{customerName}</div>
-									<div className="text-muted-foreground text-xs">{customerPhone}</div>
-									<div className="font-bold font-mono text-primary text-xs">{formatDuration(displayDuration)}</div>
+									<div className="font-semibold text-foreground text-sm">
+										{customerName}
+									</div>
+									<div className="text-muted-foreground text-xs">
+										{customerPhone}
+									</div>
+									<div className="font-bold font-mono text-primary text-xs">
+										{formatDuration(displayDuration)}
+									</div>
 								</div>
 
 								{/* Close button */}
@@ -146,8 +160,12 @@ export function CallIndicatorBadge({
 					<TooltipContent className="max-w-xs" side="left">
 						<div className="space-y-2">
 							<p className="font-semibold">Active Call (Pop-out Window)</p>
-							<p className="text-muted-foreground text-xs">Click to bring window to front</p>
-							<p className="text-muted-foreground text-xs">Right-click or click X to return to main window</p>
+							<p className="text-muted-foreground text-xs">
+								Click to bring window to front
+							</p>
+							<p className="text-muted-foreground text-xs">
+								Right-click or click X to return to main window
+							</p>
 						</div>
 					</TooltipContent>
 				</Tooltip>

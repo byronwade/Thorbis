@@ -28,7 +28,9 @@ type ServiceAgreementDetailDataProps = {
 	agreementId: string;
 };
 
-export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreementDetailDataProps) {
+export async function ServiceAgreementDetailData({
+	agreementId,
+}: ServiceAgreementDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -81,8 +83,12 @@ export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreeme
 	}
 
 	// Get related data
-	const customer = Array.isArray(agreement.customer) ? agreement.customer[0] : agreement.customer;
-	const property = Array.isArray(agreement.property) ? agreement.property[0] : agreement.property;
+	const customer = Array.isArray(agreement.customer)
+		? agreement.customer[0]
+		: agreement.customer;
+	const property = Array.isArray(agreement.property)
+		? agreement.property[0]
+		: agreement.property;
 
 	// Fetch all related data in parallel
 	const [
@@ -98,7 +104,9 @@ export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreeme
 			.from("invoices")
 			.select("id, invoice_number, total_amount, status, created_at")
 			.eq("company_id", activeCompanyId)
-			.or(`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`)
+			.or(
+				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`,
+			)
 			.order("created_at", { ascending: false })
 			.limit(20),
 		// Related jobs
@@ -106,12 +114,18 @@ export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreeme
 			.from("jobs")
 			.select("id, job_number, title, status, completed_at")
 			.eq("company_id", activeCompanyId)
-			.or(`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`)
+			.or(
+				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`,
+			)
 			.order("created_at", { ascending: false })
 			.limit(20),
 		// Equipment covered
 		agreement.property_id
-			? supabase.from("equipment").select("*").eq("property_id", agreement.property_id).is("deleted_at", null)
+			? supabase
+					.from("equipment")
+					.select("*")
+					.eq("property_id", agreement.property_id)
+					.is("deleted_at", null)
 			: Promise.resolve({ data: [], error: null }),
 		// Activity log
 		supabase
@@ -151,9 +165,14 @@ export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreeme
 	};
 
 	// Calculate metrics
-	const totalRevenue = (invoices || []).reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
+	const totalRevenue = (invoices || []).reduce(
+		(sum, inv) => sum + (inv.total_amount || 0),
+		0,
+	);
 	const completedJobs = (jobs || []).filter((j) => j.completed_at).length;
-	const activeJobs = (jobs || []).filter((j) => j.status === "in_progress").length;
+	const activeJobs = (jobs || []).filter(
+		(j) => j.status === "in_progress",
+	).length;
 
 	const stats: StatCard[] = [
 		{

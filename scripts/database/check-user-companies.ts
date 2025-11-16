@@ -38,7 +38,8 @@ async function checkUserCompanies() {
 		const userEmail = "bcw1995@gmail.com";
 
 		// Find user by email
-		const { data: authUsers, error: userError } = await supabase.auth.admin.listUsers();
+		const { data: authUsers, error: userError } =
+			await supabase.auth.admin.listUsers();
 
 		if (userError) {
 			console.error("Error fetching users:", userError);
@@ -99,16 +100,21 @@ async function checkUserCompanies() {
 			console.log(`  Deleted: ${company.deleted_at || "no"}`);
 			console.log(`  Team member records: ${memberships.length}`);
 			memberships.forEach((m, idx) => {
-				console.log(`    ${idx + 1}. team_member_id: ${m.id}, status: ${m.status}`);
+				console.log(
+					`    ${idx + 1}. team_member_id: ${m.id}, status: ${m.status}`,
+				);
 			});
 		});
 
 		// Check active companies (not archived)
 		const activeMemberships = typedMemberships.filter(
-			(membership) => membership.status === "active" && !membership.companies.deleted_at
+			(membership) =>
+				membership.status === "active" && !membership.companies.deleted_at,
 		);
 
-		console.log(`\n\nActive companies (not archived): ${activeMemberships.length}`);
+		console.log(
+			`\n\nActive companies (not archived): ${activeMemberships.length}`,
+		);
 		const activeCompanyMap = new Map<string, CompanyRecord>();
 		for (const membership of activeMemberships) {
 			const companyId = membership.companies.id;
@@ -119,7 +125,9 @@ async function checkUserCompanies() {
 
 		console.log(`Unique active companies: ${activeCompanyMap.size}`);
 		activeCompanyMap.forEach((company, companyId) => {
-			console.log(`  - ${company.name} (${companyId}): ${company.stripe_subscription_status || "null"}`);
+			console.log(
+				`  - ${company.name} (${companyId}): ${company.stripe_subscription_status || "null"}`,
+			);
 		});
 	} catch (error) {
 		console.error("Unexpected error:", error);

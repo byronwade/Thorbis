@@ -30,7 +30,8 @@ export async function LeadsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Lead Capture</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Automatically capture leads from your website, phone calls, and marketing campaigns
+							Automatically capture leads from your website, phone calls, and
+							marketing campaigns
 						</p>
 					</div>
 
@@ -41,7 +42,8 @@ export async function LeadsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Lead Scoring</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Prioritize your best leads with AI-powered scoring and qualification
+							Prioritize your best leads with AI-powered scoring and
+							qualification
 						</p>
 					</div>
 
@@ -60,7 +62,9 @@ export async function LeadsData() {
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Want Early Access?</h3>
-					<p className="mb-6 text-muted-foreground">Be the first to know when Lead Management launches</p>
+					<p className="mb-6 text-muted-foreground">
+						Be the first to know when Lead Management launches
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

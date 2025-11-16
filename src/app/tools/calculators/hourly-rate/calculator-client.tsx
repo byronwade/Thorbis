@@ -15,7 +15,12 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAnalytics, useFeatureTracking } from "@/lib/analytics";
 
 const CALCULATION_TRACKING_DEBOUNCE_MS = 1000;
@@ -162,7 +167,8 @@ export default function HonestHourlyRateCalculator() {
 		const billableHoursSoldPct = toPercent(inputs.billableHoursSoldPercent);
 
 		const totalWorkDaysPerYearRaw =
-			workDaysPerWeek * weeksPerYear - (holidaysPerYear + vacationDaysPerYear + personalDaysPerYear);
+			workDaysPerWeek * weeksPerYear -
+			(holidaysPerYear + vacationDaysPerYear + personalDaysPerYear);
 		const totalWorkDaysPerYear = Math.max(0, totalWorkDaysPerYearRaw);
 		const totalWorkHoursPerYear = totalWorkDaysPerYear * dailyWorkHours;
 		const availableBillableHours = totalWorkHoursPerYear * serviceVehicles;
@@ -173,7 +179,9 @@ export default function HonestHourlyRateCalculator() {
 		const apprenticesHelpers = toNumber(inputs.apprenticesHelpers);
 		const officeSalaries = toNumber(inputs.officeSalaries);
 		const employerTaxRate = toPercent(inputs.employerTaxPercent);
-		const employerTaxesAnnual = (ownerPay + plumber + apprenticesHelpers + officeSalaries) * employerTaxRate;
+		const employerTaxesAnnual =
+			(ownerPay + plumber + apprenticesHelpers + officeSalaries) *
+			employerTaxRate;
 
 		const operatingExpenses = {
 			ownerPay,
@@ -205,9 +213,13 @@ export default function HonestHourlyRateCalculator() {
 			otherExpenses: toNumber(inputs.otherExpenses),
 		};
 
-		const hourlyFromAnnual = (annual: number) => (annualBillableHours > 0 ? annual / annualBillableHours : 0);
+		const hourlyFromAnnual = (annual: number) =>
+			annualBillableHours > 0 ? annual / annualBillableHours : 0;
 
-		const totalOperatingAnnual = Object.values(operatingExpenses).reduce((sum, val) => sum + val, 0);
+		const totalOperatingAnnual = Object.values(operatingExpenses).reduce(
+			(sum, val) => sum + val,
+			0,
+		);
 		const totalOperatingHourly = hourlyFromAnnual(totalOperatingAnnual);
 
 		const growthExpenses = {
@@ -217,17 +229,23 @@ export default function HonestHourlyRateCalculator() {
 			other: toNumber(inputs.growthOther),
 		};
 
-		const totalGrowthAnnual = Object.values(growthExpenses).reduce((sum, val) => sum + val, 0);
+		const totalGrowthAnnual = Object.values(growthExpenses).reduce(
+			(sum, val) => sum + val,
+			0,
+		);
 		const totalGrowthHourly = hourlyFromAnnual(totalGrowthAnnual);
 
 		const totalExpensesAnnual = totalOperatingAnnual + totalGrowthAnnual;
 		const totalExpensesHourly = totalOperatingHourly + totalGrowthHourly;
 		const hourlyExpenseRate = totalExpensesHourly;
 		const profitPercent = toPercent(inputs.profitPercent);
-		const honestHourlyRate = profitPercent < 1 ? hourlyExpenseRate / (1 - profitPercent) : Number.NaN;
+		const honestHourlyRate =
+			profitPercent < 1 ? hourlyExpenseRate / (1 - profitPercent) : Number.NaN;
 
-		const dailyExpense = totalWorkDaysPerYear > 0 ? totalExpensesAnnual / totalWorkDaysPerYear : 0;
-		const dailyBillableHours = totalWorkDaysPerYear > 0 ? annualBillableHours / totalWorkDaysPerYear : 0;
+		const dailyExpense =
+			totalWorkDaysPerYear > 0 ? totalExpensesAnnual / totalWorkDaysPerYear : 0;
+		const dailyBillableHours =
+			totalWorkDaysPerYear > 0 ? annualBillableHours / totalWorkDaysPerYear : 0;
 		const dailyBreakEvenRevenue = dailyExpense;
 		const dailyRevenueCapacity = dailyBillableHours * honestHourlyRate;
 
@@ -267,7 +285,10 @@ export default function HonestHourlyRateCalculator() {
 
 	// Track calculator completion when a valid rate is calculated
 	useEffect(() => {
-		if (Number.isFinite(calculations.honestHourlyRate) && calculations.honestHourlyRate > 0) {
+		if (
+			Number.isFinite(calculations.honestHourlyRate) &&
+			calculations.honestHourlyRate > 0
+		) {
 			const timeoutId = setTimeout(() => {
 				track({
 					name: "calculator.used",
@@ -299,19 +320,21 @@ export default function HonestHourlyRateCalculator() {
 		track,
 	]);
 
-	const handleChange = (field: keyof InputState) => (e: React.ChangeEvent<HTMLInputElement>) => {
-		setInputs((prev) => ({
-			...prev,
-			[field]: e.target.value,
-		}));
-	};
+	const handleChange =
+		(field: keyof InputState) => (e: React.ChangeEvent<HTMLInputElement>) => {
+			setInputs((prev) => ({
+				...prev,
+				[field]: e.target.value,
+			}));
+		};
 
 	const _scrollToSection = (sectionId: string) => {
 		setActiveSection(sectionId);
 		const element = document.getElementById(sectionId);
 		if (element) {
 			const offset = 100;
-			const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+			const elementPosition =
+				element.getBoundingClientRect().top + window.pageYOffset;
 			window.scrollTo({
 				top: elementPosition - offset,
 				behavior: "smooth",
@@ -328,7 +351,15 @@ export default function HonestHourlyRateCalculator() {
 		}
 	};
 
-	const LabelWithTooltip = ({ htmlFor, label, tooltip }: { htmlFor: string; label: string; tooltip: string }) => (
+	const LabelWithTooltip = ({
+		htmlFor,
+		label,
+		tooltip,
+	}: {
+		htmlFor: string;
+		label: string;
+		tooltip: string;
+	}) => (
 		<div className="flex items-center gap-1.5">
 			<Label className="font-medium text-sm" htmlFor={htmlFor}>
 				{label}
@@ -366,8 +397,9 @@ export default function HonestHourlyRateCalculator() {
 								Free Tradesman Calculator
 							</h1>
 							<p className="mx-auto max-w-2xl text-pretty text-base text-muted-foreground leading-relaxed">
-								Calculate your honest hourly rate for your trades business. Factor in all expenses, capacity
-								constraints, and profit margins to price your services right and build a sustainable business.
+								Calculate your honest hourly rate for your trades business.
+								Factor in all expenses, capacity constraints, and profit margins
+								to price your services right and build a sustainable business.
 							</p>
 						</div>
 					</div>
@@ -385,7 +417,9 @@ export default function HonestHourlyRateCalculator() {
 									</div>
 									Work Schedule & Capacity
 								</h2>
-								<p className="mt-2 text-muted-foreground text-sm">Define your working hours and billable capacity</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									Define your working hours and billable capacity
+								</p>
 							</div>
 
 							<div className="space-y-6 rounded-lg bg-background p-6">
@@ -520,9 +554,12 @@ export default function HonestHourlyRateCalculator() {
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
-													Formula: (Work Days/Week × Weeks/Year) - (Holidays + Vacation + Personal Days)
-													<br />= ({inputs.workDaysPerWeek} × {inputs.weeksPerYear}) - ({inputs.holidaysPerYear} +{" "}
-													{inputs.vacationDaysPerYear} + {inputs.personalDaysPerYear})
+													Formula: (Work Days/Week × Weeks/Year) - (Holidays +
+													Vacation + Personal Days)
+													<br />= ({inputs.workDaysPerWeek} ×{" "}
+													{inputs.weeksPerYear}) - ({inputs.holidaysPerYear} +{" "}
+													{inputs.vacationDaysPerYear} +{" "}
+													{inputs.personalDaysPerYear})
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -543,7 +580,9 @@ export default function HonestHourlyRateCalculator() {
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Work Days/Year × Daily Work Hours
-													<br />= {formatNumber(calculations.totalWorkDaysPerYear)} × {inputs.dailyWorkHours}
+													<br />={" "}
+													{formatNumber(calculations.totalWorkDaysPerYear)} ×{" "}
+													{inputs.dailyWorkHours}
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -564,7 +603,9 @@ export default function HonestHourlyRateCalculator() {
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Work Hours/Year × Service Vehicles
-													<br />= {formatNumber(calculations.totalWorkHoursPerYear)} × {inputs.serviceVehicles}
+													<br />={" "}
+													{formatNumber(calculations.totalWorkHoursPerYear)} ×{" "}
+													{inputs.serviceVehicles}
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -584,9 +625,11 @@ export default function HonestHourlyRateCalculator() {
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
-													Formula: Available Billable Hours × (Billable Hours Sold % ÷ 100)
-													<br />= {formatNumber(calculations.availableBillableHours)} × (
-													{inputs.billableHoursSoldPercent}% ÷ 100)
+													Formula: Available Billable Hours × (Billable Hours
+													Sold % ÷ 100)
+													<br />={" "}
+													{formatNumber(calculations.availableBillableHours)} ×
+													({inputs.billableHoursSoldPercent}% ÷ 100)
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -605,7 +648,8 @@ export default function HonestHourlyRateCalculator() {
 									Business Expenses
 								</h2>
 								<p className="mt-2 text-muted-foreground text-sm">
-									Track all annual operating and growth expenses with hourly breakdowns
+									Track all annual operating and growth expenses with hourly
+									breakdowns
 								</p>
 							</div>
 
@@ -613,12 +657,16 @@ export default function HonestHourlyRateCalculator() {
 							<div className="rounded-lg bg-background p-6">
 								<div className="mb-4">
 									<h3 className="font-semibold text-lg">Operating Expenses</h3>
-									<p className="text-muted-foreground text-sm">Annual business expenses and hourly breakdown</p>
+									<p className="text-muted-foreground text-sm">
+										Annual business expenses and hourly breakdown
+									</p>
 								</div>
 								<div className="space-y-4">
 									{/* Personnel */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Personnel Costs</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Personnel Costs
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -698,16 +746,26 @@ export default function HonestHourlyRateCalculator() {
 																Employer Taxes
 																<Info className="h-3 w-3" />
 															</p>
-															<p className="mt-1 font-semibold">{formatCurrency(calculations.employerTaxesAnnual)}</p>
+															<p className="mt-1 font-semibold">
+																{formatCurrency(
+																	calculations.employerTaxesAnnual,
+																)}
+															</p>
 														</div>
 													</TooltipTrigger>
 													<TooltipContent>
 														<p className="text-xs">
-															Formula: (Owner Pay + Plumber + Apprentices + Office) × (Tax Rate ÷ 100)
-															<br />= ({formatCurrency(toNumber(inputs.ownerPay))} +{" "}
+															Formula: (Owner Pay + Plumber + Apprentices +
+															Office) × (Tax Rate ÷ 100)
+															<br />= (
+															{formatCurrency(toNumber(inputs.ownerPay))} +{" "}
 															{formatCurrency(toNumber(inputs.plumber))} +{" "}
-															{formatCurrency(toNumber(inputs.apprenticesHelpers))} +{" "}
-															{formatCurrency(toNumber(inputs.officeSalaries))}) × {inputs.employerTaxPercent}%
+															{formatCurrency(
+																toNumber(inputs.apprenticesHelpers),
+															)}{" "}
+															+{" "}
+															{formatCurrency(toNumber(inputs.officeSalaries))})
+															× {inputs.employerTaxPercent}%
 														</p>
 													</TooltipContent>
 												</Tooltip>
@@ -717,7 +775,9 @@ export default function HonestHourlyRateCalculator() {
 
 									{/* Insurance & Benefits */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Insurance & Benefits</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Insurance & Benefits
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -766,7 +826,9 @@ export default function HonestHourlyRateCalculator() {
 
 									{/* Vehicle Expenses */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Vehicle Expenses</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Vehicle Expenses
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -815,7 +877,9 @@ export default function HonestHourlyRateCalculator() {
 
 									{/* Office & Operations */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Office & Operations</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Office & Operations
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -906,7 +970,9 @@ export default function HonestHourlyRateCalculator() {
 
 									{/* Marketing & Professional */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Marketing & Professional Services</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Marketing & Professional Services
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -955,7 +1021,9 @@ export default function HonestHourlyRateCalculator() {
 
 									{/* Other Expenses */}
 									<div>
-										<h3 className="mb-3 font-semibold text-foreground text-sm">Other Expenses</h3>
+										<h3 className="mb-3 font-semibold text-foreground text-sm">
+											Other Expenses
+										</h3>
 										<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 											<div className="space-y-2">
 												<LabelWithTooltip
@@ -1074,7 +1142,9 @@ export default function HonestHourlyRateCalculator() {
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
-												<p className="text-xs">Sum of all operating expenses listed above.</p>
+												<p className="text-xs">
+													Sum of all operating expenses listed above.
+												</p>
 											</TooltipContent>
 										</Tooltip>
 									</div>
@@ -1093,8 +1163,10 @@ export default function HonestHourlyRateCalculator() {
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
-													Formula: Total Operating Annual ÷ Annual Billable Hours
-													<br />= {formatCurrency(calculations.totalOperatingAnnual)} ÷{" "}
+													Formula: Total Operating Annual ÷ Annual Billable
+													Hours
+													<br />={" "}
+													{formatCurrency(calculations.totalOperatingAnnual)} ÷{" "}
 													{formatNumber(calculations.annualBillableHours)}
 												</p>
 											</TooltipContent>
@@ -1110,8 +1182,12 @@ export default function HonestHourlyRateCalculator() {
 										<TrendingUp className="h-5 w-5" />
 									</div>
 									<div>
-										<h3 className="font-semibold text-lg">12-Month Growth Expenses</h3>
-										<p className="text-muted-foreground text-sm">Investment in business growth and expansion</p>
+										<h3 className="font-semibold text-lg">
+											12-Month Growth Expenses
+										</h3>
+										<p className="text-muted-foreground text-sm">
+											Investment in business growth and expansion
+										</p>
 									</div>
 								</div>
 								<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -1208,7 +1284,8 @@ export default function HonestHourlyRateCalculator() {
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Growth Annual ÷ Annual Billable Hours
-													<br />= {formatCurrency(calculations.totalGrowthAnnual)} ÷{" "}
+													<br />={" "}
+													{formatCurrency(calculations.totalGrowthAnnual)} ÷{" "}
 													{formatNumber(calculations.annualBillableHours)}
 												</p>
 											</TooltipContent>
@@ -1235,37 +1312,59 @@ export default function HonestHourlyRateCalculator() {
 							{/* Key Metrics Dashboard */}
 							<div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 								<div className="rounded-lg bg-muted/30 p-4">
-									<p className="mb-2 font-medium text-muted-foreground text-xs">Your Hourly Rate</p>
+									<p className="mb-2 font-medium text-muted-foreground text-xs">
+										Your Hourly Rate
+									</p>
 									<div className="font-bold text-2xl text-green-600 dark:text-green-500">
 										{Number.isFinite(calculations.honestHourlyRate)
 											? formatCurrency(calculations.honestHourlyRate)
 											: "—"}
 									</div>
-									<p className="mt-1 text-muted-foreground text-xs">With {inputs.profitPercent}% profit margin</p>
-								</div>
-
-								<div className="rounded-lg bg-muted/30 p-4">
-									<p className="mb-2 font-medium text-muted-foreground text-xs">Annual Billable Hours</p>
-									<div className="font-bold text-2xl">{formatNumber(calculations.annualBillableHours)}</div>
 									<p className="mt-1 text-muted-foreground text-xs">
-										{formatNumber(calculations.dailyBillableHours)} hrs/day average
+										With {inputs.profitPercent}% profit margin
 									</p>
 								</div>
 
 								<div className="rounded-lg bg-muted/30 p-4">
-									<p className="mb-2 font-medium text-muted-foreground text-xs">Total Annual Expenses</p>
-									<div className="font-bold text-2xl">{formatCurrency(calculations.totalExpensesAnnual)}</div>
-									<p className="mt-1 text-muted-foreground text-xs">{formatCurrency(calculations.dailyExpense)}/day</p>
+									<p className="mb-2 font-medium text-muted-foreground text-xs">
+										Annual Billable Hours
+									</p>
+									<div className="font-bold text-2xl">
+										{formatNumber(calculations.annualBillableHours)}
+									</div>
+									<p className="mt-1 text-muted-foreground text-xs">
+										{formatNumber(calculations.dailyBillableHours)} hrs/day
+										average
+									</p>
 								</div>
 
 								<div className="rounded-lg bg-muted/30 p-4">
-									<p className="mb-2 font-medium text-muted-foreground text-xs">Annual Revenue Target</p>
+									<p className="mb-2 font-medium text-muted-foreground text-xs">
+										Total Annual Expenses
+									</p>
+									<div className="font-bold text-2xl">
+										{formatCurrency(calculations.totalExpensesAnnual)}
+									</div>
+									<p className="mt-1 text-muted-foreground text-xs">
+										{formatCurrency(calculations.dailyExpense)}/day
+									</p>
+								</div>
+
+								<div className="rounded-lg bg-muted/30 p-4">
+									<p className="mb-2 font-medium text-muted-foreground text-xs">
+										Annual Revenue Target
+									</p>
 									<div className="font-bold text-2xl text-green-600 dark:text-green-500">
 										{Number.isFinite(calculations.honestHourlyRate)
-											? formatCurrency(calculations.honestHourlyRate * calculations.annualBillableHours)
+											? formatCurrency(
+													calculations.honestHourlyRate *
+														calculations.annualBillableHours,
+												)
 											: "—"}
 									</div>
-									<p className="mt-1 text-muted-foreground text-xs">At full capacity</p>
+									<p className="mt-1 text-muted-foreground text-xs">
+										At full capacity
+									</p>
 								</div>
 							</div>
 
@@ -1273,7 +1372,9 @@ export default function HonestHourlyRateCalculator() {
 							<div className="mb-6 rounded-lg bg-background p-6">
 								<div className="mb-4">
 									<h3 className="font-semibold text-lg">Expense Breakdown</h3>
-									<p className="text-muted-foreground text-sm">Where your money goes annually</p>
+									<p className="text-muted-foreground text-sm">
+										Where your money goes annually
+									</p>
 								</div>
 								<div className="space-y-4">
 									<div className="flex items-center justify-between border-border/50 border-b pb-3">
@@ -1284,10 +1385,16 @@ export default function HonestHourlyRateCalculator() {
 											</p>
 										</div>
 										<div className="text-right">
-											<p className="font-bold text-xl">{formatCurrency(calculations.totalOperatingAnnual)}</p>
+											<p className="font-bold text-xl">
+												{formatCurrency(calculations.totalOperatingAnnual)}
+											</p>
 											<p className="text-muted-foreground text-xs">
-												{((calculations.totalOperatingAnnual / calculations.totalExpensesAnnual) * 100).toFixed(1)}% of
-												total
+												{(
+													(calculations.totalOperatingAnnual /
+														calculations.totalExpensesAnnual) *
+													100
+												).toFixed(1)}
+												% of total
 											</p>
 										</div>
 									</div>
@@ -1300,10 +1407,16 @@ export default function HonestHourlyRateCalculator() {
 											</p>
 										</div>
 										<div className="text-right">
-											<p className="font-bold text-xl">{formatCurrency(calculations.totalGrowthAnnual)}</p>
+											<p className="font-bold text-xl">
+												{formatCurrency(calculations.totalGrowthAnnual)}
+											</p>
 											<p className="text-muted-foreground text-xs">
-												{((calculations.totalGrowthAnnual / calculations.totalExpensesAnnual) * 100).toFixed(1)}% of
-												total
+												{(
+													(calculations.totalGrowthAnnual /
+														calculations.totalExpensesAnnual) *
+													100
+												).toFixed(1)}
+												% of total
 											</p>
 										</div>
 									</div>
@@ -1316,8 +1429,12 @@ export default function HonestHourlyRateCalculator() {
 											</p>
 										</div>
 										<div className="text-right">
-											<p className="font-bold text-2xl">{formatCurrency(calculations.totalExpensesAnnual)}</p>
-											<p className="text-muted-foreground text-xs">Annual total</p>
+											<p className="font-bold text-2xl">
+												{formatCurrency(calculations.totalExpensesAnnual)}
+											</p>
+											<p className="text-muted-foreground text-xs">
+												Annual total
+											</p>
 										</div>
 									</div>
 								</div>
@@ -1328,23 +1445,31 @@ export default function HonestHourlyRateCalculator() {
 								<div className="rounded-lg bg-background p-6">
 									<div className="mb-4 flex items-center gap-2">
 										<DollarSign className="h-5 w-5" />
-										<h3 className="font-semibold text-base">Break-Even Analysis</h3>
+										<h3 className="font-semibold text-base">
+											Break-Even Analysis
+										</h3>
 									</div>
 									<div className="space-y-3">
 										<div>
-											<p className="text-muted-foreground text-sm">Hourly break-even rate</p>
+											<p className="text-muted-foreground text-sm">
+												Hourly break-even rate
+											</p>
 											<p className="font-bold text-2xl text-red-600 dark:text-red-500">
 												{formatCurrency(calculations.hourlyExpenseRate)}
 											</p>
 										</div>
 										<div>
-											<p className="text-muted-foreground text-sm">Daily break-even revenue</p>
+											<p className="text-muted-foreground text-sm">
+												Daily break-even revenue
+											</p>
 											<p className="font-bold text-2xl text-red-600 dark:text-red-500">
 												{formatCurrency(calculations.dailyBreakEvenRevenue)}
 											</p>
 										</div>
 										<div>
-											<p className="text-muted-foreground text-sm">Annual break-even revenue</p>
+											<p className="text-muted-foreground text-sm">
+												Annual break-even revenue
+											</p>
 											<p className="font-bold text-2xl text-red-600 dark:text-red-500">
 												{formatCurrency(calculations.totalExpensesAnnual)}
 											</p>
@@ -1355,32 +1480,47 @@ export default function HonestHourlyRateCalculator() {
 								<div className="rounded-lg bg-background p-6">
 									<div className="mb-4 flex items-center gap-2">
 										<TrendingUp className="h-5 w-5" />
-										<h3 className="font-semibold text-base">Profit Projections</h3>
+										<h3 className="font-semibold text-base">
+											Profit Projections
+										</h3>
 									</div>
 									<div className="space-y-3">
 										<div>
-											<p className="text-muted-foreground text-sm">Profit per billable hour</p>
-											<p className="font-bold text-2xl text-green-600 dark:text-green-500">
-												{Number.isFinite(calculations.honestHourlyRate)
-													? formatCurrency(calculations.honestHourlyRate - calculations.hourlyExpenseRate)
-													: "—"}
+											<p className="text-muted-foreground text-sm">
+												Profit per billable hour
 											</p>
-										</div>
-										<div>
-											<p className="text-muted-foreground text-sm">Daily profit potential</p>
-											<p className="font-bold text-2xl text-green-600 dark:text-green-500">
-												{Number.isFinite(calculations.dailyRevenueCapacity)
-													? formatCurrency(calculations.dailyRevenueCapacity - calculations.dailyExpense)
-													: "—"}
-											</p>
-										</div>
-										<div>
-											<p className="text-muted-foreground text-sm">Annual profit potential</p>
 											<p className="font-bold text-2xl text-green-600 dark:text-green-500">
 												{Number.isFinite(calculations.honestHourlyRate)
 													? formatCurrency(
-															calculations.honestHourlyRate * calculations.annualBillableHours -
-																calculations.totalExpensesAnnual
+															calculations.honestHourlyRate -
+																calculations.hourlyExpenseRate,
+														)
+													: "—"}
+											</p>
+										</div>
+										<div>
+											<p className="text-muted-foreground text-sm">
+												Daily profit potential
+											</p>
+											<p className="font-bold text-2xl text-green-600 dark:text-green-500">
+												{Number.isFinite(calculations.dailyRevenueCapacity)
+													? formatCurrency(
+															calculations.dailyRevenueCapacity -
+																calculations.dailyExpense,
+														)
+													: "—"}
+											</p>
+										</div>
+										<div>
+											<p className="text-muted-foreground text-sm">
+												Annual profit potential
+											</p>
+											<p className="font-bold text-2xl text-green-600 dark:text-green-500">
+												{Number.isFinite(calculations.honestHourlyRate)
+													? formatCurrency(
+															calculations.honestHourlyRate *
+																calculations.annualBillableHours -
+																calculations.totalExpensesAnnual,
 														)
 													: "—"}
 											</p>
@@ -1414,18 +1554,24 @@ export default function HonestHourlyRateCalculator() {
 														Daily Operating Cost
 														<Info className="h-3 w-3" />
 													</p>
-													<p className="mt-2 font-semibold text-2xl">{formatCurrency(calculations.dailyExpense)}</p>
-													<p className="mt-1 text-muted-foreground text-xs">Per working day</p>
+													<p className="mt-2 font-semibold text-2xl">
+														{formatCurrency(calculations.dailyExpense)}
+													</p>
+													<p className="mt-1 text-muted-foreground text-xs">
+														Per working day
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Annual Expenses ÷ Working Days Per Year
-													<br />= {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
+													<br />={" "}
+													{formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
 													{formatNumber(calculations.totalWorkDaysPerYear)}
 													<br />
 													<br />
-													This is how much your company spends every working day just to keep the doors open.
+													This is how much your company spends every working day
+													just to keep the doors open.
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -1442,7 +1588,9 @@ export default function HonestHourlyRateCalculator() {
 													<p className="mt-2 font-semibold text-2xl text-red-600 dark:text-red-500">
 														{formatCurrency(calculations.dailyBreakEvenRevenue)}
 													</p>
-													<p className="mt-1 text-muted-foreground text-xs">Minimum to cover costs</p>
+													<p className="mt-1 text-muted-foreground text-xs">
+														Minimum to cover costs
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
@@ -1451,7 +1599,8 @@ export default function HonestHourlyRateCalculator() {
 													<br />= {formatCurrency(calculations.dailyExpense)}
 													<br />
 													<br />
-													You must bill at least this amount each working day just to break even (zero profit).
+													You must bill at least this amount each working day
+													just to break even (zero profit).
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -1468,17 +1617,21 @@ export default function HonestHourlyRateCalculator() {
 													<p className="mt-2 font-semibold text-2xl">
 														{formatNumber(calculations.dailyBillableHours)} hrs
 													</p>
-													<p className="mt-1 text-muted-foreground text-xs">Average sold per day</p>
+													<p className="mt-1 text-muted-foreground text-xs">
+														Average sold per day
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Annual Billable Hours ÷ Working Days Per Year
-													<br />= {formatNumber(calculations.annualBillableHours)} ÷{" "}
+													<br />={" "}
+													{formatNumber(calculations.annualBillableHours)} ÷{" "}
 													{formatNumber(calculations.totalWorkDaysPerYear)}
 													<br />
 													<br />
-													This is the average number of billable hours your team sells each working day.
+													This is the average number of billable hours your team
+													sells each working day.
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -1494,21 +1647,27 @@ export default function HonestHourlyRateCalculator() {
 													</p>
 													<p className="mt-2 font-semibold text-2xl text-green-600 dark:text-green-500">
 														{Number.isFinite(calculations.dailyRevenueCapacity)
-															? formatCurrency(calculations.dailyRevenueCapacity)
+															? formatCurrency(
+																	calculations.dailyRevenueCapacity,
+																)
 															: "—"}
 													</p>
-													<p className="mt-1 text-muted-foreground text-xs">Target with profit margin</p>
+													<p className="mt-1 text-muted-foreground text-xs">
+														Target with profit margin
+													</p>
 												</div>
 											</TooltipTrigger>
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Daily Billable Hours × Honest Hourly Rate
-													<br />= {formatNumber(calculations.dailyBillableHours)} hrs ×{" "}
+													<br />={" "}
+													{formatNumber(calculations.dailyBillableHours)} hrs ×{" "}
 													{formatCurrency(calculations.honestHourlyRate)}
 													<br />
 													<br />
-													This is your target daily revenue when billing at your honest hourly rate, including your
-													desired profit margin.
+													This is your target daily revenue when billing at your
+													honest hourly rate, including your desired profit
+													margin.
 												</p>
 											</TooltipContent>
 										</Tooltip>
@@ -1521,32 +1680,45 @@ export default function HonestHourlyRateCalculator() {
 											<Info className="h-5 w-5" />
 										</div>
 										<div className="flex-1">
-											<h4 className="mb-2 font-semibold text-foreground">Understanding Your Daily Numbers</h4>
+											<h4 className="mb-2 font-semibold text-foreground">
+												Understanding Your Daily Numbers
+											</h4>
 											<div className="space-y-3 text-muted-foreground text-sm">
 												<p>
-													<strong className="text-foreground">Daily Operating Cost:</strong> Every working day, your
-													business spends{" "}
+													<strong className="text-foreground">
+														Daily Operating Cost:
+													</strong>{" "}
+													Every working day, your business spends{" "}
 													<span className="font-medium text-foreground">
 														{formatCurrency(calculations.dailyExpense)}
 													</span>{" "}
 													on expenses before earning a single dollar.
 												</p>
 												<p>
-													<strong className="text-foreground">Break-Even Point:</strong> You need to bill at least{" "}
+													<strong className="text-foreground">
+														Break-Even Point:
+													</strong>{" "}
+													You need to bill at least{" "}
 													<span className="font-medium text-red-600 dark:text-red-500">
 														{formatCurrency(calculations.dailyBreakEvenRevenue)}
 													</span>{" "}
 													each day just to cover costs with zero profit.
 												</p>
 												<p>
-													<strong className="text-foreground">Profit Target:</strong> To achieve your{" "}
-													{inputs.profitPercent}% profit margin, aim to bill{" "}
+													<strong className="text-foreground">
+														Profit Target:
+													</strong>{" "}
+													To achieve your {inputs.profitPercent}% profit margin,
+													aim to bill{" "}
 													<span className="font-medium text-green-600 dark:text-green-500">
 														{Number.isFinite(calculations.dailyRevenueCapacity)
-															? formatCurrency(calculations.dailyRevenueCapacity)
+															? formatCurrency(
+																	calculations.dailyRevenueCapacity,
+																)
 															: "—"}
 													</span>{" "}
-													daily ({formatNumber(calculations.dailyBillableHours)} billable hours at{" "}
+													daily ({formatNumber(calculations.dailyBillableHours)}{" "}
+													billable hours at{" "}
 													{formatCurrency(calculations.honestHourlyRate)}/hr).
 												</p>
 											</div>
@@ -1588,7 +1760,8 @@ export default function HonestHourlyRateCalculator() {
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Operating + Total Growth
-													<br />= {formatCurrency(calculations.totalOperatingAnnual)} +{" "}
+													<br />={" "}
+													{formatCurrency(calculations.totalOperatingAnnual)} +{" "}
 													{formatCurrency(calculations.totalGrowthAnnual)}
 												</p>
 											</TooltipContent>
@@ -1610,7 +1783,8 @@ export default function HonestHourlyRateCalculator() {
 											<TooltipContent>
 												<p className="text-xs">
 													Formula: Total Expenses Annual ÷ Annual Billable Hours
-													<br />= {formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
+													<br />={" "}
+													{formatCurrency(calculations.totalExpensesAnnual)} ÷{" "}
 													{formatNumber(calculations.annualBillableHours)}
 												</p>
 											</TooltipContent>
@@ -1645,20 +1819,23 @@ export default function HonestHourlyRateCalculator() {
 													: "—"}
 											</p>
 											<p className="mt-2 text-muted-foreground text-sm">
-												This rate covers all expenses and your desired profit margin
+												This rate covers all expenses and your desired profit
+												margin
 											</p>
 										</div>
 									</TooltipTrigger>
 									<TooltipContent className="max-w-sm">
 										<p className="text-xs leading-relaxed">
 											Formula: Hourly Expense Rate ÷ (1 - Profit Margin ÷ 100)
-											<br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷ (1 - {inputs.profitPercent}% ÷ 100)
+											<br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷
+											(1 - {inputs.profitPercent}% ÷ 100)
 											<br />= {formatCurrency(calculations.hourlyExpenseRate)} ÷{" "}
 											{(1 - toPercent(inputs.profitPercent)).toFixed(2)}
 											<br />
 											<br />
-											This ensures your hourly rate not only covers all expenses but also delivers your target profit
-											percentage on each billable hour.
+											This ensures your hourly rate not only covers all expenses
+											but also delivers your target profit percentage on each
+											billable hour.
 										</p>
 									</TooltipContent>
 								</Tooltip>
@@ -1669,16 +1846,28 @@ export default function HonestHourlyRateCalculator() {
 										<table className="w-full">
 											<thead className="bg-muted/50">
 												<tr>
-													<th className="px-4 py-3 text-left font-medium text-sm">Time Period</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Expenses</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Revenue (Full Capacity)</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Profit</th>
-													<th className="px-4 py-3 text-right font-medium text-sm">Profit Margin</th>
+													<th className="px-4 py-3 text-left font-medium text-sm">
+														Time Period
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Expenses
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Revenue (Full Capacity)
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Profit
+													</th>
+													<th className="px-4 py-3 text-right font-medium text-sm">
+														Profit Margin
+													</th>
 												</tr>
 											</thead>
 											<tbody className="divide-y divide-border/30">
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Per Hour</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Per Hour
+													</td>
 													<td className="px-4 py-3 text-right text-sm">
 														{formatCurrency(calculations.hourlyExpenseRate)}
 													</td>
@@ -1687,65 +1876,105 @@ export default function HonestHourlyRateCalculator() {
 													</td>
 													<td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
-															? formatCurrency(calculations.honestHourlyRate - calculations.hourlyExpenseRate)
+															? formatCurrency(
+																	calculations.honestHourlyRate -
+																		calculations.hourlyExpenseRate,
+																)
 															: "—"}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{inputs.profitPercent}%</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{inputs.profitPercent}%
+													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Per Day</td>
-													<td className="px-4 py-3 text-right text-sm">{formatCurrency(calculations.dailyExpense)}</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Per Day
+													</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{formatCurrency(calculations.dailyExpense)}
+													</td>
 													<td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.dailyRevenueCapacity)
-															? formatCurrency(calculations.dailyRevenueCapacity)
+															? formatCurrency(
+																	calculations.dailyRevenueCapacity,
+																)
 															: "—"}
 													</td>
 													<td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.dailyRevenueCapacity)
-															? formatCurrency(calculations.dailyRevenueCapacity - calculations.dailyExpense)
+															? formatCurrency(
+																	calculations.dailyRevenueCapacity -
+																		calculations.dailyExpense,
+																)
 															: "—"}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{inputs.profitPercent}%</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{inputs.profitPercent}%
+													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Per Week</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Per Week
+													</td>
 													<td className="px-4 py-3 text-right text-sm">
-														{formatCurrency(calculations.totalExpensesAnnual / 52)}
+														{formatCurrency(
+															calculations.totalExpensesAnnual / 52,
+														)}
 													</td>
 													<td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
-															? formatCurrency((calculations.honestHourlyRate * calculations.annualBillableHours) / 52)
+															? formatCurrency(
+																	(calculations.honestHourlyRate *
+																		calculations.annualBillableHours) /
+																		52,
+																)
 															: "—"}
 													</td>
 													<td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
 															? formatCurrency(
-																	(calculations.honestHourlyRate * calculations.annualBillableHours) / 52 -
-																		calculations.totalExpensesAnnual / 52
+																	(calculations.honestHourlyRate *
+																		calculations.annualBillableHours) /
+																		52 -
+																		calculations.totalExpensesAnnual / 52,
 																)
 															: "—"}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{inputs.profitPercent}%</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{inputs.profitPercent}%
+													</td>
 												</tr>
 												<tr className="hover:bg-muted/20">
-													<td className="px-4 py-3 font-medium text-sm">Per Month</td>
+													<td className="px-4 py-3 font-medium text-sm">
+														Per Month
+													</td>
 													<td className="px-4 py-3 text-right text-sm">
-														{formatCurrency(calculations.totalExpensesAnnual / 12)}
+														{formatCurrency(
+															calculations.totalExpensesAnnual / 12,
+														)}
 													</td>
 													<td className="px-4 py-3 text-right font-medium text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
-															? formatCurrency((calculations.honestHourlyRate * calculations.annualBillableHours) / 12)
+															? formatCurrency(
+																	(calculations.honestHourlyRate *
+																		calculations.annualBillableHours) /
+																		12,
+																)
 															: "—"}
 													</td>
 													<td className="px-4 py-3 text-right text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
 															? formatCurrency(
-																	(calculations.honestHourlyRate * calculations.annualBillableHours) / 12 -
-																		calculations.totalExpensesAnnual / 12
+																	(calculations.honestHourlyRate *
+																		calculations.annualBillableHours) /
+																		12 -
+																		calculations.totalExpensesAnnual / 12,
 																)
 															: "—"}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{inputs.profitPercent}%</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{inputs.profitPercent}%
+													</td>
 												</tr>
 												<tr className="bg-muted/50 font-semibold">
 													<td className="px-4 py-3 text-sm">Per Year</td>
@@ -1754,18 +1983,24 @@ export default function HonestHourlyRateCalculator() {
 													</td>
 													<td className="px-4 py-3 text-right font-bold text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
-															? formatCurrency(calculations.honestHourlyRate * calculations.annualBillableHours)
+															? formatCurrency(
+																	calculations.honestHourlyRate *
+																		calculations.annualBillableHours,
+																)
 															: "—"}
 													</td>
 													<td className="px-4 py-3 text-right font-bold text-green-600 text-sm dark:text-green-500">
 														{Number.isFinite(calculations.honestHourlyRate)
 															? formatCurrency(
-																	calculations.honestHourlyRate * calculations.annualBillableHours -
-																		calculations.totalExpensesAnnual
+																	calculations.honestHourlyRate *
+																		calculations.annualBillableHours -
+																		calculations.totalExpensesAnnual,
 																)
 															: "—"}
 													</td>
-													<td className="px-4 py-3 text-right text-sm">{inputs.profitPercent}%</td>
+													<td className="px-4 py-3 text-right text-sm">
+														{inputs.profitPercent}%
+													</td>
 												</tr>
 											</tbody>
 										</table>

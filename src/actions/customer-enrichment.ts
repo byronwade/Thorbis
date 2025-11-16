@@ -19,10 +19,16 @@ import {
 	assertExists,
 	withErrorHandling,
 } from "@/lib/errors/with-error-handling";
-import { type CustomerEnrichment, customerEnrichmentService } from "@/lib/services/customer-enrichment";
+import {
+	type CustomerEnrichment,
+	customerEnrichmentService,
+} from "@/lib/services/customer-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 type TeamMemberRecord = {
 	company_id: string;
@@ -94,11 +100,12 @@ const CUSTOMER_ENRICHMENT_SELECT = `
  */
 export async function enrichCustomerData(
 	customerId: string,
-	forceRefresh = false
+	forceRefresh = false,
 ): Promise<ActionResult<CustomerEnrichment>> {
 	return await withErrorHandling(async () => {
 		const supabase = await getSupabaseServerClient();
-		const { teamMember, customer, cachedEnrichment } = await resolveCustomerContext(supabase, customerId, forceRefresh);
+		const { teamMember, customer, cachedEnrichment } =
+			await resolveCustomerContext(supabase, customerId, forceRefresh);
 
 		if (cachedEnrichment) {
 			return cachedEnrichment;
@@ -118,7 +125,10 @@ export async function enrichCustomerData(
 		});
 
 		if (enrichmentResult.enrichmentStatus === "failed") {
-			throw new ActionError("Failed to enrich customer data from all sources", ERROR_CODES.SERVICE_INTEGRATION_ERROR);
+			throw new ActionError(
+				"Failed to enrich customer data from all sources",
+				ERROR_CODES.SERVICE_INTEGRATION_ERROR,
+			);
 		}
 
 		await storeEnrichmentResult(supabase, customerId, enrichmentResult);
@@ -134,12 +144,19 @@ export async function enrichCustomerData(
 /**
  * Get cached enrichment data for a customer
  */
-export async function getEnrichmentData(customerId: string): Promise<ActionResult<EnrichmentGroupedData | null>> {
+export async function getEnrichmentData(
+	customerId: string,
+): Promise<ActionResult<EnrichmentGroupedData | null>> {
 	return await withErrorHandling(async () => {
 		const supabase = await getSupabaseServerClient();
 		const { teamMember } = await resolveCompanyMembership(supabase);
 
-		await fetchCustomerForCompany<{ id: string }>(supabase, customerId, teamMember.company_id, "id");
+		await fetchCustomerForCompany<{ id: string }>(
+			supabase,
+			customerId,
+			teamMember.company_id,
+			"id",
+		);
 
 		const { data: enrichmentRows, error } = await supabase
 			.from("customer_enrichment_data")
@@ -159,7 +176,9 @@ export async function getEnrichmentData(customerId: string): Promise<ActionResul
 /**
  * Refresh enrichment data (force refresh even if not expired)
  */
-export async function refreshEnrichment(customerId: string): Promise<ActionResult<CustomerEnrichment>> {
+export async function refreshEnrichment(
+	customerId: string,
+): Promise<ActionResult<CustomerEnrichment>> {
 	return await enrichCustomerData(customerId, true);
 }
 
@@ -188,7 +207,10 @@ export async function getEnrichmentUsageStats(): Promise<
 		});
 
 		if (error) {
-			throw new ActionError("Failed to fetch usage stats", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to fetch usage stats",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || [];
@@ -211,7 +233,11 @@ export async function checkEnrichmentQuota(): Promise<
 		const { teamMember } = await resolveCompanyMembership(supabase);
 
 		// Check if can enrich
-		const canEnrich = await assertCanEnrichCompany(supabase, teamMember.company_id, { throwOnLimit: false });
+		const canEnrich = await assertCanEnrichCompany(
+			supabase,
+			teamMember.company_id,
+			{ throwOnLimit: false },
+		);
 
 		// Get current usage
 		const currentMonth = getCurrentMonthStamp();
@@ -236,7 +262,9 @@ export async function checkEnrichmentQuota(): Promise<
 /**
  * Update enrichment tier limits (admin only)
  */
-export async function updateEnrichmentTier(tier: "free" | "pro" | "enterprise"): Promise<ActionResult<void>> {
+export async function updateEnrichmentTier(
+	tier: "free" | "pro" | "enterprise",
+): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {
 		const supabase = await getSupabaseServerClient();
 		const { teamMember } = await resolveCompanyMembership(supabase, {
@@ -245,7 +273,10 @@ export async function updateEnrichmentTier(tier: "free" | "pro" | "enterprise"):
 
 		// Check if user is admin/owner
 		if (!["owner", "admin"].includes(teamMember.role ?? "")) {
-			throw new ActionError("Only admins can update enrichment tier", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Only admins can update enrichment tier",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		const currentMonth = getCurrentMonthStamp();
@@ -259,7 +290,10 @@ export async function updateEnrichmentTier(tier: "free" | "pro" | "enterprise"):
 		});
 
 		if (error) {
-			throw new ActionError("Failed to update tier", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to update tier",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/subscriptions");
@@ -269,16 +303,24 @@ export async function updateEnrichmentTier(tier: "free" | "pro" | "enterprise"):
 /**
  * Delete enrichment data for a customer
  */
-export async function deleteEnrichmentData(customerId: string): Promise<ActionResult<void>> {
+export async function deleteEnrichmentData(
+	customerId: string,
+): Promise<ActionResult<void>> {
 	return await withErrorHandling(async () => {
 		const supabase = await getSupabaseServerClient();
 		await getAuthenticatedUserId(supabase);
 
 		// Delete enrichment data (RLS will ensure user has access)
-		const { error } = await supabase.from("customer_enrichment_data").delete().eq("customer_id", customerId);
+		const { error } = await supabase
+			.from("customer_enrichment_data")
+			.delete()
+			.eq("customer_id", customerId);
 
 		if (error) {
-			throw new ActionError("Failed to delete enrichment data", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to delete enrichment data",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath(`/dashboard/customers/${customerId}`);
@@ -288,12 +330,17 @@ export async function deleteEnrichmentData(customerId: string): Promise<ActionRe
 const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
 	const supabase = await createClient();
 	if (!supabase) {
-		throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+		throw new ActionError(
+			"Database connection failed",
+			ERROR_CODES.DB_CONNECTION_ERROR,
+		);
 	}
 	return supabase as SupabaseServerClient;
 };
 
-const getAuthenticatedUserId = async (supabase: SupabaseServerClient): Promise<string> => {
+const getAuthenticatedUserId = async (
+	supabase: SupabaseServerClient,
+): Promise<string> => {
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
@@ -303,17 +350,21 @@ const getAuthenticatedUserId = async (supabase: SupabaseServerClient): Promise<s
 
 const resolveCompanyMembership = async (
 	supabase: SupabaseServerClient,
-	options?: { includeRole?: boolean }
+	options?: { includeRole?: boolean },
 ): Promise<{ teamMember: TeamMemberRecord }> => {
 	const userId = await getAuthenticatedUserId(supabase);
-	const teamMember = await loadActiveTeamMember(supabase, userId, options?.includeRole ?? false);
+	const teamMember = await loadActiveTeamMember(
+		supabase,
+		userId,
+		options?.includeRole ?? false,
+	);
 	return { teamMember };
 };
 
 const loadActiveTeamMember = async (
 	supabase: SupabaseServerClient,
 	userId: string,
-	includeRole: boolean
+	includeRole: boolean,
 ): Promise<TeamMemberRecord> => {
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 	const activeCompanyId = await getActiveCompanyId();
@@ -333,7 +384,10 @@ const loadActiveTeamMember = async (
 		.returns<TeamMemberRecord>();
 
 	if (!data?.company_id) {
-		throw new ActionError("User not in active company", ERROR_CODES.AUTH_UNAUTHORIZED);
+		throw new ActionError(
+			"User not in active company",
+			ERROR_CODES.AUTH_UNAUTHORIZED,
+		);
 	}
 
 	return data as TeamMemberRecord;
@@ -343,7 +397,7 @@ const fetchCustomerForCompany = async <TData>(
 	supabase: SupabaseServerClient,
 	customerId: string,
 	companyId: string,
-	columns: string
+	columns: string,
 ): Promise<TData> => {
 	const { data, error } = await supabase
 		.from("customers")
@@ -355,7 +409,10 @@ const fetchCustomerForCompany = async <TData>(
 		.returns<TData>();
 
 	if (error) {
-		throw new ActionError("Customer not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+		throw new ActionError(
+			"Customer not found",
+			ERROR_CODES.DB_RECORD_NOT_FOUND,
+		);
 	}
 
 	assertExists(data, "Customer");
@@ -364,7 +421,7 @@ const fetchCustomerForCompany = async <TData>(
 
 const getValidCachedEnrichment = async (
 	supabase: SupabaseServerClient,
-	customerId: string
+	customerId: string,
 ): Promise<CustomerEnrichment | null> => {
 	const { data, error } = await supabase
 		.from("customer_enrichment_data")
@@ -388,20 +445,23 @@ const getValidCachedEnrichment = async (
 const assertCanEnrichCompany = async (
 	supabase: SupabaseServerClient,
 	companyId: string,
-	options?: { throwOnLimit?: boolean }
+	options?: { throwOnLimit?: boolean },
 ): Promise<boolean> => {
 	const { data, error } = await supabase.rpc("can_enrich_customer", {
 		p_company_id: companyId,
 	});
 
 	if (error) {
-		throw new ActionError("Failed to check enrichment quota", ERROR_CODES.DB_QUERY_ERROR);
+		throw new ActionError(
+			"Failed to check enrichment quota",
+			ERROR_CODES.DB_QUERY_ERROR,
+		);
 	}
 
 	if (!data && options?.throwOnLimit !== false) {
 		throw new ActionError(
 			"Enrichment limit reached for this month. Upgrade your plan for more enrichments.",
-			ERROR_CODES.OPERATION_NOT_ALLOWED
+			ERROR_CODES.OPERATION_NOT_ALLOWED,
 		);
 	}
 
@@ -411,7 +471,7 @@ const assertCanEnrichCompany = async (
 const storeEnrichmentResult = async (
 	supabase: SupabaseServerClient,
 	customerId: string,
-	enrichmentResult: CustomerEnrichment
+	enrichmentResult: CustomerEnrichment,
 ) => {
 	const { error } = await supabase.from("customer_enrichment_data").insert({
 		customer_id: customerId,
@@ -425,22 +485,33 @@ const storeEnrichmentResult = async (
 	});
 
 	if (error) {
-		throw new ActionError("Failed to store enrichment data", ERROR_CODES.DB_QUERY_ERROR);
+		throw new ActionError(
+			"Failed to store enrichment data",
+			ERROR_CODES.DB_QUERY_ERROR,
+		);
 	}
 };
 
-const incrementEnrichmentUsage = async (supabase: SupabaseServerClient, companyId: string) => {
+const incrementEnrichmentUsage = async (
+	supabase: SupabaseServerClient,
+	companyId: string,
+) => {
 	const { error } = await supabase.rpc("increment_enrichment_usage", {
 		p_company_id: companyId,
 		p_api_cost: 0,
 	});
 
 	if (error) {
-		throw new ActionError("Failed to update enrichment usage", ERROR_CODES.DB_QUERY_ERROR);
+		throw new ActionError(
+			"Failed to update enrichment usage",
+			ERROR_CODES.DB_QUERY_ERROR,
+		);
 	}
 };
 
-const buildEnrichmentGrouping = (rows: EnrichmentRecord[]): EnrichmentGroupedData => ({
+const buildEnrichmentGrouping = (
+	rows: EnrichmentRecord[],
+): EnrichmentGroupedData => ({
 	combined: rows.find((row) => row.data_type === "combined") ?? null,
 	person: rows.find((row) => row.data_type === "person") ?? null,
 	business: rows.find((row) => row.data_type === "business") ?? null,
@@ -454,7 +525,7 @@ const getCurrentMonthStamp = (date: Date = new Date()): string =>
 const resolveCustomerContext = async (
 	supabase: SupabaseServerClient,
 	customerId: string,
-	forceRefresh: boolean
+	forceRefresh: boolean,
 ): Promise<{
 	teamMember: TeamMemberRecord;
 	customer: CustomerForEnrichment;
@@ -465,10 +536,12 @@ const resolveCustomerContext = async (
 		supabase,
 		customerId,
 		teamMember.company_id,
-		CUSTOMER_ENRICHMENT_SELECT
+		CUSTOMER_ENRICHMENT_SELECT,
 	);
 
-	const cachedEnrichment = forceRefresh ? null : await getValidCachedEnrichment(supabase, customerId);
+	const cachedEnrichment = forceRefresh
+		? null
+		: await getValidCachedEnrichment(supabase, customerId);
 
 	if (!cachedEnrichment) {
 		await assertCanEnrichCompany(supabase, teamMember.company_id);

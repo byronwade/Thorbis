@@ -6,10 +6,22 @@ import { useCallback, useState } from "react";
 import { uploadDocument } from "@/actions/documents";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import type { PhotoCategory } from "./photo-types";
@@ -45,16 +57,26 @@ const ACCEPTED_FILE_TYPES = {
 	// Documents
 	"application/pdf": [".pdf"],
 	"application/msword": [".doc"],
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+		".docx",
+	],
 	"application/vnd.ms-excel": [".xls"],
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+		".xlsx",
+	],
 	"text/plain": [".txt"],
 	"text/csv": [".csv"],
 };
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB for job files
 
-export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className }: PhotoUploaderProps) {
+export function PhotoUploader({
+	jobId,
+	companyId,
+	onUpload,
+	onCancel,
+	className,
+}: PhotoUploaderProps) {
 	const { toast } = useToast();
 	const [isDragging, setIsDragging] = useState(false);
 	const [files, setFiles] = useState<PhotoFile[]>([]);
@@ -63,7 +85,8 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 
 	const generateId = () => Math.random().toString(36).substring(2, 15);
 
-	const isImageFile = (mimeType: string): boolean => mimeType.startsWith("image/");
+	const isImageFile = (mimeType: string): boolean =>
+		mimeType.startsWith("image/");
 
 	const validateFile = (file: File): string | null => {
 		// Check file type
@@ -116,7 +139,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 
 			setFiles((prev) => [...prev, ...newFiles]);
 		},
-		[toast, generateId, isImageFile, validateFile]
+		[toast, generateId, isImageFile, validateFile],
 	);
 
 	const handleDragEnter = useCallback((e: React.DragEvent) => {
@@ -145,7 +168,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 			const { files: droppedFiles } = e.dataTransfer;
 			processFiles(droppedFiles);
 		},
-		[processFiles]
+		[processFiles],
 	);
 
 	const handleFileInput = useCallback(
@@ -154,7 +177,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 			// Reset input value to allow selecting the same file again
 			e.target.value = "";
 		},
-		[processFiles]
+		[processFiles],
 	);
 
 	const removeFile = useCallback((id: string) => {
@@ -167,9 +190,14 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 		});
 	}, []);
 
-	const updateFileCategory = useCallback((id: string, category: PhotoCategory) => {
-		setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, category } : f)));
-	}, []);
+	const updateFileCategory = useCallback(
+		(id: string, category: PhotoCategory) => {
+			setFiles((prev) =>
+				prev.map((f) => (f.id === id ? { ...f, category } : f)),
+			);
+		},
+		[],
+	);
 
 	const updateFileCaption = useCallback((id: string, caption: string) => {
 		setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, caption } : f)));
@@ -233,7 +261,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 			// Show results
 			if (successCount > 0) {
 				toast.success(
-					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
+					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`,
 				);
 			}
 
@@ -259,7 +287,9 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 				onCancel?.();
 			}, 500);
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : "Failed to upload files");
+			toast.error(
+				error instanceof Error ? error.message : "Failed to upload files",
+			);
 			setIsUploading(false);
 			setUploadProgress(0);
 		}
@@ -305,8 +335,9 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 					Upload Photos & Documents
 				</CardTitle>
 				<CardDescription>
-					Add photos and documents to this job. Supported formats: Images (JPG, PNG, HEIC, WEBP, etc.), Documents (PDF,
-					DOC, DOCX, XLS, XLSX, TXT, CSV) up to 100MB
+					Add photos and documents to this job. Supported formats: Images (JPG,
+					PNG, HEIC, WEBP, etc.), Documents (PDF, DOC, DOCX, XLS, XLSX, TXT,
+					CSV) up to 100MB
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
@@ -314,7 +345,9 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 				<div
 					className={cn(
 						"relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors",
-						isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-muted-foreground/50"
+						isDragging
+							? "border-primary bg-primary/5"
+							: "border-muted-foreground/25 hover:border-muted-foreground/50",
 					)}
 					onDragEnter={handleDragEnter}
 					onDragLeave={handleDragLeave}
@@ -339,8 +372,12 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 							</div>
 						</div>
 						<div>
-							<p className="font-medium">Drag and drop files here, or click to browse</p>
-							<p className="text-muted-foreground text-sm">Images and documents up to 100MB</p>
+							<p className="font-medium">
+								Drag and drop files here, or click to browse
+							</p>
+							<p className="text-muted-foreground text-sm">
+								Images and documents up to 100MB
+							</p>
 						</div>
 					</div>
 				</div>
@@ -349,7 +386,9 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 				{files.length > 0 && (
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
-							<h3 className="font-medium text-sm">Selected Files ({files.length})</h3>
+							<h3 className="font-medium text-sm">
+								Selected Files ({files.length})
+							</h3>
 							<Button
 								onClick={() => {
 									files.forEach((file) => {
@@ -366,7 +405,10 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 
 						<div className="space-y-3">
 							{files.map((photoFile) => (
-								<div className="flex gap-4 rounded-lg border bg-muted/30 p-3" key={photoFile.id}>
+								<div
+									className="flex gap-4 rounded-lg border bg-muted/30 p-3"
+									key={photoFile.id}
+								>
 									{/* Preview */}
 									<div className="relative size-20 shrink-0 overflow-hidden rounded-md bg-muted">
 										{photoFile.isDocument ? (
@@ -374,7 +416,12 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 												<FileText className="size-8 text-muted-foreground" />
 											</div>
 										) : (
-											<Image alt={photoFile.file.name} className="object-cover" fill src={photoFile.preview} />
+											<Image
+												alt={photoFile.file.name}
+												className="object-cover"
+												fill
+												src={photoFile.preview}
+											/>
 										)}
 									</div>
 
@@ -382,24 +429,43 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 									<div className="flex flex-1 flex-col gap-2">
 										<div className="flex items-start justify-between gap-2">
 											<div className="flex-1">
-												<p className="truncate font-medium text-sm">{photoFile.file.name}</p>
-												<p className="text-muted-foreground text-xs">{formatFileSize(photoFile.file.size)}</p>
+												<p className="truncate font-medium text-sm">
+													{photoFile.file.name}
+												</p>
+												<p className="text-muted-foreground text-xs">
+													{formatFileSize(photoFile.file.size)}
+												</p>
 											</div>
-											<Button onClick={() => removeFile(photoFile.id)} size="sm" variant="ghost">
+											<Button
+												onClick={() => removeFile(photoFile.id)}
+												size="sm"
+												variant="ghost"
+											>
 												<X className="size-4" />
 											</Button>
 										</div>
 
 										{/* Category Select */}
 										<div className="flex items-center gap-2">
-											<Label className="text-xs" htmlFor={`category-${photoFile.id}`}>
+											<Label
+												className="text-xs"
+												htmlFor={`category-${photoFile.id}`}
+											>
 												Category:
 											</Label>
 											<Select
-												onValueChange={(value) => updateFileCategory(photoFile.id, value as PhotoCategory)}
+												onValueChange={(value) =>
+													updateFileCategory(
+														photoFile.id,
+														value as PhotoCategory,
+													)
+												}
 												value={photoFile.category}
 											>
-												<SelectTrigger className="h-8 w-[120px]" id={`category-${photoFile.id}`}>
+												<SelectTrigger
+													className="h-8 w-[120px]"
+													id={`category-${photoFile.id}`}
+												>
 													<SelectValue />
 												</SelectTrigger>
 												<SelectContent>
@@ -409,7 +475,12 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 													<SelectItem value="other">Other</SelectItem>
 												</SelectContent>
 											</Select>
-											<Badge className={cn("text-xs", getCategoryColor(photoFile.category))}>
+											<Badge
+												className={cn(
+													"text-xs",
+													getCategoryColor(photoFile.category),
+												)}
+											>
 												{photoFile.category}
 											</Badge>
 										</div>
@@ -417,7 +488,9 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 										{/* Caption Input */}
 										<Input
 											className="h-8 text-xs"
-											onChange={(e) => updateFileCaption(photoFile.id, e.target.value)}
+											onChange={(e) =>
+												updateFileCaption(photoFile.id, e.target.value)
+											}
 											placeholder="Add a caption (optional)"
 											value={photoFile.caption}
 										/>
@@ -436,17 +509,27 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 							<span className="font-medium">{uploadProgress}%</span>
 						</div>
 						<div className="h-2 overflow-hidden rounded-full bg-muted">
-							<div className="h-full bg-primary transition-all duration-300" style={{ width: `${uploadProgress}%` }} />
+							<div
+								className="h-full bg-primary transition-all duration-300"
+								style={{ width: `${uploadProgress}%` }}
+							/>
 						</div>
 					</div>
 				)}
 
 				{/* Actions */}
 				<div className="flex justify-end gap-2">
-					<Button disabled={isUploading} onClick={handleCancel} variant="outline">
+					<Button
+						disabled={isUploading}
+						onClick={handleCancel}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={files.length === 0 || isUploading} onClick={handleUpload}>
+					<Button
+						disabled={files.length === 0 || isUploading}
+						onClick={handleUpload}
+					>
 						{isUploading ? (
 							<>Uploading...</>
 						) : (

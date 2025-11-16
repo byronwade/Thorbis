@@ -8,8 +8,16 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
-import { type ActionResult, assertAuthenticated, withErrorHandling } from "@/lib/errors/with-error-handling";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
+import {
+	type ActionResult,
+	assertAuthenticated,
+	withErrorHandling,
+} from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
@@ -25,7 +33,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -36,7 +48,9 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 // ============================================================================
 
 const customerPreferenceSchema = z.object({
-	defaultContactMethod: z.enum(["email", "sms", "phone", "app"]).default("email"),
+	defaultContactMethod: z
+		.enum(["email", "sms", "phone", "app"])
+		.default("email"),
 	allowMarketingEmails: z.boolean().default(true),
 	allowMarketingSms: z.boolean().default(false),
 	requestFeedback: z.boolean().default(true),
@@ -47,11 +61,16 @@ const customerPreferenceSchema = z.object({
 	autoTagCustomers: z.boolean().default(false),
 });
 
-export async function updateCustomerPreferences(formData: FormData): Promise<ActionResult<void>> {
+export async function updateCustomerPreferences(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -67,27 +86,33 @@ export async function updateCustomerPreferences(formData: FormData): Promise<Act
 			allowMarketingSms: formData.get("allowMarketingSms") === "true",
 			requestFeedback: formData.get("requestFeedback") !== "false",
 			feedbackDelayHours: formData.get("feedbackDelayHours") || "24",
-			sendAppointmentReminders: formData.get("sendAppointmentReminders") !== "false",
+			sendAppointmentReminders:
+				formData.get("sendAppointmentReminders") !== "false",
 			reminderHoursBefore: formData.get("reminderHoursBefore") || "24",
 			requireServiceAddress: formData.get("requireServiceAddress") !== "false",
 			autoTagCustomers: formData.get("autoTagCustomers") === "true",
 		});
 
-		const { error } = await supabase.from("customer_preference_settings").upsert({
-			company_id: companyId,
-			default_contact_method: data.defaultContactMethod,
-			allow_marketing_emails: data.allowMarketingEmails,
-			allow_marketing_sms: data.allowMarketingSms,
-			request_feedback: data.requestFeedback,
-			feedback_delay_hours: data.feedbackDelayHours,
-			send_appointment_reminders: data.sendAppointmentReminders,
-			reminder_hours_before: data.reminderHoursBefore,
-			require_service_address: data.requireServiceAddress,
-			auto_tag_customers: data.autoTagCustomers,
-		});
+		const { error } = await supabase
+			.from("customer_preference_settings")
+			.upsert({
+				company_id: companyId,
+				default_contact_method: data.defaultContactMethod,
+				allow_marketing_emails: data.allowMarketingEmails,
+				allow_marketing_sms: data.allowMarketingSms,
+				request_feedback: data.requestFeedback,
+				feedback_delay_hours: data.feedbackDelayHours,
+				send_appointment_reminders: data.sendAppointmentReminders,
+				reminder_hours_before: data.reminderHoursBefore,
+				require_service_address: data.requireServiceAddress,
+				auto_tag_customers: data.autoTagCustomers,
+			});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update customer preferences"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update customer preferences"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/preferences");
@@ -98,7 +123,10 @@ export async function getCustomerPreferences(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -115,7 +143,10 @@ export async function getCustomerPreferences(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customer preferences"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch customer preferences"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -129,7 +160,15 @@ export async function getCustomerPreferences(): Promise<ActionResult<any>> {
 const customFieldSchema = z.object({
 	fieldName: z.string().min(1, "Field name is required"),
 	fieldKey: z.string().min(1, "Field key is required"),
-	fieldType: z.enum(["text", "number", "date", "boolean", "select", "multi_select", "textarea"]),
+	fieldType: z.enum([
+		"text",
+		"number",
+		"date",
+		"boolean",
+		"select",
+		"multi_select",
+		"textarea",
+	]),
 	fieldOptions: z.string().optional(), // JSON string
 	isRequired: z.boolean().default(false),
 	showInList: z.boolean().default(false),
@@ -137,11 +176,16 @@ const customFieldSchema = z.object({
 	isActive: z.boolean().default(true),
 });
 
-export async function createCustomField(formData: FormData): Promise<ActionResult<string>> {
+export async function createCustomField(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -168,7 +212,10 @@ export async function createCustomField(formData: FormData): Promise<ActionResul
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
 			} catch (_e) {
-				throw new ActionError("Invalid field options JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid field options JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -189,7 +236,10 @@ export async function createCustomField(formData: FormData): Promise<ActionResul
 			.single();
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("create custom field"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create custom field"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/custom-fields");
@@ -197,11 +247,17 @@ export async function createCustomField(formData: FormData): Promise<ActionResul
 	});
 }
 
-export async function updateCustomField(fieldId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updateCustomField(
+	fieldId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -227,7 +283,10 @@ export async function updateCustomField(fieldId: string, formData: FormData): Pr
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
 			} catch (_e) {
-				throw new ActionError("Invalid field options JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid field options JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -247,18 +306,26 @@ export async function updateCustomField(fieldId: string, formData: FormData): Pr
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update custom field"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update custom field"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/custom-fields");
 	});
 }
 
-export async function deleteCustomField(fieldId: string): Promise<ActionResult<void>> {
+export async function deleteCustomField(
+	fieldId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -275,7 +342,10 @@ export async function deleteCustomField(fieldId: string): Promise<ActionResult<v
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete custom field"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete custom field"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/custom-fields");
@@ -286,7 +356,10 @@ export async function getCustomFields(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -303,7 +376,10 @@ export async function getCustomFields(): Promise<ActionResult<any[]>> {
 			.order("display_order", { ascending: true });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch custom fields"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch custom fields"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || [];
@@ -325,11 +401,16 @@ const loyaltySettingsSchema = z.object({
 	notifyOnPointsEarned: z.boolean().default(true),
 });
 
-export async function updateLoyaltySettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateLoyaltySettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -355,7 +436,10 @@ export async function updateLoyaltySettings(formData: FormData): Promise<ActionR
 			try {
 				rewardTiersJson = JSON.parse(data.rewardTiers);
 			} catch (_e) {
-				throw new ActionError("Invalid reward tiers JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid reward tiers JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -372,7 +456,10 @@ export async function updateLoyaltySettings(formData: FormData): Promise<ActionR
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update loyalty settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update loyalty settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/loyalty");
@@ -383,7 +470,10 @@ export async function getLoyaltySettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -400,7 +490,10 @@ export async function getLoyaltySettings(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch loyalty settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch loyalty settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -423,11 +516,16 @@ const privacySettingsSchema = z.object({
 	enableDataExport: z.boolean().default(true),
 });
 
-export async function updatePrivacySettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePrivacySettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -439,10 +537,13 @@ export async function updatePrivacySettings(formData: FormData): Promise<ActionR
 
 		const data = privacySettingsSchema.parse({
 			dataRetentionYears: formData.get("dataRetentionYears") || "7",
-			autoDeleteInactiveCustomers: formData.get("autoDeleteInactiveCustomers") === "true",
+			autoDeleteInactiveCustomers:
+				formData.get("autoDeleteInactiveCustomers") === "true",
 			inactiveThresholdYears: formData.get("inactiveThresholdYears") || "3",
-			requireMarketingConsent: formData.get("requireMarketingConsent") !== "false",
-			requireDataProcessingConsent: formData.get("requireDataProcessingConsent") !== "false",
+			requireMarketingConsent:
+				formData.get("requireMarketingConsent") !== "false",
+			requireDataProcessingConsent:
+				formData.get("requireDataProcessingConsent") !== "false",
 			privacyPolicyUrl: formData.get("privacyPolicyUrl") || undefined,
 			termsOfServiceUrl: formData.get("termsOfServiceUrl") || undefined,
 			enableRightToDeletion: formData.get("enableRightToDeletion") !== "false",
@@ -463,7 +564,10 @@ export async function updatePrivacySettings(formData: FormData): Promise<ActionR
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update privacy settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update privacy settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customers/privacy");
@@ -474,7 +578,10 @@ export async function getPrivacySettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -491,7 +598,10 @@ export async function getPrivacySettings(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch privacy settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch privacy settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -523,11 +633,16 @@ const portalSettingsSchema = z.object({
 	notifyOnAppointment: z.boolean().default(true),
 });
 
-export async function updatePortalSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePortalSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -575,7 +690,10 @@ export async function updatePortalSettings(formData: FormData): Promise<ActionRe
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update portal settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update portal settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customer-portal");
@@ -586,7 +704,10 @@ export async function getPortalSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -603,7 +724,10 @@ export async function getPortalSettings(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch portal settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch portal settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -628,11 +752,16 @@ const intakeSettingsSchema = z.object({
 	welcomeEmailTemplateId: z.string().optional(),
 });
 
-export async function updateIntakeSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateIntakeSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -653,7 +782,8 @@ export async function updateIntakeSettings(formData: FormData): Promise<ActionRe
 			autoAssignTechnician: formData.get("autoAssignTechnician") === "true",
 			autoCreateJob: formData.get("autoCreateJob") === "true",
 			sendWelcomeEmail: formData.get("sendWelcomeEmail") !== "false",
-			welcomeEmailTemplateId: formData.get("welcomeEmailTemplateId") || undefined,
+			welcomeEmailTemplateId:
+				formData.get("welcomeEmailTemplateId") || undefined,
 		});
 
 		let customQuestionsJson = [];
@@ -661,7 +791,10 @@ export async function updateIntakeSettings(formData: FormData): Promise<ActionRe
 			try {
 				customQuestionsJson = JSON.parse(data.customQuestions);
 			} catch (_e) {
-				throw new ActionError("Invalid custom questions JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid custom questions JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -681,7 +814,10 @@ export async function updateIntakeSettings(formData: FormData): Promise<ActionRe
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update intake settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update intake settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/customer-intake");
@@ -692,7 +828,10 @@ export async function getIntakeSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -709,7 +848,10 @@ export async function getIntakeSettings(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch intake settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch intake settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;

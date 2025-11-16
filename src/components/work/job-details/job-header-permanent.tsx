@@ -1,6 +1,15 @@
 "use client";
 
-import { Calendar, ChevronRight, Clock, Mail, MapPin, Navigation, Pencil, Phone } from "lucide-react";
+import {
+	Calendar,
+	ChevronRight,
+	Clock,
+	Mail,
+	MapPin,
+	Navigation,
+	Pencil,
+	Phone,
+} from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -68,11 +77,13 @@ export function JobHeaderPermanent({
 	const statusConfig = {
 		quoted: {
 			label: "Quoted",
-			color: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
+			color:
+				"bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 		},
 		scheduled: {
 			label: "Scheduled",
-			color: "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+			color:
+				"bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
 		},
 		in_progress: {
 			label: "In Progress",
@@ -84,14 +95,16 @@ export function JobHeaderPermanent({
 		},
 		cancelled: {
 			label: "Cancelled",
-			color: "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
+			color:
+				"bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
 		},
 	};
 
 	const priorityConfig = {
 		low: {
 			label: "Low",
-			color: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
+			color:
+				"bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 		},
 		medium: {
 			label: "Medium",
@@ -103,7 +116,8 @@ export function JobHeaderPermanent({
 		},
 		urgent: {
 			label: "Urgent",
-			color: "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
+			color:
+				"bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
 		},
 	};
 
@@ -132,15 +146,21 @@ export function JobHeaderPermanent({
 	const directionsUrl = getDirectionsUrl();
 
 	// Get customer display name
-	const customerName = customer ? `${customer.first_name} ${customer.last_name}` : "Unknown Customer";
+	const customerName = customer
+		? `${customer.first_name} ${customer.last_name}`
+		: "Unknown Customer";
 
 	const customerInitials = customer
 		? `${customer.first_name[0] || ""}${customer.last_name[0] || ""}`.toUpperCase()
 		: "??";
 
 	// Format next appointment
-	const nextAppointment = job.scheduledStart ? new Date(String(job.scheduledStart)) : null;
-	const appointmentEnd = job.scheduledEnd ? new Date(String(job.scheduledEnd)) : null;
+	const nextAppointment = job.scheduledStart
+		? new Date(String(job.scheduledStart))
+		: null;
+	const appointmentEnd = job.scheduledEnd
+		? new Date(String(job.scheduledEnd))
+		: null;
 
 	const formatDate = (date: Date) =>
 		new Intl.DateTimeFormat("en-US", {
@@ -158,12 +178,17 @@ export function JobHeaderPermanent({
 		}).format(date);
 
 	// Get time window from notes if available
-	const timeWindow = String(job.notes || "").match(/\[Scheduling\] Customer preferred time window: (\w+)/)?.[1];
+	const timeWindow = String(job.notes || "").match(
+		/\[Scheduling\] Customer preferred time window: (\w+)/,
+	)?.[1];
 
 	// Calculate duration
 	const duration =
 		nextAppointment && appointmentEnd
-			? Math.round((appointmentEnd.getTime() - nextAppointment.getTime()) / (1000 * 60 * 60))
+			? Math.round(
+					(appointmentEnd.getTime() - nextAppointment.getTime()) /
+						(1000 * 60 * 60),
+				)
 			: null;
 
 	// Map URL for navigation
@@ -179,26 +204,37 @@ export function JobHeaderPermanent({
 							{/* Job Number and Title */}
 							<div>
 								<div className="flex items-center gap-3">
-									<h1 className="font-bold text-2xl tracking-tight">{job.jobNumber}</h1>
+									<h1 className="font-bold text-2xl tracking-tight">
+										{job.jobNumber}
+									</h1>
 									<Badge className="text-xs capitalize" variant="outline">
 										{job.jobType || "service"}
 									</Badge>
 								</div>
-								<p className="mt-1 text-lg text-muted-foreground">{job.title}</p>
+								<p className="mt-1 text-lg text-muted-foreground">
+									{job.title}
+								</p>
 							</div>
 
 							{/* Customer */}
 							<div className="flex items-start gap-3">
 								<Avatar className="size-10">
-									<AvatarFallback className="bg-primary text-primary-foreground">{customerInitials}</AvatarFallback>
+									<AvatarFallback className="bg-primary text-primary-foreground">
+										{customerInitials}
+									</AvatarFallback>
 								</Avatar>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center gap-2">
-										<Link className="font-semibold hover:underline" href={`/dashboard/customers/${customer?.id}`}>
+										<Link
+											className="font-semibold hover:underline"
+											href={`/dashboard/customers/${customer?.id}`}
+										>
 											{customerName}
 										</Link>
 										{customer?.company_name && (
-											<span className="text-muted-foreground text-sm">({customer.company_name})</span>
+											<span className="text-muted-foreground text-sm">
+												({customer.company_name})
+											</span>
 										)}
 										{allCustomers.length > 1 && (
 											<Badge className="text-xs" variant="secondary">
@@ -237,7 +273,10 @@ export function JobHeaderPermanent({
 										<div className="flex-1">
 											<div className="flex items-center gap-2">
 												<p className="text-sm">
-													<Link className="hover:underline" href={`/dashboard/work/properties/${property.id}`}>
+													<Link
+														className="hover:underline"
+														href={`/dashboard/work/properties/${property.id}`}
+													>
 														{property.name || property.address}
 													</Link>
 												</p>
@@ -252,11 +291,21 @@ export function JobHeaderPermanent({
 												{property.address}
 												{property.address2 && `, ${property.address2}`}
 												<br />
-												{property.city}, {property.state} {property.zip_code || property.zipCode}
+												{property.city}, {property.state}{" "}
+												{property.zip_code || property.zipCode}
 											</p>
 											{directionsUrl && (
-												<Button asChild className="mt-2 h-8 gap-1.5 text-xs" size="sm" variant="outline">
-													<a href={directionsUrl} rel="noopener noreferrer" target="_blank">
+												<Button
+													asChild
+													className="mt-2 h-8 gap-1.5 text-xs"
+													size="sm"
+													variant="outline"
+												>
+													<a
+														href={directionsUrl}
+														rel="noopener noreferrer"
+														target="_blank"
+													>
 														<Navigation className="size-3.5" />
 														Get Directions
 													</a>
@@ -302,7 +351,9 @@ export function JobHeaderPermanent({
 									<CardContent className="space-y-3">
 										{/* Date & Time */}
 										<div>
-											<p className="font-semibold">{formatDate(nextAppointment)}</p>
+											<p className="font-semibold">
+												{formatDate(nextAppointment)}
+											</p>
 											<div className="mt-1 flex items-center gap-2 text-sm">
 												<Clock className="size-3.5 text-muted-foreground" />
 												<span>
@@ -315,7 +366,11 @@ export function JobHeaderPermanent({
 													</Badge>
 												)}
 											</div>
-											{timeWindow && <p className="mt-1 text-muted-foreground text-xs">Window: {timeWindow}</p>}
+											{timeWindow && (
+												<p className="mt-1 text-muted-foreground text-xs">
+													Window: {timeWindow}
+												</p>
+											)}
 										</div>
 
 										{/* Assigned Technician */}
@@ -327,7 +382,9 @@ export function JobHeaderPermanent({
 														{assignedUser.name?.[0]?.toUpperCase() || "?"}
 													</AvatarFallback>
 												</Avatar>
-												<span className="text-sm">{assignedUser.name || assignedUser.email}</span>
+												<span className="text-sm">
+													{assignedUser.name || assignedUser.email}
+												</span>
 											</div>
 										)}
 
@@ -344,7 +401,9 @@ export function JobHeaderPermanent({
 									<CardContent className="flex min-h-[140px] items-center justify-center p-6">
 										<div className="text-center">
 											<Calendar className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-											<p className="mb-2 text-muted-foreground text-sm">No appointment scheduled</p>
+											<p className="mb-2 text-muted-foreground text-sm">
+												No appointment scheduled
+											</p>
 											<Button size="sm" variant="outline">
 												<Calendar className="mr-2 size-4" />
 												Schedule Now
@@ -360,30 +419,39 @@ export function JobHeaderPermanent({
 							{/* Status Badge */}
 							<Badge
 								className={`px-3 py-1.5 font-semibold text-sm ${
-									statusConfig[job.status as keyof typeof statusConfig]?.color || statusConfig.quoted.color
+									statusConfig[job.status as keyof typeof statusConfig]
+										?.color || statusConfig.quoted.color
 								}`}
 							>
-								{statusConfig[job.status as keyof typeof statusConfig]?.label || job.status}
+								{statusConfig[job.status as keyof typeof statusConfig]?.label ||
+									job.status}
 							</Badge>
 
 							{/* Priority Badge */}
 							<Badge
 								className={`px-2 py-1 text-xs ${
-									priorityConfig[job.priority as keyof typeof priorityConfig]?.color || priorityConfig.medium.color
+									priorityConfig[job.priority as keyof typeof priorityConfig]
+										?.color || priorityConfig.medium.color
 								}`}
 								variant="outline"
 							>
-								{priorityConfig[job.priority as keyof typeof priorityConfig]?.label || job.priority} Priority
+								{priorityConfig[job.priority as keyof typeof priorityConfig]
+									?.label || job.priority}{" "}
+								Priority
 							</Badge>
 
 							{/* Financial Summary */}
 							{job.totalAmount && job.totalAmount > 0 && (
 								<div className="mt-2 rounded-lg border bg-muted/50 p-2 text-right">
 									<p className="text-muted-foreground text-xs">Total</p>
-									<p className="font-bold">${((job.totalAmount || 0) / 100).toLocaleString()}</p>
+									<p className="font-bold">
+										${((job.totalAmount || 0) / 100).toLocaleString()}
+									</p>
 									{job.paidAmount && job.paidAmount > 0 && (
 										<p className="text-xs">
-											<span className="text-success">${((job.paidAmount || 0) / 100).toLocaleString()} paid</span>
+											<span className="text-success">
+												${((job.paidAmount || 0) / 100).toLocaleString()} paid
+											</span>
 										</p>
 									)}
 								</div>

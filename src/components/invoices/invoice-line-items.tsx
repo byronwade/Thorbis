@@ -16,7 +16,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils/format";
 
 type LineItem = {
@@ -31,9 +38,14 @@ type InvoiceLineItemsProps = {
 	onUpdate: (items: LineItem[]) => void;
 };
 
-export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceLineItemsProps) {
+export function InvoiceLineItems({
+	lineItems: initialItems,
+	onUpdate,
+}: InvoiceLineItemsProps) {
 	const [items, setItems] = useState<LineItem[]>(
-		initialItems.length > 0 ? initialItems : [{ description: "", quantity: 1, unitPrice: 0, total: 0 }]
+		initialItems.length > 0
+			? initialItems
+			: [{ description: "", quantity: 1, unitPrice: 0, total: 0 }],
 	);
 
 	// Update item field
@@ -43,7 +55,8 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 
 		// Recalculate total for this item
 		if (field === "quantity" || field === "unitPrice") {
-			newItems[index].total = newItems[index].quantity * newItems[index].unitPrice;
+			newItems[index].total =
+				newItems[index].quantity * newItems[index].unitPrice;
 		}
 
 		setItems(newItems);
@@ -52,7 +65,10 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 
 	// Add new line item
 	const addItem = () => {
-		const newItems = [...items, { description: "", quantity: 1, unitPrice: 0, total: 0 }];
+		const newItems = [
+			...items,
+			{ description: "", quantity: 1, unitPrice: 0, total: 0 },
+		];
 		setItems(newItems);
 		onUpdate(newItems);
 	};
@@ -61,7 +77,9 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 	const removeItem = (index: number) => {
 		if (items.length === 1) {
 			// Keep at least one item
-			const newItems = [{ description: "", quantity: 1, unitPrice: 0, total: 0 }];
+			const newItems = [
+				{ description: "", quantity: 1, unitPrice: 0, total: 0 },
+			];
 			setItems(newItems);
 			onUpdate(newItems);
 		} else {
@@ -100,7 +118,9 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 								<TableCell>
 									<Input
 										className="border-0 p-2 focus-visible:ring-1"
-										onChange={(e) => updateItem(index, "description", e.target.value)}
+										onChange={(e) =>
+											updateItem(index, "description", e.target.value)
+										}
 										placeholder="e.g., HVAC Unit Installation, Labor, Materials"
 										value={item.description}
 									/>
@@ -109,7 +129,13 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 									<Input
 										className="border-0 p-2 focus-visible:ring-1"
 										min="0"
-										onChange={(e) => updateItem(index, "quantity", Number.parseFloat(e.target.value) || 0)}
+										onChange={(e) =>
+											updateItem(
+												index,
+												"quantity",
+												Number.parseFloat(e.target.value) || 0,
+											)
+										}
 										step="0.01"
 										type="number"
 										value={item.quantity}
@@ -121,7 +147,13 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 										<Input
 											className="border-0 p-2 focus-visible:ring-1"
 											min="0"
-											onChange={(e) => updateItem(index, "unitPrice", Number.parseFloat(e.target.value) || 0)}
+											onChange={(e) =>
+												updateItem(
+													index,
+													"unitPrice",
+													Number.parseFloat(e.target.value) || 0,
+												)
+											}
 											step="0.01"
 											type="number"
 											value={item.unitPrice}
@@ -132,7 +164,12 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 									{formatCurrency(item.total * 100, { decimals: 2 })}
 								</TableCell>
 								<TableCell>
-									<Button className="h-8 w-8" onClick={() => removeItem(index)} size="icon" variant="ghost">
+									<Button
+										className="h-8 w-8"
+										onClick={() => removeItem(index)}
+										size="icon"
+										variant="ghost"
+									>
 										<Trash2 className="h-4 w-4 text-muted-foreground" />
 									</Button>
 								</TableCell>
@@ -144,7 +181,10 @@ export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceL
 
 			{/* Helper text */}
 			<div className="mt-4 text-muted-foreground text-sm">
-				<p>Add line items for labor, materials, equipment, or services. Totals are calculated automatically.</p>
+				<p>
+					Add line items for labor, materials, equipment, or services. Totals
+					are calculated automatically.
+				</p>
 			</div>
 		</Card>
 	);

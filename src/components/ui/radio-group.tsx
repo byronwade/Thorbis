@@ -6,16 +6,28 @@ import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function RadioGroup({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
-	return <RadioGroupPrimitive.Root className={cn("grid gap-3", className)} data-slot="radio-group" {...props} />;
+function RadioGroup({
+	className,
+	...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Root>) {
+	return (
+		<RadioGroupPrimitive.Root
+			className={cn("grid gap-3", className)}
+			data-slot="radio-group"
+			{...props}
+		/>
+	);
 }
 
-function RadioGroupItem({ className, ...props }: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
+function RadioGroupItem({
+	className,
+	...props
+}: React.ComponentProps<typeof RadioGroupPrimitive.Item>) {
 	return (
 		<RadioGroupPrimitive.Item
 			className={cn(
 				"aspect-square size-4 shrink-0 rounded-full border border-input bg-card text-primary outline-none transition-colors focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20",
-				className
+				className,
 			)}
 			data-slot="radio-group-item"
 			{...props}

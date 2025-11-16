@@ -16,7 +16,8 @@ import HonestHourlyRateCalculator from "./calculator-client";
 
 // SEO Metadata for programmatic SEO targeting trades companies
 export const metadata: Metadata = {
-	title: "Free Tradesman Hourly Rate Calculator | Calculate Your Service Business Rate",
+	title:
+		"Free Tradesman Hourly Rate Calculator | Calculate Your Service Business Rate",
 	description:
 		"Calculate your honest hourly rate for trades businesses. Factor in all expenses, capacity constraints, and profit margins to price your services right. Free calculator for plumbers, HVAC, electricians, and all service trades.",
 	keywords: [

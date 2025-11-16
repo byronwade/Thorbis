@@ -20,7 +20,11 @@ type TableSkeletonProps = {
 	className?: string;
 };
 
-export function TableSkeleton({ rows = 10, showHeader = true, className }: TableSkeletonProps) {
+export function TableSkeleton({
+	rows = 10,
+	showHeader = true,
+	className,
+}: TableSkeletonProps) {
 	return (
 		<div className={`space-y-4 ${className || ""}`}>
 			{/* Table header skeleton */}
@@ -34,7 +38,10 @@ export function TableSkeleton({ rows = 10, showHeader = true, className }: Table
 			{/* Table rows skeleton */}
 			<div className="space-y-2">
 				{[...new Array(rows)].map((_, i) => (
-					<div className="flex items-center gap-4 border-b py-3 last:border-0" key={i}>
+					<div
+						className="flex items-center gap-4 border-b py-3 last:border-0"
+						key={i}
+					>
 						{/* Row checkbox/icon */}
 						<div className="h-5 w-5 animate-pulse rounded bg-muted" />
 

@@ -23,7 +23,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -60,12 +66,12 @@ export function ServiceAgreementForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [paymentSchedule, setPaymentSchedule] = useState("monthly");
 	const [autoRenew, setAutoRenew] = useState(false);
 	const [showSLA, setShowSLA] = useState(false);
@@ -134,14 +140,21 @@ export function ServiceAgreementForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select name="customerId" onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							name="customerId"
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -151,7 +164,11 @@ export function ServiceAgreementForm({
 					{selectedCustomerId && (
 						<div className="space-y-2">
 							<Label htmlFor="property-select">Property (Optional)</Label>
-							<Select name="propertyId" onValueChange={setSelectedPropertyId} value={selectedPropertyId}>
+							<Select
+								name="propertyId"
+								onValueChange={setSelectedPropertyId}
+								value={selectedPropertyId}
+							>
 								<SelectTrigger id="property-select">
 									<SelectValue placeholder="Select property" />
 								</SelectTrigger>
@@ -181,12 +198,22 @@ export function ServiceAgreementForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., Annual Service Agreement" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., Annual Service Agreement"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="description">Description</Label>
-						<Textarea id="description" name="description" placeholder="Overview of the agreement" rows={3} />
+						<Textarea
+							id="description"
+							name="description"
+							placeholder="Overview of the agreement"
+							rows={3}
+						/>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
@@ -219,7 +246,13 @@ export function ServiceAgreementForm({
 					{autoRenew && (
 						<div className="space-y-2">
 							<Label htmlFor="renewalTermMonths">Renewal Term (Months)</Label>
-							<Input id="renewalTermMonths" min="1" name="renewalTermMonths" placeholder="e.g., 12" type="number" />
+							<Input
+								id="renewalTermMonths"
+								min="1"
+								name="renewalTermMonths"
+								placeholder="e.g., 12"
+								type="number"
+							/>
 						</div>
 					)}
 				</CardContent>
@@ -237,12 +270,23 @@ export function ServiceAgreementForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="totalValue">Total Contract Value ($)</Label>
-							<Input id="totalValue" min="0" name="totalValue" placeholder="e.g., 5000.00" step="0.01" type="number" />
+							<Input
+								id="totalValue"
+								min="0"
+								name="totalValue"
+								placeholder="e.g., 5000.00"
+								step="0.01"
+								type="number"
+							/>
 						</div>
 
 						<div className="space-y-2">
 							<Label htmlFor="paymentSchedule">Payment Schedule</Label>
-							<Select name="paymentSchedule" onValueChange={setPaymentSchedule} value={paymentSchedule}>
+							<Select
+								name="paymentSchedule"
+								onValueChange={setPaymentSchedule}
+								value={paymentSchedule}
+							>
 								<SelectTrigger id="paymentSchedule">
 									<SelectValue />
 								</SelectTrigger>
@@ -282,7 +326,12 @@ export function ServiceAgreementForm({
 							<Shield className="h-5 w-5" />
 							<CardTitle>Service Level Agreement (Optional)</CardTitle>
 						</div>
-						<Button onClick={() => setShowSLA(!showSLA)} size="sm" type="button" variant="outline">
+						<Button
+							onClick={() => setShowSLA(!showSLA)}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							{showSLA ? "Hide" : "Show"} SLA
 						</Button>
 					</div>
@@ -303,7 +352,9 @@ export function ServiceAgreementForm({
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="resolutionTimeHours">Resolution Time (hours)</Label>
+								<Label htmlFor="resolutionTimeHours">
+									Resolution Time (hours)
+								</Label>
 								<Input
 									id="resolutionTimeHours"
 									min="0"
@@ -330,7 +381,12 @@ export function ServiceAgreementForm({
 
 						<div className="space-y-2">
 							<Label htmlFor="penaltyTerms">Penalty Terms</Label>
-							<Textarea id="penaltyTerms" name="penaltyTerms" placeholder="Penalties for SLA violations" rows={2} />
+							<Textarea
+								id="penaltyTerms"
+								name="penaltyTerms"
+								placeholder="Penalties for SLA violations"
+								rows={2}
+							/>
 						</div>
 					</CardContent>
 				)}
@@ -354,19 +410,34 @@ export function ServiceAgreementForm({
 
 					<div className="space-y-2">
 						<Label htmlFor="terms">Terms & Conditions</Label>
-						<Textarea id="terms" name="terms" placeholder="Cancellation policy, renewal terms, etc." rows={4} />
+						<Textarea
+							id="terms"
+							name="terms"
+							placeholder="Cancellation policy, renewal terms, etc."
+							rows={4}
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

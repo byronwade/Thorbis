@@ -32,7 +32,8 @@ export default function JobCompleteEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				Great news! Your service has been completed successfully. Thank you for choosing Thorbis.
+				Great news! Your service has been completed successfully. Thank you for
+				choosing Thorbis.
 			</Text>
 
 			<Card style={summaryCard}>
@@ -60,7 +61,8 @@ export default function JobCompleteEmail({
 			<Card style={reviewCard}>
 				<Heading level={3}>How did we do?</Heading>
 				<Text style={reviewText}>
-					Your feedback helps us improve our service. We'd love to hear about your experience!
+					Your feedback helps us improve our service. We'd love to hear about
+					your experience!
 				</Text>
 				<div style={reviewButtonContainer}>
 					<Button href={reviewUrl} variant="outline">
@@ -70,7 +72,9 @@ export default function JobCompleteEmail({
 			</Card>
 
 			<Card style={thankYouCard}>
-				<Text style={thankYouText}>Thank you for your business! We look forward to serving you again.</Text>
+				<Text style={thankYouText}>
+					Thank you for your business! We look forward to serving you again.
+				</Text>
 			</Card>
 		</BaseLayout>
 	);

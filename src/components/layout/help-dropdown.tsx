@@ -1,6 +1,13 @@
 "use client";
 
-import { BookOpen, ExternalLink, HelpCircle, LifeBuoy, MessageCircle, Video } from "lucide-react";
+import {
+	BookOpen,
+	ExternalLink,
+	HelpCircle,
+	LifeBuoy,
+	MessageCircle,
+	Video,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -51,7 +58,10 @@ export function HelpDropdown() {
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		};
@@ -81,7 +91,9 @@ export function HelpDropdown() {
 				<div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border bg-popover p-2 text-popover-foreground shadow-lg">
 					<div className="mb-2 border-b px-3 py-2">
 						<h3 className="font-semibold text-sm">Help &amp; Support</h3>
-						<p className="text-muted-foreground text-xs">Find answers and get assistance</p>
+						<p className="text-muted-foreground text-xs">
+							Find answers and get assistance
+						</p>
 					</div>
 					<div className="space-y-1">
 						{helpItems.map((item) => {
@@ -99,9 +111,13 @@ export function HelpDropdown() {
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
 											<p className="font-medium text-sm">{item.label}</p>
-											{item.external && <ExternalLink className="size-3 text-muted-foreground" />}
+											{item.external && (
+												<ExternalLink className="size-3 text-muted-foreground" />
+											)}
 										</div>
-										<p className="text-muted-foreground text-xs">{item.description}</p>
+										<p className="text-muted-foreground text-xs">
+											{item.description}
+										</p>
 									</div>
 								</Link>
 							);
@@ -112,7 +128,10 @@ export function HelpDropdown() {
 							<p className="font-medium text-xs">Need more help?</p>
 							<p className="text-muted-foreground text-xs">
 								Email us at{" "}
-								<a className="text-primary hover:underline" href="mailto:support@thorbis.com">
+								<a
+									className="text-primary hover:underline"
+									href="mailto:support@thorbis.com"
+								>
 									support@thorbis.com
 								</a>
 							</p>

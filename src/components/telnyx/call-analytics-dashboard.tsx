@@ -12,12 +12,32 @@
  * - Exportable reports
  */
 
-import { BarChart3, Clock, DollarSign, Download, Phone, PhoneMissed, TrendingUp } from "lucide-react";
+import {
+	BarChart3,
+	Clock,
+	DollarSign,
+	Download,
+	Phone,
+	PhoneMissed,
+	TrendingUp,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 export function CallAnalyticsDashboard() {
 	const [timeRange, setTimeRange] = useState("7d");
@@ -75,7 +95,9 @@ export function CallAnalyticsDashboard() {
 			<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<h2 className="font-semibold text-2xl">Call Analytics</h2>
-					<p className="text-muted-foreground text-sm">Performance metrics and insights</p>
+					<p className="text-muted-foreground text-sm">
+						Performance metrics and insights
+					</p>
 				</div>
 				<div className="flex gap-2">
 					<Select onValueChange={setTimeRange} value={timeRange}>
@@ -100,13 +122,21 @@ export function CallAnalyticsDashboard() {
 				{stats.map((stat) => (
 					<Card key={stat.title}>
 						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="font-medium text-sm">{stat.title}</CardTitle>
+							<CardTitle className="font-medium text-sm">
+								{stat.title}
+							</CardTitle>
 							<stat.icon className="size-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
 							<div className="font-bold text-2xl">{stat.value}</div>
 							<p className="flex items-center gap-1 text-muted-foreground text-xs">
-								<span className={stat.trend === "up" ? "text-success" : "text-destructive"}>{stat.change}</span>
+								<span
+									className={
+										stat.trend === "up" ? "text-success" : "text-destructive"
+									}
+								>
+									{stat.change}
+								</span>
 								from last period
 							</p>
 						</CardContent>
@@ -133,7 +163,13 @@ export function CallAnalyticsDashboard() {
 											{member.calls} calls · {member.avgDuration} avg
 										</p>
 									</div>
-									<Badge variant={Number.parseInt(member.answerRate, 10) >= 90 ? "default" : "secondary"}>
+									<Badge
+										variant={
+											Number.parseInt(member.answerRate, 10) >= 90
+												? "default"
+												: "secondary"
+										}
+									>
 										{member.answerRate}
 									</Badge>
 								</div>
@@ -149,14 +185,16 @@ export function CallAnalyticsDashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className="flex h-[200px] items-end justify-between gap-2">
-							{[45, 68, 89, 72, 56, 91, 78, 65, 42, 58, 73, 61].map((height, i) => (
-								<div
-									className="flex-1 rounded-t bg-primary transition-all hover:opacity-80"
-									key={i}
-									style={{ height: `${height}%` }}
-									title={`${i + 8}:00 - ${height} calls`}
-								/>
-							))}
+							{[45, 68, 89, 72, 56, 91, 78, 65, 42, 58, 73, 61].map(
+								(height, i) => (
+									<div
+										className="flex-1 rounded-t bg-primary transition-all hover:opacity-80"
+										key={i}
+										style={{ height: `${height}%` }}
+										title={`${i + 8}:00 - ${height} calls`}
+									/>
+								),
+							)}
 						</div>
 						<div className="mt-4 flex justify-between text-muted-foreground text-xs">
 							<span>8 AM</span>
@@ -201,10 +239,14 @@ export function CallAnalyticsDashboard() {
 				<CardContent className="flex items-start gap-3 pt-6">
 					<BarChart3 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 					<div className="space-y-1">
-						<p className="font-medium text-primary text-sm dark:text-primary">Improve Your Call Performance</p>
+						<p className="font-medium text-primary text-sm dark:text-primary">
+							Improve Your Call Performance
+						</p>
 						<p className="text-muted-foreground text-sm">
-							Monitor answer rates to ensure customers reach your team. Track missed calls and follow up promptly. Use
-							peak hour data to optimize staffing. Review call recordings for quality assurance and training.
+							Monitor answer rates to ensure customers reach your team. Track
+							missed calls and follow up promptly. Use peak hour data to
+							optimize staffing. Review call recordings for quality assurance
+							and training.
 						</p>
 					</div>
 				</CardContent>

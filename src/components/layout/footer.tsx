@@ -23,21 +23,39 @@ export function Footer() {
 					{/* Company Info - Takes 2 columns */}
 					<div className="lg:col-span-2">
 						<Link className="mb-4 flex items-center gap-2" href="/">
-							<Image alt="Thorbis" className="size-8" height={32} src="/ThorbisLogo.webp" width={32} />
+							<Image
+								alt="Thorbis"
+								className="size-8"
+								height={32}
+								src="/ThorbisLogo.webp"
+								width={32}
+							/>
 							<span className="font-bold text-foreground text-xl">Thorbis</span>
 						</Link>
 						<p className="mb-6 text-muted-foreground text-sm leading-relaxed">
-							The next-generation field service management platform built for contractors who demand control, speed, and
-							visibility. Powered by AI.
+							The next-generation field service management platform built for
+							contractors who demand control, speed, and visibility. Powered by
+							AI.
 						</p>
 
 						{/* Newsletter */}
 						<div className="mb-6">
-							<h4 className="mb-3 font-semibold text-foreground text-sm">Stay Updated</h4>
-							<p className="mb-3 text-muted-foreground text-xs">Get the latest features and industry insights.</p>
+							<h4 className="mb-3 font-semibold text-foreground text-sm">
+								Stay Updated
+							</h4>
+							<p className="mb-3 text-muted-foreground text-xs">
+								Get the latest features and industry insights.
+							</p>
 							<form className="flex gap-2">
-								<Input className="h-9 bg-background text-sm" placeholder="Enter your email" type="email" />
-								<Button className="h-9 bg-primary text-primary-foreground hover:bg-primary/90" size="sm">
+								<Input
+									className="h-9 bg-background text-sm"
+									placeholder="Enter your email"
+									type="email"
+								/>
+								<Button
+									className="h-9 bg-primary text-primary-foreground hover:bg-primary/90"
+									size="sm"
+								>
 									Subscribe
 								</Button>
 							</form>
@@ -82,24 +100,38 @@ export function Footer() {
 
 						{/* Mobile Apps - Coming Soon */}
 						<div className="mt-6">
-							<h4 className="mb-3 font-semibold text-foreground text-sm">Mobile Apps Coming Soon</h4>
+							<h4 className="mb-3 font-semibold text-foreground text-sm">
+								Mobile Apps Coming Soon
+							</h4>
 							<div className="flex flex-col gap-2 sm:flex-row">
 								<div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 opacity-60">
-									<svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+									<svg
+										className="size-5"
+										fill="currentColor"
+										viewBox="0 0 24 24"
+									>
 										<path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
 									</svg>
 									<div className="flex flex-col">
 										<span className="font-medium text-xs">Coming Soon</span>
-										<span className="text-[10px] text-muted-foreground">App Store</span>
+										<span className="text-[10px] text-muted-foreground">
+											App Store
+										</span>
 									</div>
 								</div>
 								<div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 opacity-60">
-									<svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
+									<svg
+										className="size-5"
+										fill="currentColor"
+										viewBox="0 0 24 24"
+									>
 										<path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.198l2.807 1.626a1 1 0 0 1 0 1.73l-2.808 1.626L15.206 12l2.492-2.491zM5.864 2.658L16.802 8.99l-2.303 2.303-8.635-8.635z" />
 									</svg>
 									<div className="flex flex-col">
 										<span className="font-medium text-xs">Coming Soon</span>
-										<span className="text-[10px] text-muted-foreground">Google Play</span>
+										<span className="text-[10px] text-muted-foreground">
+											Google Play
+										</span>
 									</div>
 								</div>
 							</div>
@@ -111,7 +143,9 @@ export function Footer() {
 
 					{/* Solutions Column */}
 					<div>
-						<h4 className="mb-4 font-semibold text-foreground text-sm">Solutions</h4>
+						<h4 className="mb-4 font-semibold text-foreground text-sm">
+							Solutions
+						</h4>
 						<ul className="space-y-2.5">
 							<li>
 								<Link
@@ -194,7 +228,10 @@ export function Footer() {
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/switch">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/switch"
+								>
 									Switch to Thorbis
 								</Link>
 							</li>
@@ -203,7 +240,9 @@ export function Footer() {
 
 					{/* Industries Column */}
 					<div>
-						<h4 className="mb-4 font-semibold text-foreground text-sm">Industries</h4>
+						<h4 className="mb-4 font-semibold text-foreground text-sm">
+							Industries
+						</h4>
 						<ul className="space-y-2.5">
 							<li>
 								<Link
@@ -282,10 +321,15 @@ export function Footer() {
 
 					{/* Resources Column */}
 					<div>
-						<h4 className="mb-4 font-semibold text-foreground text-sm">Resources</h4>
+						<h4 className="mb-4 font-semibold text-foreground text-sm">
+							Resources
+						</h4>
 						<ul className="space-y-2.5">
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/blog">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/blog"
+								>
 									Blog
 								</Link>
 							</li>
@@ -322,12 +366,18 @@ export function Footer() {
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/roi">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/roi"
+								>
 									ROI Calculator
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/help">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/help"
+								>
 									Help Center
 								</Link>
 							</li>
@@ -364,12 +414,18 @@ export function Footer() {
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/reviews">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/reviews"
+								>
 									Reviews & Testimonials
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/status">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/status"
+								>
 									System Status
 								</Link>
 							</li>
@@ -378,20 +434,31 @@ export function Footer() {
 
 					{/* Company Column */}
 					<div>
-						<h4 className="mb-4 font-semibold text-foreground text-sm">Company</h4>
+						<h4 className="mb-4 font-semibold text-foreground text-sm">
+							Company
+						</h4>
 						<ul className="space-y-2.5">
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/about">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/about"
+								>
 									About Us
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/pricing">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/pricing"
+								>
 									Pricing
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/careers">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/careers"
+								>
 									Careers
 								</Link>
 							</li>
@@ -404,12 +471,18 @@ export function Footer() {
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/press">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/press"
+								>
 									Press & Media
 								</Link>
 							</li>
 							<li>
-								<Link className="text-muted-foreground text-sm transition-colors hover:text-foreground" href="/contact">
+								<Link
+									className="text-muted-foreground text-sm transition-colors hover:text-foreground"
+									href="/contact"
+								>
 									Contact Sales
 								</Link>
 							</li>
@@ -443,7 +516,9 @@ export function Footer() {
 
 				{/* Comparison Links Section */}
 				<div className="mt-10 border-border/50 border-t pt-8">
-					<h4 className="mb-4 font-semibold text-foreground text-sm">Compare Thorbis</h4>
+					<h4 className="mb-4 font-semibold text-foreground text-sm">
+						Compare Thorbis
+					</h4>
 					<div className="flex flex-wrap gap-x-6 gap-y-2">
 						<Link
 							className="text-muted-foreground text-xs transition-colors hover:text-foreground"
@@ -457,7 +532,10 @@ export function Footer() {
 						>
 							vs Housecall Pro
 						</Link>
-						<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/vs/jobber">
+						<Link
+							className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+							href="/vs/jobber"
+						>
 							vs Jobber
 						</Link>
 						<Link
@@ -472,7 +550,10 @@ export function Footer() {
 						>
 							vs ServiceM8
 						</Link>
-						<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/vs/workiz">
+						<Link
+							className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+							href="/vs/workiz"
+						>
 							vs Workiz
 						</Link>
 					</div>
@@ -481,18 +562,32 @@ export function Footer() {
 				{/* Bottom Bar */}
 				<div className="mt-8 border-border/50 border-t pt-8">
 					<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-						<p className="text-muted-foreground text-xs">© {currentYear} Thorbis. All rights reserved.</p>
+						<p className="text-muted-foreground text-xs">
+							© {currentYear} Thorbis. All rights reserved.
+						</p>
 						<div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-							<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/privacy">
+							<Link
+								className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+								href="/privacy"
+							>
 								Privacy Policy
 							</Link>
-							<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/terms">
+							<Link
+								className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+								href="/terms"
+							>
 								Terms of Service
 							</Link>
-							<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/cookies">
+							<Link
+								className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+								href="/cookies"
+							>
 								Cookie Policy
 							</Link>
-							<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/gdpr">
+							<Link
+								className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+								href="/gdpr"
+							>
 								GDPR Compliance
 							</Link>
 							<Link
@@ -501,7 +596,10 @@ export function Footer() {
 							>
 								Accessibility
 							</Link>
-							<Link className="text-muted-foreground text-xs transition-colors hover:text-foreground" href="/sitemap">
+							<Link
+								className="text-muted-foreground text-xs transition-colors hover:text-foreground"
+								href="/sitemap"
+							>
 								Sitemap
 							</Link>
 						</div>

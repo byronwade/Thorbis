@@ -63,14 +63,22 @@ export function StandardPageLayout({
 	const spacingClass = spacingMap[spacing];
 
 	return (
-		<div className={`mx-auto flex h-full w-full ${maxWidthClass} flex-col ${spacingClass} p-6`}>
+		<div
+			className={`mx-auto flex h-full w-full ${maxWidthClass} flex-col ${spacingClass} p-6`}
+		>
 			{/* Page Header */}
 			{(title || description || actions) && (
 				<div className="flex items-start justify-between">
 					{(title || description) && (
 						<div className="space-y-1">
-							{title && <h1 className="font-semibold text-2xl tracking-tight">{title}</h1>}
-							{description && <p className="text-muted-foreground">{description}</p>}
+							{title && (
+								<h1 className="font-semibold text-2xl tracking-tight">
+									{title}
+								</h1>
+							)}
+							{description && (
+								<p className="text-muted-foreground">{description}</p>
+							)}
 						</div>
 					)}
 					{actions && <div className="flex gap-2">{actions}</div>}
@@ -110,7 +118,12 @@ export function ListPageLayout({
 	children: ReactNode;
 }) {
 	return (
-		<StandardPageLayout description={description} maxWidth="full" stats={stats} title={title}>
+		<StandardPageLayout
+			description={description}
+			maxWidth="full"
+			stats={stats}
+			title={title}
+		>
 			{/* Toolbar with search/filters/actions */}
 			{(search || filters || actions) && (
 				<div className="flex items-center justify-between gap-4">
@@ -162,8 +175,12 @@ export function DetailPageLayout({
 				<div className="flex items-start justify-between border-b pb-6">
 					{(title || description) && (
 						<div className="space-y-1">
-							{title && <h1 className="font-bold text-3xl tracking-tight">{title}</h1>}
-							{description && <p className="text-lg text-muted-foreground">{description}</p>}
+							{title && (
+								<h1 className="font-bold text-3xl tracking-tight">{title}</h1>
+							)}
+							{description && (
+								<p className="text-lg text-muted-foreground">{description}</p>
+							)}
 						</div>
 					)}
 					{actions && <div className="flex gap-2">{actions}</div>}

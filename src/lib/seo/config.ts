@@ -30,7 +30,10 @@ export const SEO_URLS = {
 	/**
 	 * Canonical origin for the public marketing surface.
 	 */
-	site: process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://thorbis.com",
+	site:
+		process.env.NEXT_PUBLIC_SITE_URL ??
+		process.env.NEXT_PUBLIC_BASE_URL ??
+		"https://thorbis.com",
 	/**
 	 * Default social/OG image relative path. Use helpers below to make it absolute.
 	 */
@@ -86,7 +89,11 @@ type TitleOptions = {
  * buildTitle({ section: "Knowledge Base", page: "Getting Started" })
  *   => "Knowledge Base – Getting Started | Thorbis"
  */
-export function buildTitle({ page, section, includeBrand = true }: TitleOptions): string {
+export function buildTitle({
+	page,
+	section,
+	includeBrand = true,
+}: TitleOptions): string {
 	const parts: string[] = [];
 
 	if (section) {
@@ -113,8 +120,15 @@ type CanonicalOptions = {
 /**
  * Resolve a canonical URL by combining the site origin with a normalized path.
  */
-export function buildCanonicalUrl({ path = "/" }: CanonicalOptions = {}): string {
-	const normalized = path === "" || path === "/" ? "/" : path.startsWith("/") ? path : `/${path}`;
+export function buildCanonicalUrl({
+	path = "/",
+}: CanonicalOptions = {}): string {
+	const normalized =
+		path === "" || path === "/"
+			? "/"
+			: path.startsWith("/")
+				? path
+				: `/${path}`;
 
 	return `${SEO_URLS.site}${normalized}`;
 }
@@ -134,8 +148,13 @@ type ShareImageOptions = {
  * Generate an absolute URL for social images. Supports both static assets and
  * dynamic image endpoints.
  */
-export function buildShareImageUrl({ path = SEO_URLS.defaultImagePath, query }: ShareImageOptions = {}): string {
-	const url = new URL(path.startsWith("http") ? path : `${SEO_URLS.site}${path}`);
+export function buildShareImageUrl({
+	path = SEO_URLS.defaultImagePath,
+	query,
+}: ShareImageOptions = {}): string {
+	const url = new URL(
+		path.startsWith("http") ? path : `${SEO_URLS.site}${path}`,
+	);
 
 	if (query) {
 		Object.entries(query).forEach(([key, value]) => {

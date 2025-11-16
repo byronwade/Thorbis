@@ -30,7 +30,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Turnover Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track inventory turnover rates to identify fast and slow-moving items
+							Track inventory turnover rates to identify fast and slow-moving
+							items
 						</p>
 					</div>
 
@@ -41,7 +42,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Profitability Insights</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze profit margins by category, vendor, and individual parts to maximize revenue
+							Analyze profit margins by category, vendor, and individual parts
+							to maximize revenue
 						</p>
 					</div>
 
@@ -52,7 +54,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Stock Optimization</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Get recommendations for optimal stock levels based on historical usage and seasonal trends
+							Get recommendations for optimal stock levels based on historical
+							usage and seasonal trends
 						</p>
 					</div>
 
@@ -63,15 +66,20 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Cost Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor carrying costs, shrinkage, and waste to reduce inventory expenses
+							Monitor carrying costs, shrinkage, and waste to reduce inventory
+							expenses
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Make Smarter Inventory Decisions</h3>
-					<p className="mb-6 text-muted-foreground">Use data to optimize stock levels and maximize profitability</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Make Smarter Inventory Decisions
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Use data to optimize stock levels and maximize profitability
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

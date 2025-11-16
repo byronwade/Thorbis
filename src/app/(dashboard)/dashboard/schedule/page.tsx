@@ -12,7 +12,10 @@ import { addDays, subDays } from "date-fns";
 import { Suspense } from "react";
 import { CompanyGate } from "@/components/company/company-gate";
 import { SchedulePageClient } from "@/components/schedule/schedule-page-client";
-import { getActiveCompanyId, getUserCompanies } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	getUserCompanies,
+} from "@/lib/auth/company-context";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { serializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { fetchScheduleData } from "@/lib/schedule-data";
@@ -27,7 +30,12 @@ async function ScheduleData() {
 
 	if (!companyId) {
 		const companies = await getUserCompanies();
-		return <CompanyGate context="scheduling" hasCompanies={(companies ?? []).length > 0} />;
+		return (
+			<CompanyGate
+				context="scheduling"
+				hasCompanies={(companies ?? []).length > 0}
+			/>
+		);
 	}
 
 	if (!supabase) {
@@ -56,10 +64,19 @@ async function ScheduleData() {
 		});
 	} catch (error) {
 		bootstrapError =
-			error instanceof Error ? error.message : typeof error === "string" ? error : "Unable to load schedule data";
+			error instanceof Error
+				? error.message
+				: typeof error === "string"
+					? error
+					: "Unable to load schedule data";
 	}
 
-	return <SchedulePageClient bootstrapError={bootstrapError} initialData={initialData} />;
+	return (
+		<SchedulePageClient
+			bootstrapError={bootstrapError}
+			initialData={initialData}
+		/>
+	);
 }
 
 // Loading skeleton

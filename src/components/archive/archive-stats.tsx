@@ -13,7 +13,13 @@ type ArchiveStatsProps = {
 
 export function ArchiveStats({ stats }: ArchiveStatsProps) {
 	const totalArchived =
-		stats.invoice + stats.estimate + stats.contract + stats.job + stats.customer + stats.property + stats.equipment;
+		stats.invoice +
+		stats.estimate +
+		stats.contract +
+		stats.job +
+		stats.customer +
+		stats.property +
+		stats.equipment;
 
 	const archiveStats: StatCard[] = [
 		{

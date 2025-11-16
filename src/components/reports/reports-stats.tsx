@@ -29,25 +29,33 @@ export async function ReportsStats() {
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">Total Reports</h3>
+				<h3 className="font-medium text-muted-foreground text-sm">
+					Total Reports
+				</h3>
 				<p className="mt-2 font-bold text-2xl">{stats.totalReports}</p>
 				<p className="mt-1 text-muted-foreground text-xs">Available reports</p>
 			</div>
 
 			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">Scheduled Reports</h3>
+				<h3 className="font-medium text-muted-foreground text-sm">
+					Scheduled Reports
+				</h3>
 				<p className="mt-2 font-bold text-2xl">{stats.scheduledReports}</p>
 				<p className="mt-1 text-muted-foreground text-xs">Automated delivery</p>
 			</div>
 
 			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">Custom Reports</h3>
+				<h3 className="font-medium text-muted-foreground text-sm">
+					Custom Reports
+				</h3>
 				<p className="mt-2 font-bold text-2xl">{stats.customReports}</p>
 				<p className="mt-1 text-muted-foreground text-xs">User-created</p>
 			</div>
 
 			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">Data Sources</h3>
+				<h3 className="font-medium text-muted-foreground text-sm">
+					Data Sources
+				</h3>
 				<p className="mt-2 font-bold text-2xl">{stats.dataSources}</p>
 				<p className="mt-1 text-muted-foreground text-xs">Connected sources</p>
 			</div>

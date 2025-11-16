@@ -35,7 +35,14 @@ import { Card } from "@/components/ui/card";
 type PaymentMethod = {
 	id: string;
 	stripePaymentMethodId: string;
-	type: "card" | "apple_pay" | "google_pay" | "paypal" | "amazon_pay" | "klarna" | "link";
+	type:
+		| "card"
+		| "apple_pay"
+		| "google_pay"
+		| "paypal"
+		| "amazon_pay"
+		| "klarna"
+		| "link";
 	brand?: string;
 	last4?: string;
 	expMonth?: number;
@@ -130,7 +137,9 @@ export function PaymentMethodsList({
 			<Card className="p-8 text-center">
 				<CreditCard className="mx-auto size-12 text-muted-foreground" />
 				<h3 className="mt-4 font-semibold text-lg">No payment methods</h3>
-				<p className="mt-2 text-muted-foreground text-sm">Add a payment method to get started</p>
+				<p className="mt-2 text-muted-foreground text-sm">
+					Add a payment method to get started
+				</p>
 			</Card>
 		);
 	}
@@ -145,7 +154,9 @@ export function PaymentMethodsList({
 							{getPaymentMethodIcon(method.type, method.brand)}
 							<div>
 								<div className="flex items-center gap-2">
-									<span className="font-medium">{formatPaymentMethodText(method)}</span>
+									<span className="font-medium">
+										{formatPaymentMethodText(method)}
+									</span>
 									{method.isDefault && (
 										<Badge className="text-xs" variant="default">
 											Default
@@ -157,12 +168,17 @@ export function PaymentMethodsList({
 										</Badge>
 									)}
 								</div>
-								{method.type === "card" && method.expMonth && method.expYear && (
-									<p className="text-muted-foreground text-sm">
-										Expires {String(method.expMonth).padStart(2, "0")}/{method.expYear}
-									</p>
-								)}
-								<p className="text-muted-foreground text-xs">Added {new Date(method.createdAt).toLocaleDateString()}</p>
+								{method.type === "card" &&
+									method.expMonth &&
+									method.expYear && (
+										<p className="text-muted-foreground text-sm">
+											Expires {String(method.expMonth).padStart(2, "0")}/
+											{method.expYear}
+										</p>
+									)}
+								<p className="text-muted-foreground text-xs">
+									Added {new Date(method.createdAt).toLocaleDateString()}
+								</p>
 							</div>
 						</div>
 
@@ -197,7 +213,11 @@ export function PaymentMethodsList({
 							{/* Remove payment method */}
 							<AlertDialog>
 								<AlertDialogTrigger asChild>
-									<Button disabled={isUpdating === method.id} size="sm" variant="ghost">
+									<Button
+										disabled={isUpdating === method.id}
+										size="sm"
+										variant="ghost"
+									>
 										<Trash2 className="size-4 text-destructive" />
 									</Button>
 								</AlertDialogTrigger>
@@ -205,8 +225,8 @@ export function PaymentMethodsList({
 									<AlertDialogHeader>
 										<AlertDialogTitle>Remove payment method?</AlertDialogTitle>
 										<AlertDialogDescription>
-											This will remove {formatPaymentMethodText(method)} from your account. This action cannot be
-											undone.
+											This will remove {formatPaymentMethodText(method)} from
+											your account. This action cannot be undone.
 										</AlertDialogDescription>
 									</AlertDialogHeader>
 									<AlertDialogFooter>

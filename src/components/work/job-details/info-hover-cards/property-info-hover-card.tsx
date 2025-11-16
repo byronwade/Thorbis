@@ -5,14 +5,28 @@
 
 "use client";
 
-import { Building2, Check, Clock, Copy, Home, Loader2, MapPin, Navigation, Route } from "lucide-react";
+import {
+	Building2,
+	Check,
+	Clock,
+	Copy,
+	Home,
+	Loader2,
+	MapPin,
+	Navigation,
+	Route,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TravelTimeData = {
@@ -43,7 +57,9 @@ type PropertyInfoHoverCardProps = {
 	};
 };
 
-export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) {
+export function PropertyInfoHoverCard({
+	property,
+}: PropertyInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
@@ -69,7 +85,12 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 					params.set("destinationLat", property.lat.toString());
 					params.set("destinationLon", property.lon.toString());
 				} else {
-					const destination = [property.address, property.city, property.state, property.zip_code]
+					const destination = [
+						property.address,
+						property.city,
+						property.state,
+						property.zip_code,
+					]
 						.filter(Boolean)
 						.join(", ");
 					params.set("destination", destination);
@@ -87,13 +108,30 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 		};
 
 		fetchTravelTime();
-	}, [property.address, property.city, property.state, property.zip_code, property.lat, property.lon]);
+	}, [
+		property.address,
+		property.city,
+		property.state,
+		property.zip_code,
+		property.lat,
+		property.lon,
+	]);
 
 	const displayName = property.name || property.address || "Service Location";
 
-	const fullAddress = [property.address, property.city, property.state, property.zip_code].filter(Boolean).join(", ");
+	const fullAddress = [
+		property.address,
+		property.city,
+		property.state,
+		property.zip_code,
+	]
+		.filter(Boolean)
+		.join(", ");
 
-	const coordinates = property.lat && property.lon ? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}` : null;
+	const coordinates =
+		property.lat && property.lon
+			? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}`
+			: null;
 
 	// Format duration for display
 	const formatDuration = (seconds: number): string => {
@@ -126,7 +164,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 							<div>
 								<h4 className="font-semibold text-sm">{displayName}</h4>
 								{property.property_type && (
-									<p className="text-muted-foreground text-xs capitalize">{property.property_type}</p>
+									<p className="text-muted-foreground text-xs capitalize">
+										{property.property_type}
+									</p>
 								)}
 							</div>
 						</div>
@@ -151,7 +191,11 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 									size="icon"
 									variant="ghost"
 								>
-									{copiedField === "address" ? <Check className="size-3" /> : <Copy className="size-3" />}
+									{copiedField === "address" ? (
+										<Check className="size-3" />
+									) : (
+										<Copy className="size-3" />
+									)}
 								</Button>
 							</div>
 						)}
@@ -171,7 +215,11 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 									size="icon"
 									variant="ghost"
 								>
-									{copiedField === "coordinates" ? <Check className="size-3" /> : <Copy className="size-3" />}
+									{copiedField === "coordinates" ? (
+										<Check className="size-3" />
+									) : (
+										<Copy className="size-3" />
+									)}
 								</Button>
 							</div>
 						)}
@@ -183,9 +231,13 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 							<Separator />
 							<div className="flex flex-wrap items-center gap-2">
 								{property.square_footage && (
-									<Badge variant="secondary">{property.square_footage.toLocaleString()} sq ft</Badge>
+									<Badge variant="secondary">
+										{property.square_footage.toLocaleString()} sq ft
+									</Badge>
 								)}
-								{property.year_built && <Badge variant="secondary">Built {property.year_built}</Badge>}
+								{property.year_built && (
+									<Badge variant="secondary">Built {property.year_built}</Badge>
+								)}
 							</div>
 						</>
 					)}
@@ -202,20 +254,28 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 								{isLoadingTravel && (
 									<div className="flex items-center gap-2 rounded-md bg-muted/50 p-2">
 										<Loader2 className="size-4 animate-spin text-muted-foreground" />
-										<span className="text-muted-foreground text-sm">Calculating...</span>
+										<span className="text-muted-foreground text-sm">
+											Calculating...
+										</span>
 									</div>
 								)}
 								{travelTime && !isLoadingTravel && (
 									<div className="flex items-center gap-3 rounded-md bg-muted/50 p-2">
 										<div className="flex items-center gap-1.5">
 											<Clock className="size-4 text-muted-foreground" />
-											<span className="font-semibold tabular-nums">{formatDuration(travelTime.duration)}</span>
-											<span className="text-muted-foreground text-xs">drive</span>
+											<span className="font-semibold tabular-nums">
+												{formatDuration(travelTime.duration)}
+											</span>
+											<span className="text-muted-foreground text-xs">
+												drive
+											</span>
 										</div>
 										<Separator className="h-4" orientation="vertical" />
 										<div className="flex items-center gap-1.5">
 											<Route className="size-4 text-muted-foreground" />
-											<span className="font-semibold tabular-nums">{travelTime.distance.toFixed(1)} mi</span>
+											<span className="font-semibold tabular-nums">
+												{travelTime.distance.toFixed(1)} mi
+											</span>
 										</div>
 									</div>
 								)}
@@ -232,7 +292,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 						<EntityTags
 							entityId={property.id}
 							entityType="property"
-							onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+							onUpdateTags={(id, tags) =>
+								updateEntityTags("property", id, tags)
+							}
 							tags={property.metadata?.tags || []}
 						/>
 					</div>

@@ -67,7 +67,11 @@ function formatDate(value: any): string {
 /**
  * Render custom column based on format
  */
-export function renderCustomColumn(item: any, fieldPath: string, columnFormat?: string): React.ReactNode {
+export function renderCustomColumn(
+	item: any,
+	fieldPath: string,
+	columnFormat?: string,
+): React.ReactNode {
 	const value = getNestedValue(item, fieldPath);
 
 	// Handle null/undefined values
@@ -80,15 +84,27 @@ export function renderCustomColumn(item: any, fieldPath: string, columnFormat?: 
 			return <span className="text-xs">{formatDate(value)}</span>;
 
 		case "currency":
-			return <span className="font-mono text-xs tabular-nums">{formatCurrency(value)}</span>;
+			return (
+				<span className="font-mono text-xs tabular-nums">
+					{formatCurrency(value)}
+				</span>
+			);
 
 		case "number":
-			return <span className="font-mono text-xs tabular-nums">{formatNumber(value)}</span>;
+			return (
+				<span className="font-mono text-xs tabular-nums">
+					{formatNumber(value)}
+				</span>
+			);
 
 		case "badge":
 			// Handle boolean values
 			if (typeof value === "boolean") {
-				return <Badge variant={value ? "default" : "secondary"}>{value ? "Yes" : "No"}</Badge>;
+				return (
+					<Badge variant={value ? "default" : "secondary"}>
+						{value ? "Yes" : "No"}
+					</Badge>
+				);
 			}
 			// Handle string values as badges
 			return (

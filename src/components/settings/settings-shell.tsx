@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { SettingsOverviewSection } from "@/lib/settings/overview-data";
-import { describeHealthStatus, getStatusColorClasses } from "@/lib/settings/status-utils";
+import {
+	describeHealthStatus,
+	getStatusColorClasses,
+} from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
 type SettingsShellProps = {
@@ -20,11 +23,18 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 			<div className="rounded-2xl border bg-card/90 p-4 shadow-sm">
 				<div className="flex items-center justify-between gap-3">
 					<div>
-						<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">Settings clusters</p>
-						<p className="text-muted-foreground text-sm">Jump between areas without leaving the page</p>
+						<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+							Settings clusters
+						</p>
+						<p className="text-muted-foreground text-sm">
+							Jump between areas without leaving the page
+						</p>
 					</div>
 				</div>
-				<nav aria-label="Settings clusters" className="mt-4 flex gap-3 overflow-x-auto pb-2">
+				<nav
+					aria-label="Settings clusters"
+					className="mt-4 flex gap-3 overflow-x-auto pb-2"
+				>
 					{sections.map((section) => {
 						const statusColors = getStatusColorClasses(section.status);
 						return (
@@ -40,7 +50,9 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 										</div>
 										<div>
 											<p className="font-medium text-sm">{section.title}</p>
-											<p className="text-muted-foreground text-xs">{describeHealthStatus(section.status)}</p>
+											<p className="text-muted-foreground text-xs">
+												{describeHealthStatus(section.status)}
+											</p>
 										</div>
 									</div>
 									<Badge
@@ -48,7 +60,7 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 											"font-semibold text-xs",
 											statusColors.text,
 											statusColors.background,
-											statusColors.border
+											statusColors.border,
 										)}
 										variant="outline"
 									>

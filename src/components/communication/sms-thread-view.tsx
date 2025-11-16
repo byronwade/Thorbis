@@ -29,7 +29,10 @@ import {
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { sendTextMessage } from "@/actions/telnyx";
-import type { CommunicationRecord, CompanyPhone } from "@/components/communication/communication-page-client";
+import type {
+	CommunicationRecord,
+	CompanyPhone,
+} from "@/components/communication/communication-page-client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,12 +45,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 import { cn } from "@/lib/utils";
 
-export type MessageStatus = "sending" | "sent" | "delivered" | "read" | "failed";
+export type MessageStatus =
+	| "sending"
+	| "sent"
+	| "delivered"
+	| "read"
+	| "failed";
 export type MessageDirection = "sent" | "received";
 type MediaType = "image" | "video" | "file";
 
@@ -88,24 +102,39 @@ type SMSThreadViewProps = {
 	onMessageCreated: (record: CommunicationRecord) => void;
 };
 
-export function SMSThreadView({ threads, companyId, companyPhones, onMessageCreated }: SMSThreadViewProps) {
-	const [selectedConversationId, setSelectedConversationId] = useState<string | null>(threads[0]?.id ?? null);
+export function SMSThreadView({
+	threads,
+	companyId,
+	companyPhones,
+	onMessageCreated,
+}: SMSThreadViewProps) {
+	const [selectedConversationId, setSelectedConversationId] = useState<
+		string | null
+	>(threads[0]?.id ?? null);
 	const [messageText, setMessageText] = useState("");
 	const [conversationFilter, setConversationFilter] = useState("");
 	const [isTyping, setIsTyping] = useState(false);
-	const [selectedSender, setSelectedSender] = useState(companyPhones[0]?.number ?? "");
+	const [selectedSender, setSelectedSender] = useState(
+		companyPhones[0]?.number ?? "",
+	);
 	const [isSending, startSending] = useTransition();
 	const { toast } = useToast();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const addPendingMessage = useCommunicationStore((state) => state.addPendingMessage);
+	const addPendingMessage = useCommunicationStore(
+		(state) => state.addPendingMessage,
+	);
 	useEffect(() => {
 		if (!companyPhones.find((phone) => phone.number === selectedSender)) {
 			setSelectedSender(companyPhones[0]?.number ?? "");
 		}
 	}, [companyPhones, selectedSender]);
 
-	const resolvePendingMessage = useCommunicationStore((state) => state.resolvePendingMessage);
-	const setActiveThreadId = useCommunicationStore((state) => state.setActiveThreadId);
+	const resolvePendingMessage = useCommunicationStore(
+		(state) => state.resolvePendingMessage,
+	);
+	const setActiveThreadId = useCommunicationStore(
+		(state) => state.setActiveThreadId,
+	);
 
 	const filteredThreads = useMemo(() => {
 		if (!conversationFilter.trim()) {
@@ -113,12 +142,16 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 		}
 		const query = conversationFilter.toLowerCase();
 		return threads.filter(
-			(thread) => thread.contactName.toLowerCase().includes(query) || thread.contactNumber.toLowerCase().includes(query)
+			(thread) =>
+				thread.contactName.toLowerCase().includes(query) ||
+				thread.contactNumber.toLowerCase().includes(query),
 		);
 	}, [threads, conversationFilter]);
 
 	const selectedConversation =
-		threads.find((thread) => thread.id === selectedConversationId) ?? filteredThreads[0] ?? threads[0];
+		threads.find((thread) => thread.id === selectedConversationId) ??
+		filteredThreads[0] ??
+		threads[0];
 
 	useEffect(() => {
 		if (selectedConversationId) {
@@ -139,13 +172,17 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 	}, [filteredThreads, selectedConversation]);
 
 	const handleSendMessage = () => {
-		if (!(selectedConversation && messageText.trim() && selectedSender) || isSending) {
+		if (
+			!(selectedConversation && messageText.trim() && selectedSender) ||
+			isSending
+		) {
 			return;
 		}
 
 		const draft = messageText.trim();
 		const normalizedTo =
-			selectedConversation.contactNumberRaw.replace(/\D/g, "") || selectedConversation.contactNumber.replace(/\D/g, "");
+			selectedConversation.contactNumberRaw.replace(/\D/g, "") ||
+			selectedConversation.contactNumber.replace(/\D/g, "");
 
 		if (!normalizedTo) {
 			toast.error("Conversation is missing a valid phone number.");
@@ -153,7 +190,9 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 		}
 
 		const tempId =
-			typeof crypto !== "undefined" && crypto.randomUUID ? `temp-${crypto.randomUUID()}` : `temp-${Date.now()}`;
+			typeof crypto !== "undefined" && crypto.randomUUID
+				? `temp-${crypto.randomUUID()}`
+				: `temp-${Date.now()}`;
 
 		const timestamp = new Date().toISOString();
 
@@ -185,7 +224,11 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 			if (result.success && "data" in result && result.data) {
 				resolvePendingMessage(selectedConversation.id, tempId);
 				onMessageCreated(
-					mapOutboundCommunicationRecord(result.data as Record<string, unknown>, selectedConversation, selectedSender)
+					mapOutboundCommunicationRecord(
+						result.data as Record<string, unknown>,
+						selectedConversation,
+						selectedSender,
+					),
 				);
 			} else {
 				resolvePendingMessage(selectedConversation.id, tempId);
@@ -216,13 +259,15 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 				{/* Conversation List */}
 				<div className="divide-y overflow-auto">
 					{filteredThreads.length === 0 ? (
-						<div className="p-6 text-center text-muted-foreground text-sm">No text conversations yet.</div>
+						<div className="p-6 text-center text-muted-foreground text-sm">
+							No text conversations yet.
+						</div>
 					) : (
 						filteredThreads.map((conv) => (
 							<button
 								className={cn(
 									"flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-muted/50",
-									selectedConversation?.id === conv.id && "bg-muted"
+									selectedConversation?.id === conv.id && "bg-muted",
 								)}
 								key={conv.id}
 								onClick={() => setSelectedConversationId(conv.id)}
@@ -236,14 +281,20 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 									<div className="mb-1 flex items-center justify-between">
 										<span className="font-medium">{conv.contactName}</span>
 										{conv.lastMessageTime && (
-											<span className="text-muted-foreground text-xs">{formatTime(conv.lastMessageTime)}</span>
+											<span className="text-muted-foreground text-xs">
+												{formatTime(conv.lastMessageTime)}
+											</span>
 										)}
 									</div>
 
 									<div className="flex items-center justify-between">
-										<p className="line-clamp-1 text-muted-foreground text-sm">{conv.lastMessage}</p>
+										<p className="line-clamp-1 text-muted-foreground text-sm">
+											{conv.lastMessage}
+										</p>
 										{conv.unreadCount > 0 && (
-											<Badge className="ml-2 size-5 rounded-full p-0 text-xs">{conv.unreadCount}</Badge>
+											<Badge className="ml-2 size-5 rounded-full p-0 text-xs">
+												{conv.unreadCount}
+											</Badge>
 										)}
 									</div>
 								</div>
@@ -260,11 +311,17 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 					<div className="flex items-center justify-between border-b bg-background px-4 py-3">
 						<div className="flex items-center gap-3">
 							<Avatar>
-								<AvatarFallback>{selectedConversation.contactInitials}</AvatarFallback>
+								<AvatarFallback>
+									{selectedConversation.contactInitials}
+								</AvatarFallback>
 							</Avatar>
 							<div>
-								<div className="font-medium">{selectedConversation.contactName}</div>
-								<div className="text-muted-foreground text-xs">{selectedConversation.contactNumber}</div>
+								<div className="font-medium">
+									{selectedConversation.contactName}
+								</div>
+								<div className="text-muted-foreground text-xs">
+									{selectedConversation.contactNumber}
+								</div>
 							</div>
 						</div>
 
@@ -298,7 +355,10 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 									contactInitials={selectedConversation.contactInitials}
 									key={message.id}
 									message={message}
-									showAvatar={index === 0 || messages[index - 1].direction !== message.direction}
+									showAvatar={
+										index === 0 ||
+										messages[index - 1].direction !== message.direction
+									}
 								/>
 							))}
 
@@ -306,7 +366,9 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 							{isTyping && (
 								<div className="flex items-end gap-2">
 									<Avatar className="size-8">
-										<AvatarFallback className="text-xs">{selectedConversation.contactInitials}</AvatarFallback>
+										<AvatarFallback className="text-xs">
+											{selectedConversation.contactInitials}
+										</AvatarFallback>
 									</Avatar>
 									<Card className="bg-background">
 										<CardContent className="flex items-center gap-1 p-3">
@@ -327,7 +389,8 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 						<div className="mx-auto flex max-w-4xl flex-col gap-3">
 							{companyPhones.length === 0 && (
 								<div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-warning text-xs dark:border-warning/60 dark:bg-warning/15">
-									Add a company phone number in Settings → Communications → Phone Numbers to send text messages.
+									Add a company phone number in Settings → Communications →
+									Phone Numbers to send text messages.
 								</div>
 							)}
 							<div className="flex items-center gap-2">
@@ -375,7 +438,11 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 								<div className="flex flex-1 justify-end">
 									<Button
 										disabled={
-											!(messageText.trim() && selectedConversation && selectedSender) ||
+											!(
+												messageText.trim() &&
+												selectedConversation &&
+												selectedSender
+											) ||
 											companyPhones.length === 0 ||
 											isSending
 										}
@@ -402,7 +469,9 @@ export function SMSThreadView({ threads, companyId, companyPhones, onMessageCrea
 			) : (
 				<div className="flex flex-1 items-center justify-center">
 					<div className="text-center">
-						<div className="mb-2 text-muted-foreground">Select a conversation to start messaging</div>
+						<div className="mb-2 text-muted-foreground">
+							Select a conversation to start messaging
+						</div>
 					</div>
 				</div>
 			)}
@@ -427,7 +496,9 @@ function MessageBubble({
 			{!isSent && (
 				<Avatar className="size-8">
 					{showAvatar ? (
-						<AvatarFallback className="text-xs">{contactInitials}</AvatarFallback>
+						<AvatarFallback className="text-xs">
+							{contactInitials}
+						</AvatarFallback>
 					) : (
 						<div className="size-8" />
 					)}
@@ -447,15 +518,27 @@ function MessageBubble({
 
 				{/* Text Message */}
 				{message.content && (
-					<Card className={cn("relative", isSent ? "bg-primary text-primary-foreground" : "bg-background")}>
+					<Card
+						className={cn(
+							"relative",
+							isSent ? "bg-primary text-primary-foreground" : "bg-background",
+						)}
+					>
 						<CardContent className="p-3">
-							<p className="whitespace-pre-wrap break-words text-sm">{message.content}</p>
+							<p className="whitespace-pre-wrap break-words text-sm">
+								{message.content}
+							</p>
 						</CardContent>
 					</Card>
 				)}
 
 				{/* Message Footer */}
-				<div className={cn("flex items-center gap-1 px-1 text-muted-foreground text-xs", isSent && "justify-end")}>
+				<div
+					className={cn(
+						"flex items-center gap-1 px-1 text-muted-foreground text-xs",
+						isSent && "justify-end",
+					)}
+				>
 					<span>{formatMessageTime(message.timestamp)}</span>
 					{isSent && <MessageStatusIcon status={message.status} />}
 				</div>
@@ -467,7 +550,11 @@ function MessageBubble({
 	);
 }
 
-function MediaAttachment({ media }: { media: NonNullable<ThreadMessage["media"]>[0] }) {
+function MediaAttachment({
+	media,
+}: {
+	media: NonNullable<ThreadMessage["media"]>[0];
+}) {
 	if (media.type === "image") {
 		return (
 			<Card className="overflow-hidden">
@@ -491,8 +578,14 @@ function MediaAttachment({ media }: { media: NonNullable<ThreadMessage["media"]>
 					<File className="size-10 text-muted-foreground" />
 				)}
 				<div className="min-w-0 flex-1">
-					<div className="truncate font-medium text-sm">{media.fileName || "Attachment"}</div>
-					{media.fileSize && <div className="text-muted-foreground text-xs">{formatFileSize(media.fileSize)}</div>}
+					<div className="truncate font-medium text-sm">
+						{media.fileName || "Attachment"}
+					</div>
+					{media.fileSize && (
+						<div className="text-muted-foreground text-xs">
+							{formatFileSize(media.fileSize)}
+						</div>
+					)}
 				</div>
 			</CardContent>
 		</Card>
@@ -564,16 +657,24 @@ function formatFileSize(bytes: number): string {
 function mapOutboundCommunicationRecord(
 	data: Record<string, unknown>,
 	thread: ConversationThread,
-	fromNumber: string
+	fromNumber: string,
 ): CommunicationRecord {
-	const createdAt = (data.created_at as string | undefined) ?? new Date().toISOString();
-	const fromAddress = (data.from_address as string | undefined) ?? fromNumber ?? null;
-	const toAddress = (data.to_address as string | undefined) ?? thread.contactNumberRaw ?? thread.contactNumber;
+	const createdAt =
+		(data.created_at as string | undefined) ?? new Date().toISOString();
+	const fromAddress =
+		(data.from_address as string | undefined) ?? fromNumber ?? null;
+	const toAddress =
+		(data.to_address as string | undefined) ??
+		thread.contactNumberRaw ??
+		thread.contactNumber;
 
 	return {
 		id: String(data.id),
 		type: (data.type as string) ?? "sms",
-		direction: ((data.direction as string) ?? "outbound") === "inbound" ? "inbound" : "outbound",
+		direction:
+			((data.direction as string) ?? "outbound") === "inbound"
+				? "inbound"
+				: "outbound",
 		status: (data.status as string) ?? "queued",
 		priority: ((data.priority as string) ?? null) as string | null,
 		subject: (data.subject as string) ?? null,
@@ -582,7 +683,8 @@ function mapOutboundCommunicationRecord(
 		read_at: (data.read_at as string | null) ?? null,
 		from_address: fromAddress,
 		to_address: toAddress,
-		customer_id: thread.customerId ?? (data.customer_id as string | null) ?? null,
+		customer_id:
+			thread.customerId ?? (data.customer_id as string | null) ?? null,
 		phone_number_id: (data.phone_number_id as string | null) ?? null,
 		job_id: (data.job_id as string | null) ?? null,
 		property_id: (data.property_id as string | null) ?? null,
@@ -596,9 +698,12 @@ function mapOutboundCommunicationRecord(
 					last_name: null,
 				}
 			: null,
-		telnyx_call_control_id: (data.telnyx_call_control_id as string | null) ?? null,
-		telnyx_call_session_id: (data.telnyx_call_session_id as string | null) ?? null,
+		telnyx_call_control_id:
+			(data.telnyx_call_control_id as string | null) ?? null,
+		telnyx_call_session_id:
+			(data.telnyx_call_session_id as string | null) ?? null,
 		call_recording_url: (data.call_recording_url as string | null) ?? null,
-		provider_metadata: (data.provider_metadata as Record<string, unknown> | null) ?? null,
+		provider_metadata:
+			(data.provider_metadata as Record<string, unknown> | null) ?? null,
 	};
 }

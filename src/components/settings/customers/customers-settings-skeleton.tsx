@@ -16,7 +16,10 @@ export function CustomersSettingsSkeleton() {
 			{/* Cards skeleton */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 				{[1, 2, 3, 4, 5].map((i) => (
-					<div className="h-32 animate-pulse rounded-lg border bg-card p-6" key={i}>
+					<div
+						className="h-32 animate-pulse rounded-lg border bg-card p-6"
+						key={i}
+					>
 						<div className="flex items-start gap-4">
 							<div className="size-12 rounded-lg bg-muted" />
 							<div className="flex-1 space-y-2">

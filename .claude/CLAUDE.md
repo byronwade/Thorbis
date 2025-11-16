@@ -181,6 +181,304 @@ Already documented - provides database operations:
 
 ---
 
+## 🚫 STATE MANAGEMENT ANTI-PATTERNS (NEVER DO THIS)
+
+**CRITICAL: This project uses a strict state management architecture. Follow these rules without exception.**
+
+### ❌ ANTI-PATTERN #1: Data Fetching in useEffect
+
+**WRONG - Client Component with useEffect data fetching:**
+```typescript
+"use client"
+export function CustomerList() {
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const result = await getCustomers();
+      setCustomers(result.data);
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  return <div>{customers.map(...)}</div>;
+}
+```
+
+**✅ CORRECT - Server Component with direct async/await:**
+```typescript
+// Server Component (no "use client")
+export default async function CustomerList() {
+  const customers = await getCustomers(); // Direct server-side fetch
+  return <div>{customers.map(...)}</div>;
+}
+```
+
+**✅ CORRECT - React Query for Client Components:**
+```typescript
+"use client"
+import { useQuery } from "@tanstack/react-query";
+
+export function CustomerList() {
+  const { data: customers, isLoading } = useQuery({
+    queryKey: ['customers'],
+    queryFn: getCustomers,
+  });
+
+  if (isLoading) return <Skeleton />;
+  return <div>{customers?.map(...)}</div>;
+}
+```
+
+---
+
+### ❌ ANTI-PATTERN #2: useState for Shared State
+
+**WRONG - Duplicated state across components:**
+```typescript
+"use client"
+// Toolbar component
+export function Toolbar() {
+  const [activeFilter, setActiveFilter] = useState("all");
+  // State isolated - can't share!
+}
+
+// Table component
+export function DataTable() {
+  const [activeFilter, setActiveFilter] = useState("all");
+  // Duplicate state - out of sync!
+}
+```
+
+**✅ CORRECT - Zustand store for shared state:**
+```typescript
+// lib/stores/filters-store.ts
+import { create } from "zustand";
+
+export const useFiltersStore = create((set) => ({
+  activeFilter: "all",
+  setActiveFilter: (filter) => set({ activeFilter: filter })
+}));
+
+// Both components stay in sync
+"use client"
+export function Toolbar() {
+  const activeFilter = useFiltersStore((state) => state.activeFilter);
+  const setActiveFilter = useFiltersStore((state) => state.setActiveFilter);
+}
+
+export function DataTable() {
+  const activeFilter = useFiltersStore((state) => state.activeFilter);
+  // Same state - always in sync!
+}
+```
+
+---
+
+### ❌ ANTI-PATTERN #3: Manual Loading/Error States
+
+**WRONG - Manual state management:**
+```typescript
+"use client"
+export function Notes({ customerId }: { customerId: string }) {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadNotes() {
+      try {
+        setIsLoading(true);
+        const result = await getNotes(customerId);
+        setNotes(result.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    loadNotes();
+  }, [customerId]);
+
+  // Manual loading/error handling...
+}
+```
+
+**✅ CORRECT - React Query handles everything:**
+```typescript
+"use client"
+import { useQuery } from "@tanstack/react-query";
+
+export function Notes({ customerId }: { customerId: string }) {
+  const { data: notes, isLoading, error } = useQuery({
+    queryKey: ['notes', customerId],
+    queryFn: () => getNotes(customerId),
+  });
+
+  // React Query handles loading, error, caching, refetching automatically
+  if (isLoading) return <Skeleton />;
+  if (error) return <ErrorState error={error} />;
+  return <div>{notes?.map(...)}</div>;
+}
+```
+
+---
+
+### ✅ WHEN TO USE useState (Local UI State Only)
+
+**useState is CORRECT for:**
+- Modal open/close state
+- Form input values (controlled inputs)
+- Dropdown expanded state
+- Hover/focus states
+- Animation states
+- Accordion expanded/collapsed
+- Temporary UI flags
+
+**Example of CORRECT useState usage:**
+```typescript
+"use client"
+export function SearchInput() {
+  // ✅ Local UI state - doesn't need to be shared
+  const [isOpen, setIsOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+
+  return (
+    <input
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onFocus={() => setIsOpen(true)}
+    />
+  );
+}
+```
+
+---
+
+### ✅ WHEN TO USE useEffect (Side Effects Only)
+
+**useEffect is CORRECT for:**
+- Browser API interactions (localStorage, window events)
+- Event listeners (keyboard shortcuts, scroll events)
+- Timers and intervals
+- Third-party library initialization
+- Responding to prop changes for UI effects
+
+**Example of CORRECT useEffect usage:**
+```typescript
+"use client"
+export function AutoSave({ data }: { data: any }) {
+  // ✅ Side effect - save to localStorage
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem('draft', JSON.stringify(data));
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [data]);
+
+  return null;
+}
+
+export function KeyboardShortcuts() {
+  // ✅ Side effect - event listener
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'k' && e.metaKey) {
+        // Open search...
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  return null;
+}
+```
+
+---
+
+### 🎯 STATE MANAGEMENT DECISION TREE
+
+```
+Need to manage state?
+│
+├─ Is it server-renderable data?
+│  └─ YES → ✅ Use Server Component with async/await
+│
+├─ Is it shared across multiple components?
+│  └─ YES → ✅ Use Zustand store
+│
+├─ Is it client-side data that needs caching/refetching?
+│  └─ YES → ✅ Use React Query
+│
+├─ Is it local UI state (modal open, input value)?
+│  └─ YES → ✅ Use useState
+│
+└─ Is it a side effect (event listener, timer)?
+   └─ YES → ✅ Use useEffect
+```
+
+---
+
+### 📦 REACT QUERY SETUP
+
+**This project has React Query installed and configured.**
+
+**Provider location:** `/src/components/providers/query-provider.tsx`
+**Already added to:** `/src/app/layout.tsx`
+
+**Query configuration:**
+- Stale time: 5 minutes (data considered fresh)
+- Refetch on window focus: Yes
+- Retry failed requests: Once
+- Cache time: 10 minutes
+- DevTools: Enabled in development
+
+**Example refactored component:**
+See `/src/components/customers/customer-notes-table.tsx` for a complete example with:
+- ✅ useQuery for data fetching
+- ✅ useMutation for create/delete operations
+- ✅ Optimistic updates for instant UI feedback
+- ✅ Automatic cache invalidation
+- ✅ Loading skeletons
+- ✅ Error boundaries
+
+---
+
+### 📋 REFACTORING CHECKLIST
+
+When refactoring components with data fetching:
+
+**Before:**
+```typescript
+"use client"
+const [data, setData] = useState([]);
+useEffect(() => { fetchData().then(setData) }, []);
+```
+
+**After (React Query):**
+```typescript
+"use client"
+import { useQuery } from "@tanstack/react-query";
+const { data, isLoading } = useQuery({
+  queryKey: ['my-data'],
+  queryFn: fetchData
+});
+```
+
+**Migration steps:**
+1. Import `useQuery` and `useMutation` from `@tanstack/react-query`
+2. Replace `useState` + `useEffect` with `useQuery`
+3. Replace manual mutations with `useMutation`
+4. Add `queryClient.invalidateQueries()` after mutations
+5. Use `isLoading` and `error` from query
+6. Add loading skeleton and error states
+7. Test optimistic updates if needed
+
+---
+
 ## 📚 REQUIRED CONTEXT
 
 **IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../docs/AGENTS.md) before writing any code.**

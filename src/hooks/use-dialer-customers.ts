@@ -65,7 +65,9 @@ export function useDialerCustomers(shouldFetch = false) {
 					setError(result.error || "Failed to load customers");
 				}
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Failed to load customers");
+				setError(
+					err instanceof Error ? err.message : "Failed to load customers",
+				);
 			} finally {
 				setIsLoading(false);
 			}

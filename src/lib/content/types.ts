@@ -1,6 +1,12 @@
 export type ContentStatus = "draft" | "scheduled" | "published" | "archived";
 
-export type ResourceType = "case_study" | "webinar" | "template" | "guide" | "community" | "status_update";
+export type ResourceType =
+	| "case_study"
+	| "webinar"
+	| "template"
+	| "guide"
+	| "community"
+	| "status_update";
 
 export type ContentTag = {
 	id: string;

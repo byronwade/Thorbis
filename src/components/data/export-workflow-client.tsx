@@ -6,14 +6,33 @@
  * Manages multi-step export process
  */
 
-import { Calendar, CheckCircle, Download, FileSpreadsheet, Filter, Layout } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle,
+	Download,
+	FileSpreadsheet,
+	Filter,
+	Layout,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 type ExportStep = "filters" | "fields" | "format" | "schedule" | "preview";
 
@@ -41,7 +60,8 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 		{ id: "preview", label: "Preview", icon: <Download className="size-4" /> },
 	];
 
-	const getStepIndex = (step: ExportStep) => steps.findIndex((s) => s.id === step);
+	const getStepIndex = (step: ExportStep) =>
+		steps.findIndex((s) => s.id === step);
 	const currentStepIndex = getStepIndex(currentStep);
 
 	const formatDataType = (type: string) =>
@@ -68,8 +88,12 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 		<div className="container mx-auto max-w-5xl space-y-6 py-8">
 			{/* Header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Export {formatDataType(dataType)}</h1>
-				<p className="mt-2 text-muted-foreground">Configure your export settings and download your data</p>
+				<h1 className="font-bold text-3xl tracking-tight">
+					Export {formatDataType(dataType)}
+				</h1>
+				<p className="mt-2 text-muted-foreground">
+					Configure your export settings and download your data
+				</p>
 			</div>
 
 			{/* Progress Steps */}
@@ -86,18 +110,26 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 												: "border-muted bg-muted text-muted-foreground"
 										}`}
 									>
-										{index < currentStepIndex ? <CheckCircle className="size-5" /> : step.icon}
+										{index < currentStepIndex ? (
+											<CheckCircle className="size-5" />
+										) : (
+											step.icon
+										)}
 									</div>
 									<span
 										className={`mt-2 text-xs ${
-											index <= currentStepIndex ? "font-medium text-foreground" : "text-muted-foreground"
+											index <= currentStepIndex
+												? "font-medium text-foreground"
+												: "text-muted-foreground"
 										}`}
 									>
 										{step.label}
 									</span>
 								</div>
 								{index < steps.length - 1 && (
-									<div className={`mx-2 h-0.5 flex-1 ${index < currentStepIndex ? "bg-primary" : "bg-muted"}`} />
+									<div
+										className={`mx-2 h-0.5 flex-1 ${index < currentStepIndex ? "bg-primary" : "bg-muted"}`}
+									/>
 								)}
 							</div>
 						))}
@@ -110,7 +142,9 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Apply Filters</CardTitle>
-						<CardDescription>Filter the data you want to export (optional)</CardDescription>
+						<CardDescription>
+							Filter the data you want to export (optional)
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -162,7 +196,10 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-end gap-2">
-							<Button onClick={() => setCurrentStep("fields")} variant="default">
+							<Button
+								onClick={() => setCurrentStep("fields")}
+								variant="default"
+							>
 								Next: Select Fields
 							</Button>
 						</div>
@@ -174,7 +211,9 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Select Fields</CardTitle>
-						<CardDescription>Choose which fields to include in the export</CardDescription>
+						<CardDescription>
+							Choose which fields to include in the export
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between">
@@ -186,7 +225,10 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 
 						<div className="grid gap-3 md:grid-cols-2">
 							{availableFields.map((field) => (
-								<div className="flex items-center space-x-2 rounded-lg border p-3" key={field.id}>
+								<div
+									className="flex items-center space-x-2 rounded-lg border p-3"
+									key={field.id}
+								>
 									<Checkbox defaultChecked={field.selected} id={field.id} />
 									<Label className="text-sm" htmlFor={field.id}>
 										{field.label}
@@ -196,10 +238,16 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button onClick={() => setCurrentStep("filters")} variant="outline">
+							<Button
+								onClick={() => setCurrentStep("filters")}
+								variant="outline"
+							>
 								Back
 							</Button>
-							<Button onClick={() => setCurrentStep("format")} variant="default">
+							<Button
+								onClick={() => setCurrentStep("format")}
+								variant="default"
+							>
 								Next: Choose Format
 							</Button>
 						</div>
@@ -211,13 +259,17 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Export Format</CardTitle>
-						<CardDescription>Choose the file format for your export</CardDescription>
+						<CardDescription>
+							Choose the file format for your export
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-3">
 							<button
 								className={`flex items-center gap-4 rounded-lg border-2 p-4 text-left transition-colors ${
-									selectedFormat === "xlsx" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+									selectedFormat === "xlsx"
+										? "border-primary bg-primary/5"
+										: "border-border hover:border-primary/50"
 								}`}
 								onClick={() => setSelectedFormat("xlsx")}
 								type="button"
@@ -225,14 +277,20 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 								<FileSpreadsheet className="size-8 text-success" />
 								<div className="flex-1">
 									<p className="font-medium">Excel (.xlsx)</p>
-									<p className="text-muted-foreground text-sm">Modern Excel format with formatting support</p>
+									<p className="text-muted-foreground text-sm">
+										Modern Excel format with formatting support
+									</p>
 								</div>
-								{selectedFormat === "xlsx" && <Badge className="bg-primary">Selected</Badge>}
+								{selectedFormat === "xlsx" && (
+									<Badge className="bg-primary">Selected</Badge>
+								)}
 							</button>
 
 							<button
 								className={`flex items-center gap-4 rounded-lg border-2 p-4 text-left transition-colors ${
-									selectedFormat === "csv" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+									selectedFormat === "csv"
+										? "border-primary bg-primary/5"
+										: "border-border hover:border-primary/50"
 								}`}
 								onClick={() => setSelectedFormat("csv")}
 								type="button"
@@ -240,14 +298,20 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 								<FileSpreadsheet className="size-8 text-primary" />
 								<div className="flex-1">
 									<p className="font-medium">CSV (.csv)</p>
-									<p className="text-muted-foreground text-sm">Universal format compatible with all software</p>
+									<p className="text-muted-foreground text-sm">
+										Universal format compatible with all software
+									</p>
 								</div>
-								{selectedFormat === "csv" && <Badge className="bg-primary">Selected</Badge>}
+								{selectedFormat === "csv" && (
+									<Badge className="bg-primary">Selected</Badge>
+								)}
 							</button>
 
 							<button
 								className={`flex items-center gap-4 rounded-lg border-2 p-4 text-left transition-colors ${
-									selectedFormat === "pdf" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+									selectedFormat === "pdf"
+										? "border-primary bg-primary/5"
+										: "border-border hover:border-primary/50"
 								}`}
 								onClick={() => setSelectedFormat("pdf")}
 								type="button"
@@ -255,17 +319,27 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 								<FileSpreadsheet className="size-8 text-destructive" />
 								<div className="flex-1">
 									<p className="font-medium">PDF (.pdf)</p>
-									<p className="text-muted-foreground text-sm">Print-ready format with charts and formatting</p>
+									<p className="text-muted-foreground text-sm">
+										Print-ready format with charts and formatting
+									</p>
 								</div>
-								{selectedFormat === "pdf" && <Badge className="bg-primary">Selected</Badge>}
+								{selectedFormat === "pdf" && (
+									<Badge className="bg-primary">Selected</Badge>
+								)}
 							</button>
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button onClick={() => setCurrentStep("fields")} variant="outline">
+							<Button
+								onClick={() => setCurrentStep("fields")}
+								variant="outline"
+							>
 								Back
 							</Button>
-							<Button onClick={() => setCurrentStep("schedule")} variant="default">
+							<Button
+								onClick={() => setCurrentStep("schedule")}
+								variant="default"
+							>
 								Next: Schedule Options
 							</Button>
 						</div>
@@ -277,7 +351,9 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Schedule Export</CardTitle>
-						<CardDescription>Optionally schedule recurring exports (skip for one-time export)</CardDescription>
+						<CardDescription>
+							Optionally schedule recurring exports (skip for one-time export)
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
@@ -303,14 +379,22 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 								placeholder="email@example.com"
 								type="email"
 							/>
-							<p className="mt-1 text-muted-foreground text-xs">Leave empty to skip email delivery</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								Leave empty to skip email delivery
+							</p>
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button onClick={() => setCurrentStep("format")} variant="outline">
+							<Button
+								onClick={() => setCurrentStep("format")}
+								variant="outline"
+							>
 								Back
 							</Button>
-							<Button onClick={() => setCurrentStep("preview")} variant="default">
+							<Button
+								onClick={() => setCurrentStep("preview")}
+								variant="default"
+							>
 								Next: Preview & Download
 							</Button>
 						</div>
@@ -322,14 +406,18 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Preview & Download</CardTitle>
-						<CardDescription>Review your export settings and download the file</CardDescription>
+						<CardDescription>
+							Review your export settings and download the file
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-3">
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
 									<p className="font-medium text-sm">Total Records</p>
-									<p className="text-muted-foreground text-xs">1,247 records will be exported</p>
+									<p className="text-muted-foreground text-xs">
+										1,247 records will be exported
+									</p>
 								</div>
 								<Badge>1,247</Badge>
 							</div>
@@ -337,7 +425,9 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
 									<p className="font-medium text-sm">File Format</p>
-									<p className="text-muted-foreground text-xs">{selectedFormat.toUpperCase()}</p>
+									<p className="text-muted-foreground text-xs">
+										{selectedFormat.toUpperCase()}
+									</p>
 								</div>
 								<Badge>{selectedFormat}</Badge>
 							</div>
@@ -345,14 +435,18 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
 									<p className="font-medium text-sm">Selected Fields</p>
-									<p className="text-muted-foreground text-xs">6 of 10 fields selected</p>
+									<p className="text-muted-foreground text-xs">
+										6 of 10 fields selected
+									</p>
 								</div>
 								<Badge>6 Fields</Badge>
 							</div>
 						</div>
 
 						<div className="rounded-lg border p-4">
-							<p className="mb-2 font-medium text-sm">Preview (First 10 Rows)</p>
+							<p className="mb-2 font-medium text-sm">
+								Preview (First 10 Rows)
+							</p>
 							<div className="overflow-x-auto">
 								<table className="w-full text-sm">
 									<thead>
@@ -378,7 +472,10 @@ export function ExportWorkflowClient({ dataType }: ExportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button onClick={() => setCurrentStep("schedule")} variant="outline">
+							<Button
+								onClick={() => setCurrentStep("schedule")}
+								variant="outline"
+							>
 								Back
 							</Button>
 							<Button variant="default">

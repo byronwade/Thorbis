@@ -36,11 +36,16 @@ type TeamMember = {
 	skills: string[];
 };
 
-export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignmentsWidgetProps) {
+export function TeamAssignmentsWidget({
+	job,
+	teamAssignments = [],
+}: TeamAssignmentsWidgetProps) {
 	// Transform team assignments from database
 	const teamMembers: TeamMember[] = (teamAssignments as any[])
 		.map((assignment) => {
-			const teamMember = Array.isArray(assignment.team_member) ? assignment.team_member[0] : assignment.team_member;
+			const teamMember = Array.isArray(assignment.team_member)
+				? assignment.team_member[0]
+				: assignment.team_member;
 
 			const user = teamMember?.users
 				? Array.isArray(teamMember.users)
@@ -67,7 +72,9 @@ export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignm
 
 	// TODO: Consider showing fallback assignment details if available when no team assignments exist
 
-	const primaryAssignee = teamMembers.find((member) => member.role === "primary");
+	const primaryAssignee = teamMembers.find(
+		(member) => member.role === "primary",
+	);
 	const assistants = teamMembers.filter((member) => member.role !== "primary");
 
 	const statusConfig = {
@@ -102,7 +109,9 @@ export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignm
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<Users className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-					<p className="mb-2 text-muted-foreground text-sm">No team assigned yet</p>
+					<p className="mb-2 text-muted-foreground text-sm">
+						No team assigned yet
+					</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/work/${job.id}/assign`}>
 							<UserCheck className="mr-2 size-4" />
@@ -128,13 +137,18 @@ export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignm
 			<div className="rounded-lg border bg-gradient-to-br from-primary/5 to-primary/10 p-4">
 				<div className="mb-2 flex items-center gap-2">
 					<UserCheck className="size-4 text-primary" />
-					<span className="font-medium text-primary text-xs uppercase tracking-wide">Lead Technician</span>
+					<span className="font-medium text-primary text-xs uppercase tracking-wide">
+						Lead Technician
+					</span>
 				</div>
 
 				<div className="flex items-start gap-3">
 					{/* Avatar */}
 					<Avatar className="size-12">
-						<AvatarImage alt={primaryAssignee.name} src={primaryAssignee.avatar} />
+						<AvatarImage
+							alt={primaryAssignee.name}
+							src={primaryAssignee.avatar}
+						/>
 						<AvatarFallback className="bg-primary text-primary-foreground">
 							{getInitials(primaryAssignee.name)}
 						</AvatarFallback>
@@ -143,9 +157,18 @@ export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignm
 					{/* Info */}
 					<div className="flex-1 space-y-2">
 						<div>
-							<h5 className="font-semibold text-base">{primaryAssignee.name}</h5>
-							<Badge className="mt-1 text-xs" variant={statusConfig[primaryAssignee.status].variant}>
-								<span className={"mr-1.5 inline-block size-1.5 rounded-full bg-current"} />
+							<h5 className="font-semibold text-base">
+								{primaryAssignee.name}
+							</h5>
+							<Badge
+								className="mt-1 text-xs"
+								variant={statusConfig[primaryAssignee.status].variant}
+							>
+								<span
+									className={
+										"mr-1.5 inline-block size-1.5 rounded-full bg-current"
+									}
+								/>
 								{statusConfig[primaryAssignee.status].label}
 							</Badge>
 						</div>
@@ -182,30 +205,48 @@ export function TeamAssignmentsWidget({ job, teamAssignments = [] }: TeamAssignm
 						<h5 className="mb-3 font-medium text-sm">Team Members</h5>
 						<div className="space-y-3">
 							{assistants.map((member) => (
-								<div className="flex items-start gap-3 rounded-lg border p-3" key={member.id}>
+								<div
+									className="flex items-start gap-3 rounded-lg border p-3"
+									key={member.id}
+								>
 									{/* Avatar */}
 									<Avatar className="size-10">
 										<AvatarImage alt={member.name} src={member.avatar} />
-										<AvatarFallback className="bg-muted">{getInitials(member.name)}</AvatarFallback>
+										<AvatarFallback className="bg-muted">
+											{getInitials(member.name)}
+										</AvatarFallback>
 									</Avatar>
 
 									{/* Info */}
 									<div className="flex-1 space-y-1.5">
 										<div className="flex items-center justify-between gap-2">
 											<h6 className="font-medium text-sm">{member.name}</h6>
-											<Badge className="text-xs" variant={statusConfig[member.status].variant}>
-												<span className={"mr-1 inline-block size-1.5 rounded-full bg-current"} />
+											<Badge
+												className="text-xs"
+												variant={statusConfig[member.status].variant}
+											>
+												<span
+													className={
+														"mr-1 inline-block size-1.5 rounded-full bg-current"
+													}
+												/>
 												{statusConfig[member.status].label}
 											</Badge>
 										</div>
 
 										{/* Role */}
-										<p className="text-muted-foreground text-xs capitalize">{member.role}</p>
+										<p className="text-muted-foreground text-xs capitalize">
+											{member.role}
+										</p>
 
 										{/* Skills */}
 										<div className="flex flex-wrap gap-1">
 											{member.skills.map((skill) => (
-												<Badge className="text-xs" key={skill} variant="outline">
+												<Badge
+													className="text-xs"
+													key={skill}
+													variant="outline"
+												>
 													{skill}
 												</Badge>
 											))}

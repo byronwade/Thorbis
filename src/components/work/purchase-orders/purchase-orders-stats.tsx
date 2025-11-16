@@ -57,13 +57,24 @@ export async function PurchaseOrdersStats() {
 		deleted_at: null,
 	}));
 
-	const activePurchaseOrders = purchaseOrders.filter((po) => !(po.archived_at || po.deleted_at));
+	const activePurchaseOrders = purchaseOrders.filter(
+		(po) => !(po.archived_at || po.deleted_at),
+	);
 
 	const totalPOs = activePurchaseOrders.length;
-	const pending = activePurchaseOrders.filter((po) => po.status === "pending_approval").length;
-	const ordered = activePurchaseOrders.filter((po) => po.status === "ordered").length;
-	const received = activePurchaseOrders.filter((po) => po.status === "received").length;
-	const totalValue = activePurchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0);
+	const pending = activePurchaseOrders.filter(
+		(po) => po.status === "pending_approval",
+	).length;
+	const ordered = activePurchaseOrders.filter(
+		(po) => po.status === "ordered",
+	).length;
+	const received = activePurchaseOrders.filter(
+		(po) => po.status === "received",
+	).length;
+	const totalValue = activePurchaseOrders.reduce(
+		(sum, po) => sum + po.totalAmount,
+		0,
+	);
 
 	const purchaseOrderStats: StatCard[] = [
 		{

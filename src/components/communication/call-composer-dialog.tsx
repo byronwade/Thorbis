@@ -3,12 +3,27 @@
 import { Loader2, PhoneCall } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { makeCall } from "@/actions/telnyx";
-import type { CommunicationRecord, CompanyPhone } from "@/components/communication/communication-page-client";
+import type {
+	CommunicationRecord,
+	CompanyPhone,
+} from "@/components/communication/communication-page-client";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
 type CallComposerDialogProps = {
@@ -53,7 +68,7 @@ export function CallComposerDialog({
 
 	const canCall = useMemo(
 		() => Boolean(toNumber.trim() && fromNumber && companyPhones.length > 0),
-		[toNumber, fromNumber, companyPhones]
+		[toNumber, fromNumber, companyPhones],
 	);
 
 	const handleStartCall = () => {
@@ -80,7 +95,9 @@ export function CallComposerDialog({
 
 			if (!(result.success && result.data)) {
 				const errorMessage =
-					"error" in result && typeof result.error === "string" ? result.error : "Failed to start call";
+					"error" in result && typeof result.error === "string"
+						? result.error
+						: "Failed to start call";
 				toast.error(errorMessage);
 				return;
 			}
@@ -93,7 +110,7 @@ export function CallComposerDialog({
 				window.open(
 					`/call-window?callId=${encodeURIComponent(result.callControlId)}`,
 					"_blank",
-					`width=${width},height=${height},noopener`
+					`width=${width},height=${height},noopener`,
 				);
 			}
 			toast.success("Call started");
@@ -109,19 +126,29 @@ export function CallComposerDialog({
 						Start Call
 					</DialogTitle>
 					<DialogDescription>
-						{contactName ? `Call ${contactName}` : "Dial out using your Telnyx-powered number"}
+						{contactName
+							? `Call ${contactName}`
+							: "Dial out using your Telnyx-powered number"}
 					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-2">
 					<div className="space-y-2">
 						<Label>To</Label>
-						<Input onChange={(e) => setToNumber(e.target.value)} placeholder="+1 (555) 123-4567" value={toNumber} />
+						<Input
+							onChange={(e) => setToNumber(e.target.value)}
+							placeholder="+1 (555) 123-4567"
+							value={toNumber}
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label>From</Label>
-						<Select disabled={companyPhones.length === 0} onValueChange={setFromNumber} value={fromNumber}>
+						<Select
+							disabled={companyPhones.length === 0}
+							onValueChange={setFromNumber}
+							value={fromNumber}
+						>
 							<SelectTrigger>
 								<SelectValue placeholder="Select a company line" />
 							</SelectTrigger>
@@ -134,16 +161,26 @@ export function CallComposerDialog({
 							</SelectContent>
 						</Select>
 						{companyPhones.length === 0 && (
-							<p className="text-muted-foreground text-xs">Add a company phone number first.</p>
+							<p className="text-muted-foreground text-xs">
+								Add a company phone number first.
+							</p>
 						)}
 					</div>
 				</div>
 
 				<div className="flex justify-end gap-2 pt-2">
-					<Button onClick={() => onOpenChange(false)} type="button" variant="outline">
+					<Button
+						onClick={() => onOpenChange(false)}
+						type="button"
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={!canCall || isPending} onClick={handleStartCall} type="button">
+					<Button
+						disabled={!canCall || isPending}
+						onClick={handleStartCall}
+						type="button"
+					>
 						{isPending ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />

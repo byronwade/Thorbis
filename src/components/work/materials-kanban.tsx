@@ -26,7 +26,9 @@ const MATERIAL_COLUMNS: Array<{
 	{ id: "out-of-stock", name: "Out of Stock", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(MATERIAL_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	MATERIAL_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -38,7 +40,10 @@ export function MaterialsKanban({ materials }: { materials: Material[] }) {
 		<EntityKanban<Material, MaterialStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const totalValue = columnItems.reduce((sum, item) => sum + (item.entity as Material).totalValue, 0);
+				const totalValue = columnItems.reduce(
+					(sum, item) => sum + (item.entity as Material).totalValue,
+					0,
+				);
 				return { count: columnItems.length, value: totalValue };
 			}}
 			columns={MATERIAL_COLUMNS}
@@ -51,10 +56,16 @@ export function MaterialsKanban({ materials }: { materials: Material[] }) {
 				entity: material,
 				material,
 			})}
-			renderCard={(item) => <MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />}
+			renderCard={(item) => (
+				<MaterialCard
+					item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+				/>
+			)}
 			renderDragOverlay={(item) => (
 				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />
+					<MaterialCard
+						item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+					/>
 				</div>
 			)}
 			showTotals={true}
@@ -72,16 +83,27 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div>
-					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{material.itemCode}</p>
-					<h3 className="font-semibold text-foreground text-sm">{material.description}</h3>
+					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+						{material.itemCode}
+					</p>
+					<h3 className="font-semibold text-foreground text-sm">
+						{material.description}
+					</h3>
 					<div className="mt-2 flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
-								columnId === "out-of-stock" && "bg-destructive/10 text-destructive",
-								columnId === "in-stock" && "bg-primary/10 text-primary"
+								columnId === "out-of-stock" &&
+									"bg-destructive/10 text-destructive",
+								columnId === "in-stock" && "bg-primary/10 text-primary",
 							)}
-							variant={columnId === "in-stock" ? "secondary" : columnId === "out-of-stock" ? "destructive" : "outline"}
+							variant={
+								columnId === "in-stock"
+									? "secondary"
+									: columnId === "out-of-stock"
+										? "destructive"
+										: "outline"
+							}
 						>
 							{columnLabel.get(columnId as MaterialStatus) ?? columnId}
 						</Badge>
@@ -101,15 +123,24 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 				</div>
 				<div className="flex items-center justify-between">
 					<span>Unit Cost</span>
-					<span className="font-medium text-foreground">{currencyFormatter.format(material.unitCost / 100)}</span>
+					<span className="font-medium text-foreground">
+						{currencyFormatter.format(material.unitCost / 100)}
+					</span>
 				</div>
 				<div className="flex items-center justify-between">
 					<span>Total Value</span>
-					<span className="font-semibold text-foreground">{currencyFormatter.format(material.totalValue / 100)}</span>
+					<span className="font-semibold text-foreground">
+						{currencyFormatter.format(material.totalValue / 100)}
+					</span>
 				</div>
 			</div>
 
-			<Button asChild className="w-full justify-between text-primary text-xs" size="sm" variant="ghost">
+			<Button
+				asChild
+				className="w-full justify-between text-primary text-xs"
+				size="sm"
+				variant="ghost"
+			>
 				<Link href={`/dashboard/work/materials/${material.id}`}>
 					Manage inventory
 					<ArrowUpRight className="size-3.5" />

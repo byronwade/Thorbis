@@ -14,9 +14,21 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 
@@ -78,7 +90,11 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 		setHasChanges(true);
 	};
 
-	const updateInvite = <K extends keyof InviteRow>(index: number, field: K, value: InviteRow[K]) => {
+	const updateInvite = <K extends keyof InviteRow>(
+		index: number,
+		field: K,
+		value: InviteRow[K],
+	) => {
 		setInvites((prev) => {
 			const next = [...prev];
 			next[index] = { ...next[index], [field]: value };
@@ -100,7 +116,14 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 			}
 
 			for (const invite of invites) {
-				if (!(invite.email.trim() && invite.firstName.trim() && invite.lastName.trim() && invite.roleName.trim())) {
+				if (
+					!(
+						invite.email.trim() &&
+						invite.firstName.trim() &&
+						invite.lastName.trim() &&
+						invite.roleName.trim()
+					)
+				) {
 					toast.error("Email, first name, last name, and role are required.");
 					return;
 				}
@@ -128,11 +151,15 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 			}
 
 			if (successCount) {
-				toast.success(`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`);
+				toast.success(
+					`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`,
+				);
 				resetInvites();
 			}
 			if (failureCount) {
-				toast.error(`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`);
+				toast.error(
+					`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`,
+				);
 			}
 		});
 	};
@@ -160,7 +187,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/team">Team & Permissions</Link>
+									<Link href="/dashboard/settings/team">
+										Team & Permissions
+									</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -184,10 +213,13 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 								<Mail className="h-5 w-5 text-primary" />
 							</div>
 							<div>
-								<CardTitle className="text-base">How invitations work</CardTitle>
+								<CardTitle className="text-base">
+									How invitations work
+								</CardTitle>
 								<CardDescription className="text-xs">
-									Each teammate receives an email with a secure link to create their account. They start with the role
-									and department you assign here.
+									Each teammate receives an email with a secure link to create
+									their account. They start with the role and department you
+									assign here.
 								</CardDescription>
 							</div>
 						</div>
@@ -200,7 +232,10 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							<UserPlus className="h-5 w-5" />
 							Team member details
 						</CardTitle>
-						<CardDescription>Add one or more teammates. Roles are required; departments are optional.</CardDescription>
+						<CardDescription>
+							Add one or more teammates. Roles are required; departments are
+							optional.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-8">
 						{invites.map((invite, index) => (
@@ -209,7 +244,12 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 								<div className="flex items-center justify-between">
 									<p className="font-medium text-sm">Member {index + 1}</p>
 									{invites.length > 1 && (
-										<Button onClick={() => removeInviteRow(index)} size="sm" type="button" variant="ghost">
+										<Button
+											onClick={() => removeInviteRow(index)}
+											size="sm"
+											type="button"
+											variant="ghost"
+										>
 											<Trash2 className="mr-2 size-4" />
 											Remove
 										</Button>
@@ -221,7 +261,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											Email address <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "email", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "email", event.target.value)
+											}
 											placeholder="teammate@company.com"
 											type="email"
 											value={invite.email}
@@ -230,7 +272,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 									<div className="space-y-2">
 										<p className="font-medium text-sm">Job title (optional)</p>
 										<Input
-											onChange={(event) => updateInvite(index, "jobTitle", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "jobTitle", event.target.value)
+											}
 											placeholder="e.g., Senior Technician"
 											value={invite.jobTitle}
 										/>
@@ -240,7 +284,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											First name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "firstName", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "firstName", event.target.value)
+											}
 											placeholder="First name"
 											value={invite.firstName}
 										/>
@@ -250,7 +296,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											Last name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "lastName", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "lastName", event.target.value)
+											}
 											placeholder="Last name"
 											value={invite.lastName}
 										/>
@@ -259,7 +307,12 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 										<p className="font-medium text-sm">
 											Role <span className="text-destructive">*</span>
 										</p>
-										<Select onValueChange={(value) => updateInvite(index, "roleName", value)} value={invite.roleName}>
+										<Select
+											onValueChange={(value) =>
+												updateInvite(index, "roleName", value)
+											}
+											value={invite.roleName}
+										>
 											<SelectTrigger>
 												<SelectValue placeholder="Select a role" />
 											</SelectTrigger>
@@ -275,7 +328,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 									<div className="space-y-2">
 										<p className="font-medium text-sm">Department (optional)</p>
 										<Select
-											onValueChange={(value) => updateInvite(index, "departmentId", value)}
+											onValueChange={(value) =>
+												updateInvite(index, "departmentId", value)
+											}
 											value={invite.departmentId}
 										>
 											<SelectTrigger>

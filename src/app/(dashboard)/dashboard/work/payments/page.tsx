@@ -17,7 +17,9 @@ import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 export default function UpaymentsPage() {
 	return (
 		<>
-			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
+			<Suspense
+				fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
+			>
 				<UpaymentsStats />
 			</Suspense>
 			<Suspense fallback={<PaymentsSkeleton />}>

@@ -40,7 +40,10 @@ import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
-import { type DetailPageHeaderConfig, DetailPageSurface } from "@/components/layout/detail-page-shell";
+import {
+	type DetailPageHeaderConfig,
+	DetailPageSurface,
+} from "@/components/layout/detail-page-shell";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -64,12 +67,28 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
@@ -91,7 +110,11 @@ type JobPageContentProps = {
 	metrics: any;
 };
 
-export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: JobPageContentProps) {
+export function JobPageContent({
+	entityData,
+	jobData: legacyJobData,
+	metrics,
+}: JobPageContentProps) {
 	// Support both entityData (from DetailPageLayout) and jobData (legacy)
 	const jobData = entityData || legacyJobData;
 	const jobRecord = jobData?.job ?? jobData ?? null;
@@ -103,7 +126,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 			<div className="flex h-full items-center justify-center">
 				<div className="text-center">
 					<h2 className="text-xl font-semibold">Job Not Found</h2>
-					<p className="text-muted-foreground">This job may have been deleted or you don't have access to it.</p>
+					<p className="text-muted-foreground">
+						This job may have been deleted or you don't have access to it.
+					</p>
 				</div>
 			</div>
 		);
@@ -159,14 +184,18 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const [property, setProperty] = useState(initialProperty);
 
 	const hasMapsApiKey = Boolean(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
-	const canShowInteractiveMap = Boolean(property?.lat && property?.lon) || hasMapsApiKey;
+	const canShowInteractiveMap =
+		Boolean(property?.lat && property?.lon) || hasMapsApiKey;
 
 	const [customerSearchQuery, _setCustomerSearchQuery] = useState("");
 	const [propertySearchQuery, _setPropertySearchQuery] = useState("");
-	const [_propertyDropdownMode, setPropertyDropdownMode] = useState<"search" | "add">("search");
+	const [_propertyDropdownMode, setPropertyDropdownMode] = useState<
+		"search" | "add"
+	>("search");
 	const [_isUpdatingCustomer, _setIsUpdatingCustomer] = useState(false);
 	const [_isUpdatingProperty, setIsUpdatingProperty] = useState(false);
-	const [isCreatePropertyDialogOpen, setIsCreatePropertyDialogOpen] = useState(false);
+	const [isCreatePropertyDialogOpen, setIsCreatePropertyDialogOpen] =
+		useState(false);
 	const [isCreatingProperty, setIsCreatingProperty] = useState(false);
 	const [newProperty, setNewProperty] = useState({
 		name: "",
@@ -180,7 +209,8 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	// Communication dialog states
 	const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
 	const [isSMSDialogOpen, setIsSMSDialogOpen] = useState(false);
-	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] = useState(false);
+	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
+		useState(false);
 
 	// File input ref for direct upload
 	const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -189,7 +219,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const setIncomingCall = useUIStore((state) => state.setIncomingCall);
 
 	// Filter properties by customer for property dialog
-	const availableProperties = customer?.id ? allProperties.filter((p: any) => p.customer_id === customer.id) : [];
+	const availableProperties = customer?.id
+		? allProperties.filter((p: any) => p.customer_id === customer.id)
+		: [];
 
 	// Handle field changes
 	const handleFieldChange = (field: string, value: any) => {
@@ -208,7 +240,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		const originalProperty = property;
 
 		// Optimistic update - update UI immediately
-		const newCustomer = newCustomerId ? allCustomers.find((c: any) => c.id === newCustomerId) : null;
+		const newCustomer = newCustomerId
+			? allCustomers.find((c: any) => c.id === newCustomerId)
+			: null;
 		setCustomer(newCustomer);
 
 		// Check if property needs to be cleared
@@ -219,7 +253,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		} else if (property?.id) {
 			// Customer changed - clear property if it doesn't belong to new customer
 			const propertyBelongsToCustomer = allProperties.some(
-				(p: any) => p.id === property.id && p.customer_id === newCustomerId
+				(p: any) => p.id === property.id && p.customer_id === newCustomerId,
 			);
 			if (!propertyBelongsToCustomer) {
 				shouldClearProperty = true;
@@ -274,7 +308,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		const originalProperty = property;
 
 		// Optimistic update - update UI immediately
-		const newProperty = newPropertyId ? allProperties.find((p: any) => p.id === newPropertyId) : null;
+		const newProperty = newPropertyId
+			? allProperties.find((p: any) => p.id === newPropertyId)
+			: null;
 		setProperty(newProperty);
 
 		// Show loading toast
@@ -490,7 +526,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		const phone = c.phone?.toLowerCase() || "";
 		const email = c.email?.toLowerCase() || "";
 		const company = c.company_name?.toLowerCase() || "";
-		return fullName.includes(query) || phone.includes(query) || email.includes(query) || company.includes(query);
+		return (
+			fullName.includes(query) ||
+			phone.includes(query) ||
+			email.includes(query) ||
+			company.includes(query)
+		);
 	});
 
 	// Filter properties based on search
@@ -502,7 +543,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		const name = p.name?.toLowerCase() || "";
 		const address = p.address?.toLowerCase() || "";
 		const city = p.city?.toLowerCase() || "";
-		return name.includes(query) || address.includes(query) || city.includes(query);
+		return (
+			name.includes(query) || address.includes(query) || city.includes(query)
+		);
 	});
 
 	// Save changes
@@ -563,7 +606,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				// ROLLBACK: Restore previous state on save failure
 				setLocalJob(previousState);
 				setHasChanges(false);
-				toast.error(result.error || "Failed to save changes - changes reverted");
+				toast.error(
+					result.error || "Failed to save changes - changes reverted",
+				);
 			}
 		} catch (_error) {
 			// ROLLBACK: Restore previous state on exception
@@ -625,7 +670,10 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		if (!date) {
 			return "—";
 		}
-		const value = typeof date === "string" || typeof date === "number" ? new Date(date) : date;
+		const value =
+			typeof date === "string" || typeof date === "number"
+				? new Date(date)
+				: date;
 
 		if (!value || Number.isNaN(value.getTime())) {
 			return "—";
@@ -658,7 +706,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		return rtf.format(diffYears, "year");
 	};
 
-	const customerDetailPath = customer ? `/dashboard/customers/${customer.id}` : null;
+	const customerDetailPath = customer
+		? `/dashboard/customers/${customer.id}`
+		: null;
 
 	const parseMaybeJson = (value: unknown) => {
 		if (!value) {
@@ -711,10 +761,15 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 
 	const customerMetadata = useMemo<Record<string, any>>(() => {
 		const parsed = parseMaybeJson(customer?.metadata);
-		return parsed && typeof parsed === "object" ? (parsed as Record<string, any>) : {};
+		return parsed && typeof parsed === "object"
+			? (parsed as Record<string, any>)
+			: {};
 	}, [customer?.metadata, parseMaybeJson]);
 
-	const communicationPreferences = useMemo<Record<string, boolean> | null>(() => {
+	const communicationPreferences = useMemo<Record<
+		string,
+		boolean
+	> | null>(() => {
 		const parsed = parseMaybeJson(customer?.communication_preferences);
 		if (parsed && typeof parsed === "object") {
 			return parsed as Record<string, boolean>;
@@ -734,13 +789,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		}
 
 		const vipTag = customerTags.find((tag) =>
-			["vip", "member", "plan", "tier", "priority"].some((keyword) => tag.toLowerCase().includes(keyword))
+			["vip", "member", "plan", "tier", "priority"].some((keyword) =>
+				tag.toLowerCase().includes(keyword),
+			),
 		);
 
 		return vipTag ?? null;
 	}, [customerMetadata, customerTags]);
 
-	const outstandingBalance = customer?.outstanding_balance ?? customer?.outstandingBalance ?? 0;
+	const outstandingBalance =
+		customer?.outstanding_balance ?? customer?.outstandingBalance ?? 0;
 
 	const accountHealth = useMemo(() => {
 		if (!customer) {
@@ -785,16 +843,20 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const toneClasses = {
 		positive:
 			"border-emerald-100 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200",
-		warning: "border-warning bg-warning text-warning dark:border-warning/20 dark:bg-warning/10 dark:text-warning",
+		warning:
+			"border-warning bg-warning text-warning dark:border-warning/20 dark:bg-warning/10 dark:text-warning",
 		destructive:
 			"border-rose-100 bg-rose-50 text-rose-700 dark:border-rose-400/20 dark:bg-rose-400/10 dark:text-rose-200",
 		neutral:
 			"border-muted bg-muted/40 text-muted-foreground dark:border-muted/30 dark:bg-muted/20 dark:text-muted-foreground",
 	} as const;
 
-	const accountToneClass = toneClasses[accountHealth.tone as keyof typeof toneClasses] ?? toneClasses.neutral;
+	const accountToneClass =
+		toneClasses[accountHealth.tone as keyof typeof toneClasses] ??
+		toneClasses.neutral;
 
-	const paymentTermsRaw = customer?.payment_terms ?? customer?.paymentTerms ?? "due_on_receipt";
+	const paymentTermsRaw =
+		customer?.payment_terms ?? customer?.paymentTerms ?? "due_on_receipt";
 
 	const normalizedPaymentTerms = paymentTermsRaw
 		.replace(/_/g, " ")
@@ -817,7 +879,11 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 			if (status === "overdue") {
 				return true;
 			}
-			const due = invoice?.due_date ?? invoice?.dueDate ?? invoice?.due_on ?? invoice?.dueOn;
+			const due =
+				invoice?.due_date ??
+				invoice?.dueDate ??
+				invoice?.due_on ??
+				invoice?.dueOn;
 			if (!due) {
 				return false;
 			}
@@ -832,13 +898,17 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				const balance = invoice?.balance_amount ?? invoice?.balanceAmount ?? 0;
 				return sum + (balance || 0);
 			}, 0),
-		[openInvoices]
+		[openInvoices],
 	);
 
 	const nextDueInvoice = useMemo(() => {
 		const withDates = openInvoices
 			.map((invoice: any) => {
-				const due = invoice?.due_date ?? invoice?.dueDate ?? invoice?.due_on ?? invoice?.dueOn;
+				const due =
+					invoice?.due_date ??
+					invoice?.dueDate ??
+					invoice?.due_on ??
+					invoice?.dueOn;
 				const dueDate = due ? new Date(due) : null;
 				return {
 					invoice,
@@ -857,14 +927,23 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 
 		return list
 			.map((schedule: any) => {
-				const start = schedule?.start_time ?? schedule?.startTime ?? schedule?.start_at ?? schedule?.startAt;
+				const start =
+					schedule?.start_time ??
+					schedule?.startTime ??
+					schedule?.start_at ??
+					schedule?.startAt;
 				const startDate = start ? new Date(start) : null;
 				return {
 					schedule,
 					startDate,
 				};
 			})
-			.filter(({ startDate }) => startDate && !Number.isNaN(startDate.getTime()) && startDate.getTime() > now)
+			.filter(
+				({ startDate }) =>
+					startDate &&
+					!Number.isNaN(startDate.getTime()) &&
+					startDate.getTime() > now,
+			)
 			.sort((a, b) => a.startDate?.getTime() - b.startDate?.getTime())
 			.map(({ schedule }) => schedule);
 	}, [schedules]);
@@ -882,17 +961,24 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 			{
 				key: "email",
 				label: "Email",
-				enabled: communicationPreferences.email ?? communicationPreferences.Email ?? true,
+				enabled:
+					communicationPreferences.email ??
+					communicationPreferences.Email ??
+					true,
 			},
 			{
 				key: "sms",
 				label: "SMS",
-				enabled: communicationPreferences.sms ?? communicationPreferences.SMS ?? false,
+				enabled:
+					communicationPreferences.sms ?? communicationPreferences.SMS ?? false,
 			},
 			{
 				key: "phone",
 				label: "Phone",
-				enabled: communicationPreferences.phone ?? communicationPreferences.Phone ?? false,
+				enabled:
+					communicationPreferences.phone ??
+					communicationPreferences.Phone ??
+					false,
 			},
 		];
 
@@ -902,26 +988,39 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const preferredContact =
 		customer?.preferred_contact_method ??
 		customer?.preferredContactMethod ??
-		(typeof communicationPreferences?.preferred === "string" ? communicationPreferences?.preferred : null) ??
+		(typeof communicationPreferences?.preferred === "string"
+			? communicationPreferences?.preferred
+			: null) ??
 		"email";
 
-	const normalizedPreferredContact = preferredContact ? preferredContact.replace(/_/g, " ") : "Not set";
+	const normalizedPreferredContact = preferredContact
+		? preferredContact.replace(/_/g, " ")
+		: "Not set";
 
-	const customerSource = customer?.source ?? customerMetadata?.source ?? customerMetadata?.acquiredVia ?? "—";
+	const customerSource =
+		customer?.source ??
+		customerMetadata?.source ??
+		customerMetadata?.acquiredVia ??
+		"—";
 
-	const portalEnabled = customer?.portal_enabled ?? customer?.portalEnabled ?? false;
+	const portalEnabled =
+		customer?.portal_enabled ?? customer?.portalEnabled ?? false;
 
-	const lastPortalLogin = customer?.portal_last_login_at ?? customer?.portalLastLoginAt ?? null;
+	const lastPortalLogin =
+		customer?.portal_last_login_at ?? customer?.portalLastLoginAt ?? null;
 
 	const customerSince = customer?.created_at ?? customer?.createdAt ?? null;
 
-	const _lastInvoiceDate = customer?.last_invoice_date ?? customer?.lastInvoiceDate ?? null;
+	const _lastInvoiceDate =
+		customer?.last_invoice_date ?? customer?.lastInvoiceDate ?? null;
 
-	const _lastPaymentDate = customer?.last_payment_date ?? customer?.lastPaymentDate ?? null;
+	const _lastPaymentDate =
+		customer?.last_payment_date ?? customer?.lastPaymentDate ?? null;
 
 	const lastJobDate = customer?.last_job_date ?? customer?.lastJobDate ?? null;
 
-	const averageJobValue = customer?.average_job_value ?? customer?.averageJobValue ?? 0;
+	const averageJobValue =
+		customer?.average_job_value ?? customer?.averageJobValue ?? 0;
 
 	const totalRevenue = customer?.total_revenue ?? customer?.totalRevenue ?? 0;
 
@@ -930,7 +1029,8 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 	const _outstandingInvoicesCount = openInvoices.length;
 	const overdueInvoicesCount = overdueInvoices.length;
 
-	const _internalNotes = customer?.internal_notes ?? customer?.internalNotes ?? "";
+	const _internalNotes =
+		customer?.internal_notes ?? customer?.internalNotes ?? "";
 
 	const assignedTeamMembers = useMemo(() => {
 		if (!Array.isArray(teamAssignments) || teamAssignments.length === 0) {
@@ -946,7 +1046,11 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					return null;
 				}
 
-				const user = teamMember.users || teamMember.user || assignment?.user || assignment?.assigned_user;
+				const user =
+					teamMember.users ||
+					teamMember.user ||
+					assignment?.user ||
+					assignment?.assigned_user;
 
 				const memberId = teamMember.id ?? assignment.id;
 
@@ -959,9 +1063,23 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				return {
 					id: memberId,
 					userId: user?.id ?? teamMember.user_id ?? assignment.user_id ?? null,
-					name: user?.name ?? teamMember.name ?? teamMember.display_name ?? "Team member",
-					title: teamMember.job_title ?? assignment.job_title ?? assignment.role ?? user?.job_title ?? null,
-					avatar: user?.avatar ?? user?.avatar_url ?? user?.profile_image_url ?? teamMember.avatar ?? null,
+					name:
+						user?.name ??
+						teamMember.name ??
+						teamMember.display_name ??
+						"Team member",
+					title:
+						teamMember.job_title ??
+						assignment.job_title ??
+						assignment.role ??
+						user?.job_title ??
+						null,
+					avatar:
+						user?.avatar ??
+						user?.avatar_url ??
+						user?.profile_image_url ??
+						teamMember.avatar ??
+						null,
 					email: user?.email ?? teamMember.email ?? null,
 				};
 			})
@@ -977,19 +1095,33 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		.filter(Boolean)
 		.join(", ");
 
-	const secondaryPhone = customer?.secondary_phone ?? customer?.secondaryPhone ?? null;
+	const secondaryPhone =
+		customer?.secondary_phone ?? customer?.secondaryPhone ?? null;
 
-	const billingEmail = customer?.billing_email ?? customer?.billingEmail ?? customer?.email ?? null;
+	const billingEmail =
+		customer?.billing_email ??
+		customer?.billingEmail ??
+		customer?.email ??
+		null;
 
-	const _lastCommunicationAt = lastCommunication?.created_at ?? lastCommunication?.createdAt ?? null;
+	const _lastCommunicationAt =
+		lastCommunication?.created_at ?? lastCommunication?.createdAt ?? null;
 
 	const _lastCommunicationChannel =
-		lastCommunication?.channel ?? lastCommunication?.type ?? lastCommunication?.medium ?? null;
+		lastCommunication?.channel ??
+		lastCommunication?.type ??
+		lastCommunication?.medium ??
+		null;
 
 	const _nextInvoiceDueDate =
-		nextDueInvoice?.due_date ?? nextDueInvoice?.dueDate ?? nextDueInvoice?.due_on ?? nextDueInvoice?.dueOn ?? null;
+		nextDueInvoice?.due_date ??
+		nextDueInvoice?.dueDate ??
+		nextDueInvoice?.due_on ??
+		nextDueInvoice?.dueOn ??
+		null;
 
-	const _nextInvoiceBalance = nextDueInvoice?.balance_amount ?? nextDueInvoice?.balanceAmount ?? 0;
+	const _nextInvoiceBalance =
+		nextDueInvoice?.balance_amount ?? nextDueInvoice?.balanceAmount ?? 0;
 
 	const customerStatusLabel = (customer?.status || "active").replace(/_/g, " ");
 
@@ -1019,25 +1151,41 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		}
 	};
 
-	const headerBadges = (job ? [
-		<Badge className="font-mono text-xs" key="job-number" variant="secondary">
-			#{job.job_number}
-		</Badge>,
-		localJob.status ? (
-			<Badge className="font-medium capitalize" key="job-status" variant={getStatusColor(localJob.status) as any}>
-				{localJob.status.replace(/_/g, " ")}
-			</Badge>
-		) : null,
-		localJob.priority ? (
-			<Badge
-				className="font-medium capitalize"
-				key="job-priority"
-				variant={localJob.priority === "high" || localJob.priority === "urgent" ? "destructive" : "outline"}
-			>
-				{localJob.priority}
-			</Badge>
-		) : null,
-	] : []).filter(Boolean);
+	const headerBadges = (
+		job
+			? [
+					<Badge
+						className="font-mono text-xs"
+						key="job-number"
+						variant="secondary"
+					>
+						#{job.job_number}
+					</Badge>,
+					localJob.status ? (
+						<Badge
+							className="font-medium capitalize"
+							key="job-status"
+							variant={getStatusColor(localJob.status) as any}
+						>
+							{localJob.status.replace(/_/g, " ")}
+						</Badge>
+					) : null,
+					localJob.priority ? (
+						<Badge
+							className="font-medium capitalize"
+							key="job-priority"
+							variant={
+								localJob.priority === "high" || localJob.priority === "urgent"
+									? "destructive"
+									: "outline"
+							}
+						>
+							{localJob.priority}
+						</Badge>
+					) : null,
+				]
+			: []
+	).filter(Boolean);
 
 	const handleArchiveJob = async () => {
 		setIsArchiving(true);
@@ -1085,7 +1233,8 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					>
 						<MapPin className="h-3.5 w-3.5" />
 						<span className="font-medium">
-							{property.city}, {property.state} {property.zip_code || property.zipCode || ""}
+							{property.city}, {property.state}{" "}
+							{property.zip_code || property.zipCode || ""}
 						</span>
 					</Link>
 					<TravelTime property={property} />
@@ -1119,7 +1268,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 			<Button disabled={isSaving} key="save" onClick={handleSave} size="sm">
 				<Save className="mr-2 h-4 w-4" />
 				{isSaving ? "Saving..." : "Save Changes"}
-			</Button>
+			</Button>,
 		);
 	}
 
@@ -1164,7 +1313,8 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		subtitle: subtitleContent,
 		badges: headerBadges,
 		actions: primaryActions,
-		secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
+		secondaryActions:
+			secondaryActions.length > 0 ? secondaryActions : undefined,
 		// metadata: metadataItems, // Removed - stats already in toolbar
 	};
 
@@ -1194,7 +1344,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				<div className="space-y-6">
 					<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 						<div className="space-y-2">
-							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Status</Label>
+							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+								Status
+							</Label>
 							<Select
 								onValueChange={(value) => handleFieldChange("status", value)}
 								value={localJob.status || undefined}
@@ -1203,7 +1355,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 									<SelectValue placeholder="Set status">
 										<div className="flex items-center gap-2">
 											<CheckCircle className="h-4 w-4" />
-											<span className="capitalize">{localJob.status?.replace(/_/g, " ") || "Set status"}</span>
+											<span className="capitalize">
+												{localJob.status?.replace(/_/g, " ") || "Set status"}
+											</span>
 										</div>
 									</SelectValue>
 								</SelectTrigger>
@@ -1219,7 +1373,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 						</div>
 
 						<div className="space-y-2">
-							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Priority</Label>
+							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+								Priority
+							</Label>
 							<Select
 								onValueChange={(value) => handleFieldChange("priority", value)}
 								value={localJob.priority || undefined}
@@ -1228,7 +1384,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 									<SelectValue placeholder="Set priority">
 										<div className="flex items-center gap-2">
 											<AlertCircle className="h-4 w-4" />
-											<span className="capitalize">{localJob.priority || "Set priority"}</span>
+											<span className="capitalize">
+												{localJob.priority || "Set priority"}
+											</span>
 										</div>
 									</SelectValue>
 								</SelectTrigger>
@@ -1242,13 +1400,17 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 						</div>
 
 						<div className="space-y-2">
-							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Assigned Team</Label>
+							<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+								Assigned Team
+							</Label>
 							<TeamMemberSelector isEditMode={true} jobId={job.id} />
 						</div>
 
 						{property && (
 							<div className="space-y-2">
-								<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Travel Time</Label>
+								<Label className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+									Travel Time
+								</Label>
 								<TravelTime
 									className="h-10 w-full items-center rounded-lg border border-border/40 bg-background px-3 text-sm"
 									property={property}
@@ -1268,7 +1430,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<Input
 								className="h-11 rounded-lg border border-border/40 bg-background px-3 text-sm shadow-sm focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
 								id="service-type"
-								onChange={(e) => handleFieldChange("service_type", e.target.value)}
+								onChange={(e) =>
+									handleFieldChange("service_type", e.target.value)
+								}
 								placeholder="e.g. HVAC Maintenance, Plumbing Repair"
 								value={localJob.service_type || localJob.job_type || ""}
 							/>
@@ -1284,7 +1448,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<Textarea
 								className="min-h-[120px] rounded-lg border border-border/40 bg-background px-3 py-2 text-sm shadow-sm focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20"
 								id="job-description"
-								onChange={(e) => handleFieldChange("description", e.target.value)}
+								onChange={(e) =>
+									handleFieldChange("description", e.target.value)
+								}
 								placeholder="Add context, expectations, or key notes for the crew."
 								value={localJob.description || ""}
 							/>
@@ -1330,7 +1496,11 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					<Building2 className="mr-1.5 h-3.5 w-3.5" />
 					Change Property
 				</Button>
-				<Button onClick={() => setIsRemoveCustomerDialogOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsRemoveCustomerDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<X className="mr-1.5 h-3.5 w-3.5" />
 					Remove Customer
 				</Button>
@@ -1362,13 +1532,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 												</span>
 											)}
 											<div className="flex flex-wrap items-center gap-2">
-												<Badge className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize" variant="outline">
+												<Badge
+													className="h-6 rounded-full px-2.5 font-medium text-[11px] capitalize"
+													variant="outline"
+												>
 													{customerStatusLabel}
 												</Badge>
 												<span
 													className={cn(
 														"inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-medium text-[11px]",
-														accountToneClass
+														accountToneClass,
 													)}
 													title={accountHealth.description}
 												>
@@ -1385,8 +1558,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										</div>
 									</div>
 									{customerDetailPath && (
-										<Button asChild className="flex-shrink-0" size="sm" variant="outline">
-											<Link className="flex items-center gap-1.5" href={customerDetailPath}>
+										<Button
+											asChild
+											className="flex-shrink-0"
+											size="sm"
+											variant="outline"
+										>
+											<Link
+												className="flex items-center gap-1.5"
+												href={customerDetailPath}
+											>
 												View Profile
 												<ChevronRight className="h-3.5 w-3.5" />
 											</Link>
@@ -1401,9 +1582,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
 											Lifetime Value
 										</div>
-										<div className="mt-1 font-bold text-foreground text-lg">{formatCurrency(totalRevenue)}</div>
+										<div className="mt-1 font-bold text-foreground text-lg">
+											{formatCurrency(totalRevenue)}
+										</div>
 										<div className="mt-0.5 text-muted-foreground text-xs">
-											{totalJobs} job{totalJobs === 1 ? "" : "s"} · {formatCurrency(averageJobValue)} avg
+											{totalJobs} job{totalJobs === 1 ? "" : "s"} ·{" "}
+											{formatCurrency(averageJobValue)} avg
 										</div>
 									</div>
 									<div className="px-3 first:pl-0 last:pr-0">
@@ -1413,13 +1597,17 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<div
 											className={cn(
 												"mt-1 font-bold text-lg",
-												outstandingBalance > 0 ? "text-warning" : "text-foreground"
+												outstandingBalance > 0
+													? "text-warning"
+													: "text-foreground",
 											)}
 										>
 											{formatCurrency(outstandingBalance)}
 										</div>
 										<div className="mt-0.5 text-muted-foreground text-xs">
-											{overdueInvoicesCount > 0 ? `${overdueInvoicesCount} overdue` : normalizedPaymentTerms}
+											{overdueInvoicesCount > 0
+												? `${overdueInvoicesCount} overdue`
+												: normalizedPaymentTerms}
 										</div>
 									</div>
 									<div className="px-3 first:pl-0 last:pr-0">
@@ -1444,7 +1632,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<div className="mt-1 font-bold text-foreground text-lg">
 											{customerSince ? formatRelativeTime(customerSince) : "—"}
 										</div>
-										<div className="mt-0.5 text-muted-foreground text-xs capitalize">via {customerSource}</div>
+										<div className="mt-0.5 text-muted-foreground text-xs capitalize">
+											via {customerSource}
+										</div>
 									</div>
 								</div>
 							</div>
@@ -1507,7 +1697,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 													<dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
 														Email
 													</dt>
-													<dd className="truncate font-medium text-foreground text-sm">{customer.email}</dd>
+													<dd className="truncate font-medium text-foreground text-sm">
+														{customer.email}
+													</dd>
 												</div>
 											</div>
 										)}
@@ -1520,7 +1712,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 													<dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
 														Phone
 													</dt>
-													<dd className="font-medium text-foreground text-sm">{customer.phone}</dd>
+													<dd className="font-medium text-foreground text-sm">
+														{customer.phone}
+													</dd>
 												</div>
 											</div>
 										)}
@@ -1533,7 +1727,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 													<dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
 														Alt Phone
 													</dt>
-													<dd className="font-medium text-foreground text-sm">{secondaryPhone}</dd>
+													<dd className="font-medium text-foreground text-sm">
+														{secondaryPhone}
+													</dd>
 												</div>
 											</div>
 										)}
@@ -1546,7 +1742,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 													<dt className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
 														Billing Email
 													</dt>
-													<dd className="truncate font-medium text-foreground text-sm">{billingEmail}</dd>
+													<dd className="truncate font-medium text-foreground text-sm">
+														{billingEmail}
+													</dd>
 												</div>
 											</div>
 										)}
@@ -1561,14 +1759,18 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 									</div>
 									<dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 										<div>
-											<dt className="text-muted-foreground text-xs">Portal Access</dt>
+											<dt className="text-muted-foreground text-xs">
+												Portal Access
+											</dt>
 											<dd className="mt-1 font-medium text-foreground text-sm">
 												{portalEnabled ? (
 													<span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-200">
 														<Globe className="h-3.5 w-3.5" /> Enabled
 													</span>
 												) : (
-													<span className="text-muted-foreground">Disabled</span>
+													<span className="text-muted-foreground">
+														Disabled
+													</span>
 												)}
 											</dd>
 											{portalEnabled && lastPortalLogin && (
@@ -1578,7 +1780,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 											)}
 										</div>
 										<div>
-											<dt className="text-muted-foreground text-xs">Preferred Contact</dt>
+											<dt className="text-muted-foreground text-xs">
+												Preferred Contact
+											</dt>
 											<dd className="mt-1 font-medium text-foreground text-sm capitalize">
 												{normalizedPreferredContact}
 											</dd>
@@ -1593,21 +1797,28 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 																>
 																	{channel.label}
 																</span>
-															)
+															),
 													)}
 												</dd>
 											)}
 										</div>
 										<div>
-											<dt className="text-muted-foreground text-xs">Last Activity</dt>
+											<dt className="text-muted-foreground text-xs">
+												Last Activity
+											</dt>
 											<dd className="mt-1 font-medium text-foreground text-sm">
-												{lastJobDate ? formatRelativeTime(lastJobDate) : "No activity"}
+												{lastJobDate
+													? formatRelativeTime(lastJobDate)
+													: "No activity"}
 											</dd>
 											{nextVisit && (
 												<dd className="mt-0.5 text-muted-foreground text-xs">
 													Next:{" "}
 													{formatRelativeTime(
-														nextVisit.start_time ?? nextVisit.startTime ?? nextVisit.start_at ?? nextVisit.startAt
+														nextVisit.start_time ??
+															nextVisit.startTime ??
+															nextVisit.start_at ??
+															nextVisit.startAt,
 													)}
 												</dd>
 											)}
@@ -1628,12 +1839,19 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 													{assignedTeamMembers.filter(Boolean).map((member) => (
 														<Link
 															className="group inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground text-xs transition-colors hover:border-primary/50 hover:bg-primary/5"
-															href={member?.id ? `/dashboard/settings/team/${member.id}` : "/dashboard/settings/team"}
+															href={
+																member?.id
+																	? `/dashboard/settings/team/${member.id}`
+																	: "/dashboard/settings/team"
+															}
 															key={member?.id || "unknown"}
 														>
 															<Avatar className="h-6 w-6 border border-white/10 bg-muted">
 																{member?.avatar ? (
-																	<AvatarImage alt={member?.name || "Team Member"} src={member.avatar} />
+																	<AvatarImage
+																		alt={member?.name || "Team Member"}
+																		src={member.avatar}
+																	/>
 																) : (
 																	<AvatarFallback className="text-[10px]">
 																		{member?.name
@@ -1678,8 +1896,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<div className="mb-3 flex size-12 items-center justify-center rounded-full bg-muted">
 								<User className="size-6 text-muted-foreground" />
 							</div>
-							<p className="text-muted-foreground text-sm">No customer assigned</p>
-							<p className="mt-1 text-muted-foreground text-xs">Assign a customer to unlock profile insights.</p>
+							<p className="text-muted-foreground text-sm">
+								No customer assigned
+							</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								Assign a customer to unlock profile insights.
+							</p>
 						</div>
 					)}
 
@@ -1693,9 +1915,13 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<div className="space-y-4 p-6">
 											<Skeleton className="h-40 w-full rounded-lg" />
 											<div className="space-y-1 text-muted-foreground text-sm">
-												<p>Connect a Google Maps API key or add coordinates to visualize this location.</p>
+												<p>
+													Connect a Google Maps API key or add coordinates to
+													visualize this location.
+												</p>
 												<p className="text-xs">
-													Update property details to include latitude and longitude for enhanced routing.
+													Update property details to include latitude and
+													longitude for enhanced routing.
 												</p>
 											</div>
 										</div>
@@ -1718,14 +1944,22 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										</div>
 										{property.square_footage && (
 											<div>
-												<dt className="text-muted-foreground text-xs">Square Footage</dt>
-												<dd className="text-foreground">{property.square_footage}</dd>
+												<dt className="text-muted-foreground text-xs">
+													Square Footage
+												</dt>
+												<dd className="text-foreground">
+													{property.square_footage}
+												</dd>
 											</div>
 										)}
 										{property.year_built && (
 											<div>
-												<dt className="text-muted-foreground text-xs">Year Built</dt>
-												<dd className="text-foreground">{property.year_built}</dd>
+												<dt className="text-muted-foreground text-xs">
+													Year Built
+												</dt>
+												<dd className="text-foreground">
+													{property.year_built}
+												</dd>
 											</div>
 										)}
 									</dl>
@@ -1748,7 +1982,11 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		icon: <Calendar className="size-4" />,
 		count: schedules.length,
 		actions: (
-			<Button onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)} size="sm" variant="outline">
+			<Button
+				onClick={() => router.push(`/dashboard/schedule/new?jobId=${job.id}`)}
+				size="sm"
+				variant="outline"
+			>
 				<Plus className="mr-2 h-4 w-4" /> Add Appointment
 			</Button>
 		),
@@ -1787,7 +2025,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<div className="mb-2 flex items-center justify-between text-sm">
 								<span className="font-medium">Overall Progress</span>
 								<span className="text-muted-foreground">
-									{Math.round((tasks.filter((t: any) => t.is_completed).length / tasks.length) * 100)}%
+									{Math.round(
+										(tasks.filter((t: any) => t.is_completed).length /
+											tasks.length) *
+											100,
+									)}
+									%
 								</span>
 							</div>
 							<div className="h-2 w-full overflow-hidden rounded-full bg-muted">
@@ -1802,101 +2045,118 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					)}
 
 					{tasks.length > 0 ? (
-						["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map((category) => {
-							const categoryTasks = tasks.filter((t: any) =>
-								category === null ? !t.category : t.category === category
-							);
+						["Pre-Job", "On-Site", "Post-Job", "Safety", "Quality", null].map(
+							(category) => {
+								const categoryTasks = tasks.filter((t: any) =>
+									category === null ? !t.category : t.category === category,
+								);
 
-							if (categoryTasks.length === 0) {
-								return null;
-							}
+								if (categoryTasks.length === 0) {
+									return null;
+								}
 
-							return (
-								<div key={category || "uncategorized"}>
-									<h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
-										{category || "Other Tasks"}
-									</h4>
-									<div className="space-y-2">
-										{categoryTasks.map((task: any) => {
-											const assignedTaskUser = Array.isArray(task.assigned_user)
-												? task.assigned_user[0]
-												: task.assigned_user;
+								return (
+									<div key={category || "uncategorized"}>
+										<h4 className="mb-3 font-semibold text-muted-foreground text-sm uppercase">
+											{category || "Other Tasks"}
+										</h4>
+										<div className="space-y-2">
+											{categoryTasks.map((task: any) => {
+												const assignedTaskUser = Array.isArray(
+													task.assigned_user,
+												)
+													? task.assigned_user[0]
+													: task.assigned_user;
 
-											return (
-												<div
-													className={cn(
-														"flex items-start gap-3 rounded-lg border p-3 transition-colors",
-														task.is_completed && "bg-secondary opacity-75"
-													)}
-													key={task.id}
-												>
-													<div className="flex items-center pt-0.5">
-														<input
-															checked={task.is_completed}
-															className="h-5 w-5 rounded border-border text-success focus:ring-2 focus:ring-green-500"
-															onChange={() => {}}
-															type="checkbox"
-														/>
-													</div>
-													<div className="min-w-0 flex-1">
-														<div className="flex items-start justify-between gap-2">
-															<div className="flex-1">
-																<p
-																	className={cn(
-																		"font-medium",
-																		task.is_completed && "text-muted-foreground line-through"
+												return (
+													<div
+														className={cn(
+															"flex items-start gap-3 rounded-lg border p-3 transition-colors",
+															task.is_completed && "bg-secondary opacity-75",
+														)}
+														key={task.id}
+													>
+														<div className="flex items-center pt-0.5">
+															<input
+																checked={task.is_completed}
+																className="h-5 w-5 rounded border-border text-success focus:ring-2 focus:ring-green-500"
+																onChange={() => {}}
+																type="checkbox"
+															/>
+														</div>
+														<div className="min-w-0 flex-1">
+															<div className="flex items-start justify-between gap-2">
+																<div className="flex-1">
+																	<p
+																		className={cn(
+																			"font-medium",
+																			task.is_completed &&
+																				"text-muted-foreground line-through",
+																		)}
+																	>
+																		{task.title}
+																		{task.is_required && (
+																			<Badge
+																				className="ml-2 text-xs"
+																				variant="destructive"
+																			>
+																				Required
+																			</Badge>
+																		)}
+																	</p>
+																	{task.description && (
+																		<p className="mt-1 text-muted-foreground text-sm">
+																			{task.description}
+																		</p>
 																	)}
-																>
-																	{task.title}
-																	{task.is_required && (
-																		<Badge className="ml-2 text-xs" variant="destructive">
-																			Required
-																		</Badge>
-																	)}
-																</p>
-																{task.description && (
-																	<p className="mt-1 text-muted-foreground text-sm">{task.description}</p>
+																</div>
+																{assignedTaskUser && (
+																	<div className="flex items-center gap-1">
+																		<Avatar className="h-6 w-6">
+																			<AvatarImage
+																				src={assignedTaskUser.avatar}
+																			/>
+																			<AvatarFallback className="text-xs">
+																				{assignedTaskUser.name
+																					?.substring(0, 2)
+																					.toUpperCase() || "TM"}
+																			</AvatarFallback>
+																		</Avatar>
+																	</div>
 																)}
 															</div>
-															{assignedTaskUser && (
-																<div className="flex items-center gap-1">
-																	<Avatar className="h-6 w-6">
-																		<AvatarImage src={assignedTaskUser.avatar} />
-																		<AvatarFallback className="text-xs">
-																			{assignedTaskUser.name?.substring(0, 2).toUpperCase() || "TM"}
-																		</AvatarFallback>
-																	</Avatar>
-																</div>
-															)}
-														</div>
-														<div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-															{task.is_completed && task.completed_at && (
-																<span className="flex items-center gap-1">
-																	<CheckCircle className="h-3 w-3 text-success" />
-																	Completed {formatDate(task.completed_at)}
-																</span>
-															)}
-															{!task.is_completed && task.due_date && (
-																<span className="flex items-center gap-1">
-																	<Clock className="h-3 w-3" />
-																	Due {formatDate(task.due_date)}
-																</span>
-															)}
+															<div className="mt-2 flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+																{task.is_completed && task.completed_at && (
+																	<span className="flex items-center gap-1">
+																		<CheckCircle className="h-3 w-3 text-success" />
+																		Completed {formatDate(task.completed_at)}
+																	</span>
+																)}
+																{!task.is_completed && task.due_date && (
+																	<span className="flex items-center gap-1">
+																		<Clock className="h-3 w-3" />
+																		Due {formatDate(task.due_date)}
+																	</span>
+																)}
+															</div>
 														</div>
 													</div>
-												</div>
-											);
-										})}
+												);
+											})}
+										</div>
 									</div>
-								</div>
-							);
-						})
+								);
+							},
+						)
 					) : (
 						<div className="rounded-lg border border-dashed p-6 text-center">
 							<CheckCircle className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
-							<p className="mb-1 text-muted-foreground text-sm">No tasks added yet</p>
+							<p className="mb-1 text-muted-foreground text-sm">
+								No tasks added yet
+							</p>
 							<p className="mb-3 text-muted-foreground text-xs">
-								Create a step-by-step checklist so the field crew knows exactly what to complete on-site.
+								Create a step-by-step checklist so the field crew knows exactly
+								what to complete on-site.
 							</p>
 							<Button size="sm" variant="outline">
 								<Plus className="mr-2 h-4 w-4" /> Add Task
@@ -1993,7 +2253,11 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					ref={fileInputRef}
 					type="file"
 				/>
-				<Button onClick={() => fileInputRef.current?.click()} size="sm" variant="outline">
+				<Button
+					onClick={() => fileInputRef.current?.click()}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-4 w-4" /> Upload
 				</Button>
 			</>
@@ -2001,7 +2265,10 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		content: (
 			<UnifiedAccordionContent className="p-0">
 				<div
-					className={cn("relative transition-colors", isDraggingOver && "bg-primary/5 ring-2 ring-primary ring-inset")}
+					className={cn(
+						"relative transition-colors",
+						isDraggingOver && "bg-primary/5 ring-2 ring-primary ring-inset",
+					)}
 					onDragEnter={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
@@ -2030,15 +2297,21 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 						<div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-primary/5 backdrop-blur-sm">
 							<div className="rounded-lg border-2 border-primary border-dashed bg-background p-8 text-center">
 								<Upload className="mx-auto mb-2 h-12 w-12 text-primary" />
-								<p className="font-semibold text-primary">Drop files to upload</p>
-								<p className="text-muted-foreground text-sm">Photos, documents, and more</p>
+								<p className="font-semibold text-primary">
+									Drop files to upload
+								</p>
+								<p className="text-muted-foreground text-sm">
+									Photos, documents, and more
+								</p>
 							</div>
 						</div>
 					)}
 					<div className="border-b bg-muted/30 px-6 py-3">
 						<div className="flex items-center gap-2 text-muted-foreground text-sm">
 							<Upload className="h-4 w-4" />
-							<span>Drag and drop files anywhere in this section to upload</span>
+							<span>
+								Drag and drop files anywhere in this section to upload
+							</span>
 						</div>
 					</div>
 					<div className="space-y-6 px-6 py-6">
@@ -2056,15 +2329,32 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 
 						<div>
 							<div className="mb-3 flex items-center justify-between">
-								<h4 className="font-semibold">Photos by Category ({photos.length})</h4>
+								<h4 className="font-semibold">
+									Photos by Category ({photos.length})
+								</h4>
 							</div>
 							{photos.length > 0 ? (
 								<div className="grid gap-3 md:grid-cols-4">
-									{["before", "during", "after", "issue", "equipment", "completion", "other"].map((category) => {
-										const count = photos.filter((p: any) => p.category === category).length;
+									{[
+										"before",
+										"during",
+										"after",
+										"issue",
+										"equipment",
+										"completion",
+										"other",
+									].map((category) => {
+										const count = photos.filter(
+											(p: any) => p.category === category,
+										).length;
 										return (
-											<div className="rounded-lg border p-4 text-center" key={category}>
-												<p className="font-medium text-muted-foreground text-xs uppercase">{category}</p>
+											<div
+												className="rounded-lg border p-4 text-center"
+												key={category}
+											>
+												<p className="font-medium text-muted-foreground text-xs uppercase">
+													{category}
+												</p>
 												<p className="font-bold text-3xl">{count}</p>
 											</div>
 										);
@@ -2075,9 +2365,17 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 									<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
 										<Camera className="h-8 w-8 text-muted-foreground" />
 									</div>
-									<h3 className="mb-2 font-semibold text-lg">No photos uploaded yet</h3>
-									<p className="mb-4 text-muted-foreground text-sm">Upload photos to document the job progress</p>
-									<Button onClick={() => setShowUploader(true)} size="sm" variant="secondary">
+									<h3 className="mb-2 font-semibold text-lg">
+										No photos uploaded yet
+									</h3>
+									<p className="mb-4 text-muted-foreground text-sm">
+										Upload photos to document the job progress
+									</p>
+									<Button
+										onClick={() => setShowUploader(true)}
+										size="sm"
+										variant="secondary"
+									>
 										<Plus className="mr-2 h-4 w-4" /> Upload Photos
 									</Button>
 								</div>
@@ -2087,16 +2385,25 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 						<Separator />
 
 						<div>
-							<h4 className="mb-3 font-semibold">Documents ({documents.length})</h4>
+							<h4 className="mb-3 font-semibold">
+								Documents ({documents.length})
+							</h4>
 							{documents.length > 0 ? (
 								<div className="space-y-2">
 									{documents.map((doc: any) => (
-										<div className="flex items-center justify-between rounded-lg border p-3" key={doc.id}>
+										<div
+											className="flex items-center justify-between rounded-lg border p-3"
+											key={doc.id}
+										>
 											<div className="flex items-center gap-2">
 												<FileText className="h-4 w-4 text-muted-foreground" />
 												<span className="text-sm">{doc.file_name}</span>
 											</div>
-											<Button className="h-8 px-2" size="sm" variant="secondary">
+											<Button
+												className="h-8 px-2"
+												size="sm"
+												variant="secondary"
+											>
 												<Download className="h-3.5 w-3.5" />
 											</Button>
 										</div>
@@ -2107,11 +2414,18 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 									<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
 										<FileText className="h-8 w-8 text-muted-foreground" />
 									</div>
-									<h3 className="mb-2 font-semibold text-lg">No documents uploaded yet</h3>
+									<h3 className="mb-2 font-semibold text-lg">
+										No documents uploaded yet
+									</h3>
 									<p className="mb-4 text-muted-foreground text-sm">
-										Upload documents, receipts, or other files related to this job
+										Upload documents, receipts, or other files related to this
+										job
 									</p>
-									<Button onClick={() => setShowUploader(true)} size="sm" variant="secondary">
+									<Button
+										onClick={() => setShowUploader(true)}
+										size="sm"
+										variant="secondary"
+									>
 										<Plus className="mr-2 h-4 w-4" /> Upload Document
 									</Button>
 								</div>
@@ -2126,7 +2440,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 								<div className="rounded-lg border p-4">
 									<div className="mb-2 flex items-center justify-between">
 										<p className="font-medium text-sm">Customer Signature</p>
-										{signatures.find((s: any) => s.signature_type === "customer") ? (
+										{signatures.find(
+											(s: any) => s.signature_type === "customer",
+										) ? (
 											<Badge variant="default">
 												<CheckCircle className="mr-1 h-3 w-3" /> Signed
 											</Badge>
@@ -2134,9 +2450,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 											<Badge variant="secondary">Pending</Badge>
 										)}
 									</div>
-									{signatures.find((s: any) => s.signature_type === "customer") && (
+									{signatures.find(
+										(s: any) => s.signature_type === "customer",
+									) && (
 										<p className="text-muted-foreground text-xs">
-											Signed {formatDate(signatures.find((s: any) => s.signature_type === "customer").signed_at)}
+											Signed{" "}
+											{formatDate(
+												signatures.find(
+													(s: any) => s.signature_type === "customer",
+												).signed_at,
+											)}
 										</p>
 									)}
 								</div>
@@ -2144,7 +2467,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 								<div className="rounded-lg border p-4">
 									<div className="mb-2 flex items-center justify-between">
 										<p className="font-medium text-sm">Technician Signature</p>
-										{signatures.find((s: any) => s.signature_type === "technician") ? (
+										{signatures.find(
+											(s: any) => s.signature_type === "technician",
+										) ? (
 											<Badge variant="default">
 												<CheckCircle className="mr-1 h-3 w-3" /> Signed
 											</Badge>
@@ -2152,9 +2477,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 											<Badge variant="secondary">Pending</Badge>
 										)}
 									</div>
-									{signatures.find((s: any) => s.signature_type === "technician") && (
+									{signatures.find(
+										(s: any) => s.signature_type === "technician",
+									) && (
 										<p className="text-muted-foreground text-xs">
-											Signed {formatDate(signatures.find((s: any) => s.signature_type === "technician").signed_at)}
+											Signed{" "}
+											{formatDate(
+												signatures.find(
+													(s: any) => s.signature_type === "technician",
+												).signed_at,
+											)}
 										</p>
 									)}
 								</div>
@@ -2181,13 +2513,22 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				<div className="space-y-3">
 					{activities.length > 0 || communications.length > 0 ? (
 						[...activities, ...communications]
-							.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+							.sort(
+								(a, b) =>
+									new Date(b.created_at).getTime() -
+									new Date(a.created_at).getTime(),
+							)
 							.slice(0, 20)
 							.map((item: any) => {
-								const itemUser = Array.isArray(item.user) ? item.user[0] : item.user;
+								const itemUser = Array.isArray(item.user)
+									? item.user[0]
+									: item.user;
 								const isComm = item.type || item.subject;
 								return (
-									<div className="flex gap-3 rounded-lg border p-3" key={item.id}>
+									<div
+										className="flex gap-3 rounded-lg border p-3"
+										key={item.id}
+									>
 										<Avatar className="h-8 w-8">
 											<AvatarImage src={itemUser?.avatar} />
 											<AvatarFallback className="text-xs">
@@ -2199,15 +2540,23 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										</Avatar>
 										<div className="flex-1">
 											<div className="mb-1 flex items-center gap-2">
-												<span className="font-medium text-sm">{itemUser?.name || "System"}</span>
-												<span className="text-muted-foreground text-xs">{formatDate(item.created_at)}</span>
+												<span className="font-medium text-sm">
+													{itemUser?.name || "System"}
+												</span>
+												<span className="text-muted-foreground text-xs">
+													{formatDate(item.created_at)}
+												</span>
 												{isComm && item.type && (
 													<Badge className="text-xs" variant="outline">
 														{item.type.toUpperCase()}
 													</Badge>
 												)}
 											</div>
-											{item.subject && <p className="mb-1 font-medium text-sm">{item.subject}</p>}
+											{item.subject && (
+												<p className="mb-1 font-medium text-sm">
+													{item.subject}
+												</p>
+											)}
 											<p className="text-muted-foreground text-sm">
 												{item.description || item.body || "Activity logged"}
 											</p>
@@ -2220,8 +2569,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
 								<Activity className="h-8 w-8 text-muted-foreground" />
 							</div>
-							<h3 className="mb-2 font-semibold text-lg">No activity or communications yet</h3>
-							<p className="text-muted-foreground text-sm">Activity logs and communications will appear here</p>
+							<h3 className="mb-2 font-semibold text-lg">
+								No activity or communications yet
+							</h3>
+							<p className="text-muted-foreground text-sm">
+								Activity logs and communications will appear here
+							</p>
 						</div>
 					)}
 				</div>
@@ -2246,8 +2599,12 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 						<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">
 							<Wrench className="h-8 w-8 text-muted-foreground" />
 						</div>
-						<h3 className="mb-2 font-semibold text-lg">No equipment has been added to this job yet</h3>
-						<p className="mb-4 text-muted-foreground text-sm">Equipment serviced on this job will appear here</p>
+						<h3 className="mb-2 font-semibold text-lg">
+							No equipment has been added to this job yet
+						</h3>
+						<p className="mb-4 text-muted-foreground text-sm">
+							Equipment serviced on this job will appear here
+						</p>
 						<Button onClick={() => {}} size="sm" variant="secondary">
 							<Plus className="mr-2 h-4 w-4" /> Add Equipment
 						</Button>
@@ -2255,7 +2612,10 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				) : (
 					<div className="space-y-4">
 						{jobEquipment.map((je: any) => (
-							<div className="space-y-3 rounded-lg border p-4 transition-colors hover:bg-accent/50" key={je.id}>
+							<div
+								className="space-y-3 rounded-lg border p-4 transition-colors hover:bg-accent/50"
+								key={je.id}
+							>
 								<div className="flex items-start justify-between">
 									<div className="flex-1">
 										<div className="mb-2 flex items-center gap-2">
@@ -2265,7 +2625,8 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<div className="space-y-1 text-muted-foreground text-sm">
 											<p>
 												{je.equipment?.manufacturer} {je.equipment?.model}
-												{je.equipment?.serial_number && ` • SN: ${je.equipment.serial_number}`}
+												{je.equipment?.serial_number &&
+													` • SN: ${je.equipment.serial_number}`}
 											</p>
 										</div>
 									</div>
@@ -2273,13 +2634,17 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 								{je.work_performed && (
 									<div className="text-sm">
 										<span className="font-medium">Work Performed:</span>
-										<p className="mt-1 text-muted-foreground">{je.work_performed}</p>
+										<p className="mt-1 text-muted-foreground">
+											{je.work_performed}
+										</p>
 									</div>
 								)}
 								<div className="flex flex-wrap items-center gap-4 text-sm">
 									{je.condition_before && (
 										<div>
-											<span className="mr-2 text-muted-foreground">Before:</span>
+											<span className="mr-2 text-muted-foreground">
+												Before:
+											</span>
 											<Badge variant="outline">{je.condition_before}</Badge>
 										</div>
 									)}
@@ -2325,9 +2690,13 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										<TableCell>{item.type}</TableCell>
 										<TableCell>{item.manufacturer || "N/A"}</TableCell>
 										<TableCell>{item.model || "N/A"}</TableCell>
-										<TableCell className="font-mono text-sm">{item.serial_number || "N/A"}</TableCell>
+										<TableCell className="font-mono text-sm">
+											{item.serial_number || "N/A"}
+										</TableCell>
 										<TableCell className="text-sm">
-											{item.last_service_date ? formatDate(item.last_service_date) : "Never"}
+											{item.last_service_date
+												? formatDate(item.last_service_date)
+												: "Never"}
 										</TableCell>
 									</TableRow>
 								))}
@@ -2377,7 +2746,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 			type: "team",
 			title: assignedUser.name,
 			subtitle: assignedUser.email || assignedUser.phone || undefined,
-			href: assignedUser.id ? `/dashboard/settings/team/${assignedUser.id}` : "/dashboard/settings/team",
+			href: assignedUser.id
+				? `/dashboard/settings/team/${assignedUser.id}`
+				: "/dashboard/settings/team",
 		});
 	}
 
@@ -2400,12 +2771,16 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				storageKey="job-details"
 			/>
 
-			<Dialog onOpenChange={setIsCreatePropertyDialogOpen} open={isCreatePropertyDialogOpen}>
+			<Dialog
+				onOpenChange={setIsCreatePropertyDialogOpen}
+				open={isCreatePropertyDialogOpen}
+			>
 				<DialogContent className="sm:max-w-[500px]">
 					<DialogHeader>
 						<DialogTitle>Create New Property</DialogTitle>
 						<DialogDescription>
-							Add a new property for {customer?.first_name} {customer?.last_name}
+							Add a new property for {customer?.first_name}{" "}
+							{customer?.last_name}
 						</DialogDescription>
 					</DialogHeader>
 
@@ -2414,7 +2789,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<Label htmlFor="property-name">Property Name</Label>
 							<Input
 								id="property-name"
-								onChange={(e) => setNewProperty({ ...newProperty, name: e.target.value })}
+								onChange={(e) =>
+									setNewProperty({ ...newProperty, name: e.target.value })
+								}
 								placeholder="Main Residence"
 								value={newProperty.name}
 							/>
@@ -2426,7 +2803,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							</Label>
 							<Input
 								id="property-address"
-								onChange={(e) => setNewProperty({ ...newProperty, address: e.target.value })}
+								onChange={(e) =>
+									setNewProperty({ ...newProperty, address: e.target.value })
+								}
 								placeholder="123 Main St"
 								required
 								value={newProperty.address}
@@ -2437,7 +2816,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							<Label htmlFor="property-address2">Address Line 2</Label>
 							<Input
 								id="property-address2"
-								onChange={(e) => setNewProperty({ ...newProperty, address2: e.target.value })}
+								onChange={(e) =>
+									setNewProperty({ ...newProperty, address2: e.target.value })
+								}
 								placeholder="Apt 4B"
 								value={newProperty.address2}
 							/>
@@ -2450,7 +2831,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 								</Label>
 								<Input
 									id="property-city"
-									onChange={(e) => setNewProperty({ ...newProperty, city: e.target.value })}
+									onChange={(e) =>
+										setNewProperty({ ...newProperty, city: e.target.value })
+									}
 									placeholder="New York"
 									required
 									value={newProperty.city}
@@ -2463,7 +2846,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 								</Label>
 								<Input
 									id="property-state"
-									onChange={(e) => setNewProperty({ ...newProperty, state: e.target.value })}
+									onChange={(e) =>
+										setNewProperty({ ...newProperty, state: e.target.value })
+									}
 									placeholder="NY"
 									required
 									value={newProperty.state}
@@ -2477,7 +2862,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 							</Label>
 							<Input
 								id="property-zip"
-								onChange={(e) => setNewProperty({ ...newProperty, zipCode: e.target.value })}
+								onChange={(e) =>
+									setNewProperty({ ...newProperty, zipCode: e.target.value })
+								}
 								placeholder="10001"
 								required
 								value={newProperty.zipCode}
@@ -2541,27 +2928,39 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 					<DialogHeader>
 						<DialogTitle>Archive Job</DialogTitle>
 						<DialogDescription>
-							Archiving removes this job from active workflows. You can restore it from the archive within 90 days.
+							Archiving removes this job from active workflows. You can restore
+							it from the archive within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchiveJob} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchiveJob}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 
-			<AlertDialog onOpenChange={setIsRemoveCustomerDialogOpen} open={isRemoveCustomerDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsRemoveCustomerDialogOpen}
+				open={isRemoveCustomerDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove Customer and Property?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will clear the customer and property fields from this job. This action can be undone by reassigning a
-							customer and property.
+							This will clear the customer and property fields from this job.
+							This action can be undone by reassigning a customer and property.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -2578,7 +2977,9 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 										toast.success("Customer and property removed");
 										router.refresh();
 									} else {
-										toast.error(result.error || "Failed to remove customer and property");
+										toast.error(
+											result.error || "Failed to remove customer and property",
+										);
 									}
 								} catch {
 									toast.error("Failed to remove customer and property");

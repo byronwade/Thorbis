@@ -2,7 +2,14 @@ import { Calendar, Clock, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { BlogPost } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +37,12 @@ type BlogCardProps = {
 	variant?: "default" | "compact";
 };
 
-export function BlogCard({ post, className, showImage = true, variant = "default" }: BlogCardProps) {
+export function BlogCard({
+	post,
+	className,
+	showImage = true,
+	variant = "default",
+}: BlogCardProps) {
 	const publishedLabel = formatDate(post.publishedAt);
 	const href = `/blog/${post.slug}`;
 
@@ -39,21 +51,25 @@ export function BlogCard({ post, className, showImage = true, variant = "default
 			className={cn(
 				"group relative overflow-hidden transition-shadow hover:shadow-md",
 				variant === "compact" && "flex-row gap-4",
-				className
+				className,
 			)}
 		>
 			{showImage && post.heroImageUrl ? (
 				<div
 					className={cn(
 						"relative w-full overflow-hidden",
-						variant === "compact" ? "max-w-[220px] rounded-l-xl" : "rounded-t-xl"
+						variant === "compact"
+							? "max-w-[220px] rounded-l-xl"
+							: "rounded-t-xl",
 					)}
 				>
 					<Image
 						alt={post.seoTitle ?? post.title}
 						className={cn(
 							"object-cover transition-transform duration-500 group-hover:scale-105",
-							variant === "compact" ? "h-full min-h-[180px] w-full" : "h-48 w-full"
+							variant === "compact"
+								? "h-full min-h-[180px] w-full"
+								: "h-48 w-full",
 						)}
 						height={360}
 						priority={post.featured}
@@ -63,7 +79,9 @@ export function BlogCard({ post, className, showImage = true, variant = "default
 					/>
 				</div>
 			) : null}
-			<div className={cn("flex flex-1 flex-col", variant === "compact" && "py-6")}>
+			<div
+				className={cn("flex flex-1 flex-col", variant === "compact" && "py-6")}
+			>
 				<CardHeader className="gap-3">
 					<div className="flex flex-wrap items-center gap-2 font-medium text-primary text-xs uppercase tracking-wide">
 						{post.category?.name ? (
@@ -87,14 +105,20 @@ export function BlogCard({ post, className, showImage = true, variant = "default
 							{post.title}
 						</Link>
 					</CardTitle>
-					{post.excerpt ? <CardDescription className="line-clamp-3 text-base">{post.excerpt}</CardDescription> : null}
+					{post.excerpt ? (
+						<CardDescription className="line-clamp-3 text-base">
+							{post.excerpt}
+						</CardDescription>
+					) : null}
 				</CardHeader>
 				<CardContent className="flex flex-1 flex-col justify-between gap-4">
 					<div className="flex flex-wrap gap-2 text-muted-foreground text-sm">
 						{publishedLabel ? (
 							<span className="flex items-center gap-1">
 								<Calendar aria-hidden="true" className="size-4" />
-								<time dateTime={post.publishedAt ?? undefined}>{publishedLabel}</time>
+								<time dateTime={post.publishedAt ?? undefined}>
+									{publishedLabel}
+								</time>
 							</span>
 						) : null}
 						{post.readingTime > 0 ? (
@@ -103,7 +127,9 @@ export function BlogCard({ post, className, showImage = true, variant = "default
 								<span>{post.readingTime} min read</span>
 							</span>
 						) : null}
-						{post.author?.name ? <span className="truncate">By {post.author.name}</span> : null}
+						{post.author?.name ? (
+							<span className="truncate">By {post.author.name}</span>
+						) : null}
 					</div>
 					{post.tags.length ? (
 						<ul className="flex flex-wrap gap-2 text-muted-foreground text-xs">
@@ -121,7 +147,10 @@ export function BlogCard({ post, className, showImage = true, variant = "default
 					) : null}
 				</CardContent>
 				<CardFooter className="mt-auto">
-					<Link className="font-medium text-primary text-sm transition-colors hover:text-primary/80" href={href}>
+					<Link
+						className="font-medium text-primary text-sm transition-colors hover:text-primary/80"
+						href={href}
+					>
 						Read article →
 					</Link>
 				</CardFooter>

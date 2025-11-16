@@ -12,10 +12,19 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export type JobStatus = "quoted" | "scheduled" | "in_progress" | "completed" | "cancelled";
+export type JobStatus =
+	| "quoted"
+	| "scheduled"
+	| "in_progress"
+	| "completed"
+	| "cancelled";
 
 type JobProcessIndicatorEditableProps = {
 	currentStatus: JobStatus;
@@ -111,7 +120,12 @@ export function JobProcessIndicatorEditable({
 
 	if (isCancelled) {
 		return (
-			<div className={cn("rounded-lg border border-destructive bg-destructive/10 p-4", className)}>
+			<div
+				className={cn(
+					"rounded-lg border border-destructive bg-destructive/10 p-4",
+					className,
+				)}
+			>
 				<div className="flex items-center justify-center gap-2">
 					<div className="flex size-8 items-center justify-center rounded-full bg-destructive/20">
 						<div className="size-2 rounded-full bg-destructive" />
@@ -137,14 +151,17 @@ export function JobProcessIndicatorEditable({
 							<button
 								className={cn(
 									"relative z-10 flex size-8 items-center justify-center rounded-full border transition-all hover:scale-110",
-									isCompleted || isCurrent ? "border-primary" : "border-muted"
+									isCompleted || isCurrent ? "border-primary" : "border-muted",
 								)}
 								onClick={() => onStatusChange?.(step.key as JobStatus)}
 								type="button"
 							>
 								{isCompleted ? (
 									<div className="flex size-full items-center justify-center rounded-full bg-primary">
-										<Check className="size-4 text-primary-foreground" strokeWidth={2.5} />
+										<Check
+											className="size-4 text-primary-foreground"
+											strokeWidth={2.5}
+										/>
 									</div>
 								) : isCurrent ? (
 									<div className="relative flex size-full items-center justify-center rounded-full bg-primary">
@@ -160,7 +177,11 @@ export function JobProcessIndicatorEditable({
 								<p
 									className={cn(
 										"font-medium text-xs",
-										isCurrent ? "text-foreground" : isCompleted ? "text-muted-foreground" : "text-muted-foreground/60"
+										isCurrent
+											? "text-foreground"
+											: isCompleted
+												? "text-muted-foreground"
+												: "text-muted-foreground/60",
 									)}
 								>
 									{step.label}
@@ -177,7 +198,10 @@ export function JobProcessIndicatorEditable({
 								>
 									<PopoverTrigger asChild>
 										<Button
-											className={cn("h-auto p-1 text-[10px]", !currentDate && "text-muted-foreground/40")}
+											className={cn(
+												"h-auto p-1 text-[10px]",
+												!currentDate && "text-muted-foreground/40",
+											)}
 											onClick={() => openDateEditor(step.dateKey, currentDate)}
 											size="sm"
 											variant="ghost"
@@ -212,10 +236,19 @@ export function JobProcessIndicatorEditable({
 												</div>
 											</div>
 											<div className="flex gap-2">
-												<Button className="flex-1" onClick={() => handleDateSave(step.dateKey)} size="sm">
+												<Button
+													className="flex-1"
+													onClick={() => handleDateSave(step.dateKey)}
+													size="sm"
+												>
 													Save
 												</Button>
-												<Button className="flex-1" onClick={() => setEditingDate(null)} size="sm" variant="outline">
+												<Button
+													className="flex-1"
+													onClick={() => setEditingDate(null)}
+													size="sm"
+													variant="outline"
+												>
 													Cancel
 												</Button>
 											</div>
@@ -224,14 +257,21 @@ export function JobProcessIndicatorEditable({
 								</Popover>
 
 								{currentDate ? (
-									<p className="text-[10px] text-muted-foreground/50">{formatStepTime(currentDate)}</p>
+									<p className="text-[10px] text-muted-foreground/50">
+										{formatStepTime(currentDate)}
+									</p>
 								) : null}
 							</div>
 						</div>
 
 						{/* Connecting Line */}
 						{index < statusSteps.length - 1 ? (
-							<div className={cn("h-[1px] flex-1 transition-all", isCompleted ? "bg-primary" : "bg-muted")} />
+							<div
+								className={cn(
+									"h-[1px] flex-1 transition-all",
+									isCompleted ? "bg-primary" : "bg-muted",
+								)}
+							/>
 						) : null}
 					</div>
 				);

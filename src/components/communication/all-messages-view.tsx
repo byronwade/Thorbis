@@ -6,11 +6,24 @@
  * Shows emails, SMS, calls, and tickets in a single view.
  */
 
-import { Archive, Mail, MessageCircle, Phone, PhoneIncoming, PhoneMissed, PhoneOutgoing, Ticket } from "lucide-react";
+import {
+	Archive,
+	Mail,
+	MessageCircle,
+	Phone,
+	PhoneIncoming,
+	PhoneMissed,
+	PhoneOutgoing,
+	Ticket,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -45,17 +58,23 @@ type AllMessagesViewProps = {
 	onViewRecording?: (recordingUrl: string) => void;
 };
 
-export function AllMessagesView({ messages, onResumeCall, onViewRecording }: AllMessagesViewProps) {
+export function AllMessagesView({
+	messages,
+	onResumeCall,
+	onViewRecording,
+}: AllMessagesViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
 
 	const handleOpenMessage = useCallback(
 		(message: UnifiedMessage) => {
 			setSelectedMessageId(message.id);
 			router.push(`/dashboard/communication?id=${message.id}`);
 		},
-		[router, setSelectedMessageId]
+		[router, setSelectedMessageId],
 	);
 
 	// Get icon based on message type
@@ -64,20 +83,30 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			case "email":
 				return <Mail className="size-4 text-blue-600 dark:text-blue-400" />;
 			case "sms":
-				return <MessageCircle className="size-4 text-green-600 dark:text-green-400" />;
+				return (
+					<MessageCircle className="size-4 text-green-600 dark:text-green-400" />
+				);
 			case "phone":
 				if (message.callType === "incoming") {
-					return <PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />;
+					return (
+						<PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />
+					);
 				}
 				if (message.callType === "outgoing") {
-					return <PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />;
+					return (
+						<PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />
+					);
 				}
 				if (message.callType === "missed") {
-					return <PhoneMissed className="size-4 text-red-600 dark:text-red-400" />;
+					return (
+						<PhoneMissed className="size-4 text-red-600 dark:text-red-400" />
+					);
 				}
 				return <Phone className="size-4 text-primary" />;
 			case "ticket":
-				return <Ticket className="size-4 text-orange-600 dark:text-orange-400" />;
+				return (
+					<Ticket className="size-4 text-orange-600 dark:text-orange-400" />
+				);
 			default:
 				return <Mail className="size-4 text-muted-foreground" />;
 		}
@@ -99,7 +128,9 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 		}
 	};
 
-	const getPriorityVariant = (priority: MessagePriority): "default" | "secondary" | "destructive" | "outline" => {
+	const getPriorityVariant = (
+		priority: MessagePriority,
+	): "default" | "secondary" | "destructive" | "outline" => {
 		switch (priority) {
 			case "urgent":
 				return "destructive";
@@ -159,7 +190,9 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 					</div>
 					<div className="flex flex-col">
 						<div className="flex items-center gap-2">
-							<span className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+							<span
+								className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+							>
 								{message.from}
 							</span>
 							<Badge className="text-xs" variant="outline">
@@ -167,7 +200,9 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 							</Badge>
 						</div>
 						{(message.fromPhone || message.fromEmail) && (
-							<span className="text-muted-foreground text-xs">{message.fromPhone || message.fromEmail}</span>
+							<span className="text-muted-foreground text-xs">
+								{message.fromPhone || message.fromEmail}
+							</span>
 						)}
 					</div>
 				</div>
@@ -180,12 +215,20 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			sortable: true,
 			render: (message) => (
 				<div className="flex flex-col gap-1">
-					<span className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+					<span
+						className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+					>
 						{message.subject || "(No subject)"}
 					</span>
-					{message.preview && <p className="line-clamp-1 text-muted-foreground text-xs">{message.preview}</p>}
+					{message.preview && (
+						<p className="line-clamp-1 text-muted-foreground text-xs">
+							{message.preview}
+						</p>
+					)}
 					{message.type === "phone" && message.duration !== undefined && (
-						<span className="text-muted-foreground text-xs">Duration: {formatDuration(message.duration)}</span>
+						<span className="text-muted-foreground text-xs">
+							Duration: {formatDuration(message.duration)}
+						</span>
 					)}
 				</div>
 			),
@@ -195,7 +238,10 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			header: "Priority",
 			width: "w-28",
 			render: (message) => (
-				<Badge className="capitalize" variant={getPriorityVariant(message.priority)}>
+				<Badge
+					className="capitalize"
+					variant={getPriorityVariant(message.priority)}
+				>
 					{message.priority}
 				</Badge>
 			),
@@ -223,7 +269,11 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			width: "w-32",
 			align: "right",
 			sortable: true,
-			render: (message) => <span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>,
+			render: (message) => (
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
+			),
 		},
 	];
 

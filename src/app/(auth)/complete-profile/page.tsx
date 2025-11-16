@@ -31,7 +31,11 @@ export default async function CompleteProfilePage() {
 	}
 
 	// Get user profile to check what's missing
-	const { data: profile } = await supabase.from("users").select("phone, name, avatar").eq("id", user.id).single();
+	const { data: profile } = await supabase
+		.from("users")
+		.select("phone, name, avatar")
+		.eq("id", user.id)
+		.single();
 
 	// If profile is complete, redirect to dashboard
 	if (profile?.phone && profile?.name) {
@@ -39,7 +43,11 @@ export default async function CompleteProfilePage() {
 	}
 
 	// Get OAuth avatar from user metadata if available
-	const oauthAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || profile?.avatar || null;
+	const oauthAvatar =
+		user.user_metadata?.avatar_url ||
+		user.user_metadata?.picture ||
+		profile?.avatar ||
+		null;
 
 	return (
 		<div className="relative flex min-h-screen flex-col overflow-hidden bg-background md:items-center md:justify-center">

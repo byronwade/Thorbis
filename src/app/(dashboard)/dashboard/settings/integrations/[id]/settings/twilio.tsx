@@ -3,7 +3,13 @@
 import { MessageSquare, Phone, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -25,7 +31,11 @@ export function TwilioSettings() {
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="phone-number">Business Phone Number</Label>
-						<Input defaultValue="+1 (555) 123-4567" id="phone-number" placeholder="+1 (555) 000-0000" />
+						<Input
+							defaultValue="+1 (555) 123-4567"
+							id="phone-number"
+							placeholder="+1 (555) 000-0000"
+						/>
 					</div>
 
 					<Separator />
@@ -33,7 +43,9 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Enable Call Recording</Label>
-							<p className="text-muted-foreground text-sm">Record all incoming and outgoing calls</p>
+							<p className="text-muted-foreground text-sm">
+								Record all incoming and outgoing calls
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -43,7 +55,9 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Voicemail</Label>
-							<p className="text-muted-foreground text-sm">Enable voicemail for missed calls</p>
+							<p className="text-muted-foreground text-sm">
+								Enable voicemail for missed calls
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -62,7 +76,9 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Enable SMS</Label>
-							<p className="text-muted-foreground text-sm">Send and receive text messages</p>
+							<p className="text-muted-foreground text-sm">
+								Send and receive text messages
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -72,7 +88,9 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Auto-reply</Label>
-							<p className="text-muted-foreground text-sm">Send automatic replies to incoming messages</p>
+							<p className="text-muted-foreground text-sm">
+								Send automatic replies to incoming messages
+							</p>
 						</div>
 						<Switch />
 					</div>

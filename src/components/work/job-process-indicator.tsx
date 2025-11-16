@@ -11,7 +11,12 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type JobStatus = "quoted" | "scheduled" | "in_progress" | "completed" | "cancelled";
+export type JobStatus =
+	| "quoted"
+	| "scheduled"
+	| "in_progress"
+	| "completed"
+	| "cancelled";
 
 type JobProcessIndicatorProps = {
 	currentStatus: JobStatus;
@@ -60,13 +65,22 @@ function getStatusIndex(status: JobStatus): number {
 	return statusSteps.findIndex((step) => step.key === status);
 }
 
-export function JobProcessIndicator({ currentStatus, className, dates }: JobProcessIndicatorProps) {
+export function JobProcessIndicator({
+	currentStatus,
+	className,
+	dates,
+}: JobProcessIndicatorProps) {
 	const currentIndex = getStatusIndex(currentStatus);
 	const isCancelled = currentStatus === "cancelled";
 
 	if (isCancelled) {
 		return (
-			<div className={cn("rounded-lg border border-destructive bg-destructive/10 p-4", className)}>
+			<div
+				className={cn(
+					"rounded-lg border border-destructive bg-destructive/10 p-4",
+					className,
+				)}
+			>
 				<div className="flex items-center justify-center gap-2">
 					<div className="flex size-8 items-center justify-center rounded-full bg-destructive/20">
 						<div className="size-2 rounded-full bg-destructive" />
@@ -92,12 +106,15 @@ export function JobProcessIndicator({ currentStatus, className, dates }: JobProc
 							<div
 								className={cn(
 									"relative z-10 flex size-8 items-center justify-center rounded-full border transition-all",
-									isCompleted || isCurrent ? "border-primary" : "border-muted"
+									isCompleted || isCurrent ? "border-primary" : "border-muted",
 								)}
 							>
 								{isCompleted ? (
 									<div className="flex size-full items-center justify-center rounded-full bg-primary">
-										<Check className="size-4 text-primary-foreground" strokeWidth={2.5} />
+										<Check
+											className="size-4 text-primary-foreground"
+											strokeWidth={2.5}
+										/>
 									</div>
 								) : isCurrent ? (
 									<div className="relative flex size-full items-center justify-center rounded-full bg-primary">
@@ -113,25 +130,43 @@ export function JobProcessIndicator({ currentStatus, className, dates }: JobProc
 								<p
 									className={cn(
 										"font-medium text-xs",
-										isCurrent ? "text-foreground" : isCompleted ? "text-muted-foreground" : "text-muted-foreground/60"
+										isCurrent
+											? "text-foreground"
+											: isCompleted
+												? "text-muted-foreground"
+												: "text-muted-foreground/60",
 									)}
 								>
 									{step.label}
 								</p>
 								{dates?.[step.dateKey] && (
-									<p className={cn("text-[10px]", isCurrent ? "text-muted-foreground" : "text-muted-foreground/60")}>
+									<p
+										className={cn(
+											"text-[10px]",
+											isCurrent
+												? "text-muted-foreground"
+												: "text-muted-foreground/60",
+										)}
+									>
 										{formatStepDate(dates[step.dateKey])}
 									</p>
 								)}
 								{dates?.[step.dateKey] && (
-									<p className="text-[10px] text-muted-foreground/50">{formatStepTime(dates[step.dateKey])}</p>
+									<p className="text-[10px] text-muted-foreground/50">
+										{formatStepTime(dates[step.dateKey])}
+									</p>
 								)}
 							</div>
 						</div>
 
 						{/* Connecting Line */}
 						{index < statusSteps.length - 1 && (
-							<div className={cn("h-[1px] flex-1 transition-all", isCompleted ? "bg-primary" : "bg-muted")} />
+							<div
+								className={cn(
+									"h-[1px] flex-1 transition-all",
+									isCompleted ? "bg-primary" : "bg-muted",
+								)}
+							/>
 						)}
 					</div>
 				);

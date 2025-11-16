@@ -48,7 +48,9 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
 					placeholder="Additional notes or instructions for the customer..."
 					value={notes || ""}
 				/>
-				<p className="mt-2 text-muted-foreground text-xs">Internal notes or special instructions for this invoice</p>
+				<p className="mt-2 text-muted-foreground text-xs">
+					Internal notes or special instructions for this invoice
+				</p>
 			</Card>
 		</div>
 	);

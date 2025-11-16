@@ -47,10 +47,15 @@ type TranscriptStore = {
 	filteredEntries: TranscriptEntry[];
 
 	// Actions
-	addEntry: (entry: Omit<TranscriptEntry, "id" | "timestamp" | "isAnalyzing">) => void;
+	addEntry: (
+		entry: Omit<TranscriptEntry, "id" | "timestamp" | "isAnalyzing">,
+	) => void;
 	updateEntry: (id: string, updates: Partial<TranscriptEntry>) => void;
 	markAsAnalyzing: (id: string) => void;
-	markAsAnalyzed: (id: string, extracted: TranscriptEntry["aiExtracted"]) => void;
+	markAsAnalyzed: (
+		id: string,
+		extracted: TranscriptEntry["aiExtracted"],
+	) => void;
 	setCurrentSpeaker: (speaker: "csr" | "customer" | null) => void;
 	setSearchQuery: (query: string) => void;
 	startRecording: () => void;
@@ -88,7 +93,11 @@ export const useTranscriptStore = create<TranscriptStore>()(
 					return {
 						entries,
 						filteredEntries: state.searchQuery
-							? entries.filter((e) => e.text.toLowerCase().includes(state.searchQuery.toLowerCase()))
+							? entries.filter((e) =>
+									e.text
+										.toLowerCase()
+										.includes(state.searchQuery.toLowerCase()),
+								)
 							: entries,
 					};
 				});
@@ -96,11 +105,17 @@ export const useTranscriptStore = create<TranscriptStore>()(
 
 			updateEntry: (id, updates) => {
 				set((state) => {
-					const entries = state.entries.map((entry) => (entry.id === id ? { ...entry, ...updates } : entry));
+					const entries = state.entries.map((entry) =>
+						entry.id === id ? { ...entry, ...updates } : entry,
+					);
 					return {
 						entries,
 						filteredEntries: state.searchQuery
-							? entries.filter((e) => e.text.toLowerCase().includes(state.searchQuery.toLowerCase()))
+							? entries.filter((e) =>
+									e.text
+										.toLowerCase()
+										.includes(state.searchQuery.toLowerCase()),
+								)
 							: entries,
 					};
 				});
@@ -123,7 +138,9 @@ export const useTranscriptStore = create<TranscriptStore>()(
 				set((state) => ({
 					searchQuery: query,
 					filteredEntries: query
-						? state.entries.filter((e) => e.text.toLowerCase().includes(query.toLowerCase()))
+						? state.entries.filter((e) =>
+								e.text.toLowerCase().includes(query.toLowerCase()),
+							)
 						: state.entries,
 				}));
 			},
@@ -144,7 +161,7 @@ export const useTranscriptStore = create<TranscriptStore>()(
 						aiExtracted: e.aiExtracted,
 					})),
 					null,
-					2
+					2,
 				);
 			},
 
@@ -159,6 +176,6 @@ export const useTranscriptStore = create<TranscriptStore>()(
 					.join("\n");
 			},
 		}),
-		{ name: "TranscriptStore" }
-	)
+		{ name: "TranscriptStore" },
+	),
 );

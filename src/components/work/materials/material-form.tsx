@@ -6,10 +6,22 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createInventory, reserveStock } from "@/actions/inventory";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,11 +47,17 @@ type MaterialFormProps = {
 	defaultPriceBookItemId?: string;
 };
 
-export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: MaterialFormProps) {
+export function MaterialForm({
+	priceBookItems,
+	jobs,
+	defaultPriceBookItemId,
+}: MaterialFormProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const formRef = useRef<HTMLFormElement>(null);
-	const [selectedItemId, setSelectedItemId] = useState(defaultPriceBookItemId || priceBookItems[0]?.id || "");
+	const [selectedItemId, setSelectedItemId] = useState(
+		defaultPriceBookItemId || priceBookItems[0]?.id || "",
+	);
 	const [quantityOnHand, setQuantityOnHand] = useState("1");
 	const [minimumQuantity, setMinimumQuantity] = useState("0");
 	const [reorderPoint, setReorderPoint] = useState("0");
@@ -56,7 +74,7 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 
 	const selectedItem = useMemo(
 		() => priceBookItems.find((item) => item.id === selectedItemId),
-		[priceBookItems, selectedItemId]
+		[priceBookItems, selectedItemId],
 	);
 
 	useEffect(() => {
@@ -75,7 +93,8 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 		return () => window.removeEventListener("keydown", handler);
 	}, [router]);
 
-	const toCents = (value: string) => Math.round((Number.parseFloat(value || "0") || 0) * 100);
+	const toCents = (value: string) =>
+		Math.round((Number.parseFloat(value || "0") || 0) * 100);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -125,19 +144,27 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			toast.success("Inventory created.");
 			router.push("/dashboard/work/materials");
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Something went wrong while creating inventory.");
+			setError(
+				err instanceof Error
+					? err.message
+					: "Something went wrong while creating inventory.",
+			);
 			setIsSubmitting(false);
 		}
 	};
 
-	const totalValue = (Number.parseFloat(quantityOnHand || "0") || 0) * (Number.parseFloat(costPerUnit || "0") || 0);
+	const totalValue =
+		(Number.parseFloat(quantityOnHand || "0") || 0) *
+		(Number.parseFloat(costPerUnit || "0") || 0);
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
 			<div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p className="font-semibold text-sm">Keyboard Shortcuts</p>
-					<p className="text-muted-foreground text-xs">⌘/Ctrl + S to save • Esc to cancel</p>
+					<p className="text-muted-foreground text-xs">
+						⌘/Ctrl + S to save • Esc to cancel
+					</p>
 				</div>
 				<Button asChild size="sm" variant="ghost">
 					<Link href="/dashboard/work/materials">Back to Materials</Link>
@@ -153,7 +180,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			<Card>
 				<CardHeader>
 					<CardTitle>Price Book Item</CardTitle>
-					<CardDescription>Select the service/material/equipment you&apos;re stocking</CardDescription>
+					<CardDescription>
+						Select the service/material/equipment you&apos;re stocking
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 md:grid-cols-[2fr,1fr]">
@@ -193,7 +222,8 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 						<div className="rounded-lg border bg-muted/20 p-4 text-sm">
 							<p className="font-semibold">{selectedItem.name}</p>
 							<p className="text-muted-foreground">
-								SKU {selectedItem.sku} • {selectedItem.itemType} • Unit: {selectedItem.unit || "each"}
+								SKU {selectedItem.sku} • {selectedItem.itemType} • Unit:{" "}
+								{selectedItem.unit || "each"}
 							</p>
 						</div>
 					)}
@@ -203,7 +233,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			<Card>
 				<CardHeader>
 					<CardTitle>Inventory Levels</CardTitle>
-					<CardDescription>Track how much is on hand, minimums, and reorder preferences</CardDescription>
+					<CardDescription>
+						Track how much is on hand, minimums, and reorder preferences
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -265,7 +297,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 							value={costPerUnit}
 						/>
 						{quantityOnHand && costPerUnit && (
-							<p className="text-muted-foreground text-xs">Inventory value: ${totalValue.toFixed(2)}</p>
+							<p className="text-muted-foreground text-xs">
+								Inventory value: ${totalValue.toFixed(2)}
+							</p>
 						)}
 					</div>
 				</CardContent>
@@ -274,7 +308,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			<Card>
 				<CardHeader>
 					<CardTitle>Location & Notes</CardTitle>
-					<CardDescription>Where the item lives and any internal documentation</CardDescription>
+					<CardDescription>
+						Where the item lives and any internal documentation
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -312,7 +348,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			<Card>
 				<CardHeader>
 					<CardTitle>Optional Reservation</CardTitle>
-					<CardDescription>Reserve stock for an upcoming job immediately after creation</CardDescription>
+					<CardDescription>
+						Reserve stock for an upcoming job immediately after creation
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -329,7 +367,11 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 												<span className="font-medium text-sm">
 													{job.jobNumber} • {job.title}
 												</span>
-												{job.customer && <span className="text-muted-foreground text-xs">{job.customer}</span>}
+												{job.customer && (
+													<span className="text-muted-foreground text-xs">
+														{job.customer}
+													</span>
+												)}
 											</div>
 										</SelectItem>
 									))}
@@ -361,7 +403,12 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			</Card>
 
 			<div className="flex items-center justify-end gap-3">
-				<Button disabled={isSubmitting} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isSubmitting}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel
 				</Button>
 				<Button disabled={isSubmitting} type="submit">

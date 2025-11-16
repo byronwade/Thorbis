@@ -12,7 +12,8 @@ import Stripe from "stripe";
 // Load environment variables from .env.local
 loadEnvConfig({ path: resolve(process.cwd(), ".env.local") });
 
-const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] = "2025-01-27.acacia";
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+	"2025-01-27.acacia";
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 if (!STRIPE_SECRET_KEY) {
@@ -182,7 +183,9 @@ async function createMetersAndPrices() {
 			});
 
 			console.log(`✅ Price created: ${price.id}`);
-			const priceDisplay = (meterConfig.price_amount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMAL_PLACES);
+			const priceDisplay = (meterConfig.price_amount / CENTS_IN_DOLLAR).toFixed(
+				PRICE_DECIMAL_PLACES,
+			);
 			console.log(`   Amount: $${priceDisplay} per unit\n`);
 
 			results.push({
@@ -193,8 +196,12 @@ async function createMetersAndPrices() {
 				price_amount: meterConfig.price_amount,
 			});
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error);
-			console.error(`❌ Error creating ${meterConfig.display_name}:`, errorMessage);
+			const errorMessage =
+				error instanceof Error ? error.message : String(error);
+			console.error(
+				`❌ Error creating ${meterConfig.display_name}:`,
+				errorMessage,
+			);
 			console.error("   Full error:", error);
 		}
 	}
@@ -236,7 +243,9 @@ async function createMetersAndPrices() {
 		console.log(`  Meter ID: ${result.meter_id}`);
 		console.log(`  Product ID: ${result.product_id}`);
 		console.log(`  Price ID: ${result.price_id}`);
-		const formattedAmount = (result.price_amount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMAL_PLACES);
+		const formattedAmount = (result.price_amount / CENTS_IN_DOLLAR).toFixed(
+			PRICE_DECIMAL_PLACES,
+		);
 		console.log(`  Amount: $${formattedAmount}`);
 		console.log("");
 	}
@@ -245,7 +254,9 @@ async function createMetersAndPrices() {
 // Run the script
 createMetersAndPrices()
 	.then(() => {
-		console.log("✅ All done! Copy the environment variables above to your .env.local file.");
+		console.log(
+			"✅ All done! Copy the environment variables above to your .env.local file.",
+		);
 		process.exit(0);
 	})
 	.catch((error) => {

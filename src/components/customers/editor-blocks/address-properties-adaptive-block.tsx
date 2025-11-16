@@ -13,7 +13,10 @@ import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { MapPin, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
-import { CollapsibleActionButton, CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
+import {
+	CollapsibleActionButton,
+	CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,11 +30,15 @@ const PropertiesTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[200px] w-full" />,
-	}
+	},
 );
 
 // React component that renders the block
-export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes, editor }: any) {
+export function AddressPropertiesAdaptiveBlockComponent({
+	node,
+	updateAttributes,
+	editor,
+}: any) {
 	const {
 		// Primary address from customer record
 		address,
@@ -90,7 +97,9 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
 
 						{/* Address Line 2 */}
 						<div className="space-y-2">
-							<Label htmlFor={`address2-${node.attrs.id}`}>Apartment, suite, etc. (optional)</Label>
+							<Label htmlFor={`address2-${node.attrs.id}`}>
+								Apartment, suite, etc. (optional)
+							</Label>
 							<Input
 								id={`address2-${node.attrs.id}`}
 								onChange={(e) => updateAttributes({ address2: e.target.value })}
@@ -126,7 +135,9 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
 								<Label htmlFor={`zipCode-${node.attrs.id}`}>ZIP Code</Label>
 								<Input
 									id={`zipCode-${node.attrs.id}`}
-									onChange={(e) => updateAttributes({ zipCode: e.target.value })}
+									onChange={(e) =>
+										updateAttributes({ zipCode: e.target.value })
+									}
 									placeholder="94102"
 									value={zipCode || ""}
 								/>
@@ -164,13 +175,19 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
 	};
 
 	// Calculate total property value
-	const totalValue = properties.reduce((sum: number, p: any) => sum + (p.enrichment?.ownership?.marketValue || 0), 0);
+	const totalValue = properties.reduce(
+		(sum: number, p: any) => sum + (p.enrichment?.ownership?.marketValue || 0),
+		0,
+	);
 
 	return (
 		<NodeViewWrapper className="address-properties-block">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddProperty}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddProperty}
+					>
 						Add Property
 					</CollapsibleActionButton>
 				}
@@ -180,12 +197,20 @@ export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes
 				icon={<MapPin className="size-5" />}
 				standalone={true}
 				storageKey="customer-properties-section"
-				summary={totalValue > 0 ? `Total value: ${formatCurrency(totalValue)}` : `${properties.length} locations`}
+				summary={
+					totalValue > 0
+						? `Total value: ${formatCurrency(totalValue)}`
+						: `${properties.length} locations`
+				}
 				title={`Properties (${properties.length})`}
 				value="customer-properties"
 			>
 				{/* Full-width datatable with search/sort/pagination and hover maps */}
-				<PropertiesTable customerId={customerId} itemsPerPage={10} properties={properties} />
+				<PropertiesTable
+					customerId={customerId}
+					itemsPerPage={10}
+					properties={properties}
+				/>
 			</CollapsibleDataSection>
 		</NodeViewWrapper>
 	);

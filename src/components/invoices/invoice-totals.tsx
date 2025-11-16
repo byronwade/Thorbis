@@ -37,14 +37,18 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 				{/* Subtotal */}
 				<div className="flex justify-between text-sm">
 					<span className="text-muted-foreground">Subtotal</span>
-					<span className="font-medium">{formatCurrency(invoice.subtotal || 0, { decimals: 2 })}</span>
+					<span className="font-medium">
+						{formatCurrency(invoice.subtotal || 0, { decimals: 2 })}
+					</span>
 				</div>
 
 				{/* Tax */}
 				{invoice.tax_amount > 0 && (
 					<div className="flex justify-between text-sm">
 						<span className="text-muted-foreground">Tax</span>
-						<span className="font-medium">{formatCurrency(invoice.tax_amount || 0, { decimals: 2 })}</span>
+						<span className="font-medium">
+							{formatCurrency(invoice.tax_amount || 0, { decimals: 2 })}
+						</span>
 					</div>
 				)}
 
@@ -63,7 +67,9 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 				{/* Total */}
 				<div className="flex justify-between">
 					<span className="font-semibold">Total</span>
-					<span className="font-bold text-lg">{formatCurrency(invoice.total_amount || 0, { decimals: 2 })}</span>
+					<span className="font-bold text-lg">
+						{formatCurrency(invoice.total_amount || 0, { decimals: 2 })}
+					</span>
 				</div>
 
 				{/* Paid Amount */}
@@ -83,7 +89,9 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 				{invoice.balance_amount > 0 && (
 					<div className="flex justify-between">
 						<span className="font-semibold">Balance Due</span>
-						<span className={`font-bold text-lg ${invoice.status === "overdue" ? "text-destructive" : "text-primary"}`}>
+						<span
+							className={`font-bold text-lg ${invoice.status === "overdue" ? "text-destructive" : "text-primary"}`}
+						>
 							{formatCurrency(invoice.balance_amount || 0, { decimals: 2 })}
 						</span>
 					</div>

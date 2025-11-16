@@ -14,7 +14,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -32,32 +38,53 @@ type CustomerIntakeClientProps = {
 	initialSettings: Partial<CustomerIntakeSettingsState> | null;
 };
 
-export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<CustomerIntakeSettingsState>({
-			getter: getIntakeSettings,
-			setter: updateIntakeSettings,
-			initialState: DEFAULT_CUSTOMER_INTAKE_SETTINGS,
-			settingsName: "customer intake",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapCustomerIntakeSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("requirePhone", state.requirePhone.toString());
-				formData.append("requireEmail", state.requireEmail.toString());
-				formData.append("requireAddress", state.requireAddress.toString());
-				formData.append("requirePropertyType", state.requirePropertyType.toString());
-				formData.append("trackLeadSource", state.trackLeadSource.toString());
-				formData.append("requireLeadSource", state.requireLeadSource.toString());
-				formData.append("autoAssignTechnician", state.autoAssignTechnician.toString());
-				formData.append("autoCreateJob", state.autoCreateJob.toString());
-				formData.append("sendWelcomeEmail", state.sendWelcomeEmail.toString());
-				formData.append("welcomeEmailTemplateId", state.welcomeEmailTemplateId || "");
-				const trimmedQuestions = state.customQuestions.trim();
-				formData.append("customQuestions", trimmedQuestions.length === 0 ? "[]" : trimmedQuestions);
-				return formData;
-			},
-		});
+export function CustomerIntakeClient({
+	initialSettings,
+}: CustomerIntakeClientProps) {
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<CustomerIntakeSettingsState>({
+		getter: getIntakeSettings,
+		setter: updateIntakeSettings,
+		initialState: DEFAULT_CUSTOMER_INTAKE_SETTINGS,
+		settingsName: "customer intake",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapCustomerIntakeSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("requirePhone", state.requirePhone.toString());
+			formData.append("requireEmail", state.requireEmail.toString());
+			formData.append("requireAddress", state.requireAddress.toString());
+			formData.append(
+				"requirePropertyType",
+				state.requirePropertyType.toString(),
+			);
+			formData.append("trackLeadSource", state.trackLeadSource.toString());
+			formData.append("requireLeadSource", state.requireLeadSource.toString());
+			formData.append(
+				"autoAssignTechnician",
+				state.autoAssignTechnician.toString(),
+			);
+			formData.append("autoCreateJob", state.autoCreateJob.toString());
+			formData.append("sendWelcomeEmail", state.sendWelcomeEmail.toString());
+			formData.append(
+				"welcomeEmailTemplateId",
+				state.welcomeEmailTemplateId || "",
+			);
+			const trimmedQuestions = state.customQuestions.trim();
+			formData.append(
+				"customQuestions",
+				trimmedQuestions.length === 0 ? "[]" : trimmedQuestions,
+			);
+			return formData;
+		},
+	});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {});
@@ -111,7 +138,9 @@ export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientPr
 							<Users className="size-4" />
 							Contact essentials
 						</CardTitle>
-						<CardDescription>Required fields before a customer can be created</CardDescription>
+						<CardDescription>
+							Required fields before a customer can be created
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{[
@@ -136,14 +165,28 @@ export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientPr
 								description: "Collect residential vs. commercial context.",
 							},
 						].map((field) => (
-							<div className="flex items-center justify-between rounded-lg border p-3" key={field.key}>
+							<div
+								className="flex items-center justify-between rounded-lg border p-3"
+								key={field.key}
+							>
 								<div>
 									<p className="font-medium text-sm">{field.label}</p>
-									<p className="text-muted-foreground text-xs">{field.description}</p>
+									<p className="text-muted-foreground text-xs">
+										{field.description}
+									</p>
 								</div>
 								<Switch
-									checked={settings[field.key as keyof CustomerIntakeSettingsState] as boolean}
-									onCheckedChange={(checked) => updateSetting(field.key as keyof CustomerIntakeSettingsState, checked)}
+									checked={
+										settings[
+											field.key as keyof CustomerIntakeSettingsState
+										] as boolean
+									}
+									onCheckedChange={(checked) =>
+										updateSetting(
+											field.key as keyof CustomerIntakeSettingsState,
+											checked,
+										)
+									}
 								/>
 							</div>
 						))}
@@ -156,48 +199,66 @@ export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientPr
 							<Building className="size-4" />
 							Lead capture
 						</CardTitle>
-						<CardDescription>Decide when to capture attribution and assign work automatically</CardDescription>
+						<CardDescription>
+							Decide when to capture attribution and assign work automatically
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Track lead source</p>
-								<p className="text-muted-foreground text-xs">Show the “How did you hear about us?” dropdown.</p>
+								<p className="text-muted-foreground text-xs">
+									Show the “How did you hear about us?” dropdown.
+								</p>
 							</div>
 							<Switch
 								checked={settings.trackLeadSource}
-								onCheckedChange={(checked) => updateSetting("trackLeadSource", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("trackLeadSource", checked)
+								}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Require lead source</p>
-								<p className="text-muted-foreground text-xs">Prevent submission until a source is selected.</p>
+								<p className="text-muted-foreground text-xs">
+									Prevent submission until a source is selected.
+								</p>
 							</div>
 							<Switch
 								checked={settings.requireLeadSource}
-								onCheckedChange={(checked) => updateSetting("requireLeadSource", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("requireLeadSource", checked)
+								}
 							/>
 						</div>
 						<Separator />
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Auto-assign technician</p>
-								<p className="text-muted-foreground text-xs">Immediately route new intake to dispatch rules.</p>
+								<p className="text-muted-foreground text-xs">
+									Immediately route new intake to dispatch rules.
+								</p>
 							</div>
 							<Switch
 								checked={settings.autoAssignTechnician}
-								onCheckedChange={(checked) => updateSetting("autoAssignTechnician", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("autoAssignTechnician", checked)
+								}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Auto-create job</p>
-								<p className="text-muted-foreground text-xs">Convert intake submissions straight into jobs.</p>
+								<p className="text-muted-foreground text-xs">
+									Convert intake submissions straight into jobs.
+								</p>
 							</div>
 							<Switch
 								checked={settings.autoCreateJob}
-								onCheckedChange={(checked) => updateSetting("autoCreateJob", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("autoCreateJob", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -209,24 +270,32 @@ export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientPr
 							<Inbox className="size-4" />
 							Welcome messaging
 						</CardTitle>
-						<CardDescription>What happens immediately after a customer submits the form</CardDescription>
+						<CardDescription>
+							What happens immediately after a customer submits the form
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Send welcome email</p>
-								<p className="text-muted-foreground text-xs">Triggers the template defined below.</p>
+								<p className="text-muted-foreground text-xs">
+									Triggers the template defined below.
+								</p>
 							</div>
 							<Switch
 								checked={settings.sendWelcomeEmail}
-								onCheckedChange={(checked) => updateSetting("sendWelcomeEmail", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("sendWelcomeEmail", checked)
+								}
 							/>
 						</div>
 						<div>
 							<Label>Email template ID</Label>
 							<Input
 								className="mt-2"
-								onChange={(event) => updateSetting("welcomeEmailTemplateId", event.target.value)}
+								onChange={(event) =>
+									updateSetting("welcomeEmailTemplateId", event.target.value)
+								}
 								placeholder="tmpl_welcome_123"
 								value={settings.welcomeEmailTemplateId}
 							/>
@@ -243,18 +312,23 @@ export function CustomerIntakeClient({ initialSettings }: CustomerIntakeClientPr
 							<ListChecks className="size-4" />
 							Custom questions
 						</CardTitle>
-						<CardDescription>Extend the intake form with extra fields or disclosures</CardDescription>
+						<CardDescription>
+							Extend the intake form with extra fields or disclosures
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<Textarea
 							className="min-h-[220px] font-mono text-sm"
-							onChange={(event) => updateSetting("customQuestions", event.target.value)}
+							onChange={(event) =>
+								updateSetting("customQuestions", event.target.value)
+							}
 							placeholder='Example: [{"label":"Gate code","type":"text","required":false}]'
 							value={settings.customQuestions}
 						/>
 						<p className="text-muted-foreground text-xs">
-							Provide a JSON array describing custom questions. Each object can include <code>label</code>,{" "}
-							<code>type</code>, and <code>required</code>.
+							Provide a JSON array describing custom questions. Each object can
+							include <code>label</code>, <code>type</code>, and{" "}
+							<code>required</code>.
 						</p>
 					</CardContent>
 				</Card>

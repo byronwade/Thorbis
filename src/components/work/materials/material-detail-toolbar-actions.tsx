@@ -15,7 +15,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function MaterialDetailToolbarActions() {
@@ -65,7 +70,12 @@ export function MaterialDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handleAdjustStock} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handleAdjustStock}
+								size="sm"
+								variant="outline"
+							>
 								<Wrench className="size-3.5" />
 								<span className="hidden lg:inline">Adjust Stock</span>
 							</Button>
@@ -79,7 +89,12 @@ export function MaterialDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handleReorder} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handleReorder}
+								size="sm"
+								variant="outline"
+							>
 								<Package className="size-3.5" />
 								<span className="hidden lg:inline">Reorder</span>
 							</Button>
@@ -133,14 +148,23 @@ export function MaterialDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Material</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this material? Archived items can be restored within 90 days.
+							Are you sure you want to archive this material? Archived items can
+							be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Material"}
 						</Button>
 					</DialogFooter>

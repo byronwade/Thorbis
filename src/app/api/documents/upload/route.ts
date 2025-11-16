@@ -23,7 +23,10 @@ export async function POST(request: NextRequest) {
 		// Verify authentication
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Server configuration error" },
+				{ status: 500 },
+			);
 		}
 		const {
 			data: { user },
@@ -46,7 +49,10 @@ export async function POST(request: NextRequest) {
 
 		// Validate required fields
 		if (!(file && companyId && contextType)) {
-			return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Missing required fields" },
+				{ status: 400 },
+			);
 		}
 
 		// Verify user has access to company
@@ -59,7 +65,10 @@ export async function POST(request: NextRequest) {
 			.single();
 
 		if (memberError || !membership) {
-			return NextResponse.json({ error: "Access denied - not a member of this company" }, { status: 403 });
+			return NextResponse.json(
+				{ error: "Access denied - not a member of this company" },
+				{ status: 403 },
+			);
 		}
 
 		// Validate file
@@ -71,7 +80,7 @@ export async function POST(request: NextRequest) {
 					details: validation.errors,
 					warnings: validation.warnings,
 				},
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -92,7 +101,10 @@ export async function POST(request: NextRequest) {
 		});
 
 		if (!result.success) {
-			return NextResponse.json({ error: result.error, warnings: result.warnings }, { status: 500 });
+			return NextResponse.json(
+				{ error: result.error, warnings: result.warnings },
+				{ status: 500 },
+			);
 		}
 
 		// Return success response
@@ -113,7 +125,7 @@ export async function POST(request: NextRequest) {
 				error: "Upload failed",
 				details: error instanceof Error ? error.message : "Unknown error",
 			},
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

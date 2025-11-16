@@ -7,7 +7,14 @@
 
 import { Calendar, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type JobSchedulesProps = {
 	schedules: any[];
@@ -37,7 +44,10 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+		const statusMap: Record<
+			string,
+			"default" | "secondary" | "outline" | "destructive"
+		> = {
 			scheduled: "outline",
 			confirmed: "secondary",
 			in_progress: "default",
@@ -53,7 +63,9 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<Calendar className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Appointments</h3>
-				<p className="text-muted-foreground text-sm">No appointments have been scheduled for this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No appointments have been scheduled for this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -84,12 +96,20 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 										{formatTime(schedule.start_time)}
 									</div>
 								</TableCell>
-								<TableCell>{schedule.duration ? `${schedule.duration} min` : "—"}</TableCell>
-								<TableCell className="capitalize">{schedule.appointment_type || schedule.type || "—"}</TableCell>
 								<TableCell>
-									<Badge variant={getStatusVariant(schedule.status)}>{schedule.status || "scheduled"}</Badge>
+									{schedule.duration ? `${schedule.duration} min` : "—"}
 								</TableCell>
-								<TableCell className="text-muted-foreground text-sm">{schedule.notes || "—"}</TableCell>
+								<TableCell className="capitalize">
+									{schedule.appointment_type || schedule.type || "—"}
+								</TableCell>
+								<TableCell>
+									<Badge variant={getStatusVariant(schedule.status)}>
+										{schedule.status || "scheduled"}
+									</Badge>
+								</TableCell>
+								<TableCell className="text-muted-foreground text-sm">
+									{schedule.notes || "—"}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

@@ -3,10 +3,20 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getFeatureBySlug } from "@/lib/marketing/features";
 import type { MarketingValueProp } from "@/lib/marketing/types";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Solutions for Service Businesses",
@@ -35,7 +45,8 @@ type SolutionGroupConfig = {
 const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	{
 		heading: "Automation & AI",
-		description: "Book every opportunity and run lifecycle campaigns without adding headcount.",
+		description:
+			"Book every opportunity and run lifecycle campaigns without adding headcount.",
 		features: [
 			{ slug: "ai-assistant", label: "AI Assistant", highlight: "24/7 intake" },
 			{
@@ -47,7 +58,8 @@ const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	},
 	{
 		heading: "Operations Control",
-		description: "Dispatch, CRM, and mobile tools that keep office and field teams perfectly in sync.",
+		description:
+			"Dispatch, CRM, and mobile tools that keep office and field teams perfectly in sync.",
 		features: [
 			{
 				slug: "scheduling",
@@ -60,7 +72,8 @@ const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	},
 	{
 		heading: "Revenue & Finance",
-		description: "Invoice faster, sync with accounting, and protect cash flow in one workspace.",
+		description:
+			"Invoice faster, sync with accounting, and protect cash flow in one workspace.",
 		features: [
 			{
 				slug: "invoicing",
@@ -76,7 +89,8 @@ const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	},
 	{
 		heading: "Customer Experience",
-		description: "Give homeowners and commercial clients a premium digital journey from booking to payment.",
+		description:
+			"Give homeowners and commercial clients a premium digital journey from booking to payment.",
 		features: [
 			{
 				slug: "customer-portal",
@@ -234,7 +248,7 @@ export default function SolutionsOverviewPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Solutions", url: `${siteUrl}/solutions` },
-						])
+						]),
 					),
 				}}
 				id="solutions-breadcrumb-ld"
@@ -256,8 +270,9 @@ export default function SolutionsOverviewPage() {
 						Platform building blocks for modern trades businesses
 					</h1>
 					<p className="mt-4 text-lg text-muted-foreground">
-						Each page below is a pSEO-ready deep dive that matches the intent of operators evaluating ServiceTitan,
-						Housecall Pro, and legacy toolchains. Choose your path or explore them all.
+						Each page below is a pSEO-ready deep dive that matches the intent of
+						operators evaluating ServiceTitan, Housecall Pro, and legacy
+						toolchains. Choose your path or explore them all.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -274,17 +289,27 @@ export default function SolutionsOverviewPage() {
 						<section key={group.heading}>
 							<div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 								<div>
-									<p className="font-semibold text-primary text-sm uppercase tracking-wide">{group.heading}</p>
-									<h2 className="font-semibold text-2xl text-foreground">{group.description}</h2>
+									<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+										{group.heading}
+									</p>
+									<h2 className="font-semibold text-2xl text-foreground">
+										{group.description}
+									</h2>
 								</div>
-								<Link className="font-semibold text-primary text-sm underline underline-offset-4" href="/features">
+								<Link
+									className="font-semibold text-primary text-sm underline underline-offset-4"
+									href="/features"
+								>
 									Browse all features
 								</Link>
 							</div>
 
 							<div className="grid gap-6 md:grid-cols-2">
 								{group.features.map((feature) => (
-									<Card className="flex h-full flex-col justify-between border-border/70" key={feature.slug}>
+									<Card
+										className="flex h-full flex-col justify-between border-border/70"
+										key={feature.slug}
+									>
 										<CardHeader className="space-y-3">
 											<div className="flex flex-wrap items-center gap-2">
 												<Badge variant="outline">{feature.label}</Badge>
@@ -299,7 +324,9 @@ export default function SolutionsOverviewPage() {
 													{feature.heroEyebrow}
 												</p>
 											) : null}
-											<CardTitle className="text-2xl">{feature.heroTitle}</CardTitle>
+											<CardTitle className="text-2xl">
+												{feature.heroTitle}
+											</CardTitle>
 											<CardDescription>{feature.summary}</CardDescription>
 										</CardHeader>
 										<CardContent className="flex flex-col gap-5">
@@ -309,7 +336,9 @@ export default function SolutionsOverviewPage() {
 														<li className="flex gap-2" key={value.title}>
 															<span className="mt-1 text-primary">•</span>
 															<span>
-																<span className="font-semibold">{value.title}: </span>
+																<span className="font-semibold">
+																	{value.title}:{" "}
+																</span>
 																{value.description}
 															</span>
 														</li>
@@ -318,7 +347,9 @@ export default function SolutionsOverviewPage() {
 											) : null}
 											<div className="flex flex-wrap gap-3">
 												<Button asChild>
-													<Link href={`/features/${feature.slug}`}>Explore {feature.label}</Link>
+													<Link href={`/features/${feature.slug}`}>
+														Explore {feature.label}
+													</Link>
 												</Button>
 												<Button asChild variant="ghost">
 													<Link href="/contact">Talk to sales</Link>
@@ -333,11 +364,16 @@ export default function SolutionsOverviewPage() {
 				</div>
 
 				<div className="mt-16 rounded-3xl border border-border/60 bg-muted/30 p-8 text-center">
-					<p className="font-semibold text-primary text-sm uppercase tracking-wide">Switch Programs</p>
-					<h2 className="mt-2 font-bold text-3xl">Moving from ServiceTitan or Housecall Pro?</h2>
+					<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+						Switch Programs
+					</p>
+					<h2 className="mt-2 font-bold text-3xl">
+						Moving from ServiceTitan or Housecall Pro?
+					</h2>
 					<p className="mt-3 text-lg text-muted-foreground">
-						Our white-glove team migrates data, recreates automations, and enables Dispatch AI in under 24 hours. Keep
-						your workflows, drop the bloat.
+						Our white-glove team migrates data, recreates automations, and
+						enables Dispatch AI in under 24 hours. Keep your workflows, drop the
+						bloat.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -354,10 +390,13 @@ export default function SolutionsOverviewPage() {
 						<Badge className="mb-4" variant="secondary">
 							Resource Library
 						</Badge>
-						<h2 className="font-bold text-3xl">All the research paths your buying committee needs</h2>
+						<h2 className="font-bold text-3xl">
+							All the research paths your buying committee needs
+						</h2>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Every link below is an SEO-ready landing page with rich content, schema markup, and clear CTAs—ideal for
-							programmatic search capture.
+							Every link below is an SEO-ready landing page with rich content,
+							schema markup, and clear CTAs—ideal for programmatic search
+							capture.
 						</p>
 					</div>
 					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -367,8 +406,12 @@ export default function SolutionsOverviewPage() {
 								href={item.href}
 								key={item.href}
 							>
-								<p className="font-semibold text-base text-foreground">{item.label}</p>
-								<p className="mt-2 text-muted-foreground text-sm">{item.description}</p>
+								<p className="font-semibold text-base text-foreground">
+									{item.label}
+								</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									{item.description}
+								</p>
 							</Link>
 						))}
 					</div>
@@ -379,10 +422,12 @@ export default function SolutionsOverviewPage() {
 						<Badge className="mb-4" variant="secondary">
 							Company & Trust
 						</Badge>
-						<h2 className="font-bold text-3xl">Learn about the team behind Thorbis</h2>
+						<h2 className="font-bold text-3xl">
+							Learn about the team behind Thorbis
+						</h2>
 						<p className="mt-3 text-lg text-muted-foreground">
-							Dive into pricing, careers, press, implementation, and security resources that buyers, partners, and
-							analysts ask for.
+							Dive into pricing, careers, press, implementation, and security
+							resources that buyers, partners, and analysts ask for.
 						</p>
 					</div>
 					<div className="grid gap-4 md:grid-cols-3">
@@ -392,19 +437,27 @@ export default function SolutionsOverviewPage() {
 								href={item.href}
 								key={item.href}
 							>
-								<p className="font-semibold text-base text-foreground">{item.label}</p>
-								<p className="mt-2 text-muted-foreground text-sm">Visit {item.label} →</p>
+								<p className="font-semibold text-base text-foreground">
+									{item.label}
+								</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									Visit {item.label} →
+								</p>
 							</Link>
 						))}
 					</div>
 				</section>
 
 				<section className="mt-20 rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-background to-background p-10 text-center">
-					<p className="font-semibold text-primary text-sm uppercase tracking-wide">Ready to build?</p>
-					<h2 className="mt-2 font-bold text-3xl">Create your account or schedule a working session</h2>
+					<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+						Ready to build?
+					</p>
+					<h2 className="mt-2 font-bold text-3xl">
+						Create your account or schedule a working session
+					</h2>
 					<p className="mt-3 text-lg text-muted-foreground">
-						Thorbis is $100/month base plus usage, unlimited users, and data exports whenever you like. No contracts, no
-						surprise add-ons.
+						Thorbis is $100/month base plus usage, unlimited users, and data
+						exports whenever you like. No contracts, no surprise add-ons.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">

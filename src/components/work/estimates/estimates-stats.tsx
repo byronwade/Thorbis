@@ -42,15 +42,28 @@ export async function EstimatesStats() {
 	}
 
 	// Filter to active estimates for stats calculations
-	const activeEstimates = (estimatesRaw || []).filter((est: any) => !(est.archived_at || est.deleted_at));
+	const activeEstimates = (estimatesRaw || []).filter(
+		(est: any) => !(est.archived_at || est.deleted_at),
+	);
 
 	// Calculate estimate stats
-	const draftCount = activeEstimates.filter((est: any) => est.status === "draft").length;
-	const sentCount = activeEstimates.filter((est: any) => est.status === "sent").length;
-	const acceptedCount = activeEstimates.filter((est: any) => est.status === "accepted").length;
-	const declinedCount = activeEstimates.filter((est: any) => est.status === "declined").length;
+	const draftCount = activeEstimates.filter(
+		(est: any) => est.status === "draft",
+	).length;
+	const sentCount = activeEstimates.filter(
+		(est: any) => est.status === "sent",
+	).length;
+	const acceptedCount = activeEstimates.filter(
+		(est: any) => est.status === "accepted",
+	).length;
+	const declinedCount = activeEstimates.filter(
+		(est: any) => est.status === "declined",
+	).length;
 
-	const totalValue = activeEstimates.reduce((sum: number, est: any) => sum + (est.total_amount || 0), 0);
+	const totalValue = activeEstimates.reduce(
+		(sum: number, est: any) => sum + (est.total_amount || 0),
+		0,
+	);
 	const acceptedValue = activeEstimates
 		.filter((est: any) => est.status === "accepted")
 		.reduce((sum: number, est: any) => sum + (est.total_amount || 0), 0);
@@ -88,8 +101,12 @@ export async function EstimatesStats() {
 		{
 			label: "Declined",
 			value: declinedCount,
-			change: declinedCount > 0 ? CHANGE_PERCENTAGE_DECLINED_NEGATIVE : CHANGE_PERCENTAGE_DECLINED_POSITIVE,
-			changeLabel: declinedCount > 0 ? `${declinedCount} declined` : "none declined",
+			change:
+				declinedCount > 0
+					? CHANGE_PERCENTAGE_DECLINED_NEGATIVE
+					: CHANGE_PERCENTAGE_DECLINED_POSITIVE,
+			changeLabel:
+				declinedCount > 0 ? `${declinedCount} declined` : "none declined",
 		},
 		{
 			label: "Total Value",

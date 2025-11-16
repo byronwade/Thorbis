@@ -9,7 +9,7 @@ type TelnyxRequestOptions = {
 
 async function telnyxRequest<TResponse>(
 	path: string,
-	{ method = "GET", body }: TelnyxRequestOptions = {}
+	{ method = "GET", body }: TelnyxRequestOptions = {},
 ): Promise<{ success: boolean; data?: TResponse; error?: string }> {
 	const apiKey = process.env.TELNYX_API_KEY;
 	if (!apiKey) {
@@ -30,7 +30,10 @@ async function telnyxRequest<TResponse>(
 		| undefined;
 
 	if (!response.ok) {
-		const message = payload?.errors?.[0]?.detail || payload?.errors?.[0] || response.statusText;
+		const message =
+			payload?.errors?.[0]?.detail ||
+			payload?.errors?.[0] ||
+			response.statusText;
 		return {
 			success: false,
 			error: `Telnyx ${response.status}: ${message}`,
@@ -75,7 +78,9 @@ export async function createTenDlcBrand(payload: TenDlcBrandPayload) {
 }
 
 export async function getTenDlcBrand(brandId: string) {
-	return telnyxRequest<{ id: string; status: string }>(`/10dlc/brands/${brandId}`);
+	return telnyxRequest<{ id: string; status: string }>(
+		`/10dlc/brands/${brandId}`,
+	);
 }
 
 export type TenDlcCampaignPayload = {
@@ -107,14 +112,22 @@ export async function createTenDlcCampaign(payload: TenDlcCampaignPayload) {
 }
 
 export async function getTenDlcCampaign(campaignId: string) {
-	return telnyxRequest<{ id: string; status: string; usecase: string }>(`/10dlc/campaigns/${campaignId}`);
+	return telnyxRequest<{ id: string; status: string; usecase: string }>(
+		`/10dlc/campaigns/${campaignId}`,
+	);
 }
 
-export async function attachNumberToCampaign(campaignId: string, phoneNumber: string) {
-	return telnyxRequest<{ id: string }>(`/10dlc/campaigns/${campaignId}/phone_numbers`, {
-		method: "POST",
-		body: {
-			phone_numbers: [{ phone_number: phoneNumber }],
+export async function attachNumberToCampaign(
+	campaignId: string,
+	phoneNumber: string,
+) {
+	return telnyxRequest<{ id: string }>(
+		`/10dlc/campaigns/${campaignId}/phone_numbers`,
+		{
+			method: "POST",
+			body: {
+				phone_numbers: [{ phone_number: phoneNumber }],
+			},
 		},
-	});
+	);
 }

@@ -22,7 +22,10 @@ type QuickCustomerAddProps = {
 	onCancel?: () => void;
 };
 
-export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerAddProps) {
+export function QuickCustomerAdd({
+	onCustomerCreated,
+	onCancel,
+}: QuickCustomerAddProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [firstName, setFirstName] = useState("");
@@ -99,7 +102,13 @@ export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerA
 
 	if (!isExpanded) {
 		return (
-			<Button className="w-full" onClick={() => setIsExpanded(true)} size="sm" type="button" variant="outline">
+			<Button
+				className="w-full"
+				onClick={() => setIsExpanded(true)}
+				size="sm"
+				type="button"
+				variant="outline"
+			>
 				<Plus className="mr-2 size-4" />
 				Quick Add New Customer
 			</Button>
@@ -110,7 +119,13 @@ export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerA
 		<div className="rounded-lg border bg-muted/50 p-4">
 			<div className="mb-3 flex items-center justify-between">
 				<h4 className="font-semibold text-sm">New Customer</h4>
-				<Button className="h-8 w-8 p-0" onClick={handleCancel} size="sm" type="button" variant="ghost">
+				<Button
+					className="h-8 w-8 p-0"
+					onClick={handleCancel}
+					size="sm"
+					type="button"
+					variant="ghost"
+				>
 					<X className="size-4" />
 				</Button>
 			</div>
@@ -230,10 +245,21 @@ export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerA
 				</div>
 
 				<div className="flex gap-2 pt-2">
-					<Button className="flex-1" disabled={isLoading} size="sm" type="submit">
+					<Button
+						className="flex-1"
+						disabled={isLoading}
+						size="sm"
+						type="submit"
+					>
 						{isLoading ? "Creating..." : "Create & Select"}
 					</Button>
-					<Button disabled={isLoading} onClick={handleCancel} size="sm" type="button" variant="ghost">
+					<Button
+						disabled={isLoading}
+						onClick={handleCancel}
+						size="sm"
+						type="button"
+						variant="ghost"
+					>
 						Cancel
 					</Button>
 				</div>

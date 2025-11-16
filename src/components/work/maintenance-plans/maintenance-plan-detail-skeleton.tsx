@@ -115,12 +115,18 @@ export function MaintenancePlanDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex gap-4 border-b">
 						{[1, 2, 3, 4].map((i) => (
-							<div className="h-10 w-28 animate-pulse rounded-t bg-muted" key={i} />
+							<div
+								className="h-10 w-28 animate-pulse rounded-t bg-muted"
+								key={i}
+							/>
 						))}
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div className="h-24 w-full animate-pulse rounded bg-muted" key={i} />
+							<div
+								className="h-24 w-full animate-pulse rounded bg-muted"
+								key={i}
+							/>
 						))}
 					</div>
 				</div>

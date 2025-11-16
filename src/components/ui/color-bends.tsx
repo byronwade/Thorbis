@@ -171,7 +171,10 @@ export default function ColorBends({
 		const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
 		const geometry = new THREE.PlaneGeometry(2, 2);
-		const uColorsArray = Array.from({ length: MAX_COLORS }, () => new THREE.Vector3(0, 0, 0));
+		const uColorsArray = Array.from(
+			{ length: MAX_COLORS },
+			() => new THREE.Vector3(0, 0, 0),
+		);
 		const material = new THREE.ShaderMaterial({
 			vertexShader: vert,
 			fragmentShader: frag,
@@ -201,7 +204,11 @@ export default function ColorBends({
 			const h = hex.replace("#", "").trim();
 			const v =
 				h.length === 3
-					? [Number.parseInt(h[0] + h[0], 16), Number.parseInt(h[1] + h[1], 16), Number.parseInt(h[2] + h[2], 16)]
+					? [
+							Number.parseInt(h[0] + h[0], 16),
+							Number.parseInt(h[1] + h[1], 16),
+							Number.parseInt(h[2] + h[2], 16),
+						]
 					: [
 							Number.parseInt(h.slice(0, 2), 16),
 							Number.parseInt(h.slice(2, 4), 16),
@@ -210,7 +217,10 @@ export default function ColorBends({
 			return new THREE.Vector3(v[0] / 255, v[1] / 255, v[2] / 255);
 		};
 
-		const colorVectors = (colors || []).filter(Boolean).slice(0, MAX_COLORS).map(toVec3);
+		const colorVectors = (colors || [])
+			.filter(Boolean)
+			.slice(0, MAX_COLORS)
+			.map(toVec3);
 		for (let i = 0; i < MAX_COLORS; i++) {
 			const vec = material.uniforms.uColors.value[i];
 			if (i < colorVectors.length) {
@@ -262,7 +272,10 @@ export default function ColorBends({
 			ro.observe(container);
 			resizeObserverRef.current = ro;
 		} else if (typeof window !== "undefined") {
-			(window as Window & typeof globalThis).addEventListener("resize", handleResize);
+			(window as Window & typeof globalThis).addEventListener(
+				"resize",
+				handleResize,
+			);
 		}
 
 		const loop = () => {
@@ -298,11 +311,24 @@ export default function ColorBends({
 			geometry.dispose();
 			material.dispose();
 			renderer.dispose();
-			if (renderer.domElement && renderer.domElement.parentElement === container) {
+			if (
+				renderer.domElement &&
+				renderer.domElement.parentElement === container
+			) {
 				container.removeChild(renderer.domElement);
 			}
 		};
-	}, [frequency, mouseInfluence, noise, parallax, scale, speed, transparent, warpStrength, colors]);
+	}, [
+		frequency,
+		mouseInfluence,
+		noise,
+		parallax,
+		scale,
+		speed,
+		transparent,
+		warpStrength,
+		colors,
+	]);
 
 	useEffect(() => {
 		const material = materialRef.current;
@@ -325,7 +351,11 @@ export default function ColorBends({
 			const h = hex.replace("#", "").trim();
 			const v =
 				h.length === 3
-					? [Number.parseInt(h[0] + h[0], 16), Number.parseInt(h[1] + h[1], 16), Number.parseInt(h[2] + h[2], 16)]
+					? [
+							Number.parseInt(h[0] + h[0], 16),
+							Number.parseInt(h[1] + h[1], 16),
+							Number.parseInt(h[2] + h[2], 16),
+						]
 					: [
 							Number.parseInt(h.slice(0, 2), 16),
 							Number.parseInt(h.slice(2, 4), 16),

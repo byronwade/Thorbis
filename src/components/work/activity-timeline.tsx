@@ -38,11 +38,23 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type TimelineDensity, useActivityTimelineStore } from "@/lib/stores/activity-timeline-store";
+import {
+	type TimelineDensity,
+	useActivityTimelineStore,
+} from "@/lib/stores/activity-timeline-store";
 import { cn } from "@/lib/utils";
-import { formatActivityTimestamp, groupActivitiesByDate } from "@/lib/utils/activity-tracker";
+import {
+	formatActivityTimestamp,
+	groupActivitiesByDate,
+} from "@/lib/utils/activity-tracker";
 import type { Activity, ActivityCategory } from "@/types/activity";
 
 type ActivityTimelineProps = {
@@ -50,8 +62,13 @@ type ActivityTimelineProps = {
 	isLoading?: boolean;
 };
 
-export function ActivityTimeline({ activities, isLoading = false }: ActivityTimelineProps) {
-	const [filterCategory, setFilterCategory] = useState<ActivityCategory | "all">("all");
+export function ActivityTimeline({
+	activities,
+	isLoading = false,
+}: ActivityTimelineProps) {
+	const [filterCategory, setFilterCategory] = useState<
+		ActivityCategory | "all"
+	>("all");
 
 	// Get density settings from store
 	const density = useActivityTimelineStore((state) => state.density);
@@ -59,7 +76,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 	const _itemSpacing = useActivityTimelineStore((state) => state.itemSpacing);
 	const _showIcons = useActivityTimelineStore((state) => state.showIcons);
 	const _showAvatars = useActivityTimelineStore((state) => state.showAvatars);
-	const showAttachmentPreviews = useActivityTimelineStore((state) => state.showAttachmentPreviews);
+	const showAttachmentPreviews = useActivityTimelineStore(
+		(state) => state.showAttachmentPreviews,
+	);
 	const showMetadata = useActivityTimelineStore((state) => state.showMetadata);
 	const _iconSize = useActivityTimelineStore((state) => state.iconSize);
 	const textSize = useActivityTimelineStore((state) => state.textSize);
@@ -70,7 +89,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 
 	// Filter activities
 	const filteredActivities =
-		filterCategory === "all" ? activities : activities.filter((activity) => activity.category === filterCategory);
+		filterCategory === "all"
+			? activities
+			: activities.filter((activity) => activity.category === filterCategory);
 
 	// Group by date
 	const groupedActivities = groupActivitiesByDate(filteredActivities);
@@ -99,7 +120,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 				<div className="text-center">
 					<MessageSquare className="mx-auto size-12 text-muted-foreground" />
 					<h3 className="mt-4 font-semibold text-lg">No activities yet</h3>
-					<p className="mt-2 text-muted-foreground text-sm">Activities will appear here as changes are made</p>
+					<p className="mt-2 text-muted-foreground text-sm">
+						Activities will appear here as changes are made
+					</p>
 				</div>
 			</div>
 		);
@@ -111,7 +134,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 			<div className="flex shrink-0 items-center justify-between gap-2 border-b p-4">
 				<div className="flex flex-1 items-center gap-2">
 					<Select
-						onValueChange={(value) => setFilterCategory(value as ActivityCategory | "all")}
+						onValueChange={(value) =>
+							setFilterCategory(value as ActivityCategory | "all")
+						}
 						value={filterCategory}
 					>
 						<SelectTrigger className="h-8 w-[140px]">
@@ -136,17 +161,43 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>View Density</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleDensityChange("text-only")}>
-								<span className={cn(density === "text-only" && "font-semibold text-primary")}>Text Only</span>
+							<DropdownMenuItem
+								onClick={() => handleDensityChange("text-only")}
+							>
+								<span
+									className={cn(
+										density === "text-only" && "font-semibold text-primary",
+									)}
+								>
+									Text Only
+								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("small")}>
-								<span className={cn(density === "small" && "font-semibold text-primary")}>Small</span>
+								<span
+									className={cn(
+										density === "small" && "font-semibold text-primary",
+									)}
+								>
+									Small
+								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("medium")}>
-								<span className={cn(density === "medium" && "font-semibold text-primary")}>Medium</span>
+								<span
+									className={cn(
+										density === "medium" && "font-semibold text-primary",
+									)}
+								>
+									Medium
+								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("large")}>
-								<span className={cn(density === "large" && "font-semibold text-primary")}>Large</span>
+								<span
+									className={cn(
+										density === "large" && "font-semibold text-primary",
+									)}
+								>
+									Large
+								</span>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
@@ -162,7 +213,10 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 					{sortedDates.length > 0 && (
 						<div className="relative">
 							{/* Vertical line - only extends through date groups */}
-							<Separator className="absolute top-4 bottom-0 left-2 w-px bg-muted" orientation="vertical" />
+							<Separator
+								className="absolute top-4 bottom-0 left-2 w-px bg-muted"
+								orientation="vertical"
+							/>
 
 							{/* Timeline items */}
 							{sortedDates.map((dateKey) => {
@@ -176,7 +230,10 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 										</div>
 
 										{/* Date badge */}
-										<Badge className="mb-3 rounded-xl px-3 py-2 text-sm" variant="secondary">
+										<Badge
+											className="mb-3 rounded-xl px-3 py-2 text-sm"
+											variant="secondary"
+										>
 											{dateKey}
 										</Badge>
 
@@ -207,7 +264,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 									<Sparkles className="size-7 text-muted-foreground/70" />
 								</div>
 								<div>
-									<p className="font-semibold text-foreground text-lg">Start of Timeline</p>
+									<p className="font-semibold text-foreground text-lg">
+										Start of Timeline
+									</p>
 									<p className="mt-2 text-muted-foreground text-sm">
 										You've reached the beginning of this activity history
 									</p>
@@ -243,22 +302,36 @@ function ActivityTimelineItem({
 			{/* Content */}
 			<div className="flex-1 space-y-2">
 				<div className="flex flex-wrap items-center gap-2">
-					<span className={cn("text-foreground leading-relaxed", textSize)}>{activity.action}</span>
+					<span className={cn("text-foreground leading-relaxed", textSize)}>
+						{activity.action}
+					</span>
 
 					{/* Actor metadata inline */}
 					{showMetadata && activity.actorName && (
-						<span className={cn("text-muted-foreground", textSize === "text-lg" ? "text-base" : "text-sm")}>
+						<span
+							className={cn(
+								"text-muted-foreground",
+								textSize === "text-lg" ? "text-base" : "text-sm",
+							)}
+						>
 							by {activity.actorName}
 						</span>
 					)}
 
 					{/* Timestamp inline */}
-					<span className={cn("text-muted-foreground", textSize === "text-lg" ? "text-base" : "text-sm")}>
+					<span
+						className={cn(
+							"text-muted-foreground",
+							textSize === "text-lg" ? "text-base" : "text-sm",
+						)}
+					>
 						{formatActivityTimestamp(activity.occurredAt)}
 					</span>
 
 					{/* AI Model badge inline */}
-					{showMetadata && activity.aiModel && <Badge variant="outline">{activity.aiModel}</Badge>}
+					{showMetadata && activity.aiModel && (
+						<Badge variant="outline">{activity.aiModel}</Badge>
+					)}
 
 					{/* Important badge inline */}
 					{showMetadata && activity.isImportant && (
@@ -271,72 +344,95 @@ function ActivityTimelineItem({
 
 				{/* Description on new line if present */}
 				{showMetadata && activity.description && (
-					<p className={cn("mt-1 text-muted-foreground", textSize === "text-lg" ? "text-base" : "text-sm")}>
+					<p
+						className={cn(
+							"mt-1 text-muted-foreground",
+							textSize === "text-lg" ? "text-base" : "text-sm",
+						)}
+					>
 						{activity.description}
 					</p>
 				)}
 
 				{/* Field change details */}
-				{showMetadata && activity.fieldName && (activity.oldValue || activity.newValue) && (
-					<div
-						className={cn("mt-2 rounded-lg border bg-muted/50 p-2", textSize === "text-lg" ? "text-base" : "text-sm")}
-					>
-						<div className="flex items-center gap-2">
-							{activity.oldValue && (
-								<div className="flex-1">
-									<span className="text-muted-foreground">From: </span>
-									<span className="font-medium line-through">{activity.oldValue}</span>
-								</div>
+				{showMetadata &&
+					activity.fieldName &&
+					(activity.oldValue || activity.newValue) && (
+						<div
+							className={cn(
+								"mt-2 rounded-lg border bg-muted/50 p-2",
+								textSize === "text-lg" ? "text-base" : "text-sm",
 							)}
-							{activity.newValue && (
-								<div className="flex-1">
-									<span className="text-muted-foreground">To: </span>
-									<span className="font-medium text-primary">{activity.newValue}</span>
-								</div>
-							)}
+						>
+							<div className="flex items-center gap-2">
+								{activity.oldValue && (
+									<div className="flex-1">
+										<span className="text-muted-foreground">From: </span>
+										<span className="font-medium line-through">
+											{activity.oldValue}
+										</span>
+									</div>
+								)}
+								{activity.newValue && (
+									<div className="flex-1">
+										<span className="text-muted-foreground">To: </span>
+										<span className="font-medium text-primary">
+											{activity.newValue}
+										</span>
+									</div>
+								)}
+							</div>
 						</div>
-					</div>
-				)}
+					)}
 
 				{/* Attachments */}
-				{showAttachmentPreviews && activity.attachmentUrl && activity.attachmentType === "photo" && (
-					<div className="mt-2">
-						<a
-							className="block overflow-hidden rounded-lg border"
-							href={activity.attachmentUrl}
-							rel="noopener noreferrer"
-							target="_blank"
-						>
-							<img
-								alt={activity.attachmentName || "Attachment"}
-								className="h-48 w-full object-cover"
-								src={activity.attachmentUrl}
-							/>
-						</a>
-						{activity.attachmentName && (
-							<p className={cn("mt-1 text-muted-foreground", textSize === "text-lg" ? "text-base" : "text-sm")}>
-								{activity.attachmentName}
-							</p>
-						)}
-					</div>
-				)}
-
-				{showAttachmentPreviews && activity.attachmentUrl && activity.attachmentType === "document" && (
-					<div className="mt-2">
-						<a
-							className={cn(
-								"flex items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-muted",
-								textSize === "text-lg" ? "text-base" : "text-sm"
+				{showAttachmentPreviews &&
+					activity.attachmentUrl &&
+					activity.attachmentType === "photo" && (
+						<div className="mt-2">
+							<a
+								className="block overflow-hidden rounded-lg border"
+								href={activity.attachmentUrl}
+								rel="noopener noreferrer"
+								target="_blank"
+							>
+								<img
+									alt={activity.attachmentName || "Attachment"}
+									className="h-48 w-full object-cover"
+									src={activity.attachmentUrl}
+								/>
+							</a>
+							{activity.attachmentName && (
+								<p
+									className={cn(
+										"mt-1 text-muted-foreground",
+										textSize === "text-lg" ? "text-base" : "text-sm",
+									)}
+								>
+									{activity.attachmentName}
+								</p>
 							)}
-							href={activity.attachmentUrl}
-							rel="noopener noreferrer"
-							target="_blank"
-						>
-							<FileText className="size-4 text-muted-foreground" />
-							<span>{activity.attachmentName || "Document"}</span>
-						</a>
-					</div>
-				)}
+						</div>
+					)}
+
+				{showAttachmentPreviews &&
+					activity.attachmentUrl &&
+					activity.attachmentType === "document" && (
+						<div className="mt-2">
+							<a
+								className={cn(
+									"flex items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-muted",
+									textSize === "text-lg" ? "text-base" : "text-sm",
+								)}
+								href={activity.attachmentUrl}
+								rel="noopener noreferrer"
+								target="_blank"
+							>
+								<FileText className="size-4 text-muted-foreground" />
+								<span>{activity.attachmentName || "Document"}</span>
+							</a>
+						</div>
+					)}
 			</div>
 		</li>
 	);

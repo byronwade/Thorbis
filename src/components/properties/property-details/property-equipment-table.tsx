@@ -12,7 +12,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type PropertyEquipment = {
 	id: string;
@@ -32,7 +35,9 @@ type PropertyEquipmentTableProps = {
 	equipment: PropertyEquipment[];
 };
 
-export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProps) {
+export function PropertyEquipmentTable({
+	equipment,
+}: PropertyEquipmentTableProps) {
 	const getStatusColor = (status?: string) => {
 		if (!status) {
 			return "bg-secondary0/10 text-muted-foreground";
@@ -43,7 +48,10 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 			maintenance: "bg-warning/10 text-warning hover:bg-warning/20",
 			retired: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			statusColors[status.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const columns: ColumnDef<PropertyEquipment>[] = useMemo(
@@ -72,8 +80,14 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex flex-col gap-1">
-							<span className="font-medium text-sm leading-tight hover:underline">{equipment.name}</span>
-							{equipment.type && <span className="text-muted-foreground text-xs">{equipment.type}</span>}
+							<span className="font-medium text-sm leading-tight hover:underline">
+								{equipment.name}
+							</span>
+							{equipment.type && (
+								<span className="text-muted-foreground text-xs">
+									{equipment.type}
+								</span>
+							)}
 						</div>
 					</Link>
 				),
@@ -86,7 +100,11 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 				render: (equipment) => (
 					<div className="flex flex-col gap-1 text-sm">
 						<span>{equipment.manufacturer || "-"}</span>
-						{equipment.model && <span className="text-muted-foreground text-xs">Model: {equipment.model}</span>}
+						{equipment.model && (
+							<span className="text-muted-foreground text-xs">
+								Model: {equipment.model}
+							</span>
+						)}
 					</div>
 				),
 			},
@@ -95,14 +113,20 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 				header: "Serial Number",
 				width: "w-40",
 				hideOnMobile: true,
-				render: (equipment) => <span className="font-mono text-sm">{equipment.serial_number || "-"}</span>,
+				render: (equipment) => (
+					<span className="font-mono text-sm">
+						{equipment.serial_number || "-"}
+					</span>
+				),
 			},
 			{
 				key: "location",
 				header: "Location",
 				width: "w-32",
 				hideOnMobile: true,
-				render: (equipment) => <span className="text-sm">{equipment.location || "-"}</span>,
+				render: (equipment) => (
+					<span className="text-sm">{equipment.location || "-"}</span>
+				),
 			},
 			{
 				key: "install_date",
@@ -166,7 +190,7 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 				),
 			},
 		],
-		[getStatusColor]
+		[getStatusColor],
 	);
 
 	return (
@@ -178,7 +202,8 @@ export function PropertyEquipmentTable({ equipment }: PropertyEquipmentTableProp
 			searchFilter={(item, query) =>
 				item.name.toLowerCase().includes(query.toLowerCase()) ||
 				item.equipment_number.toLowerCase().includes(query.toLowerCase()) ||
-				(item.serial_number?.toLowerCase().includes(query.toLowerCase()) ?? false)
+				(item.serial_number?.toLowerCase().includes(query.toLowerCase()) ??
+					false)
 			}
 			searchPlaceholder="Search equipment..."
 		/>

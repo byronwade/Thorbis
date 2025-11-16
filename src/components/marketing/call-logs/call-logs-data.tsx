@@ -6,7 +6,13 @@
  * allowing future expansion to data-driven call history.
  */
 
-import { BarChart2, Download, Phone, Search, VoicemailIcon } from "lucide-react";
+import {
+	BarChart2,
+	Download,
+	Phone,
+	Search,
+	VoicemailIcon,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function CallLogsData() {
@@ -30,7 +36,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Complete Call History</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							View all incoming, outgoing, and missed calls with timestamps, duration, and caller information
+							View all incoming, outgoing, and missed calls with timestamps,
+							duration, and caller information
 						</p>
 					</div>
 
@@ -41,7 +48,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Call Recordings</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Automatically record calls for quality assurance, training, and compliance purposes
+							Automatically record calls for quality assurance, training, and
+							compliance purposes
 						</p>
 					</div>
 
@@ -52,7 +60,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Advanced Search</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Find specific calls quickly with powerful search filters by date, customer, technician, or outcome
+							Find specific calls quickly with powerful search filters by date,
+							customer, technician, or outcome
 						</p>
 					</div>
 
@@ -63,7 +72,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Call Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze call volume, duration, peak times, and conversion rates to optimize your team
+							Analyze call volume, duration, peak times, and conversion rates to
+							optimize your team
 						</p>
 					</div>
 
@@ -74,7 +84,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Export & Reports</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Export call logs and generate detailed reports for accounting, compliance, and business intelligence
+							Export call logs and generate detailed reports for accounting,
+							compliance, and business intelligence
 						</p>
 					</div>
 				</div>
@@ -82,7 +93,9 @@ export async function CallLogsData() {
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Never Miss a Detail</h3>
-					<p className="mb-6 text-muted-foreground">Track and analyze every customer conversation</p>
+					<p className="mb-6 text-muted-foreground">
+						Track and analyze every customer conversation
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

@@ -1,8 +1,16 @@
 /**
- * Jobs Server Actions
+ * Jobs Server Actions - REFACTORED FOR DOMAIN TABLE STRUCTURE
  *
  * Handles job/work order management with comprehensive CRUD operations,
  * status transitions, scheduling, and assignment logic.
+ *
+ * MIGRATION NOTES:
+ * - Core jobs table now has ~20 columns
+ * - Domain-specific data moved to 11 domain tables
+ * - Financial data -> job_financial
+ * - Time tracking -> job_time_tracking
+ * - Archive/deletion -> job_multi_entity
+ * - All domain tables have CASCADE delete on job_id
  */
 
 "use server";
@@ -10,7 +18,11 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -30,7 +42,16 @@ const createJobSchema = z.object({
 	title: z.string().min(1, "Job title is required"),
 	description: z.string().optional(),
 	priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
-	jobType: z.enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"]).optional(),
+	jobType: z
+		.enum([
+			"service",
+			"installation",
+			"repair",
+			"maintenance",
+			"inspection",
+			"consultation",
+		])
+		.optional(),
 	scheduledStart: z.string().optional(),
 	scheduledEnd: z.string().optional(),
 	assignedTo: z.string().uuid("Invalid user ID").optional(),
@@ -39,7 +60,9 @@ const createJobSchema = z.object({
 	isRecurring: z.boolean().optional(),
 	schedulingMode: z.enum(["specific", "window"]).optional(),
 	timeWindow: z.string().optional(),
-	recurrenceType: z.enum(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"]).optional(),
+	recurrenceType: z
+		.enum(["daily", "weekly", "biweekly", "monthly", "quarterly", "yearly"])
+		.optional(),
 	recurrenceEndDate: z.string().optional(),
 	recurrenceCount: z.number().int().min(1).max(365).optional(),
 });
@@ -47,11 +70,32 @@ const createJobSchema = z.object({
 const updateJobSchema = z.object({
 	title: z.string().min(1, "Job title is required").optional(),
 	description: z.string().optional(),
-	status: z.enum(["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled"]).optional(),
+	status: z
+		.enum([
+			"quoted",
+			"scheduled",
+			"in_progress",
+			"on_hold",
+			"completed",
+			"cancelled",
+		])
+		.optional(),
 	priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
-	jobType: z.enum(["service", "installation", "repair", "maintenance", "inspection", "consultation"]).optional(),
+	jobType: z
+		.enum([
+			"service",
+			"installation",
+			"repair",
+			"maintenance",
+			"inspection",
+			"consultation",
+		])
+		.optional(),
 	notes: z.string().optional(),
+	// Financial fields (now in job_financial domain table)
 	totalAmount: z.number().min(0).optional(),
+	paidAmount: z.number().min(0).optional(),
+	depositAmount: z.number().min(0).optional(),
 	scheduledStart: z.string().optional(),
 	scheduledEnd: z.string().optional(),
 	assignedTo: z.string().uuid("Invalid user ID").optional().nullable(),
@@ -67,7 +111,10 @@ const scheduleJobSchema = z.object({
 /**
  * Generate unique job number
  */
-async function generateJobNumber(supabase: any, companyId: string): Promise<string> {
+async function generateJobNumber(
+	supabase: any,
+	companyId: string,
+): Promise<string> {
 	// Get the latest job number for this company
 	const { data: latestJob } = await supabase
 		.from("jobs")
@@ -95,7 +142,10 @@ async function generateJobNumber(supabase: any, companyId: string): Promise<stri
 /**
  * Calculate next recurrence date
  */
-function calculateNextRecurrence(currentDate: Date, recurrenceType: string): Date {
+function calculateNextRecurrence(
+	currentDate: Date,
+	recurrenceType: string,
+): Date {
 	const nextDate = new Date(currentDate);
 
 	switch (recurrenceType) {
@@ -135,7 +185,7 @@ async function createRecurringJobs(
 	baseJob: any,
 	recurrenceType: string,
 	recurrenceEndDate?: string,
-	recurrenceCount?: number
+	recurrenceCount?: number,
 ): Promise<void> {
 	if (!baseJob.scheduled_start) {
 		return; // Can't create recurring jobs without a start date
@@ -189,12 +239,18 @@ async function createRecurringJobs(
 
 /**
  * Create a new job
+ * ✅ ALREADY MIGRATED - Creates core job + all 10 domain records in parallel
  */
-export async function createJob(formData: FormData): Promise<ActionResult<string>> {
+export async function createJob(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -211,7 +267,11 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		const data = createJobSchema.parse({
@@ -246,7 +306,11 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 		assertExists(property, "Property");
 
 		if (property.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("property"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("property"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Use customer from property if not provided
@@ -262,7 +326,7 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 			jobNotes = jobNotes ? `${jobNotes}${windowInfo}` : windowInfo.trim();
 		}
 
-		// Create job
+		// Create core job record
 		const { data: newJob, error: createError } = await supabase
 			.from("jobs")
 			.insert({
@@ -276,6 +340,7 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 				status: "quoted",
 				priority: data.priority,
 				job_type: data.jobType,
+				service_type: data.jobType, // Default service_type to job_type
 				scheduled_start: data.scheduledStart,
 				scheduled_end: data.scheduledEnd,
 				notes: jobNotes,
@@ -284,7 +349,117 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 			.single();
 
 		if (createError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("create job"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
+		}
+
+		// Create domain records (parallel inserts for performance)
+		const domainInserts = await Promise.all([
+			// Financial domain - always create with defaults
+			supabase
+				.from("job_financial")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					total_amount: 0,
+					paid_amount: 0,
+					deposit_amount: 0,
+				}),
+
+			// Workflow domain - always create
+			supabase
+				.from("job_workflow")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					workflow_completed_stages: [],
+				}),
+
+			// Time tracking - always create
+			supabase
+				.from("job_time_tracking")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					total_labor_hours: 0,
+					break_time_minutes: 0,
+				}),
+
+			// Customer approval - always create with pending
+			supabase
+				.from("job_customer_approval")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					customer_approval_status: "pending",
+				}),
+
+			// Equipment service - always create
+			supabase
+				.from("job_equipment_service")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					equipment_service_history: [],
+					equipment_serviced: [],
+				}),
+
+			// Dispatch - always create
+			supabase
+				.from("job_dispatch")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+				}),
+
+			// Quality - always create
+			supabase
+				.from("job_quality")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					inspection_required: false,
+				}),
+
+			// Safety - always create
+			supabase
+				.from("job_safety")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					requires_permit: false,
+				}),
+
+			// AI enrichment - create empty for future processing
+			supabase
+				.from("job_ai_enrichment")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+				}),
+
+			// Multi-entity - always create
+			supabase
+				.from("job_multi_entity")
+				.insert({
+					job_id: newJob.id,
+					company_id: teamMember.company_id,
+					requires_multiple_properties: false,
+					requires_multiple_customers: false,
+				}),
+		]);
+
+		// Check for any domain insert errors
+		const domainErrors = domainInserts.filter((result) => result.error);
+		if (domainErrors.length > 0) {
+			// Rollback - delete the job (CASCADE will delete domain records)
+			await supabase.from("jobs").delete().eq("id", newJob.id);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create job domains"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Create recurring jobs if requested
@@ -310,7 +485,7 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 				baseJob,
 				data.recurrenceType,
 				data.recurrenceEndDate,
-				data.recurrenceCount
+				data.recurrenceCount,
 			);
 		}
 
@@ -322,7 +497,12 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 				jobId: newJob.id,
 				jobTitle: data.title,
 				address: property.address || "Unknown address",
-				priority: data.priority === "urgent" ? "urgent" : data.priority === "high" ? "high" : "medium",
+				priority:
+					data.priority === "urgent"
+						? "urgent"
+						: data.priority === "high"
+							? "high"
+							: "medium",
 				actionUrl: "/dashboard/work",
 			});
 		}
@@ -335,12 +515,16 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 
 /**
  * Get a single job by ID
+ * ✅ ALREADY MIGRATED - Fetches job with all domain data
  */
 export async function getJob(jobId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -357,10 +541,14 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
-		// Get job with related data
+		// Get job with all domain data and relationships
 		const { data: job, error: jobError } = await supabase
 			.from("jobs")
 			.select(
@@ -368,21 +556,39 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 				*,
 				property:properties(*),
 				customer:users!customer_id(*),
-				assigned:users!assigned_to(*)
-			`
+				assigned:users!assigned_to(*),
+				financial:job_financial(*),
+				workflow:job_workflow(*),
+				timeTracking:job_time_tracking(*),
+				customerApproval:job_customer_approval(*),
+				equipmentService:job_equipment_service(*),
+				dispatch:job_dispatch(*),
+				quality:job_quality(*),
+				safety:job_safety(*),
+				aiEnrichment:job_ai_enrichment(*),
+				multiEntity:job_multi_entity(*)
+			`,
 			)
 			.eq("id", jobId)
 			.single();
 
 		if (jobError) {
-			throw new ActionError(ERROR_MESSAGES.notFound("Job"), ERROR_CODES.DB_RECORD_NOT_FOUND, 404);
+			throw new ActionError(
+				ERROR_MESSAGES.notFound("Job"),
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		assertExists(job, "Job");
 
 		// Verify job belongs to company
 		if (job.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		return job;
@@ -391,12 +597,19 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 
 /**
  * Update job details
+ * 🔧 REFACTORED - Now updates both core jobs table and domain tables
  */
-export async function updateJob(jobId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updateJob(
+	jobId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -408,7 +621,11 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 		// Get active company ID
 		const activeCompanyId = await getActiveCompanyId();
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Get user's role to check if they're admin/owner
@@ -423,22 +640,41 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 			.eq("status", "active")
 			.maybeSingle();
 
-		const role = Array.isArray(teamMember?.custom_roles) ? teamMember.custom_roles[0] : teamMember?.custom_roles;
+		const role = Array.isArray(teamMember?.custom_roles)
+			? teamMember.custom_roles[0]
+			: teamMember?.custom_roles;
 
-		const isAdminOrOwner = role?.name === "Admin" || role?.name === "Owner" || role?.is_system === true;
+		const isAdminOrOwner =
+			role?.name === "Admin" ||
+			role?.name === "Owner" ||
+			role?.is_system === true;
 
 		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== activeCompanyId) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Prevent editing completed or cancelled jobs (unless admin/owner)
-		if (!isAdminOrOwner && (existingJob.status === "completed" || existingJob.status === "cancelled")) {
-			throw new ActionError(`Cannot edit ${existingJob.status} jobs`, ERROR_CODES.OPERATION_NOT_ALLOWED);
+		if (
+			!isAdminOrOwner &&
+			(existingJob.status === "completed" || existingJob.status === "cancelled")
+		) {
+			throw new ActionError(
+				`Cannot edit ${existingJob.status} jobs`,
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		const customerIdValue = formData.get("customerId");
@@ -472,7 +708,16 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 			priority: formData.get("priority") || undefined,
 			jobType: formData.get("jobType") || undefined,
 			notes: formData.get("notes") || undefined,
-			totalAmount: formData.get("totalAmount") ? Number.parseInt(formData.get("totalAmount") as string, 10) : undefined,
+			// Financial fields (now in job_financial domain table)
+			totalAmount: formData.get("totalAmount")
+				? Number.parseInt(formData.get("totalAmount") as string, 10)
+				: undefined,
+			paidAmount: formData.get("paidAmount")
+				? Number.parseInt(formData.get("paidAmount") as string, 10)
+				: undefined,
+			depositAmount: formData.get("depositAmount")
+				? Number.parseInt(formData.get("depositAmount") as string, 10)
+				: undefined,
 			scheduledStart: formData.get("scheduledStart") || undefined,
 			scheduledEnd: formData.get("scheduledEnd") || undefined,
 			assignedTo: formData.get("assignedTo") || null,
@@ -480,45 +725,46 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 			propertyId: parsedPropertyId,
 		});
 
-		// Build update object with only defined values
-		const updateData: any = {};
+		// Build core job update object with only defined values
+		const coreUpdateData: any = {};
 		if (data.title !== undefined) {
-			updateData.title = data.title;
+			coreUpdateData.title = data.title;
 		}
 		if (data.description !== undefined) {
-			updateData.description = data.description;
+			coreUpdateData.description = data.description;
 		}
 		if (data.status !== undefined) {
-			updateData.status = data.status;
+			coreUpdateData.status = data.status;
 		}
 		if (data.priority !== undefined) {
-			updateData.priority = data.priority;
+			coreUpdateData.priority = data.priority;
 		}
 		if (data.jobType !== undefined) {
-			updateData.job_type = data.jobType;
+			coreUpdateData.job_type = data.jobType;
 		}
 		if (data.notes !== undefined) {
-			updateData.notes = data.notes;
-		}
-		if (data.totalAmount !== undefined) {
-			updateData.total_amount = data.totalAmount;
+			coreUpdateData.notes = data.notes;
 		}
 		if (data.scheduledStart !== undefined) {
-			updateData.scheduled_start = data.scheduledStart;
+			coreUpdateData.scheduled_start = data.scheduledStart;
 		}
 		if (data.scheduledEnd !== undefined) {
-			updateData.scheduled_end = data.scheduledEnd;
+			coreUpdateData.scheduled_end = data.scheduledEnd;
 		}
 		if (data.assignedTo !== undefined) {
-			updateData.assigned_to = data.assignedTo;
+			coreUpdateData.assigned_to = data.assignedTo;
 		}
 		if (data.customerId !== undefined) {
-			updateData.customer_id = data.customerId;
+			coreUpdateData.customer_id = data.customerId;
 		}
 		if (data.propertyId !== undefined) {
-			updateData.property_id = data.propertyId;
+			coreUpdateData.property_id = data.propertyId;
 			// If property is being set (not null), verify it belongs to the customer (if customer is set)
-			if (data.propertyId !== null && data.customerId !== undefined && data.customerId !== null) {
+			if (
+				data.propertyId !== null &&
+				data.customerId !== undefined &&
+				data.customerId !== null
+			) {
 				const { data: property } = await supabase
 					.from("properties")
 					.select("customer_id")
@@ -526,19 +772,59 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 					.single();
 
 				if (property && property.customer_id !== data.customerId) {
-					throw new ActionError("Property does not belong to the selected customer", ERROR_CODES.VALIDATION_FAILED);
+					throw new ActionError(
+						"Property does not belong to the selected customer",
+						ERROR_CODES.VALIDATION_FAILED,
+					);
 				}
 			}
 		}
 
-		// Update job
-		const { error: updateError } = await supabase.from("jobs").update(updateData).eq("id", jobId);
+		// Build financial domain update object (if any financial fields provided)
+		const financialUpdateData: any = {};
+		if (data.totalAmount !== undefined) {
+			financialUpdateData.total_amount = data.totalAmount;
+		}
+		if (data.paidAmount !== undefined) {
+			financialUpdateData.paid_amount = data.paidAmount;
+		}
+		if (data.depositAmount !== undefined) {
+			financialUpdateData.deposit_amount = data.depositAmount;
+		}
 
-		if (updateError) {
-			throw new ActionError(
-				`${ERROR_MESSAGES.operationFailed("update job")}: ${updateError.message}`,
-				ERROR_CODES.DB_QUERY_ERROR
+		// Execute updates in parallel for performance
+		const updates: Promise<any>[] = [];
+
+		// Update core job table if there are changes
+		if (Object.keys(coreUpdateData).length > 0) {
+			updates.push(
+				supabase.from("jobs").update(coreUpdateData).eq("id", jobId),
 			);
+		}
+
+		// Update financial domain table if there are changes
+		if (Object.keys(financialUpdateData).length > 0) {
+			updates.push(
+				supabase
+					.from("job_financial")
+					.update(financialUpdateData)
+					.eq("job_id", jobId),
+			);
+		}
+
+		// Execute all updates in parallel
+		if (updates.length > 0) {
+			const results = await Promise.all(updates);
+
+			// Check for errors in any update
+			const errors = results.filter((result) => result.error);
+			if (errors.length > 0) {
+				const errorMessages = errors.map((e) => e.error.message).join(", ");
+				throw new ActionError(
+					`${ERROR_MESSAGES.operationFailed("update job")}: ${errorMessages}`,
+					ERROR_CODES.DB_QUERY_ERROR,
+				);
+			}
 		}
 
 		revalidatePath("/dashboard/work");
@@ -548,12 +834,19 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 
 /**
  * Update job status with validation
+ * ✅ NO CHANGES NEEDED - Only updates jobs.status
  */
-export async function updateJobStatus(jobId: string, newStatus: string): Promise<ActionResult<void>> {
+export async function updateJobStatus(
+	jobId: string,
+	newStatus: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -570,37 +863,69 @@ export async function updateJobStatus(jobId: string, newStatus: string): Promise
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Validate status value
-		const validStatuses = ["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled"];
+		const validStatuses = [
+			"quoted",
+			"scheduled",
+			"in_progress",
+			"on_hold",
+			"completed",
+			"cancelled",
+		];
 		if (!validStatuses.includes(newStatus)) {
-			throw new ActionError("Invalid job status", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"Invalid job status",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Prevent changing from completed or cancelled
 		if (
-			(existingJob.status === "completed" || existingJob.status === "cancelled") &&
+			(existingJob.status === "completed" ||
+				existingJob.status === "cancelled") &&
 			existingJob.status !== newStatus
 		) {
-			throw new ActionError(`Cannot change status of ${existingJob.status} job`, ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				`Cannot change status of ${existingJob.status} job`,
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Update status
-		const { error: updateError } = await supabase.from("jobs").update({ status: newStatus }).eq("id", jobId);
+		const { error: updateError } = await supabase
+			.from("jobs")
+			.update({ status: newStatus })
+			.eq("id", jobId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update job status"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update job status"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -610,12 +935,19 @@ export async function updateJobStatus(jobId: string, newStatus: string): Promise
 
 /**
  * Assign job to a technician
+ * ✅ NO CHANGES NEEDED - Only updates jobs.assigned_to
  */
-export async function assignJob(jobId: string, technicianId: string): Promise<ActionResult<void>> {
+export async function assignJob(
+	jobId: string,
+	technicianId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -632,16 +964,28 @@ export async function assignJob(jobId: string, technicianId: string): Promise<Ac
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id").eq("id", jobId).single();
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify technician belongs to company
@@ -653,14 +997,24 @@ export async function assignJob(jobId: string, technicianId: string): Promise<Ac
 			.single();
 
 		if (!technician) {
-			throw new ActionError("Technician not found in your company", ERROR_CODES.DB_RECORD_NOT_FOUND, 404);
+			throw new ActionError(
+				"Technician not found in your company",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Assign job
-		const { error: updateError } = await supabase.from("jobs").update({ assigned_to: technicianId }).eq("id", jobId);
+		const { error: updateError } = await supabase
+			.from("jobs")
+			.update({ assigned_to: technicianId })
+			.eq("id", jobId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("assign job"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("assign job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -670,12 +1024,19 @@ export async function assignJob(jobId: string, technicianId: string): Promise<Ac
 
 /**
  * Schedule a job
+ * ✅ NO CHANGES NEEDED - Only updates jobs table scheduling fields
  */
-export async function scheduleJob(jobId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function scheduleJob(
+	jobId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -692,7 +1053,11 @@ export async function scheduleJob(jobId: string, formData: FormData): Promise<Ac
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		const data = scheduleJobSchema.parse({
@@ -701,12 +1066,20 @@ export async function scheduleJob(jobId: string, formData: FormData): Promise<Ac
 		});
 
 		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Update schedule and status
@@ -715,12 +1088,16 @@ export async function scheduleJob(jobId: string, formData: FormData): Promise<Ac
 			.update({
 				scheduled_start: data.scheduledStart,
 				scheduled_end: data.scheduledEnd,
-				status: existingJob.status === "quoted" ? "scheduled" : existingJob.status,
+				status:
+					existingJob.status === "quoted" ? "scheduled" : existingJob.status,
 			})
 			.eq("id", jobId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("schedule job"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("schedule job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -731,12 +1108,16 @@ export async function scheduleJob(jobId: string, formData: FormData): Promise<Ac
 
 /**
  * Start a job
+ * 🔧 REFACTORED - Now updates job_time_tracking.actual_start instead of jobs.actual_start
  */
 export async function startJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -753,34 +1134,56 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Can only start scheduled jobs
 		if (existingJob.status !== "scheduled" && existingJob.status !== "quoted") {
-			throw new ActionError("Job must be scheduled before starting", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Job must be scheduled before starting",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
-		// Start job
-		const { error: updateError } = await supabase
-			.from("jobs")
-			.update({
-				status: "in_progress",
-				actual_start: new Date().toISOString(),
-			})
-			.eq("id", jobId);
+		const now = new Date().toISOString();
 
-		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("start job"), ERROR_CODES.DB_QUERY_ERROR);
+		// Update both jobs table (status) and job_time_tracking table (actual_start) in parallel
+		const updates = await Promise.all([
+			supabase.from("jobs").update({ status: "in_progress" }).eq("id", jobId),
+			supabase
+				.from("job_time_tracking")
+				.update({ actual_start: now })
+				.eq("job_id", jobId),
+		]);
+
+		// Check for errors in either update
+		const errors = updates.filter((result) => result.error);
+		if (errors.length > 0) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("start job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -790,12 +1193,16 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
 
 /**
  * Complete a job
+ * 🔧 REFACTORED - Now updates job_time_tracking.actual_end and calculates total_labor_hours
  */
 export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -812,34 +1219,70 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
-		// Verify job belongs to company
-		const { data: existingJob } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		// Verify job belongs to company and get time tracking data
+		const { data: existingJob } = await supabase
+			.from("jobs")
+			.select("company_id, status, timeTracking:job_time_tracking(*)")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Can only complete in-progress jobs
 		if (existingJob.status !== "in_progress") {
-			throw new ActionError("Job must be in progress to complete", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Job must be in progress to complete",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
-		// Complete job
-		const { error: updateError } = await supabase
-			.from("jobs")
-			.update({
-				status: "completed",
-				actual_end: new Date().toISOString(),
-			})
-			.eq("id", jobId);
+		const now = new Date().toISOString();
 
-		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("complete job"), ERROR_CODES.DB_QUERY_ERROR);
+		// Calculate total labor hours if we have actual_start
+		const timeTracking = Array.isArray(existingJob.timeTracking)
+			? existingJob.timeTracking[0]
+			: existingJob.timeTracking;
+
+		const timeTrackingUpdate: any = { actual_end: now };
+
+		if (timeTracking?.actual_start) {
+			const startTime = new Date(timeTracking.actual_start).getTime();
+			const endTime = new Date(now).getTime();
+			const hoursWorked = (endTime - startTime) / (1000 * 60 * 60); // Convert ms to hours
+			timeTrackingUpdate.total_labor_hours = hoursWorked;
+		}
+
+		// Update both jobs table (status) and job_time_tracking table (actual_end, total_labor_hours) in parallel
+		const updates = await Promise.all([
+			supabase.from("jobs").update({ status: "completed" }).eq("id", jobId),
+			supabase
+				.from("job_time_tracking")
+				.update(timeTrackingUpdate)
+				.eq("job_id", jobId),
+		]);
+
+		// Check for errors in either update
+		const errors = updates.filter((result) => result.error);
+		if (errors.length > 0) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("complete job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -849,12 +1292,19 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 
 /**
  * Cancel a job
+ * ✅ NO CHANGES NEEDED - Only updates jobs.status and jobs.notes
  */
-export async function cancelJob(jobId: string, reason?: string): Promise<ActionResult<void>> {
+export async function cancelJob(
+	jobId: string,
+	reason?: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -871,7 +1321,11 @@ export async function cancelJob(jobId: string, reason?: string): Promise<ActionR
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
@@ -884,16 +1338,25 @@ export async function cancelJob(jobId: string, reason?: string): Promise<ActionR
 		assertExists(existingJob, "Job");
 
 		if (existingJob.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Cannot cancel completed jobs
 		if (existingJob.status === "completed") {
-			throw new ActionError("Cannot cancel completed jobs", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Cannot cancel completed jobs",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Add cancellation reason to notes
-		const updatedNotes = reason ? `${existingJob.notes || ""}\n\n[CANCELLED]: ${reason}`.trim() : existingJob.notes;
+		const updatedNotes = reason
+			? `${existingJob.notes || ""}\n\n[CANCELLED]: ${reason}`.trim()
+			: existingJob.notes;
 
 		// Cancel job
 		const { error: updateError } = await supabase
@@ -905,7 +1368,10 @@ export async function cancelJob(jobId: string, reason?: string): Promise<ActionR
 			.eq("id", jobId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("cancel job"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("cancel job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -915,22 +1381,19 @@ export async function cancelJob(jobId: string, reason?: string): Promise<ActionR
 
 /**
  * Search jobs with full-text search and ranking
- *
- * Searches across: job_number, title, description, notes, job_type, status, priority, ai_service_type
- * Returns results ordered by relevance (best matches first)
- *
- * @example
- * const results = await searchJobs("HVAC repair");
- * // Returns jobs matching "HVAC" AND "repair" ranked by relevance
+ * ✅ NO CHANGES NEEDED - Only searches jobs table
  */
 export async function searchJobs(
 	searchTerm: string,
-	options?: { limit?: number; offset?: number }
+	options?: { limit?: number; offset?: number },
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -945,16 +1408,27 @@ export async function searchJobs(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Use full-text search with ranking for best matches
-		const { searchJobsFullText } = await import("@/lib/search/full-text-search");
+		const { searchJobsFullText } = await import(
+			"@/lib/search/full-text-search"
+		);
 
-		const jobs = await searchJobsFullText(supabase, teamMember.company_id, searchTerm, {
-			limit: options?.limit || 50,
-			offset: options?.offset || 0,
-		});
+		const jobs = await searchJobsFullText(
+			supabase,
+			teamMember.company_id,
+			searchTerm,
+			{
+				limit: options?.limit || 50,
+				offset: options?.offset || 0,
+			},
+		);
 
 		return jobs;
 	});
@@ -962,19 +1436,18 @@ export async function searchJobs(
 
 /**
  * Universal search across all entities
- *
- * Searches customers, jobs, properties, equipment, and price book items
- * Returns top 5 results from each entity type
- *
- * @example
- * const results = await searchAll("furnace");
- * // Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
+ * ✅ NO CHANGES NEEDED - Only searches jobs table
  */
-export async function searchAll(searchTerm: string): Promise<ActionResult<any>> {
+export async function searchAll(
+	searchTerm: string,
+): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -989,7 +1462,11 @@ export async function searchAll(searchTerm: string): Promise<ActionResult<any>> 
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Use universal search RPC function
@@ -1000,7 +1477,10 @@ export async function searchAll(searchTerm: string): Promise<ActionResult<any>> 
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("search"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("search"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data;
@@ -1013,15 +1493,16 @@ export async function searchAll(searchTerm: string): Promise<ActionResult<any>> 
 
 /**
  * Archive job (soft delete)
- *
- * Archives a job instead of permanently deleting.
- * Archived jobs can be restored within 90 days.
+ * 🔧 REFACTORED - Now updates job_multi_entity.deleted_by and permanent_delete_scheduled_at
  */
 export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1036,43 +1517,73 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company
-		const { data: job } = await supabase.from("jobs").select("company_id, status").eq("id", jobId).single();
+		const { data: job } = await supabase
+			.from("jobs")
+			.select("company_id, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(job, "Job");
 
 		if (job.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Cannot archive completed/paid jobs (business rule)
 		if (job.status === "completed" || job.status === "invoiced") {
 			throw new ActionError(
 				"Cannot archive completed or invoiced jobs. These must be retained for records.",
-				ERROR_CODES.OPERATION_NOT_ALLOWED
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
 			);
 		}
 
 		// Archive job (soft delete)
 		const now = new Date().toISOString();
-		const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+		const scheduledDeletion = new Date(
+			Date.now() + 90 * 24 * 60 * 60 * 1000,
+		).toISOString();
 
-		const { error: archiveError } = await supabase
-			.from("jobs")
-			.update({
-				deleted_at: now,
-				deleted_by: user.id,
-				archived_at: now,
-				permanent_delete_scheduled_at: scheduledDeletion,
-				status: "archived",
-			})
-			.eq("id", jobId);
+		// Update both jobs table and job_multi_entity table in parallel
+		const updates = await Promise.all([
+			// Update core jobs table with archive metadata
+			supabase
+				.from("jobs")
+				.update({
+					deleted_at: now,
+					archived_at: now,
+					status: "archived",
+				})
+				.eq("id", jobId),
 
-		if (archiveError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("archive job"), ERROR_CODES.DB_QUERY_ERROR);
+			// Update job_multi_entity table with deletion tracking
+			supabase
+				.from("job_multi_entity")
+				.update({
+					deleted_by: user.id,
+					permanent_delete_scheduled_at: scheduledDeletion,
+				})
+				.eq("job_id", jobId),
+		]);
+
+		// Check for errors in either update
+		const errors = updates.filter((result) => result.error);
+		if (errors.length > 0) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("archive job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -1083,12 +1594,16 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 
 /**
  * Restore archived job
+ * 🔧 REFACTORED - Now clears job_multi_entity.deleted_by and permanent_delete_scheduled_at
  */
 export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1103,36 +1618,66 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify job belongs to company and is archived
-		const { data: job } = await supabase.from("jobs").select("company_id, deleted_at, status").eq("id", jobId).single();
+		const { data: job } = await supabase
+			.from("jobs")
+			.select("company_id, deleted_at, status")
+			.eq("id", jobId)
+			.single();
 
 		assertExists(job, "Job");
 
 		if (job.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("job"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("job"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		if (!job.deleted_at) {
-			throw new ActionError("Job is not archived", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Job is not archived",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
-		// Restore job
-		const { error: restoreError } = await supabase
-			.from("jobs")
-			.update({
-				deleted_at: null,
-				deleted_by: null,
-				archived_at: null,
-				permanent_delete_scheduled_at: null,
-				status: job.status === "archived" ? "scheduled" : job.status,
-			})
-			.eq("id", jobId);
+		// Restore job - update both tables in parallel
+		const updates = await Promise.all([
+			// Clear core jobs table archive metadata
+			supabase
+				.from("jobs")
+				.update({
+					deleted_at: null,
+					archived_at: null,
+					status: job.status === "archived" ? "scheduled" : job.status,
+				})
+				.eq("id", jobId),
 
-		if (restoreError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("restore job"), ERROR_CODES.DB_QUERY_ERROR);
+			// Clear job_multi_entity table deletion tracking
+			supabase
+				.from("job_multi_entity")
+				.update({
+					deleted_by: null,
+					permanent_delete_scheduled_at: null,
+				})
+				.eq("job_id", jobId),
+		]);
+
+		// Check for errors in either update
+		const errors = updates.filter((result) => result.error);
+		if (errors.length > 0) {
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("restore job"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work");
@@ -1143,17 +1688,18 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 
 /**
  * Remove team assignment from job
- * Deletes the job_team_assignments junction table record
- * Updates both team member and job views
- *
- * Note: If your schema uses a simple assigned_to field instead of a junction table,
- * use updateJob() to set assigned_to to NULL instead.
+ * ✅ NO CHANGES NEEDED - Only deletes from job_team_assignments junction table
  */
-export async function removeTeamAssignment(assignmentId: string): Promise<ActionResult<void>> {
+export async function removeTeamAssignment(
+	assignmentId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1169,7 +1715,11 @@ export async function removeTeamAssignment(assignmentId: string): Promise<Action
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Get the junction record to find job_id for revalidation
@@ -1180,22 +1730,32 @@ export async function removeTeamAssignment(assignmentId: string): Promise<Action
 			.single();
 
 		if (fetchError || !record) {
-			throw new ActionError("Team assignment not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"Team assignment not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		if (record.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("team assignment"), ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("team assignment"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		const jobId = record.job_id;
 
 		// Delete junction table row
-		const { error: deleteError } = await supabase.from("job_team_assignments").delete().eq("id", assignmentId);
+		const { error: deleteError } = await supabase
+			.from("job_team_assignments")
+			.delete()
+			.eq("id", assignmentId);
 
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("remove team assignment from job"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

@@ -1,6 +1,9 @@
 "use client";
 
-import { LazyMotionButton as motion_button, LazyMotionDiv as motion_div } from "@/components/lazy/framer-motion";
+import {
+	LazyMotionButton as motion_button,
+	LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
 import { cn } from "@/lib/utils";
 
 // Alias for backward compatibility
@@ -16,7 +19,12 @@ type SlideIndicatorsProps = {
 	className?: string;
 };
 
-export function SlideIndicators({ slideCount, currentSlide, onSlideClick, className }: SlideIndicatorsProps) {
+export function SlideIndicators({
+	slideCount,
+	currentSlide,
+	onSlideClick,
+	className,
+}: SlideIndicatorsProps) {
 	if (slideCount <= 1) {
 		return null;
 	}
@@ -35,7 +43,9 @@ export function SlideIndicators({ slideCount, currentSlide, onSlideClick, classN
 						<motion.button
 							animate={{
 								width: isActive ? 24 : 8,
-								backgroundColor: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground) / 0.4)",
+								backgroundColor: isActive
+									? "hsl(var(--primary))"
+									: "hsl(var(--muted-foreground) / 0.4)",
 							}}
 							className="h-2 rounded-full transition-colors hover:bg-primary/60"
 							key={index}

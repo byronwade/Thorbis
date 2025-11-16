@@ -14,7 +14,8 @@ import Stripe from "stripe";
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
-const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] = "2025-01-27.acacia";
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+	"2025-01-27.acacia";
 const SECONDS_TO_MILLISECONDS = 1000;
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -29,7 +30,9 @@ const stripe = new Stripe(stripeSecretKey, {
 });
 
 function formatUnixSeconds(timestampSeconds: number) {
-	return new Date(timestampSeconds * SECONDS_TO_MILLISECONDS).toLocaleDateString();
+	return new Date(
+		timestampSeconds * SECONDS_TO_MILLISECONDS,
+	).toLocaleDateString();
 }
 
 function getErrorMessage(error: unknown) {
@@ -52,10 +55,18 @@ async function setupBillingPortal() {
 			console.log(`   Configuration ID: ${existingConfig.id}`);
 			console.log(`   Created: ${formatUnixSeconds(existingConfig.created)}`);
 			console.log("\n📋 Current Features:");
-			console.log(`   • Cancel subscriptions: ${existingConfig.features.subscription_cancel.enabled ? "✓" : "✗"}`);
-			console.log(`   • Update payment method: ${existingConfig.features.payment_method_update.enabled ? "✓" : "✗"}`);
-			console.log(`   • Invoice history: ${existingConfig.features.invoice_history.enabled ? "✓" : "✗"}`);
-			console.log(`   • Customer update: ${existingConfig.features.customer_update.enabled ? "✓" : "✗"}`);
+			console.log(
+				`   • Cancel subscriptions: ${existingConfig.features.subscription_cancel.enabled ? "✓" : "✗"}`,
+			);
+			console.log(
+				`   • Update payment method: ${existingConfig.features.payment_method_update.enabled ? "✓" : "✗"}`,
+			);
+			console.log(
+				`   • Invoice history: ${existingConfig.features.invoice_history.enabled ? "✓" : "✗"}`,
+			);
+			console.log(
+				`   • Customer update: ${existingConfig.features.customer_update.enabled ? "✓" : "✗"}`,
+			);
 			console.log("\n✅ Billing portal is ready to use!");
 			console.log("   Users can access it at: /dashboard/settings/billing");
 			return;
@@ -120,7 +131,9 @@ async function setupBillingPortal() {
 		console.log("   - Visit /dashboard/settings/billing");
 		console.log("   - Try updating payment method");
 		console.log("   - Try canceling subscription");
-		console.log("2. Customize portal at: https://dashboard.stripe.com/settings/billing/portal");
+		console.log(
+			"2. Customize portal at: https://dashboard.stripe.com/settings/billing/portal",
+		);
 		console.log("\n");
 	} catch (error) {
 		const errorMessage = getErrorMessage(error);
@@ -128,7 +141,9 @@ async function setupBillingPortal() {
 
 		if (errorMessage.includes("configuration has not been created")) {
 			console.log("\n💡 Alternative Setup:");
-			console.log("Configure manually at: https://dashboard.stripe.com/settings/billing/portal");
+			console.log(
+				"Configure manually at: https://dashboard.stripe.com/settings/billing/portal",
+			);
 			console.log("\nRecommended Settings:");
 			console.log("  ✓ Enable customer update (email, address, phone, tax ID)");
 			console.log("  ✓ Enable invoice history");

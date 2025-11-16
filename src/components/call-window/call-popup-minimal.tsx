@@ -11,7 +11,17 @@
  * Minimalistic design that doesn't interrupt workflow.
  */
 
-import { ArrowRightLeft, Maximize2, Mic, MicOff, Phone, PhoneOff, Video, VideoOff, X } from "lucide-react";
+import {
+	ArrowRightLeft,
+	Maximize2,
+	Mic,
+	MicOff,
+	Phone,
+	PhoneOff,
+	Video,
+	VideoOff,
+	X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -103,25 +113,42 @@ export function CallPopupMinimal({
 	};
 
 	const customerAvatar =
-		customerData?.customer && typeof customerData.customer === "object" && "avatar_url" in customerData.customer
-			? ((customerData.customer as { avatar_url?: string }).avatar_url ?? undefined)
+		customerData?.customer &&
+		typeof customerData.customer === "object" &&
+		"avatar_url" in customerData.customer
+			? ((customerData.customer as { avatar_url?: string }).avatar_url ??
+				undefined)
 			: undefined;
 
 	return (
 		<div
 			className={cn(
 				"fixed right-4 bottom-4 z-50 w-80 rounded-lg border bg-card shadow-2xl transition-all duration-300",
-				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
 			)}
 		>
 			{/* Header */}
 			<div className="flex items-center justify-between border-b bg-card/50 p-3">
 				<div className="flex items-center gap-2">
-					<div className={cn("h-2 w-2 animate-pulse rounded-full", getStatusColor())} />
+					<div
+						className={cn(
+							"h-2 w-2 animate-pulse rounded-full",
+							getStatusColor(),
+						)}
+					/>
 					<span className="font-medium text-sm capitalize">{status}</span>
-					{duration && <span className="font-mono text-muted-foreground text-xs">{duration}</span>}
+					{duration && (
+						<span className="font-mono text-muted-foreground text-xs">
+							{duration}
+						</span>
+					)}
 				</div>
-				<Button className="h-6 w-6" onClick={onClose} size="icon" variant="ghost">
+				<Button
+					className="h-6 w-6"
+					onClick={onClose}
+					size="icon"
+					variant="ghost"
+				>
 					<X className="h-3 w-3" />
 				</Button>
 			</div>
@@ -131,7 +158,9 @@ export function CallPopupMinimal({
 				<div className="flex items-start gap-3">
 					<Avatar className="h-12 w-12">
 						<AvatarImage src={customerAvatar} />
-						<AvatarFallback className="bg-primary/10 text-primary">{getInitials(callerName)}</AvatarFallback>
+						<AvatarFallback className="bg-primary/10 text-primary">
+							{getInitials(callerName)}
+						</AvatarFallback>
 					</Avatar>
 
 					<div className="min-w-0 flex-1">
@@ -143,9 +172,13 @@ export function CallPopupMinimal({
 								</Badge>
 							)}
 						</div>
-						<p className="font-mono text-muted-foreground text-xs">{callerNumber}</p>
+						<p className="font-mono text-muted-foreground text-xs">
+							{callerNumber}
+						</p>
 						{customerData?.customer?.email && (
-							<p className="truncate text-muted-foreground text-xs">{customerData.customer.email}</p>
+							<p className="truncate text-muted-foreground text-xs">
+								{customerData.customer.email}
+							</p>
 						)}
 					</div>
 				</div>
@@ -172,7 +205,11 @@ export function CallPopupMinimal({
 							size="icon"
 							variant={isMuted ? "destructive" : "ghost"}
 						>
-							{isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+							{isMuted ? (
+								<MicOff className="h-4 w-4" />
+							) : (
+								<Mic className="h-4 w-4" />
+							)}
 						</Button>
 
 						<Button
@@ -181,10 +218,19 @@ export function CallPopupMinimal({
 							size="icon"
 							variant={videoStatus === "connected" ? "default" : "ghost"}
 						>
-							{videoStatus === "connected" ? <Video className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
+							{videoStatus === "connected" ? (
+								<Video className="h-4 w-4" />
+							) : (
+								<VideoOff className="h-4 w-4" />
+							)}
 						</Button>
 
-						<Button className="h-9 w-9 rounded-full" onClick={onTransfer} size="icon" variant="ghost">
+						<Button
+							className="h-9 w-9 rounded-full"
+							onClick={onTransfer}
+							size="icon"
+							variant="ghost"
+						>
 							<ArrowRightLeft className="h-4 w-4" />
 						</Button>
 					</div>
@@ -201,7 +247,12 @@ export function CallPopupMinimal({
 							<Maximize2 className="h-4 w-4" />
 						</Button>
 
-						<Button className="h-9 w-9 rounded-full" onClick={onEnd} size="icon" variant="destructive">
+						<Button
+							className="h-9 w-9 rounded-full"
+							onClick={onEnd}
+							size="icon"
+							variant="destructive"
+						>
 							<PhoneOff className="h-4 w-4" />
 						</Button>
 					</div>

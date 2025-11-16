@@ -43,7 +43,14 @@ export function ZoomControls() {
 	return (
 		<div className="flex items-center gap-2">
 			{/* Zoom Out Button */}
-			<Button className="h-8 w-8" disabled={zoom <= 5} onClick={zoomOut} size="icon" title="Zoom Out" variant="ghost">
+			<Button
+				className="h-8 w-8"
+				disabled={zoom <= 5}
+				onClick={zoomOut}
+				size="icon"
+				title="Zoom Out"
+				variant="ghost"
+			>
 				<Minus className="h-4 w-4" />
 			</Button>
 
@@ -61,18 +68,33 @@ export function ZoomControls() {
 			</div>
 
 			{/* Zoom In Button */}
-			<Button className="h-8 w-8" disabled={zoom >= 500} onClick={zoomIn} size="icon" title="Zoom In" variant="ghost">
+			<Button
+				className="h-8 w-8"
+				disabled={zoom >= 500}
+				onClick={zoomIn}
+				size="icon"
+				title="Zoom In"
+				variant="ghost"
+			>
 				<Plus className="h-4 w-4" />
 			</Button>
 
 			{/* Zoom Level Indicator */}
 			<div className="flex min-w-[140px] items-center gap-2 rounded-md border bg-muted/50 px-2 py-1">
 				<Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-				<span className="font-medium text-muted-foreground text-xs">{getZoomDescription(zoom)}</span>
+				<span className="font-medium text-muted-foreground text-xs">
+					{getZoomDescription(zoom)}
+				</span>
 			</div>
 
 			{/* Reset Zoom Button */}
-			<Button className="h-8 px-2 text-xs" onClick={resetZoom} size="sm" title="Reset to 100%" variant="ghost">
+			<Button
+				className="h-8 px-2 text-xs"
+				onClick={resetZoom}
+				size="sm"
+				title="Reset to 100%"
+				variant="ghost"
+			>
 				{Math.round(zoom)}%
 			</Button>
 		</div>

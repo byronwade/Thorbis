@@ -30,7 +30,8 @@ export type AirQuality = z.infer<typeof AirQualitySchema>;
 
 export class AirQualityService {
 	private readonly apiKey: string | undefined;
-	private readonly cache: Map<string, { data: AirQuality; timestamp: number }> = new Map();
+	private readonly cache: Map<string, { data: AirQuality; timestamp: number }> =
+		new Map();
 	private readonly cacheTTL = 1000 * 60 * 60; // 1 hour (AQI updates hourly)
 
 	constructor() {
@@ -78,7 +79,10 @@ export class AirQualityService {
 			}
 
 			// Find the observation with the highest AQI (most concerning pollutant)
-			const highestAQI = data.reduce((max, current) => (current.AQI > max.AQI ? current : max), data[0]);
+			const highestAQI = data.reduce(
+				(max, current) => (current.AQI > max.AQI ? current : max),
+				data[0],
+			);
 
 			const airQuality: AirQuality = {
 				aqi: highestAQI.AQI,
@@ -87,7 +91,9 @@ export class AirQualityService {
 				primaryPollutant: highestAQI.ParameterName,
 				reportingArea: highestAQI.ReportingArea,
 				stateCode: highestAQI.StateCode,
-				healthRecommendations: this.getHealthRecommendations(highestAQI.Category.Number),
+				healthRecommendations: this.getHealthRecommendations(
+					highestAQI.Category.Number,
+				),
 				dataSource: "airnow",
 				enrichedAt: new Date().toISOString(),
 			};

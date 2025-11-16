@@ -20,7 +20,10 @@ function isStepCompleted(step: unknown): boolean {
 /**
  * Determine whether onboarding is complete based on stored progress metadata.
  */
-export function isOnboardingComplete(options: { progress?: ProgressRecord; completedAt?: string | null }): boolean {
+export function isOnboardingComplete(options: {
+	progress?: ProgressRecord;
+	completedAt?: string | null;
+}): boolean {
 	const { progress, completedAt } = options;
 
 	if (completedAt) {
@@ -37,5 +40,7 @@ export function isOnboardingComplete(options: { progress?: ProgressRecord; compl
 		return true;
 	}
 
-	return COMPLETION_STEPS.some((stepKey) => isStepCompleted(progressRecord[stepKey]));
+	return COMPLETION_STEPS.some((stepKey) =>
+		isStepCompleted(progressRecord[stepKey]),
+	);
 }

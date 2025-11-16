@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { ContractsKanban } from "@/components/work/contracts-kanban";
-import { type Contract, ContractsTable } from "@/components/work/contracts-table";
+import {
+	type Contract,
+	ContractsTable,
+} from "@/components/work/contracts-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -48,7 +51,9 @@ export async function ContractsData() {
 	// Only process if we have data
 	if (!error && contractsRaw) {
 		// Fetch customers separately if we have customer IDs
-		const customerIds = Array.from(new Set(contractsRaw.map((c: any) => c.customer_id).filter(Boolean)));
+		const customerIds = Array.from(
+			new Set(contractsRaw.map((c: any) => c.customer_id).filter(Boolean)),
+		);
 
 		const customersMap = new Map<string, any>();
 		if (customerIds.length > 0) {
@@ -66,7 +71,9 @@ export async function ContractsData() {
 
 		// Transform data for table component
 		contracts = contractsRaw.map((contract: any) => {
-			const customer = contract.customer_id ? customersMap.get(contract.customer_id) : null;
+			const customer = contract.customer_id
+				? customersMap.get(contract.customer_id)
+				: null;
 
 			return {
 				id: contract.id,
@@ -91,7 +98,12 @@ export async function ContractsData() {
 							year: "numeric",
 						})
 					: "",
-				status: contract.status as "signed" | "sent" | "draft" | "viewed" | "expired",
+				status: contract.status as
+					| "signed"
+					| "sent"
+					| "draft"
+					| "viewed"
+					| "expired",
 				contractType: contract.contract_type || "custom",
 				signerName: contract.signer_name || null,
 				archived_at: contract.archived_at,

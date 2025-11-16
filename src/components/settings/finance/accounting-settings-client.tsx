@@ -9,18 +9,46 @@
  * - Connection testing for accounting providers (QuickBooks, Xero, Sage)
  */
 
-import { AlertCircle, Check, CheckCircle, HelpCircle, Link2, Loader2, RefreshCw, Save } from "lucide-react";
+import {
+	AlertCircle,
+	Check,
+	CheckCircle,
+	HelpCircle,
+	Link2,
+	Loader2,
+	RefreshCw,
+	Save,
+} from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { getAccountingSettings, updateAccountingSettings } from "@/actions/settings";
+import {
+	getAccountingSettings,
+	updateAccountingSettings,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 type AccountingSettings = {
@@ -46,7 +74,9 @@ export function AccountingSettingsClient() {
 	const [isPending, startTransition] = useTransition();
 	const [isLoading, setIsLoading] = useState(true);
 	const [isTestingConnection, setIsTestingConnection] = useState(false);
-	const [connectionStatus, setConnectionStatus] = useState<"connected" | "disconnected" | null>(null);
+	const [connectionStatus, setConnectionStatus] = useState<
+		"connected" | "disconnected" | null
+	>(null);
 
 	const [settings, setSettings] = useState<AccountingSettings>({
 		provider: "none",
@@ -95,7 +125,7 @@ export function AccountingSettingsClient() {
 
 	const hasChanges = useMemo(
 		() => JSON.stringify(formData) !== JSON.stringify(originalFormData),
-		[formData, originalFormData]
+		[formData, originalFormData],
 	);
 
 	useEffect(() => {
@@ -142,14 +172,20 @@ export function AccountingSettingsClient() {
 		startTransition(async () => {
 			const formDataObj = new FormData();
 			formDataObj.append("provider", formData.provider);
-			formDataObj.append("providerEnabled", formData.providerEnabled.toString());
+			formDataObj.append(
+				"providerEnabled",
+				formData.providerEnabled.toString(),
+			);
 			if (formData.apiKey) {
 				formDataObj.append("apiKey", formData.apiKey);
 			}
 			if (formData.apiSecret) {
 				formDataObj.append("apiSecret", formData.apiSecret);
 			}
-			formDataObj.append("autoSyncEnabled", formData.autoSyncEnabled.toString());
+			formDataObj.append(
+				"autoSyncEnabled",
+				formData.autoSyncEnabled.toString(),
+			);
 			formDataObj.append("syncFrequency", formData.syncFrequency);
 			if (formData.incomeAccount) {
 				formDataObj.append("incomeAccount", formData.incomeAccount);
@@ -210,7 +246,9 @@ export function AccountingSettingsClient() {
 			<div className="space-y-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
-						<h1 className="font-bold text-4xl tracking-tight">Accounting Integration</h1>
+						<h1 className="font-bold text-4xl tracking-tight">
+							Accounting Integration
+						</h1>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<button type="button">
@@ -219,13 +257,17 @@ export function AccountingSettingsClient() {
 							</TooltipTrigger>
 							<TooltipContent className="max-w-xs">
 								<p className="text-sm">
-									Connect your accounting software for seamless financial data sync. Supports QuickBooks, Xero, Sage,
-									and FreshBooks.
+									Connect your accounting software for seamless financial data
+									sync. Supports QuickBooks, Xero, Sage, and FreshBooks.
 								</p>
 							</TooltipContent>
 						</Tooltip>
 					</div>
-					{hasChanges && <Badge className="bg-warning hover:bg-warning">Unsaved Changes</Badge>}
+					{hasChanges && (
+						<Badge className="bg-warning hover:bg-warning">
+							Unsaved Changes
+						</Badge>
+					)}
 				</div>
 				<p className="text-lg text-muted-foreground">
 					Connect your accounting software for seamless financial data sync
@@ -239,14 +281,18 @@ export function AccountingSettingsClient() {
 							<RefreshCw className="size-5 text-primary" />
 							Provider Configuration
 						</CardTitle>
-						<CardDescription>Select and configure your accounting provider</CardDescription>
+						<CardDescription>
+							Select and configure your accounting provider
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-6 sm:grid-cols-2">
 							<div>
 								<Label htmlFor="provider">Accounting Provider</Label>
 								<Select
-									onValueChange={(value) => setFormData({ ...formData, provider: value })}
+									onValueChange={(value) =>
+										setFormData({ ...formData, provider: value })
+									}
 									value={formData.provider}
 								>
 									<SelectTrigger className="mt-2">
@@ -254,7 +300,9 @@ export function AccountingSettingsClient() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="none">None</SelectItem>
-										<SelectItem value="quickbooks">QuickBooks Online</SelectItem>
+										<SelectItem value="quickbooks">
+											QuickBooks Online
+										</SelectItem>
 										<SelectItem value="xero">Xero</SelectItem>
 										<SelectItem value="sage">Sage Intacct</SelectItem>
 										<SelectItem value="freshbooks">FreshBooks</SelectItem>
@@ -293,14 +341,18 @@ export function AccountingSettingsClient() {
 											<Input
 												className="mt-2"
 												id="apiKey"
-												onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
+												onChange={(e) =>
+													setFormData({ ...formData, apiKey: e.target.value })
+												}
 												placeholder="Enter your API key"
 												type="password"
 												value={formData.apiKey}
 											/>
 										</div>
 										<div>
-											<Label htmlFor="apiSecret">API Secret / Client Secret</Label>
+											<Label htmlFor="apiSecret">
+												API Secret / Client Secret
+											</Label>
 											<Input
 												className="mt-2"
 												id="apiSecret"
@@ -318,7 +370,11 @@ export function AccountingSettingsClient() {
 									</div>
 
 									<Button
-										disabled={isTestingConnection || !formData.apiKey || !formData.apiSecret}
+										disabled={
+											isTestingConnection ||
+											!formData.apiKey ||
+											!formData.apiSecret
+										}
 										onClick={handleTestConnection}
 										variant="outline"
 									>
@@ -341,11 +397,15 @@ export function AccountingSettingsClient() {
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
 										<Label>Enable Provider</Label>
-										<p className="text-muted-foreground text-xs">Activate integration with {formData.provider}</p>
+										<p className="text-muted-foreground text-xs">
+											Activate integration with {formData.provider}
+										</p>
 									</div>
 									<Switch
 										checked={formData.providerEnabled}
-										onCheckedChange={(checked) => setFormData({ ...formData, providerEnabled: checked })}
+										onCheckedChange={(checked) =>
+											setFormData({ ...formData, providerEnabled: checked })
+										}
 									/>
 								</div>
 							</>
@@ -361,17 +421,23 @@ export function AccountingSettingsClient() {
 									<RefreshCw className="size-5 text-primary" />
 									Sync Settings
 								</CardTitle>
-								<CardDescription>Configure automatic data synchronization</CardDescription>
+								<CardDescription>
+									Configure automatic data synchronization
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
 										<Label>Auto Sync</Label>
-										<p className="text-muted-foreground text-xs">Automatically sync data on schedule</p>
+										<p className="text-muted-foreground text-xs">
+											Automatically sync data on schedule
+										</p>
 									</div>
 									<Switch
 										checked={formData.autoSyncEnabled}
-										onCheckedChange={(checked) => setFormData({ ...formData, autoSyncEnabled: checked })}
+										onCheckedChange={(checked) =>
+											setFormData({ ...formData, autoSyncEnabled: checked })
+										}
 									/>
 								</div>
 
@@ -379,7 +445,9 @@ export function AccountingSettingsClient() {
 									<div>
 										<Label htmlFor="syncFrequency">Sync Frequency</Label>
 										<Select
-											onValueChange={(value) => setFormData({ ...formData, syncFrequency: value })}
+											onValueChange={(value) =>
+												setFormData({ ...formData, syncFrequency: value })
+											}
 											value={formData.syncFrequency}
 										>
 											<SelectTrigger className="mt-2">
@@ -404,44 +472,60 @@ export function AccountingSettingsClient() {
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Invoices</Label>
-											<p className="text-muted-foreground text-xs">Sync invoice data to accounting system</p>
+											<p className="text-muted-foreground text-xs">
+												Sync invoice data to accounting system
+											</p>
 										</div>
 										<Switch
 											checked={formData.syncInvoices}
-											onCheckedChange={(checked) => setFormData({ ...formData, syncInvoices: checked })}
+											onCheckedChange={(checked) =>
+												setFormData({ ...formData, syncInvoices: checked })
+											}
 										/>
 									</div>
 
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Payments</Label>
-											<p className="text-muted-foreground text-xs">Sync payment transactions</p>
+											<p className="text-muted-foreground text-xs">
+												Sync payment transactions
+											</p>
 										</div>
 										<Switch
 											checked={formData.syncPayments}
-											onCheckedChange={(checked) => setFormData({ ...formData, syncPayments: checked })}
+											onCheckedChange={(checked) =>
+												setFormData({ ...formData, syncPayments: checked })
+											}
 										/>
 									</div>
 
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Expenses</Label>
-											<p className="text-muted-foreground text-xs">Sync expense records</p>
+											<p className="text-muted-foreground text-xs">
+												Sync expense records
+											</p>
 										</div>
 										<Switch
 											checked={formData.syncExpenses}
-											onCheckedChange={(checked) => setFormData({ ...formData, syncExpenses: checked })}
+											onCheckedChange={(checked) =>
+												setFormData({ ...formData, syncExpenses: checked })
+											}
 										/>
 									</div>
 
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Customers</Label>
-											<p className="text-muted-foreground text-xs">Sync customer information</p>
+											<p className="text-muted-foreground text-xs">
+												Sync customer information
+											</p>
 										</div>
 										<Switch
 											checked={formData.syncCustomers}
-											onCheckedChange={(checked) => setFormData({ ...formData, syncCustomers: checked })}
+											onCheckedChange={(checked) =>
+												setFormData({ ...formData, syncCustomers: checked })
+											}
 										/>
 									</div>
 								</div>
@@ -454,7 +538,9 @@ export function AccountingSettingsClient() {
 									<RefreshCw className="size-5 text-primary" />
 									Account Mapping
 								</CardTitle>
-								<CardDescription>Map Thorbis accounts to your accounting chart of accounts</CardDescription>
+								<CardDescription>
+									Map Thorbis accounts to your accounting chart of accounts
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div>
@@ -494,7 +580,9 @@ export function AccountingSettingsClient() {
 									<Input
 										className="mt-2"
 										id="assetAccount"
-										onChange={(e) => setFormData({ ...formData, assetAccount: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, assetAccount: e.target.value })
+										}
 										placeholder="e.g., 1200 - Accounts Receivable"
 										value={formData.assetAccount}
 									/>
@@ -524,11 +612,14 @@ export function AccountingSettingsClient() {
 					<CardContent className="flex items-start gap-3 pt-6">
 						<RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 						<div className="space-y-1">
-							<p className="font-medium text-primary text-sm dark:text-primary">Accounting Integration Benefits</p>
+							<p className="font-medium text-primary text-sm dark:text-primary">
+								Accounting Integration Benefits
+							</p>
 							<p className="text-muted-foreground text-sm">
-								Connecting your accounting software enables automatic financial data sync, reduces manual data entry,
-								ensures accuracy across systems, and provides real-time financial reporting. Your credentials are
-								encrypted and securely stored.
+								Connecting your accounting software enables automatic financial
+								data sync, reduces manual data entry, ensures accuracy across
+								systems, and provides real-time financial reporting. Your
+								credentials are encrypted and securely stored.
 							</p>
 						</div>
 					</CardContent>
@@ -546,7 +637,9 @@ export function AccountingSettingsClient() {
 								</div>
 								<div>
 									<p className="font-medium text-sm">Unsaved Changes</p>
-									<p className="text-muted-foreground text-xs">Save your changes or discard them</p>
+									<p className="text-muted-foreground text-xs">
+										Save your changes or discard them
+									</p>
 								</div>
 							</>
 						) : (
@@ -566,7 +659,11 @@ export function AccountingSettingsClient() {
 						)}
 					</div>
 					<div className="flex gap-3">
-						<Button disabled={isPending} onClick={handleCancel} variant="outline">
+						<Button
+							disabled={isPending}
+							onClick={handleCancel}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isPending || !hasChanges} onClick={handleSave}>

@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ZustandHydration } from "@/components/providers/zustand-hydration";
@@ -37,43 +38,53 @@ export const metadata: Metadata = {
 		startupImage: [
 			{
 				url: "/splash/iphone5_splash.png",
-				media: "(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/iphone6_splash.png",
-				media: "(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/iphoneplus_splash.png",
-				media: "(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)",
+				media:
+					"(device-width: 621px) and (device-height: 1104px) and (-webkit-device-pixel-ratio: 3)",
 			},
 			{
 				url: "/splash/iphonex_splash.png",
-				media: "(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
+				media:
+					"(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)",
 			},
 			{
 				url: "/splash/iphonexr_splash.png",
-				media: "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/iphonexsmax_splash.png",
-				media: "(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
+				media:
+					"(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)",
 			},
 			{
 				url: "/splash/ipad_splash.png",
-				media: "(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/ipadpro1_splash.png",
-				media: "(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/ipadpro3_splash.png",
-				media: "(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)",
 			},
 			{
 				url: "/splash/ipadpro2_splash.png",
-				media: "(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)",
+				media:
+					"(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)",
 			},
 		],
 	},
@@ -94,12 +105,14 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className="font-sans antialiased">
 				<ThemeProvider>
-					<ZustandHydration />
-					<BotIdProvider />
-					<Suspense fallback={null}>
-						<AnalyticsProvider>{children}</AnalyticsProvider>
-					</Suspense>
-					<ToastProvider />
+					<QueryProvider>
+						<ZustandHydration />
+						<BotIdProvider />
+						<Suspense fallback={null}>
+							<AnalyticsProvider>{children}</AnalyticsProvider>
+						</Suspense>
+						<ToastProvider />
+					</QueryProvider>
 				</ThemeProvider>
 				<Analytics />
 				<SpeedInsights />

@@ -43,8 +43,13 @@ export async function POST(request: Request) {
 	return NextResponse.json({ success: true });
 }
 
-async function handleEmailEvent(supabase: TypedSupabaseClient, payload: ResendWebhookPayload) {
-	const communicationId = payload.data.tags?.find((tag) => tag.name === "communication_id")?.value;
+async function handleEmailEvent(
+	supabase: TypedSupabaseClient,
+	payload: ResendWebhookPayload,
+) {
+	const communicationId = payload.data.tags?.find(
+		(tag) => tag.name === "communication_id",
+	)?.value;
 
 	if (!communicationId) {
 		return;
@@ -72,10 +77,16 @@ async function handleEmailEvent(supabase: TypedSupabaseClient, payload: ResendWe
 		updates.opened_at = new Date().toISOString();
 	}
 
-	await supabase.from("communications").update(updates).eq("id", communicationId);
+	await supabase
+		.from("communications")
+		.update(updates)
+		.eq("id", communicationId);
 }
 
-async function handleEmailReceived(supabase: TypedSupabaseClient, payload: ResendWebhookPayload) {
+async function handleEmailReceived(
+	supabase: TypedSupabaseClient,
+	payload: ResendWebhookPayload,
+) {
 	const destination = payload.data.to?.[0]?.email;
 	if (!destination) {
 		return;
@@ -101,10 +112,12 @@ async function handleEmailReceived(supabase: TypedSupabaseClient, payload: Resen
 		try {
 			const buffer = Buffer.from(attachment.content, "base64");
 			const filePath = `${route.company_id}/${Date.now()}-${attachment.filename}`;
-			await supabase.storage.from("email-attachments").upload(filePath, buffer, {
-				contentType: attachment.content_type || "application/octet-stream",
-				upsert: true,
-			});
+			await supabase.storage
+				.from("email-attachments")
+				.upload(filePath, buffer, {
+					contentType: attachment.content_type || "application/octet-stream",
+					upsert: true,
+				});
 			storedAttachments.push({
 				name: attachment.filename,
 				path: filePath,

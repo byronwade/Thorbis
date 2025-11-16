@@ -19,7 +19,11 @@ export const metadata = generateSEOMetadata({
 	description:
 		"Estimate the ROI of switching to Thorbis. Calculate labor savings, revenue lift, and net impact with AI automation, streamlined dispatch, and better close rates.",
 	path: "/roi",
-	keywords: ["field service roi calculator", "servicetitan roi alternative", "thorbis savings estimate"],
+	keywords: [
+		"field service roi calculator",
+		"servicetitan roi alternative",
+		"thorbis savings estimate",
+	],
 });
 
 const FAQS = [
@@ -89,7 +93,11 @@ export default function RoiPage() {
 				id="roi-howto-ld"
 				type="application/ld+json"
 			/>
-			<Script dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} id="roi-faq-ld" type="application/ld+json" />
+			<Script
+				dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+				id="roi-faq-ld"
+				type="application/ld+json"
+			/>
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto max-w-4xl space-y-6 text-center">
@@ -100,9 +108,10 @@ export default function RoiPage() {
 						Quantify the ROI of switching to Thorbis
 					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Use your real numbers to project labor savings, net-new revenue, and net ROI after Thorbis replaces your
-						legacy field service stack. Thorbis pricing starts at $100/month with pay-as-you-go usage—no per-user fees
-						and absolutely no lock-in.
+						Use your real numbers to project labor savings, net-new revenue, and
+						net ROI after Thorbis replaces your legacy field service stack.
+						Thorbis pricing starts at $100/month with pay-as-you-go usage—no
+						per-user fees and absolutely no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -141,19 +150,26 @@ export default function RoiPage() {
 								<CardHeader>
 									<CardTitle className="text-lg">{item.title}</CardTitle>
 								</CardHeader>
-								<CardContent className="text-muted-foreground text-sm leading-relaxed">{item.description}</CardContent>
+								<CardContent className="text-muted-foreground text-sm leading-relaxed">
+									{item.description}
+								</CardContent>
 							</Card>
 						))}
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="font-semibold text-3xl">Share your ROI analysis with stakeholders</h2>
+						<h2 className="font-semibold text-3xl">
+							Share your ROI analysis with stakeholders
+						</h2>
 						<p className="text-muted-foreground">
-							Export the numbers and pair them with our migration plan to prove the case for change.
+							Export the numbers and pair them with our migration plan to prove
+							the case for change.
 						</p>
 						<div className="flex flex-wrap justify-center gap-3">
 							<Button asChild>
-								<Link href="/templates?tag=migration">Download migration checklist</Link>
+								<Link href="/templates?tag=migration">
+									Download migration checklist
+								</Link>
 							</Button>
 							<Button asChild variant="outline">
 								<Link href="/vs">Compare Thorbis with your current system</Link>
@@ -169,7 +185,9 @@ export default function RoiPage() {
 									<CardHeader>
 										<CardTitle className="text-lg">{faq.question}</CardTitle>
 									</CardHeader>
-									<CardContent className="text-muted-foreground text-sm leading-relaxed">{faq.answer}</CardContent>
+									<CardContent className="text-muted-foreground text-sm leading-relaxed">
+										{faq.answer}
+									</CardContent>
 								</Card>
 							))}
 						</div>

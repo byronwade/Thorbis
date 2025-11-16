@@ -17,7 +17,10 @@ type JobQuickActionsProps = {
 	currentStatus: string;
 };
 
-export function JobQuickActions({ jobId, currentStatus }: JobQuickActionsProps) {
+export function JobQuickActions({
+	jobId,
+	currentStatus,
+}: JobQuickActionsProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -70,13 +73,21 @@ export function JobQuickActions({ jobId, currentStatus }: JobQuickActionsProps) 
 			{!(isCompleted || isCancelled) && (canArrive || canClose) && (
 				<div className="flex justify-end">
 					{canArrive && (
-						<Button className="bg-success hover:bg-success" disabled={isLoading === "arrive"} onClick={handleArrive}>
+						<Button
+							className="bg-success hover:bg-success"
+							disabled={isLoading === "arrive"}
+							onClick={handleArrive}
+						>
 							<CheckCircle className="mr-2 h-4 w-4" />
 							{isLoading === "arrive" ? "Arriving..." : "Arrive at Site"}
 						</Button>
 					)}
 					{canClose && (
-						<Button className="bg-accent hover:bg-accent" disabled={isLoading === "close"} onClick={handleClose}>
+						<Button
+							className="bg-accent hover:bg-accent"
+							disabled={isLoading === "close"}
+							onClick={handleClose}
+						>
 							<CheckCircle className="mr-2 h-4 w-4" />
 							{isLoading === "close" ? "Closing..." : "Complete Job"}
 						</Button>

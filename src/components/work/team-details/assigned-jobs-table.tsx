@@ -1,6 +1,13 @@
 "use client";
 
-import { Building2, CheckCircle, Clock, Eye, MapPin, MoreHorizontal } from "lucide-react";
+import {
+	Building2,
+	CheckCircle,
+	Clock,
+	Eye,
+	MapPin,
+	MoreHorizontal,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +19,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type AssignedJob = {
 	id: string;
@@ -55,7 +65,10 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			statusColors[status.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const getPriorityColor = (priority?: string) => {
@@ -68,7 +81,10 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 			high: "bg-warning/10 text-warning",
 			urgent: "bg-destructive/10 text-destructive",
 		};
-		return priorityColors[priority.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			priorityColors[priority.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const columns: ColumnDef<AssignedJob>[] = useMemo(
@@ -79,7 +95,10 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				width: "w-32",
 				shrink: true,
 				render: (assignment) => (
-					<Link className="font-medium font-mono text-sm hover:underline" href={`/dashboard/work/${assignment.job.id}`}>
+					<Link
+						className="font-medium font-mono text-sm hover:underline"
+						href={`/dashboard/work/${assignment.job.id}`}
+					>
 						{assignment.job.job_number}
 					</Link>
 				),
@@ -94,8 +113,14 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex flex-col gap-1">
-							<span className="font-medium text-sm leading-tight hover:underline">{assignment.job.title}</span>
-							{assignment.role && <span className="text-muted-foreground text-xs">Role: {assignment.role}</span>}
+							<span className="font-medium text-sm leading-tight hover:underline">
+								{assignment.job.title}
+							</span>
+							{assignment.role && (
+								<span className="text-muted-foreground text-xs">
+									Role: {assignment.role}
+								</span>
+							)}
 						</div>
 					</Link>
 				),
@@ -151,7 +176,9 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				width: "w-32",
 				shrink: true,
 				render: (assignment) => (
-					<Badge className={getStatusColor(assignment.job.status)}>{assignment.job.status}</Badge>
+					<Badge className={getStatusColor(assignment.job.status)}>
+						{assignment.job.status}
+					</Badge>
 				),
 			},
 			{
@@ -222,7 +249,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				),
 			},
 		],
-		[getPriorityColor, getStatusColor]
+		[getPriorityColor, getStatusColor],
 	);
 
 	return (

@@ -10,12 +10,25 @@ import { ChevronDown, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type TeamFilters, useTeamFiltersStore } from "@/lib/stores/team-filters-store";
+import {
+	type TeamFilters,
+	useTeamFiltersStore,
+} from "@/lib/stores/team-filters-store";
 
 type TeamFilterDropdownProps = {
 	activeCount?: number;
@@ -23,7 +36,11 @@ type TeamFilterDropdownProps = {
 	totalCount?: number;
 };
 
-export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: TeamFilterDropdownProps) {
+export function TeamFilterDropdown({
+	activeCount,
+	archivedCount,
+	totalCount,
+}: TeamFilterDropdownProps) {
 	const globalFilters = useTeamFiltersStore((state) => state.filters);
 	const setFilters = useTeamFiltersStore((state) => state.setFilters);
 	const resetFilters = useTeamFiltersStore((state) => state.resetFilters);
@@ -39,15 +56,17 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 	}, [isOpen, globalFilters]);
 
 	// Count active filters
-	const activeFilterCount = Object.entries(globalFilters).filter(([key, value]) => {
-		if (key === "archiveStatus") {
-			return value !== "active";
-		}
-		if (key === "role" || key === "status") {
-			return value !== "all";
-		}
-		return value !== "";
-	}).length;
+	const activeFilterCount = Object.entries(globalFilters).filter(
+		([key, value]) => {
+			if (key === "archiveStatus") {
+				return value !== "active";
+			}
+			if (key === "role" || key === "status") {
+				return value !== "all";
+			}
+			return value !== "";
+		},
+	).length;
 
 	const handleApplyFilters = () => {
 		setFilters(localFilters);
@@ -67,7 +86,10 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 					Filters
 					<ChevronDown className="ml-2 size-4" />
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 size-5 rounded-full p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 size-5 rounded-full p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -78,7 +100,12 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 					<div className="flex items-center justify-between">
 						<h4 className="font-semibold text-sm">Filter Team Members</h4>
 						{activeFilterCount > 0 && (
-							<Button className="h-auto p-1 text-xs" onClick={handleClearAll} size="sm" variant="ghost">
+							<Button
+								className="h-auto p-1 text-xs"
+								onClick={handleClearAll}
+								size="sm"
+								variant="ghost"
+							>
 								Clear All
 							</Button>
 						)}
@@ -99,11 +126,16 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="active">Active Only {activeCount !== undefined && `(${activeCount})`}</SelectItem>
-								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+								<SelectItem value="active">
+									Active Only {activeCount !== undefined && `(${activeCount})`}
 								</SelectItem>
-								<SelectItem value="all">All Members {totalCount !== undefined && `(${totalCount})`}</SelectItem>
+								<SelectItem value="archived">
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
+								</SelectItem>
+								<SelectItem value="all">
+									All Members {totalCount !== undefined && `(${totalCount})`}
+								</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -112,7 +144,9 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 					<div className="space-y-2">
 						<Label className="text-xs">Role</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, role: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, role: value })
+							}
 							value={localFilters.role}
 						>
 							<SelectTrigger className="h-9">
@@ -134,7 +168,9 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 					<div className="space-y-2">
 						<Label className="text-xs">Member Status</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, status: value })
+							}
 							value={localFilters.status}
 						>
 							<SelectTrigger className="h-9">
@@ -154,7 +190,9 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 						<Label className="text-xs">Member Name</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, name: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, name: e.target.value })
+							}
 							placeholder="Search by name..."
 							value={localFilters.name}
 						/>
@@ -165,7 +203,9 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 						<Label className="text-xs">Email</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, email: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, email: e.target.value })
+							}
 							placeholder="Search by email..."
 							value={localFilters.email}
 						/>
@@ -176,7 +216,9 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 						<Label className="text-xs">Department</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, department: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, department: e.target.value })
+							}
 							placeholder="Filter by department..."
 							value={localFilters.department}
 						/>
@@ -186,7 +228,12 @@ export function TeamFilterDropdown({ activeCount, archivedCount, totalCount }: T
 
 					{/* Actions */}
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => setIsOpen(false)}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button className="flex-1" onClick={handleApplyFilters} size="sm">

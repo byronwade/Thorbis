@@ -46,7 +46,10 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 				{/* COMFORTABLE Stage: Short title */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="font-medium text-muted-foreground" variant="body">
+						<ResponsiveText
+							className="font-medium text-muted-foreground"
+							variant="body"
+						>
 							Rating
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -86,7 +89,9 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 					<div className="mt-1">
 						{/* FULL + COMFORTABLE: Full trend */}
 						<ShowAt stage="full-comfortable">
-							<span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+							<span
+								className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
+							>
 								<TrendIcon className="size-4" />
 								{isPositive ? "+" : ""}
 								{formatPercentage(data.change, "comfortable")}

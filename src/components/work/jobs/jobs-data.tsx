@@ -109,14 +109,20 @@ export async function JobsData() {
 		.limit(JOBS_PAGE_SIZE);
 
 	if (error) {
-		const errorMessage = error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+		const errorMessage =
+			error.message ||
+			error.hint ||
+			JSON.stringify(error) ||
+			"Unknown database error";
 		throw new Error(`Failed to load jobs: ${errorMessage}`);
 	}
 
 	// Transform snake_case to camelCase for the component
 	const toDate = (value: string | null) => (value ? new Date(value) : null);
 
-	const resolveRelation = <T,>(relation: T | T[] | null | undefined): T | null => {
+	const resolveRelation = <T,>(
+		relation: T | T[] | null | undefined,
+	): T | null => {
 		if (!relation) {
 			return null;
 		}
@@ -124,8 +130,12 @@ export async function JobsData() {
 	};
 
 	const jobs: ExtendedJob[] = (jobsRaw ?? []).map((job) => {
-		const customer = resolveRelation<RelatedCustomer>(job.customers as RelatedCustomer | RelatedCustomer[] | null);
-		const property = resolveRelation<RelatedProperty>(job.properties as RelatedProperty | RelatedProperty[] | null);
+		const customer = resolveRelation<RelatedCustomer>(
+			job.customers as RelatedCustomer | RelatedCustomer[] | null,
+		);
+		const property = resolveRelation<RelatedProperty>(
+			job.properties as RelatedProperty | RelatedProperty[] | null,
+		);
 
 		const customerData: RelatedCustomer | null = customer
 			? {

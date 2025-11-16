@@ -22,7 +22,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -96,12 +102,17 @@ export function InvoiceForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		estimate?.customer_id || preselectedCustomerId || searchParams?.get("customerId") || undefined
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(
+		estimate?.customer_id ||
+			preselectedCustomerId ||
+			searchParams?.get("customerId") ||
+			undefined,
 	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		estimate?.property_id || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(estimate?.property_id || searchParams?.get("propertyId") || undefined);
 
 	// Pre-fill line items from estimate if available
 	const initialLineItems: LineItem[] = estimate?.line_items?.length
@@ -124,7 +135,9 @@ export function InvoiceForm({
 
 	const [lineItems, setLineItems] = useState<LineItem[]>(initialLineItems);
 	const [taxRate, setTaxRate] = useState(estimate?.tax_rate || 0);
-	const [discountAmount, setDiscountAmount] = useState(estimate?.discount_amount ? estimate.discount_amount / 100 : 0);
+	const [discountAmount, setDiscountAmount] = useState(
+		estimate?.discount_amount ? estimate.discount_amount / 100 : 0,
+	);
 	const [showPriceBook, setShowPriceBook] = useState(false);
 	const [paymentTerms, setPaymentTerms] = useState("net_30");
 	const [dueDate, setDueDate] = useState("");
@@ -199,7 +212,7 @@ export function InvoiceForm({
 					return updated;
 				}
 				return item;
-			})
+			}),
 		);
 	};
 
@@ -277,7 +290,8 @@ export function InvoiceForm({
 				<Card className="border-blue-200 bg-blue-50/50">
 					<CardContent className="pt-6">
 						<p className="text-muted-foreground text-sm">
-							📋 Converting from <strong>{estimate.estimate_number}</strong>: {estimate.title}
+							📋 Converting from <strong>{estimate.estimate_number}</strong>:{" "}
+							{estimate.title}
 						</p>
 					</CardContent>
 				</Card>
@@ -293,14 +307,21 @@ export function InvoiceForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select name="customerId" onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							name="customerId"
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -310,7 +331,11 @@ export function InvoiceForm({
 					{selectedCustomerId && (
 						<div className="space-y-2">
 							<Label htmlFor="property-select">Property (Optional)</Label>
-							<Select name="propertyId" onValueChange={setSelectedPropertyId} value={selectedPropertyId}>
+							<Select
+								name="propertyId"
+								onValueChange={setSelectedPropertyId}
+								value={selectedPropertyId}
+							>
 								<SelectTrigger id="property-select">
 									<SelectValue placeholder="Select property" />
 								</SelectTrigger>
@@ -360,7 +385,11 @@ export function InvoiceForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="paymentTerms">Payment Terms</Label>
-							<Select name="paymentTerms" onValueChange={setPaymentTerms} value={paymentTerms}>
+							<Select
+								name="paymentTerms"
+								onValueChange={setPaymentTerms}
+								value={paymentTerms}
+							>
 								<SelectTrigger id="paymentTerms">
 									<SelectValue />
 								</SelectTrigger>
@@ -376,7 +405,12 @@ export function InvoiceForm({
 
 						<div className="space-y-2">
 							<Label htmlFor="dueDate">Due Date</Label>
-							<Input id="dueDate" onChange={(e) => setDueDate(e.target.value)} type="date" value={dueDate} />
+							<Input
+								id="dueDate"
+								onChange={(e) => setDueDate(e.target.value)}
+								type="date"
+								value={dueDate}
+							/>
 						</div>
 					</div>
 				</CardContent>
@@ -388,10 +422,20 @@ export function InvoiceForm({
 					<div className="flex items-center justify-between">
 						<CardTitle>Line Items</CardTitle>
 						<div className="flex gap-2">
-							<Button onClick={() => setShowPriceBook(!showPriceBook)} size="sm" type="button" variant="outline">
+							<Button
+								onClick={() => setShowPriceBook(!showPriceBook)}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								Price Book
 							</Button>
-							<Button onClick={addLineItem} size="sm" type="button" variant="outline">
+							<Button
+								onClick={addLineItem}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Item
 							</Button>
@@ -403,7 +447,12 @@ export function InvoiceForm({
 						<div className="mb-4 rounded-lg border bg-muted/50 p-4">
 							<div className="mb-2 flex items-center justify-between">
 								<h4 className="font-medium">Price Book</h4>
-								<Button onClick={() => setShowPriceBook(false)} size="sm" type="button" variant="ghost">
+								<Button
+									onClick={() => setShowPriceBook(false)}
+									size="sm"
+									type="button"
+									variant="ghost"
+								>
 									<X className="h-4 w-4" />
 								</Button>
 							</div>
@@ -418,9 +467,15 @@ export function InvoiceForm({
 										<div className="flex justify-between">
 											<div>
 												<p className="font-medium">{item.name}</p>
-												{item.description && <p className="text-muted-foreground text-sm">{item.description}</p>}
+												{item.description && (
+													<p className="text-muted-foreground text-sm">
+														{item.description}
+													</p>
+												)}
 											</div>
-											<p className="font-medium">${(item.unit_price / 100).toFixed(2)}</p>
+											<p className="font-medium">
+												${(item.unit_price / 100).toFixed(2)}
+											</p>
 										</div>
 									</button>
 								))}
@@ -430,10 +485,15 @@ export function InvoiceForm({
 
 					<div className="space-y-3">
 						{lineItems.map((item) => (
-							<div className="grid grid-cols-12 gap-3 rounded-lg border p-3" key={item.id}>
+							<div
+								className="grid grid-cols-12 gap-3 rounded-lg border p-3"
+								key={item.id}
+							>
 								<div className="col-span-5">
 									<Input
-										onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
+										onChange={(e) =>
+											updateLineItem(item.id, "description", e.target.value)
+										}
 										placeholder="Description"
 										value={item.description}
 									/>
@@ -441,7 +501,13 @@ export function InvoiceForm({
 								<div className="col-span-2">
 									<Input
 										min="0.01"
-										onChange={(e) => updateLineItem(item.id, "quantity", Number.parseFloat(e.target.value) || 0)}
+										onChange={(e) =>
+											updateLineItem(
+												item.id,
+												"quantity",
+												Number.parseFloat(e.target.value) || 0,
+											)
+										}
 										placeholder="Qty"
 										step="0.01"
 										type="number"
@@ -451,7 +517,13 @@ export function InvoiceForm({
 								<div className="col-span-2">
 									<Input
 										min="0"
-										onChange={(e) => updateLineItem(item.id, "unitPrice", Number.parseFloat(e.target.value) || 0)}
+										onChange={(e) =>
+											updateLineItem(
+												item.id,
+												"unitPrice",
+												Number.parseFloat(e.target.value) || 0,
+											)
+										}
 										placeholder="Price"
 										step="0.01"
 										type="number"
@@ -459,7 +531,11 @@ export function InvoiceForm({
 									/>
 								</div>
 								<div className="col-span-2">
-									<Input className="bg-muted" disabled value={`$${item.total.toFixed(2)}`} />
+									<Input
+										className="bg-muted"
+										disabled
+										value={`$${item.total.toFixed(2)}`}
+									/>
 								</div>
 								<div className="col-span-1 flex items-center justify-center">
 									<Button
@@ -491,7 +567,9 @@ export function InvoiceForm({
 								id="taxRate"
 								max="100"
 								min="0"
-								onChange={(e) => setTaxRate(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setTaxRate(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={taxRate}
@@ -502,7 +580,9 @@ export function InvoiceForm({
 							<Input
 								id="discountAmount"
 								min="0"
-								onChange={(e) => setDiscountAmount(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setDiscountAmount(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={discountAmount}
@@ -541,19 +621,34 @@ export function InvoiceForm({
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="terms">Terms & Conditions</Label>
-						<Textarea id="terms" name="terms" placeholder="Payment terms, late fees, etc." rows={3} />
+						<Textarea
+							id="terms"
+							name="terms"
+							placeholder="Payment terms, late fees, etc."
+							rows={3}
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

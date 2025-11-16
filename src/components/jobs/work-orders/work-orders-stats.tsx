@@ -5,7 +5,12 @@
  * Loads faster than main data, so users see metrics first.
  */
 
-import { AlertCircle, CheckCircle, ClipboardList, DollarSign } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle,
+	ClipboardList,
+	DollarSign,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -39,7 +44,9 @@ export async function WorkOrdersStats() {
 				</CardHeader>
 				<CardContent>
 					<div className="font-bold text-2xl">{stats.activeOrders}</div>
-					<p className="text-muted-foreground text-xs">{stats.activeChange} from yesterday</p>
+					<p className="text-muted-foreground text-xs">
+						{stats.activeChange} from yesterday
+					</p>
 				</CardContent>
 			</Card>
 
@@ -50,13 +57,17 @@ export async function WorkOrdersStats() {
 				</CardHeader>
 				<CardContent>
 					<div className="font-bold text-2xl">{stats.completed}</div>
-					<p className="text-muted-foreground text-xs">{stats.completedPeriod}</p>
+					<p className="text-muted-foreground text-xs">
+						{stats.completedPeriod}
+					</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Pending Approval</CardTitle>
+					<CardTitle className="font-medium text-sm">
+						Pending Approval
+					</CardTitle>
 					<AlertCircle className="size-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>

@@ -103,7 +103,7 @@ const VirtualRow = memo(function VirtualRow<T>({
 		(_checked: boolean) => {
 			onSelectItem(itemId);
 		},
-		[itemId, onSelectItem]
+		[itemId, onSelectItem],
 	);
 
 	const handleClick = useCallback(() => {
@@ -127,7 +127,11 @@ const VirtualRow = memo(function VirtualRow<T>({
 			{columns.map((column) => (
 				<div
 					className={`flex items-center px-4 py-3 ${column.hideOnMobile ? "hidden md:flex" : ""} ${
-						column.align === "right" ? "justify-end" : column.align === "center" ? "justify-center" : ""
+						column.align === "right"
+							? "justify-end"
+							: column.align === "center"
+								? "justify-center"
+								: ""
 					}`}
 					key={column.key}
 					style={{
@@ -195,7 +199,7 @@ export function VirtualizedDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[filteredData, getItemId]
+		[filteredData, getItemId],
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -220,9 +224,13 @@ export function VirtualizedDataTable<T>({
 		setSearchQuery(value);
 	}, []);
 
-	const allSelected = filteredData.length > 0 && filteredData.every((item) => selectedIds.has(getItemId(item)));
+	const allSelected =
+		filteredData.length > 0 &&
+		filteredData.every((item) => selectedIds.has(getItemId(item)));
 
-	const _someSelected = filteredData.some((item) => selectedIds.has(getItemId(item)));
+	const _someSelected = filteredData.some((item) =>
+		selectedIds.has(getItemId(item)),
+	);
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -279,7 +287,11 @@ export function VirtualizedDataTable<T>({
 				<div className="flex border-border border-b bg-muted/60">
 					{enableSelection && (
 						<div className="flex w-12 items-center px-4 py-3">
-							<Checkbox aria-label="Select all" checked={allSelected} onCheckedChange={handleSelectAll} />
+							<Checkbox
+								aria-label="Select all"
+								checked={allSelected}
+								onCheckedChange={handleSelectAll}
+							/>
 						</div>
 					)}
 					{columns.map((column) => (
@@ -373,4 +385,6 @@ export function VirtualizedDataTable<T>({
 }
 
 // Export memoized version
-export const MemoizedVirtualizedDataTable = memo(VirtualizedDataTable) as typeof VirtualizedDataTable;
+export const MemoizedVirtualizedDataTable = memo(
+	VirtualizedDataTable,
+) as typeof VirtualizedDataTable;

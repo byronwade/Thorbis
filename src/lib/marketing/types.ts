@@ -81,7 +81,10 @@ export type MarketingIndustryContent = {
 	faq: MarketingFAQ[];
 };
 
-export type MarketingContent = MarketingFeatureContent | MarketingIndustryContent | MarketingIntegrationContent;
+export type MarketingContent =
+	| MarketingFeatureContent
+	| MarketingIndustryContent
+	| MarketingIntegrationContent;
 
 export type IntegrationPartner = {
 	name: string;

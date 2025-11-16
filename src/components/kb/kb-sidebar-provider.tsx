@@ -7,7 +7,13 @@
 "use client";
 
 import React, { type ReactNode } from "react";
-import { Sidebar, SidebarInset, SidebarProvider, SidebarRail, SidebarTrigger } from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarInset,
+	SidebarProvider,
+	SidebarRail,
+	SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 type KBSidebarProviderProps = {
 	children: ReactNode;

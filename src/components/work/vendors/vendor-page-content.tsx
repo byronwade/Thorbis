@@ -45,7 +45,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import { formatCurrency, formatDate } from "@/lib/formatters";
@@ -76,7 +82,11 @@ export type VendorPageContentProps = {
 	};
 };
 
-export function VendorPageContent({ entityData, metrics = {}, searchData = {} }: VendorPageContentProps) {
+export function VendorPageContent({
+	entityData,
+	metrics = {},
+	searchData = {},
+}: VendorPageContentProps) {
 	const router = useRouter();
 	const {
 		vendor: initialVendor,
@@ -100,7 +110,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 	const [contactSearchQuery, setContactSearchQuery] = useState("");
 	const [isLinkingPO, setIsLinkingPO] = useState(false);
 
-	const [tags, setTags] = useState<EntityTag[]>(Array.isArray(initialVendor.tags) ? initialVendor.tags : []);
+	const [tags, setTags] = useState<EntityTag[]>(
+		Array.isArray(initialVendor.tags) ? initialVendor.tags : [],
+	);
 
 	const handleTagsUpdate = async (entityId: string, newTags: EntityTag[]) => {
 		const result = await updateEntityTags("vendor", entityId, newTags);
@@ -121,7 +133,10 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 	const handleLinkPurchaseOrder = async (purchaseOrderId: string) => {
 		setIsLinkingPO(true);
 		try {
-			const result = await linkPurchaseOrderToVendor(purchaseOrderId, vendor.id);
+			const result = await linkPurchaseOrderToVendor(
+				purchaseOrderId,
+				vendor.id,
+			);
 
 			if (result.success) {
 				toast.success("Purchase order linked successfully");
@@ -191,7 +206,10 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 				formData.append("credit_limit", (vendor.credit_limit / 100).toString());
 			}
 			if (vendor.preferred_payment_method) {
-				formData.append("preferred_payment_method", vendor.preferred_payment_method);
+				formData.append(
+					"preferred_payment_method",
+					vendor.preferred_payment_method,
+				);
 			}
 			if (vendor.category) {
 				formData.append("category", vendor.category);
@@ -253,7 +271,10 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			title: "Vendor Information",
 			icon: <Building2 className="size-4" />,
 			actions: hasChanges ? (
-				<Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/20" variant="outline">
+				<Badge
+					className="bg-amber-100 text-amber-900 dark:bg-amber-500/20"
+					variant="outline"
+				>
 					<Save className="mr-1 size-3" />
 					Unsaved
 				</Badge>
@@ -275,13 +296,20 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 								<Label htmlFor="display_name">Display Name</Label>
 								<Input
 									id="display_name"
-									onChange={(e) => handleFieldChange("display_name", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("display_name", e.target.value)
+									}
 									value={vendor.display_name || ""}
 								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="category">Category</Label>
-								<Select onValueChange={(value) => handleFieldChange("category", value)} value={vendor.category || ""}>
+								<Select
+									onValueChange={(value) =>
+										handleFieldChange("category", value)
+									}
+									value={vendor.category || ""}
+								>
 									<SelectTrigger id="category">
 										<SelectValue placeholder="Select category" />
 									</SelectTrigger>
@@ -289,14 +317,19 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 										<SelectItem value="supplier">Supplier</SelectItem>
 										<SelectItem value="distributor">Distributor</SelectItem>
 										<SelectItem value="manufacturer">Manufacturer</SelectItem>
-										<SelectItem value="service_provider">Service Provider</SelectItem>
+										<SelectItem value="service_provider">
+											Service Provider
+										</SelectItem>
 										<SelectItem value="other">Other</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="status">Status</Label>
-								<Select onValueChange={(value) => handleFieldChange("status", value)} value={vendor.status || "active"}>
+								<Select
+									onValueChange={(value) => handleFieldChange("status", value)}
+									value={vendor.status || "active"}
+								>
 									<SelectTrigger id="status">
 										<SelectValue />
 									</SelectTrigger>
@@ -332,7 +365,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 								<Label htmlFor="secondary_phone">Secondary Phone</Label>
 								<Input
 									id="secondary_phone"
-									onChange={(e) => handleFieldChange("secondary_phone", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("secondary_phone", e.target.value)
+									}
 									type="tel"
 									value={vendor.secondary_phone || ""}
 								/>
@@ -365,7 +400,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 								<Label htmlFor="address2">Address Line 2</Label>
 								<Input
 									id="address2"
-									onChange={(e) => handleFieldChange("address2", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("address2", e.target.value)
+									}
 									value={vendor.address2 || ""}
 								/>
 							</div>
@@ -389,7 +426,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 								<Label htmlFor="zip_code">ZIP Code</Label>
 								<Input
 									id="zip_code"
-									onChange={(e) => handleFieldChange("zip_code", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("zip_code", e.target.value)
+									}
 									value={vendor.zip_code || ""}
 								/>
 							</div>
@@ -419,7 +458,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							<div className="space-y-2">
 								<Label htmlFor="payment_terms">Payment Terms</Label>
 								<Select
-									onValueChange={(value) => handleFieldChange("payment_terms", value)}
+									onValueChange={(value) =>
+										handleFieldChange("payment_terms", value)
+									}
 									value={vendor.payment_terms || "net_30"}
 								>
 									<SelectTrigger id="payment_terms">
@@ -429,7 +470,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 										<SelectItem value="net_15">Net 15</SelectItem>
 										<SelectItem value="net_30">Net 30</SelectItem>
 										<SelectItem value="net_60">Net 60</SelectItem>
-										<SelectItem value="due_on_receipt">Due on Receipt</SelectItem>
+										<SelectItem value="due_on_receipt">
+											Due on Receipt
+										</SelectItem>
 										<SelectItem value="custom">Custom</SelectItem>
 									</SelectContent>
 								</Select>
@@ -440,7 +483,12 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									id="credit_limit"
 									min="0"
 									onChange={(e) =>
-										handleFieldChange("credit_limit", Math.round(Number.parseFloat(e.target.value || "0") * 100))
+										handleFieldChange(
+											"credit_limit",
+											Math.round(
+												Number.parseFloat(e.target.value || "0") * 100,
+											),
+										)
 									}
 									step="0.01"
 									type="number"
@@ -448,9 +496,13 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="preferred_payment_method">Preferred Payment Method</Label>
+								<Label htmlFor="preferred_payment_method">
+									Preferred Payment Method
+								</Label>
 								<Select
-									onValueChange={(value) => handleFieldChange("preferred_payment_method", value)}
+									onValueChange={(value) =>
+										handleFieldChange("preferred_payment_method", value)
+									}
 									value={vendor.preferred_payment_method || ""}
 								>
 									<SelectTrigger id="preferred_payment_method">
@@ -483,7 +535,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							<Label htmlFor="internal_notes">Internal Notes</Label>
 							<Textarea
 								id="internal_notes"
-								onChange={(e) => handleFieldChange("internal_notes", e.target.value)}
+								onChange={(e) =>
+									handleFieldChange("internal_notes", e.target.value)
+								}
 								placeholder="Private team notes..."
 								rows={3}
 								value={vendor.internal_notes || ""}
@@ -520,7 +574,11 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			icon: <Receipt className="size-4" />,
 			count: purchaseOrders.length,
 			actions: (
-				<Button onClick={() => setIsPOSearchOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsPOSearchOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Link PO
 				</Button>
@@ -530,9 +588,15 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 					{purchaseOrders.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Receipt className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No purchase orders yet</p>
+							<p className="text-muted-foreground text-sm">
+								No purchase orders yet
+							</p>
 							<Button asChild className="mt-4" size="sm" variant="outline">
-								<Link href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}>Create Purchase Order</Link>
+								<Link
+									href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}
+								>
+									Create Purchase Order
+								</Link>
 							</Button>
 						</div>
 					) : (
@@ -549,14 +613,22 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 												<p className="font-medium">{po.po_number}</p>
 												<Badge variant="outline">{po.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">{po.title}</p>
+											<p className="text-muted-foreground text-sm">
+												{po.title}
+											</p>
 											{po.expected_delivery && (
-												<p className="text-muted-foreground text-xs">Expected: {formatDate(po.expected_delivery)}</p>
+												<p className="text-muted-foreground text-xs">
+													Expected: {formatDate(po.expected_delivery)}
+												</p>
 											)}
 										</div>
 										<div className="text-right">
-											<p className="font-medium">{formatCurrency(po.total_amount)}</p>
-											<p className="text-muted-foreground text-xs">{formatDate(po.created_at)}</p>
+											<p className="font-medium">
+												{formatCurrency(po.total_amount)}
+											</p>
+											<p className="text-muted-foreground text-xs">
+												{formatDate(po.created_at)}
+											</p>
 										</div>
 									</div>
 								</Link>
@@ -589,7 +661,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 						</CardHeader>
 						<CardContent>
 							<p className="font-bold text-2xl">{openPOCount}</p>
-							<p className="text-muted-foreground text-xs">{formatCurrency(openPOValue)} value</p>
+							<p className="text-muted-foreground text-xs">
+								{formatCurrency(openPOValue)} value
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -597,8 +671,12 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							<CardTitle className="text-sm">Avg Order Value</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">{formatCurrency(averageOrderValue)}</p>
-							<p className="text-muted-foreground text-xs">Per purchase order</p>
+							<p className="font-bold text-2xl">
+								{formatCurrency(averageOrderValue)}
+							</p>
+							<p className="text-muted-foreground text-xs">
+								Per purchase order
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -607,7 +685,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 						</CardHeader>
 						<CardContent>
 							<p className="font-bold text-2xl">
-								{metrics.lastOrderDate ? formatDate(metrics.lastOrderDate, { preset: "short" }) : "Never"}
+								{metrics.lastOrderDate
+									? formatDate(metrics.lastOrderDate, { preset: "short" })
+									: "Never"}
 							</p>
 							<p className="text-muted-foreground text-xs">Most recent PO</p>
 						</CardContent>
@@ -618,7 +698,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 						</CardHeader>
 						<CardContent>
 							<p className="font-bold text-2xl">{onTimeDeliveryRate}%</p>
-							<p className="text-muted-foreground text-xs">Delivery performance</p>
+							<p className="text-muted-foreground text-xs">
+								Delivery performance
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -645,7 +727,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 					{relatedJobs.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<ShoppingCart className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No jobs linked to this vendor yet</p>
+							<p className="text-muted-foreground text-sm">
+								No jobs linked to this vendor yet
+							</p>
 						</div>
 					) : (
 						<div className="space-y-3">
@@ -661,9 +745,13 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 												<p className="font-medium">{job.job_number}</p>
 												<Badge variant="outline">{job.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">{job.title}</p>
+											<p className="text-muted-foreground text-sm">
+												{job.title}
+											</p>
 										</div>
-										<p className="text-muted-foreground text-xs">{formatDate(job.created_at)}</p>
+										<p className="text-muted-foreground text-xs">
+											{formatDate(job.created_at)}
+										</p>
 									</div>
 								</Link>
 							))}
@@ -680,7 +768,11 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			icon: <User className="size-4" />,
 			count: contacts.length,
 			actions: (
-				<Button onClick={() => setIsContactSearchOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsContactSearchOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Link Contact
 				</Button>
@@ -690,7 +782,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 					{contacts.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<User className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No contacts added yet</p>
+							<p className="text-muted-foreground text-sm">
+								No contacts added yet
+							</p>
 							<Button className="mt-4" size="sm" variant="outline">
 								Add Contact
 							</Button>
@@ -703,7 +797,11 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 										<CardTitle className="text-base">
 											{contact.first_name} {contact.last_name}
 										</CardTitle>
-										{contact.title && <p className="text-muted-foreground text-sm">{contact.title}</p>}
+										{contact.title && (
+											<p className="text-muted-foreground text-sm">
+												{contact.title}
+											</p>
+										)}
 									</CardHeader>
 									<CardContent className="space-y-2">
 										{contact.email && (
@@ -742,7 +840,11 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			icon: <FileText className="size-4" />,
 			count: notes.length,
 			actions: (
-				<Button onClick={() => setIsNoteDialogOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsNoteDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Add Note
 				</Button>
@@ -759,7 +861,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							{notes.map((note: any) => (
 								<div className="rounded-lg border p-4" key={note.id}>
 									<p className="text-sm">{note.content}</p>
-									<p className="mt-2 text-muted-foreground text-xs">{formatDate(note.created_at)}</p>
+									<p className="mt-2 text-muted-foreground text-xs">
+										{formatDate(note.created_at)}
+									</p>
 								</div>
 							))}
 						</div>
@@ -773,7 +877,11 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			icon: <Paperclip className="size-4" />,
 			count: attachments.length,
 			actions: (
-				<Button onClick={() => setIsAttachmentDialogOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsAttachmentDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Upload
 				</Button>
@@ -783,14 +891,18 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 					{attachments.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Paperclip className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No attachments yet</p>
+							<p className="text-muted-foreground text-sm">
+								No attachments yet
+							</p>
 						</div>
 					) : (
 						<div className="space-y-3">
 							{attachments.map((attachment: any) => (
 								<div className="rounded-lg border p-4" key={attachment.id}>
 									<p className="font-medium text-sm">{attachment.filename}</p>
-									<p className="text-muted-foreground text-xs">{formatDate(attachment.created_at)}</p>
+									<p className="text-muted-foreground text-xs">
+										{formatDate(attachment.created_at)}
+									</p>
 								</div>
 							))}
 						</div>
@@ -815,7 +927,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							{activities.map((activity: any) => (
 								<div className="rounded-lg border p-4" key={activity.id}>
 									<p className="text-sm">{activity.action}</p>
-									<p className="text-muted-foreground text-xs">{formatDate(activity.created_at)}</p>
+									<p className="text-muted-foreground text-xs">
+										{formatDate(activity.created_at)}
+									</p>
 								</div>
 							))}
 						</div>
@@ -836,15 +950,26 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 						{/* Title and Status */}
 						<div className="space-y-4">
 							<div className="flex items-center gap-3">
-								<h1 className="font-bold text-3xl tracking-tight">{vendor.display_name || vendor.name}</h1>
-								<Badge variant={vendor.status === "active" ? "default" : "secondary"}>{vendor.status}</Badge>
+								<h1 className="font-bold text-3xl tracking-tight">
+									{vendor.display_name || vendor.name}
+								</h1>
+								<Badge
+									variant={vendor.status === "active" ? "default" : "secondary"}
+								>
+									{vendor.status}
+								</Badge>
 							</div>
 							<p className="text-muted-foreground">
 								{vendor.vendor_number} • {vendor.category || "Vendor"}
 							</p>
 
 							{/* Tags */}
-							<EntityTags entityId={vendor.id} entityType="vendor" onUpdateTags={handleTagsUpdate} tags={tags} />
+							<EntityTags
+								entityId={vendor.id}
+								entityType="vendor"
+								onUpdateTags={handleTagsUpdate}
+								tags={tags}
+							/>
 						</div>
 					</div>
 				}
@@ -872,13 +997,18 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							<Receipt className="size-12 text-muted-foreground" />
 							<div className="text-center">
 								<p className="font-medium text-sm">No purchase orders found</p>
-								<p className="text-muted-foreground text-xs">Try a different search or create a new one</p>
+								<p className="text-muted-foreground text-xs">
+									Try a different search or create a new one
+								</p>
 							</div>
 						</div>
 					</CommandEmpty>
 
 					<CommandGroup heading="Quick Actions">
-						<CommandItem asChild className="p-0 hover:bg-transparent data-[selected=true]:bg-transparent">
+						<CommandItem
+							asChild
+							className="p-0 hover:bg-transparent data-[selected=true]:bg-transparent"
+						>
 							<Link
 								className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-emerald-500/30 bg-emerald-500/12 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-emerald-500/40 transition-all hover:border-emerald-500/60 hover:bg-emerald-500/18"
 								href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}
@@ -888,8 +1018,12 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									<Plus className="size-4 text-white" />
 								</div>
 								<div className="flex flex-col">
-									<span className="font-semibold text-emerald-100 text-sm">Create New Purchase Order</span>
-									<span className="text-emerald-100/70 text-xs">Start a new PO for this vendor</span>
+									<span className="font-semibold text-emerald-100 text-sm">
+										Create New Purchase Order
+									</span>
+									<span className="text-emerald-100/70 text-xs">
+										Start a new PO for this vendor
+									</span>
 								</div>
 							</Link>
 						</CommandItem>
@@ -903,8 +1037,12 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									availablePurchaseOrders.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
-											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
+											po.po_number
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()) ||
+											po.title
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()),
 									).length
 								})`}
 							>
@@ -912,17 +1050,26 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
-											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
+											po.po_number
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()) ||
+											po.title
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()),
 									)
 									.slice(0, 8)
 									.map((po: any) => {
 										const statusColors: Record<string, string> = {
-											draft: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-											pending_approval: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-											approved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-											ordered: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-											partially_received: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+											draft:
+												"bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+											pending_approval:
+												"bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+											approved:
+												"bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+											ordered:
+												"bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+											partially_received:
+												"bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
 										};
 
 										return (
@@ -972,7 +1119,10 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			</CommandDialog>
 
 			{/* Contact Search Dialog */}
-			<CommandDialog onOpenChange={setIsContactSearchOpen} open={isContactSearchOpen}>
+			<CommandDialog
+				onOpenChange={setIsContactSearchOpen}
+				open={isContactSearchOpen}
+			>
 				<CommandInput
 					onValueChange={setContactSearchQuery}
 					placeholder="Search contacts by name, email, or company..."
@@ -984,7 +1134,9 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 							<User className="size-12 text-muted-foreground" />
 							<div className="text-center">
 								<p className="font-medium text-sm">No contacts found</p>
-								<p className="text-muted-foreground text-xs">Try a different search or create a new contact</p>
+								<p className="text-muted-foreground text-xs">
+									Try a different search or create a new contact
+								</p>
 							</div>
 						</div>
 					</CommandEmpty>
@@ -1002,8 +1154,12 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									<Plus className="size-4 text-white" />
 								</div>
 								<div className="flex flex-col">
-									<span className="font-semibold text-blue-100 text-sm">Create New Contact</span>
-									<span className="text-blue-100/70 text-xs">Add a new contact for this vendor</span>
+									<span className="font-semibold text-blue-100 text-sm">
+										Create New Contact
+									</span>
+									<span className="text-blue-100/70 text-xs">
+										Add a new contact for this vendor
+									</span>
 								</div>
 							</div>
 						</CommandItem>
@@ -1017,9 +1173,15 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									availableContacts.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
+											contact.name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.email
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()),
 									).length
 								})`}
 							>
@@ -1027,9 +1189,15 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 									.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
+											contact.name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.email
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()),
 									)
 									.slice(0, 8)
 									.map((contact: any) => (
@@ -1046,24 +1214,38 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 													<User className="size-5 text-blue-600 dark:text-blue-400" />
 												</div>
 												<div className="flex min-w-0 flex-1 flex-col gap-1.5">
-													<span className="truncate font-semibold text-sm leading-none">{contact.name}</span>
+													<span className="truncate font-semibold text-sm leading-none">
+														{contact.name}
+													</span>
 													{(contact.title || contact.company_name) && (
 														<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-															{contact.title && <span className="font-medium">{contact.title}</span>}
-															{contact.title && contact.company_name && <span>•</span>}
-															{contact.company_name && <span>{contact.company_name}</span>}
+															{contact.title && (
+																<span className="font-medium">
+																	{contact.title}
+																</span>
+															)}
+															{contact.title && contact.company_name && (
+																<span>•</span>
+															)}
+															{contact.company_name && (
+																<span>{contact.company_name}</span>
+															)}
 														</div>
 													)}
 													{contact.email && (
 														<div className="flex items-center gap-1.5">
 															<Mail className="size-3 text-muted-foreground" />
-															<span className="truncate text-muted-foreground text-xs">{contact.email}</span>
+															<span className="truncate text-muted-foreground text-xs">
+																{contact.email}
+															</span>
 														</div>
 													)}
 													{contact.phone && (
 														<div className="flex items-center gap-1.5">
 															<Phone className="size-3 text-muted-foreground" />
-															<span className="text-muted-foreground text-xs">{contact.phone}</span>
+															<span className="text-muted-foreground text-xs">
+																{contact.phone}
+															</span>
 														</div>
 													)}
 												</div>
@@ -1084,13 +1266,18 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Add Note</DialogTitle>
-						<DialogDescription>Add a note about this vendor for your team.</DialogDescription>
+						<DialogDescription>
+							Add a note about this vendor for your team.
+						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
 						<Textarea placeholder="Enter note content..." rows={4} />
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsNoteDialogOpen(false)} variant="outline">
+						<Button
+							onClick={() => setIsNoteDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button
@@ -1107,20 +1294,30 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 			</Dialog>
 
 			{/* Upload Attachment Dialog */}
-			<Dialog onOpenChange={setIsAttachmentDialogOpen} open={isAttachmentDialogOpen}>
+			<Dialog
+				onOpenChange={setIsAttachmentDialogOpen}
+				open={isAttachmentDialogOpen}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Upload Attachment</DialogTitle>
-						<DialogDescription>Upload documents, contracts, or files related to this vendor.</DialogDescription>
+						<DialogDescription>
+							Upload documents, contracts, or files related to this vendor.
+						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
 						<div className="rounded-2xl border border-white/15 border-dashed bg-zinc-900/70 p-10 text-center shadow-black/40 shadow-inner transition-colors hover:border-white/25 hover:bg-zinc-900/80">
 							<Paperclip className="mx-auto mb-4 size-12 text-zinc-400" />
-							<p className="text-sm text-zinc-300">Drag and drop files here or click to browse</p>
+							<p className="text-sm text-zinc-300">
+								Drag and drop files here or click to browse
+							</p>
 						</div>
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsAttachmentDialogOpen(false)} variant="outline">
+						<Button
+							onClick={() => setIsAttachmentDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button

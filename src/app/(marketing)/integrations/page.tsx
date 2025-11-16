@@ -4,7 +4,11 @@ import { Suspense } from "react";
 import { IntegrationCard } from "@/components/marketing/integration-card";
 import { Badge } from "@/components/ui/badge";
 import { getAllIntegrations } from "@/lib/marketing/integrations";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Integrations Directory",
@@ -12,12 +16,18 @@ export const metadata = generateSEOMetadata({
 	description:
 		"Connect Thorbis with accounting, payments, automation, and analytics tools. Explore native integrations for QuickBooks, Stripe, Zapier, and more.",
 	path: "/integrations",
-	keywords: ["thorbis integrations", "field service integrations", "quickbooks field service integration"],
+	keywords: [
+		"thorbis integrations",
+		"field service integrations",
+		"quickbooks field service integration",
+	],
 });
 
 export default async function IntegrationsPage() {
 	const integrations = getAllIntegrations();
-	const categories = [...new Set(integrations.flatMap((integration) => integration.categories))].sort();
+	const categories = [
+		...new Set(integrations.flatMap((integration) => integration.categories)),
+	].sort();
 
 	const breadcrumbLd = generateBreadcrumbStructuredData([
 		{ name: "Home", url: siteUrl },
@@ -40,14 +50,17 @@ export default async function IntegrationsPage() {
 						Connect Thorbis to the tools that run your business
 					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Thorbis integrates with leading accounting, payments, marketing, and automation platforms. Browse verified
-						integrations and discover new ways to streamline back-office work—all included in the $100/month base
-						subscription with pay-as-you-go usage and no lock-in.
+						Thorbis integrates with leading accounting, payments, marketing, and
+						automation platforms. Browse verified integrations and discover new
+						ways to streamline back-office work—all included in the $100/month
+						base subscription with pay-as-you-go usage and no lock-in.
 					</p>
 				</header>
 
 				<section className="mb-12 space-y-4 text-center">
-					<h2 className="font-semibold text-lg">Popular integration categories</h2>
+					<h2 className="font-semibold text-lg">
+						Popular integration categories
+					</h2>
 					<div className="flex flex-wrap justify-center gap-2">
 						{categories.map((category) => (
 							<Badge key={category} variant="outline">
@@ -57,10 +70,15 @@ export default async function IntegrationsPage() {
 					</div>
 				</section>
 
-				<Suspense fallback={<div className="text-center">Loading integrations…</div>}>
+				<Suspense
+					fallback={<div className="text-center">Loading integrations…</div>}
+				>
 					<section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{integrations.map((integration) => (
-							<IntegrationCard integration={integration} key={integration.slug} />
+							<IntegrationCard
+								integration={integration}
+								key={integration.slug}
+							/>
 						))}
 					</section>
 				</Suspense>

@@ -63,20 +63,38 @@ export async function VendorsStats() {
 	twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
 
 	const spendLast12Months = poRows
-		.filter((po) => new Date(po.created_at).getTime() >= twelveMonthsAgo.getTime())
+		.filter(
+			(po) => new Date(po.created_at).getTime() >= twelveMonthsAgo.getTime(),
+		)
 		.reduce((sum, po) => sum + (po.total_amount || 0), 0);
 
 	const engagedVendors = new Set(
 		poRows
-			.filter((po) => po.vendor_id && new Date(po.created_at) >= twelveMonthsAgo)
-			.map((po) => po.vendor_id as string)
+			.filter(
+				(po) => po.vendor_id && new Date(po.created_at) >= twelveMonthsAgo,
+			)
+			.map((po) => po.vendor_id as string),
 	).size;
 
-	const openStatuses = ["draft", "pending_approval", "approved", "ordered", "partially_received"];
-	const openPurchaseOrders = poRows.filter((po) => openStatuses.includes((po.status || "").toLowerCase()));
-	const openPOValue = openPurchaseOrders.reduce((sum, po) => sum + (po.total_amount || 0), 0);
+	const openStatuses = [
+		"draft",
+		"pending_approval",
+		"approved",
+		"ordered",
+		"partially_received",
+	];
+	const openPurchaseOrders = poRows.filter((po) =>
+		openStatuses.includes((po.status || "").toLowerCase()),
+	);
+	const openPOValue = openPurchaseOrders.reduce(
+		(sum, po) => sum + (po.total_amount || 0),
+		0,
+	);
 
-	const activePercentage = totalVendors > 0 ? Math.round((activeVendors / totalVendors) * PERCENTAGE_MULTIPLIER) : 0;
+	const activePercentage =
+		totalVendors > 0
+			? Math.round((activeVendors / totalVendors) * PERCENTAGE_MULTIPLIER)
+			: 0;
 
 	const vendorStats: StatCard[] = [
 		{

@@ -32,7 +32,11 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import { JobStatusBadge, PriorityBadge } from "@/components/ui/status-badge";
 import type { Job } from "@/lib/db/schema";
@@ -46,14 +50,21 @@ type JobsTableProps = {
 	showRefresh?: boolean;
 };
 
-export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = false }: JobsTableProps) {
+export function JobsTable({
+	jobs,
+	itemsPerPage = 50,
+	onJobClick,
+	showRefresh = false,
+}: JobsTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.jobs);
 
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	// Filter jobs based on archive status
 	const filteredJobs = jobs.filter((job) => {
@@ -89,12 +100,18 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			header: "Title",
 			width: "flex-1",
 			render: (job) => (
-				<Link className="block min-w-0" href={`/dashboard/work/${job.id}`} onClick={(e) => e.stopPropagation()}>
+				<Link
+					className="block min-w-0"
+					href={`/dashboard/work/${job.id}`}
+					onClick={(e) => e.stopPropagation()}
+				>
 					<div className="truncate font-medium text-sm leading-tight hover:underline">
 						{job.title ?? "Untitled Job"}
 					</div>
 					{job.description ? (
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">{job.description}</div>
+						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+							{job.description}
+						</div>
 					) : null}
 				</Link>
 			),
@@ -105,7 +122,9 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			width: "w-32",
 			shrink: true,
 			hideable: false, // CRITICAL: Status essential for workflow management
-			render: (job) => <JobStatusBadge status={(job.status ?? "quoted") as string} />,
+			render: (job) => (
+				<JobStatusBadge status={(job.status ?? "quoted") as string} />
+			),
 		},
 		{
 			key: "priority",
@@ -114,7 +133,9 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (job) => <PriorityBadge priority={(job.priority ?? "medium") as string} />,
+			render: (job) => (
+				<PriorityBadge priority={(job.priority ?? "medium") as string} />
+			),
 		},
 		{
 			key: "scheduledStart",
@@ -137,7 +158,9 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			align: "right",
 			hideable: false, // CRITICAL: Financial data essential
 			render: (job) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(job.totalAmount || 0, { decimals: 2 })}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(job.totalAmount || 0, { decimals: 2 })}
+				</span>
 			),
 		},
 		{
@@ -192,7 +215,11 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 		const searchStr = query.toLowerCase();
 
 		// Parse AI tags for searching
-		const aiTags = job.aiTags ? (typeof job.aiTags === "string" ? JSON.parse(job.aiTags) : job.aiTags) : [];
+		const aiTags = job.aiTags
+			? typeof job.aiTags === "string"
+				? JSON.parse(job.aiTags)
+				: job.aiTags
+			: [];
 		const aiCategories = job.aiCategories
 			? typeof job.aiCategories === "string"
 				? JSON.parse(job.aiCategories)
@@ -214,7 +241,9 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			(job.description?.toLowerCase() || "").includes(searchStr) ||
 			(job.aiServiceType?.toLowerCase() || "").includes(searchStr) ||
 			aiTags.some((tag: string) => tag.toLowerCase().includes(searchStr)) ||
-			aiCategories.some((cat: string) => cat.toLowerCase().includes(searchStr)) ||
+			aiCategories.some((cat: string) =>
+				cat.toLowerCase().includes(searchStr),
+			) ||
 			aiEquipment.some((eq: string) => eq.toLowerCase().includes(searchStr))
 		);
 	};
@@ -266,7 +295,10 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			/>
 
 			{/* Archive Single Job Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Job?</AlertDialogTitle>
@@ -298,9 +330,12 @@ export function JobsTable({ jobs, itemsPerPage = 50, onJobClick, showRefresh = f
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Archive {selectedItemIds.size} Job(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Archive {selectedItemIds.size} Job(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} job(s) will be archived and can be restored within 90 days.
+							{selectedItemIds.size} job(s) will be archived and can be restored
+							within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

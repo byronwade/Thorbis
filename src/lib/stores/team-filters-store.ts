@@ -22,7 +22,7 @@ const DEFAULT_FILTERS: TeamFilters = {
 	status: "all",
 	department: "",
 	name: "",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+	skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 	email: "",
 };
 
@@ -47,6 +47,6 @@ export const useTeamFiltersStore = create<TeamFiltersStore>()(
 		{
 			name: "team-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		}
-	)
+		},
+	),
 );

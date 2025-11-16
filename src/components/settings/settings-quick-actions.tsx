@@ -11,7 +11,10 @@ type SettingsQuickActionsProps = {
 	section: string;
 };
 
-export function SettingsQuickActions({ actions, section }: SettingsQuickActionsProps) {
+export function SettingsQuickActions({
+	actions,
+	section,
+}: SettingsQuickActionsProps) {
 	if (!actions.length) {
 		return null;
 	}
@@ -25,7 +28,7 @@ export function SettingsQuickActions({ actions, section }: SettingsQuickActionsP
 							variant: action.variant ?? "default",
 							size: "sm",
 						}),
-						"group justify-between"
+						"group justify-between",
 					)}
 					href={action.href}
 					key={action.key}
@@ -37,7 +40,9 @@ export function SettingsQuickActions({ actions, section }: SettingsQuickActionsP
 					}
 				>
 					{action.label}
-					<span className="ml-2 text-muted-foreground transition-transform group-hover:translate-x-0.5">↗</span>
+					<span className="ml-2 text-muted-foreground transition-transform group-hover:translate-x-0.5">
+						↗
+					</span>
 				</Link>
 			))}
 		</div>

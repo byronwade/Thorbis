@@ -17,7 +17,11 @@ type JobTeamProps = {
 	jobId: string;
 };
 
-export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) {
+export function JobTeam({
+	assignedUser,
+	teamAssignments,
+	jobId,
+}: JobTeamProps) {
 	const formatDate = (dateString: string | null) => {
 		if (!dateString) {
 			return "—";
@@ -34,7 +38,9 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<Users className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Team Assigned</h3>
-				<p className="text-muted-foreground text-sm">Assign team members to this job to track who's working on it.</p>
+				<p className="text-muted-foreground text-sm">
+					Assign team members to this job to track who's working on it.
+				</p>
 			</div>
 		);
 	}
@@ -61,9 +67,15 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
 								<p className="font-medium">
 									{assignedUser.first_name} {assignedUser.last_name}
 								</p>
-								{assignedUser.email && <p className="text-muted-foreground text-sm">{assignedUser.email}</p>}
+								{assignedUser.email && (
+									<p className="text-muted-foreground text-sm">
+										{assignedUser.email}
+									</p>
+								)}
 							</div>
-							{assignedUser.role && <Badge variant="secondary">{assignedUser.role}</Badge>}
+							{assignedUser.role && (
+								<Badge variant="secondary">{assignedUser.role}</Badge>
+							)}
 						</div>
 					</div>
 					{teamAssignments.length > 0 && <Separator />}
@@ -82,9 +94,15 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
 							}
 
 							return (
-								<div className="flex items-center gap-4 rounded-md border p-4" key={assignment.id}>
+								<div
+									className="flex items-center gap-4 rounded-md border p-4"
+									key={assignment.id}
+								>
 									<Avatar className="size-10">
-										<AvatarImage alt={`${member.first_name} ${member.last_name}`} src={member.avatar_url} />
+										<AvatarImage
+											alt={`${member.first_name} ${member.last_name}`}
+											src={member.avatar_url}
+										/>
 										<AvatarFallback>
 											{member.first_name?.[0]}
 											{member.last_name?.[0]}
@@ -95,11 +113,16 @@ export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) 
 											{member.first_name} {member.last_name}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											Assigned {formatDate(assignment.created_at || assignment.assigned_at)}
+											Assigned{" "}
+											{formatDate(
+												assignment.created_at || assignment.assigned_at,
+											)}
 										</p>
 									</div>
 									{(assignment.role || member.role) && (
-										<Badge variant="outline">{assignment.role || member.role}</Badge>
+										<Badge variant="outline">
+											{assignment.role || member.role}
+										</Badge>
 									)}
 								</div>
 							);

@@ -1,6 +1,13 @@
 "use client";
 
-import { Archive, Calendar, Download, FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Archive,
+	Calendar,
+	Download,
+	FileText,
+	MoreHorizontal,
+	Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +18,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
@@ -20,7 +31,11 @@ export type ServiceAgreement = {
 	id: string;
 	agreementNumber: string;
 	customer: string;
-	type: "Service Level Agreement" | "Extended Warranty" | "Maintenance Contract" | "Support Contract";
+	type:
+		| "Service Level Agreement"
+		| "Extended Warranty"
+		| "Maintenance Contract"
+		| "Support Contract";
 	startDate: string;
 	endDate: string;
 	value: number;
@@ -39,11 +54,13 @@ const SERVICE_AGREEMENT_STATUS_CONFIG = {
 		label: "Pending",
 	},
 	expired: {
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		label: "Expired",
 	},
 	cancelled: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Cancelled",
 	},
 } as const;
@@ -56,7 +73,9 @@ export function ServiceAgreementsTable({
 	itemsPerPage?: number;
 }) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.service_agreements);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.service_agreements,
+	);
 
 	// Filter agreements based on archive status
 	const filteredAgreements = agreements.filter((agreement) => {
@@ -101,7 +120,9 @@ export function ServiceAgreementsTable({
 					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
 						{agreement.customer}
 					</div>
-					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">{agreement.type}</div>
+					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+						{agreement.type}
+					</div>
 				</Link>
 			),
 		},
@@ -112,7 +133,11 @@ export function ServiceAgreementsTable({
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (agreement) => <span className="text-muted-foreground text-sm tabular-nums">{agreement.startDate}</span>,
+			render: (agreement) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{agreement.startDate}
+				</span>
+			),
 		},
 		{
 			key: "endDate",
@@ -121,7 +146,11 @@ export function ServiceAgreementsTable({
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (agreement) => <span className="text-muted-foreground text-sm tabular-nums">{agreement.endDate}</span>,
+			render: (agreement) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{agreement.endDate}
+				</span>
+			),
 		},
 		{
 			key: "value",
@@ -130,7 +159,11 @@ export function ServiceAgreementsTable({
 			shrink: true,
 			align: "right",
 			hideable: true,
-			render: (agreement) => <span className="font-semibold tabular-nums">{formatCurrency(agreement.value)}</span>,
+			render: (agreement) => (
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(agreement.value)}
+				</span>
+			),
 		},
 		{
 			key: "status",
@@ -222,17 +255,23 @@ export function ServiceAgreementsTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredAgreements}
-			emptyIcon={<FileText className="mx-auto h-12 w-12 text-muted-foreground" />}
+			emptyIcon={
+				<FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+			}
 			emptyMessage="No service agreements found"
 			enableSelection={true}
 			entity="service_agreements"
 			getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
 			getItemId={(agreement) => agreement.id}
-			isArchived={(agreement) => Boolean(agreement.archived_at || agreement.deleted_at)}
+			isArchived={(agreement) =>
+				Boolean(agreement.archived_at || agreement.deleted_at)
+			}
 			isHighlighted={(agreement) => agreement.status === "expired"}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
-			onRowClick={(agreement) => (window.location.href = `/dashboard/work/service-agreements/${agreement.id}`)}
+			onRowClick={(agreement) =>
+				(window.location.href = `/dashboard/work/service-agreements/${agreement.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search agreements by number, customer, type, or status..."
 			showArchived={archiveFilter !== "active"}

@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 /**
@@ -93,14 +99,19 @@ const DURATION_PRESETS = [
 	{ label: "8 hours", minutes: 480 },
 ] as const;
 
-export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedulingProps) {
+export function EnhancedScheduling({
+	defaultStart,
+	defaultEnd,
+}: EnhancedSchedulingProps) {
 	const [scheduledStart, setScheduledStart] = useState(defaultStart || "");
 	const [scheduledEnd, setScheduledEnd] = useState(defaultEnd || "");
 	const [schedulingMode, setSchedulingMode] = useState<"specific" | "window">(
-		defaultStart && defaultEnd ? "specific" : "window"
+		defaultStart && defaultEnd ? "specific" : "window",
 	);
 	const [selectedTimeWindow, setSelectedTimeWindow] = useState<string>("");
-	const [selectedDate, setSelectedDate] = useState(defaultStart ? defaultStart.split("T")[0] : "");
+	const [selectedDate, setSelectedDate] = useState(
+		defaultStart ? defaultStart.split("T")[0] : "",
+	);
 	const [isRecurring, setIsRecurring] = useState(false);
 	const [duration, setDuration] = useState<number | null>(null);
 
@@ -195,14 +206,18 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 				<Label className="font-medium text-sm">Scheduling Type</Label>
 				<RadioGroup
 					className="flex gap-4"
-					onValueChange={(value: "specific" | "window") => setSchedulingMode(value)}
+					onValueChange={(value: "specific" | "window") =>
+						setSchedulingMode(value)
+					}
 					value={schedulingMode}
 				>
 					<div className="flex items-center space-x-2">
 						<RadioGroupItem id="window" value="window" />
 						<Label className="cursor-pointer font-normal" htmlFor="window">
 							Time Window
-							<span className="ml-2 text-muted-foreground text-xs">(Recommended)</span>
+							<span className="ml-2 text-muted-foreground text-xs">
+								(Recommended)
+							</span>
 						</Label>
 					</div>
 					<div className="flex items-center space-x-2">
@@ -245,10 +260,14 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 									onClick={() => applyTimeWindow(window.value)}
 									size="sm"
 									type="button"
-									variant={selectedTimeWindow === window.value ? "default" : "outline"}
+									variant={
+										selectedTimeWindow === window.value ? "default" : "outline"
+									}
 								>
 									<span className="font-semibold">{window.label}</span>
-									<span className="text-xs opacity-80">{window.description}</span>
+									<span className="text-xs opacity-80">
+										{window.description}
+									</span>
 								</Button>
 							))}
 						</div>
@@ -287,7 +306,10 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 					{/* Date & Time Selection */}
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">
-							<Label className="flex items-center gap-2" htmlFor="scheduledStart">
+							<Label
+								className="flex items-center gap-2"
+								htmlFor="scheduledStart"
+							>
 								<Calendar className="size-4 text-primary" />
 								Start Date & Time
 							</Label>
@@ -321,7 +343,9 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 					{duration && duration > 0 && (
 						<div className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
 							<Clock className="size-4 text-primary" />
-							<span className="font-medium text-sm">Duration: {formatDuration(duration)}</span>
+							<span className="font-medium text-sm">
+								Duration: {formatDuration(duration)}
+							</span>
 						</div>
 					)}
 				</div>
@@ -331,13 +355,22 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 			<div className="space-y-4 rounded-lg border bg-card p-4">
 				<div className="flex items-center justify-between">
 					<div className="space-y-0.5">
-						<Label className="flex items-center gap-2 font-medium text-sm" htmlFor="recurring">
+						<Label
+							className="flex items-center gap-2 font-medium text-sm"
+							htmlFor="recurring"
+						>
 							<Repeat className="size-4 text-primary" />
 							Recurring Schedule
 						</Label>
-						<p className="text-muted-foreground text-xs">Set up a repeating schedule</p>
+						<p className="text-muted-foreground text-xs">
+							Set up a repeating schedule
+						</p>
 					</div>
-					<Switch checked={isRecurring} id="recurring" onCheckedChange={setIsRecurring} />
+					<Switch
+						checked={isRecurring}
+						id="recurring"
+						onCheckedChange={setIsRecurring}
+					/>
 				</div>
 
 				{isRecurring && (
@@ -362,12 +395,19 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 
 							<div className="space-y-2">
 								<Label htmlFor="recurrenceEndDate">Ends on</Label>
-								<Input className="font-mono" id="recurrenceEndDate" name="recurrenceEndDate" type="date" />
+								<Input
+									className="font-mono"
+									id="recurrenceEndDate"
+									name="recurrenceEndDate"
+									type="date"
+								/>
 							</div>
 						</div>
 
 						<div className="space-y-2">
-							<Label htmlFor="recurrenceCount">Number of occurrences (optional)</Label>
+							<Label htmlFor="recurrenceCount">
+								Number of occurrences (optional)
+							</Label>
 							<Input
 								id="recurrenceCount"
 								max="365"
@@ -385,7 +425,11 @@ export function EnhancedScheduling({ defaultStart, defaultEnd }: EnhancedSchedul
 			</div>
 
 			{/* Hidden fields to track scheduling details */}
-			<input name="isRecurring" type="hidden" value={isRecurring ? "true" : "false"} />
+			<input
+				name="isRecurring"
+				type="hidden"
+				value={isRecurring ? "true" : "false"}
+			/>
 			<input name="schedulingMode" type="hidden" value={schedulingMode} />
 			<input name="timeWindow" type="hidden" value={selectedTimeWindow} />
 			<input name="scheduledStart" type="hidden" value={scheduledStart} />

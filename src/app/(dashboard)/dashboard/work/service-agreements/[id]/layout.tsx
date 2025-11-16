@@ -11,7 +11,11 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function ServiceAgreementsDetailLayout({ children }: { children: ReactNode }) {
+export default function ServiceAgreementsDetailLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -27,7 +31,12 @@ export default function ServiceAgreementsDetailLayout({ children }: { children: 
 		},
 		toolbar: {
 			show: true,
-			back: <DetailBackButton href="/dashboard/work/service-agreements" label="Service Agreements" />,
+			back: (
+				<DetailBackButton
+					href="/dashboard/work/service-agreements"
+					label="Service Agreements"
+				/>
+			),
 			// TODO: Create ServiceAgreementDetailToolbar component
 			// actions: <ServiceAgreementDetailToolbar />,
 		},
@@ -37,7 +46,10 @@ export default function ServiceAgreementsDetailLayout({ children }: { children: 
 	};
 
 	return (
-		<SectionLayout config={config} pathname="/dashboard/work/service-agreements/[id]">
+		<SectionLayout
+			config={config}
+			pathname="/dashboard/work/service-agreements/[id]"
+		>
 			{children}
 		</SectionLayout>
 	);

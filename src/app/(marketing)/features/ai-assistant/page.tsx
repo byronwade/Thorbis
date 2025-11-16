@@ -1,10 +1,25 @@
-import { Bot, Calendar, CheckCircle2, MessageSquare, Phone, Sparkles, TrendingUp, Zap } from "lucide-react";
+import {
+	Bot,
+	Calendar,
+	CheckCircle2,
+	MessageSquare,
+	Phone,
+	Sparkles,
+	TrendingUp,
+	Zap,
+} from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -30,7 +45,8 @@ export const metadata = generateSEOMetadata({
 export default function AIAssistantPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "AI Service Assistant",
-		description: "24/7 intelligent call handling and booking automation for service businesses",
+		description:
+			"24/7 intelligent call handling and booking automation for service businesses",
 		offers: [
 			{
 				price: "100",
@@ -52,7 +68,7 @@ export default function AIAssistantPage() {
 								name: "AI Assistant",
 								url: `${siteUrl}/features/ai-assistant`,
 							},
-						])
+						]),
 					),
 				}}
 				id="ai-assistant-breadcrumb-ld"
@@ -79,8 +95,9 @@ export default function AIAssistantPage() {
 							Your AI dispatcher that never sleeps
 						</h1>
 						<p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-							Answer every call, qualify every lead, and book every job—automatically. Thorbis AI handles customer
-							conversations 24/7 so you never miss an opportunity.
+							Answer every call, qualify every lead, and book every
+							job—automatically. Thorbis AI handles customer conversations 24/7
+							so you never miss an opportunity.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-lg shadow-primary/20" size="lg">
@@ -104,7 +121,9 @@ export default function AIAssistantPage() {
 									<div className="size-3 rounded-full bg-red-500" />
 									<div className="size-3 rounded-full bg-yellow-500" />
 									<div className="size-3 rounded-full bg-green-500" />
-									<span className="ml-2 font-medium text-muted-foreground text-xs">Live AI Conversation</span>
+									<span className="ml-2 font-medium text-muted-foreground text-xs">
+										Live AI Conversation
+									</span>
 								</div>
 								<div className="space-y-4 p-6">
 									{/* Customer Message */}
@@ -113,7 +132,10 @@ export default function AIAssistantPage() {
 											<Phone className="size-4 text-muted-foreground" />
 										</div>
 										<div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
-											<p className="text-sm">Hi, my AC stopped working and it's 95 degrees. Can someone come today?</p>
+											<p className="text-sm">
+												Hi, my AC stopped working and it's 95 degrees. Can
+												someone come today?
+											</p>
 										</div>
 									</div>
 
@@ -121,8 +143,9 @@ export default function AIAssistantPage() {
 									<div className="flex items-start justify-end gap-3">
 										<div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground">
 											<p className="text-sm">
-												I understand that's urgent! I can get a technician to you today. What's your address so I can
-												check availability in your area?
+												I understand that's urgent! I can get a technician to
+												you today. What's your address so I can check
+												availability in your area?
 											</p>
 										</div>
 										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
@@ -144,15 +167,19 @@ export default function AIAssistantPage() {
 									<div className="flex items-start justify-end gap-3">
 										<div className="max-w-[80%] space-y-3 rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground">
 											<p className="text-sm">
-												Perfect! I have a technician available at 2:30 PM today. The diagnostic fee is $89. Would that
-												work for you?
+												Perfect! I have a technician available at 2:30 PM today.
+												The diagnostic fee is $89. Would that work for you?
 											</p>
 											<div className="rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 p-3">
 												<div className="flex items-center gap-2 text-xs">
 													<Calendar className="size-3.5" />
-													<span className="font-semibold">Today at 2:30 PM</span>
+													<span className="font-semibold">
+														Today at 2:30 PM
+													</span>
 												</div>
-												<div className="mt-1 text-xs opacity-90">Tech: Mike Johnson • Est. arrival: 2:30-3:00 PM</div>
+												<div className="mt-1 text-xs opacity-90">
+													Tech: Mike Johnson • Est. arrival: 2:30-3:00 PM
+												</div>
 											</div>
 										</div>
 										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
@@ -163,7 +190,9 @@ export default function AIAssistantPage() {
 							</div>
 							<div className="-right-4 -top-4 absolute flex items-center gap-2 rounded-full border border-green-500/50 bg-green-500/10 px-4 py-2 backdrop-blur-sm">
 								<div className="size-2 animate-pulse rounded-full bg-green-500" />
-								<span className="font-semibold text-green-700 text-xs dark:text-green-400">Live & Booking</span>
+								<span className="font-semibold text-green-700 text-xs dark:text-green-400">
+									Live & Booking
+								</span>
 							</div>
 						</div>
 					</div>
@@ -176,19 +205,27 @@ export default function AIAssistantPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">98%</div>
-							<div className="font-medium text-muted-foreground text-sm">Call Answer Rate</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Call Answer Rate
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">3 min</div>
-							<div className="font-medium text-muted-foreground text-sm">Avg. Booking Time</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Avg. Booking Time
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">24/7</div>
-							<div className="font-medium text-muted-foreground text-sm">Always Available</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Always Available
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">40%</div>
-							<div className="font-medium text-muted-foreground text-sm">Less Admin Work</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Less Admin Work
+							</div>
 						</div>
 					</div>
 				</div>
@@ -198,9 +235,12 @@ export default function AIAssistantPage() {
 			<section className="py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Everything your AI assistant can do</h2>
+						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+							Everything your AI assistant can do
+						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							From first contact to booked appointment, Thorbis AI handles the entire customer journey
+							From first contact to booked appointment, Thorbis AI handles the
+							entire customer journey
 						</p>
 					</div>
 
@@ -212,7 +252,8 @@ export default function AIAssistantPage() {
 								</div>
 								<CardTitle>Intelligent Call Routing</CardTitle>
 								<CardDescription>
-									Automatically identifies caller intent and routes to the right workflow
+									Automatically identifies caller intent and routes to the right
+									workflow
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -239,7 +280,10 @@ export default function AIAssistantPage() {
 									<Calendar className="size-6 text-primary" />
 								</div>
 								<CardTitle>Smart Scheduling</CardTitle>
-								<CardDescription>Books appointments based on tech availability, location, and job type</CardDescription>
+								<CardDescription>
+									Books appointments based on tech availability, location, and
+									job type
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -265,7 +309,10 @@ export default function AIAssistantPage() {
 									<MessageSquare className="size-6 text-primary" />
 								</div>
 								<CardTitle>Natural Conversations</CardTitle>
-								<CardDescription>Sounds human, understands context, and adapts to your brand voice</CardDescription>
+								<CardDescription>
+									Sounds human, understands context, and adapts to your brand
+									voice
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -291,7 +338,9 @@ export default function AIAssistantPage() {
 									<TrendingUp className="size-6 text-primary" />
 								</div>
 								<CardTitle>Lead Qualification</CardTitle>
-								<CardDescription>Captures key details and scores leads automatically</CardDescription>
+								<CardDescription>
+									Captures key details and scores leads automatically
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -317,7 +366,9 @@ export default function AIAssistantPage() {
 									<Bot className="size-6 text-primary" />
 								</div>
 								<CardTitle>CRM Integration</CardTitle>
-								<CardDescription>Every interaction logged with full transcripts and context</CardDescription>
+								<CardDescription>
+									Every interaction logged with full transcripts and context
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -343,7 +394,9 @@ export default function AIAssistantPage() {
 									<Sparkles className="size-6 text-primary" />
 								</div>
 								<CardTitle>Multi-Channel Support</CardTitle>
-								<CardDescription>Works across phone, SMS, web chat, and email</CardDescription>
+								<CardDescription>
+									Works across phone, SMS, web chat, and email
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -373,10 +426,15 @@ export default function AIAssistantPage() {
 						Stop missing calls. Start booking more jobs.
 					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-						Join hundreds of service businesses using Thorbis AI to capture every opportunity.
+						Join hundreds of service businesses using Thorbis AI to capture
+						every opportunity.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
-						<Button asChild className="bg-background text-foreground shadow-lg hover:bg-background/90" size="lg">
+						<Button
+							asChild
+							className="bg-background text-foreground shadow-lg hover:bg-background/90"
+							size="lg"
+						>
 							<Link href="/register">
 								Get Started Free
 								<Zap className="ml-2 size-4" />

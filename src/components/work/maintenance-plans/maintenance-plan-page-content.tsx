@@ -7,7 +7,15 @@
 
 "use client";
 
-import { Calendar, CheckCircle2, DollarSign, Package, Receipt, User, Wrench } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle2,
+	DollarSign,
+	Package,
+	Receipt,
+	User,
+	Wrench,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -15,7 +23,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 
 export type MaintenancePlanData = {
 	plan: any;
@@ -47,7 +58,8 @@ function formatCurrency(cents: number | null | undefined): string {
 function getStatusBadge(status: string, key?: string) {
 	const variants: Record<string, { className: string; label: string }> = {
 		draft: {
-			className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+			className:
+				"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 			label: "Draft",
 		},
 		active: {
@@ -84,7 +96,9 @@ function getStatusBadge(status: string, key?: string) {
 	);
 }
 
-export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageContentProps) {
+export function MaintenancePlanPageContent({
+	entityData,
+}: MaintenancePlanPageContentProps) {
 	const {
 		plan,
 		customer,
@@ -117,12 +131,17 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="font-semibold text-2xl sm:text-3xl">
-									{plan.name || `Plan ${plan.plan_number || plan.id.slice(0, 8)}`}
+									{plan.name ||
+										`Plan ${plan.plan_number || plan.id.slice(0, 8)}`}
 								</h1>
-								<p className="text-muted-foreground text-sm sm:text-base">{formatCurrency(plan.price)}</p>
+								<p className="text-muted-foreground text-sm sm:text-base">
+									{formatCurrency(plan.price)}
+								</p>
 							</div>
 						</div>
 					</div>
@@ -165,24 +184,42 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 							</div>
 							<div>
 								<Label>Start Date</Label>
-								<Input readOnly value={plan.start_date ? new Date(plan.start_date).toLocaleDateString() : "N/A"} />
+								<Input
+									readOnly
+									value={
+										plan.start_date
+											? new Date(plan.start_date).toLocaleDateString()
+											: "N/A"
+									}
+								/>
 							</div>
 							{plan.end_date && (
 								<div>
 									<Label>End Date</Label>
-									<Input readOnly value={new Date(plan.end_date).toLocaleDateString()} />
+									<Input
+										readOnly
+										value={new Date(plan.end_date).toLocaleDateString()}
+									/>
 								</div>
 							)}
 							{plan.next_service_due && (
 								<div>
 									<Label>Next Service Due</Label>
-									<Input readOnly value={new Date(plan.next_service_due).toLocaleDateString()} />
+									<Input
+										readOnly
+										value={new Date(plan.next_service_due).toLocaleDateString()}
+									/>
 								</div>
 							)}
 							{plan.last_service_date && (
 								<div>
 									<Label>Last Service</Label>
-									<Input readOnly value={new Date(plan.last_service_date).toLocaleDateString()} />
+									<Input
+										readOnly
+										value={new Date(
+											plan.last_service_date,
+										).toLocaleDateString()}
+									/>
 								</div>
 							)}
 						</div>
@@ -201,9 +238,14 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 					<UnifiedAccordionContent>
 						<div className="space-y-2">
 							{includedServices.map((service: any, index: number) => (
-								<div className="flex items-center gap-2 rounded-lg border p-3" key={index}>
+								<div
+									className="flex items-center gap-2 rounded-lg border p-3"
+									key={index}
+								>
 									<CheckCircle2 className="size-4 text-success" />
-									<span className="text-sm">{service.name || service.description || service}</span>
+									<span className="text-sm">
+										{service.name || service.description || service}
+									</span>
 								</div>
 							))}
 						</div>
@@ -222,15 +264,22 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 					<UnifiedAccordionContent>
 						<div className="space-y-2">
 							{equipment.map((eq: any) => (
-								<div className="flex items-center justify-between rounded-lg border p-3" key={eq.id}>
+								<div
+									className="flex items-center justify-between rounded-lg border p-3"
+									key={eq.id}
+								>
 									<div>
-										<p className="font-medium text-sm">{eq.name || eq.equipment_number}</p>
+										<p className="font-medium text-sm">
+											{eq.name || eq.equipment_number}
+										</p>
 										<p className="text-muted-foreground text-xs">
 											{eq.manufacturer} {eq.model}
 										</p>
 									</div>
 									<Button asChild size="sm" variant="ghost">
-										<Link href={`/dashboard/work/equipment/${eq.id}`}>View</Link>
+										<Link href={`/dashboard/work/equipment/${eq.id}`}>
+											View
+										</Link>
 									</Button>
 								</div>
 							))}
@@ -293,7 +342,9 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>
+									View Full Profile
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -317,28 +368,49 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Job #</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Completed</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Job #
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Title
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Property
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Completed
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{generatedJobs.map((job: any) => (
 										<tr className="border-b hover:bg-muted/30" key={job.id}>
 											<td className="px-6 py-4 text-sm">#{job.job_number}</td>
-											<td className="px-6 py-4 font-medium text-sm">{job.title}</td>
-											<td className="px-6 py-4 text-sm">{job.property?.name || job.property?.address || "-"}</td>
+											<td className="px-6 py-4 font-medium text-sm">
+												{job.title}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												{job.property?.name || job.property?.address || "-"}
+											</td>
 											<td className="px-6 py-4 text-sm">
 												<Badge variant="outline">{job.status}</Badge>
 											</td>
 											<td className="px-6 py-4 text-sm">
-												{job.completed_at ? new Date(job.completed_at).toLocaleDateString() : "-"}
+												{job.completed_at
+													? new Date(job.completed_at).toLocaleDateString()
+													: "-"}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Link className="text-primary hover:underline" href={`/dashboard/work/${job.id}`}>
+												<Link
+													className="text-primary hover:underline"
+													href={`/dashboard/work/${job.id}`}
+												>
 													View
 												</Link>
 											</td>
@@ -362,34 +434,57 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 				content: (
 					<UnifiedAccordionContent className="p-0">
 						<div className="border-b px-6 py-4 text-muted-foreground text-sm">
-							Scheduled maintenance appointments for equipment covered by this plan.
+							Scheduled maintenance appointments for equipment covered by this
+							plan.
 						</div>
 						<div className="overflow-x-auto">
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Date & Time</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Job</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Date & Time
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Job
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Property
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{scheduledAppointments.map((appointment: any) => (
-										<tr className="border-b hover:bg-muted/30" key={appointment.id}>
+										<tr
+											className="border-b hover:bg-muted/30"
+											key={appointment.id}
+										>
 											<td className="px-6 py-4 text-sm">
-												{new Date(appointment.scheduled_start).toLocaleString("en-US", {
-													month: "short",
-													day: "numeric",
-													year: "numeric",
-													hour: "numeric",
-													minute: "2-digit",
-												})}
+												{new Date(appointment.scheduled_start).toLocaleString(
+													"en-US",
+													{
+														month: "short",
+														day: "numeric",
+														year: "numeric",
+														hour: "numeric",
+														minute: "2-digit",
+													},
+												)}
 											</td>
-											<td className="px-6 py-4 text-sm">{appointment.job ? `#${appointment.job.job_number}` : "-"}</td>
 											<td className="px-6 py-4 text-sm">
-												{appointment.property?.name || appointment.property?.address || "-"}
+												{appointment.job
+													? `#${appointment.job.job_number}`
+													: "-"}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												{appointment.property?.name ||
+													appointment.property?.address ||
+													"-"}
 											</td>
 											<td className="px-6 py-4 text-sm">
 												<Badge variant="outline">{appointment.status}</Badge>
@@ -428,24 +523,49 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Invoice #</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Invoice #
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Date
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Total
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{generatedInvoices.map((invoice: any) => (
 										<tr className="border-b hover:bg-muted/30" key={invoice.id}>
-											<td className="px-6 py-4 text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</td>
-											<td className="px-6 py-4 text-sm">{new Date(invoice.created_at).toLocaleDateString()}</td>
-											<td className="px-6 py-4 font-medium text-sm">{formatCurrency(invoice.total_amount)}</td>
 											<td className="px-6 py-4 text-sm">
-												<Badge variant={invoice.status === "paid" ? "default" : "outline"}>{invoice.status}</Badge>
+												#{invoice.invoice_number || invoice.id.slice(0, 8)}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Link className="text-primary hover:underline" href={`/dashboard/work/invoices/${invoice.id}`}>
+												{new Date(invoice.created_at).toLocaleDateString()}
+											</td>
+											<td className="px-6 py-4 font-medium text-sm">
+												{formatCurrency(invoice.total_amount)}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												<Badge
+													variant={
+														invoice.status === "paid" ? "default" : "outline"
+													}
+												>
+													{invoice.status}
+												</Badge>
+											</td>
+											<td className="px-6 py-4 text-sm">
+												<Link
+													className="text-primary hover:underline"
+													href={`/dashboard/work/invoices/${invoice.id}`}
+												>
 													View
 												</Link>
 											</td>
@@ -460,7 +580,15 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 		}
 
 		return sections;
-	}, [plan, customer, equipment, generatedJobs, scheduledAppointments, generatedInvoices, includedServices]);
+	}, [
+		plan,
+		customer,
+		equipment,
+		generatedJobs,
+		scheduledAppointments,
+		generatedInvoices,
+		includedServices,
+	]);
 
 	const relatedItems = useMemo(() => {
 		const items: any[] = [];
@@ -483,7 +611,8 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 				id: `property-${property.id}`,
 				type: "property",
 				title: property.address || property.name || "Property",
-				subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+				subtitle:
+					`${property.city || ""}, ${property.state || ""}`.trim() || undefined,
 				href: `/dashboard/work/properties/${property.id}`,
 			});
 		}
@@ -493,7 +622,8 @@ export function MaintenancePlanPageContent({ entityData }: MaintenancePlanPageCo
 				id: `equipment-${eq.id}`,
 				type: "equipment",
 				title: eq.name || eq.equipment_number,
-				subtitle: `${eq.manufacturer || ""} ${eq.model || ""}`.trim() || undefined,
+				subtitle:
+					`${eq.manufacturer || ""} ${eq.model || ""}`.trim() || undefined,
 				href: `/dashboard/work/equipment/${eq.id}`,
 			});
 		});

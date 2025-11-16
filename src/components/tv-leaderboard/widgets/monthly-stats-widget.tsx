@@ -37,7 +37,9 @@ export function MonthlyStatsWidget({ data }: MonthlyStatsWidgetProps) {
 						<Calendar className="text-warning" />
 					</ResponsiveIcon>
 					<ShowAt stage="full">
-						<ResponsiveText variant="title">This Month's Performance</ResponsiveText>
+						<ResponsiveText variant="title">
+							This Month's Performance
+						</ResponsiveText>
 					</ShowAt>
 					<ShowAt stage="comfortable">
 						<ResponsiveText className="font-semibold" variant="body">
@@ -128,7 +130,10 @@ export function MonthlyStatsWidget({ data }: MonthlyStatsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText className="font-bold text-warning" variant="display">
+						<ResponsiveText
+							className="font-bold text-warning"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -137,7 +142,10 @@ export function MonthlyStatsWidget({ data }: MonthlyStatsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-warning" variant="display">
+						<ResponsiveText
+							className="font-bold text-warning"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

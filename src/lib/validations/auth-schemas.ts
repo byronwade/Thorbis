@@ -30,7 +30,10 @@ export const passwordSchema = z
 	.string()
 	.min(8, "Password must be at least 8 characters")
 	.max(100, "Password is too long")
-	.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number");
+	.regex(
+		/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+		"Password must contain uppercase, lowercase, and number",
+	);
 
 /**
  * Sign Up Schema
@@ -38,15 +41,24 @@ export const passwordSchema = z
  * Used for new user registration.
  */
 export const signUpSchema = z.object({
-	name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long").trim(),
+	name: z
+		.string()
+		.min(2, "Name must be at least 2 characters")
+		.max(100, "Name is too long")
+		.trim(),
 	email: emailSchema,
 	phone: z
 		.string()
 		.trim()
 		.min(10, "Phone number is required")
-		.refine((value) => value.replace(/\D/g, "").length >= 10, "Enter a valid phone number"),
+		.refine(
+			(value) => value.replace(/\D/g, "").length >= 10,
+			"Enter a valid phone number",
+		),
 	password: passwordSchema,
-	terms: z.boolean().refine((val) => val === true, "You must accept the terms and conditions"),
+	terms: z
+		.boolean()
+		.refine((val) => val === true, "You must accept the terms and conditions"),
 	companyName: z
 		.string()
 		.min(2, "Company name must be at least 2 characters")
@@ -119,11 +131,19 @@ export const changePasswordSchema = z
  * Used for updating user profile information.
  */
 export const updateProfileSchema = z.object({
-	name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long").trim().optional(),
+	name: z
+		.string()
+		.min(2, "Name must be at least 2 characters")
+		.max(100, "Name is too long")
+		.trim()
+		.optional(),
 	bio: z.string().max(500, "Bio is too long").optional(),
 	phone: z
 		.string()
-		.regex(/^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/, "Invalid phone number format")
+		.regex(
+			/^(\+1|1)?[-.\s]?\(?[2-9]\d{2}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/,
+			"Invalid phone number format",
+		)
 		.optional()
 		.or(z.literal("")),
 	avatar: z.string().url("Invalid avatar URL").optional().or(z.literal("")),

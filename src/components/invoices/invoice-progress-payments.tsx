@@ -12,12 +12,23 @@
 
 "use client";
 
-import { Check, ChevronDown, ChevronRight, Clock, DollarSign, Plus, Trash2 } from "lucide-react";
+import {
+	Check,
+	ChevronDown,
+	ChevronRight,
+	Clock,
+	DollarSign,
+	Plus,
+	Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type ProgressPayment = {
 	id: string;
@@ -34,7 +45,9 @@ type InvoiceProgressPaymentsProps = {
 	};
 };
 
-export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProps) {
+export function InvoiceProgressPayments({
+	invoice,
+}: InvoiceProgressPaymentsProps) {
 	const [isOpen, setIsOpen] = useState(true);
 
 	// Load state from localStorage
@@ -82,13 +95,19 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
 		{
 			key: "description",
 			header: "Description",
-			render: (payment) => <div className="font-medium">{payment.description}</div>,
+			render: (payment) => (
+				<div className="font-medium">{payment.description}</div>
+			),
 			width: "flex-1",
 		},
 		{
 			key: "amount",
 			header: "Amount",
-			render: (payment) => <div className="font-medium tabular-nums">{formatCurrency(payment.amount)}</div>,
+			render: (payment) => (
+				<div className="font-medium tabular-nums">
+					{formatCurrency(payment.amount)}
+				</div>
+			),
 			width: "w-40",
 			align: "right",
 		},
@@ -148,7 +167,9 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
 
 	// Calculate summary
 	const paidCount = progressPayments.filter((p) => p.status === "paid").length;
-	const totalPaid = progressPayments.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
+	const totalPaid = progressPayments
+		.filter((p) => p.status === "paid")
+		.reduce((sum, p) => sum + p.amount, 0);
 
 	const summary =
 		paidCount > 0
@@ -180,13 +201,20 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
 								{paidCount}/{progressPayments.length} paid
 							</Badge>
 						</div>
-						{!isOpen && <p className="mt-0.5 text-muted-foreground text-sm">{summary}</p>}
+						{!isOpen && (
+							<p className="mt-0.5 text-muted-foreground text-sm">{summary}</p>
+						)}
 					</div>
 				</button>
 
 				{/* Action Buttons - Always visible */}
 				<div className="flex shrink-0 items-center gap-2">
-					<Button className="gap-1" onClick={() => toast.info("Add payment milestone")} size="sm" variant="outline">
+					<Button
+						className="gap-1"
+						onClick={() => toast.info("Add payment milestone")}
+						size="sm"
+						variant="outline"
+					>
 						<Plus className="size-4" />
 						Add Milestone
 					</Button>
@@ -208,7 +236,9 @@ export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProp
 							toast.info("Refreshing payments...");
 							// TODO: Implement refresh
 						}}
-						searchFilter={(payment, query) => payment.description.toLowerCase().includes(query.toLowerCase())}
+						searchFilter={(payment, query) =>
+							payment.description.toLowerCase().includes(query.toLowerCase())
+						}
 						searchPlaceholder="Search progress payments..."
 						showPagination={true}
 						showRefresh={false}

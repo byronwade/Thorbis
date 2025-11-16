@@ -25,13 +25,23 @@ const createMaintenancePlanSchema = z.object({
 	propertyId: z.string().uuid("Invalid property ID").optional(),
 	name: z.string().min(1, "Plan name is required"),
 	description: z.string().optional(),
-	frequency: z.enum(["weekly", "biweekly", "monthly", "quarterly", "semiannual", "annual", "custom"]),
+	frequency: z.enum([
+		"weekly",
+		"biweekly",
+		"monthly",
+		"quarterly",
+		"semiannual",
+		"annual",
+		"custom",
+	]),
 	customFrequencyDays: z.number().int().min(1).optional(),
 	startDate: z.string().min(1, "Start date is required"),
 	endDate: z.string().optional(),
 	amount: z.number().min(0).optional(),
 	currency: z.string().default("USD"),
-	billingFrequency: z.enum(["monthly", "quarterly", "annual", "one_time"]).optional(),
+	billingFrequency: z
+		.enum(["monthly", "quarterly", "annual", "one_time"])
+		.optional(),
 	autoRenew: z.boolean().default(true),
 	servicesIncluded: z.array(z.any()).optional(),
 	terms: z.string().optional(),
@@ -41,14 +51,28 @@ const createMaintenancePlanSchema = z.object({
 const updateMaintenancePlanSchema = z.object({
 	name: z.string().min(1, "Plan name is required").optional(),
 	description: z.string().optional(),
-	status: z.enum(["draft", "active", "paused", "expired", "cancelled"]).optional(),
-	frequency: z.enum(["weekly", "biweekly", "monthly", "quarterly", "semiannual", "annual", "custom"]).optional(),
+	status: z
+		.enum(["draft", "active", "paused", "expired", "cancelled"])
+		.optional(),
+	frequency: z
+		.enum([
+			"weekly",
+			"biweekly",
+			"monthly",
+			"quarterly",
+			"semiannual",
+			"annual",
+			"custom",
+		])
+		.optional(),
 	customFrequencyDays: z.number().int().min(1).optional(),
 	startDate: z.string().optional(),
 	endDate: z.string().optional(),
 	nextServiceDate: z.string().optional(),
 	amount: z.number().min(0).optional(),
-	billingFrequency: z.enum(["monthly", "quarterly", "annual", "one_time"]).optional(),
+	billingFrequency: z
+		.enum(["monthly", "quarterly", "annual", "one_time"])
+		.optional(),
 	autoRenew: z.boolean().optional(),
 	servicesIncluded: z.array(z.any()).optional(),
 	terms: z.string().optional(),
@@ -63,11 +87,14 @@ const MAINTENANCE_PLAN_NUMBER_REGEX = /MP-(\d+)/;
 
 async function generateMaintenancePlanNumber(
 	supabase: Awaited<ReturnType<typeof createClient>>,
-	companyId: string
+	companyId: string,
 ): Promise<string> {
-	const { data, error } = await supabase.rpc("generate_maintenance_plan_number", {
-		p_company_id: companyId,
-	});
+	const { data, error } = await supabase.rpc(
+		"generate_maintenance_plan_number",
+		{
+			p_company_id: companyId,
+		},
+	);
 
 	if (error || !data) {
 		// Fallback to manual generation
@@ -102,7 +129,7 @@ async function calculateNextServiceDate(
 	supabase: any,
 	lastServiceDate: string,
 	frequency: string,
-	customFrequencyDays?: number
+	customFrequencyDays?: number,
 ): Promise<string> {
 	const { data, error } = await supabase.rpc("calculate_next_service_date", {
 		p_last_service_date: lastServiceDate,
@@ -149,19 +176,28 @@ async function calculateNextServiceDate(
 /**
  * Validate maintenance plan dates
  */
-function validateMaintenancePlanDates(startDate: string, endDate?: string): void {
+function validateMaintenancePlanDates(
+	startDate: string,
+	endDate?: string,
+): void {
 	const start = new Date(startDate);
 	const now = new Date();
 	now.setHours(0, 0, 0, 0);
 
 	if (start < now) {
-		throw new ActionError("Start date cannot be in the past", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"Start date cannot be in the past",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 
 	if (endDate) {
 		const end = new Date(endDate);
 		if (end <= start) {
-			throw new ActionError("End date must be after start date", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"End date must be after start date",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 	}
 }
@@ -169,11 +205,16 @@ function validateMaintenancePlanDates(startDate: string, endDate?: string): void
 /**
  * Create a new maintenance plan
  */
-export async function createMaintenancePlan(formData: FormData): Promise<ActionResult<string>> {
+export async function createMaintenancePlan(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -209,9 +250,12 @@ export async function createMaintenancePlan(formData: FormData): Promise<ActionR
 				: undefined,
 			startDate: formData.get("startDate") as string,
 			endDate: (formData.get("endDate") as string) || undefined,
-			amount: formData.get("amount") ? Number.parseFloat(formData.get("amount") as string) : undefined,
+			amount: formData.get("amount")
+				? Number.parseFloat(formData.get("amount") as string)
+				: undefined,
 			currency: (formData.get("currency") as string) || "USD",
-			billingFrequency: (formData.get("billingFrequency") as string) || undefined,
+			billingFrequency:
+				(formData.get("billingFrequency") as string) || undefined,
 			autoRenew: formData.get("autoRenew") === "true",
 			servicesIncluded,
 			terms: (formData.get("terms") as string) || undefined,
@@ -221,11 +265,20 @@ export async function createMaintenancePlan(formData: FormData): Promise<ActionR
 		const validatedData = createMaintenancePlanSchema.parse(rawData);
 
 		// Validate dates
-		validateMaintenancePlanDates(validatedData.startDate, validatedData.endDate);
+		validateMaintenancePlanDates(
+			validatedData.startDate,
+			validatedData.endDate,
+		);
 
 		// Validate custom frequency
-		if (validatedData.frequency === "custom" && !validatedData.customFrequencyDays) {
-			throw new ActionError("Custom frequency days is required for custom frequency", ERROR_CODES.VALIDATION_FAILED);
+		if (
+			validatedData.frequency === "custom" &&
+			!validatedData.customFrequencyDays
+		) {
+			throw new ActionError(
+				"Custom frequency days is required for custom frequency",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
 		// Calculate next service date
@@ -233,7 +286,7 @@ export async function createMaintenancePlan(formData: FormData): Promise<ActionR
 			supabase,
 			validatedData.startDate,
 			validatedData.frequency,
-			validatedData.customFrequencyDays
+			validatedData.customFrequencyDays,
 		);
 
 		// Generate plan number
@@ -268,7 +321,10 @@ export async function createMaintenancePlan(formData: FormData): Promise<ActionR
 			.single();
 
 		if (error) {
-			throw new ActionError(`Failed to create maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to create maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Revalidate relevant paths
@@ -282,11 +338,17 @@ export async function createMaintenancePlan(formData: FormData): Promise<ActionR
 /**
  * Update an existing maintenance plan
  */
-export async function updateMaintenancePlan(planId: string, formData: FormData): Promise<ActionResult<boolean>> {
+export async function updateMaintenancePlan(
+	planId: string,
+	formData: FormData,
+): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -308,7 +370,10 @@ export async function updateMaintenancePlan(planId: string, formData: FormData):
 			.single();
 
 		if (fetchError || !existingPlan) {
-			throw new ActionError("Maintenance plan not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"Maintenance plan not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		// Parse and validate form data
@@ -355,7 +420,10 @@ export async function updateMaintenancePlan(planId: string, formData: FormData):
 
 		// Validate dates if both are provided
 		if (validatedData.startDate && validatedData.endDate) {
-			validateMaintenancePlanDates(validatedData.startDate, validatedData.endDate);
+			validateMaintenancePlanDates(
+				validatedData.startDate,
+				validatedData.endDate,
+			);
 		}
 
 		// Convert camelCase to snake_case for database
@@ -373,7 +441,10 @@ export async function updateMaintenancePlan(planId: string, formData: FormData):
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(`Failed to update maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to update maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Revalidate relevant paths
@@ -387,11 +458,16 @@ export async function updateMaintenancePlan(planId: string, formData: FormData):
 /**
  * Activate a maintenance plan
  */
-export async function activateMaintenancePlan(planId: string): Promise<ActionResult<boolean>> {
+export async function activateMaintenancePlan(
+	planId: string,
+): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -412,7 +488,10 @@ export async function activateMaintenancePlan(planId: string): Promise<ActionRes
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(`Failed to activate maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to activate maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/maintenance-plans");
@@ -425,11 +504,16 @@ export async function activateMaintenancePlan(planId: string): Promise<ActionRes
 /**
  * Pause a maintenance plan
  */
-export async function pauseMaintenancePlan(planId: string): Promise<ActionResult<boolean>> {
+export async function pauseMaintenancePlan(
+	planId: string,
+): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -450,7 +534,10 @@ export async function pauseMaintenancePlan(planId: string): Promise<ActionResult
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(`Failed to pause maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to pause maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/maintenance-plans");
@@ -463,11 +550,16 @@ export async function pauseMaintenancePlan(planId: string): Promise<ActionResult
 /**
  * Cancel a maintenance plan
  */
-export async function cancelMaintenancePlan(planId: string): Promise<ActionResult<boolean>> {
+export async function cancelMaintenancePlan(
+	planId: string,
+): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -488,7 +580,10 @@ export async function cancelMaintenancePlan(planId: string): Promise<ActionResul
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(`Failed to cancel maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to cancel maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/maintenance-plans");
@@ -501,11 +596,16 @@ export async function cancelMaintenancePlan(planId: string): Promise<ActionResul
 /**
  * Delete a maintenance plan
  */
-export async function deleteMaintenancePlan(planId: string): Promise<ActionResult<boolean>> {
+export async function deleteMaintenancePlan(
+	planId: string,
+): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -519,10 +619,17 @@ export async function deleteMaintenancePlan(planId: string): Promise<ActionResul
 		assertExists(companyId, "Company not found for user");
 
 		// Delete maintenance plan
-		const { error } = await supabase.from("maintenance_plans").delete().eq("id", planId).eq("company_id", companyId);
+		const { error } = await supabase
+			.from("maintenance_plans")
+			.delete()
+			.eq("id", planId)
+			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(`Failed to delete maintenance plan: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to delete maintenance plan: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/maintenance-plans");
@@ -539,12 +646,15 @@ export async function searchMaintenancePlans(
 	options?: {
 		limit?: number;
 		offset?: number;
-	}
+	},
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -558,15 +668,21 @@ export async function searchMaintenancePlans(
 		assertExists(companyId, "Company not found for user");
 
 		// Use the RPC function for ranked search
-		const { data, error } = await supabase.rpc("search_maintenance_plans_ranked", {
-			p_company_id: companyId,
-			p_search_query: searchQuery,
-			p_limit: options?.limit || 50,
-			p_offset: options?.offset || 0,
-		});
+		const { data, error } = await supabase.rpc(
+			"search_maintenance_plans_ranked",
+			{
+				p_company_id: companyId,
+				p_search_query: searchQuery,
+				p_limit: options?.limit || 50,
+				p_offset: options?.offset || 0,
+			},
+		);
 
 		if (error) {
-			throw new ActionError(`Search failed: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Search failed: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || [];
@@ -576,7 +692,9 @@ export async function searchMaintenancePlans(
 /**
  * Archive a maintenance plan (soft delete)
  */
-export async function archiveMaintenancePlan(planId: string): Promise<{ success: boolean; error?: string }> {
+export async function archiveMaintenancePlan(
+	planId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {

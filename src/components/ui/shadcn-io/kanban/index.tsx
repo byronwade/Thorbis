@@ -22,7 +22,15 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ReactNode } from "react";
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -61,18 +69,28 @@ type KanbanProviderProps<T extends KanbanItemBase> = {
 type KanbanContextValue<T extends KanbanItemBase> = {
 	columns: KanbanColumn[];
 	getItems: (columnId: string) => T[];
-	findItem: (id: UniqueIdentifier) => { item: T; columnId: string; index: number } | null;
+	findItem: (
+		id: UniqueIdentifier,
+	) => { item: T; columnId: string; index: number } | null;
 	activeItem: { item: T; columnId: string } | null;
 };
 
-const KanbanContext = createContext<KanbanContextValue<KanbanItemBase> | null>(null);
+const KanbanContext = createContext<KanbanContextValue<KanbanItemBase> | null>(
+	null,
+);
 
 const KanbanColumnContext = createContext<KanbanColumn | null>(null);
 
 const COLUMN_DROPPABLE_PREFIX = "kanban-column-";
 
-function buildState<T extends KanbanItemBase>(columns: KanbanColumn[], data: T[], getColumnId: (item: T) => string) {
-	const initialState = Object.fromEntries(columns.map((column) => [column.id, [] as T[]]));
+function buildState<T extends KanbanItemBase>(
+	columns: KanbanColumn[],
+	data: T[],
+	getColumnId: (item: T) => string,
+) {
+	const initialState = Object.fromEntries(
+		columns.map((column) => [column.id, [] as T[]]),
+	);
 
 	return data.reduce<Record<string, T[]>>((state, item) => {
 		const columnId = getColumnId(item);
@@ -85,12 +103,19 @@ function buildState<T extends KanbanItemBase>(columns: KanbanColumn[], data: T[]
 	}, initialState);
 }
 
-function flattenState<T extends KanbanItemBase>(columns: KanbanColumn[], state: Record<string, T[]>) {
+function flattenState<T extends KanbanItemBase>(
+	columns: KanbanColumn[],
+	state: Record<string, T[]>,
+) {
 	return columns.flatMap((column) => state[column.id] ?? []);
 }
 
-function cloneState<T extends KanbanItemBase>(state: Record<string, T[]>): Record<string, T[]> {
-	return Object.fromEntries(Object.entries(state).map(([columnId, items]) => [columnId, items.slice()]));
+function cloneState<T extends KanbanItemBase>(
+	state: Record<string, T[]>,
+): Record<string, T[]> {
+	return Object.fromEntries(
+		Object.entries(state).map(([columnId, items]) => [columnId, items.slice()]),
+	);
 }
 
 export function KanbanProvider<T extends KanbanItemBase>({
@@ -104,9 +129,12 @@ export function KanbanProvider<T extends KanbanItemBase>({
 	pointerSensorOptions,
 	renderDragOverlay,
 }: KanbanProviderProps<T>) {
-	const columnIdGetter = useCallback(getColumnId ?? ((item: T) => item.columnId), []);
+	const columnIdGetter = useCallback(
+		getColumnId ?? ((item: T) => item.columnId),
+		[],
+	);
 	const [itemsByColumn, setItemsByColumn] = useState<Record<string, T[]>>(() =>
-		buildState(columns, data, columnIdGetter)
+		buildState(columns, data, columnIdGetter),
 	);
 	const [activeItem, setActiveItem] = useState<{
 		item: T;
@@ -131,7 +159,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		})
+		}),
 	);
 
 	const findItem = useCallback(
@@ -146,7 +174,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 
 			return null;
 		},
-		[itemsByColumn]
+		[itemsByColumn],
 	);
 
 	const handleDragStart = useCallback(
@@ -156,7 +184,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 				setActiveItem({ item: result.item, columnId: result.columnId });
 			}
 		},
-		[findItem]
+		[findItem],
 	);
 
 	const handleDragEnd = useCallback(
@@ -176,7 +204,10 @@ export function KanbanProvider<T extends KanbanItemBase>({
 			let destinationColumnId: string | null = null;
 			let destinationIndex: number | null = null;
 
-			if (typeof over.id === "string" && over.id.startsWith(COLUMN_DROPPABLE_PREFIX)) {
+			if (
+				typeof over.id === "string" &&
+				over.id.startsWith(COLUMN_DROPPABLE_PREFIX)
+			) {
 				destinationColumnId = over.id.replace(COLUMN_DROPPABLE_PREFIX, "");
 				destinationIndex = (itemsByColumn[destinationColumnId] ?? []).length;
 			} else {
@@ -184,14 +215,17 @@ export function KanbanProvider<T extends KanbanItemBase>({
 				if (destination) {
 					destinationColumnId = destination.columnId;
 					const columnItems = itemsByColumn[destination.columnId] ?? [];
-					destinationIndex = columnItems.findIndex((item) => item.id === destination.item.id);
+					destinationIndex = columnItems.findIndex(
+						(item) => item.id === destination.item.id,
+					);
 				}
 			}
 
 			if (
 				destinationColumnId === null ||
 				destinationIndex === null ||
-				(destinationColumnId === origin.columnId && destinationIndex === origin.index)
+				(destinationColumnId === origin.columnId &&
+					destinationIndex === origin.index)
 			) {
 				return;
 			}
@@ -203,7 +237,8 @@ export function KanbanProvider<T extends KanbanItemBase>({
 
 			const destinationItems = updatedState[destinationColumnId] ?? [];
 			const insertIndex =
-				origin.columnId === destinationColumnId && origin.index < destinationIndex
+				origin.columnId === destinationColumnId &&
+				origin.index < destinationIndex
 					? destinationIndex - 1
 					: destinationIndex;
 
@@ -229,7 +264,7 @@ export function KanbanProvider<T extends KanbanItemBase>({
 				});
 			}
 		},
-		[findItem, itemsByColumn, onDataChange, onItemMove]
+		[findItem, itemsByColumn, onDataChange, onItemMove],
 	);
 
 	const contextValue = useMemo<KanbanContextValue<T>>(
@@ -239,11 +274,13 @@ export function KanbanProvider<T extends KanbanItemBase>({
 			findItem,
 			activeItem,
 		}),
-		[columns, itemsByColumn, findItem, activeItem]
+		[columns, itemsByColumn, findItem, activeItem],
 	);
 
 	return (
-		<KanbanContext.Provider value={contextValue as KanbanContextValue<KanbanItemBase>}>
+		<KanbanContext.Provider
+			value={contextValue as KanbanContextValue<KanbanItemBase>}
+		>
 			<DndContext
 				collisionDetection={closestCorners}
 				onDragCancel={() => setActiveItem(null)}
@@ -251,14 +288,23 @@ export function KanbanProvider<T extends KanbanItemBase>({
 				onDragStart={handleDragStart}
 				sensors={sensors}
 			>
-				<div className={cn("flex w-full gap-4 overflow-x-auto px-6 py-4 md:px-8 lg:px-10", className)}>{children}</div>
+				<div
+					className={cn(
+						"flex w-full gap-4 overflow-x-auto px-6 py-4 md:px-8 lg:px-10",
+						className,
+					)}
+				>
+					{children}
+				</div>
 				<DragOverlay>
 					{activeItem ? (
 						renderDragOverlay ? (
 							renderDragOverlay(activeItem.item)
 						) : (
 							<Card className="w-[280px] max-w-[320px] border border-border/70 bg-background/95 p-3 shadow-lg">
-								<p className="font-medium text-sm">{String(activeItem.item.id)}</p>
+								<p className="font-medium text-sm">
+									{String(activeItem.item.id)}
+								</p>
 							</Card>
 						)
 					) : null}
@@ -291,7 +337,7 @@ export function KanbanBoard({ column, children, className }: KanbanBoardProps) {
 				aria-label={`${column.name} column`}
 				className={cn(
 					"kanban-column flex h-full min-w-[320px] flex-1 flex-col rounded-2xl border border-border/60 bg-gradient-to-b from-background via-background/60 to-muted/40 shadow-sm ring-1 ring-black/5 backdrop-blur-sm transition hover:shadow-md",
-					className
+					className,
 				)}
 			>
 				{children}
@@ -310,7 +356,7 @@ export function KanbanHeader({ children, className }: KanbanHeaderProps) {
 		<header
 			className={cn(
 				"sticky top-0 z-10 flex items-center justify-between gap-2 rounded-t-2xl bg-background/90 px-4 py-3 backdrop-blur-sm",
-				className
+				className,
 			)}
 		>
 			{children}
@@ -340,13 +386,16 @@ export function KanbanCards<T extends KanbanItemBase>({
 	});
 
 	return (
-		<SortableContext items={items.map((item) => item.id)} strategy={verticalListSortingStrategy}>
+		<SortableContext
+			items={items.map((item) => item.id)}
+			strategy={verticalListSortingStrategy}
+		>
 			<ScrollArea className="kanban-scroll flex-1">
 				<div
 					className={cn(
 						"kanban-column-cards flex min-h-[120px] flex-col gap-3 rounded-2xl bg-muted/30 p-3 transition",
 						isOver && "ring-2 ring-primary/60 ring-offset-2",
-						className
+						className,
 					)}
 					data-drop-state={isOver ? "active" : "inactive"}
 					ref={setNodeRef}
@@ -367,7 +416,14 @@ export type KanbanCardProps = {
 };
 
 export function KanbanCard({ itemId, children, className }: KanbanCardProps) {
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: itemId });
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: itemId });
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
@@ -379,7 +435,7 @@ export function KanbanCard({ itemId, children, className }: KanbanCardProps) {
 			className={cn(
 				"hover:-translate-y-0.5 grid gap-3 rounded-xl border border-border/70 bg-background/95 p-4 text-left shadow-sm outline-none ring-0 transition-all hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring",
 				isDragging && "scale-[1.01] border-primary/60 opacity-80 shadow-lg",
-				className
+				className,
 			)}
 			data-dragging={isDragging ? "" : undefined}
 			ref={setNodeRef}

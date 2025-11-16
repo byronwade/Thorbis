@@ -6,13 +6,18 @@
 
 import { createHmac, randomBytes } from "node:crypto";
 
-const INVITATION_SECRET = process.env.INVITATION_SECRET || "fallback-secret-change-in-production";
+const INVITATION_SECRET =
+	process.env.INVITATION_SECRET || "fallback-secret-change-in-production";
 const INVITATION_EXPIRY_DAYS = 7;
 
 /**
  * Generate a secure token for invitation
  */
-export function generateInvitationToken(payload: { email: string; companyId: string; role: string }): string {
+export function generateInvitationToken(payload: {
+	email: string;
+	companyId: string;
+	role: string;
+}): string {
 	const data = {
 		...payload,
 		exp: Date.now() + INVITATION_EXPIRY_DAYS * 24 * 60 * 60 * 1000,
@@ -20,7 +25,9 @@ export function generateInvitationToken(payload: { email: string; companyId: str
 	};
 
 	const encoded = Buffer.from(JSON.stringify(data)).toString("base64url");
-	const signature = createHmac("sha256", INVITATION_SECRET).update(encoded).digest("base64url");
+	const signature = createHmac("sha256", INVITATION_SECRET)
+		.update(encoded)
+		.digest("base64url");
 
 	return `${encoded}.${signature}`;
 }
@@ -40,7 +47,9 @@ export function verifyInvitationToken(token: string): {
 		}
 
 		// Verify signature
-		const expectedSignature = createHmac("sha256", INVITATION_SECRET).update(encoded).digest("base64url");
+		const expectedSignature = createHmac("sha256", INVITATION_SECRET)
+			.update(encoded)
+			.digest("base64url");
 
 		if (signature !== expectedSignature) {
 			return { valid: false, error: "Invalid token signature" };

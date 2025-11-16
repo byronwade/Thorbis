@@ -13,19 +13,26 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { isPopOutMessage, type PopOutMessage, sendToPopOut, verifyMessageOrigin } from "@/lib/window/pop-out-manager";
+import {
+	isPopOutMessage,
+	type PopOutMessage,
+	sendToPopOut,
+	verifyMessageOrigin,
+} from "@/lib/window/pop-out-manager";
 
 type FormType = "customer" | "job" | "appointment";
 
 export function useCallWindowSync(
 	formType: FormType,
 	currentFormData: Record<string, any>,
-	onDataReceived: (data: Record<string, any>) => void
+	onDataReceived: (data: Record<string, any>) => void,
 ) {
 	const [hasCallWindow, setHasCallWindow] = useState(false);
 	const [callWindowId, setCallWindowId] = useState<string | null>(null);
 	const [popOutWindow, _setPopOutWindow] = useState<Window | null>(null);
-	const [pendingSync, setPendingSync] = useState<Record<string, any> | null>(null);
+	const [pendingSync, setPendingSync] = useState<Record<string, any> | null>(
+		null,
+	);
 	const [showMergeDialog, setShowMergeDialog] = useState(false);
 
 	/**
@@ -41,7 +48,7 @@ export function useCallWindowSync(
 				timestamp: Date.now(),
 			});
 		},
-		[formType, popOutWindow]
+		[formType, popOutWindow],
 	);
 
 	// Detect if call window is open
@@ -94,7 +101,13 @@ export function useCallWindowSync(
 
 		window.addEventListener("message", handleMessage);
 		return () => window.removeEventListener("message", handleMessage);
-	}, [formType, currentFormData, callWindowId, onDataReceived, sendFormDataToCallWindow]);
+	}, [
+		formType,
+		currentFormData,
+		callWindowId,
+		onDataReceived,
+		sendFormDataToCallWindow,
+	]);
 
 	/**
 	 * Use call window data (accept incoming data)

@@ -15,7 +15,13 @@ import { Phone, Play, Plus, Workflow, Zap } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 export function CallFlowDesigner() {
 	const [flows, _setFlows] = useState([
@@ -52,7 +58,9 @@ export function CallFlowDesigner() {
 								<Workflow className="size-5" />
 								Call Flows
 							</CardTitle>
-							<CardDescription>Design and manage visual call routing flows</CardDescription>
+							<CardDescription>
+								Design and manage visual call routing flows
+							</CardDescription>
 						</div>
 						<Button>
 							<Plus className="mr-2 size-4" />
@@ -103,8 +111,8 @@ export function CallFlowDesigner() {
 					<Workflow className="mb-4 size-12 text-muted-foreground" />
 					<h3 className="mb-2 font-semibold text-lg">Visual Flow Builder</h3>
 					<p className="mb-6 max-w-sm text-muted-foreground text-sm">
-						Design complex call routing with our drag-and-drop flow builder. Create IVR menus, conditional routing, and
-						multi-step workflows.
+						Design complex call routing with our drag-and-drop flow builder.
+						Create IVR menus, conditional routing, and multi-step workflows.
 					</p>
 					<Button>
 						<Plus className="mr-2 size-4" />
@@ -117,11 +125,14 @@ export function CallFlowDesigner() {
 				<CardContent className="flex items-start gap-3 pt-6">
 					<Phone className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 					<div className="space-y-1">
-						<p className="font-medium text-primary text-sm dark:text-primary">Flow Design Best Practices</p>
+						<p className="font-medium text-primary text-sm dark:text-primary">
+							Flow Design Best Practices
+						</p>
 						<p className="text-muted-foreground text-sm">
-							Keep IVR menus simple with 3-4 options maximum. Always provide an option to reach a live person. Test your
-							flows before publishing. Use clear, concise voice prompts. Consider peak hours when designing call
-							capacity.
+							Keep IVR menus simple with 3-4 options maximum. Always provide an
+							option to reach a live person. Test your flows before publishing.
+							Use clear, concise voice prompts. Consider peak hours when
+							designing call capacity.
 						</p>
 					</div>
 				</CardContent>

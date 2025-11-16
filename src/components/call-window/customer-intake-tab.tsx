@@ -10,15 +10,31 @@ import { Check, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useAutoFill } from "@/hooks/use-auto-fill";
 import { cn } from "@/lib/utils";
 
 export function CustomerIntakeTab() {
-	const { getField, updateField, approveField, rejectField, approveAll, rejectAll, getFieldsByState, isExtracting } =
-		useAutoFill("customer");
+	const {
+		getField,
+		updateField,
+		approveField,
+		rejectField,
+		approveAll,
+		rejectAll,
+		getFieldsByState,
+		isExtracting,
+	} = useAutoFill("customer");
 
-	const aiFilledCount = getFieldsByState("ai-filled").length + getFieldsByState("ai-suggested").length;
+	const aiFilledCount =
+		getFieldsByState("ai-filled").length +
+		getFieldsByState("ai-suggested").length;
 
 	return (
 		<div className="h-full overflow-y-auto">
@@ -27,7 +43,9 @@ export function CustomerIntakeTab() {
 				{isExtracting && (
 					<div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
 						<Sparkles className="h-4 w-4 animate-pulse text-blue-600 dark:text-blue-400" />
-						<span className="text-blue-900 text-sm dark:text-blue-100">AI is analyzing the conversation...</span>
+						<span className="text-blue-900 text-sm dark:text-blue-100">
+							AI is analyzing the conversation...
+						</span>
 					</div>
 				)}
 
@@ -37,15 +55,26 @@ export function CustomerIntakeTab() {
 						<div className="flex items-center gap-2">
 							<Sparkles className="h-4 w-4 text-primary" />
 							<span className="text-sm">
-								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled by AI
+								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled
+								by AI
 							</span>
 						</div>
 						<div className="flex gap-2">
-							<Button className="gap-1" onClick={approveAll} size="sm" variant="outline">
+							<Button
+								className="gap-1"
+								onClick={approveAll}
+								size="sm"
+								variant="outline"
+							>
 								<Check className="h-3 w-3" />
 								Accept All
 							</Button>
-							<Button className="gap-1" onClick={rejectAll} size="sm" variant="outline">
+							<Button
+								className="gap-1"
+								onClick={rejectAll}
+								size="sm"
+								variant="outline"
+							>
 								<X className="h-3 w-3" />
 								Reject All
 							</Button>
@@ -209,7 +238,8 @@ function AIField({
 	rejectField: (name: string) => void;
 }) {
 	const field = getField(name);
-	const isAIFilled = field.state === "ai-filled" || field.state === "ai-suggested";
+	const isAIFilled =
+		field.state === "ai-filled" || field.state === "ai-suggested";
 
 	return (
 		<div className="space-y-2">
@@ -226,9 +256,11 @@ function AIField({
 				<Input
 					className={cn(
 						"transition-colors",
-						field.state === "ai-filled" && "border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
-						field.state === "ai-suggested" && "border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
-						field.state === "user-entered" && "border-green-500"
+						field.state === "ai-filled" &&
+							"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+						field.state === "ai-suggested" &&
+							"border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
+						field.state === "user-entered" && "border-green-500",
 					)}
 					id={name}
 					onChange={(e) => updateField(name, e.target.value)}

@@ -104,8 +104,12 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
 	}
 
 	// Get related data
-	const customer = Array.isArray(payment.customer) ? payment.customer[0] : payment.customer;
-	const invoice = Array.isArray(payment.invoice) ? payment.invoice[0] : payment.invoice;
+	const customer = Array.isArray(payment.customer)
+		? payment.customer[0]
+		: payment.customer;
+	const invoice = Array.isArray(payment.invoice)
+		? payment.invoice[0]
+		: payment.invoice;
 	const job = Array.isArray(payment.job) ? payment.job[0] : payment.job;
 
 	// Fetch all related data

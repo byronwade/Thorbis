@@ -23,9 +23,22 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type Invoice = {
 	id: string;
@@ -63,7 +76,10 @@ type InvoicePaymentsProps = {
 	payments?: PaymentData[];
 };
 
-export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps) {
+export function InvoicePayments({
+	invoice,
+	payments = [],
+}: InvoicePaymentsProps) {
 	const [showRecordPayment, setShowRecordPayment] = useState(false);
 	const [removePaymentId, setRemovePaymentId] = useState<string | null>(null);
 	const [isRemoving, setIsRemoving] = useState(false);
@@ -164,7 +180,11 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 					)}
 				</div>
 				{invoice.balance_amount > 0 && invoice.status !== "cancelled" && (
-					<Button onClick={() => setShowRecordPayment(!showRecordPayment)} size="sm" variant="outline">
+					<Button
+						onClick={() => setShowRecordPayment(!showRecordPayment)}
+						size="sm"
+						variant="outline"
+					>
 						<Plus className="mr-2 h-4 w-4" />
 						Record Payment
 					</Button>
@@ -177,10 +197,14 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 					<div className="mb-4 grid gap-4 md:grid-cols-3">
 						<div className="rounded-lg bg-muted p-4">
 							<div className="text-muted-foreground text-sm">Total Paid</div>
-							<div className="mt-1 font-bold text-success text-xl">{formatCurrency(invoice.paid_amount)}</div>
+							<div className="mt-1 font-bold text-success text-xl">
+								{formatCurrency(invoice.paid_amount)}
+							</div>
 						</div>
 						<div className="rounded-lg bg-muted p-4">
-							<div className="text-muted-foreground text-sm">Remaining Balance</div>
+							<div className="text-muted-foreground text-sm">
+								Remaining Balance
+							</div>
 							<div
 								className={`mt-1 font-bold text-xl ${
 									invoice.balance_amount > 0
@@ -194,7 +218,9 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 							</div>
 						</div>
 						<div className="rounded-lg bg-muted p-4">
-							<div className="text-muted-foreground text-sm">Payment Status</div>
+							<div className="text-muted-foreground text-sm">
+								Payment Status
+							</div>
 							<div className="mt-1">
 								{invoice.balance_amount === 0 ? (
 									<Badge className="bg-success" variant="default">
@@ -229,15 +255,23 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 										const payment = paymentData.payment;
 										return (
 											<TableRow key={paymentData.id}>
-												<TableCell className="whitespace-nowrap">{formatDateTime(paymentData.applied_at)}</TableCell>
-												<TableCell className="font-mono text-sm">{payment.payment_number}</TableCell>
+												<TableCell className="whitespace-nowrap">
+													{formatDateTime(paymentData.applied_at)}
+												</TableCell>
+												<TableCell className="font-mono text-sm">
+													{payment.payment_number}
+												</TableCell>
 												<TableCell className="font-medium">
 													{formatCurrency(paymentData.amount_applied)}
 													{payment.amount !== paymentData.amount_applied && (
-														<div className="text-muted-foreground text-xs">of {formatCurrency(payment.amount)}</div>
+														<div className="text-muted-foreground text-xs">
+															of {formatCurrency(payment.amount)}
+														</div>
 													)}
 												</TableCell>
-												<TableCell className="capitalize">{getPaymentMethodDisplay(payment)}</TableCell>
+												<TableCell className="capitalize">
+													{getPaymentMethodDisplay(payment)}
+												</TableCell>
 												<TableCell>
 													<Badge
 														variant={
@@ -252,13 +286,17 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 													>
 														{payment.status}
 													</Badge>
-													{payment.refunded_amount && payment.refunded_amount > 0 && (
-														<Badge className="ml-1" variant="outline">
-															Refunded: {formatCurrency(payment.refunded_amount)}
-														</Badge>
-													)}
+													{payment.refunded_amount &&
+														payment.refunded_amount > 0 && (
+															<Badge className="ml-1" variant="outline">
+																Refunded:{" "}
+																{formatCurrency(payment.refunded_amount)}
+															</Badge>
+														)}
 												</TableCell>
-												<TableCell className="font-medium">{formatCurrency(paymentData.balanceAfter)}</TableCell>
+												<TableCell className="font-medium">
+													{formatCurrency(paymentData.balanceAfter)}
+												</TableCell>
 												<TableCell>
 													<div className="flex items-center gap-1">
 														<Link
@@ -266,7 +304,9 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 															href={`/dashboard/work/payments/${payment.id}`}
 														>
 															<ExternalLink className="h-4 w-4 text-muted-foreground" />
-															<span className="sr-only">View payment details</span>
+															<span className="sr-only">
+																View payment details
+															</span>
 														</Link>
 														<Button
 															className="h-8 w-8 p-0"
@@ -275,7 +315,9 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 															variant="ghost"
 														>
 															<X className="h-4 w-4 text-destructive" />
-															<span className="sr-only">Remove payment from invoice</span>
+															<span className="sr-only">
+																Remove payment from invoice
+															</span>
 														</Button>
 													</div>
 												</TableCell>
@@ -300,26 +342,40 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 							<DollarSign />
 						</EmptyMedia>
 						<EmptyTitle>No Payments Yet</EmptyTitle>
-						<EmptyDescription>Record a payment when the customer pays this invoice.</EmptyDescription>
+						<EmptyDescription>
+							Record a payment when the customer pays this invoice.
+						</EmptyDescription>
 					</EmptyHeader>
 				</Empty>
 			)}
 
 			{/* Remove Payment Confirmation Dialog */}
-			<Dialog onOpenChange={(open) => !open && setRemovePaymentId(null)} open={removePaymentId !== null}>
+			<Dialog
+				onOpenChange={(open) => !open && setRemovePaymentId(null)}
+				open={removePaymentId !== null}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Remove Payment from Invoice?</DialogTitle>
 						<DialogDescription>
-							This will remove the payment application from this invoice. The payment will remain in the system but
-							won't be applied to this invoice. The invoice balance will be recalculated.
+							This will remove the payment application from this invoice. The
+							payment will remain in the system but won't be applied to this
+							invoice. The invoice balance will be recalculated.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isRemoving} onClick={() => setRemovePaymentId(null)} variant="outline">
+						<Button
+							disabled={isRemoving}
+							onClick={() => setRemovePaymentId(null)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isRemoving} onClick={handleRemovePayment} variant="destructive">
+						<Button
+							disabled={isRemoving}
+							onClick={handleRemovePayment}
+							variant="destructive"
+						>
 							{isRemoving ? "Removing..." : "Remove Payment"}
 						</Button>
 					</DialogFooter>

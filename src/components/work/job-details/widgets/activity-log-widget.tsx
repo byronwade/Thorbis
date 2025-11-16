@@ -10,7 +10,16 @@
  * - Efficient date formatting
  */
 
-import { Calendar, CheckCircle2, Clock, DollarSign, FileText, MessageSquare, User, Wrench } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle2,
+	Clock,
+	DollarSign,
+	FileText,
+	MessageSquare,
+	User,
+	Wrench,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -74,12 +83,21 @@ type Activity = {
 	metadata?: Record<string, unknown>;
 };
 
-export function ActivityLogWidget({ job, activities: activitiesData = [] }: ActivityLogWidgetProps) {
+export function ActivityLogWidget({
+	job,
+	activities: activitiesData = [],
+}: ActivityLogWidgetProps) {
 	// Transform activities from database
 	const activities: Activity[] = (activitiesData as any[]).map((activity) => {
-		const user = activity.user ? (Array.isArray(activity.user) ? activity.user[0] : activity.user) : null;
+		const user = activity.user
+			? Array.isArray(activity.user)
+				? activity.user[0]
+				: activity.user
+			: null;
 
-		const userName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "System";
+		const userName = user
+			? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+			: "System";
 
 		// Map activity_type from database to our widget types
 		let type: ActivityType = "work";
@@ -167,14 +185,18 @@ export function ActivityLogWidget({ job, activities: activitiesData = [] }: Acti
 							<div className={`flex-1 pb-4 ${isLast ? "" : "border-b"}`}>
 								<div className="space-y-1">
 									<div className="flex items-start justify-between gap-2">
-										<h5 className="font-medium text-sm leading-tight">{activity.title}</h5>
+										<h5 className="font-medium text-sm leading-tight">
+											{activity.title}
+										</h5>
 										<span className="shrink-0 text-muted-foreground text-xs">
 											{formatTimestamp(activity.timestamp)}
 										</span>
 									</div>
 
 									{activity.description && (
-										<p className="text-muted-foreground text-xs leading-relaxed">{activity.description}</p>
+										<p className="text-muted-foreground text-xs leading-relaxed">
+											{activity.description}
+										</p>
 									)}
 
 									<div className="flex items-center gap-1.5 text-muted-foreground text-xs">

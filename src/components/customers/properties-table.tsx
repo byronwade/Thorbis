@@ -12,7 +12,16 @@
  * - Compact rows for scalability (100+ properties)
  */
 
-import { Archive, Building2, ExternalLink, Factory, Home, Plus, Sparkles, UserX } from "lucide-react";
+import {
+	Archive,
+	Building2,
+	ExternalLink,
+	Factory,
+	Home,
+	Plus,
+	Sparkles,
+	UserX,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { archiveProperty } from "@/actions/properties";
@@ -28,8 +37,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
+import {
+	Sheet,
+	SheetContent,
+	SheetDescription,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import { JobEnrichmentPanel } from "@/components/work/job-enrichment-panel";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
@@ -87,17 +107,27 @@ function getPropertyBadge(type?: string) {
 	const variants: Record<string, string> = {
 		residential: "bg-success text-success dark:bg-success dark:text-success",
 		commercial: "bg-primary text-primary dark:bg-primary dark:text-primary",
-		industrial: "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+		industrial:
+			"bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
 	};
 
 	return (
-		<Badge className={cn("text-xs", variants[type || "residential"] || variants.residential)}>
+		<Badge
+			className={cn(
+				"text-xs",
+				variants[type || "residential"] || variants.residential,
+			)}
+		>
 			{type ? type.charAt(0).toUpperCase() + type.slice(1) : "Residential"}
 		</Badge>
 	);
 }
 
-export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: PropertiesTableProps) {
+export function PropertiesTable({
+	properties,
+	itemsPerPage = 10,
+	customerId,
+}: PropertiesTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.properties);
 
@@ -116,7 +146,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 	const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	const handleMouseEnter = (property: Property, event: React.MouseEvent) => {
 		setHoveredProperty(property);
@@ -148,7 +180,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 			variant: "ghost",
 			onClick: async (selectedIds) => {
 				// TODO: Implement move dialog
-				alert(`Move ${selectedIds.size} properties to another customer (coming soon)`);
+				alert(
+					`Move ${selectedIds.size} properties to another customer (coming soon)`,
+				);
 			},
 		},
 	];
@@ -170,7 +204,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 					>
 						<Icon className="size-4 shrink-0 text-muted-foreground" />
 						<div className="min-w-0">
-							<p className="truncate font-medium leading-tight">{property.name || property.address}</p>
+							<p className="truncate font-medium leading-tight">
+								{property.name || property.address}
+							</p>
 							<p className="truncate text-muted-foreground text-xs leading-tight">
 								{property.city}, {property.state} {property.zip_code}
 							</p>
@@ -195,7 +231,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 			sortable: true,
 			align: "right",
 			render: (property) => {
-				const sqFt = property.square_footage || property.enrichment?.details?.squareFootage;
+				const sqFt =
+					property.square_footage ||
+					property.enrichment?.details?.squareFootage;
 				const beds = property.enrichment?.details?.bedrooms;
 				const baths = property.enrichment?.details?.bathrooms;
 
@@ -208,7 +246,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 							</p>
 						)}
 						{!sqFt && property.year_built && (
-							<p className="text-muted-foreground text-xs">Built {property.year_built}</p>
+							<p className="text-muted-foreground text-xs">
+								Built {property.year_built}
+							</p>
 						)}
 					</div>
 				);
@@ -233,8 +273,14 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 					<div className="text-sm">
 						{displayValue ? (
 							<>
-								<p className="font-semibold text-success dark:text-success">{formatCurrency(displayValue)}</p>
-								{tax && <p className="text-muted-foreground text-xs">Tax: {formatCurrency(tax)}</p>}
+								<p className="font-semibold text-success dark:text-success">
+									{formatCurrency(displayValue)}
+								</p>
+								{tax && (
+									<p className="text-muted-foreground text-xs">
+										Tax: {formatCurrency(tax)}
+									</p>
+								)}
 							</>
 						) : (
 							<span className="text-muted-foreground text-xs">No data</span>
@@ -276,7 +322,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 									</SheetDescription>
 								</SheetHeader>
 								<div className="mt-6">
-									<JobEnrichmentPanel enrichmentData={property.operationalIntelligence} />
+									<JobEnrichmentPanel
+										enrichmentData={property.operationalIntelligence}
+									/>
 								</div>
 							</SheetContent>
 						</Sheet>
@@ -331,7 +379,9 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 				enableSelection={true}
 				entity="properties"
 				getItemId={(property) => property.id}
-				isArchived={(property) => Boolean(property.archived_at || property.deleted_at)}
+				isArchived={(property) =>
+					Boolean(property.archived_at || property.deleted_at)
+				}
 				itemsPerPage={itemsPerPage}
 				searchFilter={searchFilter}
 				searchPlaceholder="Search properties..."
@@ -361,14 +411,16 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 								", " +
 								hoveredProperty.state +
 								" " +
-								hoveredProperty.zip_code
+								hoveredProperty.zip_code,
 						)}&zoom=14`}
 						style={{ border: 0 }}
 						title={`Map of ${hoveredProperty.address}`}
 						width="100%"
 					/>
 					<div className="absolute right-0 bottom-0 left-0 border-t bg-background/95 p-2 backdrop-blur">
-						<p className="truncate font-medium text-xs">{hoveredProperty.address}</p>
+						<p className="truncate font-medium text-xs">
+							{hoveredProperty.address}
+						</p>
 						<p className="truncate text-muted-foreground text-xs">
 							{hoveredProperty.city}, {hoveredProperty.state}
 						</p>
@@ -381,11 +433,13 @@ export function PropertiesTable({ properties, itemsPerPage = 10, customerId }: P
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>
-							Archive {selectedItemIds.size} {selectedItemIds.size === 1 ? "Property" : "Properties"}?
+							Archive {selectedItemIds.size}{" "}
+							{selectedItemIds.size === 1 ? "Property" : "Properties"}?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} {selectedItemIds.size === 1 ? "property" : "properties"} will be archived and can
-							be restored within 90 days.
+							{selectedItemIds.size}{" "}
+							{selectedItemIds.size === 1 ? "property" : "properties"} will be
+							archived and can be restored within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

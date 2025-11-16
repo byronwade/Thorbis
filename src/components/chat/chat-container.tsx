@@ -9,13 +9,27 @@ import { SuggestedActions } from "./suggested-actions";
 type ChatContainerProps = {
 	messages: UIMessage[];
 	input: string;
-	onInputChange: (e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>) => void;
-	onSubmit: (e: FormEvent<HTMLFormElement>, options?: { data?: Record<string, string> }) => void;
+	onInputChange: (
+		e:
+			| React.ChangeEvent<HTMLTextAreaElement>
+			| React.ChangeEvent<HTMLInputElement>,
+	) => void;
+	onSubmit: (
+		e: FormEvent<HTMLFormElement>,
+		options?: { data?: Record<string, string> },
+	) => void;
 	isLoading: boolean;
 	onStop: () => void;
 };
 
-export function ChatContainer({ messages, input, onInputChange, onSubmit, isLoading, onStop }: ChatContainerProps) {
+export function ChatContainer({
+	messages,
+	input,
+	onInputChange,
+	onSubmit,
+	isLoading,
+	onStop,
+}: ChatContainerProps) {
 	const handleSuggestedAction = (prompt: string) => {
 		// Simulate form submission with the suggested prompt
 		const syntheticEvent = {
@@ -41,17 +55,27 @@ export function ChatContainer({ messages, input, onInputChange, onSubmit, isLoad
 				<div className="mx-auto flex max-w-4xl flex-col gap-4 p-4 px-2 py-4 md:gap-6 md:px-4">
 					{messages.length === 0 ? (
 						<div className="mx-auto mt-4 flex size-full max-w-3xl flex-col justify-center px-4 md:mt-16 md:px-8">
-							<div className="font-semibold text-xl md:text-2xl" style={{ opacity: 1, transform: "none" }}>
+							<div
+								className="font-semibold text-xl md:text-2xl"
+								style={{ opacity: 1, transform: "none" }}
+							>
 								Hello there!
 							</div>
-							<div className="text-muted-foreground text-xl md:text-2xl" style={{ opacity: 1, transform: "none" }}>
+							<div
+								className="text-muted-foreground text-xl md:text-2xl"
+								style={{ opacity: 1, transform: "none" }}
+							>
 								How can I help you today?
 							</div>
 						</div>
 					) : (
 						<>
 							{messages.map((message) => (
-								<ChatMessage isLoading={false} key={message.id} message={message} />
+								<ChatMessage
+									isLoading={false}
+									key={message.id}
+									message={message}
+								/>
 							))}
 							{isLoading && <ThinkingMessage />}
 						</>

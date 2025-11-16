@@ -37,7 +37,10 @@ type BillingActionResult = {
 	data?: Record<string, unknown>;
 };
 
-const toBillingError = (error: unknown, fallbackMessage: string): BillingActionResult => ({
+const toBillingError = (
+	error: unknown,
+	fallbackMessage: string,
+): BillingActionResult => ({
 	success: false,
 	error: error instanceof Error ? error.message : fallbackMessage,
 });
@@ -66,7 +69,7 @@ export async function createOrganizationCheckoutSession(
 	companyId: string,
 	successUrl?: string,
 	cancelUrl?: string,
-	phoneNumber?: string
+	phoneNumber?: string,
 ): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
@@ -93,7 +96,11 @@ export async function createOrganizationCheckoutSession(
 		// Get or create Stripe customer
 		let customerId = userData.stripe_customer_id;
 		if (!customerId) {
-			customerId = await getOrCreateStripeCustomer(user.id, userData.email, userData.name || undefined);
+			customerId = await getOrCreateStripeCustomer(
+				user.id,
+				userData.email,
+				userData.name || undefined,
+			);
 
 			if (!customerId) {
 				return {
@@ -103,7 +110,10 @@ export async function createOrganizationCheckoutSession(
 			}
 
 			// Save customer ID to database
-			await supabase.from("users").update({ stripe_customer_id: customerId }).eq("id", user.id);
+			await supabase
+				.from("users")
+				.update({ stripe_customer_id: customerId })
+				.eq("id", user.id);
 		}
 
 		// Check if this is an additional organization
@@ -115,7 +125,8 @@ export async function createOrganizationCheckoutSession(
 			.returns<MembershipWithSubscriptionStatus[]>();
 
 		const activeOrgsCount = (existingMemberships ?? []).filter(
-			(membership) => membership.companies?.stripe_subscription_status === "active"
+			(membership) =>
+				membership.companies?.stripe_subscription_status === "active",
 		).length;
 
 		const isAdditionalOrg = activeOrgsCount > 0;
@@ -126,7 +137,9 @@ export async function createOrganizationCheckoutSession(
 			customerId,
 			companyId,
 			isAdditionalOrg,
-			successUrl: successUrl || `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
+			successUrl:
+				successUrl ||
+				`${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
 			cancelUrl: cancelUrl || `${siteUrl}/dashboard/welcome`,
 			phoneNumber,
 		});
@@ -153,7 +166,9 @@ export async function createOrganizationCheckoutSession(
  * Creates a Stripe billing portal session for managing subscription
  * Users can update payment methods, view invoices, and cancel subscription
  */
-export async function createBillingPortal(companyId?: string): Promise<BillingActionResult> {
+export async function createBillingPortal(
+	companyId?: string,
+): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -166,7 +181,11 @@ export async function createBillingPortal(companyId?: string): Promise<BillingAc
 		}
 
 		// Get user's Stripe customer ID
-		const { data: userData } = await supabase.from("users").select("stripe_customer_id").eq("id", user.id).single();
+		const { data: userData } = await supabase
+			.from("users")
+			.select("stripe_customer_id")
+			.eq("id", user.id)
+			.single();
 
 		if (!userData?.stripe_customer_id) {
 			return {
@@ -181,7 +200,10 @@ export async function createBillingPortal(companyId?: string): Promise<BillingAc
 			? `${siteUrl}/dashboard/settings/billing?company=${companyId}`
 			: `${siteUrl}/dashboard/settings/billing`;
 
-		const portalUrl = await createBillingPortalSession(userData.stripe_customer_id, returnUrl);
+		const portalUrl = await createBillingPortalSession(
+			userData.stripe_customer_id,
+			returnUrl,
+		);
 
 		if (!portalUrl) {
 			return {
@@ -204,7 +226,9 @@ export async function createBillingPortal(companyId?: string): Promise<BillingAc
  *
  * Returns the current subscription status for a company
  */
-export async function getCompanySubscriptionStatus(companyId: string): Promise<BillingActionResult> {
+export async function getCompanySubscriptionStatus(
+	companyId: string,
+): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -243,7 +267,7 @@ export async function getCompanySubscriptionStatus(companyId: string): Promise<B
         subscription_current_period_end,
         subscription_cancel_at_period_end,
         trial_ends_at
-      `
+      `,
 			)
 			.eq("id", companyId)
 			.single();
@@ -255,7 +279,9 @@ export async function getCompanySubscriptionStatus(companyId: string): Promise<B
 		// Get detailed subscription info from Stripe if we have a subscription ID
 		let stripeSubscription: Stripe.Subscription | null = null;
 		if (company.stripe_subscription_id) {
-			stripeSubscription = await getSubscription(company.stripe_subscription_id);
+			stripeSubscription = await getSubscription(
+				company.stripe_subscription_id,
+			);
 		}
 
 		return {
@@ -275,7 +301,9 @@ export async function getCompanySubscriptionStatus(companyId: string): Promise<B
  *
  * Cancels subscription at the end of the current billing period
  */
-export async function cancelCompanySubscription(companyId: string): Promise<BillingActionResult> {
+export async function cancelCompanySubscription(
+	companyId: string,
+): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -324,7 +352,10 @@ export async function cancelCompanySubscription(companyId: string): Promise<Bill
 		}
 
 		// Update database
-		await supabase.from("companies").update({ subscription_cancel_at_period_end: true }).eq("id", companyId);
+		await supabase
+			.from("companies")
+			.update({ subscription_cancel_at_period_end: true })
+			.eq("id", companyId);
 
 		revalidatePath("/dashboard/settings/billing");
 
@@ -342,7 +373,9 @@ export async function cancelCompanySubscription(companyId: string): Promise<Bill
  *
  * Removes the cancellation flag from a subscription
  */
-export async function reactivateCompanySubscription(companyId: string): Promise<BillingActionResult> {
+export async function reactivateCompanySubscription(
+	companyId: string,
+): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -391,7 +424,10 @@ export async function reactivateCompanySubscription(companyId: string): Promise<
 		}
 
 		// Update database
-		await supabase.from("companies").update({ subscription_cancel_at_period_end: false }).eq("id", companyId);
+		await supabase
+			.from("companies")
+			.update({ subscription_cancel_at_period_end: false })
+			.eq("id", companyId);
 
 		revalidatePath("/dashboard/settings/billing");
 

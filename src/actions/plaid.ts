@@ -37,7 +37,9 @@ function formatAccountName(account: any): string {
 /**
  * Create a Plaid Link token for initiating bank account connection
  */
-export async function createPlaidLinkToken(companyId: string): Promise<ActionResult<{ linkToken: string }>> {
+export async function createPlaidLinkToken(
+	companyId: string,
+): Promise<ActionResult<{ linkToken: string }>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		assertSupabase(supabase);
@@ -57,7 +59,10 @@ export async function createPlaidLinkToken(companyId: string): Promise<ActionRes
 			.single();
 
 		if (!membership) {
-			throw new ActionError("You do not have access to this company", ERROR_CODES.UNAUTHORIZED);
+			throw new ActionError(
+				"You do not have access to this company",
+				ERROR_CODES.UNAUTHORIZED,
+			);
 		}
 
 		// Get company details
@@ -68,7 +73,10 @@ export async function createPlaidLinkToken(companyId: string): Promise<ActionRes
 			.single();
 
 		if (companyError || !company) {
-			throw new ActionError(`Company not found: ${companyError?.message}`, ERROR_CODES.NOT_FOUND);
+			throw new ActionError(
+				`Company not found: ${companyError?.message}`,
+				ERROR_CODES.NOT_FOUND,
+			);
 		}
 
 		// Create Plaid Link token
@@ -92,7 +100,10 @@ export async function createPlaidLinkToken(companyId: string): Promise<ActionRes
 
 			return { linkToken: response.data.link_token };
 		} catch (error: any) {
-			const errorMessage = error.response?.data?.error_message || error.message || "Failed to create Plaid Link token";
+			const errorMessage =
+				error.response?.data?.error_message ||
+				error.message ||
+				"Failed to create Plaid Link token";
 
 			throw new ActionError(errorMessage, ERROR_CODES.EXTERNAL_API_ERROR);
 		}
@@ -105,7 +116,7 @@ export async function createPlaidLinkToken(companyId: string): Promise<ActionRes
 export async function exchangePlaidToken(
 	publicToken: string,
 	companyId: string,
-	metadata: any
+	metadata: any,
 ): Promise<ActionResult<{ accountsLinked: number }>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
@@ -126,7 +137,10 @@ export async function exchangePlaidToken(
 			.single();
 
 		if (!membership) {
-			throw new ActionError("You do not have access to this company", ERROR_CODES.UNAUTHORIZED);
+			throw new ActionError(
+				"You do not have access to this company",
+				ERROR_CODES.UNAUTHORIZED,
+			);
 		}
 
 		try {
@@ -151,25 +165,33 @@ export async function exchangePlaidToken(
 
 			// Store each account in database
 			for (const account of accounts) {
-				const authData = authResponse.data.numbers.ach?.find((a) => a.account_id === account.account_id);
+				const authData = authResponse.data.numbers.ach?.find(
+					(a) => a.account_id === account.account_id,
+				);
 				const accountName = formatAccountName(account);
-				const bankName = metadata?.institution?.name || account.official_name || account.name || "Unknown Bank";
+				const bankName =
+					metadata?.institution?.name ||
+					account.official_name ||
+					account.name ||
+					"Unknown Bank";
 
-				const { error: insertError } = await supabase.from("finance_bank_accounts").insert({
-					company_id: companyId,
-					account_name: accountName,
-					bank_name: bankName,
-					account_type: account.subtype || "checking",
-					account_number_last4: account.mask || null,
-					routing_number_encrypted: authData?.routing || null, // TODO: Encrypt in production
-					current_balance: account.balances.current,
-					available_balance: account.balances.available,
-					plaid_access_token_encrypted: accessToken, // TODO: Encrypt in production
-					plaid_item_id: itemId,
-					plaid_account_id: account.account_id,
-					auto_import_transactions: true,
-					is_active: true,
-				});
+				const { error: insertError } = await supabase
+					.from("finance_bank_accounts")
+					.insert({
+						company_id: companyId,
+						account_name: accountName,
+						bank_name: bankName,
+						account_type: account.subtype || "checking",
+						account_number_last4: account.mask || null,
+						routing_number_encrypted: authData?.routing || null, // TODO: Encrypt in production
+						current_balance: account.balances.current,
+						available_balance: account.balances.available,
+						plaid_access_token_encrypted: accessToken, // TODO: Encrypt in production
+						plaid_item_id: itemId,
+						plaid_account_id: account.account_id,
+						auto_import_transactions: true,
+						is_active: true,
+					});
 
 				if (insertError) {
 					if (insertError.code === "23505") {
@@ -195,11 +217,14 @@ export async function exchangePlaidToken(
 						if (updateError) {
 							throw new ActionError(
 								`Failed to update bank account: ${updateError.message}`,
-								ERROR_CODES.DB_UPDATE_ERROR
+								ERROR_CODES.DB_UPDATE_ERROR,
 							);
 						}
 					} else {
-						throw new ActionError(`Failed to save bank account: ${insertError.message}`, ERROR_CODES.DB_INSERT_ERROR);
+						throw new ActionError(
+							`Failed to save bank account: ${insertError.message}`,
+							ERROR_CODES.DB_INSERT_ERROR,
+						);
 					}
 				}
 			}
@@ -212,7 +237,10 @@ export async function exchangePlaidToken(
 
 			return { accountsLinked: accounts.length };
 		} catch (error: any) {
-			throw new ActionError(error.message || "Failed to link bank account", ERROR_CODES.EXTERNAL_API_ERROR);
+			throw new ActionError(
+				error.message || "Failed to link bank account",
+				ERROR_CODES.EXTERNAL_API_ERROR,
+			);
 		}
 	});
 }
@@ -222,7 +250,7 @@ export async function exchangePlaidToken(
  */
 export async function syncTransactions(
 	companyId: string,
-	accessToken?: string
+	accessToken?: string,
 ): Promise<ActionResult<{ synced: number }>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
@@ -245,7 +273,10 @@ export async function syncTransactions(
 				.single();
 
 			if (!membership) {
-				throw new ActionError("You do not have access to this company", ERROR_CODES.UNAUTHORIZED);
+				throw new ActionError(
+					"You do not have access to this company",
+					ERROR_CODES.UNAUTHORIZED,
+				);
 			}
 		}
 
@@ -258,7 +289,10 @@ export async function syncTransactions(
 			.not("plaid_access_token_encrypted", "is", null);
 
 		if (accountsError) {
-			throw new ActionError(`Failed to fetch bank accounts: ${accountsError.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to fetch bank accounts: ${accountsError.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		if (!accounts || accounts.length === 0) {
@@ -274,7 +308,9 @@ export async function syncTransactions(
 				// Determine start date (last synced or 90 days ago)
 				const startDate = account.last_synced_at
 					? new Date(account.last_synced_at).toISOString().split("T")[0]
-					: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+					: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+							.toISOString()
+							.split("T")[0];
 
 				const endDate = new Date().toISOString().split("T")[0];
 
@@ -302,7 +338,7 @@ export async function syncTransactions(
 							pending: txn.pending,
 							iso_currency_code: txn.iso_currency_code || "USD",
 						},
-						{ onConflict: "plaid_transaction_id" }
+						{ onConflict: "plaid_transaction_id" },
 					);
 				}
 
@@ -346,7 +382,7 @@ export async function getTransactions(
 		endDate?: string;
 		search?: string;
 		limit?: number;
-	}
+	},
 ): Promise<
 	ActionResult<{
 		transactions: any[];
@@ -382,7 +418,10 @@ export async function getTransactions(
 			.single();
 
 		if (!membership) {
-			throw new ActionError("You do not have access to this bank account", ERROR_CODES.UNAUTHORIZED);
+			throw new ActionError(
+				"You do not have access to this bank account",
+				ERROR_CODES.UNAUTHORIZED,
+			);
 		}
 
 		// Build query
@@ -401,7 +440,9 @@ export async function getTransactions(
 		}
 
 		if (options?.search) {
-			query = query.or(`description.ilike.%${options.search}%,merchant_name.ilike.%${options.search}%`);
+			query = query.or(
+				`description.ilike.%${options.search}%,merchant_name.ilike.%${options.search}%`,
+			);
 		}
 
 		if (options?.limit) {
@@ -413,7 +454,10 @@ export async function getTransactions(
 		const { data: transactions, error, count } = await query;
 
 		if (error) {
-			throw new ActionError(`Failed to fetch transactions: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to fetch transactions: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return {

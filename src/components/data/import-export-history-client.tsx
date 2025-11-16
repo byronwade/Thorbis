@@ -6,7 +6,15 @@
  * Displays history of imports and exports with undo capability
  */
 
-import { CheckCircle, Clock, Download, FileSpreadsheet, RotateCcw, Upload, XCircle } from "lucide-react";
+import {
+	CheckCircle,
+	Clock,
+	Download,
+	FileSpreadsheet,
+	RotateCcw,
+	Upload,
+	XCircle,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -80,8 +88,12 @@ export function ImportExportHistoryClient() {
 	return (
 		<div className="container mx-auto max-w-6xl space-y-6 py-8">
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Import/Export History</h1>
-				<p className="mt-2 text-muted-foreground">View and manage your data import and export operations</p>
+				<h1 className="font-bold text-3xl tracking-tight">
+					Import/Export History
+				</h1>
+				<p className="mt-2 text-muted-foreground">
+					View and manage your data import and export operations
+				</p>
 			</div>
 
 			<Tabs defaultValue="imports">

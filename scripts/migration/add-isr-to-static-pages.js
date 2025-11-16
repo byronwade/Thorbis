@@ -104,7 +104,7 @@ function processFile(filePath) {
  * - Reduced JavaScript bundle size
  * - Better SEO and initial page load
  * - ISR revalidation every ${formatRevalidationDescription(revalidateTime)}
- */`
+ */`,
 			);
 		}
 

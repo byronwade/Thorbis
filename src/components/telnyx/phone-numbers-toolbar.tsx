@@ -15,7 +15,13 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { NumberPortingWizard } from "./number-porting-wizard";
 import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 
@@ -78,15 +84,18 @@ export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
 				{/* Info Bar */}
 				<div className="mt-3 flex items-center gap-6 text-muted-foreground text-sm">
 					<div>
-						<span className="font-medium text-foreground">3</span> active numbers
+						<span className="font-medium text-foreground">3</span> active
+						numbers
 					</div>
 					<div className="h-4 w-px bg-border" />
 					<div>
-						<span className="font-medium text-foreground">$3.00</span>/month total cost
+						<span className="font-medium text-foreground">$3.00</span>/month
+						total cost
 					</div>
 					<div className="h-4 w-px bg-border" />
 					<div>
-						<span className="font-medium text-foreground">1,247</span> minutes this month
+						<span className="font-medium text-foreground">1,247</span> minutes
+						this month
 					</div>
 					<div className="h-4 w-px bg-border" />
 					<div>
@@ -96,7 +105,11 @@ export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
 			</div>
 
 			{/* Modals */}
-			<PhoneNumberSearchModal companyId={companyId} onOpenChange={setSearchOpen} open={searchOpen} />
+			<PhoneNumberSearchModal
+				companyId={companyId}
+				onOpenChange={setSearchOpen}
+				open={searchOpen}
+			/>
 
 			<NumberPortingWizard onOpenChange={setPortingOpen} open={portingOpen} />
 		</>

@@ -74,11 +74,15 @@ export function ComingSoon({
 				{/* Main heading with gradient */}
 				<div className="space-y-4">
 					<h1 className="font-bold text-5xl tracking-tight md:text-6xl">
-						<span className={`bg-gradient-to-r ${titleGradient} bg-clip-text font-extrabold text-transparent`}>
+						<span
+							className={`bg-gradient-to-r ${titleGradient} bg-clip-text font-extrabold text-transparent`}
+						>
 							{title}
 						</span>
 					</h1>
-					<p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">{description}</p>
+					<p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
+						{description}
+					</p>
 				</div>
 
 				{/* Features Grid (if provided) */}
@@ -110,12 +114,18 @@ export function ComingSoon({
 										key={index}
 									>
 										<div className="mb-5 flex justify-center">
-											<div className={`flex size-14 items-center justify-center rounded-full bg-${colorClass}/10`}>
+											<div
+												className={`flex size-14 items-center justify-center rounded-full bg-${colorClass}/10`}
+											>
 												<FeatureIcon className={`size-7 text-${colorClass}`} />
 											</div>
 										</div>
-										<h3 className="mb-3 font-semibold text-xl">{feature.title}</h3>
-										<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+										<h3 className="mb-3 font-semibold text-xl">
+											{feature.title}
+										</h3>
+										<p className="text-muted-foreground leading-relaxed">
+											{feature.description}
+										</p>
 									</div>
 								);
 							})}
@@ -138,7 +148,10 @@ export function ComingSoon({
 					)}
 					<div className="flex items-center justify-center gap-2 text-muted-foreground">
 						<Rocket className="size-5" />
-						<p>In the meantime, explore the platform and reach out if you need help</p>
+						<p>
+							In the meantime, explore the platform and reach out if you need
+							help
+						</p>
 					</div>
 				</div>
 			</div>

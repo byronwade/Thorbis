@@ -16,7 +16,12 @@
 import type { StatCard } from "@/components/ui/status-pipeline";
 import { createClient } from "@/lib/supabase/server";
 
-export type StatsMetric = "count" | "revenue" | "avgValue" | "completion" | "growth";
+export type StatsMetric =
+	| "count"
+	| "revenue"
+	| "avgValue"
+	| "completion"
+	| "growth";
 
 export type StatsConfig = {
 	groupBy?: string;
@@ -47,11 +52,16 @@ type EntityTable =
 export async function createEntityStats(
 	table: EntityTable,
 	companyId: string,
-	config: StatsConfig = {}
+	config: StatsConfig = {},
 ): Promise<StatCard[]> {
 	const supabase = await createClient();
 
-	const { groupBy = "status", statusField = "status", amountField = "total", dateField = "created_at" } = config;
+	const {
+		groupBy = "status",
+		statusField = "status",
+		amountField = "total",
+		dateField = "created_at",
+	} = config;
 
 	try {
 		// Fetch all records for the entity
@@ -80,7 +90,7 @@ export async function createEntityStats(
 				acc[status].records.push(record);
 				return acc;
 			},
-			{} as Record<string, { count: number; total: number; records: any[] }>
+			{} as Record<string, { count: number; total: number; records: any[] }>,
 		);
 
 		// Convert to StatCard format
@@ -104,12 +114,15 @@ export async function createEntityStats(
 export async function getEntityCount(
 	table: EntityTable,
 	companyId: string,
-	filters: Record<string, any> = {}
+	filters: Record<string, any> = {},
 ): Promise<number> {
 	const supabase = await createClient();
 
 	try {
-		let query = supabase.from(table).select("*", { count: "exact", head: true }).eq("company_id", companyId);
+		let query = supabase
+			.from(table)
+			.select("*", { count: "exact", head: true })
+			.eq("company_id", companyId);
 
 		// Apply filters
 		Object.entries(filters).forEach(([key, value]) => {
@@ -130,7 +143,7 @@ export async function getEntityCount(
 export async function calculateGrowth(
 	table: EntityTable,
 	companyId: string,
-	period: "day" | "week" | "month" = "month"
+	period: "day" | "week" | "month" = "month",
 ): Promise<number> {
 	const supabase = await createClient();
 
@@ -184,7 +197,9 @@ export async function calculateGrowth(
 			return 0;
 		}
 
-		const growth = ((Number(currentCount) - Number(previousCount)) / Number(previousCount)) * 100;
+		const growth =
+			((Number(currentCount) - Number(previousCount)) / Number(previousCount)) *
+			100;
 		return Math.round(growth);
 	} catch (error) {
 		console.error("Error calculating growth:", error);
@@ -201,14 +216,24 @@ function formatStatusLabel(status: string): string {
 		.join(" ");
 }
 
-function mapStatusToVariant(status: string): "default" | "success" | "warning" | "destructive" {
+function mapStatusToVariant(
+	status: string,
+): "default" | "success" | "warning" | "destructive" {
 	const statusLower = status.toLowerCase();
 
-	if (statusLower.includes("complete") || statusLower.includes("paid") || statusLower.includes("done")) {
+	if (
+		statusLower.includes("complete") ||
+		statusLower.includes("paid") ||
+		statusLower.includes("done")
+	) {
 		return "success";
 	}
 
-	if (statusLower.includes("pending") || statusLower.includes("draft") || statusLower.includes("review")) {
+	if (
+		statusLower.includes("pending") ||
+		statusLower.includes("draft") ||
+		statusLower.includes("review")
+	) {
 		return "warning";
 	}
 
@@ -228,7 +253,17 @@ function getPlaceholderStats(): StatCard[] {
 	return [
 		{ label: "Total", value: 0, description: "Loading...", status: "default" },
 		{ label: "Active", value: 0, description: "Loading...", status: "default" },
-		{ label: "Completed", value: 0, description: "Loading...", status: "success" },
-		{ label: "Pending", value: 0, description: "Loading...", status: "warning" },
+		{
+			label: "Completed",
+			value: 0,
+			description: "Loading...",
+			status: "success",
+		},
+		{
+			label: "Pending",
+			value: 0,
+			description: "Loading...",
+			status: "warning",
+		},
 	];
 }

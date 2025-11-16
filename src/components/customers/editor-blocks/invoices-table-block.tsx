@@ -35,10 +35,20 @@ export function InvoicesTableBlockComponent({ node, editor }: any) {
 			maximumFractionDigits: 0,
 		}).format(cents / 100);
 
-	const pastDueInvoices = (invoices || []).filter((inv: any) => inv.status === "overdue");
-	const pastDueTotal = pastDueInvoices.reduce((sum: number, inv: any) => sum + (inv.balance_due || 0), 0);
-	const unpaidInvoices = (invoices || []).filter((inv: any) => inv.status !== "paid" && inv.status !== "cancelled");
-	const unpaidTotal = unpaidInvoices.reduce((sum: number, inv: any) => sum + (inv.balance_due || 0), 0);
+	const pastDueInvoices = (invoices || []).filter(
+		(inv: any) => inv.status === "overdue",
+	);
+	const pastDueTotal = pastDueInvoices.reduce(
+		(sum: number, inv: any) => sum + (inv.balance_due || 0),
+		0,
+	);
+	const unpaidInvoices = (invoices || []).filter(
+		(inv: any) => inv.status !== "paid" && inv.status !== "cancelled",
+	);
+	const unpaidTotal = unpaidInvoices.reduce(
+		(sum: number, inv: any) => sum + (inv.balance_due || 0),
+		0,
+	);
 
 	let summary = "";
 	if (invoices.length === 0) {
@@ -57,7 +67,10 @@ export function InvoicesTableBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="invoices-table-block">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddInvoice}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddInvoice}
+					>
 						Add Invoice
 					</CollapsibleActionButton>
 				}
@@ -71,7 +84,10 @@ export function InvoicesTableBlockComponent({ node, editor }: any) {
 								title: "No invoices found",
 								description: "Get started by creating your first invoice.",
 								action: (
-									<EmptyStateActionButton icon={<Plus className="size-4" />} onClick={handleAddInvoice}>
+									<EmptyStateActionButton
+										icon={<Plus className="size-4" />}
+										onClick={handleAddInvoice}
+									>
 										Add Invoice
 									</EmptyStateActionButton>
 								),
@@ -123,7 +139,11 @@ export const InvoicesTableBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "invoices-table-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "invoices-table-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

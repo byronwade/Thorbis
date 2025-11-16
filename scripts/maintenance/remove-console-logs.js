@@ -9,7 +9,12 @@ const fs = require("node:fs");
 const path = require("node:path");
 const CONSOLE_STATEMENT_REGEX = /^\s*console\.(log|warn|error|debug)\(/;
 
-const files = ["src/actions/team.ts", "src/actions/company.ts", "src/actions/settings.ts", "src/actions/customers.ts"];
+const files = [
+	"src/actions/team.ts",
+	"src/actions/company.ts",
+	"src/actions/settings.ts",
+	"src/actions/customers.ts",
+];
 
 for (const filePath of files) {
 	const fullPath = path.join(process.cwd(), filePath);

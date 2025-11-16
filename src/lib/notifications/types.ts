@@ -11,9 +11,21 @@ import { z } from "zod";
 // SCHEMAS
 // ============================================================================
 
-export const NotificationTypeSchema = z.enum(["message", "alert", "payment", "job", "team", "system"]);
+export const NotificationTypeSchema = z.enum([
+	"message",
+	"alert",
+	"payment",
+	"job",
+	"team",
+	"system",
+]);
 
-export const NotificationPrioritySchema = z.enum(["low", "medium", "high", "urgent"]);
+export const NotificationPrioritySchema = z.enum([
+	"low",
+	"medium",
+	"high",
+	"urgent",
+]);
 
 export const CreateNotificationSchema = z.object({
 	userId: z.string().uuid("Invalid user ID"),
@@ -49,4 +61,6 @@ export type NotificationType = z.infer<typeof NotificationTypeSchema>;
 export type NotificationPriority = z.infer<typeof NotificationPrioritySchema>;
 export type CreateNotificationInput = z.infer<typeof CreateNotificationSchema>;
 export type GetNotificationsInput = z.infer<typeof GetNotificationsSchema>;
-export type NotificationPreference = z.infer<typeof NotificationPreferenceSchema>;
+export type NotificationPreference = z.infer<
+	typeof NotificationPreferenceSchema
+>;

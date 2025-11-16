@@ -27,7 +27,9 @@ export default function WorkOrdersPage() {
 			{/* Page header */}
 			<div>
 				<h1 className="font-bold text-3xl tracking-tight">Work Orders</h1>
-				<p className="text-muted-foreground">Manage work orders, service requests, and job documentation</p>
+				<p className="text-muted-foreground">
+					Manage work orders, service requests, and job documentation
+				</p>
 			</div>
 
 			{/* Stats - Streams in first */}

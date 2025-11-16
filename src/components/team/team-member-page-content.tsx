@@ -30,7 +30,10 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
-import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
+import {
+	DetailPageContentLayout,
+	type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -46,9 +49,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/formatters";
 import { useToolbarActionsStore } from "@/lib/stores/toolbar-actions-store";
@@ -70,7 +83,10 @@ export type TeamMemberPageContentProps = {
 	metrics: any;
 };
 
-export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageContentProps) {
+export function TeamMemberPageContent({
+	entityData,
+	metrics,
+}: TeamMemberPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
@@ -102,11 +118,19 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 	};
 
 	const displayName = useMemo(
-		() => user?.name || localMember?.name || teamMember?.name || `${user?.email || "Unknown User"}`,
-		[user, localMember, teamMember]
+		() =>
+			user?.name ||
+			localMember?.name ||
+			teamMember?.name ||
+			`${user?.email || "Unknown User"}`,
+		[user, localMember, teamMember],
 	);
 
-	const memberStatus = (localMember?.status || teamMember?.status || "active")?.toLowerCase();
+	const memberStatus = (
+		localMember?.status ||
+		teamMember?.status ||
+		"active"
+	)?.toLowerCase();
 
 	const roleName =
 		localMember?.role?.name ||
@@ -115,12 +139,18 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		teamMember?.job_title ||
 		"Team Member";
 
-	const departmentName = localMember?.department?.name || teamMember?.department?.name || null;
+	const departmentName =
+		localMember?.department?.name || teamMember?.department?.name || null;
 
 	const memberSince =
-		localMember?.joined_at ?? teamMember?.joined_at ?? localMember?.created_at ?? teamMember?.created_at ?? null;
+		localMember?.joined_at ??
+		teamMember?.joined_at ??
+		localMember?.created_at ??
+		teamMember?.created_at ??
+		null;
 
-	const lastActive = localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
+	const lastActive =
+		localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
 
 	// Save changes
 	const handleSave = async () => {
@@ -143,7 +173,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 	};
 
 	// Get status badge variant
-	const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" => {
+	const getStatusBadgeVariant = (
+		status: string,
+	): "default" | "secondary" | "destructive" => {
 		switch (status) {
 			case "active":
 				return "default";
@@ -161,7 +193,10 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		<Badge className="font-mono" key="identifier" variant="outline">
 			#{teamMember?.id?.slice(0, 8).toUpperCase() || "MEMBER"}
 		</Badge>,
-		<Badge key="status" variant={getStatusBadgeVariant(memberStatus || "active")}>
+		<Badge
+			key="status"
+			variant={getStatusBadgeVariant(memberStatus || "active")}
+		>
 			{memberStatus === "active"
 				? "Active"
 				: memberStatus === "invited"
@@ -203,21 +238,24 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 			key: "assign-job",
 			label: "Assign Job",
 			icon: Wrench,
-			onClick: () => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "view-schedule",
 			label: "View Schedule",
 			icon: Calendar,
 			variant: "secondary" as const,
-			onClick: () => router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
+			onClick: () =>
+				router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "edit-permissions",
 			label: "Edit Permissions",
 			icon: Shield,
 			variant: "outline" as const,
-			onClick: () => router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
+			onClick: () =>
+				router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
 		},
 	] as const;
 
@@ -226,7 +264,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 			const { key, label, icon: Icon, onClick } = config;
 			const variant = "variant" in config ? config.variant : undefined;
 			return (
-				<Button key={key} onClick={onClick} size="sm" variant={variant ?? "default"}>
+				<Button
+					key={key}
+					onClick={onClick}
+					size="sm"
+					variant={variant ?? "default"}
+				>
 					<Icon className="mr-2 h-4 w-4" />
 					{label}
 				</Button>
@@ -264,7 +307,11 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)}>
+						<DropdownMenuItem
+							onClick={() =>
+								router.push(`/dashboard/settings/team/${teamMember.id}`)
+							}
+						>
 							<UserCog className="mr-2 size-3.5" />
 							Edit Full Profile
 						</DropdownMenuItem>
@@ -286,7 +333,10 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => {}}>
+						<DropdownMenuItem
+							className="text-destructive focus:text-destructive"
+							onClick={() => {}}
+						>
 							<Archive className="mr-2 size-3.5" />
 							Archive Member
 						</DropdownMenuItem>
@@ -448,29 +498,40 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		<DetailPageSurface padding="lg" variant="muted">
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-3">
-					<Label className="font-medium text-muted-foreground text-xs uppercase">Display Name</Label>
+					<Label className="font-medium text-muted-foreground text-xs uppercase">
+						Display Name
+					</Label>
 					<Input
 						className={cn(
-							"h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl"
+							"h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl",
 						)}
 						onChange={(e) => handleFieldChange("name", e.target.value)}
 						placeholder="Enter member name..."
 						value={displayName}
 					/>
 					<p className="text-muted-foreground text-xs">
-						Update how this team member appears across Thorbis. Changes are saved when you select Save changes.
+						Update how this team member appears across Thorbis. Changes are
+						saved when you select Save changes.
 					</p>
 				</div>
 
 				<div className="grid gap-3 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
-						<div className="rounded-lg border border-border/40 bg-background px-3 py-3" key={key}>
+						<div
+							className="rounded-lg border border-border/40 bg-background px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="h-4 w-4 text-muted-foreground" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">{label}</span>
+									<span className="font-medium text-muted-foreground text-xs uppercase">
+										{label}
+									</span>
 									{href ? (
-										<a className="font-semibold text-sm hover:underline" href={href}>
+										<a
+											className="font-semibold text-sm hover:underline"
+											href={href}
+										>
 											{value}
 										</a>
 									) : (
@@ -484,11 +545,16 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
-						<div className="rounded-lg border border-border/40 bg-background px-3 py-3" key={key}>
+						<div
+							className="rounded-lg border border-border/40 bg-background px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="h-4 w-4 text-muted-foreground" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">{label}</span>
+									<span className="font-medium text-muted-foreground text-xs uppercase">
+										{label}
+									</span>
 									<span className="font-semibold text-sm">{value}</span>
 								</div>
 							</div>
@@ -514,7 +580,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 									<div className="space-y-2">
 										<Label htmlFor="email">Email</Label>
 										<div className="flex gap-2">
-											<Input id="email" readOnly type="email" value={user?.email || ""} />
+											<Input
+												id="email"
+												readOnly
+												type="email"
+												value={user?.email || ""}
+											/>
 											{user?.email && (
 												<Button asChild size="icon" variant="outline">
 													<a href={`mailto:${user.email}`}>
@@ -529,7 +600,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<div className="flex gap-2">
 											<Input
 												id="phone"
-												onChange={(e) => handleFieldChange("phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("phone", e.target.value)
+												}
 												type="tel"
 												value={localMember.phone || ""}
 											/>
@@ -548,7 +621,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Label htmlFor="job_title">Job Title</Label>
 										<Input
 											id="job_title"
-											onChange={(e) => handleFieldChange("job_title", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("job_title", e.target.value)
+											}
 											value={localMember.job_title || ""}
 										/>
 									</div>
@@ -556,7 +631,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Label htmlFor="notes">Notes</Label>
 										<Textarea
 											id="notes"
-											onChange={(e) => handleFieldChange("notes", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("notes", e.target.value)
+											}
 											placeholder="Internal notes about this team member"
 											rows={3}
 											value={localMember.notes || ""}
@@ -590,25 +667,36 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 											</div>
 											<div>
 												<p className="font-medium">{cert.name}</p>
-												<p className="text-muted-foreground text-xs">{cert.issuing_organization || "Certification"}</p>
+												<p className="text-muted-foreground text-xs">
+													{cert.issuing_organization || "Certification"}
+												</p>
 											</div>
 										</div>
 										<div className="mt-3 space-y-1 text-sm">
 											{cert.issue_date && (
-												<p className="text-muted-foreground">Issued: {formatDate(cert.issue_date, "short")}</p>
+												<p className="text-muted-foreground">
+													Issued: {formatDate(cert.issue_date, "short")}
+												</p>
 											)}
 											{cert.expiry_date && (
 												<p
 													className={cn(
 														"text-muted-foreground",
-														new Date(cert.expiry_date) < new Date() && "text-destructive"
+														new Date(cert.expiry_date) < new Date() &&
+															"text-destructive",
 													)}
 												>
-													{new Date(cert.expiry_date) < new Date() ? "Expired" : "Expires"}:{" "}
-													{formatDate(cert.expiry_date, "short")}
+													{new Date(cert.expiry_date) < new Date()
+														? "Expired"
+														: "Expires"}
+													: {formatDate(cert.expiry_date, "short")}
 												</p>
 											)}
-											{cert.credential_id && <p className="text-muted-foreground">ID: {cert.credential_id}</p>}
+											{cert.credential_id && (
+												<p className="text-muted-foreground">
+													ID: {cert.credential_id}
+												</p>
+											)}
 										</div>
 									</div>
 								))}
@@ -631,7 +719,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 				count: assignedJobs.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -665,19 +755,25 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										const customerName =
 											job.customer?.display_name ||
 											job.customer?.company_name ||
-											[job.customer?.first_name, job.customer?.last_name].filter(Boolean).join(" ") ||
+											[job.customer?.first_name, job.customer?.last_name]
+												.filter(Boolean)
+												.join(" ") ||
 											"Unknown Customer";
 
 										return (
 											<TableRow key={assignment.id}>
-												<TableCell className="font-mono">#{job.job_number}</TableCell>
+												<TableCell className="font-mono">
+													#{job.job_number}
+												</TableCell>
 												<TableCell>{job.title || "Untitled Job"}</TableCell>
 												<TableCell>{customerName}</TableCell>
 												<TableCell>
 													<Badge variant="outline">{job.status}</Badge>
 												</TableCell>
 												<TableCell className="text-muted-foreground text-sm">
-													{job.scheduled_start ? formatDate(job.scheduled_start, "short") : "Not scheduled"}
+													{job.scheduled_start
+														? formatDate(job.scheduled_start, "short")
+														: "Not scheduled"}
 												</TableCell>
 												<TableCell>
 													<Button asChild size="sm" variant="ghost">
@@ -692,8 +788,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 						) : (
 							<div className="flex flex-col items-center justify-center p-8 text-center">
 								<Wrench className="mb-3 size-12 text-muted-foreground/50" />
-								<p className="font-medium text-muted-foreground text-sm">No jobs currently assigned</p>
-								<p className="mt-1 text-muted-foreground text-xs">Assign jobs to track this member's work</p>
+								<p className="font-medium text-muted-foreground text-sm">
+									No jobs currently assigned
+								</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									Assign jobs to track this member's work
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -723,17 +823,24 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 								<TableBody>
 									{timeEntries.slice(0, 20).map((entry: any) => (
 										<TableRow key={entry.id}>
-											<TableCell>{formatDate(entry.clock_in, "short")}</TableCell>
+											<TableCell>
+												{formatDate(entry.clock_in, "short")}
+											</TableCell>
 											<TableCell>
 												{entry.job ? (
-													<Link className="text-primary hover:underline" href={`/dashboard/work/${entry.job.id}`}>
+													<Link
+														className="text-primary hover:underline"
+														href={`/dashboard/work/${entry.job.id}`}
+													>
 														#{entry.job.job_number || "Unknown"}
 													</Link>
 												) : (
 													"No job"
 												)}
 											</TableCell>
-											<TableCell>{new Date(entry.clock_in).toLocaleTimeString()}</TableCell>
+											<TableCell>
+												{new Date(entry.clock_in).toLocaleTimeString()}
+											</TableCell>
 											<TableCell>
 												{entry.clock_out ? (
 													new Date(entry.clock_out).toLocaleTimeString()
@@ -741,7 +848,11 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 													<Badge variant="secondary">In progress</Badge>
 												)}
 											</TableCell>
-											<TableCell>{entry.total_hours ? `${entry.total_hours.toFixed(2)}h` : "—"}</TableCell>
+											<TableCell>
+												{entry.total_hours
+													? `${entry.total_hours.toFixed(2)}h`
+													: "—"}
+											</TableCell>
 										</TableRow>
 									))}
 								</TableBody>
@@ -749,8 +860,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 						) : (
 							<div className="flex flex-col items-center justify-center p-8 text-center">
 								<Clock className="mb-3 size-12 text-muted-foreground/50" />
-								<p className="font-medium text-muted-foreground text-sm">No time entries recorded</p>
-								<p className="mt-1 text-muted-foreground text-xs">Time entries will appear here when work begins</p>
+								<p className="font-medium text-muted-foreground text-sm">
+									No time entries recorded
+								</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									Time entries will appear here when work begins
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -769,8 +884,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Wrench className="h-4 w-4 text-primary" />
 									</div>
 									<div>
-										<p className="text-muted-foreground text-sm">Jobs Completed</p>
-										<p className="mt-1 font-bold text-2xl">{metrics?.completedJobs ?? 0}</p>
+										<p className="text-muted-foreground text-sm">
+											Jobs Completed
+										</p>
+										<p className="mt-1 font-bold text-2xl">
+											{metrics?.completedJobs ?? 0}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -781,7 +900,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 									</div>
 									<div>
 										<p className="text-muted-foreground text-sm">Total Hours</p>
-										<p className="mt-1 font-bold text-2xl">{Math.floor(metrics?.totalHours ?? 0)}h</p>
+										<p className="mt-1 font-bold text-2xl">
+											{Math.floor(metrics?.totalHours ?? 0)}h
+										</p>
 									</div>
 								</div>
 							</div>
@@ -792,7 +913,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 									</div>
 									<div>
 										<p className="text-muted-foreground text-sm">Active Jobs</p>
-										<p className="mt-1 font-bold text-2xl">{metrics?.activeJobs ?? 0}</p>
+										<p className="mt-1 font-bold text-2xl">
+											{metrics?.activeJobs ?? 0}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -806,7 +929,13 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 				icon: <Shield className="size-4" />,
 				count: permissions?.length ?? 0,
 				actions: (
-					<Button onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)} size="sm" variant="outline">
+					<Button
+						onClick={() =>
+							router.push(`/dashboard/settings/team/${teamMember.id}`)
+						}
+						size="sm"
+						variant="outline"
+					>
 						Edit Permissions
 					</Button>
 				),
@@ -814,11 +943,13 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 					<UnifiedAccordionContent>
 						<div className="rounded-lg border p-4">
 							<p className="text-muted-foreground text-sm">
-								Permissions are managed at the role level. This team member has the <strong>{roleName}</strong> role
+								Permissions are managed at the role level. This team member has
+								the <strong>{roleName}</strong> role
 								{departmentName ? (
 									<>
 										{" "}
-										and is assigned to the <strong>{departmentName}</strong> department
+										and is assigned to the <strong>{departmentName}</strong>{" "}
+										department
 									</>
 								) : (
 									""
@@ -827,14 +958,20 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 							</p>
 							{permissions && permissions.length > 0 && (
 								<div className="mt-4">
-									<p className="mb-2 font-medium text-sm">Role Permissions ({permissions.length}):</p>
+									<p className="mb-2 font-medium text-sm">
+										Role Permissions ({permissions.length}):
+									</p>
 									<div className="flex flex-wrap gap-2">
 										{permissions.slice(0, 10).map((perm: any) => (
 											<Badge key={perm.id} variant="secondary">
 												{perm.permission_name || perm.name || "Permission"}
 											</Badge>
 										))}
-										{permissions.length > 10 && <Badge variant="outline">+{permissions.length - 10} more</Badge>}
+										{permissions.length > 10 && (
+											<Badge variant="outline">
+												+{permissions.length - 10} more
+											</Badge>
+										)}
 									</div>
 								</div>
 							)}
@@ -872,7 +1009,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 					title: latestJob.title || `Job #${latestJob.job_number}`,
 					subtitle: latestJob.status,
 					href: `/dashboard/work/${latestJob.id}`,
-					badge: latestJob.status ? { label: latestJob.status, variant: "outline" as const } : undefined,
+					badge: latestJob.status
+						? { label: latestJob.status, variant: "outline" as const }
+						: undefined,
 				});
 			}
 		}

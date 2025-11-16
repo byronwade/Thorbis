@@ -8,5 +8,8 @@ export async function GET() {
 		return NextResponse.json(result.data);
 	}
 
-	return NextResponse.json({ error: result.error ?? "Unable to fetch weather" }, { status: 400 });
+	return NextResponse.json(
+		{ error: result.error ?? "Unable to fetch weather" },
+		{ status: 400 },
+	);
 }

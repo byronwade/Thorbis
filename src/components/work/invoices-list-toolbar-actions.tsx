@@ -41,7 +41,11 @@ export function InvoicesListToolbarActions({
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<InvoicesFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<InvoicesFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={INVOICES_OPTIONAL_COLUMNS}
 						criticalColumns={INVOICES_CRITICAL_COLUMNS}

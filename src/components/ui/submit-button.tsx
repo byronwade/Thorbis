@@ -106,7 +106,7 @@ export function SubmitButton({
 				"transition-all duration-200",
 				showSuccess && "bg-success hover:bg-success",
 				showError && "animate-shake bg-destructive",
-				className
+				className,
 			)}
 			disabled={isDisabled}
 			type="submit"

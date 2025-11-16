@@ -10,7 +10,15 @@
  * - Minimal JavaScript to client
  */
 
-import { AlertCircle, Calendar, CheckCircle2, Clock, MapPin, Users, XCircle } from "lucide-react";
+import {
+	AlertCircle,
+	Calendar,
+	CheckCircle2,
+	Clock,
+	MapPin,
+	Users,
+	XCircle,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +38,12 @@ type ScheduleDetails = {
 	estimatedDuration: number; // minutes
 	actualStart?: Date;
 	actualEnd?: Date;
-	status: "scheduled" | "in_progress" | "completed" | "rescheduled" | "cancelled";
+	status:
+		| "scheduled"
+		| "in_progress"
+		| "completed"
+		| "rescheduled"
+		| "cancelled";
 	technicians: {
 		id: string;
 		name: string;
@@ -165,7 +178,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 		}
 		const diffMs = date.getTime() - Date.now();
 		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-		const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		const diffHours = Math.floor(
+			(diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+		);
 
 		if (diffDays > 1) {
 			return `in ${diffDays} days`;
@@ -189,7 +204,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<Calendar className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-					<p className="mb-2 text-muted-foreground text-sm">Not scheduled yet</p>
+					<p className="mb-2 text-muted-foreground text-sm">
+						Not scheduled yet
+					</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/schedule?jobId=${job.id}`}>
 							<Clock className="mr-2 size-4" />
@@ -216,13 +233,17 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			<div className="rounded-lg border bg-gradient-to-br from-primary/5 to-primary/10 p-4">
 				<div className="mb-3 flex items-center gap-2">
 					<Calendar className="size-4 text-primary" />
-					<span className="font-medium text-primary text-xs uppercase tracking-wide">Scheduled Time</span>
+					<span className="font-medium text-primary text-xs uppercase tracking-wide">
+						Scheduled Time
+					</span>
 				</div>
 
 				{/* Start Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">Start</p>
-					<p className="font-semibold text-base">{formatDateTime(schedule.scheduledStart)}</p>
+					<p className="font-semibold text-base">
+						{formatDateTime(schedule.scheduledStart)}
+					</p>
 					<Badge className="text-xs" variant="outline">
 						{getTimeUntilStart(schedule.scheduledStart)}
 					</Badge>
@@ -233,13 +254,17 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				{/* End Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">End (Estimated)</p>
-					<p className="font-medium text-sm">{formatTime(schedule.scheduledEnd)}</p>
+					<p className="font-medium text-sm">
+						{formatTime(schedule.scheduledEnd)}
+					</p>
 				</div>
 
 				{/* Duration */}
 				<div className="mt-3 flex items-center justify-between rounded-lg bg-background/50 p-2 text-xs">
 					<span className="text-muted-foreground">Duration</span>
-					<span className="font-semibold">{formatDuration(schedule.estimatedDuration)}</span>
+					<span className="font-semibold">
+						{formatDuration(schedule.estimatedDuration)}
+					</span>
 				</div>
 			</div>
 
@@ -248,16 +273,22 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				<>
 					<Separator />
 					<div className="space-y-2 rounded-lg bg-muted p-3">
-						<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Actual Times</h5>
+						<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+							Actual Times
+						</h5>
 						<div className="space-y-1.5 text-xs">
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Started:</span>
-								<span className="font-medium">{formatTime(schedule.actualStart)}</span>
+								<span className="font-medium">
+									{formatTime(schedule.actualStart)}
+								</span>
 							</div>
 							{schedule.actualEnd && (
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Completed:</span>
-									<span className="font-medium">{formatTime(schedule.actualEnd)}</span>
+									<span className="font-medium">
+										{formatTime(schedule.actualEnd)}
+									</span>
 								</div>
 							)}
 						</div>
@@ -275,7 +306,10 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				</div>
 				<div className="space-y-2">
 					{schedule.technicians.map((tech) => (
-						<div className="flex items-center justify-between rounded-lg border p-2" key={tech.id}>
+						<div
+							className="flex items-center justify-between rounded-lg border p-2"
+							key={tech.id}
+						>
 							<div className="flex items-center gap-2">
 								<div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
 									{tech.name
@@ -302,9 +336,15 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 											: "destructive"
 								}
 							>
-								{tech.availability === "available" && <CheckCircle2 className="mr-1 size-3" />}
-								{tech.availability === "conflict" && <AlertCircle className="mr-1 size-3" />}
-								{tech.availability === "unavailable" && <XCircle className="mr-1 size-3" />}
+								{tech.availability === "available" && (
+									<CheckCircle2 className="mr-1 size-3" />
+								)}
+								{tech.availability === "conflict" && (
+									<AlertCircle className="mr-1 size-3" />
+								)}
+								{tech.availability === "unavailable" && (
+									<XCircle className="mr-1 size-3" />
+								)}
 								{tech.availability}
 							</Badge>
 						</div>
@@ -323,7 +363,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 									<MapPin className="size-3 text-muted-foreground" />
 									<span className="text-muted-foreground">Travel Time</span>
 								</div>
-								<p className="font-semibold">{formatDuration(schedule.travelTime)}</p>
+								<p className="font-semibold">
+									{formatDuration(schedule.travelTime)}
+								</p>
 							</div>
 						)}
 						{schedule.bufferTime && (
@@ -332,7 +374,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 									<Clock className="size-3 text-muted-foreground" />
 									<span className="text-muted-foreground">Buffer Time</span>
 								</div>
-								<p className="font-semibold">{formatDuration(schedule.bufferTime)}</p>
+								<p className="font-semibold">
+									{formatDuration(schedule.bufferTime)}
+								</p>
 							</div>
 						)}
 					</div>
@@ -351,8 +395,12 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 							>
 								<AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
 								<div>
-									<p className="font-medium text-destructive text-sm dark:text-destructive">Scheduling Conflict</p>
-									<p className="text-destructive text-xs dark:text-destructive">{conflict.message}</p>
+									<p className="font-medium text-destructive text-sm dark:text-destructive">
+										Scheduling Conflict
+									</p>
+									<p className="text-destructive text-xs dark:text-destructive">
+										{conflict.message}
+									</p>
 								</div>
 							</div>
 						))}
@@ -372,7 +420,8 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 							</span>
 						</div>
 						<p className="text-accent-foreground text-xs dark:text-accent-foreground">
-							{schedule.recurringSchedule.frequency} • Next: {formatDateTime(schedule.recurringSchedule.nextOccurrence)}
+							{schedule.recurringSchedule.frequency} • Next:{" "}
+							{formatDateTime(schedule.recurringSchedule.nextOccurrence)}
 						</p>
 					</div>
 				</>

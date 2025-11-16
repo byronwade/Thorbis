@@ -1,13 +1,27 @@
-import { Activity, AlertTriangle, Mail, Phone, TrendingUp, Wifi } from "lucide-react";
+import {
+	Activity,
+	AlertTriangle,
+	Mail,
+	Phone,
+	TrendingUp,
+	Wifi,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 import type { MissionControlData } from "@/lib/dashboard/mission-control-data";
-import { formatCurrencyFromDollars, formatDateTime, formatTime } from "@/lib/formatters";
+import {
+	formatCurrencyFromDollars,
+	formatDateTime,
+	formatTime,
+} from "@/lib/formatters";
 
-function formatRelative(iso: string | null | undefined, referenceTime = Date.now()) {
+function formatRelative(
+	iso: string | null | undefined,
+	referenceTime = Date.now(),
+) {
 	if (!iso) {
 		return "";
 	}
@@ -85,7 +99,13 @@ function buildSummaryStats(data: MissionControlData): StatCard[] {
 	];
 }
 
-export default function OwnerDashboard({ data, renderedAt }: { data?: MissionControlData; renderedAt?: number }) {
+export default function OwnerDashboard({
+	data,
+	renderedAt,
+}: {
+	data?: MissionControlData;
+	renderedAt?: number;
+}) {
 	if (!data) {
 		return (
 			<div className="flex min-h-[400px] items-center justify-center">
@@ -102,21 +122,25 @@ export default function OwnerDashboard({ data, renderedAt }: { data?: MissionCon
 			<header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div className="space-y-2">
 					<div className="flex items-center gap-3">
-						<h1 className="font-semibold text-3xl tracking-tight md:text-4xl">Mission Control</h1>
+						<h1 className="font-semibold text-3xl tracking-tight md:text-4xl">
+							Mission Control
+						</h1>
 						<Badge className="gap-1 text-primary" variant="outline">
 							<Wifi className="size-3.5" />
 							Live Data
 						</Badge>
 					</div>
 					<p className="text-muted-foreground text-sm md:text-base">
-						Real-time snapshot of today&apos;s operations, finances, and communications.
+						Real-time snapshot of today&apos;s operations, finances, and
+						communications.
 					</p>
 				</div>
 				<div className="flex items-center gap-2 text-muted-foreground text-xs md:text-sm">
 					<span>Last updated</span>
 					<Separator className="h-4" orientation="vertical" />
 					<span>
-						{formatDateTime(data.lastUpdated)} ({formatRelative(data.lastUpdated, relativeNow)})
+						{formatDateTime(data.lastUpdated)} (
+						{formatRelative(data.lastUpdated, relativeNow)})
 					</span>
 				</div>
 			</header>
@@ -152,27 +176,39 @@ function OperationsCard({ data }: { data: MissionControlData }) {
 						{data.operations.inProgress.length} active
 					</Badge>
 				</div>
-				<p className="text-muted-foreground text-sm">Track in-progress jobs and work orders awaiting assignment.</p>
+				<p className="text-muted-foreground text-sm">
+					Track in-progress jobs and work orders awaiting assignment.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<section className="space-y-3">
-					<SectionHeading count={data.operations.inProgress.length} title="In Progress" />
+					<SectionHeading
+						count={data.operations.inProgress.length}
+						title="In Progress"
+					/>
 					<div className="space-y-2">
 						{data.operations.inProgress.length === 0 ? (
 							<EmptyRow message="No active jobs at the moment." />
 						) : (
-							data.operations.inProgress.map((job) => <JobRow job={job} key={job.id} variant="progress" />)
+							data.operations.inProgress.map((job) => (
+								<JobRow job={job} key={job.id} variant="progress" />
+							))
 						)}
 					</div>
 				</section>
 				<Separator />
 				<section className="space-y-3">
-					<SectionHeading count={data.operations.unassigned.length} title="Awaiting Assignment" />
+					<SectionHeading
+						count={data.operations.unassigned.length}
+						title="Awaiting Assignment"
+					/>
 					<div className="space-y-2">
 						{data.operations.unassigned.length === 0 ? (
 							<EmptyRow message="All jobs are staffed. Great work!" />
 						) : (
-							data.operations.unassigned.map((job) => <JobRow job={job} key={job.id} variant="unassigned" />)
+							data.operations.unassigned.map((job) => (
+								<JobRow job={job} key={job.id} variant="unassigned" />
+							))
 						)}
 					</div>
 				</section>
@@ -186,7 +222,9 @@ function AlertsCard({ data }: { data: MissionControlData }) {
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Alerts & Risks</CardTitle>
-				<p className="text-muted-foreground text-sm">Issues that need attention to keep today on track.</p>
+				<p className="text-muted-foreground text-sm">
+					Issues that need attention to keep today on track.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-3">
 				{data.alerts.length === 0 ? (
@@ -204,13 +242,17 @@ function ScheduleCard({ data }: { data: MissionControlData }) {
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Today&apos;s Schedule</CardTitle>
-				<p className="text-muted-foreground text-sm">Upcoming appointments and technician assignments.</p>
+				<p className="text-muted-foreground text-sm">
+					Upcoming appointments and technician assignments.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-2">
 				{data.schedule.length === 0 ? (
 					<EmptyRow message="No appointments scheduled for the rest of the day." />
 				) : (
-					data.schedule.map((event) => <ScheduleRow item={event} key={event.id} />)
+					data.schedule.map((event) => (
+						<ScheduleRow item={event} key={event.id} />
+					))
 				)}
 			</CardContent>
 		</Card>
@@ -222,17 +264,24 @@ function FinancialCard({ data }: { data: MissionControlData }) {
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Financial Pulse</CardTitle>
-				<p className="text-muted-foreground text-sm">Outstanding receivables and upcoming cash.</p>
+				<p className="text-muted-foreground text-sm">
+					Outstanding receivables and upcoming cash.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div className="rounded-lg border bg-muted/40 p-3">
 					<div className="flex items-baseline justify-between">
-						<span className="text-muted-foreground text-xs uppercase">Outstanding Balance</span>
+						<span className="text-muted-foreground text-xs uppercase">
+							Outstanding Balance
+						</span>
 						<span className="font-semibold text-lg">
-							{formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, {
-								minimumFractionDigits: 0,
-								maximumFractionDigits: 0,
-							})}
+							{formatCurrencyFromDollars(
+								data.metrics.outstandingInvoicesAmount,
+								{
+									minimumFractionDigits: 0,
+									maximumFractionDigits: 0,
+								},
+							)}
 						</span>
 					</div>
 					<div className="mt-2 flex items-center justify-between text-muted-foreground text-xs">
@@ -244,7 +293,11 @@ function FinancialCard({ data }: { data: MissionControlData }) {
 					{data.financial.openInvoices.length === 0 ? (
 						<EmptyRow message="No open invoices requiring follow-up." />
 					) : (
-						data.financial.openInvoices.slice(0, 6).map((invoice) => <InvoiceRow invoice={invoice} key={invoice.id} />)
+						data.financial.openInvoices
+							.slice(0, 6)
+							.map((invoice) => (
+								<InvoiceRow invoice={invoice} key={invoice.id} />
+							))
 					)}
 				</div>
 			</CardContent>
@@ -252,36 +305,64 @@ function FinancialCard({ data }: { data: MissionControlData }) {
 	);
 }
 
-function CommunicationsCard({ data, relativeNow }: { data: MissionControlData; relativeNow: number }) {
+function CommunicationsCard({
+	data,
+	relativeNow,
+}: {
+	data: MissionControlData;
+	relativeNow: number;
+}) {
 	return (
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Latest Communications</CardTitle>
-				<p className="text-muted-foreground text-sm">Call, SMS, and email activity from today.</p>
+				<p className="text-muted-foreground text-sm">
+					Call, SMS, and email activity from today.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-2">
 				{data.communications.length === 0 ? (
 					<EmptyRow message="No communications logged today." />
 				) : (
-					data.communications.map((item) => <CommunicationRow item={item} key={item.id} relativeNow={relativeNow} />)
+					data.communications.map((item) => (
+						<CommunicationRow
+							item={item}
+							key={item.id}
+							relativeNow={relativeNow}
+						/>
+					))
 				)}
 			</CardContent>
 		</Card>
 	);
 }
 
-function ActivityCard({ data, relativeNow }: { data: MissionControlData; relativeNow: number }) {
+function ActivityCard({
+	data,
+	relativeNow,
+}: {
+	data: MissionControlData;
+	relativeNow: number;
+}) {
 	return (
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Activity Feed</CardTitle>
-				<p className="text-muted-foreground text-sm">Recent changes across jobs, customers, invoices, and more.</p>
+				<p className="text-muted-foreground text-sm">
+					Recent changes across jobs, customers, invoices, and more.
+				</p>
 			</CardHeader>
 			<CardContent className="space-y-2">
 				{data.activity.length === 0 ? (
 					<EmptyRow message="No new activity yet today." />
 				) : (
-					data.activity.map((item) => <ActivityRow activity={item} key={item.id} relativeNow={relativeNow} />)
+					data.activity.map((item) => (
+						<ActivityRow
+							activity={item}
+							key={item.id}
+							relativeNow={relativeNow}
+						/>
+					))
 				)}
 			</CardContent>
 		</Card>
@@ -321,9 +402,18 @@ function JobRow({
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
 					<div className="flex items-center gap-2">
-						<p className="font-medium text-sm">{job.title || `Job ${job.jobNumber}`}</p>
-						<Badge className={isUnassigned ? "text-warning" : "text-primary"} variant="outline">
-							{isUnassigned ? "Needs Dispatch" : job.status ? job.status.replace(/_/g, " ") : "In Progress"}
+						<p className="font-medium text-sm">
+							{job.title || `Job ${job.jobNumber}`}
+						</p>
+						<Badge
+							className={isUnassigned ? "text-warning" : "text-primary"}
+							variant="outline"
+						>
+							{isUnassigned
+								? "Needs Dispatch"
+								: job.status
+									? job.status.replace(/_/g, " ")
+									: "In Progress"}
 						</Badge>
 					</div>
 					<p className="text-muted-foreground text-xs">
@@ -335,7 +425,9 @@ function JobRow({
 							</>
 						)}
 					</p>
-					{job.address && <p className="text-muted-foreground text-xs">{job.address}</p>}
+					{job.address && (
+						<p className="text-muted-foreground text-xs">{job.address}</p>
+					)}
 				</div>
 				<div className="flex flex-col items-end gap-1 text-right">
 					<span className="font-semibold text-sm">
@@ -344,14 +436,20 @@ function JobRow({
 							maximumFractionDigits: 0,
 						})}
 					</span>
-					{!isUnassigned && <span className="text-muted-foreground text-xs">On-site team</span>}
+					{!isUnassigned && (
+						<span className="text-muted-foreground text-xs">On-site team</span>
+					)}
 				</div>
 			</div>
 		</Link>
 	);
 }
 
-function ScheduleRow({ item }: { item: MissionControlData["schedule"][number] }) {
+function ScheduleRow({
+	item,
+}: {
+	item: MissionControlData["schedule"][number];
+}) {
 	return (
 		<div className="rounded-lg border border-border/50 bg-card/60 px-3 py-2">
 			<div className="flex items-start justify-between gap-3">
@@ -361,7 +459,8 @@ function ScheduleRow({ item }: { item: MissionControlData["schedule"][number] })
 						<Badge variant="outline">{item.status}</Badge>
 					</div>
 					<p className="text-muted-foreground text-xs">
-						{formatTime(item.startTime)} – {formatTime(item.endTime)} · {item.technicianName || "Unassigned"}
+						{formatTime(item.startTime)} – {formatTime(item.endTime)} ·{" "}
+						{item.technicianName || "Unassigned"}
 					</p>
 					{item.customerName && (
 						<p className="text-muted-foreground text-xs">
@@ -371,7 +470,10 @@ function ScheduleRow({ item }: { item: MissionControlData["schedule"][number] })
 					)}
 				</div>
 				{item.jobId && (
-					<Link className="font-medium text-primary text-xs hover:underline" href={`/dashboard/work/${item.jobId}`}>
+					<Link
+						className="font-medium text-primary text-xs hover:underline"
+						href={`/dashboard/work/${item.jobId}`}
+					>
 						View Job
 					</Link>
 				)}
@@ -380,8 +482,14 @@ function ScheduleRow({ item }: { item: MissionControlData["schedule"][number] })
 	);
 }
 
-function InvoiceRow({ invoice }: { invoice: MissionControlData["financial"]["openInvoices"][number] }) {
-	const dueLabel = invoice.dueDate ? `${formatDateTime(invoice.dueDate)}` : "No due date";
+function InvoiceRow({
+	invoice,
+}: {
+	invoice: MissionControlData["financial"]["openInvoices"][number];
+}) {
+	const dueLabel = invoice.dueDate
+		? `${formatDateTime(invoice.dueDate)}`
+		: "No due date";
 
 	return (
 		<Link
@@ -389,7 +497,9 @@ function InvoiceRow({ invoice }: { invoice: MissionControlData["financial"]["ope
 			href={`/dashboard/work/invoices/${invoice.id}`}
 		>
 			<div className="space-y-1">
-				<p className="font-medium text-sm">Invoice {invoice.invoiceNumber || "—"}</p>
+				<p className="font-medium text-sm">
+					Invoice {invoice.invoiceNumber || "—"}
+				</p>
 				<p className="text-muted-foreground text-xs">
 					{invoice.customerName || "Unknown customer"} · {dueLabel}
 				</p>
@@ -401,7 +511,9 @@ function InvoiceRow({ invoice }: { invoice: MissionControlData["financial"]["ope
 						maximumFractionDigits: 0,
 					})}
 				</p>
-				<p className="text-muted-foreground text-xs capitalize">{invoice.status}</p>
+				<p className="text-muted-foreground text-xs capitalize">
+					{invoice.status}
+				</p>
 			</div>
 		</Link>
 	);
@@ -425,18 +537,27 @@ function CommunicationRow({
 				</div>
 				<div className="space-y-1">
 					<div className="flex items-center gap-2">
-						<p className="font-medium text-sm">{item.customerName || "Unknown contact"}</p>
+						<p className="font-medium text-sm">
+							{item.customerName || "Unknown contact"}
+						</p>
 						<Badge className="text-xs capitalize" variant="outline">
 							{item.type}
 						</Badge>
-						<Badge className="text-xs capitalize" variant={isInbound ? "secondary" : "outline"}>
+						<Badge
+							className="text-xs capitalize"
+							variant={isInbound ? "secondary" : "outline"}
+						>
 							{item.direction}
 						</Badge>
 					</div>
-					<p className="text-muted-foreground text-xs">{item.subject || "No subject"}</p>
+					<p className="text-muted-foreground text-xs">
+						{item.subject || "No subject"}
+					</p>
 				</div>
 			</div>
-			<span className="text-muted-foreground text-xs">{formatRelative(item.createdAt, relativeNow)}</span>
+			<span className="text-muted-foreground text-xs">
+				{formatRelative(item.createdAt, relativeNow)}
+			</span>
 		</div>
 	);
 }
@@ -455,10 +576,13 @@ function ActivityRow({
 					<Badge className="text-xs capitalize" variant="outline">
 						{activity.entityType || "general"}
 					</Badge>
-					<p className="truncate font-medium text-sm">{activity.action || "Activity recorded"}</p>
+					<p className="truncate font-medium text-sm">
+						{activity.action || "Activity recorded"}
+					</p>
 				</div>
 				<p className="text-muted-foreground text-xs">
-					{activity.actorName || "System"} · {formatRelative(activity.createdAt, relativeNow)}
+					{activity.actorName || "System"} ·{" "}
+					{formatRelative(activity.createdAt, relativeNow)}
 				</p>
 			</div>
 			<Activity className="size-4 text-muted-foreground" />
@@ -480,7 +604,9 @@ function AlertRow({ alert }: { alert: MissionControlData["alerts"][number] }) {
 				<AlertTriangle className="size-4" />
 				<span>{alert.title}</span>
 			</div>
-			{alert.description && <p className="text-muted-foreground text-xs">{alert.description}</p>}
+			{alert.description && (
+				<p className="text-muted-foreground text-xs">{alert.description}</p>
+			)}
 		</div>
 	);
 }

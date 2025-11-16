@@ -28,7 +28,10 @@ export function TeamMemberDetailSkeleton() {
 			{/* Stats cards skeleton */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				{[1, 2, 3, 4].map((i) => (
-					<div className="h-32 animate-pulse rounded-lg border bg-card p-6" key={i}>
+					<div
+						className="h-32 animate-pulse rounded-lg border bg-card p-6"
+						key={i}
+					>
 						<div className="space-y-2">
 							<div className="h-4 w-24 animate-pulse rounded bg-muted" />
 							<div className="h-8 w-16 animate-pulse rounded bg-muted" />
@@ -42,14 +45,20 @@ export function TeamMemberDetailSkeleton() {
 			<div className="space-y-4">
 				<div className="flex gap-4 border-b">
 					{[1, 2, 3, 4].map((i) => (
-						<div className="h-10 w-24 animate-pulse rounded-t bg-muted" key={i} />
+						<div
+							className="h-10 w-24 animate-pulse rounded-t bg-muted"
+							key={i}
+						/>
 					))}
 				</div>
 
 				{/* Content skeleton */}
 				<div className="space-y-4">
 					{[1, 2, 3, 4, 5].map((i) => (
-						<div className="h-24 animate-pulse rounded-lg border bg-card p-4" key={i}>
+						<div
+							className="h-24 animate-pulse rounded-lg border bg-card p-4"
+							key={i}
+						>
 							<div className="space-y-2">
 								<div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
 								<div className="h-4 w-1/2 animate-pulse rounded bg-muted" />

@@ -19,7 +19,12 @@ import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
 import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
 import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarRail,
+} from "@/components/ui/sidebar";
 import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import {
 	Archive,
@@ -2281,7 +2286,10 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 	pathname?: string;
 };
 
-export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarProps) {
+export function AppSidebar({
+	pathname: externalPathname,
+	...props
+}: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
 	const currentSection = getCurrentSection(pathname);
@@ -2290,7 +2298,8 @@ export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarP
 	const isAISection = currentSection === "ai";
 	const isReportingSection = currentSection === "reporting";
 	const isJobDetailsSection = currentSection === "jobDetails";
-	const isCommunicationDetail = pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
+	const isCommunicationDetail =
+		pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
 	// Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
 	const useGroupedNav =
@@ -2332,7 +2341,11 @@ export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarP
 					<JobDetailsNav />
 				) : hasCustomConfig ? (
 					// Use custom page configuration from layout
-					<NavFlexible config={sidebarConfig} groups={sidebarConfig?.groups} items={sidebarConfig?.items} />
+					<NavFlexible
+						config={sidebarConfig}
+						groups={sidebarConfig?.groups}
+						items={sidebarConfig?.items}
+					/>
 				) : useGroupedNav ? (
 					// Use default grouped navigation
 					<NavGrouped groups={navItems as any} pathname={pathname} />
@@ -2353,7 +2366,9 @@ export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarP
 						</div>
 						<div className="flex flex-col">
 							<span className="font-semibold text-sm">What's New</span>
-							<span className="text-muted-foreground text-xs">Version 2.1.0</span>
+							<span className="text-muted-foreground text-xs">
+								Version 2.1.0
+							</span>
 						</div>
 					</div>
 					<p className="relative z-10 text-muted-foreground text-xs leading-relaxed">

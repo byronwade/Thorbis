@@ -25,7 +25,7 @@ export function trackJobCreated(
 		jobType?: string;
 		estimatedValue?: number;
 		source?: string;
-	}
+	},
 ): AnalyticsEvent {
 	return {
 		name: "job.created",
@@ -42,7 +42,7 @@ export function trackJobUpdated(
 		field?: string;
 		oldValue?: string;
 		newValue?: string;
-	}
+	},
 ): AnalyticsEvent {
 	return {
 		name: "job.updated",
@@ -53,7 +53,11 @@ export function trackJobUpdated(
 	};
 }
 
-export function trackJobStatusChanged(jobId: string, oldStatus: string, newStatus: string): AnalyticsEvent {
+export function trackJobStatusChanged(
+	jobId: string,
+	oldStatus: string,
+	newStatus: string,
+): AnalyticsEvent {
 	return {
 		name: "job.status_changed",
 		properties: {
@@ -73,7 +77,7 @@ export function trackCustomerCreated(
 		source?: "manual" | "import" | "api";
 		hasEmail?: boolean;
 		hasPhone?: boolean;
-	}
+	},
 ): AnalyticsEvent {
 	return {
 		name: "customer.created",
@@ -94,7 +98,7 @@ export function trackInvoiceCreated(
 		customerId?: string;
 		amount?: number;
 		currency?: string;
-	}
+	},
 ): AnalyticsEvent {
 	return {
 		name: "invoice.created",
@@ -105,7 +109,10 @@ export function trackInvoiceCreated(
 	};
 }
 
-export function trackInvoiceSent(invoiceId: string, method: "email" | "sms" | "link"): AnalyticsEvent {
+export function trackInvoiceSent(
+	invoiceId: string,
+	method: "email" | "sms" | "link",
+): AnalyticsEvent {
 	return {
 		name: "invoice.sent",
 		properties: {
@@ -120,7 +127,7 @@ export function trackInvoicePaid(
 	properties?: {
 		amount?: number;
 		paymentMethod?: string;
-	}
+	},
 ): AnalyticsEvent {
 	return {
 		name: "invoice.paid",

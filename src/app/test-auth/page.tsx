@@ -73,7 +73,9 @@ export default function TestAuthPage() {
 
 					{error && (
 						<div className="rounded-lg border border-destructive bg-destructive p-4">
-							<h2 className="mb-2 font-semibold text-destructive text-lg">Error</h2>
+							<h2 className="mb-2 font-semibold text-destructive text-lg">
+								Error
+							</h2>
 							<p className="text-destructive">{error}</p>
 						</div>
 					)}
@@ -89,14 +91,22 @@ export default function TestAuthPage() {
 									<strong>Email:</strong> {user.email}
 								</p>
 								<p>
-									<strong>Email Confirmed:</strong> {user.email_confirmed_at ? "✅ Yes" : "❌ No (needs verification)"}
+									<strong>Email Confirmed:</strong>{" "}
+									{user.email_confirmed_at
+										? "✅ Yes"
+										: "❌ No (needs verification)"}
 								</p>
 								<p>
-									<strong>Created:</strong> {new Date(user.created_at).toLocaleString()}
+									<strong>Created:</strong>{" "}
+									{new Date(user.created_at).toLocaleString()}
 								</p>
 								<details className="mt-4">
-									<summary className="cursor-pointer font-semibold">Full User Object</summary>
-									<pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">{JSON.stringify(user, null, 2)}</pre>
+									<summary className="cursor-pointer font-semibold">
+										Full User Object
+									</summary>
+									<pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">
+										{JSON.stringify(user, null, 2)}
+									</pre>
 								</details>
 							</div>
 						) : (
@@ -109,13 +119,17 @@ export default function TestAuthPage() {
 						{session ? (
 							<div className="space-y-2">
 								<p>
-									<strong>Access Token:</strong> {session.access_token ? "✅ Present" : "❌ Missing"}
+									<strong>Access Token:</strong>{" "}
+									{session.access_token ? "✅ Present" : "❌ Missing"}
 								</p>
 								<p>
-									<strong>Expires:</strong> {new Date(session.expires_at * 1000).toLocaleString()}
+									<strong>Expires:</strong>{" "}
+									{new Date(session.expires_at * 1000).toLocaleString()}
 								</p>
 								<details className="mt-4">
-									<summary className="cursor-pointer font-semibold">Full Session Object</summary>
+									<summary className="cursor-pointer font-semibold">
+										Full Session Object
+									</summary>
 									<pre className="mt-2 overflow-auto rounded bg-muted p-2 text-xs">
 										{JSON.stringify(session, null, 2)}
 									</pre>
@@ -130,13 +144,18 @@ export default function TestAuthPage() {
 						<h2 className="mb-2 font-semibold text-lg">Environment</h2>
 						<div className="space-y-2">
 							<p>
-								<strong>Supabase URL:</strong> {process.env.NEXT_PUBLIC_SUPABASE_URL || "❌ Not set"}
+								<strong>Supabase URL:</strong>{" "}
+								{process.env.NEXT_PUBLIC_SUPABASE_URL || "❌ Not set"}
 							</p>
 							<p>
-								<strong>Anon Key:</strong> {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? "✅ Set" : "❌ Not set"}
+								<strong>Anon Key:</strong>{" "}
+								{process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+									? "✅ Set"
+									: "❌ Not set"}
 							</p>
 							<p>
-								<strong>Site URL:</strong> {process.env.NEXT_PUBLIC_SITE_URL || "❌ Not set"}
+								<strong>Site URL:</strong>{" "}
+								{process.env.NEXT_PUBLIC_SITE_URL || "❌ Not set"}
 							</p>
 						</div>
 					</div>

@@ -115,7 +115,11 @@ export async function createEquipment(formData: FormData) {
 		return { success: false, error: "Not authenticated" };
 	}
 
-	const { data: userData } = await supabase.from("users").select("company_id").eq("id", user.id).single();
+	const { data: userData } = await supabase
+		.from("users")
+		.select("company_id")
+		.eq("id", user.id)
+		.single();
 
 	if (!userData?.company_id) {
 		return { success: false, error: "Company not found" };
@@ -133,7 +137,8 @@ export async function createEquipment(formData: FormData) {
 	const EQUIPMENT_NUMBER_PADDING = 5;
 	let equipmentNumber = "EQ-00001";
 	if (lastEquipment?.equipment_number) {
-		const num = Number.parseInt(lastEquipment.equipment_number.split("-")[1], 10) + 1;
+		const num =
+			Number.parseInt(lastEquipment.equipment_number.split("-")[1], 10) + 1;
 		equipmentNumber = `EQ-${num.toString().padStart(EQUIPMENT_NUMBER_PADDING, "0")}`;
 	}
 
@@ -164,7 +169,9 @@ export async function createEquipment(formData: FormData) {
 			location,
 			install_date: installDate || null,
 			warranty_expiration: warrantyExpiration || null,
-			is_under_warranty: warrantyExpiration ? new Date(warrantyExpiration) > new Date() : false,
+			is_under_warranty: warrantyExpiration
+				? new Date(warrantyExpiration) > new Date()
+				: false,
 			status: "active",
 			condition: "good",
 		})
@@ -198,7 +205,11 @@ export async function addEquipmentToJob(formData: FormData) {
 		return { success: false, error: "Not authenticated" };
 	}
 
-	const { data: userData } = await supabase.from("users").select("company_id").eq("id", user.id).single();
+	const { data: userData } = await supabase
+		.from("users")
+		.select("company_id")
+		.eq("id", user.id)
+		.single();
 
 	if (!userData?.company_id) {
 		return { success: false, error: "Company not found" };
@@ -239,7 +250,10 @@ export async function addEquipmentToJob(formData: FormData) {
 /**
  * Update equipment service details on a job
  */
-export async function updateJobEquipment(jobEquipmentId: string, formData: FormData) {
+export async function updateJobEquipment(
+	jobEquipmentId: string,
+	formData: FormData,
+) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return { success: false, error: "Supabase client not initialized" };
@@ -275,7 +289,9 @@ export async function updateJobEquipment(jobEquipmentId: string, formData: FormD
 /**
  * Archive equipment (soft delete)
  */
-export async function archiveEquipment(equipmentId: string): Promise<{ success: boolean; error?: string }> {
+export async function archiveEquipment(
+	equipmentId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -353,7 +369,11 @@ export async function addMaterialToJob(formData: FormData) {
 		return { success: false, error: "Not authenticated" };
 	}
 
-	const { data: userData } = await supabase.from("users").select("company_id").eq("id", user.id).single();
+	const { data: userData } = await supabase
+		.from("users")
+		.select("company_id")
+		.eq("id", user.id)
+		.single();
 
 	if (!userData?.company_id) {
 		return { success: false, error: "Company not found" };
@@ -393,7 +413,9 @@ export async function addMaterialToJob(formData: FormData) {
  * Deletes the job_equipment junction table record
  * Bidirectional operation - updates both equipment and job views
  */
-export async function removeEquipmentFromJob(jobEquipmentId: string): Promise<{ success: boolean; error?: string }> {
+export async function removeEquipmentFromJob(
+	jobEquipmentId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -414,7 +436,10 @@ export async function removeEquipmentFromJob(jobEquipmentId: string): Promise<{ 
 		const jobId = record.job_id;
 
 		// Delete junction table row
-		const { error: deleteError } = await supabase.from("job_equipment").delete().eq("id", jobEquipmentId);
+		const { error: deleteError } = await supabase
+			.from("job_equipment")
+			.delete()
+			.eq("id", jobEquipmentId);
 
 		if (deleteError) {
 			return { success: false, error: deleteError.message };
@@ -430,7 +455,10 @@ export async function removeEquipmentFromJob(jobEquipmentId: string): Promise<{ 
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to remove equipment from job",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to remove equipment from job",
 		};
 	}
 }
@@ -440,7 +468,9 @@ export async function removeEquipmentFromJob(jobEquipmentId: string): Promise<{ 
  * Deletes the job_materials junction table record
  * Updates job page view
  */
-export async function removeJobMaterial(jobMaterialId: string): Promise<{ success: boolean; error?: string }> {
+export async function removeJobMaterial(
+	jobMaterialId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -461,7 +491,10 @@ export async function removeJobMaterial(jobMaterialId: string): Promise<{ succes
 		const jobId = record.job_id;
 
 		// Delete junction table row
-		const { error: deleteError } = await supabase.from("job_materials").delete().eq("id", jobMaterialId);
+		const { error: deleteError } = await supabase
+			.from("job_materials")
+			.delete()
+			.eq("id", jobMaterialId);
 
 		if (deleteError) {
 			return { success: false, error: deleteError.message };
@@ -476,7 +509,10 @@ export async function removeJobMaterial(jobMaterialId: string): Promise<{ succes
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to remove material from job",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to remove material from job",
 		};
 	}
 }

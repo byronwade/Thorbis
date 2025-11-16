@@ -9,7 +9,10 @@ declare const Deno: typeof globalThis.Deno;
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+	createClient,
+	type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2";
 
 type ScanRequest = {
 	attachmentId: string;
@@ -56,20 +59,26 @@ serve(async (req) => {
 		// Verify authorization
 		const authHeader = req.headers.get("Authorization");
 		if (!authHeader) {
-			return new Response(JSON.stringify({ error: "Missing authorization header" }), {
-				status: 401,
-				headers: { "Content-Type": "application/json" },
-			});
+			return new Response(
+				JSON.stringify({ error: "Missing authorization header" }),
+				{
+					status: 401,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
 		}
 
 		// Parse request body
 		const { attachmentId, bucket, path }: ScanRequest = await req.json();
 
 		if (!(attachmentId && bucket && path)) {
-			return new Response(JSON.stringify({ error: "Missing required fields" }), {
-				status: 400,
-				headers: { "Content-Type": "application/json" },
-			});
+			return new Response(
+				JSON.stringify({ error: "Missing required fields" }),
+				{
+					status: 400,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
 		}
 
 		// Create Supabase client
@@ -78,10 +87,15 @@ serve(async (req) => {
 		const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 		// Update status to scanning
-		await supabase.from("attachments").update({ virus_scan_status: "scanning" }).eq("id", attachmentId);
+		await supabase
+			.from("attachments")
+			.update({ virus_scan_status: "scanning" })
+			.eq("id", attachmentId);
 
 		// Get file from storage
-		const { data: fileData, error: downloadError } = await supabase.storage.from(bucket).download(path);
+		const { data: fileData, error: downloadError } = await supabase.storage
+			.from(bucket)
+			.download(path);
 
 		if (downloadError) {
 			throw new Error(`Failed to download file: ${downloadError.message}`);
@@ -124,7 +138,7 @@ serve(async (req) => {
 			JSON.stringify({
 				error: error instanceof Error ? error.message : "Scan failed",
 			}),
-			{ status: 500, headers: { "Content-Type": "application/json" } }
+			{ status: 500, headers: { "Content-Type": "application/json" } },
 		);
 	}
 });
@@ -144,7 +158,10 @@ async function scanFile(fileData: Blob, fileName: string): Promise<ScanResult> {
 	}
 
 	// Check file size
-	const maxSize = Number.parseInt(Deno.env.get("VIRUS_SCAN_MAX_SIZE") || `${DEFAULT_MAX_SCAN_SIZE}`, 10);
+	const maxSize = Number.parseInt(
+		Deno.env.get("VIRUS_SCAN_MAX_SIZE") || `${DEFAULT_MAX_SCAN_SIZE}`,
+		10,
+	);
 	if (fileData.size > maxSize) {
 		return {
 			status: "skipped",
@@ -165,7 +182,10 @@ async function scanFile(fileData: Blob, fileName: string): Promise<ScanResult> {
 /**
  * Scan with ClamAV
  */
-async function scanWithClamAV(fileData: Blob, fileName: string): Promise<ScanResult> {
+async function scanWithClamAV(
+	fileData: Blob,
+	fileName: string,
+): Promise<ScanResult> {
 	const endpoint = Deno.env.get("CLAMAV_ENDPOINT");
 	if (!endpoint) {
 		throw new Error("ClamAV endpoint not configured");
@@ -196,20 +216,26 @@ async function scanWithClamAV(fileData: Blob, fileName: string): Promise<ScanRes
 /**
  * Scan with VirusTotal
  */
-async function scanWithVirusTotal(fileData: Blob, fileName: string): Promise<ScanResult> {
+async function scanWithVirusTotal(
+	fileData: Blob,
+	fileName: string,
+): Promise<ScanResult> {
 	const apiKey = getEnvVar("VIRUSTOTAL_API_KEY");
 
 	// Upload file
 	const formData = new FormData();
 	formData.append("file", fileData, fileName);
 
-	const uploadResponse = await fetch("https://www.virustotal.com/api/v3/files", {
-		method: "POST",
-		headers: {
-			"x-apikey": apiKey,
+	const uploadResponse = await fetch(
+		"https://www.virustotal.com/api/v3/files",
+		{
+			method: "POST",
+			headers: {
+				"x-apikey": apiKey,
+			},
+			body: formData,
 		},
-		body: formData,
-	});
+	);
 
 	if (!uploadResponse.ok) {
 		throw new Error(`VirusTotal upload failed: ${uploadResponse.statusText}`);
@@ -222,7 +248,10 @@ async function scanWithVirusTotal(fileData: Blob, fileName: string): Promise<Sca
 	return pollVirusTotalAnalysis(apiKey, analysisId);
 }
 
-async function pollVirusTotalAnalysis(apiKey: string, analysisId: string): Promise<ScanResult> {
+async function pollVirusTotalAnalysis(
+	apiKey: string,
+	analysisId: string,
+): Promise<ScanResult> {
 	for (let attempts = 0; attempts < VIRUSTOTAL_MAX_ATTEMPTS; attempts++) {
 		await delay(VIRUSTOTAL_POLL_INTERVAL_MS);
 
@@ -241,14 +270,19 @@ async function pollVirusTotalAnalysis(apiKey: string, analysisId: string): Promi
 }
 
 async function fetchVirusTotalAnalysis(apiKey: string, analysisId: string) {
-	const analysisResponse = await fetch(`https://www.virustotal.com/api/v3/analyses/${analysisId}`, {
-		headers: {
-			"x-apikey": apiKey,
+	const analysisResponse = await fetch(
+		`https://www.virustotal.com/api/v3/analyses/${analysisId}`,
+		{
+			headers: {
+				"x-apikey": apiKey,
+			},
 		},
-	});
+	);
 
 	if (!analysisResponse.ok) {
-		throw new Error(`VirusTotal analysis failed: ${analysisResponse.statusText}`);
+		throw new Error(
+			`VirusTotal analysis failed: ${analysisResponse.statusText}`,
+		);
 	}
 
 	return analysisResponse.json();
@@ -277,7 +311,10 @@ function buildVirusTotalScanResult(stats: {
 /**
  * Mock scanner for development
  */
-async function mockScan(fileData: Blob, _fileName: string): Promise<ScanResult> {
+async function mockScan(
+	fileData: Blob,
+	_fileName: string,
+): Promise<ScanResult> {
 	// Simulate scanning delay
 	await delay(MOCK_SCAN_DELAY_MS);
 
@@ -306,14 +343,18 @@ async function quarantineFile(
 	supabase: SupabaseClient,
 	attachmentId: string,
 	bucket: string,
-	path: string
+	path: string,
 ): Promise<void> {
 	try {
 		// Get file
-		const { data: fileData, error: downloadError } = await supabase.storage.from(bucket).download(path);
+		const { data: fileData, error: downloadError } = await supabase.storage
+			.from(bucket)
+			.download(path);
 
 		if (downloadError) {
-			throw new Error(`Failed to download for quarantine: ${downloadError.message}`);
+			throw new Error(
+				`Failed to download for quarantine: ${downloadError.message}`,
+			);
 		}
 
 		// Upload to quarantine

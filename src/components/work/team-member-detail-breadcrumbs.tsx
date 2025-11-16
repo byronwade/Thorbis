@@ -15,7 +15,12 @@ export function TeamMemberDetailBreadcrumbs() {
 
 	return (
 		<div className="flex items-center gap-2">
-			<Button className="h-8 gap-1.5" onClick={() => router.push("/dashboard/work/team")} size="sm" variant="outline">
+			<Button
+				className="h-8 gap-1.5"
+				onClick={() => router.push("/dashboard/work/team")}
+				size="sm"
+				variant="outline"
+			>
 				<ArrowLeft className="size-4" />
 				Team Members
 			</Button>

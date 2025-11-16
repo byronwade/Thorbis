@@ -22,7 +22,11 @@ import { Archive, Mail, Phone, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import { CustomerStatusBadge } from "@/components/ui/status-badge";
 import { formatCurrencyFromDollars } from "@/lib/formatters";
@@ -52,7 +56,11 @@ type CustomersTableProps = {
 	onCustomerClick?: (customer: Customer) => void;
 };
 
-export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }: CustomersTableProps) {
+export function CustomersTable({
+	customers,
+	itemsPerPage = 50,
+	onCustomerClick,
+}: CustomersTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.customers);
 
@@ -94,7 +102,9 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 						<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
 							{customer.name}
 						</div>
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">{customer.contact}</div>
+						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+							{customer.contact}
+						</div>
 					</div>
 				</Link>
 			),
@@ -129,14 +139,24 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 			hideable: true,
 			render: (customer) => {
 				if (!(customer.address || customer.city || customer.state)) {
-					return <span className="text-muted-foreground text-sm italic">No address</span>;
+					return (
+						<span className="text-muted-foreground text-sm italic">
+							No address
+						</span>
+					);
 				}
 				return (
 					<div className="space-y-1">
-						{customer.address && <div className="truncate text-foreground text-sm">{customer.address}</div>}
+						{customer.address && (
+							<div className="truncate text-foreground text-sm">
+								{customer.address}
+							</div>
+						)}
 						{(customer.city || customer.state || customer.zipCode) && (
 							<div className="truncate text-muted-foreground text-xs">
-								{[customer.city, customer.state, customer.zipCode].filter(Boolean).join(", ")}
+								{[customer.city, customer.state, customer.zipCode]
+									.filter(Boolean)
+									.join(", ")}
 							</div>
 						)}
 					</div>
@@ -163,10 +183,16 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 			render: (customer) => (
 				<div className="space-y-1">
 					<div className="text-foreground text-sm">
-						Last: <span className="text-muted-foreground">{customer.lastService}</span>
+						Last:{" "}
+						<span className="text-muted-foreground">
+							{customer.lastService}
+						</span>
 					</div>
 					<div className="text-foreground text-sm">
-						Next: <span className="text-muted-foreground">{customer.nextService}</span>
+						Next:{" "}
+						<span className="text-muted-foreground">
+							{customer.nextService}
+						</span>
 					</div>
 				</div>
 			),
@@ -178,7 +204,9 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 			shrink: true,
 			align: "right",
 			render: (customer) => (
-				<span className="font-semibold tabular-nums">{formatCurrencyFromDollars(customer.totalValue)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrencyFromDollars(customer.totalValue)}
+				</span>
 			),
 		},
 		{
@@ -268,7 +296,10 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 			columns={columns}
 			data={filteredCustomers}
 			emptyAction={
-				<Button onClick={() => (window.location.href = "/dashboard/customers/new")} size="sm">
+				<Button
+					onClick={() => (window.location.href = "/dashboard/customers/new")}
+					size="sm"
+				>
 					<Users className="mr-2 size-4" />
 					Add Customer
 				</Button>
@@ -278,7 +309,9 @@ export function CustomersTable({ customers, itemsPerPage = 50, onCustomerClick }
 			enableSelection={true}
 			entity="customers"
 			getItemId={(customer) => customer.id}
-			isArchived={(customer) => Boolean(customer.archived_at || customer.deleted_at)}
+			isArchived={(customer) =>
+				Boolean(customer.archived_at || customer.deleted_at)
+			}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
 			onRowClick={handleRowClick}

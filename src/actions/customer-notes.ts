@@ -16,7 +16,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 type NoteType = "customer" | "internal";
 
@@ -35,7 +38,12 @@ type UpdateCustomerNoteInput = {
 /**
  * Get customer notes with pagination
  */
-export async function getCustomerNotes({ customerId, noteType = "all", limit = 50, offset = 0 }: GetNotesOptions) {
+export async function getCustomerNotes({
+	customerId,
+	noteType = "all",
+	limit = 50,
+	offset = 0,
+}: GetNotesOptions) {
 	try {
 		const supabase = await getSupabaseServerClient();
 		const { companyId } = await getUserAndCompany(supabase);
@@ -47,7 +55,7 @@ export async function getCustomerNotes({ customerId, noteType = "all", limit = 5
         *,
         user:users!user_id(name, email, avatar)
       `,
-				{ count: "exact" }
+				{ count: "exact" },
 			)
 			.eq("customer_id", customerId)
 			.eq("company_id", companyId)
@@ -145,7 +153,12 @@ export async function updateCustomerNote({
 			return { success: false, error: "No update fields provided" };
 		}
 
-		const { data, error } = await supabase.from("customer_notes").update(updateData).eq("id", noteId).select().single();
+		const { data, error } = await supabase
+			.from("customer_notes")
+			.update(updateData)
+			.eq("id", noteId)
+			.select()
+			.single();
 
 		if (error) {
 			return { success: false, error: error.message };
@@ -204,7 +217,9 @@ const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
 	return supabase as SupabaseServerClient;
 };
 
-const getUserAndCompany = async (supabase: SupabaseServerClient): Promise<{ userId: string; companyId: string }> => {
+const getUserAndCompany = async (
+	supabase: SupabaseServerClient,
+): Promise<{ userId: string; companyId: string }> => {
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
@@ -213,7 +228,11 @@ const getUserAndCompany = async (supabase: SupabaseServerClient): Promise<{ user
 		throw new Error("Not authenticated");
 	}
 
-	const { data: teamMember } = await supabase.from("team_members").select("company_id").eq("user_id", user.id).single();
+	const { data: teamMember } = await supabase
+		.from("team_members")
+		.select("company_id")
+		.eq("user_id", user.id)
+		.single();
 
 	if (!teamMember?.company_id) {
 		throw new Error("No company found");
@@ -222,7 +241,10 @@ const getUserAndCompany = async (supabase: SupabaseServerClient): Promise<{ user
 	return { userId: user.id, companyId: teamMember.company_id };
 };
 
-const buildNoteUpdatePayload = ({ content, isPinned }: UpdateCustomerNoteInput): Record<string, unknown> => {
+const buildNoteUpdatePayload = ({
+	content,
+	isPinned,
+}: UpdateCustomerNoteInput): Record<string, unknown> => {
 	const updates: Record<string, unknown> = {};
 
 	if (content !== undefined) {

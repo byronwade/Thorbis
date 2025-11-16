@@ -9,7 +9,12 @@
  */
 
 import { Briefcase, TrendingUp, Trophy } from "lucide-react";
-import { formatCurrency, formatNumber, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatCurrency,
+	formatNumber,
+	formatPercentage,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveIcon,
@@ -63,7 +68,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							<ResponsiveText className="truncate font-bold" variant="title">
 								{data.name}
 							</ResponsiveText>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								Rank #1
 							</ResponsiveText>
 						</div>
@@ -72,13 +80,18 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						<div className="grid w-full grid-cols-3 gap-1.5 overflow-hidden">
 							{/* Revenue */}
 							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Revenue
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
 									{formatCurrency(data.revenue, "comfortable")}
 								</ResponsiveText>
-								<span className={`inline-flex items-center gap-0.5 text-xs ${getTrendClass(data.revenueChange)}`}>
+								<span
+									className={`inline-flex items-center gap-0.5 text-xs ${getTrendClass(data.revenueChange)}`}
+								>
 									<TrendingUp className="size-2.5" />
 									{isPositive ? "+" : ""}
 									{formatPercentage(data.revenueChange, "full")}
@@ -87,7 +100,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 
 							{/* Jobs */}
 							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Jobs
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -97,7 +113,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 
 							{/* Rating */}
 							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Rating
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -120,7 +139,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 								<ResponsiveText className="truncate font-bold" variant="body">
 									{data.name}
 								</ResponsiveText>
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									#1
 								</ResponsiveText>
 							</div>
@@ -160,7 +182,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						<div className="flex size-8 items-center justify-center rounded-full border-2 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-warning text-xs">
 							{data.avatar}
 						</div>
-						<ResponsiveText className="font-bold text-warning" variant="display">
+						<ResponsiveText
+							className="font-bold text-warning"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -169,7 +194,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 				{/* TINY Stage: Just the revenue number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-warning" variant="display">
+						<ResponsiveText
+							className="font-bold text-warning"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

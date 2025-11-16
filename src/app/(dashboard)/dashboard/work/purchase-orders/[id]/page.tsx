@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { PurchaseOrderDetailData } from "@/components/work/purchase-order-detail-data";
 import { PurchaseOrderDetailSkeleton } from "@/components/work/purchase-order-detail-skeleton";
 
-export default async function PurchaseOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PurchaseOrderDetailPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: poId } = await params;
 
 	return (

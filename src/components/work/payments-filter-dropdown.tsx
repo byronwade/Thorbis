@@ -13,9 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type PaymentsFilters, usePaymentsFiltersStore } from "@/lib/stores/payments-filters-store";
+import {
+	type PaymentsFilters,
+	usePaymentsFiltersStore,
+} from "@/lib/stores/payments-filters-store";
 
 type PaymentsFilterDropdownProps = {
 	activeCount?: number;
@@ -23,7 +32,11 @@ type PaymentsFilterDropdownProps = {
 	totalCount?: number;
 };
 
-export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount }: PaymentsFilterDropdownProps) {
+export function PaymentsFilterDropdown({
+	activeCount,
+	archivedCount,
+	totalCount,
+}: PaymentsFilterDropdownProps) {
 	const globalFilters = usePaymentsFiltersStore((state) => state.filters);
 	const setFilters = usePaymentsFiltersStore((state) => state.setFilters);
 	const resetFilters = usePaymentsFiltersStore((state) => state.resetFilters);
@@ -84,7 +97,10 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 					<Filter className="size-4" />
 					<span className="ml-2">Filters</span>
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 h-5 w-5 justify-center p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 h-5 w-5 justify-center p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -95,7 +111,12 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Filter Payments</span>
 					{activeFilterCount > 0 && (
-						<Button className="h-6 px-2 text-xs" onClick={handleClear} size="sm" variant="ghost">
+						<Button
+							className="h-6 px-2 text-xs"
+							onClick={handleClear}
+							size="sm"
+							variant="ghost"
+						>
 							Clear all
 						</Button>
 					)}
@@ -107,17 +128,27 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Archive Status</Label>
 						<Select
-							onValueChange={(value) => handleLocalChange("archiveStatus", value as PaymentsFilters["archiveStatus"])}
+							onValueChange={(value) =>
+								handleLocalChange(
+									"archiveStatus",
+									value as PaymentsFilters["archiveStatus"],
+								)
+							}
 							value={localFilters.archiveStatus}
 						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="active">Active Only {activeCount !== undefined && `(${activeCount})`}</SelectItem>
-								<SelectItem value="all">All Payments {totalCount !== undefined && `(${totalCount})`}</SelectItem>
+								<SelectItem value="active">
+									Active Only {activeCount !== undefined && `(${activeCount})`}
+								</SelectItem>
+								<SelectItem value="all">
+									All Payments {totalCount !== undefined && `(${totalCount})`}
+								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 							</SelectContent>
 						</Select>
@@ -128,7 +159,10 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 					{/* Status */}
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Status</Label>
-						<Select onValueChange={(value) => handleLocalChange("status", value)} value={localFilters.status}>
+						<Select
+							onValueChange={(value) => handleLocalChange("status", value)}
+							value={localFilters.status}
+						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
@@ -147,7 +181,10 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 					{/* Payment Method */}
 					<div className="space-y-2">
 						<Label className="font-medium text-xs">Payment Method</Label>
-						<Select onValueChange={(value) => handleLocalChange("method", value)} value={localFilters.method}>
+						<Select
+							onValueChange={(value) => handleLocalChange("method", value)}
+							value={localFilters.method}
+						>
 							<SelectTrigger className="h-9">
 								<SelectValue />
 							</SelectTrigger>
@@ -192,7 +229,9 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 						<Label className="font-medium text-xs">Customer</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => handleLocalChange("customerName", e.target.value)}
+							onChange={(e) =>
+								handleLocalChange("customerName", e.target.value)
+							}
 							placeholder="Search by customer name..."
 							type="text"
 							value={localFilters.customerName}
@@ -206,7 +245,9 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 						<Label className="font-medium text-xs">Reference Number</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => handleLocalChange("referenceNumber", e.target.value)}
+							onChange={(e) =>
+								handleLocalChange("referenceNumber", e.target.value)
+							}
 							placeholder="Search by reference #..."
 							type="text"
 							value={localFilters.referenceNumber}
@@ -217,7 +258,12 @@ export function PaymentsFilterDropdown({ activeCount, archivedCount, totalCount 
 				<DropdownMenuSeparator />
 
 				<div className="flex gap-2 p-3">
-					<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+					<Button
+						className="flex-1"
+						onClick={() => setIsOpen(false)}
+						size="sm"
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button className="flex-1" onClick={handleApply} size="sm">

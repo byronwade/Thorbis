@@ -1,14 +1,23 @@
 import { Building2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 type CompanyGateProps = {
 	context?: string;
 	hasCompanies?: boolean;
 };
 
-export function CompanyGate({ context = "this page", hasCompanies = false }: CompanyGateProps) {
+export function CompanyGate({
+	context = "this page",
+	hasCompanies = false,
+}: CompanyGateProps) {
 	const description = hasCompanies
 		? `Choose an active workspace from the switcher so we know which ${context} data to load.`
 		: `You’re not part of any workspace yet. Ask an admin to invite you or create one to unlock ${context}.`;

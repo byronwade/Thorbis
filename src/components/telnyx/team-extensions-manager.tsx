@@ -27,10 +27,20 @@ import {
 	XCircle,
 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { getTeamExtensions, setVacationMode, updateTeamMemberExtension } from "@/actions/voip";
+import {
+	getTeamExtensions,
+	setVacationMode,
+	updateTeamMemberExtension,
+} from "@/actions/voip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -41,10 +51,23 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -140,7 +163,8 @@ export function TeamExtensionsManager() {
 	function openVacationDialog(member: TeamMember) {
 		setSelectedMember(member);
 		setVacationForm({
-			vacation_mode_enabled: member.availability?.vacation_mode_enabled ?? false,
+			vacation_mode_enabled:
+				member.availability?.vacation_mode_enabled ?? false,
 			vacation_start_date: member.availability?.vacation_start_date || "",
 			vacation_end_date: member.availability?.vacation_end_date || "",
 			vacation_message: member.availability?.vacation_message || "",
@@ -154,7 +178,10 @@ export function TeamExtensionsManager() {
 		}
 
 		startTransition(async () => {
-			const result = await updateTeamMemberExtension(selectedMember.id, extensionForm);
+			const result = await updateTeamMemberExtension(
+				selectedMember.id,
+				extensionForm,
+			);
 
 			if (result.success) {
 				toast.success("Extension settings saved successfully");
@@ -188,7 +215,7 @@ export function TeamExtensionsManager() {
 		(member) =>
 			member.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			member.phone_extension?.includes(searchTerm)
+			member.phone_extension?.includes(searchTerm),
 	);
 
 	const getStatusBadge = (member: TeamMember) => {
@@ -258,7 +285,9 @@ export function TeamExtensionsManager() {
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<CardTitle>Team Extensions</CardTitle>
-							<CardDescription>Assign and manage phone extensions for team members</CardDescription>
+							<CardDescription>
+								Assign and manage phone extensions for team members
+							</CardDescription>
 						</div>
 						<div className="relative w-full sm:w-72">
 							<Search className="absolute top-3 left-3 size-4 text-muted-foreground" />
@@ -297,7 +326,9 @@ export function TeamExtensionsManager() {
 											<TableCell>
 												<div>
 													<div className="font-medium">{member.full_name}</div>
-													<div className="text-muted-foreground text-xs">{member.email}</div>
+													<div className="text-muted-foreground text-xs">
+														{member.email}
+													</div>
 												</div>
 											</TableCell>
 											<TableCell>
@@ -307,11 +338,17 @@ export function TeamExtensionsManager() {
 														{member.phone_extension}
 													</Badge>
 												) : (
-													<span className="text-muted-foreground text-sm">Not assigned</span>
+													<span className="text-muted-foreground text-sm">
+														Not assigned
+													</span>
 												)}
 											</TableCell>
 											<TableCell>
-												{member.direct_inward_dial || <span className="text-muted-foreground text-sm">—</span>}
+												{member.direct_inward_dial || (
+													<span className="text-muted-foreground text-sm">
+														—
+													</span>
+												)}
 											</TableCell>
 											<TableCell>{getStatusBadge(member)}</TableCell>
 											<TableCell>
@@ -332,11 +369,19 @@ export function TeamExtensionsManager() {
 											</TableCell>
 											<TableCell className="text-right">
 												<div className="flex justify-end gap-2">
-													<Button onClick={() => openVacationDialog(member)} size="sm" variant="outline">
+													<Button
+														onClick={() => openVacationDialog(member)}
+														size="sm"
+														variant="outline"
+													>
 														<Calendar className="mr-2 size-4" />
 														Vacation
 													</Button>
-													<Button onClick={() => openEditDialog(member)} size="sm" variant="outline">
+													<Button
+														onClick={() => openEditDialog(member)}
+														size="sm"
+														variant="outline"
+													>
 														<Edit className="mr-2 size-4" />
 														Edit
 													</Button>
@@ -357,7 +402,8 @@ export function TeamExtensionsManager() {
 					<DialogHeader>
 						<DialogTitle>Edit Extension Settings</DialogTitle>
 						<DialogDescription>
-							Configure phone extension and call settings for {selectedMember?.full_name}
+							Configure phone extension and call settings for{" "}
+							{selectedMember?.full_name}
 						</DialogDescription>
 					</DialogHeader>
 
@@ -377,7 +423,9 @@ export function TeamExtensionsManager() {
 									placeholder="101"
 									value={extensionForm.phone_extension}
 								/>
-								<p className="mt-1 text-muted-foreground text-xs">3-4 digit extension number</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									3-4 digit extension number
+								</p>
 							</div>
 
 							<div>
@@ -393,14 +441,18 @@ export function TeamExtensionsManager() {
 									placeholder="+1 (555) 123-4567"
 									value={extensionForm.direct_inward_dial}
 								/>
-								<p className="mt-1 text-muted-foreground text-xs">Direct phone number (optional)</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									Direct phone number (optional)
+								</p>
 							</div>
 						</div>
 
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Extension Enabled</Label>
-								<p className="text-muted-foreground text-xs">Allow this extension to receive calls</p>
+								<p className="text-muted-foreground text-xs">
+									Allow this extension to receive calls
+								</p>
 							</div>
 							<Switch
 								checked={extensionForm.extension_enabled}
@@ -430,7 +482,9 @@ export function TeamExtensionsManager() {
 								type="password"
 								value={extensionForm.voicemail_pin}
 							/>
-							<p className="mt-1 text-muted-foreground text-xs">PIN to access voicemail remotely</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								PIN to access voicemail remotely
+							</p>
 						</div>
 
 						<Separator />
@@ -439,7 +493,9 @@ export function TeamExtensionsManager() {
 							<div className="flex items-center justify-between">
 								<div>
 									<Label>Call Forwarding</Label>
-									<p className="text-muted-foreground text-xs">Forward calls to another number</p>
+									<p className="text-muted-foreground text-xs">
+										Forward calls to another number
+									</p>
 								</div>
 								<Switch
 									checked={extensionForm.call_forwarding_enabled}
@@ -474,7 +530,9 @@ export function TeamExtensionsManager() {
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Simultaneous Ring</Label>
-								<p className="text-muted-foreground text-xs">Ring extension and forward number simultaneously</p>
+								<p className="text-muted-foreground text-xs">
+									Ring extension and forward number simultaneously
+								</p>
 							</div>
 							<Switch
 								checked={extensionForm.simultaneous_ring_enabled}
@@ -508,12 +566,18 @@ export function TeamExtensionsManager() {
 									<SelectItem value="60">60 seconds</SelectItem>
 								</SelectContent>
 							</Select>
-							<p className="mt-1 text-muted-foreground text-xs">Time to ring before forwarding to voicemail</p>
+							<p className="mt-1 text-muted-foreground text-xs">
+								Time to ring before forwarding to voicemail
+							</p>
 						</div>
 					</div>
 
 					<DialogFooter>
-						<Button disabled={isPending} onClick={() => setIsEditDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isPending}
+							onClick={() => setIsEditDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isPending} onClick={handleSaveExtension}>
@@ -534,18 +598,25 @@ export function TeamExtensionsManager() {
 			</Dialog>
 
 			{/* Vacation Mode Dialog */}
-			<Dialog onOpenChange={setIsVacationDialogOpen} open={isVacationDialogOpen}>
+			<Dialog
+				onOpenChange={setIsVacationDialogOpen}
+				open={isVacationDialogOpen}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Vacation Mode Settings</DialogTitle>
-						<DialogDescription>Configure out-of-office settings for {selectedMember?.full_name}</DialogDescription>
+						<DialogDescription>
+							Configure out-of-office settings for {selectedMember?.full_name}
+						</DialogDescription>
 					</DialogHeader>
 
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Enable Vacation Mode</Label>
-								<p className="text-muted-foreground text-xs">Stop receiving calls during vacation</p>
+								<p className="text-muted-foreground text-xs">
+									Stop receiving calls during vacation
+								</p>
 							</div>
 							<Switch
 								checked={vacationForm.vacation_mode_enabled}
@@ -606,14 +677,20 @@ export function TeamExtensionsManager() {
 										rows={3}
 										value={vacationForm.vacation_message}
 									/>
-									<p className="mt-1 text-muted-foreground text-xs">This message will be played to callers</p>
+									<p className="mt-1 text-muted-foreground text-xs">
+										This message will be played to callers
+									</p>
 								</div>
 							</>
 						)}
 					</div>
 
 					<DialogFooter>
-						<Button disabled={isPending} onClick={() => setIsVacationDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isPending}
+							onClick={() => setIsVacationDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isPending} onClick={handleSaveVacation}>

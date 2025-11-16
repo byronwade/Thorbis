@@ -8,11 +8,23 @@
 
 "use client";
 
-import { Camera, Globe, MapPin, Maximize2, Navigation, Store } from "lucide-react";
+import {
+	Camera,
+	Globe,
+	MapPin,
+	Maximize2,
+	Navigation,
+	Store,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PropertyLocationVisualProps = {
@@ -32,24 +44,40 @@ type PropertyLocationVisualProps = {
 	}>;
 };
 
-export function PropertyLocationVisual({ property, nearbySuppliers = [] }: PropertyLocationVisualProps) {
+export function PropertyLocationVisual({
+	property,
+	nearbySuppliers = [],
+}: PropertyLocationVisualProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [activeTab, setActiveTab] = useState("map");
 
 	// Format address for display (shown once)
-	const fullAddress = [property.address, property.address2, `${property.city}, ${property.state} ${property.zip_code}`]
+	const fullAddress = [
+		property.address,
+		property.address2,
+		`${property.city}, ${property.state} ${property.zip_code}`,
+	]
 		.filter(Boolean)
 		.join("\n");
 
 	// Format address for URL encoding
-	const addressForUrl = [property.address, property.address2, property.city, property.state, property.zip_code]
+	const addressForUrl = [
+		property.address,
+		property.address2,
+		property.city,
+		property.state,
+		property.zip_code,
+	]
 		.filter(Boolean)
 		.join(", ");
 
 	const encodedAddress = encodeURIComponent(addressForUrl);
 
 	// Destination for URLs (prefer coordinates, fallback to address)
-	const destination = property.lat && property.lon ? `${property.lat},${property.lon}` : encodedAddress;
+	const destination =
+		property.lat && property.lon
+			? `${property.lat},${property.lon}`
+			: encodedAddress;
 
 	// Combined Map + Directions + Supply Houses URL
 	// This shows the destination with a route from current location AND nearby places
@@ -84,14 +112,21 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 						<div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
 							Service Location
 						</div>
-						<Button asChild className="h-7 gap-1.5 px-2 text-xs" size="sm" variant="outline">
+						<Button
+							asChild
+							className="h-7 gap-1.5 px-2 text-xs"
+							size="sm"
+							variant="outline"
+						>
 							<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 								<Navigation className="size-3" />
 								Open in Maps
 							</a>
 						</Button>
 					</div>
-					<div className="whitespace-pre-line text-foreground text-sm leading-relaxed">{fullAddress}</div>
+					<div className="whitespace-pre-line text-foreground text-sm leading-relaxed">
+						{fullAddress}
+					</div>
 				</div>
 
 				{/* Visual Tabs - Map (with directions & supply houses), Street View, Earth */}
@@ -101,7 +136,11 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 							<Navigation className="size-3.5" />
 							Map
 						</TabsTrigger>
-						<TabsTrigger className="gap-1.5 text-xs" disabled={!streetViewUrl} value="street">
+						<TabsTrigger
+							className="gap-1.5 text-xs"
+							disabled={!streetViewUrl}
+							value="street"
+						>
 							<Camera className="size-3.5" />
 							Street
 						</TabsTrigger>
@@ -137,7 +176,9 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">Shows route from your current location</span>
+							<span className="text-muted-foreground">
+								Shows route from your current location
+							</span>
 							{nearbySuppliers.length > 0 && (
 								<Badge className="gap-1" variant="secondary">
 									<Store className="size-3" />
@@ -174,14 +215,19 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 										</Button>
 									</div>
 								</div>
-								<p className="text-muted-foreground text-xs">360° ground-level view of the property</p>
+								<p className="text-muted-foreground text-xs">
+									360° ground-level view of the property
+								</p>
 							</>
 						) : (
 							<div className="flex h-[200px] flex-col items-center justify-center rounded-lg border bg-muted/50 p-6 text-center">
 								<Camera className="mx-auto mb-3 size-10 text-muted-foreground opacity-30" />
-								<p className="mb-1 font-medium text-foreground text-sm">Street View Unavailable</p>
+								<p className="mb-1 font-medium text-foreground text-sm">
+									Street View Unavailable
+								</p>
 								<p className="max-w-xs text-muted-foreground text-xs">
-									Add GPS coordinates (latitude/longitude) to the property to enable street-level imagery
+									Add GPS coordinates (latitude/longitude) to the property to
+									enable street-level imagery
 								</p>
 							</div>
 						)}
@@ -213,9 +259,20 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">Satellite imagery view</span>
-							<Button asChild className="h-6 gap-1 px-2 text-xs" size="sm" variant="ghost">
-								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
+							<span className="text-muted-foreground">
+								Satellite imagery view
+							</span>
+							<Button
+								asChild
+								className="h-6 gap-1 px-2 text-xs"
+								size="sm"
+								variant="ghost"
+							>
+								<a
+									href={googleEarthWebUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Globe className="size-3" />
 									Open Google Earth
 								</a>
@@ -245,17 +302,27 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 							<MapPin className="h-5 w-5 text-primary" />
 							Service Location
 						</DialogTitle>
-						<div className="mt-2 whitespace-pre-line text-muted-foreground text-sm">{fullAddress}</div>
+						<div className="mt-2 whitespace-pre-line text-muted-foreground text-sm">
+							{fullAddress}
+						</div>
 					</DialogHeader>
 
-					<Tabs className="w-full" onValueChange={setActiveTab} value={activeTab}>
+					<Tabs
+						className="w-full"
+						onValueChange={setActiveTab}
+						value={activeTab}
+					>
 						<div className="border-b px-6">
 							<TabsList className="h-10">
 								<TabsTrigger className="gap-2" value="map">
 									<Navigation className="size-4" />
 									Map & Route
 								</TabsTrigger>
-								<TabsTrigger className="gap-2" disabled={!streetViewUrl} value="street">
+								<TabsTrigger
+									className="gap-2"
+									disabled={!streetViewUrl}
+									value="street"
+								>
 									<Camera className="size-4" />
 									Street View
 								</TabsTrigger>
@@ -294,9 +361,12 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 							) : (
 								<div className="flex h-[600px] flex-col items-center justify-center bg-muted/50 p-12 text-center">
 									<Camera className="mx-auto mb-4 size-16 text-muted-foreground opacity-20" />
-									<p className="mb-2 font-semibold text-foreground text-lg">Street View Unavailable</p>
+									<p className="mb-2 font-semibold text-foreground text-lg">
+										Street View Unavailable
+									</p>
 									<p className="max-w-md text-muted-foreground text-sm">
-										Add GPS coordinates (latitude/longitude) to the property to enable street-level imagery
+										Add GPS coordinates (latitude/longitude) to the property to
+										enable street-level imagery
 									</p>
 								</div>
 							)}
@@ -329,13 +399,21 @@ export function PropertyLocationVisual({ property, nearbySuppliers = [] }: Prope
 						</div>
 						<div className="flex items-center gap-2">
 							<Button asChild className="gap-2" size="sm" variant="outline">
-								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
+								<a
+									href={googleEarthWebUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Globe className="size-4" />
 									Open in Google Earth
 								</a>
 							</Button>
 							<Button asChild className="gap-2" size="sm">
-								<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
+								<a
+									href={googleMapsUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Navigation className="size-4" />
 									Open in Google Maps
 								</a>

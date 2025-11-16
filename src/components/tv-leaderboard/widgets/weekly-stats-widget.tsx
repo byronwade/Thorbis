@@ -37,7 +37,9 @@ export function WeeklyStatsWidget({ data }: WeeklyStatsWidgetProps) {
 						<Calendar className="text-accent-foreground" />
 					</ResponsiveIcon>
 					<ShowAt stage="full">
-						<ResponsiveText variant="title">This Week's Performance</ResponsiveText>
+						<ResponsiveText variant="title">
+							This Week's Performance
+						</ResponsiveText>
 					</ShowAt>
 					<ShowAt stage="comfortable">
 						<ResponsiveText className="font-semibold" variant="body">
@@ -128,7 +130,10 @@ export function WeeklyStatsWidget({ data }: WeeklyStatsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText className="font-bold text-accent-foreground" variant="display">
+						<ResponsiveText
+							className="font-bold text-accent-foreground"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -137,7 +142,10 @@ export function WeeklyStatsWidget({ data }: WeeklyStatsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-accent-foreground" variant="display">
+						<ResponsiveText
+							className="font-bold text-accent-foreground"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

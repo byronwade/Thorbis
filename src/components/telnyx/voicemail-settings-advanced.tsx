@@ -14,9 +14,21 @@
 import { Mic, Save, Upload, Voicemail } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,13 +52,17 @@ export function VoicemailSettingsAdvanced() {
 						<Voicemail className="size-5" />
 						Voicemail Greetings
 					</CardTitle>
-					<CardDescription>Configure default voicemail greeting for your company</CardDescription>
+					<CardDescription>
+						Configure default voicemail greeting for your company
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div>
 						<Label htmlFor="greetingType">Greeting Type</Label>
 						<Select
-							onValueChange={(value) => setSettings({ ...settings, greetingType: value })}
+							onValueChange={(value) =>
+								setSettings({ ...settings, greetingType: value })
+							}
 							value={settings.greetingType}
 						>
 							<SelectTrigger className="mt-2" id="greetingType">
@@ -66,7 +82,9 @@ export function VoicemailSettingsAdvanced() {
 							<Textarea
 								className="mt-2"
 								id="customGreeting"
-								onChange={(e) => setSettings({ ...settings, customGreeting: e.target.value })}
+								onChange={(e) =>
+									setSettings({ ...settings, customGreeting: e.target.value })
+								}
 								placeholder="Thank you for calling. We're unable to take your call right now. Please leave a message..."
 								rows={4}
 								value={settings.customGreeting}
@@ -86,7 +104,9 @@ export function VoicemailSettingsAdvanced() {
 									<Upload className="mr-2 size-4" />
 									Choose File
 								</Button>
-								<span className="text-muted-foreground text-sm">MP3, WAV, or M4A (max 5MB)</span>
+								<span className="text-muted-foreground text-sm">
+									MP3, WAV, or M4A (max 5MB)
+								</span>
 							</div>
 						</div>
 					)}
@@ -96,17 +116,23 @@ export function VoicemailSettingsAdvanced() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Notification Settings</CardTitle>
-					<CardDescription>How team members are notified of new voicemails</CardDescription>
+					<CardDescription>
+						How team members are notified of new voicemails
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div>
 							<Label>Email Notifications</Label>
-							<p className="text-muted-foreground text-xs">Send voicemail audio file via email</p>
+							<p className="text-muted-foreground text-xs">
+								Send voicemail audio file via email
+							</p>
 						</div>
 						<Switch
 							checked={settings.emailNotifications}
-							onCheckedChange={(checked) => setSettings({ ...settings, emailNotifications: checked })}
+							onCheckedChange={(checked) =>
+								setSettings({ ...settings, emailNotifications: checked })
+							}
 						/>
 					</div>
 
@@ -115,11 +141,15 @@ export function VoicemailSettingsAdvanced() {
 					<div className="flex items-center justify-between">
 						<div>
 							<Label>SMS Notifications</Label>
-							<p className="text-muted-foreground text-xs">Send text alerts for new voicemails</p>
+							<p className="text-muted-foreground text-xs">
+								Send text alerts for new voicemails
+							</p>
 						</div>
 						<Switch
 							checked={settings.smsNotifications}
-							onCheckedChange={(checked) => setSettings({ ...settings, smsNotifications: checked })}
+							onCheckedChange={(checked) =>
+								setSettings({ ...settings, smsNotifications: checked })
+							}
 						/>
 					</div>
 
@@ -128,11 +158,15 @@ export function VoicemailSettingsAdvanced() {
 					<div className="flex items-center justify-between">
 						<div>
 							<Label>Voicemail Transcription</Label>
-							<p className="text-muted-foreground text-xs">Automatically transcribe voicemails to text</p>
+							<p className="text-muted-foreground text-xs">
+								Automatically transcribe voicemails to text
+							</p>
 						</div>
 						<Switch
 							checked={settings.transcriptionEnabled}
-							onCheckedChange={(checked) => setSettings({ ...settings, transcriptionEnabled: checked })}
+							onCheckedChange={(checked) =>
+								setSettings({ ...settings, transcriptionEnabled: checked })
+							}
 						/>
 					</div>
 				</CardContent>
@@ -141,7 +175,9 @@ export function VoicemailSettingsAdvanced() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Storage & Retention</CardTitle>
-					<CardDescription>Configure voicemail storage policies</CardDescription>
+					<CardDescription>
+						Configure voicemail storage policies
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div>
@@ -167,7 +203,9 @@ export function VoicemailSettingsAdvanced() {
 								<SelectItem value="-1">Forever</SelectItem>
 							</SelectContent>
 						</Select>
-						<p className="mt-1 text-muted-foreground text-xs">Automatically delete voicemails after this period</p>
+						<p className="mt-1 text-muted-foreground text-xs">
+							Automatically delete voicemails after this period
+						</p>
 					</div>
 
 					<div>
@@ -191,7 +229,9 @@ export function VoicemailSettingsAdvanced() {
 								<SelectItem value="300">5 minutes</SelectItem>
 							</SelectContent>
 						</Select>
-						<p className="mt-1 text-muted-foreground text-xs">Maximum length for voicemail recordings</p>
+						<p className="mt-1 text-muted-foreground text-xs">
+							Maximum length for voicemail recordings
+						</p>
 					</div>
 				</CardContent>
 			</Card>

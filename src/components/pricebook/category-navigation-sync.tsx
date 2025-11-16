@@ -21,14 +21,17 @@ type CategoryNavigationSyncProps = {
 	categoryPath: string[];
 };
 
-export function CategoryNavigationSync({ categoryPath }: CategoryNavigationSyncProps) {
+export function CategoryNavigationSync({
+	categoryPath,
+}: CategoryNavigationSyncProps) {
 	const navigateToPath = usePriceBookStore((state) => state.navigateToPath);
 	const currentPath = usePriceBookStore((state) => state.navigationPath);
 
 	useEffect(() => {
 		// Only update if path is different to avoid unnecessary renders
 		const pathsMatch =
-			currentPath.length === categoryPath.length && currentPath.every((segment, i) => segment === categoryPath[i]);
+			currentPath.length === categoryPath.length &&
+			currentPath.every((segment, i) => segment === categoryPath[i]);
 
 		if (!pathsMatch) {
 			navigateToPath(categoryPath);

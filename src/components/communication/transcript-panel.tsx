@@ -25,18 +25,25 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UnifiedAccordion, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordion,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 
 export function TranscriptPanel() {
 	const entries = useTranscriptStore((state) =>
-		state.filteredEntries.length > 0 ? state.filteredEntries : state.entries
+		state.filteredEntries.length > 0 ? state.filteredEntries : state.entries,
 	);
 	const searchQuery = useTranscriptStore((state) => state.searchQuery);
 	const setSearchQuery = useTranscriptStore((state) => state.setSearchQuery);
 	const isRecording = useTranscriptStore((state) => state.isRecording);
-	const exportTranscript = useTranscriptStore((state) => state.exportTranscript);
-	const getFullTranscript = useTranscriptStore((state) => state.getFullTranscript);
+	const exportTranscript = useTranscriptStore(
+		(state) => state.exportTranscript,
+	);
+	const getFullTranscript = useTranscriptStore(
+		(state) => state.getFullTranscript,
+	);
 
 	const [autoScroll, setAutoScroll] = useState(true);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -44,14 +51,16 @@ export function TranscriptPanel() {
 	// Auto-scroll to bottom when new entries arrive
 	useEffect(() => {
 		if (autoScroll && scrollContainerRef.current) {
-			scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+			scrollContainerRef.current.scrollTop =
+				scrollContainerRef.current.scrollHeight;
 		}
 	}, [autoScroll]);
 
 	// Handle scroll to detect manual scrolling
 	const handleScroll = () => {
 		if (scrollContainerRef.current) {
-			const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+			const { scrollTop, scrollHeight, clientHeight } =
+				scrollContainerRef.current;
 			const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
 			setAutoScroll(isAtBottom);
 		}
@@ -100,10 +109,22 @@ export function TranscriptPanel() {
 							<span className="text-muted-foreground text-xs">Recording</span>
 						</div>
 					)}
-					<Button className="h-8 px-2" onClick={handleCopy} size="sm" title="Copy transcript" variant="ghost">
+					<Button
+						className="h-8 px-2"
+						onClick={handleCopy}
+						size="sm"
+						title="Copy transcript"
+						variant="ghost"
+					>
 						<Copy className="size-3.5" />
 					</Button>
-					<Button className="h-8 px-2" onClick={handleExport} size="sm" title="Export transcript" variant="ghost">
+					<Button
+						className="h-8 px-2"
+						onClick={handleExport}
+						size="sm"
+						title="Export transcript"
+						variant="ghost"
+					>
 						<Download className="size-3.5" />
 					</Button>
 				</div>
@@ -135,8 +156,12 @@ export function TranscriptPanel() {
 								<div className="rounded-full bg-foreground p-4">
 									<Sparkles className="size-8 text-muted-foreground" />
 								</div>
-								<p className="mt-4 font-medium text-muted-foreground text-sm">No transcript yet</p>
-								<p className="mt-1 text-muted-foreground text-xs">Transcript will appear here during the call</p>
+								<p className="mt-4 font-medium text-muted-foreground text-sm">
+									No transcript yet
+								</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									Transcript will appear here during the call
+								</p>
 							</div>
 						) : (
 							entries.map((entry) => (
@@ -155,15 +180,21 @@ export function TranscriptPanel() {
 											{entry.isAnalyzing && (
 												<div className="flex items-center gap-1">
 													<div className="size-1 animate-pulse rounded-full bg-warning" />
-													<span className="text-[10px] text-warning">AI Analyzing...</span>
+													<span className="text-[10px] text-warning">
+														AI Analyzing...
+													</span>
 												</div>
 											)}
 										</div>
-										<span className="font-mono text-[10px] text-muted-foreground">{formatTime(entry.timestamp)}</span>
+										<span className="font-mono text-[10px] text-muted-foreground">
+											{formatTime(entry.timestamp)}
+										</span>
 									</div>
 
 									{/* Entry text */}
-									<p className="text-muted-foreground text-sm leading-relaxed">{entry.text}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{entry.text}
+									</p>
 
 									{/* AI extracted data */}
 									{entry.aiExtracted && (
@@ -182,15 +213,21 @@ export function TranscriptPanel() {
 													)}
 												</div>
 											)}
-											{entry.aiExtracted.issueCategories && entry.aiExtracted.issueCategories.length > 0 && (
-												<div className="flex flex-wrap gap-1">
-													{entry.aiExtracted.issueCategories.map((category) => (
-														<span className="rounded bg-warning/30 px-2 py-0.5 text-[10px] text-warning" key={category}>
-															{category}
-														</span>
-													))}
-												</div>
-											)}
+											{entry.aiExtracted.issueCategories &&
+												entry.aiExtracted.issueCategories.length > 0 && (
+													<div className="flex flex-wrap gap-1">
+														{entry.aiExtracted.issueCategories.map(
+															(category) => (
+																<span
+																	className="rounded bg-warning/30 px-2 py-0.5 text-[10px] text-warning"
+																	key={category}
+																>
+																	{category}
+																</span>
+															),
+														)}
+													</div>
+												)}
 											{entry.aiExtracted.sentiment && (
 												<div className="flex items-center gap-1">
 													<span

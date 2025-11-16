@@ -13,7 +13,13 @@ import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
 // Types
-export type JobCreationStep = "customer" | "property" | "description" | "details" | "scheduling" | "review";
+export type JobCreationStep =
+	| "customer"
+	| "property"
+	| "description"
+	| "details"
+	| "scheduling"
+	| "review";
 
 export type CustomerData = {
 	id?: string;
@@ -41,7 +47,13 @@ export type PropertyData = {
 export type JobData = {
 	title: string;
 	description: string;
-	jobType?: "service" | "installation" | "repair" | "maintenance" | "inspection" | "consultation";
+	jobType?:
+		| "service"
+		| "installation"
+		| "repair"
+		| "maintenance"
+		| "inspection"
+		| "consultation";
 	priority: "low" | "medium" | "high" | "urgent";
 	scheduledStart?: string;
 	scheduledEnd?: string;
@@ -110,7 +122,14 @@ type JobCreationStore = {
 	resetForNewJob: () => void; // Keep customer but clear job details
 };
 
-const STEP_ORDER: JobCreationStep[] = ["customer", "property", "description", "details", "scheduling", "review"];
+const STEP_ORDER: JobCreationStep[] = [
+	"customer",
+	"property",
+	"description",
+	"details",
+	"scheduling",
+	"review",
+];
 
 const initialState = {
 	currentStep: "customer" as JobCreationStep,
@@ -154,7 +173,9 @@ export const useJobCreationStore = create<JobCreationStore>()(
 
 						set({
 							currentStep: nextStep,
-							completedSteps: completedSteps.includes(currentStep) ? completedSteps : [...completedSteps, currentStep],
+							completedSteps: completedSteps.includes(currentStep)
+								? completedSteps
+								: [...completedSteps, currentStep],
 						});
 					}
 				},
@@ -226,7 +247,10 @@ export const useJobCreationStore = create<JobCreationStore>()(
 				// History Actions
 				addRecentCustomer: (customerId) =>
 					set((state) => ({
-						recentCustomers: [customerId, ...state.recentCustomers.filter((id) => id !== customerId)].slice(0, 10), // Keep last 10
+						recentCustomers: [
+							customerId,
+							...state.recentCustomers.filter((id) => id !== customerId),
+						].slice(0, 10), // Keep last 10
 					})),
 
 				// Reset Actions
@@ -254,17 +278,20 @@ export const useJobCreationStore = create<JobCreationStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "JobCreationStore" }
-	)
+		{ name: "JobCreationStore" },
+	),
 );
 
 // Selectors for better performance
-export const useCurrentStep = () => useJobCreationStore((state) => state.currentStep);
+export const useCurrentStep = () =>
+	useJobCreationStore((state) => state.currentStep);
 export const useCustomer = () => useJobCreationStore((state) => state.customer);
 export const useProperty = () => useJobCreationStore((state) => state.property);
 export const useJobData = () => useJobCreationStore((state) => state.job);
-export const useAISuggestions = () => useJobCreationStore((state) => state.aiSuggestions);
-export const useIsLoadingAI = () => useJobCreationStore((state) => state.isLoadingAI);
+export const useAISuggestions = () =>
+	useJobCreationStore((state) => state.aiSuggestions);
+export const useIsLoadingAI = () =>
+	useJobCreationStore((state) => state.isLoadingAI);
 export const useErrors = () => useJobCreationStore((state) => state.errors);

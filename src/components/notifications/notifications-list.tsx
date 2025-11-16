@@ -34,7 +34,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type { NotificationPriority, NotificationType } from "@/lib/stores/notifications-store";
+import type {
+	NotificationPriority,
+	NotificationType,
+} from "@/lib/stores/notifications-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { createClient } from "@/lib/supabase/client";
 
@@ -64,7 +67,8 @@ const priorityColors: Record<NotificationPriority, string> = {
 	low: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 	medium: "bg-primary text-primary dark:bg-primary dark:text-primary",
 	high: "bg-warning text-warning dark:bg-warning dark:text-warning",
-	urgent: "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
+	urgent:
+		"bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
 };
 
 function formatTimestamp(date: Date): string {
@@ -93,14 +97,24 @@ function formatTimestamp(date: Date): string {
 export function NotificationsList() {
 	const [isInitialized, setIsInitialized] = useState(false);
 	const [filterType, setFilterType] = useState<NotificationType | "all">("all");
-	const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">("all");
+	const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">(
+		"all",
+	);
 
 	// Get notifications from Zustand store
 	const notifications = useNotificationsStore((state) => state.notifications);
-	const setNotifications = useNotificationsStore((state) => state.setNotifications);
-	const optimisticMarkAsRead = useNotificationsStore((state) => state.optimisticMarkAsRead);
-	const optimisticMarkAllAsRead = useNotificationsStore((state) => state.optimisticMarkAllAsRead);
-	const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+	const setNotifications = useNotificationsStore(
+		(state) => state.setNotifications,
+	);
+	const optimisticMarkAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAsRead,
+	);
+	const optimisticMarkAllAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAllAsRead,
+	);
+	const optimisticDelete = useNotificationsStore(
+		(state) => state.optimisticDelete,
+	);
 	const subscribe = useNotificationsStore((state) => state.subscribe);
 	const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -228,10 +242,23 @@ export function NotificationsList() {
 
 				{/* Type filters */}
 				<div className="mt-4 flex flex-wrap gap-2">
-					<Button onClick={() => setFilterType("all")} size="sm" variant={filterType === "all" ? "default" : "ghost"}>
+					<Button
+						onClick={() => setFilterType("all")}
+						size="sm"
+						variant={filterType === "all" ? "default" : "ghost"}
+					>
 						All Types
 					</Button>
-					{(["message", "alert", "payment", "job", "team", "system"] as NotificationType[]).map((type) => {
+					{(
+						[
+							"message",
+							"alert",
+							"payment",
+							"job",
+							"team",
+							"system",
+						] as NotificationType[]
+					).map((type) => {
 						const Icon = notificationIcons[type];
 						return (
 							<Button
@@ -274,7 +301,9 @@ export function NotificationsList() {
 							>
 								<div className="flex gap-4">
 									{/* Icon */}
-									<div className={`mt-1 shrink-0 ${notificationColors[notification.type]}`}>
+									<div
+										className={`mt-1 shrink-0 ${notificationColors[notification.type]}`}
+									>
 										<Icon className="size-5" />
 									</div>
 
@@ -282,10 +311,17 @@ export function NotificationsList() {
 									<div className="min-w-0 flex-1 space-y-2">
 										<div className="flex items-start justify-between gap-2">
 											<div className="flex-1">
-												<h3 className="font-semibold text-base">{notification.title}</h3>
-												<p className="mt-1 text-muted-foreground text-sm">{notification.message}</p>
+												<h3 className="font-semibold text-base">
+													{notification.title}
+												</h3>
+												<p className="mt-1 text-muted-foreground text-sm">
+													{notification.message}
+												</p>
 											</div>
-											<Badge className={priorityColors[notification.priority]} variant="outline">
+											<Badge
+												className={priorityColors[notification.priority]}
+												variant="outline"
+											>
 												{notification.priority}
 											</Badge>
 										</div>
@@ -300,7 +336,11 @@ export function NotificationsList() {
 											<div className="flex items-center gap-2">
 												{notification.action_url && (
 													<Link href={notification.action_url}>
-														<Button onClick={() => markAsRead(notification.id)} size="sm" variant="ghost">
+														<Button
+															onClick={() => markAsRead(notification.id)}
+															size="sm"
+															variant="ghost"
+														>
 															{notification.action_label || "View"}
 														</Button>
 													</Link>

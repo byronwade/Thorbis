@@ -64,7 +64,10 @@ export function AppointmentDetailSkeleton() {
 							<div className="h-6 w-24 animate-pulse rounded bg-muted" />
 							<div className="space-y-2">
 								{[1, 2, 3].map((i) => (
-									<div className="h-4 w-full animate-pulse rounded bg-muted" key={i} />
+									<div
+										className="h-4 w-full animate-pulse rounded bg-muted"
+										key={i}
+									/>
 								))}
 							</div>
 						</div>
@@ -95,7 +98,10 @@ export function AppointmentDetailSkeleton() {
 							<div className="h-6 w-28 animate-pulse rounded bg-muted" />
 							<div className="space-y-2">
 								{[1, 2].map((i) => (
-									<div className="h-4 w-full animate-pulse rounded bg-muted" key={i} />
+									<div
+										className="h-4 w-full animate-pulse rounded bg-muted"
+										key={i}
+									/>
 								))}
 							</div>
 						</div>

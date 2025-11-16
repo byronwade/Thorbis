@@ -9,7 +9,14 @@ import { Wrench } from "lucide-react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type JobEquipmentProps = {
 	equipment: any[];
@@ -21,7 +28,9 @@ export function JobEquipment({ equipment }: JobEquipmentProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<Wrench className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Equipment</h3>
-				<p className="text-muted-foreground text-sm">No equipment has been added to this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No equipment has been added to this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -44,17 +53,27 @@ export function JobEquipment({ equipment }: JobEquipmentProps) {
 					<TableBody>
 						{equipment.map((item) => (
 							<TableRow key={item.id}>
-								<TableCell className="font-medium">{item.name || item.equipment_name || "—"}</TableCell>
+								<TableCell className="font-medium">
+									{item.name || item.equipment_name || "—"}
+								</TableCell>
 								<TableCell>{item.type || item.equipment_type || "—"}</TableCell>
 								<TableCell>{item.manufacturer || "—"}</TableCell>
 								<TableCell>{item.model || item.model_number || "—"}</TableCell>
-								<TableCell className="font-mono text-xs">{item.serial_number || "—"}</TableCell>
+								<TableCell className="font-mono text-xs">
+									{item.serial_number || "—"}
+								</TableCell>
 								<TableCell className="max-w-[240px] align-top">
 									<EntityTags
 										entityId={item.id}
 										entityType="equipment"
-										onUpdateTags={(id, tags) => updateEntityTags("equipment", id, tags)}
-										tags={Array.isArray(item?.metadata?.tags) ? (item.metadata.tags as any[]) : []}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("equipment", id, tags)
+										}
+										tags={
+											Array.isArray(item?.metadata?.tags)
+												? (item.metadata.tags as any[])
+												: []
+										}
 									/>
 								</TableCell>
 								<TableCell>

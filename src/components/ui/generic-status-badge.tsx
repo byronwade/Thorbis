@@ -40,13 +40,23 @@ type GenericStatusBadgeProps = {
 /**
  * GenericStatusBadge - Displays a badge based on status configuration
  */
-export function GenericStatusBadge({ status, config, defaultStatus, className, variant }: GenericStatusBadgeProps) {
-	const statusConfig = config[status] || (defaultStatus ? config[defaultStatus] : null);
+export function GenericStatusBadge({
+	status,
+	config,
+	defaultStatus,
+	className,
+	variant,
+}: GenericStatusBadgeProps) {
+	const statusConfig =
+		config[status] || (defaultStatus ? config[defaultStatus] : null);
 
 	if (!statusConfig) {
 		// Fallback if status not found and no default
 		return (
-			<Badge className={cn("font-medium text-xs", className)} variant={variant || "outline"}>
+			<Badge
+				className={cn("font-medium text-xs", className)}
+				variant={variant || "outline"}
+			>
 				{status}
 			</Badge>
 		);

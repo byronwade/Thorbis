@@ -31,12 +31,20 @@ type PaymentsToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function PaymentsToolbarActions({ totalCount = 0, activeCount, archivedCount }: PaymentsToolbarActionsProps) {
+export function PaymentsToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: PaymentsToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<PaymentsFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
+					<PaymentsFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
 					<ColumnVisibilityMenu
 						columns={PAYMENTS_OPTIONAL_COLUMNS}
 						criticalColumns={PAYMENTS_CRITICAL_COLUMNS}

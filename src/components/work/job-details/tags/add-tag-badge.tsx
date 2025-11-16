@@ -9,12 +9,26 @@ import { Check, Plus, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { type TagWithColor, updateCustomerTags, updateJobTags } from "@/actions/job-tags";
+import {
+	type TagWithColor,
+	updateCustomerTags,
+	updateJobTags,
+} from "@/actions/job-tags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 
 type AddTagBadgeProps = {
 	customerId?: string;
@@ -27,7 +41,8 @@ const PRESET_COLORS = [
 	{
 		name: "Red",
 		value: "red",
-		class: "bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
+		class:
+			"bg-red-100 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30",
 	},
 	{
 		name: "Orange",
@@ -62,12 +77,14 @@ const PRESET_COLORS = [
 	{
 		name: "Teal",
 		value: "teal",
-		class: "bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30",
+		class:
+			"bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-400 dark:border-teal-900/30",
 	},
 	{
 		name: "Blue",
 		value: "blue",
-		class: "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30",
+		class:
+			"bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-900/30",
 	},
 	{
 		name: "Indigo",
@@ -84,21 +101,30 @@ const PRESET_COLORS = [
 	{
 		name: "Pink",
 		value: "pink",
-		class: "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30",
+		class:
+			"bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-400 dark:border-pink-900/30",
 	},
 	{
 		name: "Gray",
 		value: "gray",
-		class: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
+		class:
+			"bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
 	},
 ];
 
-export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = [] }: AddTagBadgeProps) {
+export function AddTagBadge({
+	customerId,
+	jobId,
+	customerTags = [],
+	jobTags = [],
+}: AddTagBadgeProps) {
 	const router = useRouter();
 	const [isOpen, setIsOpen] = useState(false);
 	const [tagLabel, setTagLabel] = useState("");
 	const [tagColor, setTagColor] = useState("blue");
-	const [tagType, setTagType] = useState<"customer" | "job">(customerId ? "customer" : "job");
+	const [tagType, setTagType] = useState<"customer" | "job">(
+		customerId ? "customer" : "job",
+	);
 	const [isSaving, setIsSaving] = useState(false);
 
 	const handleSave = async () => {
@@ -160,7 +186,9 @@ export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = []
 				<div className="space-y-4">
 					<div>
 						<h4 className="font-semibold text-sm">Create Custom Tag</h4>
-						<p className="text-muted-foreground text-xs">Add a custom tag with your choice of color</p>
+						<p className="text-muted-foreground text-xs">
+							Add a custom tag with your choice of color
+						</p>
 					</div>
 
 					{/* Tag Label Input */}
@@ -187,7 +215,9 @@ export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = []
 								<SelectValue>
 									{selectedColor && (
 										<div className="flex items-center gap-2">
-											<div className={`h-4 w-4 rounded-full ${selectedColor.class}`} />
+											<div
+												className={`h-4 w-4 rounded-full ${selectedColor.class}`}
+											/>
 											<span>{selectedColor.name}</span>
 										</div>
 									)}
@@ -210,7 +240,12 @@ export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = []
 					{customerId && jobId && (
 						<div className="space-y-2">
 							<Label htmlFor="tag-type">Apply To</Label>
-							<Select onValueChange={(value) => setTagType(value as "customer" | "job")} value={tagType}>
+							<Select
+								onValueChange={(value) =>
+									setTagType(value as "customer" | "job")
+								}
+								value={tagType}
+							>
 								<SelectTrigger id="tag-type">
 									<SelectValue />
 								</SelectTrigger>
@@ -237,10 +272,18 @@ export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = []
 
 					{/* Action Buttons */}
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => setIsOpen(false)} variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => setIsOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button className="flex-1" disabled={isSaving || !tagLabel.trim()} onClick={handleSave}>
+						<Button
+							className="flex-1"
+							disabled={isSaving || !tagLabel.trim()}
+							onClick={handleSave}
+						>
 							{isSaving ? (
 								<>
 									<Check className="mr-2 size-4" />

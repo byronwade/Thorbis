@@ -1,5 +1,9 @@
 import Script from "next/script";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis Privacy Policy",
@@ -7,7 +11,11 @@ export const metadata = generateSEOMetadata({
 		"Learn how Thorbis collects, uses, and protects personal data. Review GDPR compliance, data retention, and contact details.",
 	path: "/privacy",
 	section: "Legal",
-	keywords: ["thorbis privacy policy", "thorbis data protection", "field service privacy compliance"],
+	keywords: [
+		"thorbis privacy policy",
+		"thorbis data protection",
+		"field service privacy compliance",
+	],
 });
 
 const SECTIONS = [
@@ -71,7 +79,7 @@ export default function PrivacyPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Privacy Policy", url: `${siteUrl}/privacy` },
-						])
+						]),
 					),
 				}}
 				id="privacy-breadcrumb-ld"
@@ -79,17 +87,21 @@ export default function PrivacyPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Thorbis Privacy Policy</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Thorbis Privacy Policy
+					</h1>
 					<p className="text-muted-foreground">
-						Effective date: January 1, 2025. Thorbis is committed to protecting your data and empowering you with
-						transparency and control.
+						Effective date: January 1, 2025. Thorbis is committed to protecting
+						your data and empowering you with transparency and control.
 					</p>
 				</header>
 				<article className="space-y-8">
 					{SECTIONS.map((section) => (
 						<section className="space-y-2" key={section.heading}>
 							<h2 className="font-semibold text-xl">{section.heading}</h2>
-							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">{section.body}</p>
+							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+								{section.body}
+							</p>
 						</section>
 					))}
 				</article>

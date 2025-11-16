@@ -26,7 +26,9 @@ export async function GET(request: Request) {
 
 	// Handle OAuth errors
 	if (error) {
-		return NextResponse.redirect(`${requestUrl.origin}/login?error=${encodeURIComponent(errorDescription || error)}`);
+		return NextResponse.redirect(
+			`${requestUrl.origin}/login?error=${encodeURIComponent(errorDescription || error)}`,
+		);
 	}
 
 	// Exchange code for session
@@ -36,14 +38,17 @@ export async function GET(request: Request) {
 
 			if (!supabase) {
 				return NextResponse.redirect(
-					`${requestUrl.origin}/login?error=${encodeURIComponent("Authentication service not configured")}`
+					`${requestUrl.origin}/login?error=${encodeURIComponent("Authentication service not configured")}`,
 				);
 			}
 
-			const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+			const { data, error: exchangeError } =
+				await supabase.auth.exchangeCodeForSession(code);
 
 			if (exchangeError) {
-				return NextResponse.redirect(`${requestUrl.origin}/login?error=${encodeURIComponent(exchangeError.message)}`);
+				return NextResponse.redirect(
+					`${requestUrl.origin}/login?error=${encodeURIComponent(exchangeError.message)}`,
+				);
 			}
 
 			if (data.user) {
@@ -75,7 +80,7 @@ export async function GET(request: Request) {
 			return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
 		} catch (_error) {
 			return NextResponse.redirect(
-				`${requestUrl.origin}/login?error=${encodeURIComponent("An unexpected error occurred")}`
+				`${requestUrl.origin}/login?error=${encodeURIComponent("An unexpected error occurred")}`,
 			);
 		}
 	}

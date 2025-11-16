@@ -5,7 +5,11 @@ import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 import type { UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import { cn } from "@/lib/utils";
-import { type DetailPageHeaderConfig, DetailPageShell, DetailPageSurface } from "./detail-page-shell";
+import {
+	type DetailPageHeaderConfig,
+	DetailPageShell,
+	DetailPageSurface,
+} from "./detail-page-shell";
 import { ActivityLogSection } from "./standard-sections/activity-log-section";
 import { AttachmentsSection } from "./standard-sections/attachments-section";
 import { NotesSection } from "./standard-sections/notes-section";
@@ -14,8 +18,11 @@ import { RelatedItemsSection } from "./standard-sections/related-items-section";
 export type { DetailPageHeaderConfig };
 
 const UnifiedAccordion = dynamic(
-	() => import("@/components/ui/unified-accordion").then((mod) => mod.UnifiedAccordion),
-	{ ssr: false }
+	() =>
+		import("@/components/ui/unified-accordion").then(
+			(mod) => mod.UnifiedAccordion,
+		),
+	{ ssr: false },
 );
 
 type DetailPageContentLayoutProps = {

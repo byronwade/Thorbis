@@ -5,10 +5,19 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
+import type {
+	KanbanItemBase,
+	KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 
-type AppointmentStatus = "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled" | "no_show";
+type AppointmentStatus =
+	| "scheduled"
+	| "confirmed"
+	| "in_progress"
+	| "completed"
+	| "cancelled"
+	| "no_show";
 
 type Appointment = {
 	id: string;
@@ -49,7 +58,9 @@ const APPOINTMENT_STATUS_COLUMNS: Array<{
 	{ id: "no_show", name: "No Show", accentColor: "#F59E0B" },
 ];
 
-const COLUMN_LABEL = new Map(APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+	APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]),
+);
 const DEFAULT_STATUS: AppointmentStatus = "scheduled";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -105,25 +116,33 @@ function getCustomerName(appointment: Appointment): string {
 
 function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 	const { appointment, columnId } = item;
-	const startTime = appointment.start_time ? new Date(appointment.start_time) : null;
+	const startTime = appointment.start_time
+		? new Date(appointment.start_time)
+		: null;
 	const endTime = appointment.end_time ? new Date(appointment.end_time) : null;
 
 	return (
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<h3 className="font-semibold text-foreground text-sm leading-snug">{appointment.title}</h3>
+					<h3 className="font-semibold text-foreground text-sm leading-snug">
+						{appointment.title}
+					</h3>
 				</div>
 			</div>
 
 			{appointment.description && (
-				<p className="line-clamp-2 text-muted-foreground text-xs">{appointment.description}</p>
+				<p className="line-clamp-2 text-muted-foreground text-xs">
+					{appointment.description}
+				</p>
 			)}
 
 			<div className="space-y-2 text-muted-foreground text-xs">
 				<div className="flex items-center gap-2">
 					<User className="size-4 text-primary" />
-					<span className="font-medium text-foreground">{getCustomerName(appointment)}</span>
+					<span className="font-medium text-foreground">
+						{getCustomerName(appointment)}
+					</span>
 				</div>
 
 				{startTime && (
@@ -152,11 +171,18 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 
 			<div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
 				<span>{startTime && fullDateFormatter.format(startTime)}</span>
-				<span className="uppercase">{COLUMN_LABEL.get(columnId as AppointmentStatus) ?? columnId}</span>
+				<span className="uppercase">
+					{COLUMN_LABEL.get(columnId as AppointmentStatus) ?? columnId}
+				</span>
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button asChild className="gap-1 text-primary text-xs" size="sm" variant="ghost">
+				<Button
+					asChild
+					className="gap-1 text-primary text-xs"
+					size="sm"
+					variant="ghost"
+				>
 					<Link href={`/dashboard/work/appointments/${appointment.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
@@ -171,7 +197,11 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 	const { toast } = useToast();
 	const [_isPending, startTransition] = useTransition();
 
-	const handleItemMove = async ({ item, fromColumnId, toColumnId }: KanbanMoveEvent<AppointmentsKanbanItem>) => {
+	const handleItemMove = async ({
+		item,
+		fromColumnId,
+		toColumnId,
+	}: KanbanMoveEvent<AppointmentsKanbanItem>) => {
 		if (fromColumnId === toColumnId) {
 			return;
 		}
@@ -189,7 +219,9 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 				//   return;
 				// }
 
-				toast.success(`Appointment moved to ${COLUMN_LABEL.get(toColumnId as AppointmentStatus)}`);
+				toast.success(
+					`Appointment moved to ${COLUMN_LABEL.get(toColumnId as AppointmentStatus)}`,
+				);
 			})();
 		});
 	};
@@ -211,11 +243,17 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 			})}
 			onItemMove={handleItemMove as any}
 			renderCard={(item) => (
-				<AppointmentCardContent item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem} />
+				<AppointmentCardContent
+					item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem}
+				/>
 			)}
 			renderDragOverlay={(item) => (
 				<div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
-					<AppointmentCardContent item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem} />
+					<AppointmentCardContent
+						item={
+							{ ...item, appointment: item.entity } as AppointmentsKanbanItem
+						}
+					/>
 				</div>
 			)}
 			updateEntityStatus={(appointment, newStatus) => ({

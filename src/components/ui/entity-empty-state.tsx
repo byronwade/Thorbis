@@ -17,7 +17,14 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import {
+	Empty,
+	EmptyContent,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
 
 type EntityEmptyStateProps = {
 	/** Icon to display */
@@ -35,7 +42,13 @@ type EntityEmptyStateProps = {
 /**
  * EntityEmptyState - Standardized empty state for entities
  */
-export function EntityEmptyState({ icon: Icon, title, description, action, className }: EntityEmptyStateProps) {
+export function EntityEmptyState({
+	icon: Icon,
+	title,
+	description,
+	action,
+	className,
+}: EntityEmptyStateProps) {
 	return (
 		<Empty className={className}>
 			<EmptyHeader>

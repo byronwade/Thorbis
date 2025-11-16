@@ -40,7 +40,9 @@ export async function GET() {
 		// Check the ACTIVE company's payment status
 		const { data: teamMember } = await supabase
 			.from("team_members")
-			.select("company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)")
+			.select(
+				"company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)",
+			)
 			.eq("user_id", user.id)
 			.eq("company_id", activeCompanyId)
 			.eq("status", "active")
@@ -55,10 +57,14 @@ export async function GET() {
 			});
 		}
 
-		const companies = Array.isArray(teamMember.companies) ? teamMember.companies[0] : teamMember.companies;
+		const companies = Array.isArray(teamMember.companies)
+			? teamMember.companies[0]
+			: teamMember.companies;
 		const subscriptionStatus = companies?.stripe_subscription_status;
-		const subscriptionActive = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-		const onboardingProgress = (companies?.onboarding_progress as Record<string, unknown>) || null;
+		const subscriptionActive =
+			subscriptionStatus === "active" || subscriptionStatus === "trialing";
+		const onboardingProgress =
+			(companies?.onboarding_progress as Record<string, unknown>) || null;
 		const onboardingComplete = isOnboardingComplete({
 			progress: onboardingProgress,
 			completedAt: companies?.onboarding_completed_at ?? null,
@@ -72,6 +78,9 @@ export async function GET() {
 			needsOnboarding: !onboardingComplete,
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

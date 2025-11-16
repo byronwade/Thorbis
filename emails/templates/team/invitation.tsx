@@ -4,7 +4,18 @@
  * Sent when a team member is invited to join a company
  */
 
-import { Body, Button, Container, Head, Heading, Html, Link, Preview, Section, Text } from "@react-email/components";
+import {
+	Body,
+	Button,
+	Container,
+	Head,
+	Heading,
+	Html,
+	Link,
+	Preview,
+	Section,
+	Text,
+} from "@react-email/components";
 
 type TeamInvitationProps = {
 	inviteeName: string;
@@ -47,13 +58,15 @@ const TeamInvitationEmail = ({
 						<Text style={greeting}>Hi {inviteeName},</Text>
 
 						<Text style={paragraph}>
-							<strong>{inviterName}</strong> has invited you to join <strong>{companyName}</strong> on Thorbis as a{" "}
+							<strong>{inviterName}</strong> has invited you to join{" "}
+							<strong>{companyName}</strong> on Thorbis as a{" "}
 							<strong>{roleDisplay}</strong>.
 						</Text>
 
 						<Text style={paragraph}>
-							Thorbis is a complete business management platform that helps your team manage jobs, track time,
-							communicate with customers, and grow your business.
+							Thorbis is a complete business management platform that helps your
+							team manage jobs, track time, communicate with customers, and grow
+							your business.
 						</Text>
 
 						<Section style={roleSection}>
@@ -61,10 +74,12 @@ const TeamInvitationEmail = ({
 							<Text style={roleDescription}>
 								{role === "owner" &&
 									"Full access to all features including company settings, billing, and team management."}
-								{role === "admin" && "Full access to all features except billing and company ownership settings."}
+								{role === "admin" &&
+									"Full access to all features except billing and company ownership settings."}
 								{role === "manager" &&
 									"Manage jobs, team schedules, and customer communications. View reports and analytics."}
-								{role === "dispatcher" && "Schedule and assign jobs, communicate with technicians and customers."}
+								{role === "dispatcher" &&
+									"Schedule and assign jobs, communicate with technicians and customers."}
 								{role === "technician" &&
 									"View and complete assigned jobs, update job status, and communicate with team."}
 							</Text>
@@ -77,23 +92,29 @@ const TeamInvitationEmail = ({
 							</Button>
 						</Section>
 
-						<Text style={paragraph}>Or copy and paste this link into your browser:</Text>
+						<Text style={paragraph}>
+							Or copy and paste this link into your browser:
+						</Text>
 						<Text style={linkText}>
 							<Link href={magicLink} style={link}>
 								{magicLink}
 							</Link>
 						</Text>
 
-						<Text style={expiryText}>This invitation expires in {expiresInDays} days.</Text>
+						<Text style={expiryText}>
+							This invitation expires in {expiresInDays} days.
+						</Text>
 					</Section>
 
 					{/* Footer */}
 					<Section style={footer}>
 						<Text style={footerText}>
-							If you didn't expect this invitation or have questions, please contact {inviterName} or reply to this
-							email.
+							If you didn't expect this invitation or have questions, please
+							contact {inviterName} or reply to this email.
 						</Text>
-						<Text style={footerText}>© {new Date().getFullYear()} Thorbis. All rights reserved.</Text>
+						<Text style={footerText}>
+							© {new Date().getFullYear()} Thorbis. All rights reserved.
+						</Text>
 					</Section>
 				</Container>
 			</Body>
@@ -106,7 +127,8 @@ export default TeamInvitationEmail;
 // Styles
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily:
+		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

@@ -44,10 +44,14 @@ type ContentOutput = {
  * Content Generation Workflow
  * Steps: Research → Draft → Review → Polish
  */
-export const contentGenerationWorkflow: WorkflowDefinition<ContentInput, ContentOutput> = {
+export const contentGenerationWorkflow: WorkflowDefinition<
+	ContentInput,
+	ContentOutput
+> = {
 	id: "content-generation",
 	name: "Content Generation Workflow",
-	description: "Multi-agent workflow for creating high-quality content with research, writing, and review",
+	description:
+		"Multi-agent workflow for creating high-quality content with research, writing, and review",
 	version: "1.0.0",
 
 	steps: [

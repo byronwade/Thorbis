@@ -33,7 +33,7 @@ function generateSecureToken(): string {
 export async function createEmailVerificationToken(
 	email: string,
 	userId?: string,
-	expiresInHours = 24
+	expiresInHours = 24,
 ): Promise<{ token: string; expiresAt: Date }> {
 	const token = generateSecureToken();
 	const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
@@ -67,7 +67,7 @@ export async function createEmailVerificationToken(
  */
 export async function createPasswordResetToken(
 	email: string,
-	expiresInHours = 1
+	expiresInHours = 1,
 ): Promise<{ token: string; expiresAt: Date }> {
 	const token = generateSecureToken();
 	const expiresAt = new Date(Date.now() + expiresInHours * 60 * 60 * 1000);
@@ -100,7 +100,7 @@ export async function createPasswordResetToken(
  */
 export async function createMagicLinkToken(
 	email: string,
-	expiresInMinutes = 15
+	expiresInMinutes = 15,
 ): Promise<{ token: string; expiresAt: Date }> {
 	const token = generateSecureToken();
 	const expiresAt = new Date(Date.now() + expiresInMinutes * 60 * 1000);
@@ -134,7 +134,7 @@ export async function createMagicLinkToken(
  */
 export async function verifyAndConsumeToken(
 	token: string,
-	type: "email_verification" | "password_reset" | "magic_link"
+	type: "email_verification" | "password_reset" | "magic_link",
 ) {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -183,7 +183,10 @@ export async function cleanupExpiredTokens() {
 	}
 	const now = new Date().toISOString();
 
-	const { error } = await supabase.from("verification_tokens").delete().lt("expires_at", now);
+	const { error } = await supabase
+		.from("verification_tokens")
+		.delete()
+		.lt("expires_at", now);
 
 	if (error) {
 		throw new Error(`Failed to cleanup expired tokens: ${error.message}`);
@@ -198,7 +201,7 @@ export async function cleanupExpiredTokens() {
  */
 export async function deleteTokensForEmail(
 	email: string,
-	type?: "email_verification" | "password_reset" | "magic_link"
+	type?: "email_verification" | "password_reset" | "magic_link",
 ) {
 	const supabase = await createClient();
 	if (!supabase) {

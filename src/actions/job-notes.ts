@@ -23,7 +23,12 @@ type GetJobNotesOptions = {
 /**
  * Get job notes with pagination
  */
-export async function getJobNotes({ jobId, noteType = "all", limit = 50, offset = 0 }: GetJobNotesOptions) {
+export async function getJobNotes({
+	jobId,
+	noteType = "all",
+	limit = 50,
+	offset = 0,
+}: GetJobNotesOptions) {
 	try {
 		const supabase = await createClient();
 
@@ -57,7 +62,7 @@ export async function getJobNotes({ jobId, noteType = "all", limit = 50, offset 
         *,
         user:users!user_id(name, email, avatar)
       `,
-				{ count: "exact" }
+				{ count: "exact" },
 			)
 			.eq("job_id", jobId)
 			.eq("company_id", teamMember.company_id)
@@ -183,7 +188,12 @@ export async function updateJobNote({
 			updateData.is_pinned = isPinned;
 		}
 
-		const { data, error } = await supabase.from("job_notes").update(updateData).eq("id", noteId).select().single();
+		const { data, error } = await supabase
+			.from("job_notes")
+			.update(updateData)
+			.eq("id", noteId)
+			.select()
+			.single();
 
 		if (error) {
 			return { success: false, error: error.message };

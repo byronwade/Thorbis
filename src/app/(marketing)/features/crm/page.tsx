@@ -18,7 +18,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -44,7 +50,8 @@ export const metadata = generateSEOMetadata({
 export default function CRMPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "CRM & Sales",
-		description: "Customer intelligence and pipeline management for service businesses",
+		description:
+			"Customer intelligence and pipeline management for service businesses",
 		offers: [
 			{
 				price: "100",
@@ -66,7 +73,7 @@ export default function CRMPage() {
 								name: "CRM & Sales",
 								url: `${siteUrl}/features/crm`,
 							},
-						])
+						]),
 					),
 				}}
 				id="crm-breadcrumb-ld"
@@ -95,8 +102,9 @@ export default function CRMPage() {
 							Turn leads into loyal customers
 						</h1>
 						<p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-							A CRM that actually understands service businesses. Track every touchpoint, automate follow-ups, and close
-							more deals with intelligent insights.
+							A CRM that actually understands service businesses. Track every
+							touchpoint, automate follow-ups, and close more deals with
+							intelligent insights.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-lg shadow-primary/20" size="lg">
@@ -143,7 +151,9 @@ export default function CRMPage() {
 										<div className="mb-1 font-semibold text-sm">New Leads</div>
 										<div className="flex items-baseline gap-2">
 											<span className="font-bold text-2xl">12</span>
-											<span className="text-muted-foreground text-xs">$48K</span>
+											<span className="text-muted-foreground text-xs">
+												$48K
+											</span>
 										</div>
 									</div>
 									<div className="space-y-2">
@@ -156,8 +166,12 @@ export default function CRMPage() {
 													Hot
 												</Badge>
 											</div>
-											<div className="mb-1 font-semibold text-sm">John's HVAC Install</div>
-											<div className="mb-2 text-muted-foreground text-xs">Residential • $12,500</div>
+											<div className="mb-1 font-semibold text-sm">
+												John's HVAC Install
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Residential • $12,500
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<Phone className="size-3" />
 												<span>Called 2 days ago</span>
@@ -170,8 +184,12 @@ export default function CRMPage() {
 													SM
 												</div>
 											</div>
-											<div className="mb-1 font-semibold text-sm">Smith Property</div>
-											<div className="mb-2 text-muted-foreground text-xs">Commercial • $8,200</div>
+											<div className="mb-1 font-semibold text-sm">
+												Smith Property
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Commercial • $8,200
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<Mail className="size-3" />
 												<span>Email sent today</span>
@@ -186,7 +204,9 @@ export default function CRMPage() {
 										<div className="mb-1 font-semibold text-sm">Qualified</div>
 										<div className="flex items-baseline gap-2">
 											<span className="font-bold text-2xl">8</span>
-											<span className="text-muted-foreground text-xs">$67K</span>
+											<span className="text-muted-foreground text-xs">
+												$67K
+											</span>
 										</div>
 									</div>
 									<div className="space-y-2">
@@ -199,8 +219,12 @@ export default function CRMPage() {
 													Warm
 												</Badge>
 											</div>
-											<div className="mb-1 font-semibold text-sm">Anderson Plumbing</div>
-											<div className="mb-2 text-muted-foreground text-xs">Multi-unit • $24,000</div>
+											<div className="mb-1 font-semibold text-sm">
+												Anderson Plumbing
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Multi-unit • $24,000
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<MessageSquare className="size-3" />
 												<span>Meeting scheduled</span>
@@ -212,10 +236,14 @@ export default function CRMPage() {
 								{/* Stage 3: Proposal Sent */}
 								<div className="space-y-3">
 									<div className="rounded-lg bg-yellow-500/10 p-3">
-										<div className="mb-1 font-semibold text-sm">Proposal Sent</div>
+										<div className="mb-1 font-semibold text-sm">
+											Proposal Sent
+										</div>
 										<div className="flex items-baseline gap-2">
 											<span className="font-bold text-2xl">5</span>
-											<span className="text-muted-foreground text-xs">$82K</span>
+											<span className="text-muted-foreground text-xs">
+												$82K
+											</span>
 										</div>
 									</div>
 									<div className="space-y-2">
@@ -224,10 +252,16 @@ export default function CRMPage() {
 												<div className="flex size-8 items-center justify-center rounded-full bg-yellow-500/20 font-semibold text-xs text-yellow-600">
 													TC
 												</div>
-												<Badge className="h-5 bg-green-500 text-[10px]">Viewed</Badge>
+												<Badge className="h-5 bg-green-500 text-[10px]">
+													Viewed
+												</Badge>
 											</div>
-											<div className="mb-1 font-semibold text-sm">Tech Center Remodel</div>
-											<div className="mb-2 text-muted-foreground text-xs">Commercial • $45,000</div>
+											<div className="mb-1 font-semibold text-sm">
+												Tech Center Remodel
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Commercial • $45,000
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<FileText className="size-3" />
 												<span>Opened 3 times</span>
@@ -239,10 +273,14 @@ export default function CRMPage() {
 								{/* Stage 4: Negotiation */}
 								<div className="space-y-3">
 									<div className="rounded-lg bg-orange-500/10 p-3">
-										<div className="mb-1 font-semibold text-sm">Negotiation</div>
+										<div className="mb-1 font-semibold text-sm">
+											Negotiation
+										</div>
 										<div className="flex items-baseline gap-2">
 											<span className="font-bold text-2xl">3</span>
-											<span className="text-muted-foreground text-xs">$38K</span>
+											<span className="text-muted-foreground text-xs">
+												$38K
+											</span>
 										</div>
 									</div>
 									<div className="space-y-2">
@@ -255,8 +293,12 @@ export default function CRMPage() {
 													90%
 												</Badge>
 											</div>
-											<div className="mb-1 font-semibold text-sm">Metro Warehouse</div>
-											<div className="mb-2 text-muted-foreground text-xs">Industrial • $28,500</div>
+											<div className="mb-1 font-semibold text-sm">
+												Metro Warehouse
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Industrial • $28,500
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<DollarSign className="size-3" />
 												<span>Final pricing review</span>
@@ -271,7 +313,9 @@ export default function CRMPage() {
 										<div className="mb-1 font-semibold text-sm">Closed Won</div>
 										<div className="flex items-baseline gap-2">
 											<span className="font-bold text-2xl">2</span>
-											<span className="text-muted-foreground text-xs">$12K</span>
+											<span className="text-muted-foreground text-xs">
+												$12K
+											</span>
 										</div>
 									</div>
 									<div className="space-y-2">
@@ -281,8 +325,12 @@ export default function CRMPage() {
 													<CheckCircle2 className="size-4 text-white" />
 												</div>
 											</div>
-											<div className="mb-1 font-semibold text-sm">Davis Residence</div>
-											<div className="mb-2 text-muted-foreground text-xs">Residential • $7,800</div>
+											<div className="mb-1 font-semibold text-sm">
+												Davis Residence
+											</div>
+											<div className="mb-2 text-muted-foreground text-xs">
+												Residential • $7,800
+											</div>
 											<div className="flex items-center gap-1 text-muted-foreground text-xs">
 												<CheckCircle2 className="size-3" />
 												<span>Signed today</span>
@@ -299,11 +347,15 @@ export default function CRMPage() {
 									<div className="font-semibold text-lg">67%</div>
 								</div>
 								<div>
-									<div className="text-muted-foreground text-xs">Avg. Deal Size</div>
+									<div className="text-muted-foreground text-xs">
+										Avg. Deal Size
+									</div>
 									<div className="font-semibold text-lg">$8,233</div>
 								</div>
 								<div>
-									<div className="text-muted-foreground text-xs">Sales Cycle</div>
+									<div className="text-muted-foreground text-xs">
+										Sales Cycle
+									</div>
 									<div className="font-semibold text-lg">14 days</div>
 								</div>
 								<div>
@@ -323,8 +375,11 @@ export default function CRMPage() {
 							</div>
 							<p className="text-muted-foreground text-xs leading-relaxed">
 								Tech Center Remodel has viewed proposal 3 times.
-								<span className="font-medium text-foreground"> Recommend follow-up call today</span> for 85% close
-								probability.
+								<span className="font-medium text-foreground">
+									{" "}
+									Recommend follow-up call today
+								</span>{" "}
+								for 85% close probability.
 							</p>
 						</div>
 					</div>
@@ -337,19 +392,29 @@ export default function CRMPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">67%</div>
-							<div className="font-medium text-muted-foreground text-sm">Higher Win Rate</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Higher Win Rate
+							</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">14 days</div>
-							<div className="font-medium text-muted-foreground text-sm">Avg. Sales Cycle</div>
+							<div className="mb-2 font-bold text-4xl text-primary">
+								14 days
+							</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Avg. Sales Cycle
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">3.2x</div>
-							<div className="font-medium text-muted-foreground text-sm">More Follow-Ups</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								More Follow-Ups
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">$42K</div>
-							<div className="font-medium text-muted-foreground text-sm">Avg. Monthly Revenue Lift</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Avg. Monthly Revenue Lift
+							</div>
 						</div>
 					</div>
 				</div>
@@ -363,7 +428,8 @@ export default function CRMPage() {
 							Know your customers better than they know themselves
 						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Every interaction, every job, every dollar—all in one place with AI-powered insights
+							Every interaction, every job, every dollar—all in one place with
+							AI-powered insights
 						</p>
 					</div>
 
@@ -375,7 +441,9 @@ export default function CRMPage() {
 									<Users className="size-6 text-primary" />
 								</div>
 								<CardTitle>360° Customer View</CardTitle>
-								<CardDescription>Complete customer history at your fingertips</CardDescription>
+								<CardDescription>
+									Complete customer history at your fingertips
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="space-y-4">
@@ -383,22 +451,30 @@ export default function CRMPage() {
 										<div className="mb-3 flex items-start justify-between">
 											<div>
 												<div className="mb-1 font-semibold">Sarah Johnson</div>
-												<div className="text-muted-foreground text-sm">123 Oak Street, Austin TX</div>
+												<div className="text-muted-foreground text-sm">
+													123 Oak Street, Austin TX
+												</div>
 											</div>
 											<Badge variant="secondary">VIP</Badge>
 										</div>
 										<div className="grid grid-cols-3 gap-4 text-center">
 											<div>
 												<div className="font-semibold text-lg">$18.2K</div>
-												<div className="text-muted-foreground text-xs">Lifetime Value</div>
+												<div className="text-muted-foreground text-xs">
+													Lifetime Value
+												</div>
 											</div>
 											<div>
 												<div className="font-semibold text-lg">14</div>
-												<div className="text-muted-foreground text-xs">Total Jobs</div>
+												<div className="text-muted-foreground text-xs">
+													Total Jobs
+												</div>
 											</div>
 											<div>
 												<div className="font-semibold text-lg">3 yrs</div>
-												<div className="text-muted-foreground text-xs">Customer Since</div>
+												<div className="text-muted-foreground text-xs">
+													Customer Since
+												</div>
 											</div>
 										</div>
 									</div>
@@ -431,7 +507,9 @@ export default function CRMPage() {
 									<TrendingUp className="size-6 text-primary" />
 								</div>
 								<CardTitle>AI-Powered Insights</CardTitle>
-								<CardDescription>Smart recommendations that drive revenue</CardDescription>
+								<CardDescription>
+									Smart recommendations that drive revenue
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="space-y-4">
@@ -440,10 +518,13 @@ export default function CRMPage() {
 											<div className="flex size-6 items-center justify-center rounded-full bg-green-500">
 												<ArrowRight className="size-3 text-white" />
 											</div>
-											<span className="font-semibold text-sm">Upsell Opportunity</span>
+											<span className="font-semibold text-sm">
+												Upsell Opportunity
+											</span>
 										</div>
 										<p className="text-muted-foreground text-sm">
-											Customer's AC unit is 12 years old. Recommend system replacement during next maintenance visit.
+											Customer's AC unit is 12 years old. Recommend system
+											replacement during next maintenance visit.
 										</p>
 									</div>
 									<ul className="space-y-2 text-sm">
@@ -479,7 +560,8 @@ export default function CRMPage() {
 							Everything you need to close more deals
 						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Built specifically for service businesses, not adapted from generic CRM software
+							Built specifically for service businesses, not adapted from
+							generic CRM software
 						</p>
 					</div>
 
@@ -490,7 +572,9 @@ export default function CRMPage() {
 									<Target className="size-6 text-primary" />
 								</div>
 								<CardTitle>Visual Sales Pipeline</CardTitle>
-								<CardDescription>Drag-and-drop deals through stages with real-time forecasting</CardDescription>
+								<CardDescription>
+									Drag-and-drop deals through stages with real-time forecasting
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -520,7 +604,9 @@ export default function CRMPage() {
 									<FileText className="size-6 text-primary" />
 								</div>
 								<CardTitle>Smart Proposals</CardTitle>
-								<CardDescription>Create professional proposals in minutes with tracking</CardDescription>
+								<CardDescription>
+									Create professional proposals in minutes with tracking
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -550,7 +636,9 @@ export default function CRMPage() {
 									<Mail className="size-6 text-primary" />
 								</div>
 								<CardTitle>Automated Follow-Ups</CardTitle>
-								<CardDescription>Never let a lead go cold with intelligent automation</CardDescription>
+								<CardDescription>
+									Never let a lead go cold with intelligent automation
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -580,7 +668,9 @@ export default function CRMPage() {
 									<Building2 className="size-6 text-primary" />
 								</div>
 								<CardTitle>Commercial Accounts</CardTitle>
-								<CardDescription>Manage complex B2B relationships and contracts</CardDescription>
+								<CardDescription>
+									Manage complex B2B relationships and contracts
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -610,7 +700,9 @@ export default function CRMPage() {
 									<Phone className="size-6 text-primary" />
 								</div>
 								<CardTitle>Communication Hub</CardTitle>
-								<CardDescription>All customer interactions in one unified timeline</CardDescription>
+								<CardDescription>
+									All customer interactions in one unified timeline
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -640,7 +732,9 @@ export default function CRMPage() {
 									<BarChart3 className="size-6 text-primary" />
 								</div>
 								<CardTitle>Sales Analytics</CardTitle>
-								<CardDescription>Data-driven insights to optimize your sales process</CardDescription>
+								<CardDescription>
+									Data-driven insights to optimize your sales process
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -679,13 +773,16 @@ export default function CRMPage() {
 									</div>
 									<div>
 										<div className="font-semibold text-lg">Mike Rodriguez</div>
-										<div className="text-muted-foreground text-sm">Owner, Rodriguez HVAC</div>
+										<div className="text-muted-foreground text-sm">
+											Owner, Rodriguez HVAC
+										</div>
 									</div>
 								</div>
 								<blockquote className="text-lg leading-relaxed">
-									"We went from closing 1 in 4 estimates to 2 in 3 after switching to Thorbis CRM. The AI insights tell
-									us exactly when to follow up, and the proposal tracking shows us which customers are serious. Our
-									revenue is up 42% year-over-year."
+									"We went from closing 1 in 4 estimates to 2 in 3 after
+									switching to Thorbis CRM. The AI insights tell us exactly when
+									to follow up, and the proposal tracking shows us which
+									customers are serious. Our revenue is up 42% year-over-year."
 								</blockquote>
 								<div className="mt-6 flex items-center gap-4">
 									<Badge variant="secondary">HVAC</Badge>
@@ -701,12 +798,19 @@ export default function CRMPage() {
 			{/* CTA Section */}
 			<section className="bg-gradient-to-br from-primary via-primary to-primary/90 py-20 text-primary-foreground">
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Start closing more deals today</h2>
+					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+						Start closing more deals today
+					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-						Join service businesses increasing their win rate by 67% with Thorbis CRM.
+						Join service businesses increasing their win rate by 67% with
+						Thorbis CRM.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
-						<Button asChild className="bg-background text-foreground shadow-lg hover:bg-background/90" size="lg">
+						<Button
+							asChild
+							className="bg-background text-foreground shadow-lg hover:bg-background/90"
+							size="lg"
+						>
 							<Link href="/register">
 								Start 14-day Free Trial
 								<Zap className="ml-2 size-4" />

@@ -30,7 +30,13 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -41,12 +47,24 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 // IVR Node Types
-type NodeType = "greeting" | "menu" | "route" | "voicemail" | "hangup" | "repeat";
+type NodeType =
+	| "greeting"
+	| "menu"
+	| "route"
+	| "voicemail"
+	| "hangup"
+	| "repeat";
 
 // IVR Action Types
 type ActionType = "transfer" | "voicemail" | "submenu" | "repeat" | "hangup";
@@ -183,7 +201,8 @@ export function IVRMenuBuilder() {
 		setMenu((prev) => ({
 			...prev,
 			nodes: prev.nodes.map((n) => (n.id === updatedNode.id ? updatedNode : n)),
-			rootNode: prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
+			rootNode:
+				prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
 		}));
 		setSelectedNode(updatedNode);
 	};
@@ -202,7 +221,11 @@ export function IVRMenuBuilder() {
 							<CardDescription>{menu.description}</CardDescription>
 						</div>
 						<div className="flex items-center gap-2">
-							<Button onClick={() => setTestMode(!testMode)} size="sm" variant="outline">
+							<Button
+								onClick={() => setTestMode(!testMode)}
+								size="sm"
+								variant="outline"
+							>
 								<Play className="mr-2 size-3" />
 								{testMode ? "Stop Test" : "Test Menu"}
 							</Button>
@@ -219,7 +242,9 @@ export function IVRMenuBuilder() {
 			{testMode && (
 				<Card className="border-primary bg-primary dark:border-primary dark:bg-primary/20">
 					<CardHeader>
-						<CardTitle className="text-base text-primary dark:text-primary">Test Mode Active</CardTitle>
+						<CardTitle className="text-base text-primary dark:text-primary">
+							Test Mode Active
+						</CardTitle>
 						<CardDescription className="text-primary dark:text-primary">
 							Simulate calling your IVR menu. Press keys to navigate.
 						</CardDescription>
@@ -228,7 +253,9 @@ export function IVRMenuBuilder() {
 						<div className="rounded-lg border bg-background p-4">
 							<div className="mb-3 flex items-center gap-2">
 								<Volume2 className="size-4" />
-								<span className="text-sm">"{menu.rootNode.greeting?.content}"</span>
+								<span className="text-sm">
+									"{menu.rootNode.greeting?.content}"
+								</span>
 							</div>
 							<div className="grid grid-cols-3 gap-2">
 								{menu.rootNode.keypressOptions.map((option) => (
@@ -246,12 +273,18 @@ export function IVRMenuBuilder() {
 			<Card>
 				<CardHeader>
 					<CardTitle className="text-base">Menu Flow</CardTitle>
-					<CardDescription>Visual representation of your IVR menu structure</CardDescription>
+					<CardDescription>
+						Visual representation of your IVR menu structure
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						{/* Root Node */}
-						<IVRNodeCard isRoot={true} node={menu.rootNode} onEdit={() => editNode(menu.rootNode)} />
+						<IVRNodeCard
+							isRoot={true}
+							node={menu.rootNode}
+							onEdit={() => editNode(menu.rootNode)}
+						/>
 
 						{/* Keypress Options Flow */}
 						<div className="ml-8 space-y-3 border-l-2 border-dashed pl-6">
@@ -304,7 +337,9 @@ export function IVRMenuBuilder() {
 			<div className="grid gap-4 sm:grid-cols-3">
 				<Card>
 					<CardContent className="pt-6">
-						<div className="font-bold text-2xl">{menu.rootNode.keypressOptions.length}</div>
+						<div className="font-bold text-2xl">
+							{menu.rootNode.keypressOptions.length}
+						</div>
 						<div className="text-muted-foreground text-sm">Menu Options</div>
 					</CardContent>
 				</Card>
@@ -337,7 +372,15 @@ export function IVRMenuBuilder() {
 	);
 }
 
-function IVRNodeCard({ node, isRoot, onEdit }: { node: IVRNode; isRoot?: boolean; onEdit: () => void }) {
+function IVRNodeCard({
+	node,
+	isRoot,
+	onEdit,
+}: {
+	node: IVRNode;
+	isRoot?: boolean;
+	onEdit: () => void;
+}) {
 	const getNodeIcon = () => {
 		switch (node.type) {
 			case "greeting":
@@ -358,10 +401,16 @@ function IVRNodeCard({ node, isRoot, onEdit }: { node: IVRNode; isRoot?: boolean
 			<CardHeader className="pb-3">
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-3">
-						<div className="rounded-lg border bg-muted p-2">{getNodeIcon()}</div>
+						<div className="rounded-lg border bg-muted p-2">
+							{getNodeIcon()}
+						</div>
 						<div>
 							<CardTitle className="text-base">{node.name}</CardTitle>
-							{node.description && <CardDescription className="text-xs">{node.description}</CardDescription>}
+							{node.description && (
+								<CardDescription className="text-xs">
+									{node.description}
+								</CardDescription>
+							)}
 						</div>
 					</div>
 					<Button onClick={onEdit} size="icon" variant="ghost">
@@ -374,7 +423,9 @@ function IVRNodeCard({ node, isRoot, onEdit }: { node: IVRNode; isRoot?: boolean
 					<div className="rounded-lg bg-muted/50 p-3 text-sm">
 						<div className="mb-1 flex items-center gap-2 text-muted-foreground text-xs">
 							<Volume2 className="size-3" />
-							{node.greeting.type === "text-to-speech" ? "Text-to-Speech" : "Audio File"}
+							{node.greeting.type === "text-to-speech"
+								? "Text-to-Speech"
+								: "Audio File"}
 						</div>
 						<div className="line-clamp-2">{node.greeting.content}</div>
 					</div>
@@ -411,7 +462,9 @@ function NodeEditorDialog({
 			<DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Edit IVR Node: {node.name}</DialogTitle>
-					<DialogDescription>Configure the greeting, options, and behavior for this menu node</DialogDescription>
+					<DialogDescription>
+						Configure the greeting, options, and behavior for this menu node
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-6">
@@ -421,7 +474,9 @@ function NodeEditorDialog({
 							<Label htmlFor="node-name">Node Name</Label>
 							<Input
 								id="node-name"
-								onChange={(e) => setEditedNode({ ...editedNode, name: e.target.value })}
+								onChange={(e) =>
+									setEditedNode({ ...editedNode, name: e.target.value })
+								}
 								value={editedNode.name}
 							/>
 						</div>
@@ -430,7 +485,9 @@ function NodeEditorDialog({
 							<Label htmlFor="node-description">Description (Optional)</Label>
 							<Input
 								id="node-description"
-								onChange={(e) => setEditedNode({ ...editedNode, description: e.target.value })}
+								onChange={(e) =>
+									setEditedNode({ ...editedNode, description: e.target.value })
+								}
 								value={editedNode.description || ""}
 							/>
 						</div>
@@ -537,7 +594,20 @@ function NodeEditorDialog({
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
-															{["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "#"].map((key) => (
+															{[
+																"0",
+																"1",
+																"2",
+																"3",
+																"4",
+																"5",
+																"6",
+																"7",
+																"8",
+																"9",
+																"*",
+																"#",
+															].map((key) => (
 																<SelectItem key={key} value={key}>
 																	{key}
 																</SelectItem>
@@ -583,18 +653,31 @@ function NodeEditorDialog({
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
-															<SelectItem value="transfer">Transfer to Number</SelectItem>
-															<SelectItem value="voicemail">Send to Voicemail</SelectItem>
-															<SelectItem value="submenu">Go to Submenu</SelectItem>
-															<SelectItem value="repeat">Repeat Menu</SelectItem>
+															<SelectItem value="transfer">
+																Transfer to Number
+															</SelectItem>
+															<SelectItem value="voicemail">
+																Send to Voicemail
+															</SelectItem>
+															<SelectItem value="submenu">
+																Go to Submenu
+															</SelectItem>
+															<SelectItem value="repeat">
+																Repeat Menu
+															</SelectItem>
 															<SelectItem value="hangup">Hang Up</SelectItem>
 														</SelectContent>
 													</Select>
 												</div>
 
-												{(option.action === "transfer" || option.action === "submenu") && (
+												{(option.action === "transfer" ||
+													option.action === "submenu") && (
 													<div className="space-y-2">
-														<Label>{option.action === "transfer" ? "Phone Number" : "Submenu"}</Label>
+														<Label>
+															{option.action === "transfer"
+																? "Phone Number"
+																: "Submenu"}
+														</Label>
 														<Input
 															onChange={(e) => {
 																const updated = [...editedNode.keypressOptions];
@@ -607,7 +690,11 @@ function NodeEditorDialog({
 																	keypressOptions: updated,
 																});
 															}}
-															placeholder={option.action === "transfer" ? "+1 (555) 123-4567" : "Select submenu"}
+															placeholder={
+																option.action === "transfer"
+																	? "+1 (555) 123-4567"
+																	: "Select submenu"
+															}
 															value={option.destination || ""}
 														/>
 													</div>
@@ -615,7 +702,11 @@ function NodeEditorDialog({
 											</div>
 
 											<div className="flex justify-end">
-												<Button onClick={() => onRemoveKeypress(option.key)} size="sm" variant="ghost">
+												<Button
+													onClick={() => onRemoveKeypress(option.key)}
+													size="sm"
+													variant="ghost"
+												>
 													<Trash2 className="mr-2 size-3" />
 													Remove
 												</Button>
@@ -670,7 +761,9 @@ function NodeEditorDialog({
 						<div className="space-y-2">
 							<Label>Timeout Action</Label>
 							<Select
-								onValueChange={(value: ActionType) => setEditedNode({ ...editedNode, timeoutAction: value })}
+								onValueChange={(value: ActionType) =>
+									setEditedNode({ ...editedNode, timeoutAction: value })
+								}
 								value={editedNode.timeoutAction}
 							>
 								<SelectTrigger>
@@ -702,7 +795,20 @@ function NodeEditorDialog({
 
 function getNextAvailableKey(options: KeypressOption[]): string {
 	const usedKeys = new Set(options.map((opt) => opt.key));
-	const availableKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "*", "#"];
+	const availableKeys = [
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		"0",
+		"*",
+		"#",
+	];
 	return availableKeys.find((key) => !usedKeys.has(key)) || "1";
 }
 

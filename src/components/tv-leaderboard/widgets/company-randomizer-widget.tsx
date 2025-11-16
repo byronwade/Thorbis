@@ -63,7 +63,9 @@ function getCategoryLabel(category?: "team" | "food" | "activity") {
 	}
 }
 
-export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: CompanyRandomizerWidgetProps) {
+export function CompanyRandomizerWidget({
+	selected = DEFAULT_SELECTED,
+}: CompanyRandomizerWidgetProps) {
 	return (
 		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-background/80">
 			<ResponsiveContent className="flex flex-col gap-3">
@@ -71,7 +73,9 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
 				<div className="flex items-center gap-2">
 					<ResponsiveIcon>{getCategoryIcon(selected.category)}</ResponsiveIcon>
 					<ShowAt stage="full">
-						<ResponsiveText variant="title">Random {getCategoryLabel(selected.category)}</ResponsiveText>
+						<ResponsiveText variant="title">
+							Random {getCategoryLabel(selected.category)}
+						</ResponsiveText>
 					</ShowAt>
 					<ShowAt stage="comfortable">
 						<ResponsiveText className="font-semibold" variant="body">
@@ -90,7 +94,10 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
 
 						{/* Selected item */}
 						<div>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								Selected
 							</ResponsiveText>
 							<ResponsiveText className="font-bold" variant="title">
@@ -101,7 +108,10 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
 						{/* Description */}
 						{selected.description && (
 							<div className="rounded-lg bg-background/50 px-4 py-2">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									{selected.description}
 								</ResponsiveText>
 							</div>
@@ -117,7 +127,10 @@ export function CompanyRandomizerWidget({ selected = DEFAULT_SELECTED }: Company
 							<div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
 								{getCategoryIcon(selected.category)}
 							</div>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								{getCategoryLabel(selected.category)}
 							</ResponsiveText>
 						</div>

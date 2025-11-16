@@ -41,7 +41,16 @@ const inferClassification = (type?: string | null) => {
 	if (["vehicle", "fleet_vehicle", "truck", "van"].includes(type)) {
 		return "vehicle";
 	}
-	if (["tool", "hand_tool", "power_tool", "equipment_tool", "pipe_tool", "jetter"].includes(type)) {
+	if (
+		[
+			"tool",
+			"hand_tool",
+			"power_tool",
+			"equipment_tool",
+			"pipe_tool",
+			"jetter",
+		].includes(type)
+	) {
 		return "tool";
 	}
 	return "equipment";
@@ -66,7 +75,8 @@ const getCustomerName = (customer: any) => {
 	if (customer.display_name) {
 		return customer.display_name;
 	}
-	const fullName = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+	const fullName =
+		`${customer.first_name || ""} ${customer.last_name || ""}`.trim();
 	return fullName || "Unknown";
 };
 
@@ -83,8 +93,10 @@ const transformEquipmentData = (eq: any) => {
 	const customer = Array.isArray(eq.customer) ? eq.customer[0] : eq.customer;
 	const property = Array.isArray(eq.property) ? eq.property[0] : eq.property;
 
-	const classification = eq.classification || inferClassification(eq.type || undefined);
-	const classificationLabel = classificationLabelMap[classification] || formatLabel(classification);
+	const classification =
+		eq.classification || inferClassification(eq.type || undefined);
+	const classificationLabel =
+		classificationLabelMap[classification] || formatLabel(classification);
 	const typeLabel = typeLabelMap[eq.type] || formatLabel(eq.type);
 
 	return {
@@ -146,7 +158,9 @@ export async function UequipmentData() {
 	}
 
 	// Transform data for table component
-	const equipment = (equipmentRaw || []).map((eq) => transformEquipmentData(eq));
+	const equipment = (equipmentRaw || []).map((eq) =>
+		transformEquipmentData(eq),
+	);
 
 	return (
 		<WorkDataView

@@ -2,7 +2,11 @@ import Script from "next/script";
 import { ModernHomepage } from "@/components/home/modern-homepage";
 import { SEO_URLS } from "@/lib/seo/config";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
-import { createOrganizationSchema, createReviewAggregateSchema, createWebsiteSchema } from "@/lib/seo/structured-data";
+import {
+	createOrganizationSchema,
+	createReviewAggregateSchema,
+	createWebsiteSchema,
+} from "@/lib/seo/structured-data";
 
 export const metadata = generateSEOMetadata({
 	title: "Modern Business Management Platform",
@@ -25,17 +29,32 @@ export default function Home() {
 	return (
 		<>
 			{/* Organization and WebSite Structured Data */}
-			<Script id="thorbis-organization-schema" strategy="afterInteractive" type="application/ld+json">
+			<Script
+				id="thorbis-organization-schema"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			>
 				{JSON.stringify(
 					createOrganizationSchema({
-						sameAs: ["https://www.linkedin.com/company/thorbis", "https://twitter.com/thorbis"],
-					})
+						sameAs: [
+							"https://www.linkedin.com/company/thorbis",
+							"https://twitter.com/thorbis",
+						],
+					}),
 				)}
 			</Script>
-			<Script id="thorbis-website-schema" strategy="afterInteractive" type="application/ld+json">
+			<Script
+				id="thorbis-website-schema"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			>
 				{JSON.stringify(createWebsiteSchema())}
 			</Script>
-			<Script id="thorbis-review-schema" strategy="afterInteractive" type="application/ld+json">
+			<Script
+				id="thorbis-review-schema"
+				strategy="afterInteractive"
+				type="application/ld+json"
+			>
 				{JSON.stringify(
 					createReviewAggregateSchema({
 						item: {
@@ -45,7 +64,7 @@ export default function Home() {
 						},
 						ratingValue: 4.9,
 						reviewCount: 327,
-					})
+					}),
 				)}
 			</Script>
 			<ModernHomepage />

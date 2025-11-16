@@ -22,7 +22,16 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 	const templates: Record<string, ExcelTemplate> = {
 		customers: {
 			dataType: "customers",
-			headers: ["Name", "Email", "Phone", "Address", "City", "State", "ZIP", "Notes"],
+			headers: [
+				"Name",
+				"Email",
+				"Phone",
+				"Address",
+				"City",
+				"State",
+				"ZIP",
+				"Notes",
+			],
 			validations: {
 				Name: ["Required", "Max 200 characters"],
 				Email: ["Optional", "Valid email format"],
@@ -50,11 +59,21 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 					Notes: "",
 				},
 			],
-			instructions: "Fill in customer information. Name is required, other fields are optional.",
+			instructions:
+				"Fill in customer information. Name is required, other fields are optional.",
 		},
 		jobs: {
 			dataType: "jobs",
-			headers: ["Title", "Customer Name", "Description", "Status", "Priority", "Scheduled Date", "Address", "Notes"],
+			headers: [
+				"Title",
+				"Customer Name",
+				"Description",
+				"Status",
+				"Priority",
+				"Scheduled Date",
+				"Address",
+				"Notes",
+			],
 			validations: {
 				Title: ["Required", "Max 200 characters"],
 				"Customer Name": ["Required"],
@@ -73,11 +92,21 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 					Notes: "Customer prefers morning appointments",
 				},
 			],
-			instructions: "Create jobs with customer information and scheduling details.",
+			instructions:
+				"Create jobs with customer information and scheduling details.",
 		},
 		invoices: {
 			dataType: "invoices",
-			headers: ["Invoice Number", "Customer Name", "Date", "Due Date", "Amount", "Tax", "Status", "Notes"],
+			headers: [
+				"Invoice Number",
+				"Customer Name",
+				"Date",
+				"Due Date",
+				"Amount",
+				"Tax",
+				"Status",
+				"Notes",
+			],
 			validations: {
 				"Invoice Number": ["Required", "Unique"],
 				"Customer Name": ["Required"],
@@ -190,7 +219,7 @@ export function createCSVFile(data: unknown[]): Blob {
 						? `"${stringValue.replace(/"/g, '""')}"`
 						: stringValue;
 				})
-				.join(",")
+				.join(","),
 		),
 	].join("\n");
 

@@ -33,13 +33,23 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
+import type {
+	KanbanItemBase,
+	KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useSchedule } from "@/hooks/use-schedule";
 import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
 import { TeamAvatarGroup } from "./team-avatar-manager";
 
-type ScheduleStatus = "scheduled" | "dispatched" | "arrived" | "in-progress" | "closed" | "completed" | "cancelled";
+type ScheduleStatus =
+	| "scheduled"
+	| "dispatched"
+	| "arrived"
+	| "in-progress"
+	| "closed"
+	| "completed"
+	| "cancelled";
 
 type ScheduleKanbanItem = KanbanItemBase & {
 	entity: Job;
@@ -60,13 +70,15 @@ const SCHEDULE_STATUS_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#94A3B8" }, // Slate
 ];
 
-const COLUMN_LABEL = new Map(SCHEDULE_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+	SCHEDULE_STATUS_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const DEFAULT_STATUS: ScheduleStatus = "scheduled";
 
 function resolveStatus(
 	status: string | null | undefined,
-	technicianId: string | null | undefined
+	technicianId: string | null | undefined,
 ): ScheduleStatus | "unassigned" {
 	// If no technician assigned, it's unscheduled
 	if (!technicianId) {
@@ -89,15 +101,27 @@ const getJobTypeColor = (job: Job) => {
 		return "border-l-red-400 dark:border-l-red-700";
 	}
 
-	if (title.includes("callback") || title.includes("follow-up") || title.includes("followup")) {
+	if (
+		title.includes("callback") ||
+		title.includes("follow-up") ||
+		title.includes("followup")
+	) {
 		return "border-l-orange-400 dark:border-l-orange-700";
 	}
 
-	if (title.includes("meeting") || title.includes("event") || title.includes("training")) {
+	if (
+		title.includes("meeting") ||
+		title.includes("event") ||
+		title.includes("training")
+	) {
 		return "border-l-purple-400 dark:border-l-purple-700";
 	}
 
-	if (title.includes("install") || title.includes("setup") || title.includes("new")) {
+	if (
+		title.includes("install") ||
+		title.includes("setup") ||
+		title.includes("new")
+	) {
 		return "border-l-green-400 dark:border-l-green-700";
 	}
 
@@ -133,12 +157,14 @@ const getStatusColor = (status: Job["status"]) => {
 function JobCard({ item }: { item: ScheduleKanbanItem }) {
 	const router = useRouter();
 	const { entity: job } = item;
-	const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-	const endTime = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+	const startTime =
+		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+	const endTime =
+		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 	const handleAction = async (
 		action: string,
-		actionFn: (id: string) => Promise<{ success: boolean; error?: string }>
+		actionFn: (id: string) => Promise<{ success: boolean; error?: string }>,
 	) => {
 		const toastId = toast.loading(`${action}...`);
 		const result = await actionFn(job.id);
@@ -153,10 +179,17 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 	};
 
 	const cardContent = (
-		<div className={cn("-m-4 relative flex flex-col gap-2 rounded-xl border-l-4 p-4", getJobTypeColor(job))}>
+		<div
+			className={cn(
+				"-m-4 relative flex flex-col gap-2 rounded-xl border-l-4 p-4",
+				getJobTypeColor(job),
+			)}
+		>
 			{/* Status Dot */}
 			<div className="absolute top-4 right-4">
-				<div className={cn("size-2 rounded-full", getStatusColor(job.status))} />
+				<div
+					className={cn("size-2 rounded-full", getStatusColor(job.status))}
+				/>
 			</div>
 
 			{/* Customer Name */}
@@ -192,7 +225,12 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 			{/* Team Avatars */}
 			{job.assignments.length > 0 && (
 				<div className="border-t pt-2">
-					<TeamAvatarGroup assignments={job.assignments} jobId={job.id} maxVisible={3} size="sm" />
+					<TeamAvatarGroup
+						assignments={job.assignments}
+						jobId={job.id}
+						maxVisible={3}
+						size="sm"
+					/>
 				</div>
 			)}
 		</div>
@@ -231,12 +269,17 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 					Mark Arrived
 				</ContextMenuItem>
 
-				<ContextMenuItem disabled={job.status === "closed"} onClick={() => handleAction("Closing", closeAppointment)}>
+				<ContextMenuItem
+					disabled={job.status === "closed"}
+					onClick={() => handleAction("Closing", closeAppointment)}
+				>
 					<UserCheck className="mr-2 size-4" />
 					Mark Closed
 				</ContextMenuItem>
 
-				<ContextMenuItem onClick={() => handleAction("Completing", completeAppointment)}>
+				<ContextMenuItem
+					onClick={() => handleAction("Completing", completeAppointment)}
+				>
 					<CheckCircle2 className="mr-2 size-4" />
 					Mark Complete
 				</ContextMenuItem>
@@ -257,7 +300,9 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 
 				<ContextMenuItem
 					className="text-orange-600 dark:text-orange-400"
-					onClick={() => handleAction("Cancelling appointment", cancelAppointment)}
+					onClick={() =>
+						handleAction("Cancelling appointment", cancelAppointment)
+					}
 				>
 					<XCircle className="mr-2 size-4" />
 					Cancel Appointment Only
@@ -267,7 +312,7 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 					className="text-red-600 dark:text-red-400"
 					onClick={() =>
 						handleAction("Cancelling job & appointment", (scheduleId) =>
-							cancelJobAndAppointment(scheduleId, job.jobId ?? "")
+							cancelJobAndAppointment(scheduleId, job.jobId ?? ""),
 						)
 					}
 				>
@@ -275,7 +320,10 @@ function JobCard({ item }: { item: ScheduleKanbanItem }) {
 					Cancel Job & Appointment
 				</ContextMenuItem>
 
-				<ContextMenuItem className="text-destructive" onClick={() => handleAction("Archiving", archiveAppointment)}>
+				<ContextMenuItem
+					className="text-destructive"
+					onClick={() => handleAction("Archiving", archiveAppointment)}
+				>
 					<Archive className="mr-2 size-4" />
 					Archive Job
 				</ContextMenuItem>
@@ -290,7 +338,11 @@ export function KanbanView() {
 
 	const jobs = getAllJobs();
 
-	const handleItemMove = async ({ item, fromColumnId, toColumnId }: KanbanMoveEvent<ScheduleKanbanItem>) => {
+	const handleItemMove = async ({
+		item,
+		fromColumnId,
+		toColumnId,
+	}: KanbanMoveEvent<ScheduleKanbanItem>) => {
 		if (fromColumnId === toColumnId) {
 			return;
 		}
@@ -307,7 +359,9 @@ export function KanbanView() {
 				// Handle moving to/from unassigned
 				if (toColumnId === "unassigned") {
 					// Moving to unassigned - unassign the job
-					const { unassignAppointment } = await import("@/actions/schedule-assignments");
+					const { unassignAppointment } = await import(
+						"@/actions/schedule-assignments"
+					);
 					result = await unassignAppointment(jobItem.entity.id);
 					if (result.success) {
 						toast.success("Appointment unscheduled");
@@ -363,7 +417,9 @@ export function KanbanView() {
 		<div className="h-full overflow-auto">
 			<EntityKanban<Job, ScheduleStatus | "unassigned">
 				calculateColumnMeta={(columnId, items) => {
-					const columnItems = items.filter((item) => item.columnId === columnId);
+					const columnItems = items.filter(
+						(item) => item.columnId === columnId,
+					);
 					return { count: columnItems.length };
 				}}
 				columns={SCHEDULE_STATUS_COLUMNS}

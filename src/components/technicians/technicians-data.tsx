@@ -22,7 +22,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="font-semibold text-lg">Smart Scheduling</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Optimize technician schedules based on skills, location, and availability
+							Optimize technician schedules based on skills, location, and
+							availability
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="font-semibold text-lg">GPS Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Real-time location tracking for efficient dispatching and route optimization
+							Real-time location tracking for efficient dispatching and route
+							optimization
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="font-semibold text-lg">Skills Management</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track certifications, specializations, and skill levels for better job matching
+							Track certifications, specializations, and skill levels for better
+							job matching
 						</p>
 					</div>
 
@@ -52,14 +55,17 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="font-semibold text-lg">Performance Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor productivity, customer satisfaction, and revenue per technician
+							Monitor productivity, customer satisfaction, and revenue per
+							technician
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Empower Your Team</h3>
-					<p className="mb-6 text-muted-foreground">Give technicians the tools they need to succeed</p>
+					<p className="mb-6 text-muted-foreground">
+						Give technicians the tools they need to succeed
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

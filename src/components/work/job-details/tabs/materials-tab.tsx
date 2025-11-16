@@ -8,7 +8,14 @@ import { Package, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type MaterialsTabProps = {
 	job: any;
@@ -16,14 +23,21 @@ type MaterialsTabProps = {
 	isEditMode: boolean;
 };
 
-export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) {
+export function MaterialsTab({
+	job,
+	materials,
+	isEditMode,
+}: MaterialsTabProps) {
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-US", {
 			style: "currency",
 			currency: "USD",
 		}).format(cents / 100);
 
-	const totalCost = materials.reduce((sum, item) => sum + (item.quantity * item.unit_price || 0), 0);
+	const totalCost = materials.reduce(
+		(sum, item) => sum + (item.quantity * item.unit_price || 0),
+		0,
+	);
 
 	return (
 		<div className="mx-auto max-w-6xl space-y-6">
@@ -61,9 +75,15 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
 									{materials.map((item) => (
 										<TableRow key={item.id}>
 											<TableCell className="font-medium">{item.name}</TableCell>
-											<TableCell className="text-muted-foreground text-sm">{item.description}</TableCell>
-											<TableCell className="text-right">{item.quantity}</TableCell>
-											<TableCell className="text-right">{formatCurrency(item.unit_price || 0)}</TableCell>
+											<TableCell className="text-muted-foreground text-sm">
+												{item.description}
+											</TableCell>
+											<TableCell className="text-right">
+												{item.quantity}
+											</TableCell>
+											<TableCell className="text-right">
+												{formatCurrency(item.unit_price || 0)}
+											</TableCell>
 											<TableCell className="text-right font-medium">
 												{formatCurrency(item.quantity * item.unit_price || 0)}
 											</TableCell>
@@ -80,13 +100,19 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
 							</Table>
 							<div className="mt-4 flex justify-end border-t pt-4">
 								<div className="text-right">
-									<p className="text-muted-foreground text-sm">Total Materials</p>
-									<p className="font-bold text-2xl">{formatCurrency(totalCost)}</p>
+									<p className="text-muted-foreground text-sm">
+										Total Materials
+									</p>
+									<p className="font-bold text-2xl">
+										{formatCurrency(totalCost)}
+									</p>
 								</div>
 							</div>
 						</>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">No line items added yet</div>
+						<div className="text-center text-muted-foreground text-sm">
+							No line items added yet
+						</div>
 					)}
 				</CardContent>
 			</Card>

@@ -39,7 +39,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export function ModernHomepage() {
-	const tradeBadges = ["HVAC", "Plumbing", "Electrical", "Roofing", "Garage Door", "Renovation"] as const;
+	const tradeBadges = [
+		"HVAC",
+		"Plumbing",
+		"Electrical",
+		"Roofing",
+		"Garage Door",
+		"Renovation",
+	] as const;
 
 	const heroStats = [
 		{
@@ -85,21 +92,24 @@ export function ModernHomepage() {
 			icon: Brain,
 			label: "Certainty",
 			title: "Margin guardrails on every ticket",
-			description: "Live job costing exposes labor, material, and equipment creep before it kills profit.",
+			description:
+				"Live job costing exposes labor, material, and equipment creep before it kills profit.",
 			proof: "Know your exact margin before the truck heads back.",
 		},
 		{
 			icon: Target,
 			label: "Control",
 			title: "Dispatch board built for chaos",
-			description: "Drag-and-drop routes, route heatmaps, and AI slot suggestions keep six trucks moving like one.",
+			description:
+				"Drag-and-drop routes, route heatmaps, and AI slot suggestions keep six trucks moving like one.",
 			proof: "Visualize the entire day at once with zero spreadsheets.",
 		},
 		{
 			icon: ShieldCheck,
 			label: "Trust",
 			title: "Promises backed by guarantees",
-			description: "21-day performance lift or walk away, no lock-in. Keep the playbooks we build for you.",
+			description:
+				"21-day performance lift or walk away, no lock-in. Keep the playbooks we build for you.",
 			proof: "Risk-free adoption with concierge setup.",
 		},
 	] as const;
@@ -109,13 +119,15 @@ export function ModernHomepage() {
 			src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
 			alt: "Crew installing a rooftop unit at sunrise",
 			badge: "Field reality",
-			caption: "Offline-ready checklists, annotated photos, and signatures captured even when service drops.",
+			caption:
+				"Offline-ready checklists, annotated photos, and signatures captured even when service drops.",
 		},
 		{
 			src: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
 			alt: "Dispatcher coordinating jobs with a homeowner",
 			badge: "Control tower",
-			caption: "Dispatch AI qualifies leads, books them, and drops them on the board with playbook-driven notes.",
+			caption:
+				"Dispatch AI qualifies leads, books them, and drops them on the board with playbook-driven notes.",
 		},
 	] as const;
 
@@ -123,7 +135,8 @@ export function ModernHomepage() {
 		{
 			icon: Bot,
 			title: "Dispatch AI",
-			description: "Answers calls, qualifies homeowners, and drops jobs straight onto the board with custom scripts.",
+			description:
+				"Answers calls, qualifies homeowners, and drops jobs straight onto the board with custom scripts.",
 		},
 		{
 			icon: Layers,
@@ -134,7 +147,8 @@ export function ModernHomepage() {
 		{
 			icon: Zap,
 			title: "Revenue copilots",
-			description: "Suggests upsell menus, financing, and review requests the second a job is marked complete.",
+			description:
+				"Suggests upsell menus, financing, and review requests the second a job is marked complete.",
 		},
 		{
 			icon: Globe,
@@ -162,13 +176,15 @@ export function ModernHomepage() {
 		{
 			icon: Wrench,
 			title: "Crew-first mobile app",
-			description: "Technicians see routes, checklists, equipment history, and capture photos even when service drops.",
+			description:
+				"Technicians see routes, checklists, equipment history, and capture photos even when service drops.",
 			color: "text-warning",
 		},
 		{
 			icon: DollarSign,
 			title: "Cash flow control",
-			description: "Track labor, material, equipment, and markups in real time. Send invoices with 0% processing fees.",
+			description:
+				"Track labor, material, equipment, and markups in real time. Send invoices with 0% processing fees.",
 			color: "text-accent-foreground",
 		},
 		{
@@ -181,7 +197,8 @@ export function ModernHomepage() {
 		{
 			icon: Shield,
 			title: "Safety & compliance",
-			description: "Store permits, inspection photos, and job packets so crews always have the right paperwork.",
+			description:
+				"Store permits, inspection photos, and job packets so crews always have the right paperwork.",
 			color: "text-primary",
 		},
 	] as const;
@@ -227,17 +244,20 @@ export function ModernHomepage() {
 		},
 		{
 			claim: "After-hours coverage",
-			thorbis: "Dispatch AI books no-heat calls overnight with scripts you control.",
+			thorbis:
+				"Dispatch AI books no-heat calls overnight with scripts you control.",
 			others: "Forwarding to voicemail and hoping for the best.",
 		},
 		{
 			claim: "Implementation",
-			thorbis: "Trade operators build your board, imports, and automations in 24 hours.",
+			thorbis:
+				"Trade operators build your board, imports, and automations in 24 hours.",
 			others: "Self-serve onboarding videos and weeks of DIY cleanup.",
 		},
 		{
 			claim: "Data ownership",
-			thorbis: "Export everything anytime—customers, jobs, invoices—no penalty.",
+			thorbis:
+				"Export everything anytime—customers, jobs, invoices—no penalty.",
 			others: "Lock-in contracts and paywalls around your own data.",
 		},
 	] as const;
@@ -245,7 +265,8 @@ export function ModernHomepage() {
 	const incumbentIntel = [
 		{
 			name: "ServiceTitan",
-			summary: "Enterprise-first bundles like Marketing Pro add heavy overhead.",
+			summary:
+				"Enterprise-first bundles like Marketing Pro add heavy overhead.",
 			takeaway:
 				"Thorbis includes lifecycle marketing, review boosts, and advanced reporting in the flat base so you are not upsold feature-by-feature.",
 			source: {
@@ -255,7 +276,8 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Housecall Pro",
-			summary: "Highlights 100M+ jobs and a 35% average revenue lift after year one.",
+			summary:
+				"Highlights 100M+ jobs and a 35% average revenue lift after year one.",
 			takeaway:
 				"Thorbis matches the growth focus but layers on 0% processing, Dispatch AI, and multi-division controls built for bigger crews.",
 			source: {
@@ -265,7 +287,8 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Status quo tools",
-			summary: "Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
+			summary:
+				"Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
 			takeaway:
 				"Thorbis unifies quoting, dispatch, cash flow, and customer comms so information moves once and mirrors the field.",
 			source: {
@@ -291,7 +314,8 @@ export function ModernHomepage() {
 		{
 			metric: "3x",
 			label: "Faster cash collection",
-			description: "Instant payouts with 0% processing fees and auto reminders.",
+			description:
+				"Instant payouts with 0% processing fees and auto reminders.",
 			icon: DollarSign,
 		},
 		{
@@ -344,7 +368,8 @@ export function ModernHomepage() {
 		},
 		{
 			title: "Explore industries",
-			description: "Find HVAC, plumbing, electrical, roofing, and more playbooks.",
+			description:
+				"Find HVAC, plumbing, electrical, roofing, and more playbooks.",
 			icon: Globe,
 			href: "/industries",
 		},
@@ -411,7 +436,10 @@ export function ModernHomepage() {
 								variant="secondary"
 							>
 								<Sparkles className="size-4 text-primary" />
-								<span className="font-medium">Built with trade operators for HVAC, plumbing, electrical & more</span>
+								<span className="font-medium">
+									Built with trade operators for HVAC, plumbing, electrical &
+									more
+								</span>
 							</Badge>
 						</div>
 
@@ -423,12 +451,14 @@ export function ModernHomepage() {
 								</span>
 							</h1>
 							<p className="mx-auto mb-3 max-w-3xl text-foreground/80 text-xl leading-relaxed md:text-2xl">
-								Thorbis runs dispatch, quoting, payments, and after-hours calls from one control tower, so owners who
-								still wear the tool belt can scale like a franchise.
+								Thorbis runs dispatch, quoting, payments, and after-hours calls
+								from one control tower, so owners who still wear the tool belt
+								can scale like a franchise.
 							</p>
 							<p className="mx-auto max-w-2xl text-base text-muted-foreground">
-								$100/month base plus pay-as-you-go usage. Unlimited users, AI-powered office staff, and data you own. No
-								contracts, no per-seat fees.
+								$100/month base plus pay-as-you-go usage. Unlimited users,
+								AI-powered office staff, and data you own. No contracts, no
+								per-seat fees.
 							</p>
 							<div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm">
 								{tradeBadges.map((trade) => (
@@ -455,23 +485,37 @@ export function ModernHomepage() {
 								<div className="ml-2">
 									<div className="flex items-center gap-1">
 										{[1, 2, 3, 4, 5].map((i) => (
-											<Star className="size-4 fill-yellow-500 text-warning" key={i} />
+											<Star
+												className="size-4 fill-yellow-500 text-warning"
+												key={i}
+											/>
 										))}
 										<span className="ml-2 font-bold">4.9/5</span>
 									</div>
-									<p className="text-muted-foreground text-xs">from 1,247+ trades reviews</p>
+									<p className="text-muted-foreground text-xs">
+										from 1,247+ trades reviews
+									</p>
 								</div>
 							</div>
 						</div>
 
 						<div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
-							<Button asChild className="group h-14 px-8 text-lg shadow-lg shadow-primary/20" size="lg">
+							<Button
+								asChild
+								className="group h-14 px-8 text-lg shadow-lg shadow-primary/20"
+								size="lg"
+							>
 								<Link href="/register">
 									Start 14-day Free Trial
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
+							<Button
+								asChild
+								className="h-14 border-2 px-8 text-lg"
+								size="lg"
+								variant="outline"
+							>
 								<Link href="/pricing">See trade pricing</Link>
 							</Button>
 						</div>
@@ -492,10 +536,16 @@ export function ModernHomepage() {
 										className="rounded-2xl border border-border/50 bg-background/80 p-5 shadow-sm backdrop-blur"
 										key={stat.label}
 									>
-										<p className="text-muted-foreground text-xs">{stat.label}</p>
+										<p className="text-muted-foreground text-xs">
+											{stat.label}
+										</p>
 										<p className="font-bold text-3xl">{stat.value}</p>
-										<p className="text-success text-xs dark:text-success">{stat.change}</p>
-										<p className="text-muted-foreground text-xs">{stat.detail}</p>
+										<p className="text-success text-xs dark:text-success">
+											{stat.change}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{stat.detail}
+										</p>
 									</div>
 								))}
 							</div>
@@ -517,8 +567,12 @@ export function ModernHomepage() {
 										<div className="grid gap-3 sm:grid-cols-2">
 											{heroCallouts.map((callout) => (
 												<div key={callout.label}>
-													<p className="text-muted-foreground text-xs">{callout.label}</p>
-													<p className="font-semibold text-lg">{callout.value}</p>
+													<p className="text-muted-foreground text-xs">
+														{callout.label}
+													</p>
+													<p className="font-semibold text-lg">
+														{callout.value}
+													</p>
 												</div>
 											))}
 										</div>
@@ -535,10 +589,12 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							FAQ
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">Answers for busy owners</h2>
+						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							Answers for busy owners
+						</h2>
 						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							We captured the top objections trade owners raise after evaluating ServiceTitan, Housecall Pro, and
-							generic CRMs.
+							We captured the top objections trade owners raise after evaluating
+							ServiceTitan, Housecall Pro, and generic CRMs.
 						</p>
 					</div>
 					<div className="mx-auto mt-12 max-w-4xl space-y-4">
@@ -548,7 +604,9 @@ export function ModernHomepage() {
 								key={item.question}
 							>
 								<p className="font-semibold text-xl">{item.question}</p>
-								<p className="mt-3 text-muted-foreground text-sm leading-relaxed">{item.answer}</p>
+								<p className="mt-3 text-muted-foreground text-sm leading-relaxed">
+									{item.answer}
+								</p>
 							</div>
 						))}
 					</div>
@@ -560,10 +618,13 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Dive deeper
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">Everything a buying committee needs</h2>
+						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							Everything a buying committee needs
+						</h2>
 						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							Compare pricing, study industry playbooks, or watch an on-demand walkthrough without talking to sales.
-							Each page was refreshed for trade owners doing serious diligence.
+							Compare pricing, study industry playbooks, or watch an on-demand
+							walkthrough without talking to sales. Each page was refreshed for
+							trade owners doing serious diligence.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -577,10 +638,16 @@ export function ModernHomepage() {
 									<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
 										<destination.icon className="size-6 text-primary" />
 									</div>
-									<h3 className="mb-2 font-semibold text-2xl group-hover:text-primary">{destination.title}</h3>
-									<p className="text-muted-foreground text-sm">{destination.description}</p>
+									<h3 className="mb-2 font-semibold text-2xl group-hover:text-primary">
+										{destination.title}
+									</h3>
+									<p className="text-muted-foreground text-sm">
+										{destination.description}
+									</p>
 								</div>
-								<p className="mt-6 font-semibold text-primary text-sm">Explore &rarr;</p>
+								<p className="mt-6 font-semibold text-primary text-sm">
+									Explore &rarr;
+								</p>
 							</Link>
 						))}
 					</div>
@@ -592,23 +659,37 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Market research
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">We studied the incumbents so you don&apos;t have to</h2>
+						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							We studied the incumbents so you don&apos;t have to
+						</h2>
 						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							ServiceTitan leans enterprise, Housecall Pro leans DIY websites, and spreadsheets keep you stuck reacting.
-							Thorbis blends the best ideas—without the add-on upsells, per-seat fees, or DIY headache.
+							ServiceTitan leans enterprise, Housecall Pro leans DIY websites,
+							and spreadsheets keep you stuck reacting. Thorbis blends the best
+							ideas—without the add-on upsells, per-seat fees, or DIY headache.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
 						{incumbentIntel.map((intel) => (
-							<div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm" key={intel.name}>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">{intel.name}</p>
-								<h3 className="mt-3 mb-2 font-semibold text-xl">{intel.summary}</h3>
-								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">{intel.takeaway}</p>
+							<div
+								className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
+								key={intel.name}
+							>
+								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+									{intel.name}
+								</p>
+								<h3 className="mt-3 mb-2 font-semibold text-xl">
+									{intel.summary}
+								</h3>
+								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">
+									{intel.takeaway}
+								</p>
 								<Link
 									className="text-primary text-sm underline underline-offset-2"
 									href={intel.source.href}
 									rel="noopener noreferrer"
-									target={intel.source.href.startsWith("http") ? "_blank" : undefined}
+									target={
+										intel.source.href.startsWith("http") ? "_blank" : undefined
+									}
 								>
 									{intel.source.label}
 								</Link>
@@ -626,25 +707,30 @@ export function ModernHomepage() {
 							</Badge>
 							<div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
 								<div>
-									<h2 className="mb-4 font-bold text-4xl md:text-5xl">Automation you can actually trust</h2>
+									<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+										Automation you can actually trust
+									</h2>
 									<p className="mb-6 text-foreground/70 text-lg">
-										Housecall Pro talks about AI teams. ServiceTitan sells Marketing Pro bundles. Thorbis bakes the same
-										capabilities into the base platform so every shop, not just enterprise, gets dispatch, marketing,
-										and cash flow copilots on day one.
+										Housecall Pro talks about AI teams. ServiceTitan sells
+										Marketing Pro bundles. Thorbis bakes the same capabilities
+										into the base platform so every shop, not just enterprise,
+										gets dispatch, marketing, and cash flow copilots on day one.
 									</p>
 									<div className="space-y-3 text-muted-foreground text-sm">
 										<p className="flex items-start gap-3">
 											<Sparkles className="mt-0.5 size-4 text-primary" />
-											Dispatch AI books urgent calls in the same board your humans use—no outside integrations.
+											Dispatch AI books urgent calls in the same board your
+											humans use—no outside integrations.
 										</p>
 										<p className="flex items-start gap-3">
 											<ShieldCheck className="mt-0.5 size-4 text-primary" />
-											Playbooks enforce safety checklists, permit tasks, and job costing guardrails automatically.
+											Playbooks enforce safety checklists, permit tasks, and job
+											costing guardrails automatically.
 										</p>
 										<p className="flex items-start gap-3">
 											<TrendingUp className="mt-0.5 size-4 text-primary" />
-											Revenue insights flag idle crews, low conversion zones, and cash delays so you can course-correct
-											live.
+											Revenue insights flag idle crews, low conversion zones,
+											and cash delays so you can course-correct live.
 										</p>
 									</div>
 								</div>
@@ -657,8 +743,12 @@ export function ModernHomepage() {
 											<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
 												<highlight.icon className="size-6 text-primary" />
 											</div>
-											<h3 className="mb-2 font-semibold text-xl">{highlight.title}</h3>
-											<p className="text-muted-foreground text-sm leading-relaxed">{highlight.description}</p>
+											<h3 className="mb-2 font-semibold text-xl">
+												{highlight.title}
+											</h3>
+											<p className="text-muted-foreground text-sm leading-relaxed">
+												{highlight.description}
+											</p>
 										</div>
 									))}
 								</div>
@@ -675,10 +765,13 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Psychology-backed proof
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">Owners Move When Risk Is Gone</h2>
+						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							Owners Move When Risk Is Gone
+						</h2>
 						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							We speak to the levers that matter: certainty on margins, total control of the board, and trust that
-							someone has your back if it doesn&apos;t work.
+							We speak to the levers that matter: certainty on margins, total
+							control of the board, and trust that someone has your back if it
+							doesn&apos;t work.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -690,10 +783,16 @@ export function ModernHomepage() {
 								<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
 									<driver.icon className="size-6 text-primary" />
 								</div>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">{driver.label}</p>
+								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+									{driver.label}
+								</p>
 								<h3 className="mb-2 font-semibold text-2xl">{driver.title}</h3>
-								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">{driver.description}</p>
-								<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{driver.proof}</p>
+								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">
+									{driver.description}
+								</p>
+								<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+									{driver.proof}
+								</p>
 							</div>
 						))}
 					</div>
@@ -708,10 +807,13 @@ export function ModernHomepage() {
 								<Badge className="mb-4" variant="secondary">
 									Visual proof
 								</Badge>
-								<h2 className="mb-4 font-bold text-4xl md:text-5xl">See The Platform In The Field</h2>
+								<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+									See The Platform In The Field
+								</h2>
 								<p className="mb-8 text-foreground/70 text-lg">
-									Lifestyle proof sells: let owners see crews, dispatchers, and the product in action—then show how
-									those moments tie back to revenue and peace of mind.
+									Lifestyle proof sells: let owners see crews, dispatchers, and
+									the product in action—then show how those moments tie back to
+									revenue and peace of mind.
 								</p>
 								<div className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-6 text-muted-foreground text-sm leading-relaxed">
 									<p className="flex items-start gap-3">
@@ -720,11 +822,13 @@ export function ModernHomepage() {
 									</p>
 									<p className="flex items-start gap-3">
 										<LineChart className="mt-1 size-4 text-primary" />
-										Tie every scene to growth: faster calls, tighter routes, and cash collected.
+										Tie every scene to growth: faster calls, tighter routes, and
+										cash collected.
 									</p>
 									<p className="flex items-start gap-3">
 										<Handshake className="mt-1 size-4 text-primary" />
-										Back it with guarantees and concierge humans, not just software.
+										Back it with guarantees and concierge humans, not just
+										software.
 									</p>
 								</div>
 							</div>
@@ -743,7 +847,9 @@ export function ModernHomepage() {
 										/>
 										<div className="space-y-2 border-border/60 border-t bg-background/90 p-6 backdrop-blur">
 											<Badge variant="secondary">{visual.badge}</Badge>
-											<p className="font-semibold text-foreground">{visual.caption}</p>
+											<p className="font-semibold text-foreground">
+												{visual.caption}
+											</p>
 										</div>
 									</div>
 								))}
@@ -760,10 +866,13 @@ export function ModernHomepage() {
 							<Badge className="mb-4" variant="secondary">
 								Trade-built workflows
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">Crew-Ready Tools For Owners On The Go</h2>
+							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+								Crew-Ready Tools For Owners On The Go
+							</h2>
 							<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-								Replace paper, whiteboards, and stitched-together apps with one system designed alongside HVAC,
-								plumbing, electrical, and specialty contractors.
+								Replace paper, whiteboards, and stitched-together apps with one
+								system designed alongside HVAC, plumbing, electrical, and
+								specialty contractors.
 							</p>
 						</div>
 
@@ -774,10 +883,16 @@ export function ModernHomepage() {
 									key={feature.title}
 								>
 									<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-										<feature.icon className={`size-6 ${feature.color} transition-transform group-hover:scale-110`} />
+										<feature.icon
+											className={`size-6 ${feature.color} transition-transform group-hover:scale-110`}
+										/>
 									</div>
-									<h3 className="mb-2 font-semibold text-xl">{feature.title}</h3>
-									<p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+									<h3 className="mb-2 font-semibold text-xl">
+										{feature.title}
+									</h3>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{feature.description}
+									</p>
 								</div>
 							))}
 						</div>
@@ -791,24 +906,35 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Field-proven workflow
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">Every Phase Of The Job, In One Place</h2>
+						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							Every Phase Of The Job, In One Place
+						</h2>
 						<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-							Whether you&apos;re in the truck or in the office, Thorbis keeps the same playbook visible to everyone so
-							nothing slips between estimate and final payment.
+							Whether you&apos;re in the truck or in the office, Thorbis keeps
+							the same playbook visible to everyone so nothing slips between
+							estimate and final payment.
 						</p>
 					</div>
 
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
 						{jobFlow.map((stage) => (
-							<div className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm" key={stage.title}>
+							<div
+								className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
+								key={stage.title}
+							>
 								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
 									<stage.icon className="size-6 text-primary" />
 								</div>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">{stage.stage}</p>
+								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+									{stage.stage}
+								</p>
 								<h3 className="mb-4 font-semibold text-2xl">{stage.title}</h3>
 								<ul className="space-y-3">
 									{stage.bullets.map((bullet) => (
-										<li className="flex items-start gap-3 text-muted-foreground text-sm" key={bullet}>
+										<li
+											className="flex items-start gap-3 text-muted-foreground text-sm"
+											key={bullet}
+										>
 											<CheckCircle2 className="mt-0.5 size-4 text-success" />
 											<span>{bullet}</span>
 										</li>
@@ -826,24 +952,40 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Proof over promises
 						</Badge>
-						<h2 className="mb-6 font-bold text-4xl md:text-5xl">Why Trade Owners Switch From Legacy Systems</h2>
+						<h2 className="mb-6 font-bold text-4xl md:text-5xl">
+							Why Trade Owners Switch From Legacy Systems
+						</h2>
 						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							Strip away the marketing—here&apos;s how Thorbis wins when owners compare us against the usual suspects.
+							Strip away the marketing—here&apos;s how Thorbis wins when owners
+							compare us against the usual suspects.
 						</p>
 					</div>
 					<div className="mt-12 overflow-hidden rounded-3xl border border-border/60 bg-card">
 						<div className="grid gap-0 md:grid-cols-2">
 							{comparisonPoints.map((point) => (
-								<div className="border-border/60 border-t p-6 text-sm md:border-l" key={point.claim}>
-									<p className="font-semibold text-primary text-xs uppercase tracking-wide">{point.claim}</p>
+								<div
+									className="border-border/60 border-t p-6 text-sm md:border-l"
+									key={point.claim}
+								>
+									<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+										{point.claim}
+									</p>
 									<div className="mt-4 flex flex-col gap-4">
 										<div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-											<p className="font-semibold text-primary text-xs uppercase tracking-wide">Thorbis</p>
-											<p className="text-base text-foreground">{point.thorbis}</p>
+											<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+												Thorbis
+											</p>
+											<p className="text-base text-foreground">
+												{point.thorbis}
+											</p>
 										</div>
 										<div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-											<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">Other tools</p>
-											<p className="text-base text-muted-foreground">{point.others}</p>
+											<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+												Other tools
+											</p>
+											<p className="text-base text-muted-foreground">
+												{point.others}
+											</p>
 										</div>
 									</div>
 								</div>
@@ -860,23 +1002,33 @@ export function ModernHomepage() {
 							<Badge className="mb-4" variant="secondary">
 								Owner outcomes
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">Numbers That Make Trade Owners Smile</h2>
+							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+								Numbers That Make Trade Owners Smile
+							</h2>
 							<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-								See what happens when every truck, call, and invoice moves through the same playbook.
+								See what happens when every truck, call, and invoice moves
+								through the same playbook.
 							</p>
 						</div>
 
 						<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 							{ownerWins.map((win) => (
-								<div className="rounded-xl border border-border/50 bg-background p-6 text-center" key={win.label}>
+								<div
+									className="rounded-xl border border-border/50 bg-background p-6 text-center"
+									key={win.label}
+								>
 									<div className="mb-4 flex justify-center">
 										<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
 											<win.icon className="size-6 text-primary" />
 										</div>
 									</div>
-									<div className="mb-2 font-bold text-4xl text-primary">{win.metric}</div>
+									<div className="mb-2 font-bold text-4xl text-primary">
+										{win.metric}
+									</div>
 									<div className="mb-1 font-semibold text-lg">{win.label}</div>
-									<div className="text-muted-foreground text-sm">{win.description}</div>
+									<div className="text-muted-foreground text-sm">
+										{win.description}
+									</div>
 								</div>
 							))}
 						</div>
@@ -891,18 +1043,28 @@ export function ModernHomepage() {
 							<Badge className="mb-4" variant="secondary">
 								Customer stories
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">Crew-Tested By Real Tradespeople</h2>
+							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+								Crew-Tested By Real Tradespeople
+							</h2>
 						</div>
 
 						<div className="grid gap-6 md:grid-cols-3">
 							{testimonialQuotes.map((testimonial) => (
-								<div className="rounded-xl border border-border/50 bg-card p-6" key={testimonial.name}>
+								<div
+									className="rounded-xl border border-border/50 bg-card p-6"
+									key={testimonial.name}
+								>
 									<div className="mb-4 flex gap-1">
 										{[...new Array(testimonial.rating)].map((_, index) => (
-											<Star className="size-4 fill-yellow-500 text-warning" key={index} />
+											<Star
+												className="size-4 fill-yellow-500 text-warning"
+												key={index}
+											/>
 										))}
 									</div>
-									<p className="mb-6 text-muted-foreground leading-relaxed">"{testimonial.content}"</p>
+									<p className="mb-6 text-muted-foreground leading-relaxed">
+										"{testimonial.content}"
+									</p>
 									<div>
 										<div className="font-semibold">{testimonial.name}</div>
 										<div className="text-muted-foreground text-sm">
@@ -922,10 +1084,13 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Risk-free switch
 						</Badge>
-						<h2 className="mb-6 font-bold text-4xl md:text-5xl lg:text-6xl">Give Your Crews A System That Works</h2>
+						<h2 className="mb-6 font-bold text-4xl md:text-5xl lg:text-6xl">
+							Give Your Crews A System That Works
+						</h2>
 						<p className="mx-auto mb-10 max-w-2xl text-foreground/70 text-xl">
-							HVAC, plumbing, electrical, roofing, and specialty contractors trust Thorbis to keep phones answered,
-							trucks dispatched, and cash collected without babysitting software.
+							HVAC, plumbing, electrical, roofing, and specialty contractors
+							trust Thorbis to keep phones answered, trucks dispatched, and cash
+							collected without babysitting software.
 						</p>
 						<div className="mb-10 space-y-3 text-left text-muted-foreground text-sm sm:text-base">
 							{guaranteeHighlights.map((highlight) => (
@@ -936,18 +1101,28 @@ export function ModernHomepage() {
 							))}
 						</div>
 						<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-							<Button asChild className="group h-14 px-8 text-lg shadow-lg shadow-primary/20" size="lg">
+							<Button
+								asChild
+								className="group h-14 px-8 text-lg shadow-lg shadow-primary/20"
+								size="lg"
+							>
 								<Link href="/register">
 									Start 14-day Free Trial
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
+							<Button
+								asChild
+								className="h-14 border-2 px-8 text-lg"
+								size="lg"
+								variant="outline"
+							>
 								<Link href="/pricing">Talk with a trade expert</Link>
 							</Button>
 						</div>
 						<p className="mt-6 text-muted-foreground text-sm">
-							Working system in 24 hours • Unlimited users • Trade-focused onboarding • Cancel anytime
+							Working system in 24 hours • Unlimited users • Trade-focused
+							onboarding • Cancel anytime
 						</p>
 					</div>
 				</div>

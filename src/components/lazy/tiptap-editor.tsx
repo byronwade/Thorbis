@@ -19,10 +19,13 @@ const EditorLoadingSkeleton = () => (
 	</div>
 );
 
-export const LazyTipTapEditor = dynamic(() => import("@tiptap/react").then((mod) => mod.EditorContent), {
-	ssr: false,
-	loading: EditorLoadingSkeleton,
-});
+export const LazyTipTapEditor = dynamic(
+	() => import("@tiptap/react").then((mod) => mod.EditorContent),
+	{
+		ssr: false,
+		loading: EditorLoadingSkeleton,
+	},
+);
 
 // Re-export hooks and utilities (these are lightweight)
 export { useEditor } from "@tiptap/react";

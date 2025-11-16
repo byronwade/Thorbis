@@ -9,7 +9,12 @@ import { getKBArticles, searchKBArticles } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSearch } from "@/components/kb/kb-search";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
@@ -29,7 +34,15 @@ type SearchPageProps = {
 	searchParams: Promise<{ q?: string; category?: string; tag?: string }>;
 };
 
-function SearchResults({ query, category, tag }: { query?: string; category?: string; tag?: string }) {
+function SearchResults({
+	query,
+	category,
+	tag,
+}: {
+	query?: string;
+	category?: string;
+	tag?: string;
+}) {
 	return (
 		<Suspense
 			fallback={
@@ -45,7 +58,15 @@ function SearchResults({ query, category, tag }: { query?: string; category?: st
 	);
 }
 
-async function SearchResultsContent({ query, category, tag }: { query?: string; category?: string; tag?: string }) {
+async function SearchResultsContent({
+	query,
+	category,
+	tag,
+}: {
+	query?: string;
+	category?: string;
+	tag?: string;
+}) {
 	const result = query
 		? await searchKBArticles(query, { category, tag, limit: 20 })
 		: await getKBArticles({ category, tag, limit: 20 });
@@ -58,7 +79,9 @@ async function SearchResultsContent({ query, category, tag }: { query?: string; 
 			<Card>
 				<CardHeader>
 					<CardTitle>Start Searching</CardTitle>
-					<CardDescription>Enter a search query above to find articles in our knowledge base.</CardDescription>
+					<CardDescription>
+						Enter a search query above to find articles in our knowledge base.
+					</CardDescription>
 				</CardHeader>
 			</Card>
 		);
@@ -69,7 +92,9 @@ async function SearchResultsContent({ query, category, tag }: { query?: string; 
 			<Card>
 				<CardHeader>
 					<CardTitle>No results found</CardTitle>
-					<CardDescription>Try adjusting your search terms or browse by category.</CardDescription>
+					<CardDescription>
+						Try adjusting your search terms or browse by category.
+					</CardDescription>
 				</CardHeader>
 			</Card>
 		);

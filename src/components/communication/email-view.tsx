@@ -10,7 +10,10 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -34,8 +37,12 @@ type EmailViewProps = {
 export function EmailView({ messages }: EmailViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
 
 	const handleOpenMessage = (message: EmailMessage) => {
 		setSelectedMessageId(message.id);
@@ -106,7 +113,11 @@ export function EmailView({ messages }: EmailViewProps) {
 					</Avatar>
 					<div className="flex flex-col">
 						<span className="font-medium text-sm">{message.from}</span>
-						{message.fromEmail && <span className="text-muted-foreground text-xs">{message.fromEmail}</span>}
+						{message.fromEmail && (
+							<span className="text-muted-foreground text-xs">
+								{message.fromEmail}
+							</span>
+						)}
 					</div>
 				</div>
 			),
@@ -120,11 +131,15 @@ export function EmailView({ messages }: EmailViewProps) {
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
 						<Mail className="size-3.5 text-muted-foreground" />
-						<span className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+						<span
+							className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+						>
 							{message.subject || "(No subject)"}
 						</span>
 					</div>
-					<p className="line-clamp-1 text-muted-foreground text-xs">{message.preview}</p>
+					<p className="line-clamp-1 text-muted-foreground text-xs">
+						{message.preview}
+					</p>
 				</div>
 			),
 		},
@@ -133,7 +148,10 @@ export function EmailView({ messages }: EmailViewProps) {
 			header: "Priority",
 			width: "w-28",
 			render: (message) => (
-				<Badge className="capitalize" variant={getPriorityVariant(message.priority)}>
+				<Badge
+					className="capitalize"
+					variant={getPriorityVariant(message.priority)}
+				>
 					{message.priority}
 				</Badge>
 			),
@@ -146,7 +164,11 @@ export function EmailView({ messages }: EmailViewProps) {
 				message.tags && message.tags.length > 0 ? (
 					<div className="flex flex-wrap gap-1">
 						{message.tags.slice(0, 2).map((tag) => (
-							<Badge className="text-xs" key={`${message.id}-${tag}`} variant="outline">
+							<Badge
+								className="text-xs"
+								key={`${message.id}-${tag}`}
+								variant="outline"
+							>
 								{tag}
 							</Badge>
 						))}
@@ -166,7 +188,11 @@ export function EmailView({ messages }: EmailViewProps) {
 			width: "w-32",
 			align: "right",
 			sortable: true,
-			render: (message) => <span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>,
+			render: (message) => (
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
+			),
 		},
 	];
 
@@ -178,7 +204,7 @@ export function EmailView({ messages }: EmailViewProps) {
 			const noun = selectedIds.size === 1 ? "email" : "emails";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast]
+		[toast],
 	);
 
 	const bulkActions = [

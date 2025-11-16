@@ -61,7 +61,11 @@ type CommunicationStore = {
 	closeComposer: () => void;
 	pendingMessages: PendingMessageMap;
 	addPendingMessage: (message: PendingMessage) => void;
-	resolvePendingMessage: (conversationId: string, messageId: string, replacement?: PendingMessage) => void;
+	resolvePendingMessage: (
+		conversationId: string,
+		messageId: string,
+		replacement?: PendingMessage,
+	) => void;
 	resetPendingMessages: (conversationId: string) => void;
 };
 
@@ -114,7 +118,11 @@ export const useCommunicationStore = create<CommunicationStore>((set) => ({
 							...state.pendingMessages,
 							[conversationId]: filtered,
 						}
-					: Object.fromEntries(Object.entries(state.pendingMessages).filter(([key]) => key !== conversationId));
+					: Object.fromEntries(
+							Object.entries(state.pendingMessages).filter(
+								([key]) => key !== conversationId,
+							),
+						);
 			return {
 				pendingMessages: nextPending,
 			};
@@ -124,7 +132,9 @@ export const useCommunicationStore = create<CommunicationStore>((set) => ({
 			if (!state.pendingMessages[conversationId]) {
 				return { pendingMessages: state.pendingMessages };
 			}
-			const nextEntries = Object.entries(state.pendingMessages).filter(([key]) => key !== conversationId);
+			const nextEntries = Object.entries(state.pendingMessages).filter(
+				([key]) => key !== conversationId,
+			);
 			return {
 				pendingMessages: Object.fromEntries(nextEntries),
 			};

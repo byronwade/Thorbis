@@ -70,7 +70,11 @@ type ImportExportDropdownProps = {
 	onBulkAction?: (action: string, ids: string[]) => void;
 };
 
-export function ImportExportDropdown({ dataType, selectedIds = [], onBulkAction }: ImportExportDropdownProps) {
+export function ImportExportDropdown({
+	dataType,
+	selectedIds = [],
+	onBulkAction,
+}: ImportExportDropdownProps) {
 	const hasSelection = selectedIds.length > 0;
 
 	const handleBulkAction = (action: string) => {
@@ -82,7 +86,12 @@ export function ImportExportDropdown({ dataType, selectedIds = [], onBulkAction 
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
-				<Button aria-label="Data management options" className="h-8 w-8" size="icon" variant="outline">
+				<Button
+					aria-label="Data management options"
+					className="h-8 w-8"
+					size="icon"
+					variant="outline"
+				>
 					<MoreVertical className="size-4" />
 				</Button>
 			</DropdownMenuTrigger>
@@ -119,9 +128,14 @@ export function ImportExportDropdown({ dataType, selectedIds = [], onBulkAction 
 				<DropdownMenuSeparator />
 
 				{/* Bulk Actions Group */}
-				<DropdownMenuLabel>Bulk Actions {hasSelection && `(${selectedIds.length})`}</DropdownMenuLabel>
+				<DropdownMenuLabel>
+					Bulk Actions {hasSelection && `(${selectedIds.length})`}
+				</DropdownMenuLabel>
 				<DropdownMenuGroup>
-					<DropdownMenuItem disabled={!hasSelection} onClick={() => handleBulkAction("edit")}>
+					<DropdownMenuItem
+						disabled={!hasSelection}
+						onClick={() => handleBulkAction("edit")}
+					>
 						<Pencil className="mr-2 size-4" />
 						<span>Bulk Edit</span>
 					</DropdownMenuItem>

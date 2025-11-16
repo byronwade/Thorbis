@@ -102,7 +102,10 @@ export function useWidgetNavigation(): NavGroup[] {
 	const allWidgets = useJobDetailsLayoutStore((state) => state.widgets);
 
 	// Filter visible widgets in useMemo to maintain stable reference
-	const visibleWidgets = useMemo(() => (isClient ? allWidgets.filter((w) => w.isVisible) : []), [allWidgets, isClient]);
+	const visibleWidgets = useMemo(
+		() => (isClient ? allWidgets.filter((w) => w.isVisible) : []),
+		[allWidgets, isClient],
+	);
 
 	// Generate navigation groups dynamically based on visible widgets
 	const navigationGroups = useMemo(() => {

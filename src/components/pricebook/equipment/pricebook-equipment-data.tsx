@@ -23,7 +23,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Rental Rates</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Define hourly, daily, and weekly rental rates for equipment and specialized tools
+							Define hourly, daily, and weekly rental rates for equipment and
+							specialized tools
 						</p>
 					</div>
 
@@ -33,7 +34,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Usage Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track equipment usage hours and automatically calculate rental charges for jobs
+							Track equipment usage hours and automatically calculate rental
+							charges for jobs
 						</p>
 					</div>
 
@@ -43,7 +45,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Depreciation</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Calculate depreciation and track asset value over time for accounting purposes
+							Calculate depreciation and track asset value over time for
+							accounting purposes
 						</p>
 					</div>
 
@@ -53,14 +56,19 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Maintenance Costs</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track maintenance expenses and factor into equipment rental pricing
+							Track maintenance expenses and factor into equipment rental
+							pricing
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Track Equipment Profitability</h3>
-					<p className="mb-6 text-muted-foreground">Ensure every asset contributes to your bottom line</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Track Equipment Profitability
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Ensure every asset contributes to your bottom line
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

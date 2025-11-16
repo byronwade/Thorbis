@@ -13,7 +13,17 @@
 
 import { mergeAttributes, Node } from "@tiptap/core";
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
-import { Activity, Briefcase, Clock, DollarSign, FileText, Mail, MapPin, Phone, User } from "lucide-react";
+import {
+	Activity,
+	Briefcase,
+	Clock,
+	DollarSign,
+	FileText,
+	Mail,
+	MapPin,
+	Phone,
+	User,
+} from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
 import { cn } from "@/lib/utils";
@@ -144,7 +154,9 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 					{activities.map((activity: any, index: number) => {
 						const Icon = getActivityIcon(activity.action);
 						const colorClass = getActivityColor(activity.action);
-						const user = Array.isArray(activity.user) ? activity.user[0] : activity.user;
+						const user = Array.isArray(activity.user)
+							? activity.user[0]
+							: activity.user;
 						const userName = user?.name || "System";
 						const userInitials = userName
 							.split(" ")
@@ -156,9 +168,13 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 						const changes = [];
 						if (activity.old_values && activity.new_values) {
 							const oldVals =
-								typeof activity.old_values === "string" ? JSON.parse(activity.old_values) : activity.old_values;
+								typeof activity.old_values === "string"
+									? JSON.parse(activity.old_values)
+									: activity.old_values;
 							const newVals =
-								typeof activity.new_values === "string" ? JSON.parse(activity.new_values) : activity.new_values;
+								typeof activity.new_values === "string"
+									? JSON.parse(activity.new_values)
+									: activity.new_values;
 
 							for (const key in newVals) {
 								if (oldVals[key] !== newVals[key]) {
@@ -177,7 +193,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 								<div
 									className={cn(
 										"relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full",
-										colorClass
+										colorClass,
 									)}
 								>
 									<Icon className="size-6" />
@@ -189,17 +205,25 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 										{/* Header */}
 										<div className="mb-2 flex items-start justify-between gap-4">
 											<div className="flex-1">
-												<p className="font-semibold text-sm">{activity.action}</p>
+												<p className="font-semibold text-sm">
+													{activity.action}
+												</p>
 
 												{/* Show all changed fields */}
 												{changes.length > 0 && (
 													<div className="mt-2 space-y-1">
 														{changes.map((change, i) => (
 															<div className="text-xs" key={i}>
-																<span className="font-medium text-muted-foreground">{change.field}:</span>{" "}
-																<span className="text-destructive line-through">{String(change.old)}</span>
+																<span className="font-medium text-muted-foreground">
+																	{change.field}:
+																</span>{" "}
+																<span className="text-destructive line-through">
+																	{String(change.old)}
+																</span>
 																{" → "}
-																<span className="text-success">{String(change.new)}</span>
+																<span className="text-success">
+																	{String(change.new)}
+																</span>
 															</div>
 														))}
 													</div>
@@ -216,21 +240,32 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 										{/* User - ALWAYS SHOW WHO DID IT */}
 										<div className="mt-3 flex items-center gap-2 border-t pt-2">
 											<Avatar className="size-6">
-												<AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
+												<AvatarFallback className="text-xs">
+													{userInitials}
+												</AvatarFallback>
 											</Avatar>
 											<div className="text-xs">
 												<span className="font-medium">{userName}</span>
-												<span className="text-muted-foreground"> • {formatDate(activity.created_at)}</span>
+												<span className="text-muted-foreground">
+													{" "}
+													• {formatDate(activity.created_at)}
+												</span>
 											</div>
 										</div>
 
 										{/* IP Address and User Agent (for audit trail) */}
 										{(activity.ip_address || activity.user_agent) && (
 											<div className="mt-2 text-muted-foreground text-xs">
-												{activity.ip_address && <span>IP: {activity.ip_address}</span>}
-												{activity.ip_address && activity.user_agent && <span className="mx-2">•</span>}
+												{activity.ip_address && (
+													<span>IP: {activity.ip_address}</span>
+												)}
+												{activity.ip_address && activity.user_agent && (
+													<span className="mx-2">•</span>
+												)}
 												{activity.user_agent && (
-													<span title={activity.user_agent}>Browser: {activity.user_agent.split(" ")[0]}</span>
+													<span title={activity.user_agent}>
+														Browser: {activity.user_agent.split(" ")[0]}
+													</span>
 												)}
 											</div>
 										)}

@@ -23,12 +23,24 @@ import { useUIStore } from "@/lib/stores";
 import { useCallPreferencesStore } from "@/lib/stores/call-preferences-store";
 
 type CallSyncMessage = {
-	type: "CALL_INCOMING" | "CALL_ANSWERED" | "CALL_ENDED" | "CALL_ACTION" | "POSITION_UPDATE" | "SIZE_UPDATE";
+	type:
+		| "CALL_INCOMING"
+		| "CALL_ANSWERED"
+		| "CALL_ENDED"
+		| "CALL_ACTION"
+		| "POSITION_UPDATE"
+		| "SIZE_UPDATE";
 	timestamp: number;
 	data?: unknown;
 };
 
-type CallAction = "mute" | "unmute" | "hold" | "unhold" | "record_start" | "record_stop";
+type CallAction =
+	| "mute"
+	| "unmute"
+	| "hold"
+	| "unhold"
+	| "record_start"
+	| "record_stop";
 
 const CHANNEL_NAME = "thorbis-call-sync";
 const STORAGE_KEY = "thorbis-call-sync-fallback";
@@ -158,7 +170,10 @@ export function useCrossTabSync() {
 
 					case "POSITION_UPDATE": {
 						const newPosition = message.data as { x: number; y: number };
-						if (position !== "default" && (position.x !== newPosition.x || position.y !== newPosition.y)) {
+						if (
+							position !== "default" &&
+							(position.x !== newPosition.x || position.y !== newPosition.y)
+						) {
 							actions.setPosition(newPosition);
 						}
 						break;
@@ -177,7 +192,7 @@ export function useCrossTabSync() {
 				isProcessingSyncRef.current = false;
 			}
 		},
-		[] // ✅ No dependencies - uses refs to prevent channel recreation
+		[], // ✅ No dependencies - uses refs to prevent channel recreation
 	);
 
 	// Setup localStorage fallback for older browsers
@@ -205,7 +220,9 @@ export function useCrossTabSync() {
 			try {
 				channelRef.current = new BroadcastChannel(CHANNEL_NAME);
 
-				channelRef.current.onmessage = (event: MessageEvent<CallSyncMessage>) => {
+				channelRef.current.onmessage = (
+					event: MessageEvent<CallSyncMessage>,
+				) => {
 					handleSyncMessage(event.data);
 				};
 			} catch (_error) {
@@ -226,11 +243,17 @@ export function useCrossTabSync() {
 					const actions = actionsRef.current;
 
 					// Update position if changed
-					if (newState.state?.position && JSON.stringify(newState.state.position) !== JSON.stringify(position)) {
+					if (
+						newState.state?.position &&
+						JSON.stringify(newState.state.position) !== JSON.stringify(position)
+					) {
 						actions.setPosition(newState.state.position);
 					}
 					// Update width if changed
-					if (newState.state?.popoverWidth && newState.state.popoverWidth !== popoverWidth) {
+					if (
+						newState.state?.popoverWidth &&
+						newState.state.popoverWidth !== popoverWidth
+					) {
 						actions.setPopoverWidth(newState.state.popoverWidth);
 					}
 				} catch (_error) {}
@@ -275,7 +298,7 @@ export function useCrossTabSync() {
 					data: { caller },
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastCallAnswered: useCallback(() => {
@@ -300,7 +323,7 @@ export function useCrossTabSync() {
 					data: action,
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastPositionUpdate: useCallback(
@@ -311,7 +334,7 @@ export function useCrossTabSync() {
 					data: { x, y },
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastSizeUpdate: useCallback(
@@ -322,7 +345,7 @@ export function useCrossTabSync() {
 					data: width,
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 	};
 }

@@ -97,7 +97,10 @@ export function PropertyDetailSkeleton() {
 							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
 							<div className="space-y-2">
 								{[1, 2].map((i) => (
-									<div className="h-4 w-full animate-pulse rounded bg-muted" key={i} />
+									<div
+										className="h-4 w-full animate-pulse rounded bg-muted"
+										key={i}
+									/>
 								))}
 							</div>
 						</div>
@@ -121,12 +124,18 @@ export function PropertyDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex gap-4 border-b">
 						{[1, 2, 3, 4, 5].map((i) => (
-							<div className="h-10 w-24 animate-pulse rounded-t bg-muted" key={i} />
+							<div
+								className="h-10 w-24 animate-pulse rounded-t bg-muted"
+								key={i}
+							/>
 						))}
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div className="h-20 w-full animate-pulse rounded bg-muted" key={i} />
+							<div
+								className="h-20 w-full animate-pulse rounded bg-muted"
+								key={i}
+							/>
 						))}
 					</div>
 				</div>

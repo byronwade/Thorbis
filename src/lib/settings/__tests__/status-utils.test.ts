@@ -1,5 +1,10 @@
 import { describe, expect, it } from "@jest/globals";
-import { deriveHealthStatus, formatTrendDelta, normalizeProgress, progressFromSteps } from "../status-utils";
+import {
+	deriveHealthStatus,
+	formatTrendDelta,
+	normalizeProgress,
+	progressFromSteps,
+} from "../status-utils";
 
 describe("status-utils", () => {
 	describe("normalizeProgress", () => {

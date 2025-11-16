@@ -8,7 +8,12 @@ import { useEffect, useMemo, useState } from "react";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/client";
@@ -217,13 +222,22 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 	}
 
 	return (
-		<div className="relative" onMouseEnter={() => setIsOpen(true)} onMouseLeave={() => setIsOpen(false)}>
+		<div
+			className="relative"
+			onMouseEnter={() => setIsOpen(true)}
+			onMouseLeave={() => setIsOpen(false)}
+		>
 			<button
 				className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 font-medium text-foreground/70 text-sm transition-all hover:bg-accent/50 hover:text-foreground"
 				type="button"
 			>
 				{section.label}
-				<ChevronDown className={cn("size-3.5 transition-transform duration-200", isOpen && "rotate-180")} />
+				<ChevronDown
+					className={cn(
+						"size-3.5 transition-transform duration-200",
+						isOpen && "rotate-180",
+					)}
+				/>
 				<span className="-bottom-px absolute inset-x-0 h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
 			</button>
 
@@ -234,7 +248,9 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 							<div className="border-border/50 border-b bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5">
 								<div className="flex items-start justify-between gap-4">
 									<div>
-										<p className="font-semibold text-primary text-xs uppercase tracking-wider">{section.label}</p>
+										<p className="font-semibold text-primary text-xs uppercase tracking-wider">
+											{section.label}
+										</p>
 										<p className="mt-1.5 max-w-md text-muted-foreground text-sm leading-relaxed">
 											{section.description}
 										</p>
@@ -264,12 +280,17 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 													{item.label}
 												</span>
 												{item.badge && (
-													<Badge className="h-5 px-1.5 font-semibold text-[10px]" variant="secondary">
+													<Badge
+														className="h-5 px-1.5 font-semibold text-[10px]"
+														variant="secondary"
+													>
 														{item.badge}
 													</Badge>
 												)}
 											</div>
-											<p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">{item.description}</p>
+											<p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
+												{item.description}
+											</p>
 										</div>
 										<ChevronDown className="-rotate-90 size-3.5 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
 									</div>
@@ -298,7 +319,9 @@ export function MarketingHeader() {
 	const [loading, setLoading] = useState(true);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
-	const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+	const [expandedSections, setExpandedSections] = useState<Set<string>>(
+		new Set(),
+	);
 	const [userCompanies, setUserCompanies] = useState<UserCompany[]>([]);
 
 	useEffect(() => {
@@ -328,19 +351,24 @@ export function MarketingHeader() {
 					return;
 				}
 
-				const { data: profile } = await supabase.from("users").select("*").eq("id", user.id).single();
+				const { data: profile } = await supabase
+					.from("users")
+					.select("*")
+					.eq("id", user.id)
+					.single();
 
 				if (cancelled) {
 					return;
 				}
 
-				const fallbackName = user.user_metadata?.name || user.email?.split("@")[0] || "User";
+				const fallbackName =
+					user.user_metadata?.name || user.email?.split("@")[0] || "User";
 				const fallbackEmail = user.email || profile?.email || "";
 				const fallbackAvatar =
 					profile?.avatar ||
 					user.user_metadata?.avatar_url ||
 					`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-						fallbackEmail || fallbackName
+						fallbackEmail || fallbackName,
 					)}&backgroundColor=0ea5e9&textColor=ffffff`;
 
 				setUserProfile({
@@ -368,7 +396,7 @@ export function MarketingHeader() {
               onboarding_completed_at,
               deleted_at
             )
-          `
+          `,
 					)
 					.eq("user_id", user.id)
 					.eq("status", "active")
@@ -380,8 +408,12 @@ export function MarketingHeader() {
 						const companyId = m.companies.id;
 						if (!companyMap.has(companyId)) {
 							const subscriptionStatus = m.companies.stripe_subscription_status;
-							const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-							const onboardingProgress = (m.companies.onboarding_progress as Record<string, unknown>) || null;
+							const hasPayment =
+								subscriptionStatus === "active" ||
+								subscriptionStatus === "trialing";
+							const onboardingProgress =
+								(m.companies.onboarding_progress as Record<string, unknown>) ||
+								null;
 							const onboardingComplete = isOnboardingComplete({
 								progress: onboardingProgress,
 								completedAt: m.companies.onboarding_completed_at ?? null,
@@ -389,7 +421,10 @@ export function MarketingHeader() {
 
 							let planLabel = "Active";
 							if (!(hasPayment && onboardingComplete)) {
-								planLabel = subscriptionStatus === "incomplete" ? "Incomplete" : "Setup Required";
+								planLabel =
+									subscriptionStatus === "incomplete"
+										? "Incomplete"
+										: "Setup Required";
 							}
 
 							companyMap.set(companyId, {
@@ -449,7 +484,7 @@ export function MarketingHeader() {
 				...section,
 				items: section.items ?? [],
 			})),
-		[]
+		[],
 	);
 
 	const toggleSection = (sectionLabel: string) => {
@@ -468,9 +503,18 @@ export function MarketingHeader() {
 		return (
 			<header className="sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl">
 				<div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-					<Link className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight" href="/">
+					<Link
+						className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight"
+						href="/"
+					>
 						<div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
-							<Image alt="Thorbis" className="size-5" height={20} src="/ThorbisLogo.webp" width={20} />
+							<Image
+								alt="Thorbis"
+								className="size-5"
+								height={20}
+								src="/ThorbisLogo.webp"
+								width={20}
+							/>
 						</div>
 						<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
 							Thorbis
@@ -485,7 +529,7 @@ export function MarketingHeader() {
 		<header
 			className={cn(
 				"sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60",
-				scrolled && "border-border/60 shadow-black/5 shadow-lg"
+				scrolled && "border-border/60 shadow-black/5 shadow-lg",
 			)}
 		>
 			<div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -495,7 +539,13 @@ export function MarketingHeader() {
 					href="/"
 				>
 					<div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50 transition-all hover:scale-105 hover:ring-border">
-						<Image alt="Thorbis" className="size-5" height={20} src="/ThorbisLogo.webp" width={20} />
+						<Image
+							alt="Thorbis"
+							className="size-5"
+							height={20}
+							src="/ThorbisLogo.webp"
+							width={20}
+						/>
 					</div>
 					<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
 						Thorbis
@@ -513,7 +563,9 @@ export function MarketingHeader() {
 							href="/pricing"
 						>
 							Pricing
-							<Badge className="h-4 bg-primary px-1.5 font-bold text-[9px] text-primary-foreground">$100/mo</Badge>
+							<Badge className="h-4 bg-primary px-1.5 font-bold text-[9px] text-primary-foreground">
+								$100/mo
+							</Badge>
 						</Link>
 					</div>
 				</nav>
@@ -563,17 +615,31 @@ export function MarketingHeader() {
 				{/* Mobile Menu */}
 				<Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
 					<SheetTrigger asChild>
-						<Button aria-label="Open navigation" className="lg:hidden" size="icon" variant="ghost">
+						<Button
+							aria-label="Open navigation"
+							className="lg:hidden"
+							size="icon"
+							variant="ghost"
+						>
 							<Menu className="size-5" />
 						</Button>
 					</SheetTrigger>
-					<SheetContent className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm" side="right">
+					<SheetContent
+						className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm"
+						side="right"
+					>
 						<SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
 						{/* Mobile Header */}
 						<div className="sticky top-0 z-10 flex items-center gap-2.5 border-border/50 border-b bg-background/95 px-5 py-4 backdrop-blur-sm">
 							<div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
-								<Image alt="Thorbis" className="size-4" height={16} src="/ThorbisLogo.webp" width={16} />
+								<Image
+									alt="Thorbis"
+									className="size-4"
+									height={16}
+									src="/ThorbisLogo.webp"
+									width={16}
+								/>
 							</div>
 							<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-base text-transparent">
 								Thorbis
@@ -601,7 +667,7 @@ export function MarketingHeader() {
 													<ChevronDown
 														className={cn(
 															"size-4 text-muted-foreground transition-transform duration-200",
-															isExpanded && "rotate-180"
+															isExpanded && "rotate-180",
 														)}
 													/>
 												</button>
@@ -611,7 +677,9 @@ export function MarketingHeader() {
 												href={section.href}
 												onClick={() => setMobileOpen(false)}
 											>
-												<span className="font-semibold text-foreground text-sm">{section.label}</span>
+												<span className="font-semibold text-foreground text-sm">
+													{section.label}
+												</span>
 												<ChevronDown className="-rotate-90 size-4 text-muted-foreground" />
 											</Link>
 										</div>
@@ -630,7 +698,10 @@ export function MarketingHeader() {
 																{item.label}
 															</span>
 															{item.badge && (
-																<Badge className="h-4 px-1.5 font-semibold text-[9px]" variant="secondary">
+																<Badge
+																	className="h-4 px-1.5 font-semibold text-[9px]"
+																	variant="secondary"
+																>
 																	{item.badge}
 																</Badge>
 															)}
@@ -653,10 +724,16 @@ export function MarketingHeader() {
 								onClick={() => setMobileOpen(false)}
 							>
 								<div>
-									<span className="font-semibold text-foreground text-sm">Pricing</span>
-									<p className="text-[11px] text-muted-foreground">Flat $100/mo base plus usage</p>
+									<span className="font-semibold text-foreground text-sm">
+										Pricing
+									</span>
+									<p className="text-[11px] text-muted-foreground">
+										Flat $100/mo base plus usage
+									</p>
 								</div>
-								<Badge className="bg-primary px-2 py-1 font-bold text-primary-foreground text-xs">$100/mo</Badge>
+								<Badge className="bg-primary px-2 py-1 font-bold text-primary-foreground text-xs">
+									$100/mo
+								</Badge>
 							</Link>
 						</div>
 
@@ -665,11 +742,22 @@ export function MarketingHeader() {
 							{!loading && userProfile ? (
 								<div className="space-y-3">
 									<div className="rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/20 p-3">
-										<p className="font-semibold text-foreground text-xs">{userProfile.name}</p>
-										<p className="text-[11px] text-muted-foreground">{userProfile.email}</p>
+										<p className="font-semibold text-foreground text-xs">
+											{userProfile.name}
+										</p>
+										<p className="text-[11px] text-muted-foreground">
+											{userProfile.email}
+										</p>
 									</div>
-									<Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
-										<Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+									<Button
+										asChild
+										className="w-full shadow-lg shadow-primary/20"
+										size="default"
+									>
+										<Link
+											href="/dashboard"
+											onClick={() => setMobileOpen(false)}
+										>
 											<LayoutDashboard className="mr-2 size-4" />
 											Go to Dashboard
 										</Link>
@@ -677,13 +765,25 @@ export function MarketingHeader() {
 								</div>
 							) : (
 								<div className="space-y-2">
-									<Button asChild className="w-full" size="default" variant="outline">
+									<Button
+										asChild
+										className="w-full"
+										size="default"
+										variant="outline"
+									>
 										<Link href="/login" onClick={() => setMobileOpen(false)}>
 											Sign in
 										</Link>
 									</Button>
-									<Button asChild className="w-full shadow-lg shadow-primary/20" size="default">
-										<Link href={CTA_LINK.href} onClick={() => setMobileOpen(false)}>
+									<Button
+										asChild
+										className="w-full shadow-lg shadow-primary/20"
+										size="default"
+									>
+										<Link
+											href={CTA_LINK.href}
+											onClick={() => setMobileOpen(false)}
+										>
 											<Plus className="mr-2 size-4" />
 											{CTA_LINK.label}
 										</Link>

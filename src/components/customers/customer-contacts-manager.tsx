@@ -2,14 +2,30 @@
 
 import { Mail, Phone, Plus, Star, Trash2, User, X } from "lucide-react";
 import { useState } from "react";
-import { addCustomerContact, deleteCustomerContact, updateCustomerContact } from "@/actions/customer-enhancements";
+import {
+	addCustomerContact,
+	deleteCustomerContact,
+	updateCustomerContact,
+} from "@/actions/customer-enhancements";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -46,7 +62,10 @@ type CustomerContactsManagerProps = {
 	initialContacts?: Contact[];
 };
 
-export function CustomerContactsManager({ customerId, initialContacts = [] }: CustomerContactsManagerProps) {
+export function CustomerContactsManager({
+	customerId,
+	initialContacts = [],
+}: CustomerContactsManagerProps) {
 	const { toast } = useToast();
 	const [contacts, setContacts] = useState<Contact[]>(initialContacts);
 	const [showAddForm, setShowAddForm] = useState(false);
@@ -100,9 +119,18 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 			formDataObj.set("phone", formData.phone);
 			formDataObj.set("secondaryPhone", formData.secondaryPhone);
 			formDataObj.set("isPrimary", formData.isPrimary ? "true" : "false");
-			formDataObj.set("isBillingContact", formData.isBillingContact ? "true" : "false");
-			formDataObj.set("isEmergencyContact", formData.isEmergencyContact ? "true" : "false");
-			formDataObj.set("preferredContactMethod", formData.preferredContactMethod);
+			formDataObj.set(
+				"isBillingContact",
+				formData.isBillingContact ? "true" : "false",
+			);
+			formDataObj.set(
+				"isEmergencyContact",
+				formData.isEmergencyContact ? "true" : "false",
+			);
+			formDataObj.set(
+				"preferredContactMethod",
+				formData.preferredContactMethod,
+			);
 			formDataObj.set("notes", formData.notes);
 
 			if (editingId) {
@@ -126,8 +154,8 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 										preferred_contact_method: formData.preferredContactMethod,
 										notes: formData.notes,
 									}
-								: c
-						)
+								: c,
+						),
 					);
 					resetForm();
 					toast.success("Contact updated successfully");
@@ -205,7 +233,8 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 		}
 	};
 
-	const getInitials = (contact: Contact) => `${contact.first_name[0] || ""}${contact.last_name[0] || ""}`.toUpperCase();
+	const getInitials = (contact: Contact) =>
+		`${contact.first_name[0] || ""}${contact.last_name[0] || ""}`.toUpperCase();
 
 	return (
 		<Card>
@@ -219,7 +248,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 						{contacts.length} contact{contacts.length !== 1 ? "s" : ""}
 					</Badge>
 				</div>
-				<CardDescription>Manage multiple contacts for this business customer</CardDescription>
+				<CardDescription>
+					Manage multiple contacts for this business customer
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{/* Existing Contacts */}
@@ -228,7 +259,13 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex flex-1 items-start gap-3">
 								<Avatar className="size-10">
-									<AvatarFallback className={contact.is_primary ? "bg-primary text-primary-foreground" : ""}>
+									<AvatarFallback
+										className={
+											contact.is_primary
+												? "bg-primary text-primary-foreground"
+												: ""
+										}
+									>
 										{getInitials(contact)}
 									</AvatarFallback>
 								</Avatar>
@@ -256,7 +293,11 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 										)}
 									</div>
 
-									{contact.title && <p className="text-muted-foreground text-sm">{contact.title}</p>}
+									{contact.title && (
+										<p className="text-muted-foreground text-sm">
+											{contact.title}
+										</p>
+									)}
 
 									<div className="flex flex-wrap gap-3 text-sm">
 										<a
@@ -275,7 +316,11 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 										</a>
 									</div>
 
-									{contact.notes && <p className="text-muted-foreground text-xs">{contact.notes}</p>}
+									{contact.notes && (
+										<p className="text-muted-foreground text-xs">
+											{contact.notes}
+										</p>
+									)}
 								</div>
 							</div>
 
@@ -308,10 +353,21 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 
 				{/* Add/Edit Form */}
 				{showAddForm ? (
-					<form className="space-y-4 rounded-lg border bg-card p-4" onSubmit={handleSubmit}>
+					<form
+						className="space-y-4 rounded-lg border bg-card p-4"
+						onSubmit={handleSubmit}
+					>
 						<div className="flex items-center justify-between">
-							<h4 className="font-semibold text-sm">{editingId ? "Edit Contact" : "Add New Contact"}</h4>
-							<Button className="h-8 w-8 p-0" onClick={resetForm} size="sm" type="button" variant="ghost">
+							<h4 className="font-semibold text-sm">
+								{editingId ? "Edit Contact" : "Add New Contact"}
+							</h4>
+							<Button
+								className="h-8 w-8 p-0"
+								onClick={resetForm}
+								size="sm"
+								type="button"
+								variant="ghost"
+							>
 								<X className="size-4" />
 							</Button>
 						</div>
@@ -324,7 +380,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Input
 									className="h-9"
 									id="firstName"
-									onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, firstName: e.target.value })
+									}
 									required
 									value={formData.firstName}
 								/>
@@ -336,7 +394,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Input
 									className="h-9"
 									id="lastName"
-									onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, lastName: e.target.value })
+									}
 									required
 									value={formData.lastName}
 								/>
@@ -350,7 +410,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 							<Input
 								className="h-9"
 								id="title"
-								onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+								onChange={(e) =>
+									setFormData({ ...formData, title: e.target.value })
+								}
 								placeholder="Property Manager, Facilities Director, etc."
 								value={formData.title}
 							/>
@@ -364,7 +426,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Input
 									className="h-9"
 									id="email"
-									onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, email: e.target.value })
+									}
 									required
 									type="email"
 									value={formData.email}
@@ -377,7 +441,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Input
 									className="h-9"
 									id="phone"
-									onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, phone: e.target.value })
+									}
 									required
 									type="tel"
 									value={formData.phone}
@@ -393,7 +459,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Input
 									className="h-9"
 									id="secondaryPhone"
-									onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, secondaryPhone: e.target.value })
+									}
 									type="tel"
 									value={formData.secondaryPhone}
 								/>
@@ -403,7 +471,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 									Preferred Contact
 								</Label>
 								<Select
-									onValueChange={(value) => setFormData({ ...formData, preferredContactMethod: value })}
+									onValueChange={(value) =>
+										setFormData({ ...formData, preferredContactMethod: value })
+									}
 									value={formData.preferredContactMethod}
 								>
 									<SelectTrigger className="h-9" id="preferredMethod">
@@ -427,7 +497,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Switch
 									checked={formData.isPrimary}
 									id="isPrimary"
-									onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
+									onCheckedChange={(checked) =>
+										setFormData({ ...formData, isPrimary: checked })
+									}
 								/>
 							</div>
 							<div className="flex items-center justify-between">
@@ -437,7 +509,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Switch
 									checked={formData.isBillingContact}
 									id="isBilling"
-									onCheckedChange={(checked) => setFormData({ ...formData, isBillingContact: checked })}
+									onCheckedChange={(checked) =>
+										setFormData({ ...formData, isBillingContact: checked })
+									}
 								/>
 							</div>
 							<div className="flex items-center justify-between">
@@ -447,7 +521,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 								<Switch
 									checked={formData.isEmergencyContact}
 									id="isEmergency"
-									onCheckedChange={(checked) => setFormData({ ...formData, isEmergencyContact: checked })}
+									onCheckedChange={(checked) =>
+										setFormData({ ...formData, isEmergencyContact: checked })
+									}
 								/>
 							</div>
 						</div>
@@ -459,7 +535,9 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 							<Textarea
 								className="text-sm"
 								id="notes"
-								onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+								onChange={(e) =>
+									setFormData({ ...formData, notes: e.target.value })
+								}
 								placeholder="Additional notes about this contact..."
 								rows={2}
 								value={formData.notes}
@@ -467,16 +545,37 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 						</div>
 
 						<div className="flex gap-2">
-							<Button className="flex-1" disabled={isLoading} size="sm" type="submit">
-								{isLoading ? "Saving..." : editingId ? "Update Contact" : "Add Contact"}
+							<Button
+								className="flex-1"
+								disabled={isLoading}
+								size="sm"
+								type="submit"
+							>
+								{isLoading
+									? "Saving..."
+									: editingId
+										? "Update Contact"
+										: "Add Contact"}
 							</Button>
-							<Button disabled={isLoading} onClick={resetForm} size="sm" type="button" variant="ghost">
+							<Button
+								disabled={isLoading}
+								onClick={resetForm}
+								size="sm"
+								type="button"
+								variant="ghost"
+							>
 								Cancel
 							</Button>
 						</div>
 					</form>
 				) : (
-					<Button className="w-full" onClick={() => setShowAddForm(true)} size="sm" type="button" variant="outline">
+					<Button
+						className="w-full"
+						onClick={() => setShowAddForm(true)}
+						size="sm"
+						type="button"
+						variant="outline"
+					>
 						<Plus className="mr-2 size-4" />
 						Add Contact
 					</Button>
@@ -485,8 +584,12 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 				{contacts.length === 0 && !showAddForm && (
 					<div className="py-6 text-center">
 						<User className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-						<p className="text-muted-foreground text-sm">No contacts added yet</p>
-						<p className="text-muted-foreground text-xs">Add contacts for business customers</p>
+						<p className="text-muted-foreground text-sm">
+							No contacts added yet
+						</p>
+						<p className="text-muted-foreground text-xs">
+							Add contacts for business customers
+						</p>
 					</div>
 				)}
 			</CardContent>

@@ -9,7 +9,10 @@ export function JobsSkeleton() {
 			{/* Stats skeleton */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				{[1, 2, 3, 4].map((i) => (
-					<div className="h-28 animate-pulse rounded-lg border bg-muted/40 p-4" key={i}>
+					<div
+						className="h-28 animate-pulse rounded-lg border bg-muted/40 p-4"
+						key={i}
+					>
 						<div className="mb-4 flex items-center justify-between">
 							<div className="h-4 w-24 rounded bg-muted" />
 							<div className="size-5 rounded-full bg-muted" />
@@ -30,7 +33,10 @@ export function JobsSkeleton() {
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3, 4, 5].map((i) => (
-							<div className="flex items-center gap-4 rounded-md border p-3" key={i}>
+							<div
+								className="flex items-center gap-4 rounded-md border p-3"
+								key={i}
+							>
 								<div className="size-10 animate-pulse rounded-full bg-muted" />
 								<div className="flex-1 space-y-2">
 									<div className="h-4 w-40 animate-pulse rounded bg-muted" />
@@ -50,7 +56,10 @@ export function JobsSkeleton() {
 						<div className="h-4 w-40 animate-pulse rounded bg-muted" />
 					</div>
 					{[1, 2, 3, 4].map((i) => (
-						<div className="flex items-center justify-between rounded-md bg-muted/40 p-3" key={i}>
+						<div
+							className="flex items-center justify-between rounded-md bg-muted/40 p-3"
+							key={i}
+						>
 							<div className="space-y-2">
 								<div className="h-4 w-28 animate-pulse rounded bg-muted" />
 								<div className="h-3 w-20 animate-pulse rounded bg-muted" />

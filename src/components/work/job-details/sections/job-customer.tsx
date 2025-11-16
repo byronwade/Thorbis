@@ -20,7 +20,9 @@ type JobCustomerProps = {
 
 export function JobCustomer({ customer }: JobCustomerProps) {
 	const customerName =
-		customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer";
+		customer.display_name ||
+		`${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+		"Unknown Customer";
 
 	return (
 		<div className="space-y-6">
@@ -40,7 +42,11 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 					>
 						{customerName}
 					</Link>
-					{customer.company_name && <p className="text-muted-foreground text-sm">{customer.company_name}</p>}
+					{customer.company_name && (
+						<p className="text-muted-foreground text-sm">
+							{customer.company_name}
+						</p>
+					)}
 				</div>
 			</div>
 
@@ -64,7 +70,10 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 						<Mail className="size-4 text-muted-foreground" />
 						<div className="flex-1">
 							<Label>Email</Label>
-							<a className="text-primary text-sm hover:underline" href={`mailto:${customer.email}`}>
+							<a
+								className="text-primary text-sm hover:underline"
+								href={`mailto:${customer.email}`}
+							>
 								{customer.email}
 							</a>
 						</div>
@@ -75,7 +84,10 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 						<Phone className="size-4 text-muted-foreground" />
 						<div className="flex-1">
 							<Label>Phone</Label>
-							<a className="text-primary text-sm hover:underline" href={`tel:${customer.phone}`}>
+							<a
+								className="text-primary text-sm hover:underline"
+								href={`tel:${customer.phone}`}
+							>
 								{customer.phone}
 							</a>
 						</div>
@@ -96,7 +108,9 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 			{/* Actions */}
 			<div className="flex gap-2">
 				<Button asChild className="flex-1" size="sm" variant="outline">
-					<Link href={`/dashboard/customers/${customer.id}`}>View Customer Profile</Link>
+					<Link href={`/dashboard/customers/${customer.id}`}>
+						View Customer Profile
+					</Link>
 				</Button>
 			</div>
 		</div>

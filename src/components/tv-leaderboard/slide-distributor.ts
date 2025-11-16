@@ -18,7 +18,9 @@ export function distributeWidgetsToSlides(widgets: Widget[]): Slide[] {
 	let currentCapacity = GRID_CAPACITY;
 
 	// Sort widgets by size (largest first) for better packing
-	const sortedWidgets = [...widgets].sort((a, b) => getWidgetCellCount(b.size) - getWidgetCellCount(a.size));
+	const sortedWidgets = [...widgets].sort(
+		(a, b) => getWidgetCellCount(b.size) - getWidgetCellCount(a.size),
+	);
 
 	for (const widget of sortedWidgets) {
 		const widgetCells = getWidgetCellCount(widget.size);
@@ -80,7 +82,10 @@ export function optimizeSlideDistribution(widgets: Widget[]): Slide[] {
 		const lastSlide = slides.at(-1);
 		const secondLastSlide = slides.at(-2);
 
-		if (lastSlide.widgets.length === 1 && getWidgetCellCount(lastSlide.widgets[0].size) < GRID_CAPACITY) {
+		if (
+			lastSlide.widgets.length === 1 &&
+			getWidgetCellCount(lastSlide.widgets[0].size) < GRID_CAPACITY
+		) {
 			// Try to move one widget from second-last to last slide
 			const lastWidget = secondLastSlide.widgets.at(-1);
 			const lastWidgetCells = getWidgetCellCount(lastWidget.size);
@@ -100,11 +105,19 @@ export function optimizeSlideDistribution(widgets: Widget[]): Slide[] {
 /**
  * Redistributes widgets when a widget is added, removed, or resized
  */
-export function redistributeWidgets(currentSlides: Slide[], allWidgets: Widget[]): Slide[] {
+export function redistributeWidgets(
+	currentSlides: Slide[],
+	allWidgets: Widget[],
+): Slide[] {
 	// Flatten current widgets and merge with new widgets
-	const existingWidgetIds = new Set(currentSlides.flatMap((s) => s.widgets.map((w) => w.id)));
+	const existingWidgetIds = new Set(
+		currentSlides.flatMap((s) => s.widgets.map((w) => w.id)),
+	);
 	const newWidgets = allWidgets.filter((w) => !existingWidgetIds.has(w.id));
-	const allCurrentWidgets = [...currentSlides.flatMap((s) => s.widgets), ...newWidgets];
+	const allCurrentWidgets = [
+		...currentSlides.flatMap((s) => s.widgets),
+		...newWidgets,
+	];
 
 	// Re-distribute everything
 	return optimizeSlideDistribution(allCurrentWidgets);
@@ -114,7 +127,10 @@ export function redistributeWidgets(currentSlides: Slide[], allWidgets: Widget[]
  * Checks if a widget can fit in a specific slide
  */
 export function canWidgetFitInSlide(slide: Slide, widget: Widget): boolean {
-	const currentUsage = slide.widgets.reduce((sum, w) => sum + getWidgetCellCount(w.size), 0);
+	const currentUsage = slide.widgets.reduce(
+		(sum, w) => sum + getWidgetCellCount(w.size),
+		0,
+	);
 	const widgetCells = getWidgetCellCount(widget.size);
 	return currentUsage + widgetCells <= GRID_CAPACITY;
 }
@@ -122,14 +138,20 @@ export function canWidgetFitInSlide(slide: Slide, widget: Widget): boolean {
 /**
  * Moves a widget from one slide to another
  */
-export function moveWidgetBetweenSlides(slides: Slide[], widgetId: string, targetSlideId: string): Slide[] {
+export function moveWidgetBetweenSlides(
+	slides: Slide[],
+	widgetId: string,
+	targetSlideId: string,
+): Slide[] {
 	const newSlides = slides.map((slide) => ({
 		...slide,
 		widgets: [...slide.widgets],
 	}));
 
 	// Find source and target slides
-	const sourceSlide = newSlides.find((s) => s.widgets.some((w) => w.id === widgetId));
+	const sourceSlide = newSlides.find((s) =>
+		s.widgets.some((w) => w.id === widgetId),
+	);
 	const targetSlide = newSlides.find((s) => s.id === targetSlideId);
 
 	if (!(sourceSlide && targetSlide)) {

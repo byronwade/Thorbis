@@ -11,7 +11,10 @@ export async function POST() {
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database connection failed" },
+				{ status: 500 },
+			);
 		}
 
 		// Get authenticated user
@@ -36,7 +39,7 @@ export async function POST() {
 					hint: "Please complete onboarding first at /dashboard/welcome",
 					userId: user.id,
 				},
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
@@ -51,7 +54,10 @@ export async function POST() {
 			.eq("company_id", companyId);
 
 		if (propertiesError) {
-			return NextResponse.json({ error: "Failed to fetch properties", details: propertiesError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to fetch properties", details: propertiesError },
+				{ status: 500 },
+			);
 		}
 
 		// New address data (without customer_id and company_id - they stay the same)
@@ -74,7 +80,10 @@ export async function POST() {
 			.select("id, name, address, city, state, customer_id");
 
 		if (updateError) {
-			return NextResponse.json({ error: "Failed to update properties", details: updateError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to update properties", details: updateError },
+				{ status: 500 },
+			);
 		}
 
 		return NextResponse.json({
@@ -89,6 +98,9 @@ export async function POST() {
 					: undefined,
 		});
 	} catch (error: any) {
-		return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error", details: error.message },
+			{ status: 500 },
+		);
 	}
 }

@@ -1,4 +1,12 @@
-import { AlertTriangle, DollarSign, MessageSquare, Package, PhoneCall, Star, Users } from "lucide-react";
+import {
+	AlertTriangle,
+	DollarSign,
+	MessageSquare,
+	Package,
+	PhoneCall,
+	Star,
+	Users,
+} from "lucide-react";
 import { Suspense } from "react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { SectionHeader } from "@/components/dashboard/section-header";
@@ -28,7 +36,9 @@ export default function ManagerDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="font-bold text-4xl tracking-tight">Operations Management</h1>
+					<h1 className="font-bold text-4xl tracking-tight">
+						Operations Management
+					</h1>
 					<Badge className="text-success" variant="outline">
 						Manager View
 					</Badge>
@@ -48,7 +58,9 @@ export default function ManagerDashboard() {
 					<div className="flex items-start gap-3 rounded-lg border border-destructive bg-card p-3 dark:border-destructive dark:bg-destructive/50">
 						<Star className="mt-0.5 size-4 text-destructive" />
 						<div className="flex-1">
-							<p className="font-medium text-sm">2-Star Review Posted (1 hour ago)</p>
+							<p className="font-medium text-sm">
+								2-Star Review Posted (1 hour ago)
+							</p>
 							<p className="text-muted-foreground text-xs">
 								"Technician was rude" - Jane Smith - Needs immediate response
 							</p>
@@ -60,8 +72,12 @@ export default function ManagerDashboard() {
 					<div className="flex items-start gap-3 rounded-lg border border-warning bg-card p-3 dark:border-warning dark:bg-warning/50">
 						<PhoneCall className="mt-0.5 size-4 text-warning" />
 						<div className="flex-1">
-							<p className="font-medium text-sm">Customer Called 3 Times Today</p>
-							<p className="text-muted-foreground text-xs">Bob Johnson - Job #4523 - Escalate to senior tech</p>
+							<p className="font-medium text-sm">
+								Customer Called 3 Times Today
+							</p>
+							<p className="text-muted-foreground text-xs">
+								Bob Johnson - Job #4523 - Escalate to senior tech
+							</p>
 						</div>
 						<Button size="sm" variant="outline">
 							Call Customer
@@ -137,10 +153,15 @@ export default function ManagerDashboard() {
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center justify-between">
-										<Badge className="border-success text-success" variant="outline">
+										<Badge
+											className="border-success text-success"
+											variant="outline"
+										>
 											High Value
 										</Badge>
-										<span className="font-bold text-sm text-success">$32,400 potential</span>
+										<span className="font-bold text-sm text-success">
+											$32,400 potential
+										</span>
 									</div>
 									<p className="mt-1 font-bold text-sm">12 Pending Estimates</p>
 									<p className="text-muted-foreground text-xs">
@@ -159,8 +180,12 @@ export default function ManagerDashboard() {
 								</div>
 								<div className="flex-1">
 									<Badge variant="outline">Recurring Revenue</Badge>
-									<p className="mt-1 font-bold text-sm">8 Maintenance Plans Expiring</p>
-									<p className="text-muted-foreground text-xs">Within 7 days • Auto-generate renewal calls</p>
+									<p className="mt-1 font-bold text-sm">
+										8 Maintenance Plans Expiring
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Within 7 days • Auto-generate renewal calls
+									</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Send Reminders
@@ -174,8 +199,12 @@ export default function ManagerDashboard() {
 								</div>
 								<div className="flex-1">
 									<Badge variant="outline">Pending Callbacks</Badge>
-									<p className="mt-1 font-bold text-sm">5 Customers Awaiting Parts</p>
-									<p className="text-muted-foreground text-xs">Parts arrived • Schedule completion visits</p>
+									<p className="mt-1 font-bold text-sm">
+										5 Customers Awaiting Parts
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Parts arrived • Schedule completion visits
+									</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Schedule
@@ -190,7 +219,9 @@ export default function ManagerDashboard() {
 								<div className="flex-1">
 									<Badge variant="outline">Ready to Send</Badge>
 									<p className="mt-1 font-bold text-sm">3 Quotes Finalized</p>
-									<p className="text-muted-foreground text-xs">Send to customers for approval</p>
+									<p className="text-muted-foreground text-xs">
+										Send to customers for approval
+									</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Send Quotes
@@ -217,11 +248,14 @@ export default function ManagerDashboard() {
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
 										<Badge variant="destructive">⚠ URGENT</Badge>
-										<span className="text-muted-foreground text-xs">1 hour ago</span>
+										<span className="text-muted-foreground text-xs">
+											1 hour ago
+										</span>
 									</div>
 									<p className="mt-1 font-bold text-sm">2-Star Google Review</p>
 									<p className="text-muted-foreground text-xs">
-										Jane Smith - "Tech was rude and rushed" - Respond immediately
+										Jane Smith - "Tech was rude and rushed" - Respond
+										immediately
 									</p>
 								</div>
 								<Button size="sm" variant="destructive">
@@ -236,14 +270,20 @@ export default function ManagerDashboard() {
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
-										<Badge className="border-warning text-warning" variant="outline">
+										<Badge
+											className="border-warning text-warning"
+											variant="outline"
+										>
 											Needs Response
 										</Badge>
-										<span className="text-muted-foreground text-xs">2 days ago</span>
+										<span className="text-muted-foreground text-xs">
+											2 days ago
+										</span>
 									</div>
 									<p className="mt-1 font-bold text-sm">3-Star Yelp Review</p>
 									<p className="text-muted-foreground text-xs">
-										Tom Wilson - "Job done but expensive" - Address pricing concern
+										Tom Wilson - "Job done but expensive" - Address pricing
+										concern
 									</p>
 								</div>
 								<Button size="sm" variant="outline">
@@ -266,19 +306,29 @@ export default function ManagerDashboard() {
 									platform: "Facebook",
 								},
 							].map((review, index) => (
-								<div className="flex items-start gap-3 rounded-lg border bg-card p-3" key={index}>
+								<div
+									className="flex items-start gap-3 rounded-lg border bg-card p-3"
+									key={index}
+								>
 									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-success/10">
 										<Star className="size-5 text-success" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
-											<Badge className="border-success text-success" variant="outline">
+											<Badge
+												className="border-success text-success"
+												variant="outline"
+											>
 												⭐ {review.rating}-Star
 											</Badge>
-											<span className="text-muted-foreground text-xs">{review.platform}</span>
+											<span className="text-muted-foreground text-xs">
+												{review.platform}
+											</span>
 										</div>
 										<p className="mt-1 font-bold text-sm">{review.customer}</p>
-										<p className="text-muted-foreground text-xs">"{review.comment}"</p>
+										<p className="text-muted-foreground text-xs">
+											"{review.comment}"
+										</p>
 									</div>
 									<Button size="sm" variant="ghost">
 										Share
@@ -318,8 +368,12 @@ export default function ManagerDashboard() {
 								<Package className="mt-0.5 size-5 text-destructive" />
 								<div className="flex-1">
 									<Badge variant="destructive">CRITICAL LOW</Badge>
-									<p className="mt-1 font-bold text-sm">40-Gallon Water Heaters</p>
-									<p className="text-muted-foreground text-xs">2 units left • 3 jobs scheduled this week</p>
+									<p className="mt-1 font-bold text-sm">
+										40-Gallon Water Heaters
+									</p>
+									<p className="text-muted-foreground text-xs">
+										2 units left • 3 jobs scheduled this week
+									</p>
 								</div>
 								<Button size="sm" variant="destructive">
 									Order Now
@@ -330,11 +384,16 @@ export default function ManagerDashboard() {
 							<div className="flex items-start gap-3 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
 								<Package className="mt-0.5 size-5 text-warning" />
 								<div className="flex-1">
-									<Badge className="border-warning text-warning" variant="outline">
+									<Badge
+										className="border-warning text-warning"
+										variant="outline"
+									>
 										Low Stock
 									</Badge>
 									<p className="mt-1 font-bold text-sm">PEX Fittings - 1/2"</p>
-									<p className="text-muted-foreground text-xs">12 pieces left • Reorder soon</p>
+									<p className="text-muted-foreground text-xs">
+										12 pieces left • Reorder soon
+									</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Add to Order
@@ -346,8 +405,12 @@ export default function ManagerDashboard() {
 								<Users className="mt-0.5 size-5 text-primary" />
 								<div className="flex-1">
 									<Badge variant="outline">Truck Inventory</Badge>
-									<p className="mt-1 font-bold text-sm">Mike's Truck Needs Restock</p>
-									<p className="text-muted-foreground text-xs">Ran out of copper fittings - restock end of day</p>
+									<p className="mt-1 font-bold text-sm">
+										Mike's Truck Needs Restock
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Ran out of copper fittings - restock end of day
+									</p>
 								</div>
 								<Button size="sm" variant="outline">
 									View List
@@ -368,7 +431,9 @@ export default function ManagerDashboard() {
 						<CardContent className="space-y-4 pt-6">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">First-Call Resolution</p>
+									<p className="text-muted-foreground text-sm">
+										First-Call Resolution
+									</p>
 									<p className="font-bold text-2xl">87%</p>
 								</div>
 								<Badge className="text-success" variant="outline">
@@ -377,7 +442,9 @@ export default function ManagerDashboard() {
 							</div>
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">Avg. Job Duration</p>
+									<p className="text-muted-foreground text-sm">
+										Avg. Job Duration
+									</p>
 									<p className="font-bold text-2xl">2.4 hrs</p>
 								</div>
 								<Badge className="text-primary" variant="outline">
@@ -395,7 +462,9 @@ export default function ManagerDashboard() {
 							</div>
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">Overtime Hours</p>
+									<p className="text-muted-foreground text-sm">
+										Overtime Hours
+									</p>
 									<p className="font-bold text-2xl">12 hrs</p>
 								</div>
 								<Badge className="text-warning" variant="outline">

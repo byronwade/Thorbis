@@ -30,13 +30,25 @@ type WorkToolbarActionsProps = {
 	archivedCount?: number;
 };
 
-export function WorkToolbarActions({ totalCount = 0, activeCount, archivedCount }: WorkToolbarActionsProps) {
+export function WorkToolbarActions({
+	totalCount = 0,
+	activeCount,
+	archivedCount,
+}: WorkToolbarActionsProps) {
 	return (
 		<BaseToolbarActions
 			beforePrimaryAction={
 				<div className="flex items-center gap-2">
-					<JobsFilterDropdown activeCount={activeCount} archivedCount={archivedCount} totalCount={totalCount} />
-					<ColumnVisibilityMenu columns={JOBS_OPTIONAL_COLUMNS} criticalColumns={JOBS_CRITICAL_COLUMNS} entity="jobs" />
+					<JobsFilterDropdown
+						activeCount={activeCount}
+						archivedCount={archivedCount}
+						totalCount={totalCount}
+					/>
+					<ColumnVisibilityMenu
+						columns={JOBS_OPTIONAL_COLUMNS}
+						criticalColumns={JOBS_CRITICAL_COLUMNS}
+						entity="jobs"
+					/>
 				</div>
 			}
 			importExportDataType="jobs"

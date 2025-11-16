@@ -141,13 +141,20 @@ export function InlinePropertyForm({
 
 	return (
 		<form
-			className={cn("space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4", className)}
+			className={cn(
+				"space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4",
+				className,
+			)}
 			onSubmit={handleSubmit}
 		>
 			<div className="flex items-center justify-between">
 				<div>
-					<h3 className="font-semibold text-sm">Add Property for {customerName}</h3>
-					<p className="text-muted-foreground text-xs">Create a service location for this customer</p>
+					<h3 className="font-semibold text-sm">
+						Add Property for {customerName}
+					</h3>
+					<p className="text-muted-foreground text-xs">
+						Create a service location for this customer
+					</p>
 				</div>
 				<Button onClick={onCancel} size="sm" type="button" variant="ghost">
 					<X className="size-4" />
@@ -168,7 +175,9 @@ export function InlinePropertyForm({
 					placeholder="Main Office, Home, Warehouse, etc."
 					value={formData.name}
 				/>
-				<p className="text-muted-foreground text-xs">If blank, address will be used as the name</p>
+				<p className="text-muted-foreground text-xs">
+					If blank, address will be used as the name
+				</p>
 			</div>
 
 			<div className="space-y-2">
@@ -181,7 +190,9 @@ export function InlinePropertyForm({
 					placeholder="123 Main Street"
 					value={formData.address}
 				/>
-				{errors.address && <p className="text-destructive text-xs">{errors.address}</p>}
+				{errors.address && (
+					<p className="text-destructive text-xs">{errors.address}</p>
+				)}
 			</div>
 
 			<div className="space-y-2">
@@ -205,7 +216,9 @@ export function InlinePropertyForm({
 						placeholder="Los Angeles"
 						value={formData.city}
 					/>
-					{errors.city && <p className="text-destructive text-xs">{errors.city}</p>}
+					{errors.city && (
+						<p className="text-destructive text-xs">{errors.city}</p>
+					)}
 				</div>
 
 				<div className="space-y-2">
@@ -219,7 +232,9 @@ export function InlinePropertyForm({
 						placeholder="CA"
 						value={formData.state}
 					/>
-					{errors.state && <p className="text-destructive text-xs">{errors.state}</p>}
+					{errors.state && (
+						<p className="text-destructive text-xs">{errors.state}</p>
+					)}
 				</div>
 
 				<div className="space-y-2">
@@ -232,7 +247,9 @@ export function InlinePropertyForm({
 						placeholder="90210"
 						value={formData.zipCode}
 					/>
-					{errors.zipCode && <p className="text-destructive text-xs">{errors.zipCode}</p>}
+					{errors.zipCode && (
+						<p className="text-destructive text-xs">{errors.zipCode}</p>
+					)}
 				</div>
 			</div>
 
@@ -258,7 +275,13 @@ export function InlinePropertyForm({
 			</div>
 
 			<div className="flex justify-end gap-2 pt-2">
-				<Button disabled={isLoading} onClick={onCancel} size="sm" type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={onCancel}
+					size="sm"
+					type="button"
+					variant="outline"
+				>
 					Cancel
 				</Button>
 				<Button disabled={isLoading} size="sm" type="submit">

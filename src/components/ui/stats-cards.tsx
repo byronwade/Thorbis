@@ -42,20 +42,21 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 	const isNeutral = numericChange === 0;
 
 	// Format value if it's a number with commas
-	const formattedValue = typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
+	const formattedValue =
+		typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
 
 	return (
 		<div
 			className={cn(
 				"group cursor-default transition-all duration-200 hover:bg-muted/10 dark:hover:bg-muted/5",
-				compact ? "px-4 py-2" : "px-5 py-3"
+				compact ? "px-4 py-2" : "px-5 py-3",
 			)}
 		>
 			<div className="flex items-baseline gap-2">
 				<div
 					className={cn(
 						"font-semibold text-foreground tabular-nums tracking-tight transition-all duration-200",
-						compact ? "text-base leading-tight" : "text-xl leading-tight"
+						compact ? "text-base leading-tight" : "text-xl leading-tight",
 					)}
 				>
 					{formattedValue}
@@ -65,8 +66,10 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 						className={cn(
 							"flex items-center gap-0.5 rounded px-1 py-0.5 font-medium text-[10px] tabular-nums shadow-sm",
 							isPositive && "bg-success/10 text-success ring-1 ring-success/20",
-							isNegative && "bg-destructive/10 text-destructive ring-1 ring-destructive/20",
-							isNeutral && "bg-muted/50 text-muted-foreground ring-1 ring-border/50"
+							isNegative &&
+								"bg-destructive/10 text-destructive ring-1 ring-destructive/20",
+							isNeutral &&
+								"bg-muted/50 text-muted-foreground ring-1 ring-border/50",
 						)}
 					>
 						{isPositive && <TrendingUp className="h-2.5 w-2.5" />}
@@ -80,19 +83,27 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 			<div
 				className={cn(
 					"font-medium text-muted-foreground/70 uppercase tracking-wide transition-all duration-200",
-					compact ? "mt-0.5 text-[10px] leading-tight" : "mt-1 text-xs leading-tight"
+					compact
+						? "mt-0.5 text-[10px] leading-tight"
+						: "mt-1 text-xs leading-tight",
 				)}
 			>
 				{stat.label}
 			</div>
 			{!compact && stat.changeLabel && (
-				<div className="mt-0.5 text-[10px] text-muted-foreground/60 leading-tight">{stat.changeLabel}</div>
+				<div className="mt-0.5 text-[10px] text-muted-foreground/60 leading-tight">
+					{stat.changeLabel}
+				</div>
 			)}
 		</div>
 	);
 }
 
-export function StatsCards({ stats, variant = "ticker", compact = false }: StatsCardsProps) {
+export function StatsCards({
+	stats,
+	variant = "ticker",
+	compact = false,
+}: StatsCardsProps) {
 	// Dynamically determine grid columns based on number of stats
 	const gridColsClass =
 		{
@@ -108,7 +119,9 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 		return (
 			<div className="w-full border-border/30 border-b bg-background dark:bg-background">
 				{/* Stats Grid - Stock ticker style */}
-				<div className={cn("grid w-full divide-x divide-border/30", gridColsClass)}>
+				<div
+					className={cn("grid w-full divide-x divide-border/30", gridColsClass)}
+				>
 					{stats.map((stat) => (
 						<TickerStat compact={compact} key={stat.label} stat={stat} />
 					))}
@@ -127,12 +140,18 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 						{/* Content with padding */}
 						<div className="relative z-10 px-4 py-3">
 							<div className="flex items-baseline gap-2">
-								<div className="font-semibold text-foreground text-xl tabular-nums">{stat.value}</div>
+								<div className="font-semibold text-foreground text-xl tabular-nums">
+									{stat.value}
+								</div>
 								{stat.percentage !== undefined && (
-									<div className="text-muted-foreground text-xs">{stat.percentage}%</div>
+									<div className="text-muted-foreground text-xs">
+										{stat.percentage}%
+									</div>
 								)}
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-sm">{stat.label}</div>
+							<div className="mt-0.5 text-muted-foreground text-sm">
+								{stat.label}
+							</div>
 						</div>
 
 						{/* Full-width chart positioned absolutely */}
@@ -147,11 +166,28 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 										},
 									}}
 								>
-									<LazyAreaChart data={stat.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+									<LazyAreaChart
+										data={stat.data}
+										margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+									>
 										<defs>
-											<linearGradient id={`gradient-${stat.label}`} x1="0" x2="0" y1="0" y2="1">
-												<stop offset="0%" stopColor={stat.color} stopOpacity={0.4} />
-												<stop offset="100%" stopColor={stat.color} stopOpacity={0.05} />
+											<linearGradient
+												id={`gradient-${stat.label}`}
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor={stat.color}
+													stopOpacity={0.4}
+												/>
+												<stop
+													offset="100%"
+													stopColor={stat.color}
+													stopOpacity={0.05}
+												/>
 											</linearGradient>
 										</defs>
 										<Area

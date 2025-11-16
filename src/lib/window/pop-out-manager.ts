@@ -56,7 +56,16 @@ export type PopOutMessage =
 	| {
 			type: "CALL_ACTION";
 			callId: string;
-			action: "mute" | "unmute" | "hold" | "unhold" | "record_start" | "record_stop" | "video_on" | "video_off" | "end";
+			action:
+				| "mute"
+				| "unmute"
+				| "hold"
+				| "unhold"
+				| "record_start"
+				| "record_stop"
+				| "video_on"
+				| "video_off"
+				| "end";
 			timestamp: number;
 	  }
 	| {
@@ -132,7 +141,11 @@ export function createPopOutWindow(callId: string): Window | null {
 	const { target, features } = POP_OUT_CONFIG;
 
 	try {
-		const popOut = window.open(`/call-window?callId=${callId}`, target, features);
+		const popOut = window.open(
+			`/call-window?callId=${callId}`,
+			target,
+			features,
+		);
 
 		if (!popOut) {
 			return null;
@@ -147,7 +160,10 @@ export function createPopOutWindow(callId: string): Window | null {
 /**
  * Sends a message to a pop-out window with security verification
  */
-export function sendToPopOut(popOutWindow: Window | null, message: PopOutMessage): boolean {
+export function sendToPopOut(
+	popOutWindow: Window | null,
+	message: PopOutMessage,
+): boolean {
 	if (!popOutWindow || popOutWindow.closed) {
 		return false;
 	}
@@ -216,7 +232,11 @@ export function isPopOutMessage(data: unknown): data is PopOutMessage {
 /**
  * Monitors a pop-out window and calls callback when it closes
  */
-export function monitorPopOutWindow(popOutWindow: Window, onClose: () => void, intervalMs = 500): () => void {
+export function monitorPopOutWindow(
+	popOutWindow: Window,
+	onClose: () => void,
+	intervalMs = 500,
+): () => void {
 	const checkInterval = setInterval(() => {
 		if (popOutWindow.closed) {
 			clearInterval(checkInterval);
@@ -235,7 +255,7 @@ export function waitForPopOutReady(
 	popOutWindow: Window,
 	callId: string,
 	onReady: () => void,
-	timeoutMs = 5000
+	timeoutMs = 5000,
 ): () => void {
 	const checkInterval = setInterval(() => {
 		if (popOutWindow.closed) {

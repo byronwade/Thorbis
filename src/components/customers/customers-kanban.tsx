@@ -25,7 +25,9 @@ const CUSTOMER_COLUMNS: Array<{
 	{ id: "inactive", name: "Inactive", accentColor: "#6B7280" },
 ];
 
-const columnLabel = new Map(CUSTOMER_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	CUSTOMER_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -37,7 +39,10 @@ export function CustomersKanban({ customers }: { customers: Customer[] }) {
 		<EntityKanban<Customer, CustomerStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce((sum, item) => sum + (item.entity as Customer).totalValue, 0);
+				const total = columnItems.reduce(
+					(sum, item) => sum + (item.entity as Customer).totalValue,
+					0,
+				);
 				return { count: columnItems.length, total };
 			}}
 			columns={CUSTOMER_COLUMNS}
@@ -50,10 +55,16 @@ export function CustomersKanban({ customers }: { customers: Customer[] }) {
 				entity: customer,
 				customer,
 			})}
-			renderCard={(item) => <CustomerCard item={{ ...item, customer: item.entity } as CustomersKanbanItem} />}
+			renderCard={(item) => (
+				<CustomerCard
+					item={{ ...item, customer: item.entity } as CustomersKanbanItem}
+				/>
+			)}
 			renderDragOverlay={(item) => (
 				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<CustomerCard item={{ ...item, customer: item.entity } as CustomersKanbanItem} />
+					<CustomerCard
+						item={{ ...item, customer: item.entity } as CustomersKanbanItem}
+					/>
 				</div>
 			)}
 			showTotals={true}
@@ -71,21 +82,32 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<h3 className="font-semibold text-foreground text-sm">{customer.name}</h3>
+					<h3 className="font-semibold text-foreground text-sm">
+						{customer.name}
+					</h3>
 					<p className="text-muted-foreground text-xs">{customer.contact}</p>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
 								columnId === "active" && "bg-primary/10 text-primary",
-								columnId === "prospect" && "bg-primary/10 text-primary"
+								columnId === "prospect" && "bg-primary/10 text-primary",
 							)}
-							variant={columnId === "active" ? "secondary" : columnId === "prospect" ? "outline" : "outline"}
+							variant={
+								columnId === "active"
+									? "secondary"
+									: columnId === "prospect"
+										? "outline"
+										: "outline"
+							}
 						>
 							{columnLabel.get(columnId as CustomerStatus) ?? columnId}
 						</Badge>
 						{customer.totalValue > 0 && (
-							<Badge className="bg-muted/60 text-muted-foreground" variant="outline">
+							<Badge
+								className="bg-muted/60 text-muted-foreground"
+								variant="outline"
+							>
 								{currencyFormatter.format(customer.totalValue / 100)}
 							</Badge>
 						)}
@@ -110,15 +132,26 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 					<div className="flex items-center gap-2">
 						<Users className="size-4 text-primary" />
 						<span className="truncate">
-							{[customer.address, customer.city, customer.state].filter(Boolean).join(", ")}
+							{[customer.address, customer.city, customer.state]
+								.filter(Boolean)
+								.join(", ")}
 						</span>
 					</div>
 				)}
 			</div>
 
 			<div className="flex items-center justify-between pt-2 text-muted-foreground text-xs">
-				<span>{customer.lastService !== "None" ? `Last: ${customer.lastService}` : "No services"}</span>
-				<Button asChild className="gap-1 text-primary text-xs" size="sm" variant="ghost">
+				<span>
+					{customer.lastService !== "None"
+						? `Last: ${customer.lastService}`
+						: "No services"}
+				</span>
+				<Button
+					asChild
+					className="gap-1 text-primary text-xs"
+					size="sm"
+					variant="ghost"
+				>
 					<Link href={`/dashboard/customers/${customer.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />

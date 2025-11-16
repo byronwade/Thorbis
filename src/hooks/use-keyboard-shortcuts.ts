@@ -35,7 +35,10 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
 
 				// Check if all required modifiers are pressed
 				const modifiersMatch =
-					(!shortcut.ctrl || ctrlKey) && (!shortcut.alt || altKey) && (!shortcut.shift || shiftKey) && key;
+					(!shortcut.ctrl || ctrlKey) &&
+					(!shortcut.alt || altKey) &&
+					(!shortcut.shift || shiftKey) &&
+					key;
 
 				if (modifiersMatch) {
 					event.preventDefault();

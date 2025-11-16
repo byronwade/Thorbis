@@ -3,7 +3,14 @@
  * Helper functions for time calculations, positioning, and date manipulation
  */
 
-import { addMinutes, format, getHours, getMinutes, setHours, startOfDay } from "date-fns";
+import {
+	addMinutes,
+	format,
+	getHours,
+	getMinutes,
+	setHours,
+	startOfDay,
+} from "date-fns";
 
 /**
  * Generate hourly time slots for a given day
@@ -12,7 +19,11 @@ import { addMinutes, format, getHours, getMinutes, setHours, startOfDay } from "
  * @param endHour - Ending hour (0-23), default 19
  * @returns Array of Date objects representing each hour
  */
-export function generateHourlySlots(date: Date, startHour = 7, endHour = 19): Date[] {
+export function generateHourlySlots(
+	date: Date,
+	startHour = 7,
+	endHour = 19,
+): Date[] {
 	const slots: Date[] = [];
 	const dayStart = startOfDay(date);
 
@@ -31,7 +42,12 @@ export function generateHourlySlots(date: Date, startHour = 7, endHour = 19): Da
  * @param totalWidth - Total width in pixels
  * @returns Pixel position from the left
  */
-export function calculateTimePosition(time: Date, startTime: Date, endTime: Date, totalWidth: number): number {
+export function calculateTimePosition(
+	time: Date,
+	startTime: Date,
+	endTime: Date,
+	totalWidth: number,
+): number {
 	const totalMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
 	const timeMinutes = (time.getTime() - startTime.getTime()) / (1000 * 60);
 	const percentage = timeMinutes / totalMinutes;
@@ -52,9 +68,10 @@ export function calculateJobWidth(
 	endTime: Date,
 	startRange: Date,
 	endRange: Date,
-	totalWidth: number
+	totalWidth: number,
 ): number {
-	const totalMinutes = (endRange.getTime() - startRange.getTime()) / (1000 * 60);
+	const totalMinutes =
+		(endRange.getTime() - startRange.getTime()) / (1000 * 60);
 	const jobMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
 	const percentage = jobMinutes / totalMinutes;
 	return percentage * totalWidth;
@@ -86,7 +103,11 @@ export function formatTimeRange(start: Date, end: Date): string {
  * @param totalWidth - Total width in pixels
  * @returns Pixel position for current time, or null if outside range
  */
-export function getCurrentTimePosition(startRange: Date, endRange: Date, totalWidth: number): number | null {
+export function getCurrentTimePosition(
+	startRange: Date,
+	endRange: Date,
+	totalWidth: number,
+): number | null {
 	const now = new Date();
 	if (now < startRange || now > endRange) {
 		return null;
@@ -102,7 +123,12 @@ export function getCurrentTimePosition(startRange: Date, endRange: Date, totalWi
  * @param rangeEnd - Range end time
  * @returns True if job overlaps with range
  */
-export function jobOverlapsRange(jobStart: Date, jobEnd: Date, rangeStart: Date, rangeEnd: Date): boolean {
+export function jobOverlapsRange(
+	jobStart: Date,
+	jobEnd: Date,
+	rangeStart: Date,
+	rangeEnd: Date,
+): boolean {
 	return jobStart < rangeEnd && jobEnd > rangeStart;
 }
 

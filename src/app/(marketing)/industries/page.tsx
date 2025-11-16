@@ -3,9 +3,19 @@ import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getAllIndustries } from "@/lib/marketing/industries";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Industries Powered by Thorbis",
@@ -13,7 +23,11 @@ export const metadata = generateSEOMetadata({
 	description:
 		"Thorbis helps HVAC, plumbing, electrical, cleaning, and other service businesses deliver world-class operations. Explore industry-specific playbooks and best practices.",
 	path: "/industries",
-	keywords: ["field service industries", "thorbis industries", "service business software by industry"],
+	keywords: [
+		"field service industries",
+		"thorbis industries",
+		"service business software by industry",
+	],
 });
 
 export default function IndustriesOverviewPage() {
@@ -27,7 +41,7 @@ export default function IndustriesOverviewPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Industries", url: `${siteUrl}/industries` },
-						])
+						]),
 					),
 				}}
 				id="industries-breadcrumb-ld"
@@ -42,9 +56,11 @@ export default function IndustriesOverviewPage() {
 						Industry expertise included with every Thorbis deployment
 					</h1>
 					<p className="mt-4 text-lg text-muted-foreground">
-						Whether you respond to emergency plumbing calls or run recurring landscaping routes, Thorbis adapts to your
-						playbooks with proven workflows, automations, and reporting. Every industry gets the same transparent
-						pricing—$100/month base plus pay-as-you-go usage, unlimited users, and no lock-in contracts.
+						Whether you respond to emergency plumbing calls or run recurring
+						landscaping routes, Thorbis adapts to your playbooks with proven
+						workflows, automations, and reporting. Every industry gets the same
+						transparent pricing—$100/month base plus pay-as-you-go usage,
+						unlimited users, and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -58,7 +74,9 @@ export default function IndustriesOverviewPage() {
 
 				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{industries.map((industry) => {
-						const Icon = getMarketingIcon(industry.valueProps[0]?.icon ?? "sparkles");
+						const Icon = getMarketingIcon(
+							industry.valueProps[0]?.icon ?? "sparkles",
+						);
 						return (
 							<Card
 								className="flex h-full flex-col justify-between transition-shadow hover:shadow-md"
@@ -69,12 +87,16 @@ export default function IndustriesOverviewPage() {
 										<Icon aria-hidden="true" className="size-8" />
 										<Badge variant="outline">{industry.name}</Badge>
 									</div>
-									<CardTitle className="text-2xl">{industry.heroTitle}</CardTitle>
+									<CardTitle className="text-2xl">
+										{industry.heroTitle}
+									</CardTitle>
 									<CardDescription>{industry.summary}</CardDescription>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-4">
 									<div>
-										<p className="font-medium text-muted-foreground text-sm">Specialities we support</p>
+										<p className="font-medium text-muted-foreground text-sm">
+											Specialities we support
+										</p>
 										<div className="mt-2 flex flex-wrap gap-2">
 											{industry.fieldTypes.slice(0, 3).map((type) => (
 												<Badge key={type} variant="secondary">
@@ -84,13 +106,17 @@ export default function IndustriesOverviewPage() {
 										</div>
 									</div>
 									<div>
-										<p className="font-medium text-muted-foreground text-sm">Sample results</p>
+										<p className="font-medium text-muted-foreground text-sm">
+											Sample results
+										</p>
 										<p className="text-muted-foreground text-sm">
 											{industry.stats[0]?.label}: {industry.stats[0]?.value}
 										</p>
 									</div>
 									<Button asChild>
-										<Link href={`/industries/${industry.slug}`}>Explore {industry.name}</Link>
+										<Link href={`/industries/${industry.slug}`}>
+											Explore {industry.name}
+										</Link>
 									</Button>
 								</CardContent>
 							</Card>

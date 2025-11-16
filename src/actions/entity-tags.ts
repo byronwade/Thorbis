@@ -9,7 +9,10 @@ import { revalidatePath } from "next/cache";
 import { withErrorHandling } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 export type TagWithColor = {
 	label: string;
@@ -29,7 +32,10 @@ type EntityType =
 	| "material"
 	| "vendor";
 
-const ENTITY_TAG_FIELD_MAP: Record<EntityType, { table: string; field: string; useMetadata: boolean }> = {
+const ENTITY_TAG_FIELD_MAP: Record<
+	EntityType,
+	{ table: string; field: string; useMetadata: boolean }
+> = {
 	customer: { table: "customers", field: "tags", useMetadata: false },
 	job: { table: "jobs", field: "metadata", useMetadata: true },
 	property: { table: "properties", field: "metadata", useMetadata: true },
@@ -44,7 +50,11 @@ const ENTITY_TAG_FIELD_MAP: Record<EntityType, { table: string; field: string; u
 /**
  * Update tags for any entity type
  */
-export async function updateEntityTags(entityType: EntityType, entityId: string, tags: EntityTag[]) {
+export async function updateEntityTags(
+	entityType: EntityType,
+	entityId: string,
+	tags: EntityTag[],
+) {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -140,11 +150,15 @@ const buildTagsUpdateData = async ({
 		.single();
 
 	if (fetchError) {
-		throw new Error(`Failed to load ${entityType} metadata: ${fetchError.message}`);
+		throw new Error(
+			`Failed to load ${entityType} metadata: ${fetchError.message}`,
+		);
 	}
 
 	const existingMetadata =
-		existingRecord && typeof existingRecord.metadata === "object" && existingRecord.metadata !== null
+		existingRecord &&
+		typeof existingRecord.metadata === "object" &&
+		existingRecord.metadata !== null
 			? (existingRecord.metadata as Record<string, unknown>)
 			: {};
 
@@ -165,8 +179,17 @@ type ApplyTagUpdateParams = {
 	updateData: Record<string, unknown>;
 };
 
-const applyTagUpdate = async ({ supabase, config, entityId, entityType, updateData }: ApplyTagUpdateParams) => {
-	const { error } = await supabase.from(config.table).update(updateData).eq("id", entityId);
+const applyTagUpdate = async ({
+	supabase,
+	config,
+	entityId,
+	entityType,
+	updateData,
+}: ApplyTagUpdateParams) => {
+	const { error } = await supabase
+		.from(config.table)
+		.update(updateData)
+		.eq("id", entityId);
 
 	if (error) {
 		throw new Error(`Failed to update ${entityType} tags: ${error.message}`);

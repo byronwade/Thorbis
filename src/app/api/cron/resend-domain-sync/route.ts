@@ -29,7 +29,10 @@ export async function GET() {
 				status: result.data.status,
 				dns_records: result.data.records || [],
 				last_synced_at: new Date().toISOString(),
-				last_verified_at: result.data.status === "verified" ? new Date().toISOString() : domain.last_verified_at,
+				last_verified_at:
+					result.data.status === "verified"
+						? new Date().toISOString()
+						: domain.last_verified_at,
 			})
 			.eq("id", domain.id);
 		updated += 1;

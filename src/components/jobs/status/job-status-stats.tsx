@@ -38,7 +38,9 @@ export async function JobStatusStats() {
 				</CardHeader>
 				<CardContent>
 					<div className="font-bold text-2xl">{stats.inProgress}</div>
-					<p className="text-muted-foreground text-xs">Average: {stats.avgDuration} duration</p>
+					<p className="text-muted-foreground text-xs">
+						Average: {stats.avgDuration} duration
+					</p>
 				</CardContent>
 			</Card>
 
@@ -70,7 +72,9 @@ export async function JobStatusStats() {
 					<AlertTriangle className="size-4 text-muted-foreground" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl text-destructive">{stats.overdue}</div>
+					<div className="font-bold text-2xl text-destructive">
+						{stats.overdue}
+					</div>
 					<p className="text-muted-foreground text-xs">Need attention</p>
 				</CardContent>
 			</Card>

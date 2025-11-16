@@ -20,7 +20,18 @@
  * - Visual category hierarchy display
  */
 
-import { Archive, Box, Copy, DollarSign, Edit, Eye, Image, MoreHorizontal, Package, TrendingUp } from "lucide-react";
+import {
+	Archive,
+	Box,
+	Copy,
+	DollarSign,
+	Edit,
+	Eye,
+	Image,
+	MoreHorizontal,
+	Package,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,7 +43,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { formatCurrency } from "@/lib/formatters";
 import { usePriceBookStore } from "@/lib/stores/pricebook-store";
 import { cn } from "@/lib/utils";
@@ -129,7 +144,11 @@ export function PriceBookTable({
 			render: (item) => (
 				<div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border bg-muted">
 					{item.imageUrl ? (
-						<img alt={item.name} className="h-full w-full object-cover" src={item.imageUrl} />
+						<img
+							alt={item.name}
+							className="h-full w-full object-cover"
+							src={item.imageUrl}
+						/>
 					) : (
 						<Image className="h-4 w-4 text-muted-foreground" />
 					)}
@@ -165,7 +184,11 @@ export function PriceBookTable({
 						<span className="truncate font-mono">SKU: {item.sku}</span>
 						<span>•</span>
 						<span>
-							{item.itemType === "service" ? "Service" : item.itemType === "material" ? "Material" : "Equipment"}
+							{item.itemType === "service"
+								? "Service"
+								: item.itemType === "material"
+									? "Material"
+									: "Equipment"}
 						</span>
 						{item.isFlatRate && (
 							<>
@@ -185,8 +208,14 @@ export function PriceBookTable({
 			shrink: true,
 			hideOnMobile: true,
 			render: (item) => {
-				const displayText = item.subcategory ? `${item.category} › ${item.subcategory}` : item.category;
-				return <div className="truncate text-muted-foreground text-sm">{displayText}</div>;
+				const displayText = item.subcategory
+					? `${item.category} › ${item.subcategory}`
+					: item.category;
+				return (
+					<div className="truncate text-muted-foreground text-sm">
+						{displayText}
+					</div>
+				);
 			},
 		},
 		// Labor hours (for services only)
@@ -215,7 +244,11 @@ export function PriceBookTable({
 			shrink: true,
 			align: "right",
 			hideOnMobile: true,
-			render: (item) => <div className="font-medium text-muted-foreground text-sm">{formatCurrency(item.cost)}</div>,
+			render: (item) => (
+				<div className="font-medium text-muted-foreground text-sm">
+					{formatCurrency(item.cost)}
+				</div>
+			),
 		},
 		// Price (base selling price)
 		{
@@ -226,7 +259,9 @@ export function PriceBookTable({
 			align: "right",
 			render: (item) => (
 				<div>
-					<div className="font-semibold text-foreground text-sm">{formatCurrency(item.price)}</div>
+					<div className="font-semibold text-foreground text-sm">
+						{formatCurrency(item.price)}
+					</div>
 					{/* Show unit below price */}
 					<div className="text-muted-foreground text-xs">{item.unit}</div>
 				</div>
@@ -240,7 +275,11 @@ export function PriceBookTable({
 			shrink: true,
 			align: "right",
 			hideOnMobile: true,
-			render: (item) => <div className="font-medium text-sm text-success dark:text-success">{item.markupPercent}%</div>,
+			render: (item) => (
+				<div className="font-medium text-sm text-success dark:text-success">
+					{item.markupPercent}%
+				</div>
+			),
 		},
 		// Status (only show if inactive)
 		{
@@ -252,7 +291,10 @@ export function PriceBookTable({
 			render: (item) =>
 				item.isActive ? null : (
 					<Badge
-						className={cn("font-medium text-xs", "border-border/50 bg-background text-muted-foreground")}
+						className={cn(
+							"font-medium text-xs",
+							"border-border/50 bg-background text-muted-foreground",
+						)}
 						variant="outline"
 					>
 						Inactive
@@ -294,7 +336,10 @@ export function PriceBookTable({
 								Duplicate
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem className="text-warning dark:text-warning" onClick={(e) => e.stopPropagation()}>
+							<DropdownMenuItem
+								className="text-warning dark:text-warning"
+								onClick={(e) => e.stopPropagation()}
+							>
 								<Archive className="mr-2 h-4 w-4" />
 								{item.isActive ? "Deactivate" : "Activate"}
 							</DropdownMenuItem>
@@ -350,14 +395,17 @@ export function PriceBookTable({
 			(item.subcategory?.toLowerCase() || "").includes(searchLower) ||
 			(item.description?.toLowerCase() || "").includes(searchLower) ||
 			(item.supplierName?.toLowerCase() || "").includes(searchLower) ||
-			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ?? false)
+			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ??
+				false)
 		);
 	};
 
 	// Show filter summary if filters are active
 	const filterSummary = getFilterSummary();
 	const emptyMessage =
-		filterSummary !== "All Items" ? `No items found for: ${filterSummary}` : "No price book items found";
+		filterSummary !== "All Items"
+			? `No items found for: ${filterSummary}`
+			: "No price book items found";
 
 	return (
 		<div className="flex h-full flex-col">
@@ -370,7 +418,8 @@ export function PriceBookTable({
 							{filterSummary}
 						</Badge>
 						<span className="text-muted-foreground text-sm">
-							({filteredItems.length} {filteredItems.length === 1 ? "item" : "items"})
+							({filteredItems.length}{" "}
+							{filteredItems.length === 1 ? "item" : "items"})
 						</span>
 					</div>
 				</div>

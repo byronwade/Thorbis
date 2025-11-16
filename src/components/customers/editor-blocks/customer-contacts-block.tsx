@@ -12,7 +12,10 @@ import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import { Plus, Users } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { CollapsibleActionButton, CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
+import {
+	CollapsibleActionButton,
+	CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Dynamically import to avoid SSR issues
@@ -24,7 +27,7 @@ const CustomerContactsTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[300px] w-full" />,
-	}
+	},
 );
 
 // React component that renders the block
@@ -33,7 +36,9 @@ export function CustomerContactsBlockComponent({ node, editor }: any) {
 	const [triggerAddContact, setTriggerAddContact] = useState(0);
 
 	const summary =
-		contactsCount === 0 ? "No additional contacts" : `${contactsCount} contact${contactsCount === 1 ? "" : "s"}`;
+		contactsCount === 0
+			? "No additional contacts"
+			: `${contactsCount} contact${contactsCount === 1 ? "" : "s"}`;
 
 	const handleAddContact = () => {
 		setTriggerAddContact((prev) => prev + 1);
@@ -43,7 +48,10 @@ export function CustomerContactsBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="customer-contacts-block" data-drag-handle>
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddContact}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddContact}
+					>
 						Add Contact
 					</CollapsibleActionButton>
 				}
@@ -57,7 +65,10 @@ export function CustomerContactsBlockComponent({ node, editor }: any) {
 				title="Additional Contacts"
 				value="customer-contacts"
 			>
-				<CustomerContactsTable customerId={customerId} triggerAdd={triggerAddContact} />
+				<CustomerContactsTable
+					customerId={customerId}
+					triggerAdd={triggerAddContact}
+				/>
 			</CollapsibleDataSection>
 		</NodeViewWrapper>
 	);

@@ -1,6 +1,8 @@
 import type { Database } from "@/types/supabase";
 
-type JobSettingsRow = Database["public"]["Tables"]["job_settings"]["Row"] | null;
+type JobSettingsRow =
+	| Database["public"]["Tables"]["job_settings"]["Row"]
+	| null;
 
 export type JobSettingsState = {
 	jobNumberPrefix: string;
@@ -17,7 +19,12 @@ export type JobSettingsState = {
 	requireCompletionNotes: boolean;
 };
 
-export const JOB_STATUSES = ["scheduled", "in-progress", "completed", "cancelled"];
+export const JOB_STATUSES = [
+	"scheduled",
+	"in-progress",
+	"completed",
+	"cancelled",
+];
 export const JOB_PRIORITIES = ["low", "normal", "high", "urgent"];
 
 export const DEFAULT_JOB_SETTINGS: JobSettingsState = {

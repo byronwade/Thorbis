@@ -122,20 +122,31 @@ function formatCurrencyCents(value: number | null | undefined): number {
 	return typeof value === "number" ? value : 0;
 }
 
-function resolveName(primary?: NullableString, fallbackFirst?: NullableString, fallbackLast?: NullableString) {
+function resolveName(
+	primary?: NullableString,
+	fallbackFirst?: NullableString,
+	fallbackLast?: NullableString,
+) {
 	if (primary && primary.trim().length > 0) {
 		return primary;
 	}
-	const combined = [fallbackFirst, fallbackLast].filter((part) => part && part.trim().length > 0).join(" ");
+	const combined = [fallbackFirst, fallbackLast]
+		.filter((part) => part && part.trim().length > 0)
+		.join(" ");
 
 	return combined.length > 0 ? combined : undefined;
 }
 
 // Cache mission control data for 30 seconds to reduce database load
-const dataCache = new Map<string, { data: MissionControlData; timestamp: number }>();
+const dataCache = new Map<
+	string,
+	{ data: MissionControlData; timestamp: number }
+>();
 const CACHE_TTL = 30_000; // 30 seconds
 
-export async function getMissionControlData(companyId?: string): Promise<MissionControlData> {
+export async function getMissionControlData(
+	companyId?: string,
+): Promise<MissionControlData> {
 	try {
 		// Check cache first
 		if (companyId) {
@@ -193,7 +204,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             state,
             zip_code
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.gte("scheduled_start", dayStart)
@@ -223,7 +234,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             state,
             zip_code
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.in("status", ["in_progress", "en_route", "on_hold"])
@@ -260,7 +271,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             state,
             zip_code
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.in("status", ["scheduled", "dispatch_required", "pending"])
@@ -298,7 +309,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             job_number,
             status
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.gte("start_time", dayStart)
@@ -321,7 +332,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             first_name,
             last_name
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.gte("created_at", dayStart)
@@ -344,7 +355,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
             first_name,
             last_name
           )
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.in("status", ["sent", "partial", "unpaid", "overdue"])
@@ -361,7 +372,7 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
           category,
           created_at,
           actor_name
-        `
+        `,
 				)
 				.eq("company_id", activeCompanyId)
 				.order("created_at", { ascending: false })
@@ -377,20 +388,27 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
 		const invoices = invoicesResult.data ?? [];
 		const activities = activityResult.data ?? [];
 
-		const revenueTodayCents = completedToday.reduce((sum, job) => sum + formatCurrencyCents(job.total_amount), 0);
+		const revenueTodayCents = completedToday.reduce(
+			(sum, job) => sum + formatCurrencyCents(job.total_amount),
+			0,
+		);
 
-		const averageTicketCents = completedToday.length > 0 ? revenueTodayCents / completedToday.length : 0;
+		const averageTicketCents =
+			completedToday.length > 0 ? revenueTodayCents / completedToday.length : 0;
 
 		const outstandingBalanceCents = invoices.reduce(
 			(sum, invoice) => sum + formatCurrencyCents(invoice.balance_amount),
-			0
+			0,
 		);
 
 		const overdueInvoicesCount = invoices.filter((invoice) => {
 			if (!invoice.due_date) {
 				return false;
 			}
-			return invoice.status === "overdue" || new Date(invoice.due_date).getTime() < now.getTime();
+			return (
+				invoice.status === "overdue" ||
+				new Date(invoice.due_date).getTime() < now.getTime()
+			);
 		}).length;
 
 		const metrics: MissionControlMetrics = {
@@ -412,7 +430,8 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
 				id: "unassigned-jobs",
 				level: metrics.unassignedJobs > 5 ? "critical" : "warning",
 				title: `${metrics.unassignedJobs} job${metrics.unassignedJobs === 1 ? "" : "s"} awaiting assignment`,
-				description: "Assign technicians to keep response times within SLA targets.",
+				description:
+					"Assign technicians to keep response times within SLA targets.",
 			});
 		}
 
@@ -441,10 +460,19 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
 			status: job.status,
 			priority: job.priority,
 			scheduledStart: job.scheduled_start,
-			customerName: resolveName(job.customers?.display_name, job.customers?.first_name, job.customers?.last_name),
+			customerName: resolveName(
+				job.customers?.display_name,
+				job.customers?.first_name,
+				job.customers?.last_name,
+			),
 			address:
 				job.properties &&
-				[job.properties.address, job.properties.city, job.properties.state, job.properties.zip_code]
+				[
+					job.properties.address,
+					job.properties.city,
+					job.properties.state,
+					job.properties.zip_code,
+				]
 					.filter(Boolean)
 					.join(", "),
 			totalAmountCents: formatCurrencyCents(job.total_amount),
@@ -462,52 +490,70 @@ export async function getMissionControlData(companyId?: string): Promise<Mission
 				startTime: entry.start_time,
 				endTime: entry.end_time,
 				status: entry.status,
-				technicianName: resolveName(undefined, entry.assigned_user?.first_name, entry.assigned_user?.last_name),
+				technicianName: resolveName(
+					undefined,
+					entry.assigned_user?.first_name,
+					entry.assigned_user?.last_name,
+				),
 				customerName: resolveName(
 					entry.customers?.display_name,
 					entry.customers?.first_name,
-					entry.customers?.last_name
+					entry.customers?.last_name,
 				),
 				address:
 					entry.properties &&
-					[entry.properties.address, entry.properties.city, entry.properties.state, entry.properties.zip_code]
+					[
+						entry.properties.address,
+						entry.properties.city,
+						entry.properties.state,
+						entry.properties.zip_code,
+					]
 						.filter(Boolean)
 						.join(", "),
 				jobId: entry.job?.id ?? null,
 			}))
 			.slice(0, 8);
 
-		const communicationItems: MissionControlCommunication[] = communications.map((item: any) => ({
-			id: item.id,
-			type: item.type,
-			direction: item.direction,
-			subject: item.subject,
-			status: item.status,
-			createdAt: item.created_at,
-			customerName: resolveName(item.customers?.display_name, item.customers?.first_name, item.customers?.last_name),
-		}));
+		const communicationItems: MissionControlCommunication[] =
+			communications.map((item: any) => ({
+				id: item.id,
+				type: item.type,
+				direction: item.direction,
+				subject: item.subject,
+				status: item.status,
+				createdAt: item.created_at,
+				customerName: resolveName(
+					item.customers?.display_name,
+					item.customers?.first_name,
+					item.customers?.last_name,
+				),
+			}));
 
-		const invoiceItems: MissionControlInvoice[] = invoices.map((invoice: any) => ({
-			id: invoice.id,
-			invoiceNumber: invoice.invoice_number,
-			status: invoice.status,
-			totalAmountCents: formatCurrencyCents(invoice.total_amount),
-			balanceAmountCents: formatCurrencyCents(invoice.balance_amount),
-			dueDate: invoice.due_date,
-			customerName: resolveName(
-				invoice.customers?.display_name,
-				invoice.customers?.first_name,
-				invoice.customers?.last_name
-			),
-		}));
+		const invoiceItems: MissionControlInvoice[] = invoices.map(
+			(invoice: any) => ({
+				id: invoice.id,
+				invoiceNumber: invoice.invoice_number,
+				status: invoice.status,
+				totalAmountCents: formatCurrencyCents(invoice.total_amount),
+				balanceAmountCents: formatCurrencyCents(invoice.balance_amount),
+				dueDate: invoice.due_date,
+				customerName: resolveName(
+					invoice.customers?.display_name,
+					invoice.customers?.first_name,
+					invoice.customers?.last_name,
+				),
+			}),
+		);
 
-		const activityItems: MissionControlActivity[] = activities.map((entry: any) => ({
-			id: entry.id,
-			entityType: entry.entity_type,
-			action: entry.action,
-			createdAt: entry.created_at,
-			actorName: entry.actor_name,
-		}));
+		const activityItems: MissionControlActivity[] = activities.map(
+			(entry: any) => ({
+				id: entry.id,
+				entityType: entry.entity_type,
+				action: entry.action,
+				createdAt: entry.created_at,
+				actorName: entry.actor_name,
+			}),
+		);
 
 		const data = {
 			metrics,

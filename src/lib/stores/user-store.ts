@@ -67,7 +67,7 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = false;
 						},
 						false,
-						"setUser"
+						"setUser",
 					),
 
 				updateUser: (updates) =>
@@ -78,7 +78,7 @@ export const useUserStore = create<UserStore>()(
 							}
 						},
 						false,
-						"updateUser"
+						"updateUser",
 					),
 
 				logout: () =>
@@ -89,7 +89,7 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = false;
 						},
 						false,
-						"logout"
+						"logout",
 					),
 
 				setLoading: (loading) =>
@@ -98,22 +98,22 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = loading;
 						},
 						false,
-						"setLoading"
+						"setLoading",
 					),
 
 				reset: () => set(initialState, false, "reset"),
 			})),
 			{
 				name: "user-store",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					user: state.user,
 					isAuthenticated: state.isAuthenticated,
 				}),
-			}
+			},
 		),
-		{ name: "UserStore" }
-	)
+		{ name: "UserStore" },
+	),
 );
 
 /**

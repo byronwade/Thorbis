@@ -10,7 +10,13 @@
  * - Integrated with our design system
  */
 
-import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import {
+	CardCvcElement,
+	CardExpiryElement,
+	CardNumberElement,
+	useElements,
+	useStripe,
+} from "@stripe/react-stripe-js";
 import type { StripeCardNumberElementChangeEvent } from "@stripe/stripe-js";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { useState } from "react";
@@ -112,7 +118,9 @@ export function CustomPaymentForm({
 				setIsProcessing(false);
 			}
 		} catch (err) {
-			onError(err instanceof Error ? err.message : "An unexpected error occurred");
+			onError(
+				err instanceof Error ? err.message : "An unexpected error occurred",
+			);
 			setIsProcessing(false);
 		}
 	};
@@ -123,7 +131,12 @@ export function CustomPaymentForm({
 			<div className="space-y-2">
 				<Label htmlFor="card-number">Card Number</Label>
 				<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-					<CardNumberElement className="w-full" id="card-number" onChange={handleCardChange} options={elementOptions} />
+					<CardNumberElement
+						className="w-full"
+						id="card-number"
+						onChange={handleCardChange}
+						options={elementOptions}
+					/>
 				</div>
 				{cardError && (
 					<div className="flex items-center gap-1 text-destructive text-sm">
@@ -150,7 +163,12 @@ export function CustomPaymentForm({
 				<div className="space-y-2">
 					<Label htmlFor="card-cvc">CVC</Label>
 					<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-						<CardCvcElement className="w-full" id="card-cvc" onChange={handleCvcChange} options={elementOptions} />
+						<CardCvcElement
+							className="w-full"
+							id="card-cvc"
+							onChange={handleCvcChange}
+							options={elementOptions}
+						/>
 					</div>
 				</div>
 			</div>
@@ -165,7 +183,11 @@ export function CustomPaymentForm({
 
 			{/* Optional Submit Button */}
 			{showButton && (
-				<Button className="w-full" disabled={!stripe || isProcessing || !isFormComplete} type="submit">
+				<Button
+					className="w-full"
+					disabled={!stripe || isProcessing || !isFormComplete}
+					type="submit"
+				>
 					{isProcessing && <Loader2 className="mr-2 size-4 animate-spin" />}
 					{isProcessing ? "Processing..." : buttonText}
 				</Button>

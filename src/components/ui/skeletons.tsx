@@ -230,7 +230,9 @@ export function WorkDetailSkeleton({
 								<div className="space-y-2">
 									{i === 1 ? (
 										// Actions section with buttons
-										Array.from({ length: 3 }).map((_, j) => <Skeleton className="h-10 w-full" key={j} />)
+										Array.from({ length: 3 }).map((_, j) => (
+											<Skeleton className="h-10 w-full" key={j} />
+										))
 									) : (
 										// Regular content
 										<>

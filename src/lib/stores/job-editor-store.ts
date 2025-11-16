@@ -109,18 +109,21 @@ export const useJobEditorStore = create<JobEditorStore>()(
 				setActiveTab: (tab) => set({ activeTab: tab }),
 
 				// Edit Mode
-				toggleEditMode: () => set((state) => ({ isEditMode: !state.isEditMode })),
+				toggleEditMode: () =>
+					set((state) => ({ isEditMode: !state.isEditMode })),
 				setEditMode: (mode) => set({ isEditMode: mode }),
 
 				// Changes Tracking
-				setHasUnsavedChanges: (hasChanges) => set({ hasUnsavedChanges: hasChanges }),
+				setHasUnsavedChanges: (hasChanges) =>
+					set({ hasUnsavedChanges: hasChanges }),
 
 				// Auto-save Status
 				setSaveStatus: (status) => set({ saveStatus: status }),
 				setSaveError: (error) => set({ saveError: error }),
 
 				// Right Sidebar
-				toggleRightSidebar: () => set((state) => ({ isRightSidebarOpen: !state.isRightSidebarOpen })),
+				toggleRightSidebar: () =>
+					set((state) => ({ isRightSidebarOpen: !state.isRightSidebarOpen })),
 				setRightSidebarOpen: (isOpen) => set({ isRightSidebarOpen: isOpen }),
 
 				// Command Palette
@@ -128,10 +131,12 @@ export const useJobEditorStore = create<JobEditorStore>()(
 					set((state) => ({
 						isCommandPaletteOpen: !state.isCommandPaletteOpen,
 					})),
-				setCommandPaletteOpen: (isOpen) => set({ isCommandPaletteOpen: isOpen }),
+				setCommandPaletteOpen: (isOpen) =>
+					set({ isCommandPaletteOpen: isOpen }),
 
 				// Mobile Bottom Navigation
-				toggleMobileNav: () => set((state) => ({ isMobileNavOpen: !state.isMobileNavOpen })),
+				toggleMobileNav: () =>
+					set((state) => ({ isMobileNavOpen: !state.isMobileNavOpen })),
 				setMobileNavOpen: (isOpen) => set({ isMobileNavOpen: isOpen }),
 
 				// Content State
@@ -161,25 +166,29 @@ export const useJobEditorStore = create<JobEditorStore>()(
 			}),
 			{
 				name: "job-editor-storage", // localStorage key
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					activeTab: state.activeTab, // Persist active tab
 					isRightSidebarOpen: state.isRightSidebarOpen, // Persist sidebar state
 				}),
-			}
+			},
 		),
-		{ name: "JobEditorStore" } // DevTools name
-	)
+		{ name: "JobEditorStore" }, // DevTools name
+	),
 );
 
 // Selectors for optimized re-renders
 export const useActiveTab = () => useJobEditorStore((state) => state.activeTab);
-export const useSetActiveTab = () => useJobEditorStore((state) => state.setActiveTab);
+export const useSetActiveTab = () =>
+	useJobEditorStore((state) => state.setActiveTab);
 
-export const useIsEditMode = () => useJobEditorStore((state) => state.isEditMode);
-export const useToggleEditMode = () => useJobEditorStore((state) => state.toggleEditMode);
+export const useIsEditMode = () =>
+	useJobEditorStore((state) => state.isEditMode);
+export const useToggleEditMode = () =>
+	useJobEditorStore((state) => state.toggleEditMode);
 
-export const useHasUnsavedChanges = () => useJobEditorStore((state) => state.hasUnsavedChanges);
+export const useHasUnsavedChanges = () =>
+	useJobEditorStore((state) => state.hasUnsavedChanges);
 
 export const useSaveStatus = () =>
 	useJobEditorStore((state) => ({
@@ -187,11 +196,15 @@ export const useSaveStatus = () =>
 		error: state.saveError,
 	}));
 
-export const useIsRightSidebarOpen = () => useJobEditorStore((state) => state.isRightSidebarOpen);
-export const useToggleRightSidebar = () => useJobEditorStore((state) => state.toggleRightSidebar);
+export const useIsRightSidebarOpen = () =>
+	useJobEditorStore((state) => state.isRightSidebarOpen);
+export const useToggleRightSidebar = () =>
+	useJobEditorStore((state) => state.toggleRightSidebar);
 
-export const useIsCommandPaletteOpen = () => useJobEditorStore((state) => state.isCommandPaletteOpen);
-export const useToggleCommandPalette = () => useJobEditorStore((state) => state.toggleCommandPalette);
+export const useIsCommandPaletteOpen = () =>
+	useJobEditorStore((state) => state.isCommandPaletteOpen);
+export const useToggleCommandPalette = () =>
+	useJobEditorStore((state) => state.toggleCommandPalette);
 
 // Usage Example:
 // import { useActiveTab, useSetActiveTab } from "@/lib/stores/job-editor-store";

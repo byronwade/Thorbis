@@ -28,7 +28,13 @@ type NavGroup = {
 	items: NavItem[];
 };
 
-export function NavGrouped({ groups, pathname = "/dashboard" }: { groups: NavGroup[]; pathname?: string }) {
+export function NavGrouped({
+	groups,
+	pathname = "/dashboard",
+}: {
+	groups: NavGroup[];
+	pathname?: string;
+}) {
 	const safePathname = pathname || "/dashboard";
 
 	// Guard against undefined or null groups
@@ -63,7 +69,9 @@ export function NavGrouped({ groups, pathname = "/dashboard" }: { groups: NavGro
 
 				return (
 					<SidebarGroup key={`${group.label || "group"}-${groupIndex}`}>
-						{group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
+						{group.label && (
+							<SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+						)}
 						<SidebarMenu>
 							{group.items.map((item) => {
 								// Check if current path matches this item or its detail pages
@@ -73,21 +81,33 @@ export function NavGrouped({ groups, pathname = "/dashboard" }: { groups: NavGro
 								let isDetailPage = safePathname.startsWith(`${item.url}/`);
 								if (item.url === "/dashboard/work" && isDetailPage) {
 									// Check if pathname matches any known work subpath
-									const pathAfterWork = safePathname.replace("/dashboard/work", "");
-									const isKnownSubpath = workSubpaths.some((subpath) => pathAfterWork.startsWith(subpath));
+									const pathAfterWork = safePathname.replace(
+										"/dashboard/work",
+										"",
+									);
+									const isKnownSubpath = workSubpaths.some((subpath) =>
+										pathAfterWork.startsWith(subpath),
+									);
 									if (isKnownSubpath) {
 										isDetailPage = false; // Don't mark Jobs as active for known subpaths
 									}
 								}
 
-								const hasActiveSubItem = item.items?.some((subItem) => safePathname === subItem.url);
-								const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
+								const hasActiveSubItem = item.items?.some(
+									(subItem) => safePathname === subItem.url,
+								);
+								const isActive =
+									isExactMatch || isDetailPage || hasActiveSubItem;
 
 								// If item has sub-items, render parent + children (always open, no chevron)
 								if (item.items && item.items.length > 0) {
 									return (
 										<SidebarMenuItem key={item.title}>
-											<SidebarMenuButton asChild isActive={isActive && safePathname === item.url} tooltip={item.title}>
+											<SidebarMenuButton
+												asChild
+												isActive={isActive && safePathname === item.url}
+												tooltip={item.title}
+											>
 												<Link href={item.url}>
 													{item.icon && <item.icon />}
 													<span>{item.title}</span>
@@ -96,10 +116,14 @@ export function NavGrouped({ groups, pathname = "/dashboard" }: { groups: NavGro
 											<SidebarMenuSub>
 												{item.items.map((subItem) => {
 													const isSubActive =
-														safePathname === subItem.url || safePathname.startsWith(`${subItem.url}/`);
+														safePathname === subItem.url ||
+														safePathname.startsWith(`${subItem.url}/`);
 													return (
 														<SidebarMenuSubItem key={subItem.title}>
-															<SidebarMenuSubButton asChild isActive={isSubActive}>
+															<SidebarMenuSubButton
+																asChild
+																isActive={isSubActive}
+															>
 																<Link href={subItem.url}>
 																	<span>{subItem.title}</span>
 																</Link>
@@ -138,7 +162,12 @@ export function NavGrouped({ groups, pathname = "/dashboard" }: { groups: NavGro
 
 								return (
 									<SidebarMenuItem key={item.title}>
-										<SidebarMenuButton asChild className={highlightClass} isActive={isActive} tooltip={item.title}>
+										<SidebarMenuButton
+											asChild
+											className={highlightClass}
+											isActive={isActive}
+											tooltip={item.title}
+										>
 											{isAnchorLink ? (
 												<a href={item.url}>
 													{item.icon && <item.icon />}

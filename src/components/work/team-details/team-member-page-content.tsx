@@ -33,10 +33,17 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
-import { archiveTeamMember, restoreTeamMember, updateTeamMember } from "@/actions/team";
+import {
+	archiveTeamMember,
+	restoreTeamMember,
+	updateTeamMember,
+} from "@/actions/team";
 import { EmailDialog } from "@/components/communication/email-dialog";
 import { SMSDialog } from "@/components/communication/sms-dialog";
-import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
+import {
+	DetailPageContentLayout,
+	type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,7 +55,11 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 import { AssignedJobsTable } from "./assigned-jobs-table";
@@ -80,7 +91,10 @@ type TeamMemberPageContentProps = {
 	};
 };
 
-export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageContentProps) {
+export function TeamMemberPageContent({
+	memberData,
+	metrics,
+}: TeamMemberPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [mounted, setMounted] = useState(false);
@@ -123,10 +137,16 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 	const handleArchive = async () => {
 		setIsArchiving(true);
 		try {
-			const result = isArchived ? await restoreTeamMember(member.id) : await archiveTeamMember(member.id);
+			const result = isArchived
+				? await restoreTeamMember(member.id)
+				: await archiveTeamMember(member.id);
 
 			if (result.success) {
-				toast.success(isArchived ? "Team member unarchived successfully" : "Team member archived successfully");
+				toast.success(
+					isArchived
+						? "Team member unarchived successfully"
+						: "Team member archived successfully",
+				);
 				router.refresh();
 				setIsArchiveDialogOpen(false);
 			} else {
@@ -140,15 +160,25 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 	};
 
 	// Group communications by type
-	const emailCommunications = communications.filter((c: any) => c.type === "email");
+	const emailCommunications = communications.filter(
+		(c: any) => c.type === "email",
+	);
 	const smsCommunications = communications.filter((c: any) => c.type === "sms");
-	const phoneCommunications = communications.filter((c: any) => c.type === "phone");
+	const phoneCommunications = communications.filter(
+		(c: any) => c.type === "phone",
+	);
 
 	// Header badges
 	const headerBadges = [
 		<Badge
 			key="status"
-			variant={member.status === "active" ? "default" : member.status === "invited" ? "secondary" : "destructive"}
+			variant={
+				member.status === "active"
+					? "default"
+					: member.status === "invited"
+						? "secondary"
+						: "destructive"
+			}
 		>
 			{member.status}
 		</Badge>,
@@ -236,13 +266,20 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 		{
 			label: "Last Active",
 			icon: <Activity className="h-3.5 w-3.5" />,
-			value: member.last_active_at ? new Date(member.last_active_at).toLocaleDateString() : "Never",
+			value: member.last_active_at
+				? new Date(member.last_active_at).toLocaleDateString()
+				: "Never",
 			helperText: member.last_active_at
 				? (() => {
 						const diffDays = Math.floor(
-							(Date.now() - new Date(member.last_active_at).getTime()) / (1000 * 60 * 60 * 24)
+							(Date.now() - new Date(member.last_active_at).getTime()) /
+								(1000 * 60 * 60 * 24),
 						);
-						return diffDays === 0 ? "Today" : diffDays === 1 ? "Yesterday" : `${diffDays} days ago`;
+						return diffDays === 0
+							? "Today"
+							: diffDays === 1
+								? "Yesterday"
+								: `${diffDays} days ago`;
 					})()
 				: undefined,
 		},
@@ -265,7 +302,12 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 		primaryActions.push(
 			<Tooltip delayDuration={300} key="email">
 				<TooltipTrigger asChild>
-					<Button aria-label="Send Email" onClick={() => setIsEmailDialogOpen(true)} size="sm" variant="outline">
+					<Button
+						aria-label="Send Email"
+						onClick={() => setIsEmailDialogOpen(true)}
+						size="sm"
+						variant="outline"
+					>
 						<Mail className="size-4" />
 						<span className="hidden sm:inline">Email</span>
 					</Button>
@@ -273,7 +315,7 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 				<TooltipContent align="end" side="bottom">
 					Send email to {user.name || "team member"}
 				</TooltipContent>
-			</Tooltip>
+			</Tooltip>,
 		);
 	}
 
@@ -282,7 +324,12 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 		primaryActions.push(
 			<Tooltip delayDuration={300} key="sms">
 				<TooltipTrigger asChild>
-					<Button aria-label="Send SMS" onClick={() => setIsSMSDialogOpen(true)} size="sm" variant="outline">
+					<Button
+						aria-label="Send SMS"
+						onClick={() => setIsSMSDialogOpen(true)}
+						size="sm"
+						variant="outline"
+					>
 						<MessageSquare className="size-4" />
 						<span className="hidden sm:inline">SMS</span>
 					</Button>
@@ -290,7 +337,7 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 				<TooltipContent align="end" side="bottom">
 					Send SMS to {user?.name || "team member"}
 				</TooltipContent>
-			</Tooltip>
+			</Tooltip>,
 		);
 	}
 
@@ -307,7 +354,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					variant="outline"
 				>
 					<Archive className="size-4" />
-					<span className="hidden sm:inline">{isArchived ? "Unarchive" : "Archive"}</span>
+					<span className="hidden sm:inline">
+						{isArchived ? "Unarchive" : "Archive"}
+					</span>
 				</Button>
 			</TooltipTrigger>
 			<TooltipContent align="end" side="bottom">
@@ -326,11 +375,14 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 		leadingVisual: (
 			<Avatar className="size-16 ring-2 ring-border">
 				<AvatarImage alt={user?.name || "User"} src={user?.avatar} />
-				<AvatarFallback className="text-xl">{getInitials(user?.name || "Unknown")}</AvatarFallback>
+				<AvatarFallback className="text-xl">
+					{getInitials(user?.name || "Unknown")}
+				</AvatarFallback>
 			</Avatar>
 		),
 		actions: mounted && primaryActions.length > 0 ? primaryActions : undefined,
-		secondaryActions: mounted && secondaryActions.length > 0 ? secondaryActions : undefined,
+		secondaryActions:
+			mounted && secondaryActions.length > 0 ? secondaryActions : undefined,
 	};
 
 	const sections: UnifiedAccordionSection[] = [
@@ -340,7 +392,11 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 			icon: <Briefcase className="size-4" />,
 			count: assignedJobs.length,
 			actions: (
-				<Button onClick={() => toast.info("Assign job functionality coming soon")} size="sm" variant="outline">
+				<Button
+					onClick={() => toast.info("Assign job functionality coming soon")}
+					size="sm"
+					variant="outline"
+				>
 					<Briefcase className="mr-2 size-4" />
 					Assign Job
 				</Button>
@@ -350,7 +406,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					{assignedJobs.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Briefcase className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No jobs currently assigned</p>
+							<p className="text-muted-foreground text-sm">
+								No jobs currently assigned
+							</p>
 						</div>
 					) : (
 						<AssignedJobsTable assignments={assignedJobs} />
@@ -374,7 +432,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					{schedules.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Calendar className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No upcoming appointments</p>
+							<p className="text-muted-foreground text-sm">
+								No upcoming appointments
+							</p>
 						</div>
 					) : (
 						<TeamScheduleTable schedules={schedules} />
@@ -398,7 +458,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					{timeEntries.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Clock className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No time entries recorded</p>
+							<p className="text-muted-foreground text-sm">
+								No time entries recorded
+							</p>
 						</div>
 					) : (
 						<TimeEntriesTable timeEntries={timeEntries} />
@@ -413,12 +475,20 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 			count: communications.length,
 			actions: (
 				<div className="flex gap-2">
-					<Button onClick={() => setIsEmailDialogOpen(true)} size="sm" variant="outline">
+					<Button
+						onClick={() => setIsEmailDialogOpen(true)}
+						size="sm"
+						variant="outline"
+					>
 						<Mail className="mr-2 size-4" />
 						Email
 					</Button>
 					{member.phone && (
-						<Button onClick={() => setIsSMSDialogOpen(true)} size="sm" variant="outline">
+						<Button
+							onClick={() => setIsSMSDialogOpen(true)}
+							size="sm"
+							variant="outline"
+						>
 							<MessageSquare className="mr-2 size-4" />
 							SMS
 						</Button>
@@ -430,7 +500,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					{communications.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<MessageSquare className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No communications logged</p>
+							<p className="text-muted-foreground text-sm">
+								No communications logged
+							</p>
 						</div>
 					) : (
 						<div className="space-y-4">
@@ -453,10 +525,19 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 							{/* Recent Communications List */}
 							<div className="space-y-2">
 								{communications.slice(0, 10).map((comm: any, idx: number) => (
-									<div className="flex items-start gap-3 rounded-lg border p-3" key={idx}>
-										{comm.type === "email" && <Mail className="mt-0.5 size-4 text-muted-foreground" />}
-										{comm.type === "sms" && <MessageSquare className="mt-0.5 size-4 text-muted-foreground" />}
-										{comm.type === "phone" && <Phone className="mt-0.5 size-4 text-muted-foreground" />}
+									<div
+										className="flex items-start gap-3 rounded-lg border p-3"
+										key={idx}
+									>
+										{comm.type === "email" && (
+											<Mail className="mt-0.5 size-4 text-muted-foreground" />
+										)}
+										{comm.type === "sms" && (
+											<MessageSquare className="mt-0.5 size-4 text-muted-foreground" />
+										)}
+										{comm.type === "phone" && (
+											<Phone className="mt-0.5 size-4 text-muted-foreground" />
+										)}
 										<div className="flex-1 space-y-1">
 											<div className="flex items-center justify-between">
 												<p className="font-medium text-sm">
@@ -468,8 +549,14 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 													{comm.direction}
 												</Badge>
 											</div>
-											{comm.body && <p className="line-clamp-2 text-muted-foreground text-sm">{comm.body}</p>}
-											<p className="text-muted-foreground text-xs">{new Date(comm.created_at).toLocaleString()}</p>
+											{comm.body && (
+												<p className="line-clamp-2 text-muted-foreground text-sm">
+													{comm.body}
+												</p>
+											)}
+											<p className="text-muted-foreground text-xs">
+												{new Date(comm.created_at).toLocaleString()}
+											</p>
 										</div>
 									</div>
 								))}
@@ -507,9 +594,13 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 									<p className="text-sm">{note.content || note.note}</p>
 									<div className="mt-2 flex items-center justify-between">
 										{note.user && (
-											<p className="text-muted-foreground text-xs">by {note.user.name || note.user.email}</p>
+											<p className="text-muted-foreground text-xs">
+												by {note.user.name || note.user.email}
+											</p>
 										)}
-										<p className="text-muted-foreground text-xs">{new Date(note.created_at).toLocaleString()}</p>
+										<p className="text-muted-foreground text-xs">
+											{new Date(note.created_at).toLocaleString()}
+										</p>
 									</div>
 								</div>
 							))}
@@ -534,7 +625,9 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					{attachments.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Paperclip className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No attachments yet</p>
+							<p className="text-muted-foreground text-sm">
+								No attachments yet
+							</p>
 							<Button className="mt-4" size="sm" variant="outline">
 								Upload File
 							</Button>
@@ -542,12 +635,19 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 					) : (
 						<div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
 							{attachments.map((attachment: any, idx: number) => (
-								<div className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent" key={idx}>
+								<div
+									className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent"
+									key={idx}
+								>
 									<Paperclip className="size-4 text-muted-foreground" />
 									<div className="flex-1 overflow-hidden">
-										<p className="truncate font-medium text-sm">{attachment.filename || "Untitled"}</p>
+										<p className="truncate font-medium text-sm">
+											{attachment.filename || "Untitled"}
+										</p>
 										<p className="text-muted-foreground text-xs">
-											{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : "Unknown size"}
+											{attachment.file_size
+												? `${(attachment.file_size / 1024).toFixed(1)} KB`
+												: "Unknown size"}
 										</p>
 									</div>
 								</div>
@@ -565,10 +665,13 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 			<div className="flex items-center gap-3">
 				<Archive className="size-5 text-warning dark:text-warning" />
 				<div>
-					<p className="font-medium text-warning dark:text-warning">This team member has been archived</p>
+					<p className="font-medium text-warning dark:text-warning">
+						This team member has been archived
+					</p>
 					<p className="text-sm text-warning dark:text-warning">
-						Archived on {new Date(member.archived_at).toLocaleDateString()}. This member no longer has access and
-						doesn't count in team statistics.
+						Archived on {new Date(member.archived_at).toLocaleDateString()}.
+						This member no longer has access and doesn't count in team
+						statistics.
 					</p>
 				</div>
 			</div>
@@ -620,10 +723,15 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 
 			{/* Archive Confirmation Dialog */}
 			{mounted && (
-				<Dialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+				<Dialog
+					onOpenChange={setIsArchiveDialogOpen}
+					open={isArchiveDialogOpen}
+				>
 					<DialogContent>
 						<DialogHeader>
-							<DialogTitle>{isArchived ? "Unarchive" : "Archive"} Team Member</DialogTitle>
+							<DialogTitle>
+								{isArchived ? "Unarchive" : "Archive"} Team Member
+							</DialogTitle>
 							<DialogDescription>
 								{isArchived
 									? "This will restore the team member's access and include them in team statistics."
@@ -631,11 +739,23 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 							</DialogDescription>
 						</DialogHeader>
 						<DialogFooter>
-							<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+							<Button
+								disabled={isArchiving}
+								onClick={() => setIsArchiveDialogOpen(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
-							<Button disabled={isArchiving} onClick={handleArchive} variant={isArchived ? "default" : "destructive"}>
-								{isArchiving ? "Processing..." : isArchived ? "Unarchive" : "Archive"}
+							<Button
+								disabled={isArchiving}
+								onClick={handleArchive}
+								variant={isArchived ? "default" : "destructive"}
+							>
+								{isArchiving
+									? "Processing..."
+									: isArchived
+										? "Unarchive"
+										: "Archive"}
 							</Button>
 						</DialogFooter>
 					</DialogContent>

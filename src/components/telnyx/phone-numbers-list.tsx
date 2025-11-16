@@ -10,10 +10,25 @@
 
 "use client";
 
-import { DollarSign, Edit, MessageSquare, MoreVertical, Phone, Settings, Trash2, Upload } from "lucide-react";
+import {
+	DollarSign,
+	Edit,
+	MessageSquare,
+	MoreVertical,
+	Phone,
+	Settings,
+	Trash2,
+	Upload,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -53,7 +68,9 @@ export function PhoneNumbersList({ numbers }: PhoneNumbersListProps) {
 			{numbers.length === 0 ? (
 				<EmptyState />
 			) : (
-				numbers.map((number) => <PhoneNumberCard key={number.id} number={number} />)
+				numbers.map((number) => (
+					<PhoneNumberCard key={number.id} number={number} />
+				))
 			)}
 		</div>
 	);
@@ -66,12 +83,19 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
 				<div className="flex items-start justify-between">
 					<div className="space-y-1">
 						<div className="flex items-center gap-3">
-							<CardTitle className="font-semibold text-2xl">{number.formattedNumber}</CardTitle>
-							<Badge variant={getStatusVariant(number.status)}>{getStatusLabel(number.status)}</Badge>
-							{number.numberType === "toll-free" && <Badge variant="secondary">Toll-Free</Badge>}
+							<CardTitle className="font-semibold text-2xl">
+								{number.formattedNumber}
+							</CardTitle>
+							<Badge variant={getStatusVariant(number.status)}>
+								{getStatusLabel(number.status)}
+							</Badge>
+							{number.numberType === "toll-free" && (
+								<Badge variant="secondary">Toll-Free</Badge>
+							)}
 						</div>
 						<CardDescription>
-							{number.routingRule ?? "Routing not configured"} {number.voicemailEnabled && "• Voicemail enabled"}
+							{number.routingRule ?? "Routing not configured"}{" "}
+							{number.voicemailEnabled && "• Voicemail enabled"}
 						</CardDescription>
 						<div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
 							{number.metadata?.ten_dlc_campaign_id ? (
@@ -113,8 +137,12 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
 					<div className="mb-4 rounded-lg border border-primary bg-primary p-4 dark:border-primary dark:bg-primary/20">
 						<div className="flex items-center justify-between">
 							<div>
-								<div className="font-medium text-primary dark:text-primary">Porting {number.portingStatus}</div>
-								<div className="text-primary text-sm dark:text-primary">Estimated completion: {number.portingEta}</div>
+								<div className="font-medium text-primary dark:text-primary">
+									Porting {number.portingStatus}
+								</div>
+								<div className="text-primary text-sm dark:text-primary">
+									Estimated completion: {number.portingEta}
+								</div>
 							</div>
 							<Button size="sm" variant="outline">
 								View Status
@@ -210,7 +238,9 @@ function EmptyState() {
 	);
 }
 
-function getStatusVariant(status: string | null): "default" | "secondary" | "destructive" | "outline" {
+function getStatusVariant(
+	status: string | null,
+): "default" | "secondary" | "destructive" | "outline" {
 	switch (status) {
 		case "active":
 			return "default";

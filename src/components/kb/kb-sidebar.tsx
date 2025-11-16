@@ -41,8 +41,13 @@ export async function KBSidebarContent({
 		getKBArticles({ featured: true, limit: 5 }),
 	]);
 
-	const categories = categoriesResult.success ? categoriesResult.categories || [] : [];
-	const popularArticles = popularResult.success && popularResult.articles ? popularResult.articles : [];
+	const categories = categoriesResult.success
+		? categoriesResult.categories || []
+		: [];
+	const popularArticles =
+		popularResult.success && popularResult.articles
+			? popularResult.articles
+			: [];
 
 	return (
 		<SidebarContent>
@@ -52,7 +57,10 @@ export async function KBSidebarContent({
 					<SidebarGroupLabel>On This Page</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<div className="space-y-1">
-							<KBTableOfContents className="border-0 bg-transparent p-0 shadow-none" htmlContent={htmlContent} />
+							<KBTableOfContents
+								className="border-0 bg-transparent p-0 shadow-none"
+								htmlContent={htmlContent}
+							/>
 						</div>
 					</SidebarGroupContent>
 				</SidebarGroup>
@@ -65,9 +73,14 @@ export async function KBSidebarContent({
 					<SidebarMenu>
 						{categories.map((category) => (
 							<SidebarMenuItem key={category.id}>
-								<SidebarMenuButton asChild isActive={currentCategory === category.slug}>
+								<SidebarMenuButton
+									asChild
+									isActive={currentCategory === category.slug}
+								>
 									<Link href={`/kb/${category.slug}`}>
-										{category.icon && <span className="mr-2">{category.icon}</span>}
+										{category.icon && (
+											<span className="mr-2">{category.icon}</span>
+										)}
 										<span>{category.title}</span>
 									</Link>
 								</SidebarMenuButton>
@@ -75,15 +88,24 @@ export async function KBSidebarContent({
 								{category.children && category.children.length > 0 && (
 									<SidebarMenu>
 										{category.children.map(
-											(child: { id: string; slug: string; title: string; children?: unknown[] }) => (
+											(child: {
+												id: string;
+												slug: string;
+												title: string;
+												children?: unknown[];
+											}) => (
 												<SidebarMenuItem key={child.id}>
-													<SidebarMenuButton asChild className="pl-8" isActive={currentCategory === child.slug}>
+													<SidebarMenuButton
+														asChild
+														className="pl-8"
+														isActive={currentCategory === child.slug}
+													>
 														<Link href={`/kb/${child.slug}`}>
 															<span>{child.title}</span>
 														</Link>
 													</SidebarMenuButton>
 												</SidebarMenuItem>
-											)
+											),
 										)}
 									</SidebarMenu>
 								)}
@@ -100,11 +122,19 @@ export async function KBSidebarContent({
 					<SidebarGroupContent>
 						<div className="space-y-2">
 							{relatedArticles.map((article) => (
-								<Link className="block" href={`/kb/${article.category.slug}/${article.slug}`} key={article.id}>
+								<Link
+									className="block"
+									href={`/kb/${article.category.slug}/${article.slug}`}
+									key={article.id}
+								>
 									<div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-										<h4 className="line-clamp-2 font-medium text-sm leading-tight">{article.title}</h4>
+										<h4 className="line-clamp-2 font-medium text-sm leading-tight">
+											{article.title}
+										</h4>
 										{article.excerpt && (
-											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">{article.excerpt}</p>
+											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
+												{article.excerpt}
+											</p>
 										)}
 									</div>
 								</Link>
@@ -121,11 +151,19 @@ export async function KBSidebarContent({
 					<SidebarGroupContent>
 						<div className="space-y-2">
 							{popularArticles.map((article) => (
-								<Link className="block" href={`/kb/${article.category.slug}/${article.slug}`} key={article.id}>
+								<Link
+									className="block"
+									href={`/kb/${article.category.slug}/${article.slug}`}
+									key={article.id}
+								>
 									<div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-										<h4 className="line-clamp-2 font-medium text-sm leading-tight">{article.title}</h4>
+										<h4 className="line-clamp-2 font-medium text-sm leading-tight">
+											{article.title}
+										</h4>
 										{article.excerpt && (
-											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">{article.excerpt}</p>
+											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
+												{article.excerpt}
+											</p>
 										)}
 									</div>
 								</Link>

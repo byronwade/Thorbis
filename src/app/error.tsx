@@ -3,7 +3,13 @@
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 /**
  * Root Error Boundary
@@ -11,7 +17,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
  * Catches and handles errors in the root layout
  * Follows Next.js 16 error boundary pattern
  */
-export default function RootError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function RootError({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
 	useEffect(() => {
 		// Log error to error reporting service
 		// TODO: Integrate with error monitoring (e.g., Sentry)
@@ -34,11 +46,17 @@ export default function RootError({ error, reset }: { error: Error & { digest?: 
 				<CardContent className="space-y-4">
 					{process.env.NODE_ENV === "development" && (
 						<div className="rounded-lg bg-muted p-4">
-							<p className="font-mono text-muted-foreground text-sm">{error.message}</p>
+							<p className="font-mono text-muted-foreground text-sm">
+								{error.message}
+							</p>
 							{error.stack && (
 								<details className="mt-2">
-									<summary className="cursor-pointer text-muted-foreground text-xs">Stack trace</summary>
-									<pre className="mt-2 overflow-auto text-xs">{error.stack}</pre>
+									<summary className="cursor-pointer text-muted-foreground text-xs">
+										Stack trace
+									</summary>
+									<pre className="mt-2 overflow-auto text-xs">
+										{error.stack}
+									</pre>
 								</details>
 							)}
 						</div>
@@ -47,7 +65,11 @@ export default function RootError({ error, reset }: { error: Error & { digest?: 
 						<Button className="flex-1" onClick={reset} variant="default">
 							Try again
 						</Button>
-						<Button className="flex-1" onClick={() => (window.location.href = "/")} variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => (window.location.href = "/")}
+							variant="outline"
+						>
 							Go Home
 						</Button>
 					</div>

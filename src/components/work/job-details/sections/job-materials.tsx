@@ -8,7 +8,14 @@
 import { Package } from "lucide-react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type JobMaterialsProps = {
 	materials: any[];
@@ -30,7 +37,9 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<Package className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Materials</h3>
-				<p className="text-muted-foreground text-sm">No materials have been added to this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No materials have been added to this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -52,20 +61,33 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 					<TableBody>
 						{materials.map((material) => (
 							<TableRow key={material.id}>
-								<TableCell className="font-medium">{material.name || material.material_name || "—"}</TableCell>
+								<TableCell className="font-medium">
+									{material.name || material.material_name || "—"}
+								</TableCell>
 								<TableCell>{material.quantity || 0}</TableCell>
 								<TableCell>{material.unit || "ea"}</TableCell>
-								<TableCell>{formatCurrency(material.unit_cost || material.cost)}</TableCell>
+								<TableCell>
+									{formatCurrency(material.unit_cost || material.cost)}
+								</TableCell>
 								<TableCell className="max-w-[240px] align-top">
 									<EntityTags
 										entityId={material.id}
 										entityType="material"
-										onUpdateTags={(id, tags) => updateEntityTags("material", id, tags)}
-										tags={Array.isArray(material?.metadata?.tags) ? (material.metadata.tags as any[]) : []}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("material", id, tags)
+										}
+										tags={
+											Array.isArray(material?.metadata?.tags)
+												? (material.metadata.tags as any[])
+												: []
+										}
 									/>
 								</TableCell>
 								<TableCell className="text-right font-medium">
-									{formatCurrency((material.quantity || 0) * (material.unit_cost || material.cost || 0))}
+									{formatCurrency(
+										(material.quantity || 0) *
+											(material.unit_cost || material.cost || 0),
+									)}
 								</TableCell>
 							</TableRow>
 						))}
@@ -84,7 +106,13 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 					</div>
 					<div className="text-right">
 						<p className="font-bold text-2xl">
-							{formatCurrency(materials.reduce((sum, m) => sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0), 0))}
+							{formatCurrency(
+								materials.reduce(
+									(sum, m) =>
+										sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0),
+									0,
+								),
+							)}
 						</p>
 						<p className="text-muted-foreground text-xs">Total Cost</p>
 					</div>

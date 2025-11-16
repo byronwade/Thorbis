@@ -11,7 +11,14 @@
 import { Layers } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 type VirtualBucket = {
@@ -74,8 +81,14 @@ const buckets: VirtualBucket[] = [
 ];
 
 export function VirtualBucketsOverview() {
-	const totalAllocated = buckets.reduce((sum, bucket) => sum + bucket.currentBalance, 0);
-	const totalTarget = buckets.reduce((sum, bucket) => sum + bucket.targetAmount, 0);
+	const totalAllocated = buckets.reduce(
+		(sum, bucket) => sum + bucket.currentBalance,
+		0,
+	);
+	const totalTarget = buckets.reduce(
+		(sum, bucket) => sum + bucket.targetAmount,
+		0,
+	);
 
 	return (
 		<Card>
@@ -89,7 +102,9 @@ export function VirtualBucketsOverview() {
 						<CardDescription>Organize funds for specific goals</CardDescription>
 					</div>
 					<Button asChild size="sm" variant="ghost">
-						<Link href="/dashboard/settings/finance/virtual-buckets">Manage</Link>
+						<Link href="/dashboard/settings/finance/virtual-buckets">
+							Manage
+						</Link>
 					</Button>
 				</div>
 			</CardHeader>
@@ -98,10 +113,16 @@ export function VirtualBucketsOverview() {
 				{/* Total Overview */}
 				<div className="rounded-lg border-2 border-border/20 bg-accent/5 p-4">
 					<p className="text-muted-foreground text-sm">Total in Buckets</p>
-					<p className="font-bold text-3xl">${totalAllocated.toLocaleString()}</p>
+					<p className="font-bold text-3xl">
+						${totalAllocated.toLocaleString()}
+					</p>
 					<div className="mt-2 flex items-center justify-between text-xs">
-						<span className="text-muted-foreground">{buckets.length} buckets</span>
-						<span className="text-muted-foreground">Target: ${totalTarget.toLocaleString()}</span>
+						<span className="text-muted-foreground">
+							{buckets.length} buckets
+						</span>
+						<span className="text-muted-foreground">
+							Target: ${totalTarget.toLocaleString()}
+						</span>
 					</div>
 				</div>
 			</CardContent>
@@ -132,12 +153,18 @@ export function VirtualBucketsOverview() {
 												style={{ width: `${Math.min(progress, 100)}%` }}
 											/>
 										</div>
-										<span className="text-muted-foreground text-xs">{progress.toFixed(0)}%</span>
+										<span className="text-muted-foreground text-xs">
+											{progress.toFixed(0)}%
+										</span>
 									</div>
 								</div>
 								<div className="text-right">
-									<p className="font-semibold text-sm">${bucket.currentBalance.toLocaleString()}</p>
-									<p className="text-muted-foreground text-xs">/ ${bucket.targetAmount.toLocaleString()}</p>
+									<p className="font-semibold text-sm">
+										${bucket.currentBalance.toLocaleString()}
+									</p>
+									<p className="text-muted-foreground text-xs">
+										/ ${bucket.targetAmount.toLocaleString()}
+									</p>
 								</div>
 							</div>
 						</div>

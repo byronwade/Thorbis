@@ -13,7 +13,10 @@ type KBTableOfContentsProps = {
 	className?: string;
 };
 
-export function KBTableOfContents({ htmlContent, className }: KBTableOfContentsProps) {
+export function KBTableOfContents({
+	htmlContent,
+	className,
+}: KBTableOfContentsProps) {
 	const toc = extractTableOfContents(htmlContent);
 
 	if (toc.length === 0) {
@@ -30,7 +33,7 @@ export function KBTableOfContents({ htmlContent, className }: KBTableOfContentsP
 							item.level === 1 && "font-medium",
 							item.level === 2 && "pl-4",
 							item.level === 3 && "pl-8",
-							item.level >= 4 && "pl-12"
+							item.level >= 4 && "pl-12",
 						)}
 						key={item.id}
 					>

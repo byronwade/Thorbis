@@ -31,7 +31,12 @@ type ComingSoonShellProps = {
 	children?: ReactNode;
 };
 
-export function ComingSoonShell({ title, icon: Icon, description, children }: ComingSoonShellProps) {
+export function ComingSoonShell({
+	title,
+	icon: Icon,
+	description,
+	children,
+}: ComingSoonShellProps) {
 	return (
 		<div className="relative space-y-10 py-8 md:py-12">
 			{/* Background gradients - purely decorative */}
@@ -65,8 +70,12 @@ export function ComingSoonShell({ title, icon: Icon, description, children }: Co
 
 				{/* Title and description */}
 				<div className="space-y-3">
-					<h1 className="font-bold text-4xl tracking-tight md:text-5xl">{title}</h1>
-					<p className="mx-auto max-w-3xl text-foreground/60 text-lg leading-relaxed">{description}</p>
+					<h1 className="font-bold text-4xl tracking-tight md:text-5xl">
+						{title}
+					</h1>
+					<p className="mx-auto max-w-3xl text-foreground/60 text-lg leading-relaxed">
+						{description}
+					</p>
 				</div>
 
 				{/* Custom content (feature cards, CTA, etc.) */}

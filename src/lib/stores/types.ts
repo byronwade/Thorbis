@@ -25,4 +25,7 @@ export type Store<T extends StoreState> = T & StoreActions;
 /**
  * Extract state from store (without actions)
  */
-export type ExtractState<S> = Omit<S, keyof StoreActions | "_hasHydrated" | "setHasHydrated">;
+export type ExtractState<S> = Omit<
+	S,
+	keyof StoreActions | "_hasHydrated" | "setHasHydrated"
+>;

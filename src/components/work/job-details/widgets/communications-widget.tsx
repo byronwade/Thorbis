@@ -2,7 +2,13 @@ import { MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function CommunicationsWidget({ communications, jobId }: { communications: unknown[]; jobId: string }) {
+export function CommunicationsWidget({
+	communications,
+	jobId,
+}: {
+	communications: unknown[];
+	jobId: string;
+}) {
 	return (
 		<div className="space-y-3">
 			<p className="text-sm">

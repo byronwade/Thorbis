@@ -17,7 +17,10 @@ export function JobsSkeleton() {
 			{/* Table / list skeleton */}
 			<div className="flex-1 space-y-2">
 				{[...new Array(10)].map((_, i) => (
-					<div className="flex items-center gap-4 rounded-md border p-3" key={i}>
+					<div
+						className="flex items-center gap-4 rounded-md border p-3"
+						key={i}
+					>
 						{/* Job number + title */}
 						<div className="h-8 flex-1 animate-pulse rounded bg-muted" />
 						{/* Customer */}

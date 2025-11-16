@@ -47,7 +47,12 @@ type ColumnVisibilityMenuProps = {
 	trigger?: React.ReactNode;
 };
 
-export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], trigger }: ColumnVisibilityMenuProps) {
+export function ColumnVisibilityMenu({
+	entity,
+	columns,
+	criticalColumns = [],
+	trigger,
+}: ColumnVisibilityMenuProps) {
 	// Mounted state to prevent hydration mismatch
 	const [mounted, setMounted] = useState(false);
 
@@ -59,26 +64,37 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 	}, []);
 
 	// Zustand stores
-	const isColumnVisible = useDataTableColumnsStore((state) => state.isColumnVisible);
+	const isColumnVisible = useDataTableColumnsStore(
+		(state) => state.isColumnVisible,
+	);
 	const toggleColumn = useDataTableColumnsStore((state) => state.toggleColumn);
-	const showAllColumns = useDataTableColumnsStore((state) => state.showAllColumns);
-	const hideAllColumns = useDataTableColumnsStore((state) => state.hideAllColumns);
+	const showAllColumns = useDataTableColumnsStore(
+		(state) => state.showAllColumns,
+	);
+	const hideAllColumns = useDataTableColumnsStore(
+		(state) => state.hideAllColumns,
+	);
 	const resetEntity = useDataTableColumnsStore((state) => state.resetEntity);
 
 	// Subscribe to column visibility state to trigger re-renders when columns are toggled
-	const columnVisibilityState = useDataTableColumnsStore((state) => (entity ? state.entities[entity] : null));
+	const columnVisibilityState = useDataTableColumnsStore((state) =>
+		entity ? state.entities[entity] : null,
+	);
 
 	// Custom columns store - get all columns and memoize
 	const allCustomColumns = useCustomColumnsStore((state) => state.columns);
 	const removeColumn = useCustomColumnsStore((state) => state.removeColumn);
 
 	// Memoize custom columns for this entity to prevent re-renders
-	const customColumns = useMemo(() => allCustomColumns[entity] || [], [allCustomColumns, entity]);
+	const customColumns = useMemo(
+		() => allCustomColumns[entity] || [],
+		[allCustomColumns, entity],
+	);
 
 	// Count visible columns (recompute when visibility state changes)
 	const visibleCount = useMemo(
 		() => columns.filter((col) => isColumnVisible(entity, col.key)).length,
-		[columns, entity, isColumnVisible]
+		[columns, entity, isColumnVisible],
 	);
 	const allVisible = visibleCount === columns.length;
 	const noneVisible = visibleCount === 0;
@@ -140,7 +156,7 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 									onClick={() =>
 										showAllColumns(
 											entity,
-											columns.map((c) => c.key)
+											columns.map((c) => c.key),
 										)
 									}
 									size="sm"
@@ -155,7 +171,7 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 									onClick={() =>
 										hideAllColumns(
 											entity,
-											columns.map((c) => c.key)
+											columns.map((c) => c.key),
 										)
 									}
 									size="sm"
@@ -173,7 +189,7 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 										// Re-initialize with all columns visible (default state)
 										showAllColumns(
 											entity,
-											columns.map((c) => c.key)
+											columns.map((c) => c.key),
 										);
 									}}
 									size="sm"
@@ -190,9 +206,14 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 					{criticalColumns.length > 0 && (
 						<>
 							<div className="px-2 py-2">
-								<div className="mb-2 font-medium text-muted-foreground text-xs">Always Visible (Critical)</div>
+								<div className="mb-2 font-medium text-muted-foreground text-xs">
+									Always Visible (Critical)
+								</div>
 								{criticalColumns.map((column) => (
-									<div className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm" key={column.key}>
+									<div
+										className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
+										key={column.key}
+									>
 										<div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary bg-primary">
 											<svg
 												className="h-3 w-3 text-primary-foreground"
@@ -201,11 +222,17 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 												strokeWidth={3}
 												viewBox="0 0 24 24"
 											>
-												<path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+												<path
+													d="M5 13l4 4L19 7"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
 											</svg>
 										</div>
 										<span className="font-medium text-sm">{column.label}</span>
-										<span className="ml-auto text-muted-foreground text-xs">Always</span>
+										<span className="ml-auto text-muted-foreground text-xs">
+											Always
+										</span>
 									</div>
 								))}
 							</div>
@@ -226,7 +253,9 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 					{columns.length > 0 && (
 						<>
 							{criticalColumns.length > 0 && (
-								<div className="px-2 pt-1 pb-2 font-medium text-muted-foreground text-xs">Optional Columns</div>
+								<div className="px-2 pt-1 pb-2 font-medium text-muted-foreground text-xs">
+									Optional Columns
+								</div>
 							)}
 							<div className="max-h-[300px] overflow-y-auto">
 								{mounted &&
@@ -240,7 +269,13 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 												key={`${column.key}-${visible}`}
 												onCheckedChange={() => toggleColumn(entity, column.key)}
 											>
-												<span className={visible ? "font-medium" : "text-muted-foreground"}>{column.label}</span>
+												<span
+													className={
+														visible ? "font-medium" : "text-muted-foreground"
+													}
+												>
+													{column.label}
+												</span>
 											</DropdownMenuCheckboxItem>
 										);
 									})}
@@ -249,19 +284,35 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 								{customColumns && customColumns.length > 0 && (
 									<>
 										<DropdownMenuSeparator />
-										<DropdownMenuLabel className="text-muted-foreground text-xs">Custom Columns</DropdownMenuLabel>
+										<DropdownMenuLabel className="text-muted-foreground text-xs">
+											Custom Columns
+										</DropdownMenuLabel>
 										{mounted &&
 											customColumns.map((column) => {
 												// Get fresh visibility state for each render
-												const visible = columnVisibilityState?.[column.id] ?? true;
+												const visible =
+													columnVisibilityState?.[column.id] ?? true;
 												return (
-													<div className="group relative" key={`${column.id}-${visible}`}>
+													<div
+														className="group relative"
+														key={`${column.id}-${visible}`}
+													>
 														<DropdownMenuCheckboxItem
 															checked={visible}
 															className="cursor-pointer pr-8"
-															onCheckedChange={() => toggleColumn(entity, column.id)}
+															onCheckedChange={() =>
+																toggleColumn(entity, column.id)
+															}
 														>
-															<span className={visible ? "font-medium" : "text-muted-foreground"}>{column.label}</span>
+															<span
+																className={
+																	visible
+																		? "font-medium"
+																		: "text-muted-foreground"
+																}
+															>
+																{column.label}
+															</span>
 														</DropdownMenuCheckboxItem>
 														<Button
 															className="-translate-y-1/2 absolute top-1/2 right-2 h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100"
@@ -286,7 +337,11 @@ export function ColumnVisibilityMenu({ entity, columns, criticalColumns = [], tr
 			</DropdownMenu>
 
 			{/* Column Builder Dialog */}
-			<ColumnBuilderDialog entity={entity} onOpenChange={setDialogOpen} open={dialogOpen} />
+			<ColumnBuilderDialog
+				entity={entity}
+				onOpenChange={setDialogOpen}
+				open={dialogOpen}
+			/>
 		</>
 	);
 }

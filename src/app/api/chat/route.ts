@@ -27,7 +27,9 @@ const createDocumentTool = tool({
 	inputSchema: z.object({
 		title: z.string().describe("The title of the document"),
 		content: z.string().describe("The content of the document"),
-		kind: z.enum(["text", "code", "image", "sheet"]).describe("The type of document"),
+		kind: z
+			.enum(["text", "code", "image", "sheet"])
+			.describe("The type of document"),
 	}),
 	execute: async ({ title, content, kind }) => {
 		// This would normally save to database
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
 				headers: {
 					"Content-Type": "application/json",
 				},
-			}
+			},
 		);
 	}
 }

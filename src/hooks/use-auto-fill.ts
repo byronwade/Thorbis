@@ -11,10 +11,19 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { type FieldState, type FormData, getDataSyncManager } from "@/lib/call-window/data-sync-manager";
+import {
+	type FieldState,
+	type FormData,
+	getDataSyncManager,
+} from "@/lib/call-window/data-sync-manager";
 import { useAIExtraction } from "./use-ai-extraction";
 
-export type FieldVisualState = "empty" | "ai-filled" | "ai-suggested" | "user-entered" | "synced";
+export type FieldVisualState =
+	| "empty"
+	| "ai-filled"
+	| "ai-suggested"
+	| "user-entered"
+	| "synced";
 
 export function useAutoFill(formType: "customer" | "job" | "appointment") {
 	const { extractedData, isExtracting } = useAIExtraction();
@@ -46,7 +55,9 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 	 * Get field value and state
 	 */
 	const getField = useCallback(
-		(fieldName: string): { value: any; state: FieldVisualState; confidence?: number } => {
+		(
+			fieldName: string,
+		): { value: any; state: FieldVisualState; confidence?: number } => {
 			const field = formData[fieldName];
 
 			if (!field) {
@@ -71,7 +82,7 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 				confidence: field.confidence,
 			};
 		},
-		[formData]
+		[formData],
 	);
 
 	/**
@@ -81,7 +92,7 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 		(fieldName: string, value: any) => {
 			syncManager.updateFromUser(formType, fieldName, value);
 		},
-		[syncManager, formType]
+		[syncManager, formType],
 	);
 
 	/**
@@ -91,7 +102,7 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 		(fieldName: string) => {
 			syncManager.approveAISuggestion(formType, fieldName);
 		},
-		[syncManager, formType]
+		[syncManager, formType],
 	);
 
 	/**
@@ -101,7 +112,7 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 		(fieldName: string) => {
 			syncManager.rejectAISuggestion(formType, fieldName);
 		},
-		[syncManager, formType]
+		[syncManager, formType],
 	);
 
 	/**
@@ -137,14 +148,16 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 					return false;
 				})
 				.map(([key]) => key),
-		[formData]
+		[formData],
 	);
 
 	/**
 	 * Approve all AI suggestions
 	 */
 	const approveAll = useCallback(() => {
-		const aiFields = getFieldsByState("ai-filled").concat(getFieldsByState("ai-suggested"));
+		const aiFields = getFieldsByState("ai-filled").concat(
+			getFieldsByState("ai-suggested"),
+		);
 		aiFields.forEach((fieldName) => {
 			syncManager.approveAISuggestion(formType, fieldName);
 		});
@@ -154,7 +167,9 @@ export function useAutoFill(formType: "customer" | "job" | "appointment") {
 	 * Reject all AI suggestions
 	 */
 	const rejectAll = useCallback(() => {
-		const aiFields = getFieldsByState("ai-filled").concat(getFieldsByState("ai-suggested"));
+		const aiFields = getFieldsByState("ai-filled").concat(
+			getFieldsByState("ai-suggested"),
+		);
 		aiFields.forEach((fieldName) => {
 			syncManager.rejectAISuggestion(formType, fieldName);
 		});

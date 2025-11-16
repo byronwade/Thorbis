@@ -10,7 +10,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CustomerInfoHoverCardProps = {
@@ -31,7 +35,9 @@ type CustomerInfoHoverCardProps = {
 	};
 };
 
-export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) {
+export function CustomerInfoHoverCard({
+	customer,
+}: CustomerInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 
 	const copyToClipboard = (text: string, field: string) => {
@@ -41,9 +47,18 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 	};
 
 	const displayName =
-		customer.display_name || `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer";
+		customer.display_name ||
+		`${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
+		"Unknown Customer";
 
-	const fullAddress = [customer.address, customer.city, customer.state, customer.zip_code].filter(Boolean).join(", ");
+	const fullAddress = [
+		customer.address,
+		customer.city,
+		customer.state,
+		customer.zip_code,
+	]
+		.filter(Boolean)
+		.join(", ");
 
 	return (
 		<HoverCard openDelay={200}>
@@ -62,7 +77,11 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 					<div className="flex items-start justify-between">
 						<div>
 							<h4 className="font-semibold text-sm">{displayName}</h4>
-							{customer.company_name && <p className="text-muted-foreground text-xs">{customer.company_name}</p>}
+							{customer.company_name && (
+								<p className="text-muted-foreground text-xs">
+									{customer.company_name}
+								</p>
+							)}
 						</div>
 						{customer.status && (
 							<Badge className="capitalize" variant="outline">
@@ -79,7 +98,10 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 							<div className="group flex items-center justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-center gap-2">
 									<Mail className="size-3.5 shrink-0 text-muted-foreground" />
-									<a className="truncate text-sm hover:text-primary hover:underline" href={`mailto:${customer.email}`}>
+									<a
+										className="truncate text-sm hover:text-primary hover:underline"
+										href={`mailto:${customer.email}`}
+									>
 										{customer.email}
 									</a>
 								</div>
@@ -92,7 +114,11 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 									size="icon"
 									variant="ghost"
 								>
-									{copiedField === "email" ? <Check className="size-3" /> : <Copy className="size-3" />}
+									{copiedField === "email" ? (
+										<Check className="size-3" />
+									) : (
+										<Copy className="size-3" />
+									)}
 								</Button>
 							</div>
 						)}
@@ -101,7 +127,10 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 							<div className="group flex items-center justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-center gap-2">
 									<Phone className="size-3.5 shrink-0 text-muted-foreground" />
-									<a className="text-sm hover:text-primary hover:underline" href={`tel:${customer.phone}`}>
+									<a
+										className="text-sm hover:text-primary hover:underline"
+										href={`tel:${customer.phone}`}
+									>
 										{customer.phone}
 									</a>
 								</div>
@@ -114,7 +143,11 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 									size="icon"
 									variant="ghost"
 								>
-									{copiedField === "phone" ? <Check className="size-3" /> : <Copy className="size-3" />}
+									{copiedField === "phone" ? (
+										<Check className="size-3" />
+									) : (
+										<Copy className="size-3" />
+									)}
 								</Button>
 							</div>
 						)}
@@ -134,7 +167,11 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 									size="icon"
 									variant="ghost"
 								>
-									{copiedField === "address" ? <Check className="size-3" /> : <Copy className="size-3" />}
+									{copiedField === "address" ? (
+										<Check className="size-3" />
+									) : (
+										<Copy className="size-3" />
+									)}
 								</Button>
 							</div>
 						)}

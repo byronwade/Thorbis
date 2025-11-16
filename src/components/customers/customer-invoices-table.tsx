@@ -15,7 +15,10 @@ import { CreditCard, FileText, Mail, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { sendEstimateEmail, sendInvoiceEmail } from "@/actions/invoice-communications";
+import {
+	sendEstimateEmail,
+	sendInvoiceEmail,
+} from "@/actions/invoice-communications";
 import { QuickPayDialog } from "@/components/invoices/quick-pay-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,14 +29,20 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type CustomerInvoicesTableProps = {
 	invoices: any[];
 	onUpdate?: () => void;
 };
 
-export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTableProps) {
+export function CustomerInvoicesTable({
+	invoices,
+	onUpdate,
+}: CustomerInvoicesTableProps) {
 	const [quickPayInvoice, setQuickPayInvoice] = useState<any>(null);
 	const [isSending, setIsSending] = useState<string | null>(null);
 
@@ -130,7 +139,11 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 				width: "w-32",
 				shrink: true,
 				align: "right",
-				render: (invoice) => <span className="font-medium">{formatCurrency(invoice.total_amount)}</span>,
+				render: (invoice) => (
+					<span className="font-medium">
+						{formatCurrency(invoice.total_amount)}
+					</span>
+				),
 			},
 			{
 				key: "balance_amount",
@@ -140,7 +153,9 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 				align: "right",
 				render: (invoice) =>
 					invoice.balance_amount > 0 ? (
-						<span className="font-medium text-destructive">{formatCurrency(invoice.balance_amount)}</span>
+						<span className="font-medium text-destructive">
+							{formatCurrency(invoice.balance_amount)}
+						</span>
 					) : (
 						<span className="text-muted-foreground text-sm">Paid</span>
 					),
@@ -152,7 +167,11 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 				shrink: true,
 				hideOnMobile: true,
 				render: (invoice) => (
-					<span className="text-sm">{invoice.due_date ? new Date(invoice.due_date).toLocaleDateString() : "—"}</span>
+					<span className="text-sm">
+						{invoice.due_date
+							? new Date(invoice.due_date).toLocaleDateString()
+							: "—"}
+					</span>
 				),
 			},
 			{
@@ -162,7 +181,8 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 				shrink: true,
 				align: "right",
 				render: (invoice) => {
-					const canPay = invoice.status !== "paid" && invoice.balance_amount > 0;
+					const canPay =
+						invoice.status !== "paid" && invoice.balance_amount > 0;
 
 					return (
 						<DropdownMenu>
@@ -174,7 +194,10 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 							<DropdownMenuContent align="end" className="w-48">
 								{canPay && (
 									<>
-										<DropdownMenuItem className="cursor-pointer" onClick={() => setQuickPayInvoice(invoice)}>
+										<DropdownMenuItem
+											className="cursor-pointer"
+											onClick={() => setQuickPayInvoice(invoice)}
+										>
 											<CreditCard className="mr-2 size-4" />
 											Quick Pay
 										</DropdownMenuItem>
@@ -203,7 +226,13 @@ export function CustomerInvoicesTable({ invoices, onUpdate }: CustomerInvoicesTa
 				},
 			},
 		],
-		[isSending, formatCurrency, getStatusBadge, handleSendEstimate, handleSendInvoice]
+		[
+			isSending,
+			formatCurrency,
+			getStatusBadge,
+			handleSendEstimate,
+			handleSendInvoice,
+		],
 	);
 
 	return (

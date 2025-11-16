@@ -1,6 +1,15 @@
 "use client";
 
-import { Archive, CheckCircle2, Clock, Download, MoreHorizontal, Package, PackageCheck, PackageX } from "lucide-react";
+import {
+	Archive,
+	CheckCircle2,
+	Clock,
+	Download,
+	MoreHorizontal,
+	Package,
+	PackageCheck,
+	PackageX,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +21,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
@@ -42,10 +55,14 @@ export type PurchaseOrder = {
 	deleted_at?: string | null;
 };
 
-const statusConfig: Record<POStatus, { label: string; className: string; Icon: React.ElementType }> = {
+const statusConfig: Record<
+	POStatus,
+	{ label: string; className: string; Icon: React.ElementType }
+> = {
 	draft: {
 		label: "Draft",
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		Icon: Package,
 	},
 	pending_approval: {
@@ -65,7 +82,8 @@ const statusConfig: Record<POStatus, { label: string; className: string; Icon: R
 	},
 	partially_received: {
 		label: "Partially Received",
-		className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+		className:
+			"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 		Icon: PackageCheck,
 	},
 	received: {
@@ -75,21 +93,33 @@ const statusConfig: Record<POStatus, { label: string; className: string; Icon: R
 	},
 	cancelled: {
 		label: "Cancelled",
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		Icon: PackageX,
 	},
 };
 
-const priorityConfig: Record<"low" | "normal" | "high" | "urgent", { label: string; className: string }> = {
+const priorityConfig: Record<
+	"low" | "normal" | "high" | "urgent",
+	{ label: string; className: string }
+> = {
 	low: { label: "Low", className: "text-primary" },
 	normal: { label: "Normal", className: "text-muted-foreground" },
 	high: { label: "High", className: "text-warning" },
 	urgent: { label: "Urgent", className: "text-destructive" },
 };
 
-export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: PurchaseOrder[]; itemsPerPage?: number }) {
+export function PurchaseOrdersTable({
+	orders,
+	itemsPerPage = 50,
+}: {
+	orders: PurchaseOrder[];
+	itemsPerPage?: number;
+}) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.purchase_orders);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.purchase_orders,
+	);
 
 	// Filter orders based on archive status
 	const filteredOrders = orders.filter((order) => {
@@ -134,7 +164,9 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			shrink: true,
 			sortable: true,
 			hideable: false, // CRITICAL: Vendor essential for quick identification
-			render: (po) => <span className="text-foreground text-sm">{po.vendor}</span>,
+			render: (po) => (
+				<span className="text-foreground text-sm">{po.vendor}</span>
+			),
 		},
 		{
 			key: "title",
@@ -147,9 +179,13 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 					href={`/dashboard/work/purchase-orders/${po.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">{po.title}</div>
+					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+						{po.title}
+					</div>
 					{po.jobNumber && (
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">Job: {po.jobNumber}</div>
+						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+							Job: {po.jobNumber}
+						</div>
 					)}
 				</Link>
 			),
@@ -163,7 +199,9 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			sortable: true,
 			hideable: true,
 			render: (po) => (
-				<span className={`font-medium text-sm ${priorityConfig[po.priority].className}`}>
+				<span
+					className={`font-medium text-sm ${priorityConfig[po.priority].className}`}
+				>
 					{priorityConfig[po.priority].label}
 				</span>
 			),
@@ -176,7 +214,11 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			align: "right",
 			sortable: true,
 			hideable: false, // CRITICAL: Financial data essential
-			render: (po) => <span className="font-semibold tabular-nums">{formatCurrency(po.totalAmount)}</span>,
+			render: (po) => (
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(po.totalAmount)}
+				</span>
+			),
 		},
 		{
 			key: "expectedDelivery",
@@ -186,7 +228,11 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (po) => <span className="text-muted-foreground text-sm tabular-nums">{po.expectedDelivery || "—"}</span>,
+			render: (po) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{po.expectedDelivery || "—"}
+				</span>
+			),
 		},
 		{
 			key: "status",
@@ -198,7 +244,10 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			render: (po) => {
 				const config = statusConfig[po.status];
 				return (
-					<Badge className={`font-medium text-xs ${config?.className || ""}`} variant="outline">
+					<Badge
+						className={`font-medium text-xs ${config?.className || ""}`}
+						variant="outline"
+					>
 						{config?.label || po.status}
 					</Badge>
 				);
@@ -242,7 +291,8 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 									<DropdownMenuSeparator />
 								</>
 							)}
-							{(po.status === "ordered" || po.status === "partially_received") && (
+							{(po.status === "ordered" ||
+								po.status === "partially_received") && (
 								<>
 									<DropdownMenuItem>
 										<PackageCheck className="mr-2 size-4" />
@@ -308,7 +358,9 @@ export function PurchaseOrdersTable({ orders, itemsPerPage = 50 }: { orders: Pur
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredOrders}
-			emptyIcon={<Package className="mx-auto h-12 w-12 text-muted-foreground" />}
+			emptyIcon={
+				<Package className="mx-auto h-12 w-12 text-muted-foreground" />
+			}
 			emptyMessage="No purchase orders found"
 			enableSelection={true}
 			entity="purchase_orders"

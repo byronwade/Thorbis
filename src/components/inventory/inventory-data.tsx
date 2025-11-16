@@ -29,7 +29,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="font-semibold text-lg">Real-Time Stock Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor inventory levels in real-time with automatic updates from job completions and purchases
+							Monitor inventory levels in real-time with automatic updates from
+							job completions and purchases
 						</p>
 					</div>
 
@@ -40,7 +41,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="font-semibold text-lg">Low Stock Alerts</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Get notified when items fall below minimum stock levels and automate reordering
+							Get notified when items fall below minimum stock levels and
+							automate reordering
 						</p>
 					</div>
 
@@ -51,7 +53,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="font-semibold text-lg">Usage Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze inventory turnover, identify slow-moving items, and optimize stock levels
+							Analyze inventory turnover, identify slow-moving items, and
+							optimize stock levels
 						</p>
 					</div>
 
@@ -62,15 +65,20 @@ export async function InventoryData() {
 						</div>
 						<h3 className="font-semibold text-lg">Cost Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track purchase costs, calculate profit margins, and manage inventory valuation
+							Track purchase costs, calculate profit margins, and manage
+							inventory valuation
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Optimize Your Inventory</h3>
-					<p className="mb-6 text-muted-foreground">Never run out of parts and reduce carrying costs</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Optimize Your Inventory
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Never run out of parts and reduce carrying costs
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

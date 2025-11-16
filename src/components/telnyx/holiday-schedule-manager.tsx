@@ -11,12 +11,31 @@
  * - Support for date ranges and multi-day holidays
  */
 
-import { Calendar, Edit, Loader2, Plus, Repeat, Save, Trash2 } from "lucide-react";
+import {
+	Calendar,
+	Edit,
+	Loader2,
+	Plus,
+	Repeat,
+	Save,
+	Trash2,
+} from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import { createHoliday, deleteHoliday, getCompanyHolidays, updateHoliday } from "@/actions/voip";
+import {
+	createHoliday,
+	deleteHoliday,
+	getCompanyHolidays,
+	updateHoliday,
+} from "@/actions/voip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -27,9 +46,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 
@@ -126,7 +158,9 @@ export function HolidayScheduleManager() {
 			}
 
 			if (result.success) {
-				toast.success(`Holiday ${isCreating ? "created" : "updated"} successfully`);
+				toast.success(
+					`Holiday ${isCreating ? "created" : "updated"} successfully`,
+				);
 				setIsEditDialogOpen(false);
 				loadHolidays();
 			} else {
@@ -161,7 +195,8 @@ export function HolidayScheduleManager() {
 	}
 
 	const sortedHolidays = [...holidays].sort(
-		(a, b) => new Date(a.holiday_date).getTime() - new Date(b.holiday_date).getTime()
+		(a, b) =>
+			new Date(a.holiday_date).getTime() - new Date(b.holiday_date).getTime(),
 	);
 
 	if (isLoading) {
@@ -179,7 +214,9 @@ export function HolidayScheduleManager() {
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<CardTitle>Company Holidays</CardTitle>
-							<CardDescription>Manage holidays and configure special call routing</CardDescription>
+							<CardDescription>
+								Manage holidays and configure special call routing
+							</CardDescription>
 						</div>
 						<Button onClick={openCreateDialog}>
 							<Plus className="mr-2 size-4" />
@@ -203,7 +240,8 @@ export function HolidayScheduleManager() {
 								{sortedHolidays.length === 0 ? (
 									<TableRow>
 										<TableCell className="h-24 text-center" colSpan={5}>
-											No holidays configured. Add your first holiday to get started.
+											No holidays configured. Add your first holiday to get
+											started.
 										</TableCell>
 									</TableRow>
 								) : (
@@ -213,14 +251,18 @@ export function HolidayScheduleManager() {
 												<div>
 													<div className="font-medium">{holiday.name}</div>
 													{holiday.special_greeting_message && (
-														<div className="text-muted-foreground text-xs">Special greeting configured</div>
+														<div className="text-muted-foreground text-xs">
+															Special greeting configured
+														</div>
 													)}
 												</div>
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-2">
 													<Calendar className="size-4 text-muted-foreground" />
-													<span className="text-sm">{formatDate(holiday.holiday_date)}</span>
+													<span className="text-sm">
+														{formatDate(holiday.holiday_date)}
+													</span>
 												</div>
 											</TableCell>
 											<TableCell>
@@ -242,7 +284,11 @@ export function HolidayScheduleManager() {
 											</TableCell>
 											<TableCell className="text-right">
 												<div className="flex justify-end gap-2">
-													<Button onClick={() => openEditDialog(holiday)} size="sm" variant="outline">
+													<Button
+														onClick={() => openEditDialog(holiday)}
+														size="sm"
+														variant="outline"
+													>
 														<Edit className="mr-2 size-4" />
 														Edit
 													</Button>
@@ -270,11 +316,14 @@ export function HolidayScheduleManager() {
 				<CardContent className="flex items-start gap-3 pt-6">
 					<Calendar className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 					<div className="space-y-1">
-						<p className="font-medium text-primary text-sm dark:text-primary">Holiday Routing Tips</p>
+						<p className="font-medium text-primary text-sm dark:text-primary">
+							Holiday Routing Tips
+						</p>
 						<p className="text-muted-foreground text-sm">
-							Set up recurring holidays to automatically apply special routing every year. Configure special greeting
-							messages to inform callers about holiday hours. Consider creating a dedicated routing rule for holidays
-							with voicemail or emergency contact options.
+							Set up recurring holidays to automatically apply special routing
+							every year. Configure special greeting messages to inform callers
+							about holiday hours. Consider creating a dedicated routing rule
+							for holidays with voicemail or emergency contact options.
 						</p>
 					</div>
 				</CardContent>
@@ -284,8 +333,12 @@ export function HolidayScheduleManager() {
 			<Dialog onOpenChange={setIsEditDialogOpen} open={isEditDialogOpen}>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>{isCreating ? "Add Holiday" : "Edit Holiday"}</DialogTitle>
-						<DialogDescription>Configure holiday details and special call routing</DialogDescription>
+						<DialogTitle>
+							{isCreating ? "Add Holiday" : "Edit Holiday"}
+						</DialogTitle>
+						<DialogDescription>
+							Configure holiday details and special call routing
+						</DialogDescription>
 					</DialogHeader>
 
 					<div className="space-y-6">
@@ -293,7 +346,9 @@ export function HolidayScheduleManager() {
 							<Label htmlFor="holidayName">Holiday Name *</Label>
 							<Input
 								id="holidayName"
-								onChange={(e) => setHolidayForm({ ...holidayForm, name: e.target.value })}
+								onChange={(e) =>
+									setHolidayForm({ ...holidayForm, name: e.target.value })
+								}
 								placeholder="New Year's Day"
 								value={holidayForm.name}
 							/>
@@ -318,11 +373,15 @@ export function HolidayScheduleManager() {
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Recurring Holiday</Label>
-								<p className="text-muted-foreground text-xs">Automatically repeat this holiday</p>
+								<p className="text-muted-foreground text-xs">
+									Automatically repeat this holiday
+								</p>
 							</div>
 							<Switch
 								checked={holidayForm.is_recurring}
-								onCheckedChange={(checked) => setHolidayForm({ ...holidayForm, is_recurring: checked })}
+								onCheckedChange={(checked) =>
+									setHolidayForm({ ...holidayForm, is_recurring: checked })
+								}
 							/>
 						</div>
 
@@ -330,24 +389,36 @@ export function HolidayScheduleManager() {
 							<div>
 								<Label htmlFor="recurrenceType">Recurrence Pattern</Label>
 								<Select
-									onValueChange={(value) => setHolidayForm({ ...holidayForm, recurrence_type: value })}
+									onValueChange={(value) =>
+										setHolidayForm({ ...holidayForm, recurrence_type: value })
+									}
 									value={holidayForm.recurrence_type}
 								>
 									<SelectTrigger className="mt-2" id="recurrenceType">
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="yearly">Yearly - Same date every year</SelectItem>
-										<SelectItem value="monthly">Monthly - Same day each month</SelectItem>
-										<SelectItem value="weekly">Weekly - Same day each week</SelectItem>
-										<SelectItem value="custom">Custom - Define your own pattern</SelectItem>
+										<SelectItem value="yearly">
+											Yearly - Same date every year
+										</SelectItem>
+										<SelectItem value="monthly">
+											Monthly - Same day each month
+										</SelectItem>
+										<SelectItem value="weekly">
+											Weekly - Same day each week
+										</SelectItem>
+										<SelectItem value="custom">
+											Custom - Define your own pattern
+										</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
 						)}
 
 						<div>
-							<Label htmlFor="greetingMessage">Special Greeting Message (Optional)</Label>
+							<Label htmlFor="greetingMessage">
+								Special Greeting Message (Optional)
+							</Label>
 							<Textarea
 								className="mt-2"
 								id="greetingMessage"
@@ -369,17 +440,25 @@ export function HolidayScheduleManager() {
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Holiday Enabled</Label>
-								<p className="text-muted-foreground text-xs">Enable or disable this holiday</p>
+								<p className="text-muted-foreground text-xs">
+									Enable or disable this holiday
+								</p>
 							</div>
 							<Switch
 								checked={holidayForm.enabled}
-								onCheckedChange={(checked) => setHolidayForm({ ...holidayForm, enabled: checked })}
+								onCheckedChange={(checked) =>
+									setHolidayForm({ ...holidayForm, enabled: checked })
+								}
 							/>
 						</div>
 					</div>
 
 					<DialogFooter>
-						<Button disabled={isPending} onClick={() => setIsEditDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isPending}
+							onClick={() => setIsEditDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isPending} onClick={handleSaveHoliday}>

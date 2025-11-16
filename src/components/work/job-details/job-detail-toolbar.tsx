@@ -44,7 +44,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
@@ -81,7 +86,8 @@ export function JobDetailToolbar({
 
 	// Calculate tag count
 	const customerTags = (customer?.tags as string[]) || [];
-	const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+	const jobTags =
+		((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
 	const tagCount = customerTags.length + jobTags.length;
 
 	const handleArchive = async () => {
@@ -163,7 +169,12 @@ export function JobDetailToolbar({
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={() => setIsTagDialogOpen(true)} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={() => setIsTagDialogOpen(true)}
+								size="sm"
+								variant="outline"
+							>
 								<Tags className="size-3.5" />
 								<span className="hidden lg:inline">Tags</span>
 								{tagCount > 0 && (
@@ -250,15 +261,24 @@ export function JobDetailToolbar({
 					<DialogHeader>
 						<DialogTitle>Archive Job</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this job? Archived jobs can be restored within 90 days. Completed or
-							invoiced jobs cannot be archived.
+							Are you sure you want to archive this job? Archived jobs can be
+							restored within 90 days. Completed or invoiced jobs cannot be
+							archived.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>

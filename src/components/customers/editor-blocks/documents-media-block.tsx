@@ -30,14 +30,28 @@ import {
 import { useMemo, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CollapsibleActionButton, CollapsibleDataSection } from "@/components/ui/collapsible-data-section";
+import {
+	CollapsibleActionButton,
+	CollapsibleDataSection,
+} from "@/components/ui/collapsible-data-section";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 // React component
 export function DocumentsMediaBlockComponent({ node, editor }: any) {
-	const { attachments: allAttachments, properties, jobs, customerId } = node.attrs;
+	const {
+		attachments: allAttachments,
+		properties,
+		jobs,
+		customerId,
+	} = node.attrs;
 	const _isEditable = editor.isEditable;
 
 	// Filter to only show attachments related to this customer
@@ -60,7 +74,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 
 			// Property attachments for this customer's properties
 			if (a.entity_type === "property") {
-				const relatedProperty = properties?.find((p: any) => p.id === a.entity_id);
+				const relatedProperty = properties?.find(
+					(p: any) => p.id === a.entity_id,
+				);
 				return !!relatedProperty;
 			}
 
@@ -70,8 +86,12 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 
 	const attachments = customerAttachments;
 
-	const [viewMode, setViewMode] = useState<"timeline" | "gallery" | "property" | "job" | "type">("timeline");
-	const [filterType, setFilterType] = useState<"all" | "images" | "documents" | "videos">("all");
+	const [viewMode, setViewMode] = useState<
+		"timeline" | "gallery" | "property" | "job" | "type"
+	>("timeline");
+	const [filterType, setFilterType] = useState<
+		"all" | "images" | "documents" | "videos"
+	>("all");
 	const [filterProperty, setFilterProperty] = useState<string>("all");
 	const [filterJob, setFilterJob] = useState<string>("all");
 	const [filterDate, setFilterDate] = useState<string>("all"); // all, today, week, month
@@ -85,7 +105,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 		if (!files || files.length === 0) {
 			return;
 		}
-		alert(`File upload functionality coming soon! Selected ${files.length} file(s)`);
+		alert(
+			`File upload functionality coming soon! Selected ${files.length} file(s)`,
+		);
 	};
 
 	// Handle drag and drop
@@ -131,14 +153,18 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 		if (filterProperty !== "all") {
 			filtered = filtered.filter((a: any) => {
 				// Find related job/property
-				const relatedJob = jobs?.find((j: any) => j.id === a.entity_id && a.entity_type === "job");
+				const relatedJob = jobs?.find(
+					(j: any) => j.id === a.entity_id && a.entity_type === "job",
+				);
 				return relatedJob?.property_id === filterProperty;
 			});
 		}
 
 		// Job filter
 		if (filterJob !== "all") {
-			filtered = filtered.filter((a: any) => a.entity_id === filterJob && a.entity_type === "job");
+			filtered = filtered.filter(
+				(a: any) => a.entity_id === filterJob && a.entity_type === "job",
+			);
 		}
 
 		// Date filter
@@ -152,10 +178,14 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 				});
 			} else if (filterDate === "week") {
 				const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-				filtered = filtered.filter((a: any) => new Date(a.uploaded_at) >= weekAgo);
+				filtered = filtered.filter(
+					(a: any) => new Date(a.uploaded_at) >= weekAgo,
+				);
 			} else if (filterDate === "month") {
 				const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-				filtered = filtered.filter((a: any) => new Date(a.uploaded_at) >= monthAgo);
+				filtered = filtered.filter(
+					(a: any) => new Date(a.uploaded_at) >= monthAgo,
+				);
 			}
 		}
 
@@ -166,16 +196,26 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 				(a: any) =>
 					a.original_file_name?.toLowerCase().includes(query) ||
 					a.description?.toLowerCase().includes(query) ||
-					a.category?.toLowerCase().includes(query)
+					a.category?.toLowerCase().includes(query),
 			);
 		}
 
 		return filtered;
-	}, [attachments, filterType, filterProperty, filterJob, filterDate, searchQuery, jobs]);
+	}, [
+		attachments,
+		filterType,
+		filterProperty,
+		filterJob,
+		filterDate,
+		searchQuery,
+		jobs,
+	]);
 
 	// Calculate summary
 	const imageCount = (attachments || []).filter((a: any) => a.is_image).length;
-	const documentCount = (attachments || []).filter((a: any) => a.is_document).length;
+	const documentCount = (attachments || []).filter(
+		(a: any) => a.is_document,
+	).length;
 	const videoCount = (attachments || []).filter((a: any) => a.is_video).length;
 
 	const summary = `${imageCount} photos • ${documentCount} docs • ${videoCount} videos`;
@@ -238,11 +278,15 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 			const job = jobs?.find((j: any) => j.id === entityId);
 			if (job) {
 				const property = properties?.find((p: any) => p.id === job.property_id);
-				return property ? `${property.address}, ${property.city}` : "Unknown property";
+				return property
+					? `${property.address}, ${property.city}`
+					: "Unknown property";
 			}
 		} else if (entityType === "property") {
 			const property = properties?.find((p: any) => p.id === entityId);
-			return property ? `${property.address}, ${property.city}` : "Unknown property";
+			return property
+				? `${property.address}, ${property.city}`
+				: "Unknown property";
 		}
 		return "General";
 	};
@@ -261,7 +305,10 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 								ref={fileInputRef}
 								type="file"
 							/>
-							<CollapsibleActionButton icon={<Plus className="h-3.5 w-3.5" />} onClick={handleAddDocument}>
+							<CollapsibleActionButton
+								icon={<Plus className="h-3.5 w-3.5" />}
+								onClick={handleAddDocument}
+							>
 								Add Document
 							</CollapsibleActionButton>
 						</>
@@ -278,15 +325,19 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 					<div
 						className={cn(
 							"rounded-lg border-2 border-dashed bg-muted/30 p-12 text-center transition-colors",
-							isDragging && "border-primary bg-primary/5"
+							isDragging && "border-primary bg-primary/5",
 						)}
 						onDragLeave={handleDragLeave}
 						onDragOver={handleDragOver}
 						onDrop={handleDrop}
 					>
 						<Upload className="mx-auto mb-4 size-16 text-muted-foreground/50" />
-						<p className="text-muted-foreground">Drag and drop files here or click Add Document</p>
-						<p className="mt-2 text-muted-foreground text-sm">Supports images, PDFs, and documents</p>
+						<p className="text-muted-foreground">
+							Drag and drop files here or click Add Document
+						</p>
+						<p className="mt-2 text-muted-foreground text-sm">
+							Supports images, PDFs, and documents
+						</p>
 					</div>
 				</CollapsibleDataSection>
 			</NodeViewWrapper>
@@ -306,7 +357,10 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 							ref={fileInputRef}
 							type="file"
 						/>
-						<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddDocument}>
+						<CollapsibleActionButton
+							icon={<Plus className="size-4" />}
+							onClick={handleAddDocument}
+						>
 							Add Document
 						</CollapsibleActionButton>
 					</>
@@ -357,14 +411,19 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 						</Select>
 
 						{/* Type Filter */}
-						<Select onValueChange={(v: any) => setFilterType(v)} value={filterType}>
+						<Select
+							onValueChange={(v: any) => setFilterType(v)}
+							value={filterType}
+						>
 							<SelectTrigger className="w-[130px]">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
 								<SelectItem value="all">All Types</SelectItem>
 								<SelectItem value="images">Photos ({imageCount})</SelectItem>
-								<SelectItem value="documents">Documents ({documentCount})</SelectItem>
+								<SelectItem value="documents">
+									Documents ({documentCount})
+								</SelectItem>
 								<SelectItem value="videos">Videos ({videoCount})</SelectItem>
 							</SelectContent>
 						</Select>
@@ -398,64 +457,80 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 					{/* Timeline View */}
 					{viewMode === "timeline" && (
 						<div className="space-y-6">
-							{Object.entries(groupedByDate).map(([dateGroup, items]: [string, any]) => (
-								<div key={dateGroup}>
-									<h4 className="mb-3 flex items-center gap-2 font-semibold text-sm">
-										<Calendar className="size-4" />
-										{dateGroup}
-										<Badge className="ml-2" variant="secondary">
-											{items.length}
-										</Badge>
-									</h4>
-									<div className="space-y-2">
-										{items.map((attachment: any) => {
-											const Icon = getFileIcon(attachment);
-											const propertyName = getPropertyName(attachment.entity_id, attachment.entity_type);
+							{Object.entries(groupedByDate).map(
+								([dateGroup, items]: [string, any]) => (
+									<div key={dateGroup}>
+										<h4 className="mb-3 flex items-center gap-2 font-semibold text-sm">
+											<Calendar className="size-4" />
+											{dateGroup}
+											<Badge className="ml-2" variant="secondary">
+												{items.length}
+											</Badge>
+										</h4>
+										<div className="space-y-2">
+											{items.map((attachment: any) => {
+												const Icon = getFileIcon(attachment);
+												const propertyName = getPropertyName(
+													attachment.entity_id,
+													attachment.entity_type,
+												);
 
-											return (
-												<div
-													className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/30"
-													key={attachment.id}
-												>
+												return (
 													<div
-														className={cn(
-															"flex size-10 shrink-0 items-center justify-center rounded-lg",
-															attachment.is_image && "bg-primary text-primary dark:bg-primary",
-															attachment.is_document && "bg-secondary text-muted-foreground dark:bg-foreground",
-															attachment.is_video && "bg-accent text-accent-foreground dark:bg-accent"
-														)}
+														className="flex items-center gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/30"
+														key={attachment.id}
 													>
-														<Icon className="size-5" />
-													</div>
-
-													<div className="min-w-0 flex-1">
-														<p className="truncate font-medium text-sm">{attachment.original_file_name}</p>
-														<div className="flex items-center gap-2 text-muted-foreground text-xs">
-															<span>{formatFileSize(attachment.file_size)}</span>
-															<span>•</span>
-															<MapPin className="size-3" />
-															<span>{propertyName}</span>
-															<span>•</span>
-															<User className="size-3" />
-															<span>{new Date(attachment.uploaded_at).toLocaleString()}</span>
+														<div
+															className={cn(
+																"flex size-10 shrink-0 items-center justify-center rounded-lg",
+																attachment.is_image &&
+																	"bg-primary text-primary dark:bg-primary",
+																attachment.is_document &&
+																	"bg-secondary text-muted-foreground dark:bg-foreground",
+																attachment.is_video &&
+																	"bg-accent text-accent-foreground dark:bg-accent",
+															)}
+														>
+															<Icon className="size-5" />
 														</div>
-													</div>
 
-													<a
-														className="shrink-0 text-primary hover:underline"
-														href={attachment.storage_url}
-														onClick={(e) => e.stopPropagation()}
-														rel="noopener noreferrer"
-														target="_blank"
-													>
-														<Download className="size-4" />
-													</a>
-												</div>
-											);
-										})}
+														<div className="min-w-0 flex-1">
+															<p className="truncate font-medium text-sm">
+																{attachment.original_file_name}
+															</p>
+															<div className="flex items-center gap-2 text-muted-foreground text-xs">
+																<span>
+																	{formatFileSize(attachment.file_size)}
+																</span>
+																<span>•</span>
+																<MapPin className="size-3" />
+																<span>{propertyName}</span>
+																<span>•</span>
+																<User className="size-3" />
+																<span>
+																	{new Date(
+																		attachment.uploaded_at,
+																	).toLocaleString()}
+																</span>
+															</div>
+														</div>
+
+														<a
+															className="shrink-0 text-primary hover:underline"
+															href={attachment.storage_url}
+															onClick={(e) => e.stopPropagation()}
+															rel="noopener noreferrer"
+															target="_blank"
+														>
+															<Download className="size-4" />
+														</a>
+													</div>
+												);
+											})}
+										</div>
 									</div>
-								</div>
-							))}
+								),
+							)}
 						</div>
 					)}
 
@@ -479,8 +554,14 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 										/>
 										<div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity group-hover:opacity-100">
 											<div className="absolute right-0 bottom-0 left-0 p-2">
-												<p className="truncate text-white text-xs">{attachment.original_file_name}</p>
-												<p className="text-white/80 text-xs">{new Date(attachment.uploaded_at).toLocaleDateString()}</p>
+												<p className="truncate text-white text-xs">
+													{attachment.original_file_name}
+												</p>
+												<p className="text-white/80 text-xs">
+													{new Date(
+														attachment.uploaded_at,
+													).toLocaleDateString()}
+												</p>
 											</div>
 										</div>
 									</a>
@@ -492,10 +573,14 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 					{viewMode === "property" && (
 						<div className="space-y-4">
 							{properties?.map((property: any) => {
-								const propertyAttachments = filteredAttachments.filter((a: any) => {
-									const relatedJob = jobs?.find((j: any) => j.id === a.entity_id);
-									return relatedJob?.property_id === property.id;
-								});
+								const propertyAttachments = filteredAttachments.filter(
+									(a: any) => {
+										const relatedJob = jobs?.find(
+											(j: any) => j.id === a.entity_id,
+										);
+										return relatedJob?.property_id === property.id;
+									},
+								);
 
 								if (propertyAttachments.length === 0) {
 									return null;
@@ -511,27 +596,32 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 											</Badge>
 										</h4>
 										<div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-											{propertyAttachments.slice(0, 12).map((attachment: any) => (
-												<a
-													className="aspect-square overflow-hidden rounded border"
-													href={attachment.storage_url}
-													key={attachment.id}
-													rel="noopener noreferrer"
-													target="_blank"
-												>
-													{attachment.is_image ? (
-														<img
-															alt={attachment.original_file_name}
-															className="size-full object-cover"
-															src={attachment.thumbnail_url || attachment.storage_url}
-														/>
-													) : (
-														<div className="flex size-full items-center justify-center bg-muted">
-															<FileText className="size-6 text-muted-foreground" />
-														</div>
-													)}
-												</a>
-											))}
+											{propertyAttachments
+												.slice(0, 12)
+												.map((attachment: any) => (
+													<a
+														className="aspect-square overflow-hidden rounded border"
+														href={attachment.storage_url}
+														key={attachment.id}
+														rel="noopener noreferrer"
+														target="_blank"
+													>
+														{attachment.is_image ? (
+															<img
+																alt={attachment.original_file_name}
+																className="size-full object-cover"
+																src={
+																	attachment.thumbnail_url ||
+																	attachment.storage_url
+																}
+															/>
+														) : (
+															<div className="flex size-full items-center justify-center bg-muted">
+																<FileText className="size-6 text-muted-foreground" />
+															</div>
+														)}
+													</a>
+												))}
 										</div>
 										{propertyAttachments.length > 12 && (
 											<p className="mt-2 text-muted-foreground text-xs">
@@ -548,7 +638,9 @@ export function DocumentsMediaBlockComponent({ node, editor }: any) {
 					{filteredAttachments.length === 0 && (
 						<div className="rounded-lg border bg-muted/30 p-8 text-center">
 							<Filter className="mx-auto mb-3 size-12 text-muted-foreground/50" />
-							<p className="text-muted-foreground">No files match your filters</p>
+							<p className="text-muted-foreground">
+								No files match your filters
+							</p>
 							<Button
 								className="mt-3"
 								onClick={() => {
@@ -607,7 +699,11 @@ export const DocumentsMediaBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "documents-media-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "documents-media-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

@@ -23,7 +23,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -60,12 +66,12 @@ export function MaintenancePlanForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [frequency, setFrequency] = useState("monthly");
 	const [showCustomFrequency, setShowCustomFrequency] = useState(false);
 	const [billingFrequency, setBillingFrequency] = useState("monthly");
@@ -140,14 +146,21 @@ export function MaintenancePlanForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select name="customerId" onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							name="customerId"
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -157,7 +170,11 @@ export function MaintenancePlanForm({
 					{selectedCustomerId && (
 						<div className="space-y-2">
 							<Label htmlFor="property-select">Property (Optional)</Label>
-							<Select name="propertyId" onValueChange={setSelectedPropertyId} value={selectedPropertyId}>
+							<Select
+								name="propertyId"
+								onValueChange={setSelectedPropertyId}
+								value={selectedPropertyId}
+							>
 								<SelectTrigger id="property-select">
 									<SelectValue placeholder="Select property" />
 								</SelectTrigger>
@@ -184,7 +201,12 @@ export function MaintenancePlanForm({
 						<Label htmlFor="name">
 							Plan Name <span className="text-destructive">*</span>
 						</Label>
-						<Input id="name" name="name" placeholder="e.g., Annual HVAC Maintenance Plan" required />
+						<Input
+							id="name"
+							name="name"
+							placeholder="e.g., Annual HVAC Maintenance Plan"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
@@ -212,7 +234,12 @@ export function MaintenancePlanForm({
 						<Label htmlFor="frequency">
 							Frequency <span className="text-destructive">*</span>
 						</Label>
-						<Select name="frequency" onValueChange={setFrequency} required value={frequency}>
+						<Select
+							name="frequency"
+							onValueChange={setFrequency}
+							required
+							value={frequency}
+						>
 							<SelectTrigger id="frequency">
 								<SelectValue />
 							</SelectTrigger>
@@ -231,7 +258,8 @@ export function MaintenancePlanForm({
 					{showCustomFrequency && (
 						<div className="space-y-2">
 							<Label htmlFor="customFrequencyDays">
-								Custom Frequency (Days) <span className="text-destructive">*</span>
+								Custom Frequency (Days){" "}
+								<span className="text-destructive">*</span>
 							</Label>
 							<Input
 								id="customFrequencyDays"
@@ -255,7 +283,9 @@ export function MaintenancePlanForm({
 						<div className="space-y-2">
 							<Label htmlFor="endDate">End Date (Optional)</Label>
 							<Input id="endDate" name="endDate" type="date" />
-							<p className="text-muted-foreground text-xs">Leave blank for ongoing plan</p>
+							<p className="text-muted-foreground text-xs">
+								Leave blank for ongoing plan
+							</p>
 						</div>
 					</div>
 
@@ -284,12 +314,23 @@ export function MaintenancePlanForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="amount">Plan Amount ($)</Label>
-							<Input id="amount" min="0" name="amount" placeholder="e.g., 299.00" step="0.01" type="number" />
+							<Input
+								id="amount"
+								min="0"
+								name="amount"
+								placeholder="e.g., 299.00"
+								step="0.01"
+								type="number"
+							/>
 						</div>
 
 						<div className="space-y-2">
 							<Label htmlFor="billingFrequency">Billing Frequency</Label>
-							<Select name="billingFrequency" onValueChange={setBillingFrequency} value={billingFrequency}>
+							<Select
+								name="billingFrequency"
+								onValueChange={setBillingFrequency}
+								value={billingFrequency}
+							>
 								<SelectTrigger id="billingFrequency">
 									<SelectValue />
 								</SelectTrigger>
@@ -313,19 +354,34 @@ export function MaintenancePlanForm({
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="terms">Plan Terms</Label>
-						<Textarea id="terms" name="terms" placeholder="Cancellation policy, included services, etc." rows={3} />
+						<Textarea
+							id="terms"
+							name="terms"
+							placeholder="Cancellation policy, included services, etc."
+							rows={3}
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

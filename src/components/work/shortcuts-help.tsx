@@ -1,7 +1,13 @@
 "use client";
 
 import { Keyboard } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 
 /**
  * Shortcuts Help Dialog
@@ -59,7 +65,8 @@ const SHORTCUTS = [
 ];
 
 export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
-	const isMac = typeof navigator !== "undefined" && navigator.platform.includes("Mac");
+	const isMac =
+		typeof navigator !== "undefined" && navigator.platform.includes("Mac");
 
 	const formatKey = (key: string) => {
 		if (key === "⌘" && !isMac) {
@@ -76,7 +83,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 						<Keyboard className="size-5" />
 						Keyboard Shortcuts
 					</DialogTitle>
-					<DialogDescription>Speed up your workflow with these keyboard shortcuts</DialogDescription>
+					<DialogDescription>
+						Speed up your workflow with these keyboard shortcuts
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="grid gap-6 md:grid-cols-2">
@@ -85,15 +94,24 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 							<h4 className="font-semibold text-sm">{category.category}</h4>
 							<div className="space-y-2">
 								{category.shortcuts.map((shortcut, index) => (
-									<div className="flex items-center justify-between text-sm" key={index}>
-										<span className="text-muted-foreground">{shortcut.description}</span>
+									<div
+										className="flex items-center justify-between text-sm"
+										key={index}
+									>
+										<span className="text-muted-foreground">
+											{shortcut.description}
+										</span>
 										<div className="flex items-center gap-1">
 											{shortcut.keys.map((key, keyIndex) => (
 												<span className="flex items-center" key={keyIndex}>
 													<kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-medium font-mono text-xs">
 														{formatKey(key)}
 													</kbd>
-													{keyIndex < shortcut.keys.length - 1 && <span className="mx-1 text-muted-foreground">+</span>}
+													{keyIndex < shortcut.keys.length - 1 && (
+														<span className="mx-1 text-muted-foreground">
+															+
+														</span>
+													)}
 												</span>
 											))}
 										</div>
@@ -106,8 +124,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 
 				<div className="mt-4 rounded-lg bg-muted p-4">
 					<p className="text-muted-foreground text-sm">
-						<strong>Pro tip:</strong> Use Tab to quickly move between fields. Press {isMac ? "⌘" : "Ctrl"} + K to
-						instantly jump to customer search from anywhere in the form.
+						<strong>Pro tip:</strong> Use Tab to quickly move between fields.
+						Press {isMac ? "⌘" : "Ctrl"} + K to instantly jump to customer
+						search from anywhere in the form.
 					</p>
 				</div>
 			</DialogContent>

@@ -58,37 +58,42 @@ export type EnrichedCustomer = Customer & {
  * - Hash map joins for O(n) lookups
  * - React.cache() prevents duplicate queries
  */
-export const getCustomersWithStats = cache(async (): Promise<EnrichedCustomer[] | null> => {
-	const supabase = await createClient();
-	if (!supabase) {
-		return null;
-	}
+export const getCustomersWithStats = cache(
+	async (): Promise<EnrichedCustomer[] | null> => {
+		const supabase = await createClient();
+		if (!supabase) {
+			return null;
+		}
 
-	// Parallel auth checks
-	const [
-		{
-			data: { user },
-		},
-		activeCompanyId,
-	] = await Promise.all([supabase.auth.getUser(), getActiveCompanyId()]);
+		// Parallel auth checks
+		const [
+			{
+				data: { user },
+			},
+			activeCompanyId,
+		] = await Promise.all([supabase.auth.getUser(), getActiveCompanyId()]);
 
-	if (!(user && activeCompanyId)) {
-		return null;
-	}
+		if (!(user && activeCompanyId)) {
+			return null;
+		}
 
-	// OPTIMIZED: Single RPC function with SQL joins (8-14x faster!)
-	// Replaces: 4 parallel queries + JavaScript joins (4200ms)
-	// With: Single SQL query with correlated subqueries (300-500ms)
-	const { data: customers, error } = await supabase.rpc("get_customers_with_stats", {
-		company_id_param: activeCompanyId,
-	});
+		// OPTIMIZED: Single RPC function with SQL joins (8-14x faster!)
+		// Replaces: 4 parallel queries + JavaScript joins (4200ms)
+		// With: Single SQL query with correlated subqueries (300-500ms)
+		const { data: customers, error } = await supabase.rpc(
+			"get_customers_with_stats",
+			{
+				company_id_param: activeCompanyId,
+			},
+		);
 
-	if (error) {
-		throw new Error(`Failed to load customers: ${error.message}`);
-	}
+		if (error) {
+			throw new Error(`Failed to load customers: ${error.message}`);
+		}
 
-	return customers || [];
-});
+		return customers || [];
+	},
+);
 
 /**
  * Get customer statistics

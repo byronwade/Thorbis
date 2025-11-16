@@ -18,10 +18,23 @@ import { updatePersonalInfo } from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+	Form,
+	FormControl,
+	FormDescription,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 // Constants
@@ -29,13 +42,31 @@ const MIN_NAME_LENGTH = 2;
 const MIN_PHONE_LENGTH = 10;
 const MAX_BIO_LENGTH = 500;
 const personalInfoSchema = z.object({
-	firstName: z.string().min(MIN_NAME_LENGTH, `First name must be at least ${MIN_NAME_LENGTH} characters`),
-	lastName: z.string().min(MIN_NAME_LENGTH, `Last name must be at least ${MIN_NAME_LENGTH} characters`),
+	firstName: z
+		.string()
+		.min(
+			MIN_NAME_LENGTH,
+			`First name must be at least ${MIN_NAME_LENGTH} characters`,
+		),
+	lastName: z
+		.string()
+		.min(
+			MIN_NAME_LENGTH,
+			`Last name must be at least ${MIN_NAME_LENGTH} characters`,
+		),
 	email: z.string().email("Please enter a valid email address"),
-	phone: z.string().min(MIN_PHONE_LENGTH, `Phone number must be at least ${MIN_PHONE_LENGTH} digits`),
+	phone: z
+		.string()
+		.min(
+			MIN_PHONE_LENGTH,
+			`Phone number must be at least ${MIN_PHONE_LENGTH} digits`,
+		),
 	jobTitle: z.string().optional(),
 	company: z.string().optional(),
-	bio: z.string().max(MAX_BIO_LENGTH, `Bio must be less than ${MAX_BIO_LENGTH} characters`).optional(),
+	bio: z
+		.string()
+		.max(MAX_BIO_LENGTH, `Bio must be less than ${MAX_BIO_LENGTH} characters`)
+		.optional(),
 	address: z.string().optional(),
 	city: z.string().optional(),
 	state: z.string().optional(),
@@ -48,7 +79,9 @@ export type PersonalInformationClientProps = {
 	initialData: PersonalInfoFormData & { avatar?: string | null };
 };
 
-export function PersonalInformationClient({ initialData }: PersonalInformationClientProps) {
+export function PersonalInformationClient({
+	initialData,
+}: PersonalInformationClientProps) {
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [hasChanges, setHasChanges] = useState(false);
@@ -108,15 +141,24 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 				title="Personal Information"
 			>
 				<Form {...form}>
-					<form className="space-y-8" onChange={() => setHasChanges(true)} onSubmit={form.handleSubmit(onSubmit)}>
+					<form
+						className="space-y-8"
+						onChange={() => setHasChanges(true)}
+						onSubmit={form.handleSubmit(onSubmit)}
+					>
 						{/* Profile Picture Section */}
 						<div className="rounded-xl border bg-card p-8 shadow-sm">
 							<div className="flex items-start gap-8">
 								<div className="flex flex-col items-center space-y-4">
 									<div className="relative">
 										<Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-											<AvatarImage alt="Profile picture" src={initialData.avatar ?? undefined} />
-											<AvatarFallback className="text-2xl">{avatarFallback || "?"}</AvatarFallback>
+											<AvatarImage
+												alt="Profile picture"
+												src={initialData.avatar ?? undefined}
+											/>
+											<AvatarFallback className="text-2xl">
+												{avatarFallback || "?"}
+											</AvatarFallback>
 										</Avatar>
 										<Tooltip>
 											<TooltipTrigger asChild>
@@ -141,14 +183,18 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 											<h2 className="font-semibold text-xl">Profile Picture</h2>
 											<Tooltip>
 												<TooltipTrigger asChild>
-													<button className="flex items-center justify-center" type="button">
+													<button
+														className="flex items-center justify-center"
+														type="button"
+													>
 														<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 													</button>
 												</TooltipTrigger>
 												<TooltipContent className="max-w-xs">
 													<p className="text-sm">
-														Your profile photo appears throughout the platform, including in customer communications and
-														team directories.
+														Your profile photo appears throughout the platform,
+														including in customer communications and team
+														directories.
 													</p>
 												</TooltipContent>
 											</Tooltip>
@@ -170,7 +216,8 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 									</div>
 
 									<p className="text-muted-foreground text-xs">
-										Recommended: JPG or PNG, max 2MB, at least 400x400 pixels for best quality
+										Recommended: JPG or PNG, max 2MB, at least 400x400 pixels
+										for best quality
 									</p>
 								</div>
 							</div>
@@ -184,16 +231,24 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 									<h2 className="font-semibold text-xl">Basic Information</h2>
 									<Tooltip>
 										<TooltipTrigger asChild>
-											<button className="flex items-center justify-center" type="button">
+											<button
+												className="flex items-center justify-center"
+												type="button"
+											>
 												<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 											</button>
 										</TooltipTrigger>
 										<TooltipContent className="max-w-xs">
-											<p className="text-sm">Required information for your account and communications.</p>
+											<p className="text-sm">
+												Required information for your account and
+												communications.
+											</p>
 										</TooltipContent>
 									</Tooltip>
 								</div>
-								<p className="text-muted-foreground text-sm">Essential details used across the platform</p>
+								<p className="text-muted-foreground text-sm">
+									Essential details used across the platform
+								</p>
 							</div>
 
 							<div className="space-y-6">
@@ -214,7 +269,9 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Your legal first name</p>
+															<p className="max-w-xs text-sm">
+																Your legal first name
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
@@ -241,7 +298,9 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Your legal last name or surname</p>
+															<p className="max-w-xs text-sm">
+																Your legal last name or surname
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
@@ -272,15 +331,22 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 														</TooltipTrigger>
 														<TooltipContent>
 															<p className="max-w-xs text-sm">
-																Primary email for login, notifications, and communication
+																Primary email for login, notifications, and
+																communication
 															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
 												<FormControl>
-													<Input placeholder="john@example.com" type="email" {...field} />
+													<Input
+														placeholder="john@example.com"
+														type="email"
+														{...field}
+													/>
 												</FormControl>
-												<FormDescription>Used for account login and notifications</FormDescription>
+												<FormDescription>
+													Used for account login and notifications
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -301,14 +367,23 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Contact number for SMS notifications and voice calls</p>
+															<p className="max-w-xs text-sm">
+																Contact number for SMS notifications and voice
+																calls
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
 												<FormControl>
-													<Input placeholder="+1 (555) 123-4567" type="tel" {...field} />
+													<Input
+														placeholder="+1 (555) 123-4567"
+														type="tel"
+														{...field}
+													/>
 												</FormControl>
-												<FormDescription>Include country code for international</FormDescription>
+												<FormDescription>
+													Include country code for international
+												</FormDescription>
 												<FormMessage />
 											</FormItem>
 										)}
@@ -331,12 +406,17 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Your role or position in the organization</p>
+															<p className="max-w-xs text-sm">
+																Your role or position in the organization
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
 												<FormControl>
-													<Input placeholder="Field Service Technician" {...field} />
+													<Input
+														placeholder="Field Service Technician"
+														{...field}
+													/>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -357,12 +437,17 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 															</button>
 														</TooltipTrigger>
 														<TooltipContent>
-															<p className="max-w-xs text-sm">Organization or company name</p>
+															<p className="max-w-xs text-sm">
+																Organization or company name
+															</p>
 														</TooltipContent>
 													</Tooltip>
 												</FormLabel>
 												<FormControl>
-													<Input placeholder="Thorbis Field Services" {...field} />
+													<Input
+														placeholder="Thorbis Field Services"
+														{...field}
+													/>
 												</FormControl>
 												<FormMessage />
 											</FormItem>
@@ -386,7 +471,8 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 													</TooltipTrigger>
 													<TooltipContent>
 														<p className="max-w-xs text-sm">
-															Brief description of your background, experience, and expertise
+															Brief description of your background, experience,
+															and expertise
 														</p>
 													</TooltipContent>
 												</Tooltip>
@@ -416,18 +502,24 @@ export function PersonalInformationClient({ initialData }: PersonalInformationCl
 									<h2 className="font-semibold text-xl">Address</h2>
 									<Tooltip>
 										<TooltipTrigger asChild>
-											<button className="flex items-center justify-center" type="button">
+											<button
+												className="flex items-center justify-center"
+												type="button"
+											>
 												<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
 											</button>
 										</TooltipTrigger>
 										<TooltipContent className="max-w-xs">
 											<p className="text-sm">
-												Optional address information for shipping, billing, or service location purposes.
+												Optional address information for shipping, billing, or
+												service location purposes.
 											</p>
 										</TooltipContent>
 									</Tooltip>
 								</div>
-								<p className="text-muted-foreground text-sm">Optional location information</p>
+								<p className="text-muted-foreground text-sm">
+									Optional location information
+								</p>
 							</div>
 
 							<div className="space-y-6">

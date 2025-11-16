@@ -16,7 +16,9 @@ export function ActivityLogSection({ activities }: ActivityLogSectionProps) {
 				<div className="flex h-32 items-center justify-center">
 					<div className="text-center">
 						<Activity className="mx-auto size-8 text-muted-foreground/50" />
-						<p className="mt-2 text-muted-foreground text-sm">No activity yet</p>
+						<p className="mt-2 text-muted-foreground text-sm">
+							No activity yet
+						</p>
 					</div>
 				</div>
 			</UnifiedAccordionContent>
@@ -27,10 +29,15 @@ export function ActivityLogSection({ activities }: ActivityLogSectionProps) {
 		<UnifiedAccordionContent>
 			<div className="max-h-96 space-y-3 overflow-y-auto">
 				{activities.map((activity: any) => (
-					<div className="flex gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50" key={activity.id}>
+					<div
+						className="flex gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/50"
+						key={activity.id}
+					>
 						<Avatar className="size-8 flex-shrink-0">
 							<AvatarImage src={activity.user?.avatar} />
-							<AvatarFallback>{activity.user?.name?.charAt(0) || "?"}</AvatarFallback>
+							<AvatarFallback>
+								{activity.user?.name?.charAt(0) || "?"}
+							</AvatarFallback>
 						</Avatar>
 						<div className="min-w-0 flex-1">
 							<p className="break-words text-sm">{activity.description}</p>

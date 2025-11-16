@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { MaintenancePlanDetailData } from "@/components/work/maintenance-plans/maintenance-plan-detail-data";
 import { MaintenancePlanDetailSkeleton } from "@/components/work/maintenance-plans/maintenance-plan-detail-skeleton";
 
-export default async function MaintenancePlanDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function MaintenancePlanDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: planId } = await params;
 
 	return (

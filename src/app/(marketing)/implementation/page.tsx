@@ -19,7 +19,11 @@ export const metadata = generateSEOMetadata({
 	description:
 		"Accelerate time-to-value with dedicated migration engineers, AI configuration, and role-based training. Explore onboarding phases and support tiers.",
 	path: "/implementation",
-	keywords: ["thorbis implementation", "field service onboarding", "customer success program thorbis"],
+	keywords: [
+		"thorbis implementation",
+		"field service onboarding",
+		"customer success program thorbis",
+	],
 });
 
 const PHASES = [
@@ -27,7 +31,11 @@ const PHASES = [
 		title: "Discovery & blueprint",
 		description:
 			"We audit current systems, export data, and map workflows to Thorbis modules. The output is a tailored implementation blueprint.",
-		bullets: ["Kickoff meeting with stakeholders", "Data audit & export collection", "Success metrics & KPI alignment"],
+		bullets: [
+			"Kickoff meeting with stakeholders",
+			"Data audit & export collection",
+			"Success metrics & KPI alignment",
+		],
 		icon: "map-pin",
 	},
 	{
@@ -77,7 +85,8 @@ const SUPPORT_PACKAGES = [
 	},
 	{
 		name: "Enterprise Elite",
-		description: "White-glove program with 24/7 support, sandbox environments, and embedded Thorbis specialists.",
+		description:
+			"White-glove program with 24/7 support, sandbox environments, and embedded Thorbis specialists.",
 		features: [
 			"Quarterly onsite optimization sessions",
 			"Executive sponsor & named product liaison",
@@ -116,7 +125,8 @@ const breadcrumbLd = generateBreadcrumbStructuredData([
 
 const howToLd = createHowToSchema({
 	name: "Thorbis Implementation Playbook",
-	description: "Three-phase process to migrate, train, and optimize your field service team on Thorbis.",
+	description:
+		"Three-phase process to migrate, train, and optimize your field service team on Thorbis.",
 	steps: PHASES.map((phase, index) => ({
 		name: phase.title,
 		text: phase.description,
@@ -130,7 +140,8 @@ const faqLd = generateFAQStructuredData(FAQS);
 
 const serviceLd = generateServiceStructuredData({
 	name: "Thorbis Implementation & Success",
-	description: "Guided migration and customer success program for field service contractors adopting Thorbis.",
+	description:
+		"Guided migration and customer success program for field service contractors adopting Thorbis.",
 	serviceType: "ImplementationService",
 	offers: [
 		{
@@ -141,7 +152,8 @@ const serviceLd = generateServiceStructuredData({
 		{
 			price: "Custom",
 			currency: "USD",
-			description: "Growth Accelerator and Enterprise Elite tailored to your roadmap.",
+			description:
+				"Growth Accelerator and Enterprise Elite tailored to your roadmap.",
 		},
 	],
 });
@@ -179,9 +191,11 @@ export default function ImplementationPage() {
 						Launch Thorbis in 45 days with migration experts by your side
 					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Dedicated migration engineers, AI strategists, and customer success coaches guide your team from day-one
-						planning to long-term optimization. Implementation is included in the $100/month base subscription with
-						pay-as-you-go usage—no surprise onboarding fees and no lock-in.
+						Dedicated migration engineers, AI strategists, and customer success
+						coaches guide your team from day-one planning to long-term
+						optimization. Implementation is included in the $100/month base
+						subscription with pay-as-you-go usage—no surprise onboarding fees
+						and no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -196,23 +210,31 @@ export default function ImplementationPage() {
 				<main className="mt-16 space-y-20">
 					<section className="space-y-8">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">Three-phase onboarding blueprint</h2>
+							<h2 className="font-semibold text-3xl">
+								Three-phase onboarding blueprint
+							</h2>
 							<p className="text-muted-foreground">
-								A proven implementation methodology honed with hundreds of contractors moving from ServiceTitan,
-								Housecall Pro, Jobber, and custom tools.
+								A proven implementation methodology honed with hundreds of
+								contractors moving from ServiceTitan, Housecall Pro, Jobber, and
+								custom tools.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
 							{PHASES.map((phase) => {
 								const Icon = getMarketingIcon(phase.icon);
 								return (
-									<Card className="border-primary/30 bg-primary/5" key={phase.title}>
+									<Card
+										className="border-primary/30 bg-primary/5"
+										key={phase.title}
+									>
 										<CardHeader className="space-y-3">
 											<span className="inline-flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
 												<Icon aria-hidden="true" className="size-6" />
 											</span>
 											<CardTitle className="text-xl">{phase.title}</CardTitle>
-											<p className="text-muted-foreground text-sm leading-relaxed">{phase.description}</p>
+											<p className="text-muted-foreground text-sm leading-relaxed">
+												{phase.description}
+											</p>
 										</CardHeader>
 										<CardContent>
 											<ul className="space-y-2 text-muted-foreground text-sm">
@@ -231,10 +253,13 @@ export default function ImplementationPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">Enablement resources for every role</h2>
+							<h2 className="font-semibold text-3xl">
+								Enablement resources for every role
+							</h2>
 							<p className="text-muted-foreground">
-								Technicians, dispatchers, finance, and leadership receive tailored instruction through live sessions and
-								on-demand content.
+								Technicians, dispatchers, finance, and leadership receive
+								tailored instruction through live sessions and on-demand
+								content.
 							</p>
 						</div>
 
@@ -242,25 +267,29 @@ export default function ImplementationPage() {
 							{[
 								{
 									title: "Help Center",
-									description: "Step-by-step guides covering configuration, workflows, and best practices.",
+									description:
+										"Step-by-step guides covering configuration, workflows, and best practices.",
 									href: "/kb",
 									icon: "library",
 								},
 								{
 									title: "Thorbis University",
-									description: "Role-based training paths with quizzes and certifications.",
+									description:
+										"Role-based training paths with quizzes and certifications.",
 									href: "/templates?tag=training",
 									icon: "graduation-cap",
 								},
 								{
 									title: "Live office hours",
-									description: "Weekly drop-in sessions with success managers and solution architects.",
+									description:
+										"Weekly drop-in sessions with success managers and solution architects.",
 									href: "/webinars",
 									icon: "calendar-check",
 								},
 								{
 									title: "Community Forum",
-									description: "Share playbooks, ask peers, and access customer-only templates.",
+									description:
+										"Share playbooks, ask peers, and access customer-only templates.",
 									href: "/community",
 									icon: "users",
 								},
@@ -270,9 +299,14 @@ export default function ImplementationPage() {
 									<Card key={resource.title}>
 										<CardHeader className="space-y-3">
 											<span className="inline-flex size-12 items-center justify-center rounded-full bg-muted">
-												<Icon aria-hidden="true" className="size-6 text-primary" />
+												<Icon
+													aria-hidden="true"
+													className="size-6 text-primary"
+												/>
 											</span>
-											<CardTitle className="text-lg">{resource.title}</CardTitle>
+											<CardTitle className="text-lg">
+												{resource.title}
+											</CardTitle>
 										</CardHeader>
 										<CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
 											<p>{resource.description}</p>
@@ -288,10 +322,12 @@ export default function ImplementationPage() {
 
 					<section className="space-y-8">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">Success packages designed for every growth stage</h2>
+							<h2 className="font-semibold text-3xl">
+								Success packages designed for every growth stage
+							</h2>
 							<p className="text-muted-foreground">
-								Choose the support level that matches your expansion plans. All packages include proactive guidance and
-								metrics reviews.
+								Choose the support level that matches your expansion plans. All
+								packages include proactive guidance and metrics reviews.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
@@ -304,7 +340,9 @@ export default function ImplementationPage() {
 										<CardTitle className="text-2xl">{pkg.name}</CardTitle>
 									</CardHeader>
 									<CardContent className="flex flex-1 flex-col justify-between space-y-4">
-										<p className="text-muted-foreground text-sm leading-relaxed">{pkg.description}</p>
+										<p className="text-muted-foreground text-sm leading-relaxed">
+											{pkg.description}
+										</p>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											{pkg.features.map((feature) => (
 												<li key={feature}>✔️ {feature}</li>
@@ -322,23 +360,33 @@ export default function ImplementationPage() {
 					<section className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
 						<Card className="bg-primary/5">
 							<CardContent className="flex h-full flex-col justify-center space-y-4 p-8">
-								<p className="font-semibold text-lg text-primary uppercase tracking-wide">Customer spotlight</p>
-								<p className="font-semibold text-2xl">
-									“Thorbis migrated our multi-branch ServiceTitan deployment in 42 days. Dispatchers were live day one,
-									and AI booking added 11% more jobs in the first month.”
+								<p className="font-semibold text-lg text-primary uppercase tracking-wide">
+									Customer spotlight
 								</p>
-								<p className="text-muted-foreground">— Leslie Warren, COO, Elevate Mechanical</p>
+								<p className="font-semibold text-2xl">
+									“Thorbis migrated our multi-branch ServiceTitan deployment in
+									42 days. Dispatchers were live day one, and AI booking added
+									11% more jobs in the first month.”
+								</p>
+								<p className="text-muted-foreground">
+									— Leslie Warren, COO, Elevate Mechanical
+								</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-xl">Implementation KPI targets</CardTitle>
+								<CardTitle className="text-xl">
+									Implementation KPI targets
+								</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-3 text-muted-foreground text-sm">
 								<p>✔️ Go-live readiness checklist completed within 30 days</p>
 								<p>✔️ Dispatch adoption {">"} 90% within first week</p>
 								<p>✔️ AI assistant handling 40% of incoming calls by week six</p>
-								<p>✔️ Customer portal activation rate surpassing 60% after training campaign</p>
+								<p>
+									✔️ Customer portal activation rate surpassing 60% after
+									training campaign
+								</p>
 							</CardContent>
 						</Card>
 					</section>
@@ -351,7 +399,9 @@ export default function ImplementationPage() {
 									<CardHeader>
 										<CardTitle className="text-lg">{faq.question}</CardTitle>
 									</CardHeader>
-									<CardContent className="text-muted-foreground text-sm leading-relaxed">{faq.answer}</CardContent>
+									<CardContent className="text-muted-foreground text-sm leading-relaxed">
+										{faq.answer}
+									</CardContent>
 								</Card>
 							))}
 						</div>

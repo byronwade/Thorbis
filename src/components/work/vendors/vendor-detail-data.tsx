@@ -60,62 +60,78 @@ export async function VendorDetailData({ vendorId }: VendorDetailDataProps) {
 	}
 
 	// Fetch all related data in parallel
-	const [{ data: purchaseOrders }, { data: allPurchaseOrders }, { data: allContacts }, { data: activities }] =
-		await Promise.all([
-			// Purchase orders linked to this vendor
-			supabase
-				.from("purchase_orders")
-				.select("*")
-				.eq("vendor_id", vendorId)
-				.eq("company_id", activeCompanyId)
-				.is("deleted_at", null)
-				.order("created_at", { ascending: false }),
+	const [
+		{ data: purchaseOrders },
+		{ data: allPurchaseOrders },
+		{ data: allContacts },
+		{ data: activities },
+	] = await Promise.all([
+		// Purchase orders linked to this vendor
+		supabase
+			.from("purchase_orders")
+			.select("*")
+			.eq("vendor_id", vendorId)
+			.eq("company_id", activeCompanyId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false }),
 
-			// All purchase orders for search (not linked to this vendor)
-			supabase
-				.from("purchase_orders")
-				.select("id, po_number, title, total_amount, status, created_at")
-				.eq("company_id", activeCompanyId)
-				.is("deleted_at", null)
-				.is("vendor_id", null)
-				.order("created_at", { ascending: false })
-				.limit(50),
+		// All purchase orders for search (not linked to this vendor)
+		supabase
+			.from("purchase_orders")
+			.select("id, po_number, title, total_amount, status, created_at")
+			.eq("company_id", activeCompanyId)
+			.is("deleted_at", null)
+			.is("vendor_id", null)
+			.order("created_at", { ascending: false })
+			.limit(50),
 
-			// All contacts for search
-			supabase
-				.from("contacts")
-				.select("id, name, email, phone, title, company_name")
-				.eq("company_id", activeCompanyId)
-				.is("deleted_at", null)
-				.order("name", { ascending: true })
-				.limit(100),
+		// All contacts for search
+		supabase
+			.from("contacts")
+			.select("id, name, email, phone, title, company_name")
+			.eq("company_id", activeCompanyId)
+			.is("deleted_at", null)
+			.order("name", { ascending: true })
+			.limit(100),
 
-			// Activity log
-			supabase
-				.from("activity_log")
-				.select("*, user:users!user_id(*)")
-				.eq("entity_type", "vendor")
-				.eq("entity_id", vendorId)
-				.order("created_at", { ascending: false })
-				.limit(50),
-		]);
+		// Activity log
+		supabase
+			.from("activity_log")
+			.select("*, user:users!user_id(*)")
+			.eq("entity_type", "vendor")
+			.eq("entity_id", vendorId)
+			.order("created_at", { ascending: false })
+			.limit(50),
+	]);
 
 	const poRows = purchaseOrders || [];
 
 	// Calculate metrics
-	const totalSpend = poRows.reduce((sum, po) => sum + (po.total_amount || 0), 0);
+	const totalSpend = poRows.reduce(
+		(sum, po) => sum + (po.total_amount || 0),
+		0,
+	);
 	const openPOs = poRows.filter((po) =>
-		["draft", "pending_approval", "approved", "ordered"].includes(po.status || "")
+		["draft", "pending_approval", "approved", "ordered"].includes(
+			po.status || "",
+		),
 	).length;
-	const completedPOs = poRows.filter((po) => po.status === "received" || po.status === "completed").length;
+	const completedPOs = poRows.filter(
+		(po) => po.status === "received" || po.status === "completed",
+	).length;
 
 	// Get unique job IDs from purchase orders
-	const relatedJobIds = Array.from(new Set(poRows.map((po) => po.job_id).filter(Boolean)));
+	const relatedJobIds = Array.from(
+		new Set(poRows.map((po) => po.job_id).filter(Boolean)),
+	);
 
 	// Fetch related jobs if any
 	let relatedJobs = [];
 	if (relatedJobIds.length > 0) {
-		const { data: jobs } = await supabase.from("jobs").select("id, job_number, title, status").in("id", relatedJobIds);
+		const { data: jobs } = await supabase
+			.from("jobs")
+			.select("id, job_number, title, status")
+			.in("id", relatedJobIds);
 		relatedJobs = jobs || [];
 	}
 

@@ -1,6 +1,8 @@
 import type { Database } from "@/types/supabase";
 
-type TeamRulesRow = Database["public"]["Tables"]["schedule_team_rules"]["Row"] | null;
+type TeamRulesRow =
+	| Database["public"]["Tables"]["schedule_team_rules"]["Row"]
+	| null;
 
 export type TeamSchedulingSettingsState = {
 	maxJobsPerDay: number;
@@ -28,7 +30,9 @@ export const DEFAULT_TEAM_SCHEDULING_SETTINGS: TeamSchedulingSettingsState = {
 	breakDurationMinutes: 15,
 };
 
-export function mapTeamSchedulingSettings(row: TeamRulesRow): Partial<TeamSchedulingSettingsState> {
+export function mapTeamSchedulingSettings(
+	row: TeamRulesRow,
+): Partial<TeamSchedulingSettingsState> {
 	if (!row) {
 		return {};
 	}

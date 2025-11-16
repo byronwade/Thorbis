@@ -22,7 +22,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type Customer = {
@@ -82,12 +88,12 @@ export function EstimateForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(searchParams?.get("propertyId") || undefined);
 	const [lineItems, setLineItems] = useState<LineItem[]>([
 		{
 			id: crypto.randomUUID(),
@@ -151,7 +157,7 @@ export function EstimateForm({
 					return updated;
 				}
 				return item;
-			})
+			}),
 		);
 	};
 
@@ -232,14 +238,21 @@ export function EstimateForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select name="customerId" onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
+						<Select
+							name="customerId"
+							onValueChange={setSelectedCustomerId}
+							required
+							value={selectedCustomerId}
+						>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
 							<SelectContent>
 								{customers.map((customer) => (
 									<SelectItem key={customer.id} value={customer.id}>
-										{customer.display_name || `${customer.first_name} ${customer.last_name}` || customer.email}
+										{customer.display_name ||
+											`${customer.first_name} ${customer.last_name}` ||
+											customer.email}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -250,7 +263,11 @@ export function EstimateForm({
 					{selectedCustomerId && (
 						<div className="space-y-2">
 							<Label htmlFor="property-select">Property (Optional)</Label>
-							<Select name="propertyId" onValueChange={setSelectedPropertyId} value={selectedPropertyId}>
+							<Select
+								name="propertyId"
+								onValueChange={setSelectedPropertyId}
+								value={selectedPropertyId}
+							>
 								<SelectTrigger id="property-select">
 									<SelectValue placeholder="Select property or add new" />
 								</SelectTrigger>
@@ -277,7 +294,12 @@ export function EstimateForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., HVAC System Installation" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., HVAC System Installation"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
@@ -293,7 +315,13 @@ export function EstimateForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="validDays">Valid For (Days)</Label>
-							<Input defaultValue="30" id="validDays" min="1" name="validDays" type="number" />
+							<Input
+								defaultValue="30"
+								id="validDays"
+								min="1"
+								name="validDays"
+								type="number"
+							/>
 						</div>
 					</div>
 				</CardContent>
@@ -305,10 +333,20 @@ export function EstimateForm({
 					<div className="flex items-center justify-between">
 						<CardTitle>Line Items</CardTitle>
 						<div className="flex gap-2">
-							<Button onClick={() => setShowPriceBook(!showPriceBook)} size="sm" type="button" variant="outline">
+							<Button
+								onClick={() => setShowPriceBook(!showPriceBook)}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								Price Book
 							</Button>
-							<Button onClick={addLineItem} size="sm" type="button" variant="outline">
+							<Button
+								onClick={addLineItem}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Item
 							</Button>
@@ -321,7 +359,12 @@ export function EstimateForm({
 						<div className="mb-4 rounded-lg border bg-muted/50 p-4">
 							<div className="mb-2 flex items-center justify-between">
 								<h4 className="font-medium">Price Book</h4>
-								<Button onClick={() => setShowPriceBook(false)} size="sm" type="button" variant="ghost">
+								<Button
+									onClick={() => setShowPriceBook(false)}
+									size="sm"
+									type="button"
+									variant="ghost"
+								>
 									<X className="h-4 w-4" />
 								</Button>
 							</div>
@@ -336,9 +379,15 @@ export function EstimateForm({
 										<div className="flex justify-between">
 											<div>
 												<p className="font-medium">{item.name}</p>
-												{item.description && <p className="text-muted-foreground text-sm">{item.description}</p>}
+												{item.description && (
+													<p className="text-muted-foreground text-sm">
+														{item.description}
+													</p>
+												)}
 											</div>
-											<p className="font-medium">${(item.unit_price / 100).toFixed(2)}</p>
+											<p className="font-medium">
+												${(item.unit_price / 100).toFixed(2)}
+											</p>
 										</div>
 									</button>
 								))}
@@ -349,10 +398,15 @@ export function EstimateForm({
 					{/* Line Items List */}
 					<div className="space-y-3">
 						{lineItems.map((item, _index) => (
-							<div className="grid grid-cols-12 gap-3 rounded-lg border p-3" key={item.id}>
+							<div
+								className="grid grid-cols-12 gap-3 rounded-lg border p-3"
+								key={item.id}
+							>
 								<div className="col-span-5">
 									<Input
-										onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
+										onChange={(e) =>
+											updateLineItem(item.id, "description", e.target.value)
+										}
 										placeholder="Description"
 										value={item.description}
 									/>
@@ -360,7 +414,13 @@ export function EstimateForm({
 								<div className="col-span-2">
 									<Input
 										min="0.01"
-										onChange={(e) => updateLineItem(item.id, "quantity", Number.parseFloat(e.target.value) || 0)}
+										onChange={(e) =>
+											updateLineItem(
+												item.id,
+												"quantity",
+												Number.parseFloat(e.target.value) || 0,
+											)
+										}
 										placeholder="Qty"
 										step="0.01"
 										type="number"
@@ -370,7 +430,13 @@ export function EstimateForm({
 								<div className="col-span-2">
 									<Input
 										min="0"
-										onChange={(e) => updateLineItem(item.id, "unitPrice", Number.parseFloat(e.target.value) || 0)}
+										onChange={(e) =>
+											updateLineItem(
+												item.id,
+												"unitPrice",
+												Number.parseFloat(e.target.value) || 0,
+											)
+										}
 										placeholder="Price"
 										step="0.01"
 										type="number"
@@ -378,7 +444,11 @@ export function EstimateForm({
 									/>
 								</div>
 								<div className="col-span-2">
-									<Input className="bg-muted" disabled value={`$${item.total.toFixed(2)}`} />
+									<Input
+										className="bg-muted"
+										disabled
+										value={`$${item.total.toFixed(2)}`}
+									/>
 								</div>
 								<div className="col-span-1 flex items-center justify-center">
 									<Button
@@ -410,7 +480,9 @@ export function EstimateForm({
 								id="taxRate"
 								max="100"
 								min="0"
-								onChange={(e) => setTaxRate(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setTaxRate(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={taxRate}
@@ -421,7 +493,9 @@ export function EstimateForm({
 							<Input
 								id="discountAmount"
 								min="0"
-								onChange={(e) => setDiscountAmount(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setDiscountAmount(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={discountAmount}
@@ -460,19 +534,34 @@ export function EstimateForm({
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="terms">Terms & Conditions</Label>
-						<Textarea id="terms" name="terms" placeholder="Payment terms, warranty information, etc." rows={3} />
+						<Textarea
+							id="terms"
+							name="terms"
+							placeholder="Payment terms, warranty information, etc."
+							rows={3}
+						/>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use (not shown to customer)" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use (not shown to customer)"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

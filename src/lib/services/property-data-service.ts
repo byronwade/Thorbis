@@ -91,7 +91,10 @@ export type PropertyData = z.infer<typeof PropertyDataSchema>;
 export class PropertyDataService {
 	private readonly rentcastApiKey: string | undefined;
 	private readonly attomApiKey: string | undefined; // Optional fallback
-	private readonly cache: Map<string, { data: PropertyData; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: PropertyData; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days (property data doesn't change often)
 
 	constructor() {
@@ -108,7 +111,7 @@ export class PropertyDataService {
 		state: string,
 		zipCode: string,
 		_lat?: number,
-		_lon?: number
+		_lon?: number,
 	): Promise<PropertyData | null> {
 		const cacheKey = `${address}-${city}-${state}-${zipCode}`;
 		const cached = this.cache.get(cacheKey);
@@ -121,7 +124,12 @@ export class PropertyDataService {
 			const fullAddress = `${address}, ${city}, ${state} ${zipCode}`;
 
 			// Try RentCast first (free tier: 50/month)
-			let propertyData = await this.getRentCastData(address, city, state, zipCode);
+			let propertyData = await this.getRentCastData(
+				address,
+				city,
+				state,
+				zipCode,
+			);
 
 			// Fallback to Attom if available
 			if (!propertyData && this.attomApiKey) {
@@ -165,7 +173,7 @@ export class PropertyDataService {
 		address: string,
 		city: string,
 		state: string,
-		zipCode: string
+		zipCode: string,
 	): Promise<PropertyData | null> {
 		if (!this.rentcastApiKey) {
 			return null;
@@ -223,7 +231,10 @@ export class PropertyDataService {
 					estimatedValue: data.price || data.addressedValue,
 					lastSoldDate: data.lastSaleDate,
 					lastSoldPrice: data.lastSalePrice,
-					pricePerSqFt: data.price && data.squareFootage ? Math.round(data.price / data.squareFootage) : undefined,
+					pricePerSqFt:
+						data.price && data.squareFootage
+							? Math.round(data.price / data.squareFootage)
+							: undefined,
 				},
 				dataSource: "rentcast",
 				enrichedAt: new Date().toISOString(),
@@ -243,7 +254,7 @@ export class PropertyDataService {
 		address: string,
 		city: string,
 		state: string,
-		zipCode: string
+		zipCode: string,
 	): Promise<PropertyData | null> {
 		if (!this.attomApiKey) {
 			return null;
@@ -287,12 +298,24 @@ export class PropertyDataService {
 				},
 				characteristics: {
 					propertyType: building?.propertyType || summary?.proptype,
-					yearBuilt: building?.yearBuilt ? Number.parseInt(building.yearBuilt, 10) : undefined,
-					squareFeet: building?.size?.livingSize ? Number.parseInt(building.size.livingSize, 10) : undefined,
-					lotSize: summary?.lotSize ? Number.parseInt(summary.lotSize, 10) : undefined,
-					bedrooms: building?.rooms?.beds ? Number.parseInt(building.rooms.beds, 10) : undefined,
-					bathrooms: building?.rooms?.bathstotal ? Number.parseInt(building.rooms.bathstotal, 10) : undefined,
-					stories: building?.stories ? Number.parseInt(building.stories, 10) : undefined,
+					yearBuilt: building?.yearBuilt
+						? Number.parseInt(building.yearBuilt, 10)
+						: undefined,
+					squareFeet: building?.size?.livingSize
+						? Number.parseInt(building.size.livingSize, 10)
+						: undefined,
+					lotSize: summary?.lotSize
+						? Number.parseInt(summary.lotSize, 10)
+						: undefined,
+					bedrooms: building?.rooms?.beds
+						? Number.parseInt(building.rooms.beds, 10)
+						: undefined,
+					bathrooms: building?.rooms?.bathstotal
+						? Number.parseInt(building.rooms.bathstotal, 10)
+						: undefined,
+					stories: building?.stories
+						? Number.parseInt(building.stories, 10)
+						: undefined,
 					garage: building?.parking?.garagetype ? true : undefined,
 					pool: building?.pool ? true : undefined,
 				},
@@ -301,7 +324,9 @@ export class PropertyDataService {
 							assessedValue: assessment.assessed?.assdTtlValue
 								? Number.parseInt(assessment.assessed.assdTtlValue, 10)
 								: undefined,
-							taxAmount: assessment.tax?.taxAmt ? Number.parseInt(assessment.tax.taxAmt, 10) : undefined,
+							taxAmount: assessment.tax?.taxAmt
+								? Number.parseInt(assessment.tax.taxAmt, 10)
+								: undefined,
 							assessmentYear: assessment.assessed?.assdYear
 								? Number.parseInt(assessment.assessed.assdYear, 10)
 								: undefined,
@@ -310,7 +335,9 @@ export class PropertyDataService {
 				market: sale
 					? {
 							lastSoldDate: sale.saleTransDate,
-							lastSoldPrice: sale.amount?.saleAmt ? Number.parseInt(sale.amount.saleAmt, 10) : undefined,
+							lastSoldPrice: sale.amount?.saleAmt
+								? Number.parseInt(sale.amount.saleAmt, 10)
+								: undefined,
 						}
 					: undefined,
 				dataSource: "attom",
@@ -356,10 +383,14 @@ export class PropertyDataService {
 			const maintenance: string[] = [];
 
 			if (result.ageYears > 15) {
-				maintenance.push("Water heater likely needs replacement (15-20 year lifespan)");
+				maintenance.push(
+					"Water heater likely needs replacement (15-20 year lifespan)",
+				);
 			}
 			if (result.ageYears > 20) {
-				maintenance.push("HVAC system may need replacement (15-25 year lifespan)");
+				maintenance.push(
+					"HVAC system may need replacement (15-25 year lifespan)",
+				);
 			}
 			if (result.ageYears > 25) {
 				maintenance.push("Plumbing systems should be inspected for corrosion");

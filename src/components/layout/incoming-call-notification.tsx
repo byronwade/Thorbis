@@ -28,35 +28,67 @@
 import dynamic from "next/dynamic";
 
 // Dynamic icon imports - only load what's needed
-const AlertCircle = dynamic(() => import("lucide-react").then((mod) => mod.AlertCircle));
-const AlertTriangle = dynamic(() => import("lucide-react").then((mod) => mod.AlertTriangle));
-const ArrowRightLeft = dynamic(() => import("lucide-react").then((mod) => mod.ArrowRightLeft));
+const AlertCircle = dynamic(() =>
+	import("lucide-react").then((mod) => mod.AlertCircle),
+);
+const AlertTriangle = dynamic(() =>
+	import("lucide-react").then((mod) => mod.AlertTriangle),
+);
+const ArrowRightLeft = dynamic(() =>
+	import("lucide-react").then((mod) => mod.ArrowRightLeft),
+);
 const Brain = dynamic(() => import("lucide-react").then((mod) => mod.Brain));
-const Building2 = dynamic(() => import("lucide-react").then((mod) => mod.Building2));
-const CheckCircle2 = dynamic(() => import("lucide-react").then((mod) => mod.CheckCircle2));
-const ChevronDown = dynamic(() => import("lucide-react").then((mod) => mod.ChevronDown));
-const ChevronUp = dynamic(() => import("lucide-react").then((mod) => mod.ChevronUp));
+const Building2 = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Building2),
+);
+const CheckCircle2 = dynamic(() =>
+	import("lucide-react").then((mod) => mod.CheckCircle2),
+);
+const ChevronDown = dynamic(() =>
+	import("lucide-react").then((mod) => mod.ChevronDown),
+);
+const ChevronUp = dynamic(() =>
+	import("lucide-react").then((mod) => mod.ChevronUp),
+);
 const Clock = dynamic(() => import("lucide-react").then((mod) => mod.Clock));
-const FileText = dynamic(() => import("lucide-react").then((mod) => mod.FileText));
+const FileText = dynamic(() =>
+	import("lucide-react").then((mod) => mod.FileText),
+);
 const Hash = dynamic(() => import("lucide-react").then((mod) => mod.Hash));
-const HelpCircle = dynamic(() => import("lucide-react").then((mod) => mod.HelpCircle));
-const Maximize2 = dynamic(() => import("lucide-react").then((mod) => mod.Maximize2));
+const HelpCircle = dynamic(() =>
+	import("lucide-react").then((mod) => mod.HelpCircle),
+);
+const Maximize2 = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Maximize2),
+);
 const Mic = dynamic(() => import("lucide-react").then((mod) => mod.Mic));
 const MicOff = dynamic(() => import("lucide-react").then((mod) => mod.MicOff));
-const Minimize2 = dynamic(() => import("lucide-react").then((mod) => mod.Minimize2));
+const Minimize2 = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Minimize2),
+);
 const Pause = dynamic(() => import("lucide-react").then((mod) => mod.Pause));
 const Phone = dynamic(() => import("lucide-react").then((mod) => mod.Phone));
-const PhoneOff = dynamic(() => import("lucide-react").then((mod) => mod.PhoneOff));
+const PhoneOff = dynamic(() =>
+	import("lucide-react").then((mod) => mod.PhoneOff),
+);
 const Play = dynamic(() => import("lucide-react").then((mod) => mod.Play));
-const Settings = dynamic(() => import("lucide-react").then((mod) => mod.Settings));
+const Settings = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Settings),
+);
 const Shield = dynamic(() => import("lucide-react").then((mod) => mod.Shield));
 const Square = dynamic(() => import("lucide-react").then((mod) => mod.Square));
-const SquareStack = dynamic(() => import("lucide-react").then((mod) => mod.SquareStack));
+const SquareStack = dynamic(() =>
+	import("lucide-react").then((mod) => mod.SquareStack),
+);
 const Tag = dynamic(() => import("lucide-react").then((mod) => mod.Tag));
 const User = dynamic(() => import("lucide-react").then((mod) => mod.User));
 const Video = dynamic(() => import("lucide-react").then((mod) => mod.Video));
-const VideoOff = dynamic(() => import("lucide-react").then((mod) => mod.VideoOff));
-const Voicemail = dynamic(() => import("lucide-react").then((mod) => mod.Voicemail));
+const VideoOff = dynamic(() =>
+	import("lucide-react").then((mod) => mod.VideoOff),
+);
+const Voicemail = dynamic(() =>
+	import("lucide-react").then((mod) => mod.Voicemail),
+);
 
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CallIndicatorBadge } from "@/components/call/call-indicator-badge";
@@ -79,7 +111,7 @@ const TransferCallModal = dynamic(
 		})),
 	{
 		loading: () => null,
-	}
+	},
 );
 const AIAutofillPreview = dynamic(
 	() =>
@@ -88,7 +120,7 @@ const AIAutofillPreview = dynamic(
 		})),
 	{
 		loading: () => null,
-	}
+	},
 );
 const TranscriptPanel = dynamic(
 	() =>
@@ -97,7 +129,7 @@ const TranscriptPanel = dynamic(
 		})),
 	{
 		loading: () => null,
-	}
+	},
 );
 const VideoConferenceView = dynamic(
 	() =>
@@ -106,10 +138,14 @@ const VideoConferenceView = dynamic(
 		})),
 	{
 		loading: () => null,
-	}
+	},
 );
 
-import { getWebRTCCredentials, startCallRecording, stopCallRecording } from "@/actions/telnyx";
+import {
+	getWebRTCCredentials,
+	startCallRecording,
+	stopCallRecording,
+} from "@/actions/telnyx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { useCrossTabSync } from "@/hooks/use-cross-tab-sync";
@@ -118,11 +154,20 @@ import { usePopOutDrag } from "@/hooks/use-pop-out-drag";
 import { useResizableMulti } from "@/hooks/use-resizable-multi";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useUIStore } from "@/lib/stores";
-import { type CardType, useCallPreferencesStore } from "@/lib/stores/call-preferences-store";
+import {
+	type CardType,
+	useCallPreferencesStore,
+} from "@/lib/stores/call-preferences-store";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 import { cn } from "@/lib/utils";
 
-type CallDisposition = "resolved" | "escalated" | "callback" | "voicemail" | "no_answer" | "";
+type CallDisposition =
+	| "resolved"
+	| "escalated"
+	| "callback"
+	| "voicemail"
+	| "no_answer"
+	| "";
 
 type CallerAIData = {
 	isKnownCustomer: boolean;
@@ -173,7 +218,9 @@ const getPriorityColorClass = (priority: "low" | "medium" | "high"): string => {
 	return "bg-success text-success-foreground dark:text-success-foreground";
 };
 
-const getPriorityTextColorClass = (priority: "low" | "medium" | "high"): string => {
+const getPriorityTextColorClass = (
+	priority: "low" | "medium" | "high",
+): string => {
 	if (priority === "high") {
 		return "text-destructive";
 	}
@@ -193,7 +240,9 @@ const getTrustScoreColorClass = (score: number): string => {
 	return "bg-destructive";
 };
 
-const getRiskLevelColorClass = (riskLevel: "low" | "medium" | "high"): string => {
+const getRiskLevelColorClass = (
+	riskLevel: "low" | "medium" | "high",
+): string => {
 	if (riskLevel === "high") {
 		return "bg-destructive text-destructive";
 	}
@@ -203,7 +252,9 @@ const getRiskLevelColorClass = (riskLevel: "low" | "medium" | "high"): string =>
 	return "bg-success text-success";
 };
 
-const _getVideoButtonClass = (videoStatus: "off" | "requesting" | "ringing" | "connected" | "declined"): string => {
+const _getVideoButtonClass = (
+	videoStatus: "off" | "requesting" | "ringing" | "connected" | "declined",
+): string => {
 	if (videoStatus === "connected") {
 		return "bg-primary hover:bg-primary/90 text-primary-foreground";
 	}
@@ -249,7 +300,11 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
 					callHistory: [],
 					similarCallers: 0,
 					riskLevel: "medium",
-					aiNotes: ["First-time caller", "No prior history", "Standard verification recommended"],
+					aiNotes: [
+						"First-time caller",
+						"No prior history",
+						"Standard verification recommended",
+					],
 				},
 			});
 			return;
@@ -259,7 +314,9 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
 
 		// Fetch real customer data from database
 		import("@/actions/customers")
-			.then(({ getCustomerByPhone }) => getCustomerByPhone(callerNumber, companyId))
+			.then(({ getCustomerByPhone }) =>
+				getCustomerByPhone(callerNumber, companyId),
+			)
 			.then((result) => {
 				if (cancelled) {
 					return;
@@ -287,7 +344,10 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
 							: "Unknown",
 						totalCalls: customer.total_interactions || 0,
 						openTickets: 0, // Would need to query jobs/tickets table
-						priority: (customer.priority_level || "medium") as "low" | "medium" | "high",
+						priority: (customer.priority_level || "medium") as
+							| "low"
+							| "medium"
+							| "high",
 						tags: customer.tags || [],
 						recentIssues: [], // Would need to query jobs table
 						aiData: {
@@ -330,7 +390,11 @@ const useCustomerData = (callerNumber?: string, companyId?: string) => {
 							callHistory: [],
 							similarCallers: 0,
 							riskLevel: "medium",
-							aiNotes: ["First-time caller", "No prior history", "Standard verification recommended"],
+							aiNotes: [
+								"First-time caller",
+								"No prior history",
+								"Standard verification recommended",
+							],
 						},
 					});
 				}
@@ -402,9 +466,12 @@ const IncomingCallView = memo(function IncomingCallView({
 				<div className="mb-4 flex items-center gap-2.5 rounded-lg border border-destructive/50 bg-destructive/5 p-3 backdrop-blur-sm dark:bg-destructive/10">
 					<AlertTriangle className="size-4 shrink-0 text-destructive" />
 					<div className="min-w-0 flex-1">
-						<p className="font-semibold text-destructive text-xs leading-tight">Potential Spam Detected</p>
+						<p className="font-semibold text-destructive text-xs leading-tight">
+							Potential Spam Detected
+						</p>
 						<p className="mt-0.5 text-[11px] text-destructive/70 dark:text-destructive/90">
-							{Math.round(aiData.spamConfidence)}% confidence • {aiData.similarCallers} similar reports
+							{Math.round(aiData.spamConfidence)}% confidence •{" "}
+							{aiData.similarCallers} similar reports
 						</p>
 					</div>
 				</div>
@@ -415,9 +482,12 @@ const IncomingCallView = memo(function IncomingCallView({
 				<div className="mb-4 flex items-center gap-2.5 rounded-lg border border-success/50 bg-success/5 p-3 backdrop-blur-sm dark:bg-success/10">
 					<CheckCircle2 className="size-4 shrink-0 text-success" />
 					<div className="min-w-0 flex-1">
-						<p className="font-semibold text-success text-xs leading-tight">Verified Customer</p>
+						<p className="font-semibold text-success text-xs leading-tight">
+							Verified Customer
+						</p>
 						<p className="mt-0.5 text-[11px] text-success/70 dark:text-success/90">
-							Trust score: {aiData.trustScore}% • {aiData.recognitionSource.toUpperCase()}
+							Trust score: {aiData.trustScore}% •{" "}
+							{aiData.recognitionSource.toUpperCase()}
 						</p>
 					</div>
 				</div>
@@ -427,7 +497,9 @@ const IncomingCallView = memo(function IncomingCallView({
 			<div className="mb-4 flex items-center gap-2.5 rounded-lg border border-warning/50 bg-warning/5 p-3 backdrop-blur-sm dark:bg-warning/10">
 				<HelpCircle className="size-4 shrink-0 text-warning" />
 				<div className="min-w-0 flex-1">
-					<p className="font-semibold text-warning text-xs leading-tight">Unknown Caller</p>
+					<p className="font-semibold text-warning text-xs leading-tight">
+						Unknown Caller
+					</p>
 					<p className="mt-0.5 text-[11px] text-warning/70 dark:text-warning/90">
 						First-time caller • Verification recommended
 					</p>
@@ -450,7 +522,7 @@ const IncomingCallView = memo(function IncomingCallView({
 				.map((n) => n[0])
 				.join("")
 				.toUpperCase() || "?",
-		[caller.name]
+		[caller.name],
 	);
 
 	const tagsMemo = useMemo(
@@ -460,7 +532,7 @@ const IncomingCallView = memo(function IncomingCallView({
 					{tag}
 				</Badge>
 			)),
-		[customerData.tags]
+		[customerData.tags],
 	);
 
 	// Memoize callbacks
@@ -503,10 +575,14 @@ const IncomingCallView = memo(function IncomingCallView({
 									{caller.name || "Unknown Caller"}
 								</h3>
 							</div>
-							<p className="mb-2 font-mono text-muted-foreground text-sm">{caller.number}</p>
+							<p className="mb-2 font-mono text-muted-foreground text-sm">
+								{caller.number}
+							</p>
 							<div className="flex items-center gap-2">
 								<div className="size-2 animate-pulse rounded-full bg-success shadow-sm shadow-success/50" />
-								<p className="font-medium text-muted-foreground text-xs">Incoming call...</p>
+								<p className="font-medium text-muted-foreground text-xs">
+									Incoming call...
+								</p>
 							</div>
 						</div>
 					</div>
@@ -517,7 +593,10 @@ const IncomingCallView = memo(function IncomingCallView({
 						<div className="mb-3 flex flex-wrap items-center gap-2">
 							{tagsMemo}
 							<Badge
-								className={cn("px-2 py-0.5 text-[10px]", getPriorityColorClass(customerData.priority))}
+								className={cn(
+									"px-2 py-0.5 text-[10px]",
+									getPriorityColorClass(customerData.priority),
+								)}
 								variant={
 									customerData.priority === "high"
 										? "destructive"
@@ -532,7 +611,9 @@ const IncomingCallView = memo(function IncomingCallView({
 						<div className="space-y-2.5 text-xs">
 							<div className="flex items-center gap-2.5 text-muted-foreground">
 								<Building2 className="size-4 shrink-0" />
-								<span className="truncate">{customerData.company || "No company"}</span>
+								<span className="truncate">
+									{customerData.company || "No company"}
+								</span>
 							</div>
 							<div className="flex items-center gap-2.5 text-muted-foreground">
 								<Clock className="size-4 shrink-0" />
@@ -658,7 +739,7 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 		<div
 			className={cn(
 				"fade-in slide-in-from-bottom-2 fixed z-50 animate-in duration-300",
-				isDragging && "cursor-grabbing"
+				isDragging && "cursor-grabbing",
 			)}
 			style={{
 				left: `${position.x}px`,
@@ -684,10 +765,14 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 							</AvatarFallback>
 						</Avatar>
 						<div className="flex-1 overflow-hidden">
-							<p className="truncate font-medium text-foreground text-sm">{caller.name || "Unknown"}</p>
+							<p className="truncate font-medium text-foreground text-sm">
+								{caller.name || "Unknown"}
+							</p>
 							<div className="flex items-center gap-1.5">
 								<div className="size-1.5 animate-pulse rounded-full bg-success" />
-								<p className="font-mono text-[11px] text-muted-foreground">{callDuration}</p>
+								<p className="font-mono text-[11px] text-muted-foreground">
+									{callDuration}
+								</p>
 								{call.isRecording && (
 									<>
 										<span className="text-muted-foreground">•</span>
@@ -719,14 +804,20 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 								"flex flex-col items-center gap-1 rounded-lg p-2 transition-colors active:scale-95",
 								call.isMuted
 									? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-									: "bg-background text-muted-foreground hover:bg-accent"
+									: "bg-background text-muted-foreground hover:bg-accent",
 							)}
 							onClick={toggleMute}
 							title={call.isMuted ? "Unmute" : "Mute"}
 							type="button"
 						>
-							{call.isMuted ? <MicOff className="size-4" /> : <Mic className="size-4" />}
-							<span className="text-[9px]">{call.isMuted ? "Unmute" : "Mute"}</span>
+							{call.isMuted ? (
+								<MicOff className="size-4" />
+							) : (
+								<Mic className="size-4" />
+							)}
+							<span className="text-[9px]">
+								{call.isMuted ? "Unmute" : "Mute"}
+							</span>
 						</button>
 
 						{toggleHold && (
@@ -735,14 +826,20 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 									"flex flex-col items-center gap-1 rounded-lg p-2 transition-colors active:scale-95",
 									call.isOnHold
 										? "bg-warning text-warning-foreground hover:bg-warning/90 dark:text-warning-foreground"
-										: "bg-background text-muted-foreground hover:bg-accent"
+										: "bg-background text-muted-foreground hover:bg-accent",
 								)}
 								onClick={toggleHold}
 								title={call.isOnHold ? "Resume" : "Hold"}
 								type="button"
 							>
-								{call.isOnHold ? <Play className="size-4" /> : <Pause className="size-4" />}
-								<span className="text-[9px]">{call.isOnHold ? "Resume" : "Hold"}</span>
+								{call.isOnHold ? (
+									<Play className="size-4" />
+								) : (
+									<Pause className="size-4" />
+								)}
+								<span className="text-[9px]">
+									{call.isOnHold ? "Resume" : "Hold"}
+								</span>
 							</button>
 						)}
 
@@ -752,7 +849,7 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 									"flex flex-col items-center gap-1 rounded-lg p-2 transition-colors active:scale-95",
 									showKeypad
 										? "bg-primary text-primary-foreground hover:bg-primary/90"
-										: "bg-background text-muted-foreground hover:bg-accent"
+										: "bg-background text-muted-foreground hover:bg-accent",
 								)}
 								onClick={() => setShowKeypad(!showKeypad)}
 								title="Keypad"
@@ -791,13 +888,17 @@ const MinimizedCallWidget = memo(function MinimizedCallWidget({
 						<div className="space-y-2">
 							<div className="flex items-center justify-between text-xs">
 								<span className="text-muted-foreground">Caller Number</span>
-								<span className="font-mono text-muted-foreground">{caller.number}</span>
+								<span className="font-mono text-muted-foreground">
+									{caller.number}
+								</span>
 							</div>
 							<div className="flex items-center justify-between text-xs">
 								<span className="text-muted-foreground">Status</span>
 								<div className="flex items-center gap-1.5">
 									<div className="size-1.5 rounded-full bg-success" />
-									<span className="text-muted-foreground">{call.isOnHold ? "On Hold" : "Active"}</span>
+									<span className="text-muted-foreground">
+										{call.isOnHold ? "On Hold" : "Active"}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -866,7 +967,11 @@ const DashboardCard = memo(function DashboardCard({
 				)}
 			</button>
 
-			{!isCollapsed && <div className="border-border border-t bg-card/30 p-5 dark:bg-card/50">{children}</div>}
+			{!isCollapsed && (
+				<div className="border-border border-t bg-card/30 p-5 dark:bg-card/50">
+					{children}
+				</div>
+			)}
 		</div>
 	);
 });
@@ -970,18 +1075,30 @@ const ActiveCallView = memo(function ActiveCallView({
 	const layoutMode = useCallPreferencesStore((state) => state.layoutMode);
 
 	// Get spacing based on layout mode
-	const spacing = layoutMode === "compact" ? "gap-3" : layoutMode === "comfortable" ? "gap-4" : "gap-5";
-	const padding = layoutMode === "compact" ? "p-4" : layoutMode === "comfortable" ? "p-5" : "p-6";
+	const spacing =
+		layoutMode === "compact"
+			? "gap-3"
+			: layoutMode === "comfortable"
+				? "gap-4"
+				: "gap-5";
+	const padding =
+		layoutMode === "compact"
+			? "p-4"
+			: layoutMode === "comfortable"
+				? "p-5"
+				: "p-6";
 
 	// Get visible cards
-	const visibleCards = cards.filter((c) => c.isVisible).sort((a, b) => a.order - b.order);
+	const visibleCards = cards
+		.filter((c) => c.isVisible)
+		.sort((a, b) => a.order - b.order);
 
 	return (
 		<div
 			className={cn(
 				"fade-in slide-in-from-bottom-2 fixed z-50 animate-in duration-300",
 				isDragging && "cursor-grabbing",
-				isPopOutZone && "scale-95 opacity-50"
+				isPopOutZone && "scale-95 opacity-50",
 			)}
 			data-draggable-container
 			style={{
@@ -997,7 +1114,9 @@ const ActiveCallView = memo(function ActiveCallView({
 					<div className="text-center">
 						<SquareStack className="mx-auto mb-2 h-12 w-12 text-primary" />
 						<p className="font-semibold text-primary">Release to Pop Out</p>
-						<p className="text-muted-foreground text-sm">Opens call in separate window</p>
+						<p className="text-muted-foreground text-sm">
+							Opens call in separate window
+						</p>
 					</div>
 				</div>
 			)}
@@ -1007,7 +1126,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-top-1 absolute right-0 left-0 h-2 cursor-ns-resize hover:bg-primary/20",
-					isResizing && "bg-primary/30"
+					isResizing && "bg-primary/30",
 				)}
 				{...resizeHandles.handleNorth}
 			/>
@@ -1016,7 +1135,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-right-1 absolute top-0 bottom-0 w-2 cursor-ew-resize hover:bg-primary/20",
-					isResizing && "bg-primary/30"
+					isResizing && "bg-primary/30",
 				)}
 				{...resizeHandles.handleEast}
 			/>
@@ -1025,7 +1144,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-bottom-1 absolute right-0 left-0 h-2 cursor-ns-resize hover:bg-primary/20",
-					isResizing && "bg-primary/30"
+					isResizing && "bg-primary/30",
 				)}
 				{...resizeHandles.handleSouth}
 			/>
@@ -1034,7 +1153,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-left-1 absolute top-0 bottom-0 w-2 cursor-ew-resize hover:bg-primary/20",
-					isResizing && "bg-primary/30"
+					isResizing && "bg-primary/30",
 				)}
 				{...resizeHandles.handleWest}
 			/>
@@ -1044,7 +1163,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-left-1 -top-1 absolute h-4 w-4 cursor-nwse-resize rounded-tl-2xl hover:bg-primary/30",
-					isResizing && "bg-primary/40"
+					isResizing && "bg-primary/40",
 				)}
 				{...resizeHandles.handleNorthWest}
 			/>
@@ -1053,7 +1172,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-right-1 -top-1 absolute h-4 w-4 cursor-nesw-resize rounded-tr-2xl hover:bg-primary/30",
-					isResizing && "bg-primary/40"
+					isResizing && "bg-primary/40",
 				)}
 				{...resizeHandles.handleNorthEast}
 			/>
@@ -1062,7 +1181,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-right-1 -bottom-1 absolute h-4 w-4 cursor-nwse-resize rounded-br-2xl hover:bg-primary/30",
-					isResizing && "bg-primary/40"
+					isResizing && "bg-primary/40",
 				)}
 				{...resizeHandles.handleSouthEast}
 			/>
@@ -1071,7 +1190,7 @@ const ActiveCallView = memo(function ActiveCallView({
 			<div
 				className={cn(
 					"-left-1 -bottom-1 absolute h-4 w-4 cursor-nesw-resize rounded-bl-2xl hover:bg-primary/30",
-					isResizing && "bg-primary/40"
+					isResizing && "bg-primary/40",
 				)}
 				{...resizeHandles.handleSouthWest}
 			/>
@@ -1098,13 +1217,19 @@ const ActiveCallView = memo(function ActiveCallView({
 							</Avatar>
 							<div>
 								<div className="flex items-center gap-2">
-									<p className="font-semibold text-base text-foreground">{caller.name || "Unknown"}</p>
-									{customerData.priority === "high" && <AlertCircle className="size-4 text-destructive" />}
+									<p className="font-semibold text-base text-foreground">
+										{caller.name || "Unknown"}
+									</p>
+									{customerData.priority === "high" && (
+										<AlertCircle className="size-4 text-destructive" />
+									)}
 								</div>
 								<p className="text-muted-foreground text-sm">{caller.number}</p>
 								<div className="mt-1.5 flex items-center gap-2">
 									<div className="size-2 animate-pulse rounded-full bg-success" />
-									<p className="font-mono text-muted-foreground text-xs">{callDuration}</p>
+									<p className="font-mono text-muted-foreground text-xs">
+										{callDuration}
+									</p>
 									{call.isRecording && (
 										<>
 											<span className="text-muted-foreground">•</span>
@@ -1141,13 +1266,19 @@ const ActiveCallView = memo(function ActiveCallView({
 								"flex flex-col items-center gap-1.5 rounded-lg p-3 transition-colors active:scale-95",
 								call.isMuted
 									? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-									: "bg-background text-muted-foreground hover:bg-accent"
+									: "bg-background text-muted-foreground hover:bg-accent",
 							)}
 							onClick={toggleMute}
 							type="button"
 						>
-							{call.isMuted ? <MicOff className="size-5" /> : <Mic className="size-5" />}
-							<span className="text-[10px]">{call.isMuted ? "Unmute" : "Mute"}</span>
+							{call.isMuted ? (
+								<MicOff className="size-5" />
+							) : (
+								<Mic className="size-5" />
+							)}
+							<span className="text-[10px]">
+								{call.isMuted ? "Unmute" : "Mute"}
+							</span>
 						</button>
 
 						<button
@@ -1155,13 +1286,19 @@ const ActiveCallView = memo(function ActiveCallView({
 								"flex flex-col items-center gap-1.5 rounded-lg p-3 transition-colors active:scale-95",
 								call.isOnHold
 									? "bg-warning text-warning-foreground hover:bg-warning/90 dark:text-warning-foreground"
-									: "bg-background text-muted-foreground hover:bg-accent"
+									: "bg-background text-muted-foreground hover:bg-accent",
 							)}
 							onClick={toggleHold}
 							type="button"
 						>
-							{call.isOnHold ? <Play className="size-5" /> : <Pause className="size-5" />}
-							<span className="text-[10px]">{call.isOnHold ? "Resume" : "Hold"}</span>
+							{call.isOnHold ? (
+								<Play className="size-5" />
+							) : (
+								<Pause className="size-5" />
+							)}
+							<span className="text-[10px]">
+								{call.isOnHold ? "Resume" : "Hold"}
+							</span>
 						</button>
 
 						<button
@@ -1169,13 +1306,15 @@ const ActiveCallView = memo(function ActiveCallView({
 								"flex flex-col items-center gap-1.5 rounded-lg p-3 transition-colors active:scale-95",
 								call.isRecording
 									? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-									: "bg-background text-muted-foreground hover:bg-accent"
+									: "bg-background text-muted-foreground hover:bg-accent",
 							)}
 							onClick={toggleRecording}
 							type="button"
 						>
 							<Square className="size-5" />
-							<span className="text-[10px]">{call.isRecording ? "Stop" : "Record"}</span>
+							<span className="text-[10px]">
+								{call.isRecording ? "Stop" : "Record"}
+							</span>
 						</button>
 
 						<button
@@ -1193,7 +1332,7 @@ const ActiveCallView = memo(function ActiveCallView({
 								"flex flex-col items-center gap-1.5 rounded-lg p-3 transition-colors active:scale-95",
 								call.videoStatus === "connected"
 									? "bg-primary text-primary-foreground hover:bg-primary/90"
-									: "bg-background text-muted-foreground hover:bg-accent"
+									: "bg-background text-muted-foreground hover:bg-accent",
 							)}
 							onClick={() => {
 								if (call.videoStatus === "off") {
@@ -1204,7 +1343,11 @@ const ActiveCallView = memo(function ActiveCallView({
 							}}
 							type="button"
 						>
-							{call.videoStatus === "connected" ? <Video className="size-5" /> : <VideoOff className="size-5" />}
+							{call.videoStatus === "connected" ? (
+								<Video className="size-5" />
+							) : (
+								<VideoOff className="size-5" />
+							)}
 							<span className="text-[10px]">Video</span>
 						</button>
 
@@ -1221,7 +1364,12 @@ const ActiveCallView = memo(function ActiveCallView({
 
 				{/* Dashboard Grid Content */}
 				<div className={cn("flex-1 overflow-y-auto", padding, spacing)}>
-					<div className={cn("grid gap-4", width >= 1200 ? "grid-cols-2" : "grid-cols-1")}>
+					<div
+						className={cn(
+							"grid gap-4",
+							width >= 1200 ? "grid-cols-2" : "grid-cols-1",
+						)}
+					>
 						{visibleCards.map((card) => {
 							switch (card.id) {
 								case "transcript":
@@ -1244,7 +1392,9 @@ const ActiveCallView = memo(function ActiveCallView({
 									return (
 										<DashboardCard
 											badge={
-												<span className="rounded-full bg-accent px-2 py-0.5 text-[9px] text-accent-foreground">AI</span>
+												<span className="rounded-full bg-accent px-2 py-0.5 text-[9px] text-accent-foreground">
+													AI
+												</span>
 											}
 											icon={<Brain className="size-4 text-accent-foreground" />}
 											id={card.id}
@@ -1272,27 +1422,51 @@ const ActiveCallView = memo(function ActiveCallView({
 											<div className="space-y-4">
 												<div className="grid grid-cols-2 gap-4">
 													<div>
-														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">Email</label>
-														<p className="text-muted-foreground text-sm">{customerData.email}</p>
+														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">
+															Email
+														</label>
+														<p className="text-muted-foreground text-sm">
+															{customerData.email}
+														</p>
 													</div>
 													<div>
-														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">Company</label>
-														<p className="text-muted-foreground text-sm">{customerData.company}</p>
+														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">
+															Company
+														</label>
+														<p className="text-muted-foreground text-sm">
+															{customerData.company}
+														</p>
 													</div>
 													<div>
-														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">Status</label>
-														<p className="text-sm text-success">{customerData.accountStatus}</p>
+														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">
+															Status
+														</label>
+														<p className="text-sm text-success">
+															{customerData.accountStatus}
+														</p>
 													</div>
 													<div>
-														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">Priority</label>
-														<p className={cn("text-sm", getPriorityTextColorClass(customerData.priority))}>
-															{customerData.priority.charAt(0).toUpperCase() + customerData.priority.slice(1)}
+														<label className="mb-1.5 block font-medium text-muted-foreground text-xs">
+															Priority
+														</label>
+														<p
+															className={cn(
+																"text-sm",
+																getPriorityTextColorClass(
+																	customerData.priority,
+																),
+															)}
+														>
+															{customerData.priority.charAt(0).toUpperCase() +
+																customerData.priority.slice(1)}
 														</p>
 													</div>
 												</div>
 
 												<div>
-													<label className="mb-1.5 block font-medium text-muted-foreground text-xs">Tags</label>
+													<label className="mb-1.5 block font-medium text-muted-foreground text-xs">
+														Tags
+													</label>
 													<div className="flex flex-wrap gap-2">
 														{customerData.tags.map((tag) => (
 															<span
@@ -1311,7 +1485,10 @@ const ActiveCallView = memo(function ActiveCallView({
 													</label>
 													<div className="space-y-1.5">
 														{customerData.recentIssues.map((issue) => (
-															<p className="text-muted-foreground text-sm" key={issue.id}>
+															<p
+																className="text-muted-foreground text-sm"
+																key={issue.id}
+															>
 																• {issue.text}
 															</p>
 														))}
@@ -1346,7 +1523,9 @@ const ActiveCallView = memo(function ActiveCallView({
 												{/* Trust Score */}
 												<div>
 													<div className="mb-2 flex items-center justify-between">
-														<span className="font-medium text-muted-foreground text-xs">Trust Score</span>
+														<span className="font-medium text-muted-foreground text-xs">
+															Trust Score
+														</span>
 														<span className="font-mono font-semibold text-foreground text-sm">
 															{customerData.aiData.trustScore}%
 														</span>
@@ -1355,7 +1534,9 @@ const ActiveCallView = memo(function ActiveCallView({
 														<div
 															className={cn(
 																"h-full transition-all",
-																getTrustScoreColorClass(customerData.aiData.trustScore)
+																getTrustScoreColorClass(
+																	customerData.aiData.trustScore,
+																),
 															)}
 															style={{
 																width: `${customerData.aiData.trustScore}%`,
@@ -1366,11 +1547,15 @@ const ActiveCallView = memo(function ActiveCallView({
 
 												{/* Risk Level */}
 												<div className="flex items-center justify-between">
-													<span className="font-medium text-muted-foreground text-xs">Risk Level</span>
+													<span className="font-medium text-muted-foreground text-xs">
+														Risk Level
+													</span>
 													<span
 														className={cn(
 															"rounded px-3 py-1 font-semibold text-xs",
-															getRiskLevelColorClass(customerData.aiData.riskLevel)
+															getRiskLevelColorClass(
+																customerData.aiData.riskLevel,
+															),
 														)}
 													>
 														{customerData.aiData.riskLevel.toUpperCase()}
@@ -1379,7 +1564,9 @@ const ActiveCallView = memo(function ActiveCallView({
 
 												{/* AI Notes */}
 												<div>
-													<label className="mb-2 block font-medium text-muted-foreground text-xs">AI Insights</label>
+													<label className="mb-2 block font-medium text-muted-foreground text-xs">
+														AI Insights
+													</label>
 													<div className="space-y-2">
 														{customerData.aiData.aiNotes.map((note, index) => (
 															<div
@@ -1387,7 +1574,9 @@ const ActiveCallView = memo(function ActiveCallView({
 																key={index}
 															>
 																<div className="mt-1 size-2 shrink-0 rounded-full bg-success" />
-																<p className="flex-1 text-muted-foreground text-sm leading-relaxed">{note}</p>
+																<p className="flex-1 text-muted-foreground text-sm leading-relaxed">
+																	{note}
+																</p>
 															</div>
 														))}
 													</div>
@@ -1399,7 +1588,9 @@ const ActiveCallView = memo(function ActiveCallView({
 								case "notes":
 									return (
 										<DashboardCard
-											icon={<FileText className="size-4 text-muted-foreground" />}
+											icon={
+												<FileText className="size-4 text-muted-foreground" />
+											}
 											id={card.id}
 											isCollapsed={card.isCollapsed}
 											key={card.id}
@@ -1459,10 +1650,12 @@ const ActiveCallView = memo(function ActiveCallView({
 																		: disp.color === "amber"
 																			? "border-warning bg-warning text-warning-foreground dark:text-warning-foreground"
 																			: "border-primary bg-primary text-primary-foreground"
-																: "border-border bg-background text-muted-foreground hover:bg-accent"
+																: "border-border bg-background text-muted-foreground hover:bg-accent",
 														)}
 														key={disp.value}
-														onClick={() => setDisposition(disp.value as CallDisposition)}
+														onClick={() =>
+															setDisposition(disp.value as CallDisposition)
+														}
 														type="button"
 													>
 														{disp.label}
@@ -1475,7 +1668,9 @@ const ActiveCallView = memo(function ActiveCallView({
 								case "quick-actions":
 									return (
 										<DashboardCard
-											icon={<SquareStack className="size-4 text-muted-foreground" />}
+											icon={
+												<SquareStack className="size-4 text-muted-foreground" />
+											}
 											id={card.id}
 											isCollapsed={card.isCollapsed}
 											key={card.id}
@@ -1483,7 +1678,12 @@ const ActiveCallView = memo(function ActiveCallView({
 											title="Quick Actions"
 										>
 											<div className="grid grid-cols-2 gap-2.5">
-												{["Check Balance", "Reset Password", "Open Ticket", "Send Email"].map((action) => (
+												{[
+													"Check Balance",
+													"Reset Password",
+													"Open Ticket",
+													"Send Email",
+												].map((action) => (
 													<button
 														className="rounded-lg border border-border bg-background px-4 py-3 text-foreground text-sm transition-colors hover:bg-accent active:scale-95"
 														key={action}
@@ -1620,7 +1820,9 @@ export function IncomingCallNotification() {
 	const [companyId, setCompanyId] = useState<string | null>(null);
 	useEffect(() => {
 		async function fetchCompanyId() {
-			const supabase = await import("@/lib/supabase/client").then((m) => m.createClient());
+			const supabase = await import("@/lib/supabase/client").then((m) =>
+				m.createClient(),
+			);
 			if (!supabase) {
 				return;
 			}
@@ -1657,10 +1859,8 @@ export function IncomingCallNotification() {
 	}, []);
 
 	// Fetch real customer data from database
-	const { customerData: fetchedCustomerData, isLoading: isLoadingCustomer } = useCustomerData(
-		call.caller?.number,
-		companyId || undefined
-	);
+	const { customerData: fetchedCustomerData, isLoading: isLoadingCustomer } =
+		useCustomerData(call.caller?.number, companyId || undefined);
 
 	// Use fetched data or fallback to default
 	const customerData: CustomerData = fetchedCustomerData || {
@@ -1718,12 +1918,19 @@ export function IncomingCallNotification() {
 	});
 
 	// Pop-out window functionality
-	const { isPopOutZone, isPopOutActive, popOutWindow, handleBeyondBounds, createPopOut, returnToMain, focusPopOut } =
-		usePopOutDrag({
-			callId,
-			onPopOutCreated: () => {},
-			onPopOutClosed: () => {},
-		});
+	const {
+		isPopOutZone,
+		isPopOutActive,
+		popOutWindow,
+		handleBeyondBounds,
+		createPopOut,
+		returnToMain,
+		focusPopOut,
+	} = usePopOutDrag({
+		callId,
+		onPopOutCreated: () => {},
+		onPopOutClosed: () => {},
+	});
 
 	// Handle creating pop-out when drag ends in pop-out zone
 	useEffect(() => {
@@ -1792,10 +1999,14 @@ export function IncomingCallNotification() {
 
 			const interval = setInterval(() => {
 				const now = Date.now();
-				const duration = Math.floor((now - (call.startTime || now)) / UPDATE_INTERVAL);
+				const duration = Math.floor(
+					(now - (call.startTime || now)) / UPDATE_INTERVAL,
+				);
 				const minutes = Math.floor(duration / SECONDS_PER_MINUTE);
 				const seconds = duration % SECONDS_PER_MINUTE;
-				setCallDuration(`${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`);
+				setCallDuration(
+					`${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`,
+				);
 			}, UPDATE_INTERVAL);
 
 			return () => clearInterval(interval);
@@ -1929,7 +2140,9 @@ export function IncomingCallNotification() {
 	// Show video conference view when video is active
 	if (
 		call.status === "active" &&
-		(call.videoStatus === "requesting" || call.videoStatus === "ringing" || call.videoStatus === "connected")
+		(call.videoStatus === "requesting" ||
+			call.videoStatus === "ringing" ||
+			call.videoStatus === "connected")
 	) {
 		return (
 			<VideoConferenceView
@@ -1983,7 +2196,9 @@ export function IncomingCallNotification() {
 				callId={callId}
 				customerName={call.caller?.name || "Unknown Caller"}
 				customerPhone={call.caller?.number || ""}
-				duration={Math.floor((Date.now() - (call.startTime || Date.now())) / 1000)}
+				duration={Math.floor(
+					(Date.now() - (call.startTime || Date.now())) / 1000,
+				)}
 				isActive={call.status === "active"}
 				onFocusPopOut={focusPopOut}
 				onReturnToMain={returnToMain}

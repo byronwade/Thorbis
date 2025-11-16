@@ -35,7 +35,8 @@ import {
 import type { Database } from "@/types/supabase";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
-type CommunicationInsert = Database["public"]["Tables"]["communications"]["Insert"];
+type CommunicationInsert =
+	Database["public"]["Tables"]["communications"]["Insert"];
 
 /**
  * POST /api/webhooks/telnyx
@@ -54,7 +55,8 @@ export async function POST(request: NextRequest) {
 
 		// Verify webhook signature (skip in development for easier testing)
 		const skipSignatureVerification =
-			process.env.NODE_ENV === "development" && process.env.TELNYX_SKIP_SIGNATURE_VERIFICATION === "true";
+			process.env.NODE_ENV === "development" &&
+			process.env.TELNYX_SKIP_SIGNATURE_VERIFICATION === "true";
 
 		if (signature && timestamp && !skipSignatureVerification) {
 			const isValid = verifyWebhookSignature({
@@ -64,16 +66,22 @@ export async function POST(request: NextRequest) {
 			});
 
 			if (!isValid) {
-				return NextResponse.json(createWebhookResponse(false, "Invalid signature"), {
-					status: 401,
-				});
+				return NextResponse.json(
+					createWebhookResponse(false, "Invalid signature"),
+					{
+						status: 401,
+					},
+				);
 			}
 
 			// Validate timestamp to prevent replay attacks
 			if (!isWebhookTimestampValid(timestamp)) {
-				return NextResponse.json(createWebhookResponse(false, "Webhook too old"), {
-					status: 400,
-				});
+				return NextResponse.json(
+					createWebhookResponse(false, "Webhook too old"),
+					{
+						status: 400,
+					},
+				);
 			}
 		} else if (skipSignatureVerification) {
 			// TODO: Handle error case
@@ -83,9 +91,12 @@ export async function POST(request: NextRequest) {
 		const payload = parseWebhookPayload(body);
 
 		if (!payload) {
-			return NextResponse.json(createWebhookResponse(false, "Invalid payload"), {
-				status: 400,
-			});
+			return NextResponse.json(
+				createWebhookResponse(false, "Invalid payload"),
+				{
+					status: 400,
+				},
+			);
 		}
 
 		// Get event type
@@ -102,9 +113,15 @@ export async function POST(request: NextRequest) {
 		// Return success response
 		return NextResponse.json(createWebhookResponse(true), { status: 200 });
 	} catch (error) {
-		return NextResponse.json(createWebhookResponse(false, error instanceof Error ? error.message : "Internal error"), {
-			status: 500,
-		});
+		return NextResponse.json(
+			createWebhookResponse(
+				false,
+				error instanceof Error ? error.message : "Internal error",
+			),
+			{
+				status: 500,
+			},
+		);
 	}
 }
 
@@ -130,7 +147,11 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 
 			const customerId =
 				callData.direction === "incoming"
-					? await findCustomerIdByPhone(supabase, phoneContext.companyId, fromAddress)
+					? await findCustomerIdByPhone(
+							supabase,
+							phoneContext.companyId,
+							fromAddress,
+						)
 					: undefined;
 
 			let fromName: string | null = null;
@@ -179,9 +200,11 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 				communicationPayload.customer_id = customerId;
 			}
 
-			const { error: upsertError } = await supabase.from("communications").upsert(communicationPayload, {
-				onConflict: "telnyx_call_control_id",
-			});
+			const { error: upsertError } = await supabase
+				.from("communications")
+				.upsert(communicationPayload, {
+					onConflict: "telnyx_call_control_id",
+				});
 
 			if (upsertError) {
 				throw upsertError;
@@ -244,7 +267,8 @@ async function handleCallEvent(payload: WebhookPayload, eventType: string) {
 
 		case "call.recording.saved": {
 			const recordingData = payload.data.payload as any;
-			const recordingUrl = recordingData.recording_urls?.[0] || recordingData.public_recording_url;
+			const recordingUrl =
+				recordingData.recording_urls?.[0] || recordingData.public_recording_url;
 
 			// Update communication with recording URL
 			const { data: communication } = await supabase
@@ -305,7 +329,9 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
 			const messageData = event.data.payload;
 
 			const destinationNumber = messageData.to[0]?.phone_number;
-			const phoneContext = destinationNumber ? await getPhoneNumberContext(supabase, destinationNumber) : null;
+			const phoneContext = destinationNumber
+				? await getPhoneNumberContext(supabase, destinationNumber)
+				: null;
 
 			if (!phoneContext) {
 				break;
@@ -313,7 +339,11 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
 
 			const fromAddress = normalizePhoneNumber(messageData.from.phone_number);
 			const toAddress = normalizePhoneNumber(destinationNumber);
-			const customerId = await findCustomerIdByPhone(supabase, phoneContext.companyId, fromAddress);
+			const customerId = await findCustomerIdByPhone(
+				supabase,
+				phoneContext.companyId,
+				fromAddress,
+			);
 
 			await supabase.from("communications").insert({
 				company_id: phoneContext.companyId,
@@ -404,7 +434,7 @@ function extractComparableDigits(phoneNumber: string): string {
 
 async function getPhoneNumberContext(
 	supabase: TypedSupabaseClient,
-	phoneNumber: string
+	phoneNumber: string,
 ): Promise<{ companyId: string; phoneNumberId: string } | null> {
 	const normalized = normalizePhoneNumber(phoneNumber);
 
@@ -428,7 +458,7 @@ async function getPhoneNumberContext(
 async function findCustomerIdByPhone(
 	supabase: TypedSupabaseClient,
 	companyId: string,
-	phoneNumber: string
+	phoneNumber: string,
 ): Promise<string | null> {
 	const digits = extractComparableDigits(phoneNumber);
 	if (!digits) {
@@ -445,7 +475,10 @@ async function findCustomerIdByPhone(
 	return data?.id ?? null;
 }
 
-async function getCustomerDisplayName(supabase: TypedSupabaseClient, customerId: string) {
+async function getCustomerDisplayName(
+	supabase: TypedSupabaseClient,
+	customerId: string,
+) {
 	const { data } = await supabase
 		.from("customers")
 		.select("first_name, last_name, company_name")

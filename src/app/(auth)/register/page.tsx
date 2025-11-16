@@ -11,7 +11,11 @@ export const metadata = generateSEOMetadata({
 		"Create your Thorbis account to bring scheduling, dispatch, and communications together for your field service team.",
 	path: "/register",
 	imageAlt: "Thorbis register form",
-	keywords: ["thorbis register", "field service signup", "contractor crm account"],
+	keywords: [
+		"thorbis register",
+		"field service signup",
+		"contractor crm account",
+	],
 	noindex: true,
 	nofollow: true,
 });

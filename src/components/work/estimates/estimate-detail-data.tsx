@@ -28,7 +28,9 @@ type EstimateDetailDataProps = {
 	estimateId: string;
 };
 
-export async function EstimateDetailData({ estimateId }: EstimateDetailDataProps) {
+export async function EstimateDetailData({
+	estimateId,
+}: EstimateDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -76,26 +78,40 @@ export async function EstimateDetailData({ estimateId }: EstimateDetailDataProps
 	}
 
 	// Now fetch related data separately to avoid join issues
-	const [{ data: customer }, { data: job }, { data: invoice }] = await Promise.all([
-		// Fetch customer
-		estimate.customer_id
-			? supabase.from("customers").select("*").eq("id", estimate.customer_id).maybeSingle()
-			: Promise.resolve({ data: null }),
-		// Fetch job
-		estimate.job_id
-			? supabase.from("jobs").select("*").eq("id", estimate.job_id).maybeSingle()
-			: Promise.resolve({ data: null }),
-		// Fetch invoice (if this estimate was converted)
-		supabase
-			.from("invoices")
-			.select("*")
-			.eq("converted_from_estimate_id", estimateId)
-			.is("deleted_at", null)
-			.maybeSingle(),
-	]);
+	const [{ data: customer }, { data: job }, { data: invoice }] =
+		await Promise.all([
+			// Fetch customer
+			estimate.customer_id
+				? supabase
+						.from("customers")
+						.select("*")
+						.eq("id", estimate.customer_id)
+						.maybeSingle()
+				: Promise.resolve({ data: null }),
+			// Fetch job
+			estimate.job_id
+				? supabase
+						.from("jobs")
+						.select("*")
+						.eq("id", estimate.job_id)
+						.maybeSingle()
+				: Promise.resolve({ data: null }),
+			// Fetch invoice (if this estimate was converted)
+			supabase
+				.from("invoices")
+				.select("*")
+				.eq("converted_from_estimate_id", estimateId)
+				.is("deleted_at", null)
+				.maybeSingle(),
+		]);
 
 	// Fetch all related data (including contract for workflow timeline)
-	const [{ data: contract }, { data: activities }, { data: notes }, { data: attachments }] = await Promise.all([
+	const [
+		{ data: contract },
+		{ data: activities },
+		{ data: notes },
+		{ data: attachments },
+	] = await Promise.all([
 		// Fetch contract generated from this estimate
 		supabase
 			.from("contracts")
@@ -145,7 +161,10 @@ export async function EstimateDetailData({ estimateId }: EstimateDetailDataProps
 
 	// Calculate days until expiry
 	const daysUntilExpiry = estimate.valid_until
-		? Math.ceil((new Date(estimate.valid_until).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+		? Math.ceil(
+				(new Date(estimate.valid_until).getTime() - Date.now()) /
+					(1000 * 60 * 60 * 24),
+			)
 		: null;
 
 	const metrics = {

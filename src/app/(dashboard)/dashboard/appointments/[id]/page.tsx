@@ -10,7 +10,11 @@ import { Suspense } from "react";
 import { AppointmentDetailData } from "@/components/appointments/appointment-detail-data";
 import { AppointmentDetailSkeleton } from "@/components/appointments/appointment-detail-skeleton";
 
-export default async function AppointmentDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AppointmentDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: appointmentId } = await params;
 
 	return (

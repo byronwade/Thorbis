@@ -26,7 +26,9 @@ type MaintenancePlanDetailDataProps = {
 	planId: string;
 };
 
-export async function MaintenancePlanDetailData({ planId }: MaintenancePlanDetailDataProps) {
+export async function MaintenancePlanDetailData({
+	planId,
+}: MaintenancePlanDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -77,17 +79,26 @@ export async function MaintenancePlanDetailData({ planId }: MaintenancePlanDetai
 		...planRecord,
 		price:
 			planRecord.price ??
-			(planRecord.amount !== null && planRecord.amount !== undefined ? Math.round(Number(planRecord.amount) * 100) : 0),
-		included_services: planRecord.included_services ?? planRecord.services_included ?? [],
-		next_service_due: planRecord.next_service_due ?? planRecord.next_service_date ?? null,
-		visits_per_term: planRecord.visits_per_term ?? planRecord.total_services_scheduled ?? 1,
+			(planRecord.amount !== null && planRecord.amount !== undefined
+				? Math.round(Number(planRecord.amount) * 100)
+				: 0),
+		included_services:
+			planRecord.included_services ?? planRecord.services_included ?? [],
+		next_service_due:
+			planRecord.next_service_due ?? planRecord.next_service_date ?? null,
+		visits_per_term:
+			planRecord.visits_per_term ?? planRecord.total_services_scheduled ?? 1,
 		type: planRecord.type ?? "maintenance",
 		taxable: planRecord.taxable ?? false,
 	};
 
 	// Get related data
-	const customer = Array.isArray(normalizedPlan.customer) ? normalizedPlan.customer[0] : normalizedPlan.customer;
-	const property = Array.isArray(normalizedPlan.property) ? normalizedPlan.property[0] : normalizedPlan.property;
+	const customer = Array.isArray(normalizedPlan.customer)
+		? normalizedPlan.customer[0]
+		: normalizedPlan.customer;
+	const property = Array.isArray(normalizedPlan.property)
+		? normalizedPlan.property[0]
+		: normalizedPlan.property;
 
 	// Fetch equipment linked to this plan
 	const { data: equipment } = await supabase
@@ -108,10 +119,14 @@ export async function MaintenancePlanDetailData({ planId }: MaintenancePlanDetai
 		// Fetch jobs generated from this maintenance plan
 		supabase
 			.from("jobs")
-			.select("id, job_number, title, status, completed_at, property:properties!property_id(id, name, address)")
+			.select(
+				"id, job_number, title, status, completed_at, property:properties!property_id(id, name, address)",
+			)
 			.eq("company_id", activeCompanyId)
 			.is("deleted_at", null)
-			.or(`metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`)
+			.or(
+				`metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`,
+			)
 			.order("created_at", { ascending: false })
 			.limit(10),
 
@@ -158,11 +173,11 @@ export async function MaintenancePlanDetailData({ planId }: MaintenancePlanDetai
 
 						const relatedJobIds = new Set(
 							// biome-ignore lint/suspicious/noExplicitAny: Supabase query result
-							relatedJobs?.map((j: any) => j.job_id) || []
+							relatedJobs?.map((j: any) => j.job_id) || [],
 						);
 						const filtered = result.data.filter(
 							// biome-ignore lint/suspicious/noExplicitAny: Supabase query result
-							(s: any) => s.job_id && relatedJobIds.has(s.job_id)
+							(s: any) => s.job_id && relatedJobIds.has(s.job_id),
 						);
 
 						return { data: filtered, error: null };
@@ -174,7 +189,9 @@ export async function MaintenancePlanDetailData({ planId }: MaintenancePlanDetai
 			.from("invoices")
 			.select("id, invoice_number, total_amount, status, created_at")
 			.eq("company_id", activeCompanyId)
-			.or(`metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`)
+			.or(
+				`metadata->>'service_plan_id'.eq.${planId},metadata->>'maintenance_plan_id'.eq.${planId}`,
+			)
 			.order("created_at", { ascending: false })
 			.limit(10),
 

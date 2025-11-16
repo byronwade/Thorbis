@@ -37,7 +37,10 @@ import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
 import { PropertiesTable } from "@/components/customers/properties-table";
-import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
+import {
+	DetailPageContentLayout,
+	type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
 import { DetailPageSurface } from "@/components/layout/detail-page-shell";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,9 +57,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { CustomerStatusBadge, InvoiceStatusBadge, JobStatusBadge } from "@/components/ui/status-badge";
+import {
+	CustomerStatusBadge,
+	InvoiceStatusBadge,
+	JobStatusBadge,
+} from "@/components/ui/status-badge";
 import { Textarea } from "@/components/ui/textarea";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { JobsTable } from "@/components/work/jobs-table";
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
@@ -68,7 +78,10 @@ type CustomerPageContentProps = {
 	metrics: any;
 };
 
-export function CustomerPageContent({ customerData, metrics }: CustomerPageContentProps) {
+export function CustomerPageContent({
+	customerData,
+	metrics,
+}: CustomerPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
@@ -105,11 +118,18 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		setHasChanges(true);
 	};
 
-	const customerStatus = (localCustomer?.status || customer?.status || "active")?.toLowerCase();
+	const customerStatus = (
+		localCustomer?.status ||
+		customer?.status ||
+		"active"
+	)?.toLowerCase();
 
 	const displayName = useMemo(() => {
 		const explicitName =
-			localCustomer?.display_name || localCustomer?.company_name || customer?.display_name || customer?.company_name;
+			localCustomer?.display_name ||
+			localCustomer?.company_name ||
+			customer?.display_name ||
+			customer?.company_name;
 
 		if (explicitName && explicitName.trim().length > 0) {
 			return explicitName.trim();
@@ -159,7 +179,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
 	const customerIdentifier = useMemo(() => {
 		const candidate =
-			customer?.customer_number ?? customer?.account_number ?? customer?.reference_id ?? customer?.external_id;
+			customer?.customer_number ??
+			customer?.account_number ??
+			customer?.reference_id ??
+			customer?.external_id;
 
 		if (candidate) {
 			return `#${candidate}`;
@@ -174,7 +197,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
 	const primaryEmail = localCustomer?.email || customer?.email || null;
 	const primaryPhone =
-		localCustomer?.phone || localCustomer?.mobile_phone || customer?.phone || customer?.mobile_phone || null;
+		localCustomer?.phone ||
+		localCustomer?.mobile_phone ||
+		customer?.phone ||
+		customer?.mobile_phone ||
+		null;
 
 	const primaryProperty = useMemo(() => {
 		if (properties.length > 0) {
@@ -183,10 +210,17 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		return null;
 	}, [properties]);
 
-	const customerSince = localCustomer?.created_at ?? customer?.created_at ?? customer?.createdAt ?? null;
+	const customerSince =
+		localCustomer?.created_at ??
+		customer?.created_at ??
+		customer?.createdAt ??
+		null;
 
 	const outstandingBalance =
-		metrics?.outstandingBalance ?? customer?.outstanding_balance ?? customer?.outstandingBalance ?? 0;
+		metrics?.outstandingBalance ??
+		customer?.outstanding_balance ??
+		customer?.outstandingBalance ??
+		0;
 
 	const membershipLabel =
 		localCustomer?.membership_tier ??
@@ -197,7 +231,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		customer?.plan ??
 		null;
 
-	const portalEnabled = localCustomer?.portal_enabled ?? customer?.portal_enabled ?? customer?.portalEnabled ?? false;
+	const portalEnabled =
+		localCustomer?.portal_enabled ??
+		customer?.portal_enabled ??
+		customer?.portalEnabled ??
+		false;
 
 	// Save changes
 	const handleSave = async () => {
@@ -220,7 +258,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 	};
 
 	// Helper to determine badge type based on status
-	const _getStatusBadge = (status: string, entityType: "job" | "invoice" = "job") => {
+	const _getStatusBadge = (
+		status: string,
+		entityType: "job" | "invoice" = "job",
+	) => {
 		if (entityType === "invoice") {
 			return <InvoiceStatusBadge status={status} />;
 		}
@@ -249,21 +290,24 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 			key: "new-job",
 			label: "New Job",
 			icon: Plus,
-			onClick: () => router.push(`/dashboard/work/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/new?customerId=${customer.id}`),
 		},
 		{
 			key: "new-invoice",
 			label: "New Invoice",
 			icon: FileText,
 			variant: "secondary" as const,
-			onClick: () => router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
 		},
 		{
 			key: "add-property",
 			label: "Add Property",
 			icon: Building2,
 			variant: "outline" as const,
-			onClick: () => router.push(`/dashboard/work/properties/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/properties/new?customerId=${customer.id}`),
 		},
 	] as const;
 
@@ -272,7 +316,12 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 			const { key, label, icon: Icon, onClick } = config;
 			const variant = "variant" in config ? config.variant : undefined;
 			return (
-				<Button key={key} onClick={onClick} size="sm" variant={variant ?? "default"}>
+				<Button
+					key={key}
+					onClick={onClick}
+					size="sm"
+					variant={variant ?? "default"}
+				>
 					<Icon className="mr-2 h-4 w-4" />
 					{label}
 				</Button>
@@ -310,7 +359,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem onClick={() => router.push(`/dashboard/customers/${customer.id}/edit`)}>
+						<DropdownMenuItem
+							onClick={() =>
+								router.push(`/dashboard/customers/${customer.id}/edit`)
+							}
+						>
 							<UserCog className="mr-2 size-3.5" />
 							Edit Full Profile
 						</DropdownMenuItem>
@@ -339,7 +392,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
 						<DropdownMenuSeparator />
 
-						<DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => {}}>
+						<DropdownMenuItem
+							className="text-destructive focus:text-destructive"
+							onClick={() => {}}
+						>
 							<Archive className="mr-2 size-3.5" />
 							Archive Customer
 						</DropdownMenuItem>
@@ -387,7 +443,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		<div className="flex flex-wrap items-center gap-2">
 			<span className="inline-flex items-center gap-1">
 				<Calendar className="h-4 w-4" />
-				{customerSince ? `Customer since ${formatDate(customerSince, "short")}` : "Customer since —"}
+				{customerSince
+					? `Customer since ${formatDate(customerSince, "short")}`
+					: "Customer since —"}
 			</span>
 			{primaryProperty ? (
 				<>
@@ -419,7 +477,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		metadata: metadataItems,
 		leadingVisual: (
 			<Avatar className="h-12 w-12">
-				<AvatarImage alt={displayName} src={customer?.avatar_url ?? undefined} />
+				<AvatarImage
+					alt={displayName}
+					src={customer?.avatar_url ?? undefined}
+				/>
 				<AvatarFallback>{avatarInitials || "CU"}</AvatarFallback>
 			</Avatar>
 		),
@@ -498,29 +559,40 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		<DetailPageSurface padding="lg" variant="muted">
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-3">
-					<Label className="font-medium text-muted-foreground text-xs uppercase">Display Name</Label>
+					<Label className="font-medium text-muted-foreground text-xs uppercase">
+						Display Name
+					</Label>
 					<Input
 						className={cn(
-							"h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl"
+							"h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl",
 						)}
 						onChange={(e) => handlePrimaryNameChange(e.target.value)}
 						placeholder="Enter customer name..."
 						value={displayName}
 					/>
 					<p className="text-muted-foreground text-xs">
-						Update how this customer appears across Thorbis. Changes are saved when you select Save changes.
+						Update how this customer appears across Thorbis. Changes are saved
+						when you select Save changes.
 					</p>
 				</div>
 
 				<div className="grid gap-3 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
-						<div className="rounded-lg border border-border/40 bg-background px-3 py-3" key={key}>
+						<div
+							className="rounded-lg border border-border/40 bg-background px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="h-4 w-4 text-muted-foreground" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">{label}</span>
+									<span className="font-medium text-muted-foreground text-xs uppercase">
+										{label}
+									</span>
 									{href ? (
-										<a className="font-semibold text-sm hover:underline" href={href}>
+										<a
+											className="font-semibold text-sm hover:underline"
+											href={href}
+										>
 											{value}
 										</a>
 									) : (
@@ -534,11 +606,16 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
-						<div className="rounded-lg border border-border/40 bg-background px-3 py-3" key={key}>
+						<div
+							className="rounded-lg border border-border/40 bg-background px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="h-4 w-4 text-muted-foreground" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">{label}</span>
+									<span className="font-medium text-muted-foreground text-xs uppercase">
+										{label}
+									</span>
 									<span className="font-semibold text-sm">{value}</span>
 								</div>
 							</div>
@@ -565,7 +642,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="first_name">First Name</Label>
 										<Input
 											id="first_name"
-											onChange={(e) => handleFieldChange("first_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("first_name", e.target.value)
+											}
 											value={localCustomer.first_name || ""}
 										/>
 									</div>
@@ -573,7 +652,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="last_name">Last Name</Label>
 										<Input
 											id="last_name"
-											onChange={(e) => handleFieldChange("last_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("last_name", e.target.value)
+											}
 											value={localCustomer.last_name || ""}
 										/>
 									</div>
@@ -581,7 +662,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="company_name">Company Name</Label>
 										<Input
 											id="company_name"
-											onChange={(e) => handleFieldChange("company_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("company_name", e.target.value)
+											}
 											value={localCustomer.company_name || ""}
 										/>
 									</div>
@@ -592,7 +675,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="email"
-												onChange={(e) => handleFieldChange("email", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("email", e.target.value)
+												}
 												type="email"
 												value={localCustomer.email || ""}
 											/>
@@ -610,7 +695,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="phone"
-												onChange={(e) => handleFieldChange("phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("phone", e.target.value)
+												}
 												type="tel"
 												value={localCustomer.phone || ""}
 											/>
@@ -628,7 +715,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="mobile_phone"
-												onChange={(e) => handleFieldChange("mobile_phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("mobile_phone", e.target.value)
+												}
 												type="tel"
 												value={localCustomer.mobile_phone || ""}
 											/>
@@ -650,7 +739,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="address">Address</Label>
 										<Textarea
 											id="address"
-											onChange={(e) => handleFieldChange("address", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("address", e.target.value)
+											}
 											rows={3}
 											value={localCustomer.address || ""}
 										/>
@@ -660,7 +751,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="city">City</Label>
 											<Input
 												id="city"
-												onChange={(e) => handleFieldChange("city", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("city", e.target.value)
+												}
 												value={localCustomer.city || ""}
 											/>
 										</div>
@@ -668,7 +761,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="state">State</Label>
 											<Input
 												id="state"
-												onChange={(e) => handleFieldChange("state", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("state", e.target.value)
+												}
 												value={localCustomer.state || ""}
 											/>
 										</div>
@@ -676,7 +771,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="postal_code">Postal Code</Label>
 											<Input
 												id="postal_code"
-												onChange={(e) => handleFieldChange("postal_code", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("postal_code", e.target.value)
+												}
 												value={localCustomer.postal_code || ""}
 											/>
 										</div>
@@ -684,7 +781,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="country">Country</Label>
 											<Input
 												id="country"
-												onChange={(e) => handleFieldChange("country", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("country", e.target.value)
+												}
 												value={localCustomer.country || ""}
 											/>
 										</div>
@@ -699,7 +798,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											onChange={(e) =>
 												handleFieldChange(
 													"tags",
-													e.target.value.split(",").map((tag) => tag.trim())
+													e.target.value.split(",").map((tag) => tag.trim()),
 												)
 											}
 											placeholder="Comma separated tags"
@@ -710,7 +809,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="notes">Notes</Label>
 										<Textarea
 											id="notes"
-											onChange={(e) => handleFieldChange("notes", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("notes", e.target.value)
+											}
 											placeholder="Internal notes about this customer"
 											rows={4}
 											value={localCustomer.notes || ""}
@@ -729,7 +830,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: properties.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/properties/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/properties/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -741,7 +846,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						<div className="border-b px-6 py-4 text-muted-foreground text-sm">
 							Manage service locations for this customer.
 						</div>
-						<PropertiesTable customerId={customer.id} itemsPerPage={10} properties={properties} />
+						<PropertiesTable
+							customerId={customer.id}
+							itemsPerPage={10}
+							properties={properties}
+						/>
 					</UnifiedAccordionContent>
 				),
 			},
@@ -752,7 +861,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: jobs.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/new?customerId=${customer.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -774,7 +885,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				icon: <Receipt className="size-4" />,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/invoices/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -786,7 +901,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						<div className="border-b px-6 py-4 text-muted-foreground text-sm">
 							Billing history and outstanding invoices.
 						</div>
-						<CustomerInvoicesTable invoices={invoices || []} onUpdate={() => router.refresh()} />
+						<CustomerInvoicesTable
+							invoices={invoices || []}
+							onUpdate={() => router.refresh()}
+						/>
 					</UnifiedAccordionContent>
 				),
 			},
@@ -811,11 +929,17 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											</div>
 											<div>
 												<p className="font-medium">{item.name}</p>
-												<p className="text-muted-foreground text-xs">{item.type || item.category || "Equipment"}</p>
+												<p className="text-muted-foreground text-xs">
+													{item.type || item.category || "Equipment"}
+												</p>
 											</div>
 										</div>
 										<div className="mt-3 space-y-1 text-sm">
-											{item.serial_number && <p className="text-muted-foreground">Serial: {item.serial_number}</p>}
+											{item.serial_number && (
+												<p className="text-muted-foreground">
+													Serial: {item.serial_number}
+												</p>
+											)}
 											{item.manufacturer && (
 												<p className="flex items-center gap-2 text-muted-foreground">
 													<Building2 className="h-4 w-4" />
@@ -835,7 +959,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
 								<Package className="h-6 w-6 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No equipment on record for this customer yet.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No equipment on record for this customer yet.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -857,7 +983,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 							<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 								{paymentMethods.map((method: any) => {
 									// Determine payment method type
-									const type = method.type === "ach" || method.type === "bank" ? method.type : "card";
+									const type =
+										method.type === "ach" || method.type === "bank"
+											? method.type
+											: "card";
 
 									return (
 										<PaymentMethodCard
@@ -866,7 +995,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											card_brand={method.brand || method.card_brand}
 											card_exp_month={method.exp_month || method.card_exp_month}
 											card_exp_year={method.exp_year || method.card_exp_year}
-											card_last4={method.last4 || method.card_last_four || method.card_last4}
+											card_last4={
+												method.last4 ||
+												method.card_last_four ||
+												method.card_last4
+											}
 											cardholder_name={method.cardholder_name || method.name}
 											id={method.id}
 											is_default={method.is_default}
@@ -883,8 +1016,12 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-12 text-center">
 								<CreditCard className="mb-3 size-12 text-muted-foreground/50" />
-								<p className="font-medium text-muted-foreground text-sm">No payment methods on file</p>
-								<p className="mt-1 text-muted-foreground text-xs">Add a card or bank account for quick invoicing</p>
+								<p className="font-medium text-muted-foreground text-sm">
+									No payment methods on file
+								</p>
+								<p className="mt-1 text-muted-foreground text-xs">
+									Add a card or bank account for quick invoicing
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -898,7 +1035,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: estimates.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/estimates/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/estimates/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -915,23 +1056,44 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Estimate #</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Estimate #
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Total
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{estimates.map((estimate: any) => (
-											<tr className="border-b hover:bg-muted/30" key={estimate.id}>
-												<td className="px-6 py-4 text-sm">#{estimate.estimate_number || estimate.id.slice(0, 8)}</td>
-												<td className="px-6 py-4 text-sm">{formatDate(estimate.created_at, "short")}</td>
-												<td className="px-6 py-4 font-medium text-sm">
-													{formatCurrencyFromDollars(estimate.total_amount / 100)}
+											<tr
+												className="border-b hover:bg-muted/30"
+												key={estimate.id}
+											>
+												<td className="px-6 py-4 text-sm">
+													#{estimate.estimate_number || estimate.id.slice(0, 8)}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{estimate.status || "draft"}</Badge>
+													{formatDate(estimate.created_at, "short")}
+												</td>
+												<td className="px-6 py-4 font-medium text-sm">
+													{formatCurrencyFromDollars(
+														estimate.total_amount / 100,
+													)}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{estimate.status || "draft"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -949,7 +1111,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<FileText className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No estimates for this customer yet.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No estimates for this customer yet.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -963,7 +1127,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: appointments.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/schedule?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/schedule?customerId=${customer.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -980,27 +1146,54 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Date & Time</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Type</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Job</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Date & Time
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Type
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Job
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{appointments.map((appointment: any) => (
-											<tr className="border-b hover:bg-muted/30" key={appointment.id}>
-												<td className="px-6 py-4 text-sm">{new Date(appointment.scheduled_start).toLocaleString()}</td>
-												<td className="px-6 py-4 text-sm">{appointment.type || "Service"}</td>
+											<tr
+												className="border-b hover:bg-muted/30"
+												key={appointment.id}
+											>
 												<td className="px-6 py-4 text-sm">
-													{appointment.property?.name || appointment.property?.address || "-"}
+													{new Date(
+														appointment.scheduled_start,
+													).toLocaleString()}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{appointment.job?.job_number ? `#${appointment.job.job_number}` : "-"}
+													{appointment.type || "Service"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{appointment.status || "scheduled"}</Badge>
+													{appointment.property?.name ||
+														appointment.property?.address ||
+														"-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													{appointment.job?.job_number
+														? `#${appointment.job.job_number}`
+														: "-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{appointment.status || "scheduled"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1018,7 +1211,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<Calendar className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No appointments scheduled for this customer.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No appointments scheduled for this customer.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -1040,18 +1235,35 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Contract #</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Related To</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Contract #
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Related To
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{contracts.map((contract: any) => (
-											<tr className="border-b hover:bg-muted/30" key={contract.id}>
-												<td className="px-6 py-4 text-sm">#{contract.contract_number || contract.id.slice(0, 8)}</td>
-												<td className="px-6 py-4 text-sm">{formatDate(contract.created_at, "short")}</td>
+											<tr
+												className="border-b hover:bg-muted/30"
+												key={contract.id}
+											>
+												<td className="px-6 py-4 text-sm">
+													#{contract.contract_number || contract.id.slice(0, 8)}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													{formatDate(contract.created_at, "short")}
+												</td>
 												<td className="px-6 py-4 text-sm">
 													{contract.job
 														? `Job #${contract.job.job_number}`
@@ -1062,7 +1274,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 																: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{contract.status || "draft"}</Badge>
+													<Badge variant="outline">
+														{contract.status || "draft"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1080,7 +1294,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<FileText className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No contracts for this customer.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No contracts for this customer.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -1102,20 +1318,41 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Payment #</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Amount</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Method</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Invoice</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Payment #
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Amount
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Method
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Invoice
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{payments.map((payment: any) => (
-											<tr className="border-b hover:bg-muted/30" key={payment.id}>
-												<td className="px-6 py-4 text-sm">#{payment.payment_number || payment.id.slice(0, 8)}</td>
-												<td className="px-6 py-4 text-sm">{formatDate(payment.created_at, "short")}</td>
+											<tr
+												className="border-b hover:bg-muted/30"
+												key={payment.id}
+											>
+												<td className="px-6 py-4 text-sm">
+													#{payment.payment_number || payment.id.slice(0, 8)}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													{formatDate(payment.created_at, "short")}
+												</td>
 												<td className="px-6 py-4 font-medium text-sm">
 													{formatCurrencyFromDollars(payment.amount / 100)}
 												</td>
@@ -1123,10 +1360,18 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 													{payment.payment_method?.replace("_", " ") || "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{payment.invoice ? `#${payment.invoice.invoice_number}` : "-"}
+													{payment.invoice
+														? `#${payment.invoice.invoice_number}`
+														: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant={payment.status === "completed" ? "default" : "outline"}>
+													<Badge
+														variant={
+															payment.status === "completed"
+																? "default"
+																: "outline"
+														}
+													>
 														{payment.status}
 													</Badge>
 												</td>
@@ -1146,7 +1391,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<CreditCard className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No payment history for this customer.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No payment history for this customer.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -1168,21 +1415,39 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Plan Name</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Frequency</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Plan Name
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Frequency
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{maintenancePlans.map((plan: any) => (
 											<tr className="border-b hover:bg-muted/30" key={plan.id}>
-												<td className="px-6 py-4 font-medium text-sm">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</td>
-												<td className="px-6 py-4 text-sm">{plan.property?.name || plan.property?.address || "-"}</td>
-												<td className="px-6 py-4 text-sm capitalize">{plan.frequency || "Monthly"}</td>
+												<td className="px-6 py-4 font-medium text-sm">
+													{plan.name || `Plan ${plan.id.slice(0, 8)}`}
+												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{plan.status || "active"}</Badge>
+													{plan.property?.name || plan.property?.address || "-"}
+												</td>
+												<td className="px-6 py-4 text-sm capitalize">
+													{plan.frequency || "Monthly"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{plan.status || "active"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1200,7 +1465,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<ShieldCheck className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No maintenance plans for this customer.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No maintenance plans for this customer.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -1222,29 +1489,54 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="border-b bg-muted/50">
 										<tr>
-											<th className="px-6 py-3 text-left font-medium text-sm">Agreement #</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Property</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Start Date</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">End Date</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-											<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Agreement #
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Start Date
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												End Date
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left font-medium text-sm">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{serviceAgreements.map((agreement: any) => (
-											<tr className="border-b hover:bg-muted/30" key={agreement.id}>
-												<td className="px-6 py-4 text-sm">#{agreement.id.slice(0, 8)}</td>
+											<tr
+												className="border-b hover:bg-muted/30"
+												key={agreement.id}
+											>
 												<td className="px-6 py-4 text-sm">
-													{agreement.property?.name || agreement.property?.address || "-"}
+													#{agreement.id.slice(0, 8)}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{agreement.start_date ? formatDate(agreement.start_date, "short") : "-"}
+													{agreement.property?.name ||
+														agreement.property?.address ||
+														"-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{agreement.end_date ? formatDate(agreement.end_date, "short") : "-"}
+													{agreement.start_date
+														? formatDate(agreement.start_date, "short")
+														: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{agreement.status || "active"}</Badge>
+													{agreement.end_date
+														? formatDate(agreement.end_date, "short")
+														: "-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{agreement.status || "active"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1262,7 +1554,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						) : (
 							<div className="flex flex-col items-center justify-center p-12 text-center">
 								<FileText className="h-8 w-8 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">No service agreements for this customer.</p>
+								<p className="mt-2 text-muted-foreground text-sm">
+									No service agreements for this customer.
+								</p>
 							</div>
 						)}
 					</UnifiedAccordionContent>
@@ -1313,7 +1607,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				title: recentJob.title || `Job #${recentJob.job_number}`,
 				subtitle: recentJob.status,
 				href: `/dashboard/work/${recentJob.id}`,
-				badge: recentJob.status ? { label: recentJob.status, variant: "outline" as const } : undefined,
+				badge: recentJob.status
+					? { label: recentJob.status, variant: "outline" as const }
+					: undefined,
 			});
 		}
 
@@ -1325,7 +1621,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		<div className="w-full px-2 sm:px-0">
 			<div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
 				<div className="flex flex-col gap-3 p-4 sm:p-6">
-					<span className="font-medium text-muted-foreground text-xs">Tags:</span>
+					<span className="font-medium text-muted-foreground text-xs">
+						Tags:
+					</span>
 					<EntityTags
 						entityId={customer.id}
 						entityType="customer"

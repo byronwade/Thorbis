@@ -12,7 +12,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 export type CustomerContact = {
 	id: string;
@@ -98,7 +101,8 @@ export async function getCustomerContacts(customerId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to fetch contacts",
+			error:
+				error instanceof Error ? error.message : "Failed to fetch contacts",
 			data: [],
 		};
 	}
@@ -216,7 +220,8 @@ export async function updateCustomerContact({
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to update contact",
+			error:
+				error instanceof Error ? error.message : "Failed to update contact",
 		};
 	}
 }
@@ -252,12 +257,15 @@ export async function removeCustomerContact(contactId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to remove contact",
+			error:
+				error instanceof Error ? error.message : "Failed to remove contact",
 		};
 	}
 }
 
-const buildContactUpdates = (updateData: UpdateCustomerContactInput): Record<string, unknown> => {
+const buildContactUpdates = (
+	updateData: UpdateCustomerContactInput,
+): Record<string, unknown> => {
 	const mappings: Record<keyof UpdateCustomerContactInput, string> = {
 		firstName: "first_name",
 		lastName: "last_name",
@@ -274,7 +282,9 @@ const buildContactUpdates = (updateData: UpdateCustomerContactInput): Record<str
 
 	const updates: Record<string, unknown> = {};
 
-	for (const key of Object.keys(mappings) as Array<keyof UpdateCustomerContactInput>) {
+	for (const key of Object.keys(mappings) as Array<
+		keyof UpdateCustomerContactInput
+	>) {
 		const value = updateData[key];
 		if (value !== undefined) {
 			updates[mappings[key]] = value;

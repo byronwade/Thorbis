@@ -16,18 +16,28 @@
  * ```
  */
 
-import type { RealtimeChannel, RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import type {
+	RealtimeChannel,
+	RealtimePostgresChangesPayload,
+} from "@supabase/supabase-js";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { createClient } from "@/lib/supabase/client";
-import { COMMUNICATION_MARK_AS_READ_EVENT, type CommunicationMarkAsReadDetail } from "./notification-events";
+import {
+	COMMUNICATION_MARK_AS_READ_EVENT,
+	type CommunicationMarkAsReadDetail,
+} from "./notification-events";
 
 // =====================================================================================
 // Types
 // =====================================================================================
 
 // Import and re-export shared types to maintain backward compatibility
-import type { Notification, NotificationPriority, NotificationType } from "./notifications-types";
+import type {
+	Notification,
+	NotificationPriority,
+	NotificationType,
+} from "./notifications-types";
 
 export type { Notification, NotificationPriority, NotificationType };
 
@@ -95,7 +105,9 @@ export const useNotificationsStore = create<NotificationsState>()(
 
 			addNotification: (notification) =>
 				set((state) => {
-					const exists = state.notifications.some((n) => n.id === notification.id);
+					const exists = state.notifications.some(
+						(n) => n.id === notification.id,
+					);
 					if (exists) {
 						return state;
 					}
@@ -111,7 +123,9 @@ export const useNotificationsStore = create<NotificationsState>()(
 
 			updateNotification: (id, updates) =>
 				set((state) => {
-					const notifications = state.notifications.map((n) => (n.id === id ? { ...n, ...updates } : n));
+					const notifications = state.notifications.map((n) =>
+						n.id === id ? { ...n, ...updates } : n,
+					);
 					const unreadCount = notifications.filter((n) => !n.read).length;
 
 					return { notifications, unreadCount };
@@ -138,7 +152,9 @@ export const useNotificationsStore = create<NotificationsState>()(
 			optimisticMarkAsRead: (id) =>
 				set((state) => {
 					const notifications = state.notifications.map((n) =>
-						n.id === id ? { ...n, read: true, read_at: new Date().toISOString() } : n
+						n.id === id
+							? { ...n, read: true, read_at: new Date().toISOString() }
+							: n,
 					);
 					const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -148,7 +164,7 @@ export const useNotificationsStore = create<NotificationsState>()(
 			optimisticMarkAsUnread: (id) =>
 				set((state) => {
 					const notifications = state.notifications.map((n) =>
-						n.id === id ? { ...n, read: false, read_at: null } : n
+						n.id === id ? { ...n, read: false, read_at: null } : n,
 					);
 					const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -226,17 +242,24 @@ export const useNotificationsStore = create<NotificationsState>()(
 										// Show toast notification for communication events
 										if (typeof window !== "undefined") {
 											// Check if this is a communication-related notification
-											const isCommunication = notification.metadata?.communication_id;
+											const isCommunication =
+												notification.metadata?.communication_id;
 
 											if (isCommunication) {
 												// Use communication notifications store for toast
-												import("./communication-notifications-store").then(({ useCommunicationNotificationsStore }) => {
-													useCommunicationNotificationsStore.getState().showCommunicationToast(notification);
-												});
+												import("./communication-notifications-store").then(
+													({ useCommunicationNotificationsStore }) => {
+														useCommunicationNotificationsStore
+															.getState()
+															.showCommunicationToast(notification);
+													},
+												);
 											} else {
 												// Use standard notification handling for non-communication events
 												// Play notification sound if enabled
-												const soundEnabled = localStorage.getItem("notifications_sound_enabled");
+												const soundEnabled = localStorage.getItem(
+													"notifications_sound_enabled",
+												);
 												if (soundEnabled !== "false") {
 													// Play a subtle notification sound
 													const audio = new Audio("/sounds/notification.mp3");
@@ -247,7 +270,9 @@ export const useNotificationsStore = create<NotificationsState>()(
 												}
 
 												// Show desktop notification if enabled and permission granted
-												const desktopEnabled = localStorage.getItem("notifications_desktop_enabled");
+												const desktopEnabled = localStorage.getItem(
+													"notifications_desktop_enabled",
+												);
 												if (
 													desktopEnabled !== "false" &&
 													"Notification" in window &&
@@ -263,7 +288,7 @@ export const useNotificationsStore = create<NotificationsState>()(
 											}
 										}
 									}
-								}
+								},
 							)
 							.on(
 								"postgres_changes",
@@ -279,7 +304,7 @@ export const useNotificationsStore = create<NotificationsState>()(
 										const notification = payload.new as Notification;
 										get().updateNotification(notification.id, notification);
 									}
-								}
+								},
 							)
 							.on(
 								"postgres_changes",
@@ -294,7 +319,7 @@ export const useNotificationsStore = create<NotificationsState>()(
 									if (payload.old) {
 										get().removeNotification((payload.old as Notification).id);
 									}
-								}
+								},
 							)
 							.subscribe((status, _err) => {
 								if (status === "SUBSCRIBED") {
@@ -352,8 +377,8 @@ export const useNotificationsStore = create<NotificationsState>()(
 
 			reset: () => set(initialState),
 		}),
-		{ name: "NotificationsStore" }
-	)
+		{ name: "NotificationsStore" },
+	),
 );
 
 if (typeof window !== "undefined") {
@@ -376,19 +401,22 @@ if (typeof window !== "undefined") {
 /**
  * Get only unread notifications
  */
-export const selectUnreadNotifications = (state: NotificationsState) => state.notifications.filter((n) => !n.read);
+export const selectUnreadNotifications = (state: NotificationsState) =>
+	state.notifications.filter((n) => !n.read);
 
 /**
  * Get notifications by type
  */
-export const selectNotificationsByType = (type: NotificationType) => (state: NotificationsState) =>
-	state.notifications.filter((n) => n.type === type);
+export const selectNotificationsByType =
+	(type: NotificationType) => (state: NotificationsState) =>
+		state.notifications.filter((n) => n.type === type);
 
 /**
  * Get notifications by priority
  */
-export const selectNotificationsByPriority = (priority: NotificationPriority) => (state: NotificationsState) =>
-	state.notifications.filter((n) => n.priority === priority);
+export const selectNotificationsByPriority =
+	(priority: NotificationPriority) => (state: NotificationsState) =>
+		state.notifications.filter((n) => n.priority === priority);
 
 /**
  * Get urgent unread notifications

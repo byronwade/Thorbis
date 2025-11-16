@@ -12,7 +12,13 @@
  */
 
 import type { ReactElement } from "react";
-import { cloneElement, isValidElement, useEffect, useRef, useState } from "react";
+import {
+	cloneElement,
+	isValidElement,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { cn } from "@/lib/utils";
 
 type StickyStatsBarProps = {
@@ -38,7 +44,10 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 			while (parent) {
 				const { overflow, overflowY } = window.getComputedStyle(parent);
 				const isScrollable =
-					overflow === "auto" || overflow === "scroll" || overflowY === "auto" || overflowY === "scroll";
+					overflow === "auto" ||
+					overflow === "scroll" ||
+					overflowY === "auto" ||
+					overflowY === "scroll";
 
 				if (isScrollable && parent.scrollHeight > parent.clientHeight) {
 					return parent;
@@ -69,7 +78,7 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 				root: scrollContainer, // Use the scroll container as root instead of viewport
 				threshold: 0, // Trigger as soon as any part is visible/hidden
 				rootMargin: "0px", // No margin adjustment
-			}
+			},
 		);
 
 		observer.observe(sentinel);
@@ -80,7 +89,9 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 	}, []);
 
 	// Clone the child element and pass the compact prop if it's a valid React element
-	const childWithProps = isValidElement(children) ? cloneElement(children, { compact: isScrolled } as any) : children;
+	const childWithProps = isValidElement(children)
+		? cloneElement(children, { compact: isScrolled } as any)
+		: children;
 
 	return (
 		<>
@@ -92,7 +103,7 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 				className={cn(
 					"top-0 z-40 w-full bg-background transition-all duration-300 ease-in-out",
 					isScrolled && "sticky shadow-md",
-					className
+					className,
 				)}
 				ref={containerRef}
 			>

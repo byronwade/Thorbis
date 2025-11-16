@@ -17,12 +17,21 @@ type EmptyStateProps = {
 	};
 };
 
-export function EmptyState({ title, description, icon, action }: EmptyStateProps) {
+export function EmptyState({
+	title,
+	description,
+	icon,
+	action,
+}: EmptyStateProps) {
 	return (
 		<div className="flex h-full w-full flex-col items-center justify-center p-8">
-			<div className="mb-4 text-muted-foreground">{icon || <Calendar className="size-12" />}</div>
+			<div className="mb-4 text-muted-foreground">
+				{icon || <Calendar className="size-12" />}
+			</div>
 			<h3 className="mb-2 font-semibold text-lg">{title}</h3>
-			<p className="mb-6 max-w-md text-center text-muted-foreground text-sm">{description}</p>
+			<p className="mb-6 max-w-md text-center text-muted-foreground text-sm">
+				{description}
+			</p>
 			{action && (
 				<Button onClick={action.onClick} size="sm" variant="default">
 					{action.label}
@@ -32,7 +41,11 @@ export function EmptyState({ title, description, icon, action }: EmptyStateProps
 	);
 }
 
-export function NoTechniciansEmptyState({ onAddTechnician }: { onAddTechnician?: () => void }) {
+export function NoTechniciansEmptyState({
+	onAddTechnician,
+}: {
+	onAddTechnician?: () => void;
+}) {
 	return (
 		<EmptyState
 			action={
@@ -50,7 +63,13 @@ export function NoTechniciansEmptyState({ onAddTechnician }: { onAddTechnician?:
 	);
 }
 
-export function NoJobsEmptyState({ date, onNewJob }: { date: Date; onNewJob?: () => void }) {
+export function NoJobsEmptyState({
+	date,
+	onNewJob,
+}: {
+	date: Date;
+	onNewJob?: () => void;
+}) {
 	const formattedDate = date.toLocaleDateString("en-US", {
 		weekday: "long",
 		year: "numeric",
@@ -75,14 +94,24 @@ export function NoJobsEmptyState({ date, onNewJob }: { date: Date; onNewJob?: ()
 	);
 }
 
-export function ErrorState({ error, onRetry }: { error: string; onRetry?: () => void }) {
+export function ErrorState({
+	error,
+	onRetry,
+}: {
+	error: string;
+	onRetry?: () => void;
+}) {
 	return (
 		<div className="flex h-full w-full flex-col items-center justify-center p-8">
 			<div className="mb-4 text-destructive">
 				<AlertCircle className="size-12" />
 			</div>
-			<h3 className="mb-2 font-semibold text-destructive text-lg">Something went wrong</h3>
-			<p className="mb-6 max-w-md text-center text-muted-foreground text-sm">{error}</p>
+			<h3 className="mb-2 font-semibold text-destructive text-lg">
+				Something went wrong
+			</h3>
+			<p className="mb-6 max-w-md text-center text-muted-foreground text-sm">
+				{error}
+			</p>
 			{onRetry && (
 				<Button onClick={onRetry} size="sm" variant="outline">
 					Try Again

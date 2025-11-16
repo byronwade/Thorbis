@@ -98,7 +98,10 @@ function delay(ms: number): Promise<void> {
  *
  * console.log(`Sent ${results.successful}/${results.total} emails`);
  */
-export async function sendBulkEmails(emails: BulkEmailItem[], config: BulkEmailConfig = {}): Promise<BulkEmailResult> {
+export async function sendBulkEmails(
+	emails: BulkEmailItem[],
+	config: BulkEmailConfig = {},
+): Promise<BulkEmailResult> {
 	const {
 		batchSize = 10, // Conservative batch size
 		batchDelay = 1000, // 1 second between batches
@@ -207,7 +210,10 @@ export async function sendBulkEmails(emails: BulkEmailItem[], config: BulkEmailC
  * @param config - Batch configuration
  * @returns Estimated time in milliseconds
  */
-export function estimateBulkSendTime(emailCount: number, config: BulkEmailConfig = {}): number {
+export function estimateBulkSendTime(
+	emailCount: number,
+	config: BulkEmailConfig = {},
+): number {
 	const { batchSize = 10, batchDelay = 1000 } = config;
 
 	const batchCount = Math.ceil(emailCount / batchSize);

@@ -23,7 +23,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Service Catalog</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Maintain a complete catalog of services with descriptions, durations, and pricing tiers
+							Maintain a complete catalog of services with descriptions,
+							durations, and pricing tiers
 						</p>
 					</div>
 
@@ -33,7 +34,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Dynamic Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Adjust pricing based on time of day, urgency, location, and customer type
+							Adjust pricing based on time of day, urgency, location, and
+							customer type
 						</p>
 					</div>
 
@@ -43,7 +45,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Customer-Specific Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Set custom rates for VIP customers, contracts, and service agreements
+							Set custom rates for VIP customers, contracts, and service
+							agreements
 						</p>
 					</div>
 
@@ -53,14 +56,19 @@ export async function ServicesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Seasonal Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Implement seasonal rates and promotional pricing for peak and off-peak periods
+							Implement seasonal rates and promotional pricing for peak and
+							off-peak periods
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Price Smarter, Not Harder</h3>
-					<p className="mb-6 text-muted-foreground">Maximize revenue with intelligent pricing strategies</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Price Smarter, Not Harder
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Maximize revenue with intelligent pricing strategies
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

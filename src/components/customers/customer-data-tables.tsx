@@ -4,8 +4,17 @@ import { Briefcase, FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
 /**
@@ -42,7 +51,8 @@ function getStatusBadge(status: string) {
 		}
 	> = {
 		draft: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Draft",
 		},
 		scheduled: {
@@ -59,7 +69,8 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		cancelled: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Cancelled",
 		},
 		paid: {
@@ -72,7 +83,8 @@ function getStatusBadge(status: string) {
 			label: "Unpaid",
 		},
 		overdue: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Overdue",
 		},
 	};
@@ -83,7 +95,10 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge className={`font-medium text-xs ${config.className}`} variant="outline">
+		<Badge
+			className={`font-medium text-xs ${config.className}`}
+			variant="outline"
+		>
 			{config.label}
 		</Badge>
 	);
@@ -95,7 +110,11 @@ type CustomerDataTablesProps = {
 	invoices: Invoice[];
 };
 
-export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataTablesProps) {
+export function CustomerDataTables({
+	customerId,
+	jobs,
+	invoices,
+}: CustomerDataTablesProps) {
 	// Job columns for FullWidthDataTable
 	const jobColumns: ColumnDef<Job>[] = [
 		{
@@ -118,8 +137,14 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 			header: "Title",
 			width: "flex-1",
 			render: (job) => (
-				<Link className="block min-w-0" href={`/dashboard/work/${job.id}`} onClick={(e) => e.stopPropagation()}>
-					<span className="truncate font-medium text-sm leading-tight hover:underline">{job.title}</span>
+				<Link
+					className="block min-w-0"
+					href={`/dashboard/work/${job.id}`}
+					onClick={(e) => e.stopPropagation()}
+				>
+					<span className="truncate font-medium text-sm leading-tight hover:underline">
+						{job.title}
+					</span>
 				</Link>
 			),
 		},
@@ -137,7 +162,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 			shrink: true,
 			align: "right",
 			render: (job) => (
-				<span className="font-semibold text-sm tabular-nums">{formatCurrencyFromDollars(job.totalAmount)}</span>
+				<span className="font-semibold text-sm tabular-nums">
+					{formatCurrencyFromDollars(job.totalAmount)}
+				</span>
 			),
 		},
 		{
@@ -147,7 +174,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 			shrink: true,
 			hideOnMobile: true,
 			render: (job) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{formatDate(job.scheduledStart, "short")}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{formatDate(job.scheduledStart, "short")}
+				</span>
 			),
 		},
 	];
@@ -179,7 +208,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 					href={`/dashboard/work/invoices/${invoice.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<span className="truncate font-medium text-sm leading-tight hover:underline">{invoice.title}</span>
+					<span className="truncate font-medium text-sm leading-tight hover:underline">
+						{invoice.title}
+					</span>
 				</Link>
 			),
 		},
@@ -197,7 +228,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 			shrink: true,
 			align: "right",
 			render: (invoice) => (
-				<span className="font-semibold text-sm tabular-nums">{formatCurrencyFromDollars(invoice.totalAmount)}</span>
+				<span className="font-semibold text-sm tabular-nums">
+					{formatCurrencyFromDollars(invoice.totalAmount)}
+				</span>
 			),
 		},
 		{
@@ -207,7 +240,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 			shrink: true,
 			hideOnMobile: true,
 			render: (invoice) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{formatDate(invoice.dueDate, "short")}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{formatDate(invoice.dueDate, "short")}
+				</span>
 			),
 		},
 	];
@@ -295,7 +330,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 							<CardDescription>All invoices for this customer</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="outline">
-							<Link href={`/dashboard/work/invoices/new?customer=${customerId}`}>
+							<Link
+								href={`/dashboard/work/invoices/new?customer=${customerId}`}
+							>
 								<FileText className="mr-2 size-4" />
 								New Invoice
 							</Link>
@@ -308,7 +345,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 						data={invoices}
 						emptyAction={
 							<Button asChild size="sm">
-								<Link href={`/dashboard/work/invoices/new?customer=${customerId}`}>
+								<Link
+									href={`/dashboard/work/invoices/new?customer=${customerId}`}
+								>
 									<Plus className="mr-2 size-4" />
 									Add Invoice
 								</Link>

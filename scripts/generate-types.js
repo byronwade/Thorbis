@@ -15,10 +15,13 @@ try {
 	console.log("Generating TypeScript types from Supabase schema...");
 
 	// Use Supabase CLI to generate types
-	const output = execSync(`npx supabase@latest gen types typescript --db-url "${connectionString}"`, {
-		encoding: "utf-8",
-		maxBuffer: MAX_BUFFER_SIZE_BYTES,
-	});
+	const output = execSync(
+		`npx supabase@latest gen types typescript --db-url "${connectionString}"`,
+		{
+			encoding: "utf-8",
+			maxBuffer: MAX_BUFFER_SIZE_BYTES,
+		},
+	);
 
 	// Write to types file
 	const typesPath = path.join(__dirname, "..", "src", "types", "supabase.ts");

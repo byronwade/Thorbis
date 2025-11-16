@@ -80,11 +80,17 @@ type CommunicationPageClientProps = {
 	companyPhones: CompanyPhone[];
 };
 
-export function CommunicationPageClient({ communications, companyId, companyPhones }: CommunicationPageClientProps) {
+export function CommunicationPageClient({
+	communications,
+	companyId,
+	companyPhones,
+}: CommunicationPageClientProps) {
 	const [records, setRecords] = useState<CommunicationRecord[]>(communications);
 
 	const activeFilter = useCommunicationStore((state) => state.activeFilter);
-	const setActiveFilter = useCommunicationStore((state) => state.setActiveFilter);
+	const setActiveFilter = useCommunicationStore(
+		(state) => state.setActiveFilter,
+	);
 	useEffect(() => {
 		setRecords(communications);
 	}, [communications]);
@@ -107,7 +113,7 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 				},
 				(payload) => {
 					setRecords((prev) => applyRealtimePayload(prev, payload));
-				}
+				},
 			)
 			.subscribe();
 
@@ -116,11 +122,19 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 		};
 	}, [companyId]);
 
-	const handleCommunicationCreated = useCallback((record: CommunicationRecord) => {
-		setRecords((prev) => upsertCommunicationRecord(prev, normalizeCommunicationRecord(record)));
-	}, []);
+	const handleCommunicationCreated = useCallback(
+		(record: CommunicationRecord) => {
+			setRecords((prev) =>
+				upsertCommunicationRecord(prev, normalizeCommunicationRecord(record)),
+			);
+		},
+		[],
+	);
 
-	const unifiedMessages = useMemo(() => records.map(convertCommunicationToMessage), [records]);
+	const unifiedMessages = useMemo(
+		() => records.map(convertCommunicationToMessage),
+		[records],
+	);
 
 	const messageCounts = useMemo(
 		() => ({
@@ -130,12 +144,15 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 			phone: unifiedMessages.filter((m) => m.type === "phone").length,
 			ticket: unifiedMessages.filter((m) => m.type === "ticket").length,
 		}),
-		[unifiedMessages]
+		[unifiedMessages],
 	);
 
 	const filteredMessages = useMemo(
-		() => unifiedMessages.filter((msg) => activeFilter === "all" || msg.type === activeFilter),
-		[unifiedMessages, activeFilter]
+		() =>
+			unifiedMessages.filter(
+				(msg) => activeFilter === "all" || msg.type === activeFilter,
+			),
+		[unifiedMessages, activeFilter],
 	);
 
 	const handleResumeCall = useCallback((callControlId: string) => {
@@ -143,7 +160,11 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 			return;
 		}
 		// Open call window in new tab
-		window.open(`/call-window?callId=${encodeURIComponent(callControlId)}`, "_blank", "noopener,noreferrer");
+		window.open(
+			`/call-window?callId=${encodeURIComponent(callControlId)}`,
+			"_blank",
+			"noopener,noreferrer",
+		);
 	}, []);
 
 	const handleViewRecording = useCallback((recordingUrl: string) => {
@@ -204,7 +225,9 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 							<button
 								className={cn(
 									"relative flex items-center justify-center gap-2 py-3 font-medium text-sm transition-all hover:bg-muted/50",
-									activeFilter === key ? "bg-muted/30 text-foreground" : "text-muted-foreground"
+									activeFilter === key
+										? "bg-muted/30 text-foreground"
+										: "text-muted-foreground",
 								)}
 								key={key}
 								onClick={() => setActiveFilter(key as MessageType | "all")}
@@ -215,7 +238,9 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 								<span className="ml-1 rounded-full bg-background px-2 py-0.5 text-xs tabular-nums">
 									{messageCounts[key as keyof typeof messageCounts] ?? 0}
 								</span>
-								{activeFilter === key && <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />}
+								{activeFilter === key && (
+									<div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />
+								)}
 							</button>
 						))}
 					</div>
@@ -234,19 +259,26 @@ export function CommunicationPageClient({ communications, companyId, companyPhon
 	);
 }
 
-function convertCommunicationToMessage(record: CommunicationRecord): UnifiedMessage {
+function convertCommunicationToMessage(
+	record: CommunicationRecord,
+): UnifiedMessage {
 	const type = mapMessageType(record.type);
 	const customerName = getCustomerName(record);
 	const { primaryAddress, secondaryAddress } = getDirectionalAddresses(record);
 	const status = mapMessageStatus(record);
-	const callType = type === "phone" ? mapCallType(record.direction, status, record.call_duration) : undefined;
+	const callType =
+		type === "phone"
+			? mapCallType(record.direction, status, record.call_duration)
+			: undefined;
 	const { fromEmail, toEmail } = getEmailAddresses(record);
 
 	// Parse timestamp: Database stores in UTC without timezone suffix
 	// Ensure we parse it as UTC by appending 'Z' if no timezone is present
 	const timestampStr = record.created_at;
 	const timestamp =
-		timestampStr.includes("Z") || timestampStr.includes("+") || timestampStr.includes("-")
+		timestampStr.includes("Z") ||
+		timestampStr.includes("+") ||
+		timestampStr.includes("-")
 			? new Date(timestampStr)
 			: new Date(`${timestampStr}Z`); // Force UTC parsing
 
@@ -272,7 +304,9 @@ function convertCommunicationToMessage(record: CommunicationRecord): UnifiedMess
 	};
 }
 
-function normalizeCommunicationRecord(record: CommunicationRecord): CommunicationRecord {
+function normalizeCommunicationRecord(
+	record: CommunicationRecord,
+): CommunicationRecord {
 	const normalizedCustomer = buildNormalizedCustomer(record);
 	return {
 		...record,
@@ -292,7 +326,10 @@ function normalizeCommunicationRecord(record: CommunicationRecord): Communicatio
 	};
 }
 
-function upsertCommunicationRecord(list: CommunicationRecord[], incoming: CommunicationRecord): CommunicationRecord[] {
+function upsertCommunicationRecord(
+	list: CommunicationRecord[],
+	incoming: CommunicationRecord,
+): CommunicationRecord[] {
 	const existingIndex = list.findIndex((record) => record.id === incoming.id);
 	if (existingIndex === -1) {
 		return sortRecords([incoming, ...list]);
@@ -307,13 +344,16 @@ function upsertCommunicationRecord(list: CommunicationRecord[], incoming: Commun
 
 function applyRealtimePayload(
 	state: CommunicationRecord[],
-	payload: RealtimePostgresChangesPayload<Record<string, unknown>>
+	payload: RealtimePostgresChangesPayload<Record<string, unknown>>,
 ): CommunicationRecord[] {
 	switch (payload.eventType) {
 		case "INSERT":
 		case "UPDATE": {
 			const rawRecord = payload.new as CommunicationRecord;
-			return upsertCommunicationRecord(state, normalizeCommunicationRecord(rawRecord));
+			return upsertCommunicationRecord(
+				state,
+				normalizeCommunicationRecord(rawRecord),
+			);
 		}
 		case "DELETE": {
 			const recordId = (payload.old as { id?: string } | null)?.id;
@@ -328,7 +368,10 @@ function applyRealtimePayload(
 }
 
 function sortRecords(records: CommunicationRecord[]): CommunicationRecord[] {
-	return [...records].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+	return [...records].sort(
+		(a, b) =>
+			new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+	);
 }
 
 function mapMessageType(type: string): MessageType {
@@ -361,7 +404,7 @@ function mapPriority(priority?: string | null): MessagePriority {
 function mapCallType(
 	direction: "inbound" | "outbound",
 	status: MessageStatus,
-	duration?: number | null
+	duration?: number | null,
 ): "incoming" | "outgoing" | "missed" | "voicemail" {
 	if (direction === "outbound") {
 		return "outgoing";
@@ -384,15 +427,27 @@ function formatDisplayPhoneNumber(phoneNumber?: string | null): string {
 		return "Unknown";
 	}
 	const digits = phoneNumber.replace(/\D/g, "");
-	if (digits.length === NANP_WITH_COUNTRY_LENGTH && digits.startsWith(NORTH_AMERICAN_COUNTRY_CODE)) {
-		const areaCode = digits.slice(COUNTRY_CODE_PREFIX_LENGTH, NANP_COUNTRY_AREA_END_INDEX);
-		const exchangeCode = digits.slice(NANP_COUNTRY_AREA_END_INDEX, NANP_COUNTRY_EXCHANGE_END_INDEX);
+	if (
+		digits.length === NANP_WITH_COUNTRY_LENGTH &&
+		digits.startsWith(NORTH_AMERICAN_COUNTRY_CODE)
+	) {
+		const areaCode = digits.slice(
+			COUNTRY_CODE_PREFIX_LENGTH,
+			NANP_COUNTRY_AREA_END_INDEX,
+		);
+		const exchangeCode = digits.slice(
+			NANP_COUNTRY_AREA_END_INDEX,
+			NANP_COUNTRY_EXCHANGE_END_INDEX,
+		);
 		const subscriberNumber = digits.slice(NANP_COUNTRY_EXCHANGE_END_INDEX);
 		return `+${NORTH_AMERICAN_COUNTRY_CODE} (${areaCode}) ${exchangeCode}-${subscriberNumber}`;
 	}
 	if (digits.length === NANP_LOCAL_LENGTH) {
 		const areaCode = digits.slice(0, NANP_LOCAL_AREA_END_INDEX);
-		const exchangeCode = digits.slice(NANP_LOCAL_AREA_END_INDEX, NANP_LOCAL_EXCHANGE_END_INDEX);
+		const exchangeCode = digits.slice(
+			NANP_LOCAL_AREA_END_INDEX,
+			NANP_LOCAL_EXCHANGE_END_INDEX,
+		);
 		const subscriberNumber = digits.slice(NANP_LOCAL_EXCHANGE_END_INDEX);
 		return `(${areaCode}) ${exchangeCode}-${subscriberNumber}`;
 	}
@@ -410,12 +465,15 @@ function getDirectionalAddresses(record: CommunicationRecord) {
 function getEmailAddresses(record: CommunicationRecord) {
 	const isInbound = record.direction === "inbound";
 	return {
-		fromEmail: (isInbound ? record.from_address : record.to_address) ?? undefined,
+		fromEmail:
+			(isInbound ? record.from_address : record.to_address) ?? undefined,
 		toEmail: (isInbound ? record.to_address : record.from_address) ?? undefined,
 	};
 }
 
-function buildNormalizedCustomer(record: CommunicationRecord): CommunicationRecord["customer"] {
+function buildNormalizedCustomer(
+	record: CommunicationRecord,
+): CommunicationRecord["customer"] {
 	if (record.customer) {
 		return {
 			id: record.customer.id,
@@ -439,7 +497,10 @@ const NANP_LOCAL_LENGTH = 10;
 const COUNTRY_CODE_PREFIX_LENGTH = 1;
 const NANP_AREA_CODE_LENGTH = 3;
 const NANP_EXCHANGE_CODE_LENGTH = 3;
-const NANP_COUNTRY_AREA_END_INDEX = COUNTRY_CODE_PREFIX_LENGTH + NANP_AREA_CODE_LENGTH;
-const NANP_COUNTRY_EXCHANGE_END_INDEX = NANP_COUNTRY_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;
+const NANP_COUNTRY_AREA_END_INDEX =
+	COUNTRY_CODE_PREFIX_LENGTH + NANP_AREA_CODE_LENGTH;
+const NANP_COUNTRY_EXCHANGE_END_INDEX =
+	NANP_COUNTRY_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;
 const NANP_LOCAL_AREA_END_INDEX = NANP_AREA_CODE_LENGTH;
-const NANP_LOCAL_EXCHANGE_END_INDEX = NANP_LOCAL_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;
+const NANP_LOCAL_EXCHANGE_END_INDEX =
+	NANP_LOCAL_AREA_END_INDEX + NANP_EXCHANGE_CODE_LENGTH;

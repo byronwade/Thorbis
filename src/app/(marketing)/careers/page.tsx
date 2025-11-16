@@ -1,9 +1,24 @@
 import Script from "next/script";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateBreadcrumbStructuredData, generateMetadata as generateSEOMetadata, siteUrl } from "@/lib/seo/metadata";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	generateBreadcrumbStructuredData,
+	generateMetadata as generateSEOMetadata,
+	siteUrl,
+} from "@/lib/seo/metadata";
 
 export const metadata = generateSEOMetadata({
 	title: "Careers at Thorbis",
@@ -11,7 +26,11 @@ export const metadata = generateSEOMetadata({
 		"Join Thorbis and build software that powers modern trades. Explore open roles across engineering, product, customer experience, and go-to-market.",
 	path: "/careers",
 	section: "Company",
-	keywords: ["thorbis careers", "field service software jobs", "thorbis hiring"],
+	keywords: [
+		"thorbis careers",
+		"field service software jobs",
+		"thorbis hiring",
+	],
 });
 
 const BENEFITS = [
@@ -112,7 +131,7 @@ export default function CareersPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Careers", url: `${siteUrl}/careers` },
-						])
+						]),
 					),
 				}}
 				id="careers-breadcrumb-ld"
@@ -134,8 +153,9 @@ export default function CareersPage() {
 						We’re assembling a team of builders obsessed with the trades
 					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Thorbis hires curious, mission-driven people who love solving real-world problems for dispatchers,
-						technicians, and operators. We work fast, ship thoughtfully, and measure impact by the outcomes our
+						Thorbis hires curious, mission-driven people who love solving
+						real-world problems for dispatchers, technicians, and operators. We
+						work fast, ship thoughtfully, and measure impact by the outcomes our
 						customers achieve.
 					</p>
 					<div className="flex flex-wrap gap-3">
@@ -157,7 +177,9 @@ export default function CareersPage() {
 									<CardTitle>{benefit.title}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<CardDescription className="leading-relaxed">{benefit.description}</CardDescription>
+									<CardDescription className="leading-relaxed">
+										{benefit.description}
+									</CardDescription>
 								</CardContent>
 							</Card>
 						))}
@@ -168,7 +190,9 @@ export default function CareersPage() {
 					<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 						<h2 className="font-semibold text-2xl">Open roles</h2>
 						<Button asChild variant="outline">
-							<a href="mailto:careers@thorbis.com">Submit a general application</a>
+							<a href="mailto:careers@thorbis.com">
+								Submit a general application
+							</a>
 						</Button>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2">
@@ -179,9 +203,13 @@ export default function CareersPage() {
 									<CardDescription>{role.location}</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">{role.description}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{role.description}
+									</p>
 									<Button asChild className="mt-4">
-										<a href="mailto:careers@thorbis.com?subject=Application%20for%20Thorbis%20Role">Apply via email</a>
+										<a href="mailto:careers@thorbis.com?subject=Application%20for%20Thorbis%20Role">
+											Apply via email
+										</a>
 									</Button>
 								</CardContent>
 							</Card>
@@ -194,7 +222,9 @@ export default function CareersPage() {
 					<Accordion collapsible type="single">
 						{FAQ.map((item, index) => (
 							<AccordionItem key={item.question} value={`careers-faq-${index}`}>
-								<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+								<AccordionTrigger className="text-left">
+									{item.question}
+								</AccordionTrigger>
 								<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 									{item.answer}
 								</AccordionContent>
@@ -205,8 +235,9 @@ export default function CareersPage() {
 
 				<section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
 					<p className="text-lg text-muted-foreground">
-						Don’t see the perfect role? We hire exceptional people across product, design, engineering, customer
-						experience, and go-to-market. Tell us how you want to make an impact.
+						Don’t see the perfect role? We hire exceptional people across
+						product, design, engineering, customer experience, and go-to-market.
+						Tell us how you want to make an impact.
 					</p>
 					<Button asChild className="mt-6">
 						<a href="mailto:careers@thorbis.com">Send us your story</a>

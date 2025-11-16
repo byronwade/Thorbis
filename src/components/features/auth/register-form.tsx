@@ -1,6 +1,13 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, Eye, EyeOff, ImageUp, Loader2 } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Eye,
+	EyeOff,
+	ImageUp,
+	Loader2,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -33,7 +40,7 @@ export function RegisterForm() {
 				URL.revokeObjectURL(avatarPreview);
 			}
 		},
-		[avatarPreview]
+		[avatarPreview],
 	);
 
 	const passwordScore = useMemo(() => {
@@ -111,10 +118,17 @@ export function RegisterForm() {
 				setIsLoading(false);
 			}
 		} catch (caughtError) {
-			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
+			if (
+				caughtError instanceof Error &&
+				caughtError.message === "NEXT_REDIRECT"
+			) {
 				return;
 			}
-			setError(caughtError instanceof Error ? caughtError.message : "Unable to start OAuth signup right now.");
+			setError(
+				caughtError instanceof Error
+					? caughtError.message
+					: "Unable to start OAuth signup right now.",
+			);
 			setIsLoading(false);
 		}
 	};
@@ -156,7 +170,11 @@ export function RegisterForm() {
 			setAvatarPreview(null);
 			setIsLoading(false);
 		} catch (caughtError) {
-			setError(caughtError instanceof Error ? caughtError.message : "Something went wrong. Please try again.");
+			setError(
+				caughtError instanceof Error
+					? caughtError.message
+					: "Something went wrong. Please try again.",
+			);
 			setIsLoading(false);
 		}
 	};
@@ -165,14 +183,22 @@ export function RegisterForm() {
 		<div className="flex w-full max-w-2xl flex-col gap-6">
 			{/* Logo */}
 			<div className="flex items-center gap-3">
-				<Image alt="Thorbis Logo" className="size-8.5" height={34} src="/ThorbisLogo.webp" width={34} />
+				<Image
+					alt="Thorbis Logo"
+					className="size-8.5"
+					height={34}
+					src="/ThorbisLogo.webp"
+					width={34}
+				/>
 				<span className="font-semibold text-xl">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
 				<h2 className="mb-1.5 font-semibold text-2xl">Create your account</h2>
-				<p className="text-muted-foreground">Join thousands of field service teams streamlining their operations</p>
+				<p className="text-muted-foreground">
+					Join thousands of field service teams streamlining their operations
+				</p>
 			</div>
 
 			{/* Error Alert */}
@@ -233,10 +259,21 @@ export function RegisterForm() {
 			</div>
 
 			{/* Registration Form */}
-			<form className="grid gap-6 md:grid-cols-2" encType="multipart/form-data" onSubmit={handleSubmit}>
+			<form
+				className="grid gap-6 md:grid-cols-2"
+				encType="multipart/form-data"
+				onSubmit={handleSubmit}
+			>
 				<div className="space-y-1">
 					<Label htmlFor="name">Full name*</Label>
-					<Input autoComplete="name" disabled={isLoading} id="name" name="name" placeholder="Byron Wade" required />
+					<Input
+						autoComplete="name"
+						disabled={isLoading}
+						id="name"
+						name="name"
+						placeholder="Byron Wade"
+						required
+					/>
 				</div>
 
 				<div className="space-y-1">
@@ -276,7 +313,9 @@ export function RegisterForm() {
 						required
 						type="tel"
 					/>
-					<p className="text-muted-foreground text-xs">We’ll text urgent dispatch alerts and MFA codes here.</p>
+					<p className="text-muted-foreground text-xs">
+						We’ll text urgent dispatch alerts and MFA codes here.
+					</p>
 				</div>
 
 				<div className="space-y-1">
@@ -303,8 +342,14 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-							<span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+							{showPassword ? (
+								<EyeOff className="h-4 w-4" />
+							) : (
+								<Eye className="h-4 w-4" />
+							)}
+							<span className="sr-only">
+								{showPassword ? "Hide password" : "Show password"}
+							</span>
 						</Button>
 					</div>
 					<div className="flex items-center justify-between text-xs">
@@ -312,7 +357,11 @@ export function RegisterForm() {
 						<span
 							className={cn(
 								"font-medium",
-								passwordScore >= 80 ? "text-green-600" : passwordScore >= 60 ? "text-amber-500" : "text-red-500"
+								passwordScore >= 80
+									? "text-green-600"
+									: passwordScore >= 60
+										? "text-amber-500"
+										: "text-red-500",
 							)}
 						>
 							{passwordStrengthLabel}
@@ -322,7 +371,11 @@ export function RegisterForm() {
 						<div
 							className={cn(
 								"h-full rounded-full transition-all",
-								passwordScore >= 80 ? "bg-green-500" : passwordScore >= 60 ? "bg-amber-500" : "bg-red-500"
+								passwordScore >= 80
+									? "bg-green-500"
+									: passwordScore >= 60
+										? "bg-amber-500"
+										: "bg-red-500",
 							)}
 							style={{ width: `${passwordScore}%` }}
 						/>
@@ -353,8 +406,14 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-							<span className="sr-only">{showConfirmPassword ? "Hide password" : "Show password"}</span>
+							{showConfirmPassword ? (
+								<EyeOff className="h-4 w-4" />
+							) : (
+								<Eye className="h-4 w-4" />
+							)}
+							<span className="sr-only">
+								{showConfirmPassword ? "Hide password" : "Show password"}
+							</span>
 						</Button>
 					</div>
 				</div>
@@ -426,7 +485,9 @@ export function RegisterForm() {
 							"Create account"
 						)}
 					</Button>
-					<p className="text-center text-muted-foreground text-sm">14-day free trial • No credit card required</p>
+					<p className="text-center text-muted-foreground text-sm">
+						14-day free trial • No credit card required
+					</p>
 				</div>
 			</form>
 

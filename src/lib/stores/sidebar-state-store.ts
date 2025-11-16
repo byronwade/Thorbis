@@ -140,8 +140,8 @@ export const useSidebarStateStore = create<SidebarStateStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "SidebarStateStore" }
-	)
+		{ name: "SidebarStateStore" },
+	),
 );

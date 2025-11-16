@@ -17,7 +17,11 @@ import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -51,9 +55,17 @@ const CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH = 50;
 const CENTS_PER_DOLLAR = 100;
 
 const customerSchema = z.object({
-	type: z.enum(["residential", "commercial", "industrial"]).default("residential"),
-	firstName: z.string().min(1, "First name is required").max(CUSTOMER_NAME_MAX_LENGTH),
-	lastName: z.string().min(1, "Last name is required").max(CUSTOMER_NAME_MAX_LENGTH),
+	type: z
+		.enum(["residential", "commercial", "industrial"])
+		.default("residential"),
+	firstName: z
+		.string()
+		.min(1, "First name is required")
+		.max(CUSTOMER_NAME_MAX_LENGTH),
+	lastName: z
+		.string()
+		.min(1, "Last name is required")
+		.max(CUSTOMER_NAME_MAX_LENGTH),
 	companyName: z.string().max(CUSTOMER_COMPANY_MAX_LENGTH).optional(),
 	email: z.string().email("Invalid email address"),
 	phone: z.string().min(1, "Phone is required").max(CUSTOMER_PHONE_MAX_LENGTH),
@@ -64,15 +76,22 @@ const customerSchema = z.object({
 	state: z.string().max(CUSTOMER_STATE_MAX_LENGTH).optional(),
 	zipCode: z.string().max(CUSTOMER_ZIP_MAX_LENGTH).optional(),
 	country: z.string().max(CUSTOMER_COUNTRY_MAX_LENGTH).default("USA"),
-	source: z.enum(["referral", "google", "facebook", "direct", "yelp", "other"]).optional(),
+	source: z
+		.enum(["referral", "google", "facebook", "direct", "yelp", "other"])
+		.optional(),
 	referredBy: z.string().uuid().optional().nullable(),
 	preferredContactMethod: z.enum(["email", "phone", "sms"]).default("email"),
 	preferredTechnician: z.string().uuid().optional().nullable(),
 	billingEmail: z.string().email().optional().nullable(),
-	paymentTerms: z.enum(["due_on_receipt", "net_15", "net_30", "net_60"]).default("due_on_receipt"),
+	paymentTerms: z
+		.enum(["due_on_receipt", "net_15", "net_30", "net_60"])
+		.default("due_on_receipt"),
 	creditLimit: z.number().int().min(0).default(0), // In cents
 	taxExempt: z.boolean().default(false),
-	taxExemptNumber: z.string().max(CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH).optional(),
+	taxExemptNumber: z
+		.string()
+		.max(CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH)
+		.optional(),
 	tags: z.array(z.string()).optional(),
 	notes: z.string().optional(),
 	internalNotes: z.string().optional(),
@@ -92,11 +111,16 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export async function createCustomer(formData: FormData): Promise<ActionResult<string>> {
+export async function createCustomer(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -104,21 +128,34 @@ export async function createCustomer(formData: FormData): Promise<ActionResult<s
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
-		const { contacts, properties, tags } = parseCustomerContactsPropertiesAndTags(formData);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
+		const { contacts, properties, tags } =
+			parseCustomerContactsPropertiesAndTags(formData);
 		const primaryContact = getPrimaryContactOrThrow(contacts);
 		const primaryProperty = getPrimaryProperty(properties);
 
-		await assertCustomerEmailNotDuplicate(supabase, teamMember.company_id, primaryContact.email);
+		await assertCustomerEmailNotDuplicate(
+			supabase,
+			teamMember.company_id,
+			primaryContact.email,
+		);
 
 		const customerType = formData.get("type") || "residential";
 		const companyName = formData.get("companyName");
-		const displayName = buildCustomerDisplayName(customerType, companyName, primaryContact);
+		const displayName = buildCustomerDisplayName(
+			customerType,
+			companyName,
+			primaryContact,
+		);
 
 		const communicationPreferences = buildDefaultCommunicationPreferences();
 		const customerMetadata = buildCustomerMetadata(contacts);
 
-		const { lat: customerLat, lon: customerLon } = await geocodePrimaryPropertyIfAvailable(primaryProperty);
+		const { lat: customerLat, lon: customerLon } =
+			await geocodePrimaryPropertyIfAvailable(primaryProperty);
 
 		const customer = await insertCustomerRecord(supabase, {
 			companyId: teamMember.company_id,
@@ -135,7 +172,12 @@ export async function createCustomer(formData: FormData): Promise<ActionResult<s
 			customerMetadata,
 		});
 
-		await insertAdditionalPropertiesIfAny(supabase, teamMember.company_id, customer.id, properties);
+		await insertAdditionalPropertiesIfAny(
+			supabase,
+			teamMember.company_id,
+			customer.id,
+			properties,
+		);
 
 		revalidatePath("/dashboard/customers");
 		return customer.id;
@@ -172,18 +214,28 @@ type ParsedCustomerFormCollections = {
 
 async function requireCustomerCompanyMembership(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string
+	userId: string,
 ) {
-	const { data: teamMember } = await supabase.from("team_members").select("company_id").eq("user_id", userId).single();
+	const { data: teamMember } = await supabase
+		.from("team_members")
+		.select("company_id")
+		.eq("user_id", userId)
+		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			HTTP_STATUS_FORBIDDEN,
+		);
 	}
 
 	return teamMember;
 }
 
-function parseCustomerContactsPropertiesAndTags(formData: FormData): ParsedCustomerFormCollections {
+function parseCustomerContactsPropertiesAndTags(
+	formData: FormData,
+): ParsedCustomerFormCollections {
 	const contacts = parseContacts(formData.get("contacts"));
 	const properties = parseProperties(formData.get("properties"));
 	const tags = parseTagsField(formData.get("tags"));
@@ -191,7 +243,9 @@ function parseCustomerContactsPropertiesAndTags(formData: FormData): ParsedCusto
 	return { contacts, properties, tags };
 }
 
-function parseContacts(value: FormDataEntryValue | null): ParsedCustomerContact[] {
+function parseContacts(
+	value: FormDataEntryValue | null,
+): ParsedCustomerContact[] {
 	if (!value || typeof value !== "string") {
 		return [];
 	}
@@ -199,11 +253,16 @@ function parseContacts(value: FormDataEntryValue | null): ParsedCustomerContact[
 	try {
 		return JSON.parse(value) as ParsedCustomerContact[];
 	} catch {
-		throw new ActionError("Invalid contacts data", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"Invalid contacts data",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 }
 
-function parseProperties(value: FormDataEntryValue | null): ParsedCustomerProperty[] {
+function parseProperties(
+	value: FormDataEntryValue | null,
+): ParsedCustomerProperty[] {
 	if (!value || typeof value !== "string") {
 		return [];
 	}
@@ -211,11 +270,16 @@ function parseProperties(value: FormDataEntryValue | null): ParsedCustomerProper
 	try {
 		return JSON.parse(value) as ParsedCustomerProperty[];
 	} catch {
-		throw new ActionError("Invalid properties data", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"Invalid properties data",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 }
 
-function parseTagsField(value: FormDataEntryValue | null): string[] | undefined {
+function parseTagsField(
+	value: FormDataEntryValue | null,
+): string[] | undefined {
 	if (!value || typeof value !== "string") {
 		return;
 	}
@@ -227,22 +291,29 @@ function parseTagsField(value: FormDataEntryValue | null): string[] | undefined 
 	}
 }
 
-function getPrimaryContactOrThrow(contacts: ParsedCustomerContact[]): ParsedCustomerContact {
+function getPrimaryContactOrThrow(
+	contacts: ParsedCustomerContact[],
+): ParsedCustomerContact {
 	const primaryContact = contacts.find((c) => c.isPrimary) || contacts[0];
 	if (!primaryContact) {
-		throw new ActionError("At least one contact is required", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"At least one contact is required",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 	return primaryContact;
 }
 
-function getPrimaryProperty(properties: ParsedCustomerProperty[]): ParsedCustomerProperty | undefined {
+function getPrimaryProperty(
+	properties: ParsedCustomerProperty[],
+): ParsedCustomerProperty | undefined {
 	return properties.find((p) => p.isPrimary) || properties[0];
 }
 
 async function assertCustomerEmailNotDuplicate(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
 	companyId: string,
-	email: string
+	email: string,
 ) {
 	const { data: existingEmail } = await supabase
 		.from("customers")
@@ -253,14 +324,17 @@ async function assertCustomerEmailNotDuplicate(
 		.single();
 
 	if (existingEmail) {
-		throw new ActionError("A customer with this email already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+		throw new ActionError(
+			"A customer with this email already exists",
+			ERROR_CODES.DB_DUPLICATE_ENTRY,
+		);
 	}
 }
 
 function buildCustomerDisplayName(
 	customerType: FormDataEntryValue | null,
 	companyNameValue: FormDataEntryValue | null,
-	primaryContact: ParsedCustomerContact
+	primaryContact: ParsedCustomerContact,
 ): string {
 	const companyName = companyNameValue ? String(companyNameValue) : null;
 
@@ -294,9 +368,16 @@ function buildCustomerMetadata(contacts: ParsedCustomerContact[]) {
 }
 
 async function geocodePrimaryPropertyIfAvailable(
-	primaryProperty: ParsedCustomerProperty | undefined
+	primaryProperty: ParsedCustomerProperty | undefined,
 ): Promise<{ lat: number | null; lon: number | null }> {
-	if (!(primaryProperty?.address && primaryProperty.city && primaryProperty.state && primaryProperty.zipCode)) {
+	if (
+		!(
+			primaryProperty?.address &&
+			primaryProperty.city &&
+			primaryProperty.state &&
+			primaryProperty.zipCode
+		)
+	) {
 		return { lat: null, lon: null };
 	}
 
@@ -305,7 +386,7 @@ async function geocodePrimaryPropertyIfAvailable(
 		primaryProperty.city,
 		primaryProperty.state,
 		primaryProperty.zipCode,
-		primaryProperty.country || "USA"
+		primaryProperty.country || "USA",
 	);
 
 	if (!geocodeResult) {
@@ -337,20 +418,29 @@ type InsertCustomerParams = {
 
 async function insertCustomerRecord(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	params: InsertCustomerParams
+	params: InsertCustomerParams,
 ) {
 	const payload = buildCustomerInsertPayload(params);
 
-	const { data: customer, error: createError } = await supabase.from("customers").insert(payload).select("id").single();
+	const { data: customer, error: createError } = await supabase
+		.from("customers")
+		.insert(payload)
+		.select("id")
+		.single();
 
 	if (createError || !customer) {
-		throw new ActionError(ERROR_MESSAGES.operationFailed("create customer"), ERROR_CODES.DB_QUERY_ERROR);
+		throw new ActionError(
+			ERROR_MESSAGES.operationFailed("create customer"),
+			ERROR_CODES.DB_QUERY_ERROR,
+		);
 	}
 
 	return customer;
 }
 
-function buildCustomerInsertPayload(params: InsertCustomerParams): Record<string, unknown> {
+function buildCustomerInsertPayload(
+	params: InsertCustomerParams,
+): Record<string, unknown> {
 	const {
 		companyId,
 		customerType,
@@ -387,18 +477,31 @@ function buildCustomerInsertPayload(params: InsertCustomerParams): Record<string
 		lat: customerLat,
 		lon: customerLon,
 		source: formData.get("source") ? String(formData.get("source")) : null,
-		referred_by: formData.get("referredBy") ? String(formData.get("referredBy")) : null,
-		preferred_contact_method: String(formData.get("preferredContactMethod")) || "email",
-		preferred_technician: formData.get("preferredTechnician") ? String(formData.get("preferredTechnician")) : null,
-		billing_email: formData.get("billingEmail") ? String(formData.get("billingEmail")) : null,
+		referred_by: formData.get("referredBy")
+			? String(formData.get("referredBy"))
+			: null,
+		preferred_contact_method:
+			String(formData.get("preferredContactMethod")) || "email",
+		preferred_technician: formData.get("preferredTechnician")
+			? String(formData.get("preferredTechnician"))
+			: null,
+		billing_email: formData.get("billingEmail")
+			? String(formData.get("billingEmail"))
+			: null,
 		payment_terms: String(formData.get("paymentTerms")) || "due_on_receipt",
-		credit_limit: formData.get("creditLimit") ? Number(formData.get("creditLimit")) * CENTS_PER_DOLLAR : 0,
+		credit_limit: formData.get("creditLimit")
+			? Number(formData.get("creditLimit")) * CENTS_PER_DOLLAR
+			: 0,
 		tax_exempt: formData.get("taxExempt") === "on",
-		tax_exempt_number: formData.get("taxExemptNumber") ? String(formData.get("taxExemptNumber")) : null,
+		tax_exempt_number: formData.get("taxExemptNumber")
+			? String(formData.get("taxExemptNumber"))
+			: null,
 		tags: tags || null,
 		communication_preferences: communicationPreferences,
 		notes: formData.get("notes") ? String(formData.get("notes")) : null,
-		internal_notes: formData.get("internalNotes") ? String(formData.get("internalNotes")) : null,
+		internal_notes: formData.get("internalNotes")
+			? String(formData.get("internalNotes"))
+			: null,
 		metadata: customerMetadata,
 		status: "active",
 		portal_enabled: false,
@@ -414,7 +517,7 @@ async function insertAdditionalPropertiesIfAny(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
 	companyId: string,
 	customerId: string,
-	properties: ParsedCustomerProperty[]
+	properties: ParsedCustomerProperty[],
 ) {
 	const additionalProperties = properties.filter((p) => !p.isPrimary);
 	if (additionalProperties.length === 0) {
@@ -432,7 +535,7 @@ async function insertAdditionalPropertiesIfAny(
 					prop.city,
 					prop.state,
 					prop.zipCode,
-					prop.country || "USA"
+					prop.country || "USA",
 				);
 
 				if (geocodeResult) {
@@ -456,7 +559,7 @@ async function insertAdditionalPropertiesIfAny(
 				lat: propLat,
 				lon: propLon,
 			};
-		})
+		}),
 	);
 
 	await supabase.from("properties").insert(propertiesToInsert);
@@ -465,11 +568,17 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-export async function updateCustomer(customerId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updateCustomer(
+	customerId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -477,7 +586,10 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -490,7 +602,11 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Parse tags if provided
@@ -525,7 +641,9 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 			preferredTechnician: formData.get("preferredTechnician") || null,
 			billingEmail: formData.get("billingEmail") || null,
 			paymentTerms: formData.get("paymentTerms") || "due_on_receipt",
-			creditLimit: formData.get("creditLimit") ? Number(formData.get("creditLimit")) : 0,
+			creditLimit: formData.get("creditLimit")
+				? Number(formData.get("creditLimit"))
+				: 0,
 			taxExempt: formData.get("taxExempt") === "true",
 			taxExemptNumber: formData.get("taxExemptNumber") || undefined,
 			tags,
@@ -545,13 +663,18 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 				.single();
 
 			if (existingEmail) {
-				throw new ActionError("A customer with this email already exists", ERROR_CODES.DB_DUPLICATE_ENTRY);
+				throw new ActionError(
+					"A customer with this email already exists",
+					ERROR_CODES.DB_DUPLICATE_ENTRY,
+				);
 			}
 		}
 
 		// Generate display name
 		const displayName =
-			data.type === "commercial" && data.companyName ? data.companyName : `${data.firstName} ${data.lastName}`;
+			data.type === "commercial" && data.companyName
+				? data.companyName
+				: `${data.firstName} ${data.lastName}`;
 
 		const companyName = data.companyName ? String(data.companyName) : null;
 
@@ -589,7 +712,10 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 			.eq("id", customerId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update customer"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update customer"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/customers");
@@ -600,11 +726,16 @@ export async function updateCustomer(customerId: string, formData: FormData): Pr
 /**
  * Delete customer (soft delete/archive)
  */
-export async function deleteCustomer(customerId: string): Promise<ActionResult<void>> {
+export async function deleteCustomer(
+	customerId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -612,7 +743,10 @@ export async function deleteCustomer(customerId: string): Promise<ActionResult<v
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -625,14 +759,18 @@ export async function deleteCustomer(customerId: string): Promise<ActionResult<v
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Prevent deletion if customer has outstanding balance
 		if (customer.outstanding_balance > 0) {
 			throw new ActionError(
 				"Cannot delete customer with outstanding balance. Collect payment first.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION
+				ERROR_CODES.BUSINESS_RULE_VIOLATION,
 			);
 		}
 
@@ -647,7 +785,10 @@ export async function deleteCustomer(customerId: string): Promise<ActionResult<v
 			.eq("id", customerId);
 
 		if (deleteError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete customer"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete customer"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/customers");
@@ -663,12 +804,15 @@ export async function deleteCustomer(customerId: string): Promise<ActionResult<v
  */
 export async function updateCustomerStatus(
 	customerId: string,
-	status: "active" | "inactive" | "archived" | "blocked"
+	status: "active" | "inactive" | "archived" | "blocked",
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -676,7 +820,10 @@ export async function updateCustomerStatus(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -689,14 +836,24 @@ export async function updateCustomerStatus(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Update status
-		const { error: updateError } = await supabase.from("customers").update({ status }).eq("id", customerId);
+		const { error: updateError } = await supabase
+			.from("customers")
+			.update({ status })
+			.eq("id", customerId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update customer status"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update customer status"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/customers");
@@ -709,12 +866,15 @@ export async function updateCustomerStatus(
  */
 export async function updateCommunicationPreferences(
 	customerId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -722,7 +882,10 @@ export async function updateCommunicationPreferences(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -735,7 +898,11 @@ export async function updateCommunicationPreferences(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Validate input
@@ -755,7 +922,7 @@ export async function updateCommunicationPreferences(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update communication preferences"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -771,11 +938,16 @@ export async function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export async function inviteToPortal(customerId: string): Promise<ActionResult<void>> {
+export async function inviteToPortal(
+	customerId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -783,7 +955,10 @@ export async function inviteToPortal(customerId: string): Promise<ActionResult<v
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -796,15 +971,24 @@ export async function inviteToPortal(customerId: string): Promise<ActionResult<v
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		if (customer.portal_enabled) {
-			throw new ActionError("Customer is already invited to portal", ERROR_CODES.BUSINESS_RULE_VIOLATION);
+			throw new ActionError(
+				"Customer is already invited to portal",
+				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+			);
 		}
 
 		// Generate secure portal invitation token
-		const inviteToken = Buffer.from(`${customerId}:${Date.now()}:${Math.random()}`).toString("base64url");
+		const inviteToken = Buffer.from(
+			`${customerId}:${Date.now()}:${Math.random()}`,
+		).toString("base64url");
 
 		// Update customer
 		const { error: updateError } = await supabase
@@ -816,7 +1000,10 @@ export async function inviteToPortal(customerId: string): Promise<ActionResult<v
 			.eq("id", customerId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("invite customer to portal"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("invite customer to portal"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Send invitation email
@@ -848,11 +1035,16 @@ export async function inviteToPortal(customerId: string): Promise<ActionResult<v
 /**
  * Revoke portal access
  */
-export async function revokePortalAccess(customerId: string): Promise<ActionResult<void>> {
+export async function revokePortalAccess(
+	customerId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -860,7 +1052,10 @@ export async function revokePortalAccess(customerId: string): Promise<ActionResu
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		const teamMember = await requireCustomerCompanyMembership(supabase, user.id);
+		const teamMember = await requireCustomerCompanyMembership(
+			supabase,
+			user.id,
+		);
 
 		// Verify customer exists and belongs to company
 		const { data: customer } = await supabase
@@ -873,7 +1068,11 @@ export async function revokePortalAccess(customerId: string): Promise<ActionResu
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"Customer not found",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Revoke access
@@ -883,7 +1082,10 @@ export async function revokePortalAccess(customerId: string): Promise<ActionResu
 			.eq("id", customerId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("revoke portal access"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("revoke portal access"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/customers");
@@ -899,11 +1101,17 @@ export async function revokePortalAccess(customerId: string): Promise<ActionResu
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export async function getCustomerByPhone(phoneNumber: string, companyId: string): Promise<ActionResult<unknown>> {
+export async function getCustomerByPhone(
+	phoneNumber: string,
+	companyId: string,
+): Promise<ActionResult<unknown>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Normalize phone number (remove formatting)
@@ -918,13 +1126,16 @@ export async function getCustomerByPhone(phoneNumber: string, companyId: string)
       `)
 			.eq("company_id", companyId)
 			.or(
-				`phone.eq.${phoneNumber},phone.eq.${normalizedPhone},secondary_phone.eq.${phoneNumber},secondary_phone.eq.${normalizedPhone}`
+				`phone.eq.${phoneNumber},phone.eq.${normalizedPhone},secondary_phone.eq.${phoneNumber},secondary_phone.eq.${normalizedPhone}`,
 			)
 			.single();
 
 		if (error && error.code !== "PGRST116") {
 			// PGRST116 = no rows found
-			throw new ActionError(`Failed to find customer: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				`Failed to find customer: ${error.message}`,
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return customer || null;
@@ -936,12 +1147,15 @@ export async function getCustomerByPhone(phoneNumber: string, companyId: string)
  */
 export async function searchCustomers(
 	searchTerm: string,
-	options?: { limit?: number; offset?: number }
+	options?: { limit?: number; offset?: number },
 ): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -956,19 +1170,30 @@ export async function searchCustomers(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Use full-text search with ranking for best matches
 		// Searches across: first_name, last_name, display_name, email, phone,
 		// secondary_phone, company_name, address, city, state
 		// Returns results ordered by relevance (weighted: name > contact > address)
-		const { searchCustomersFullText } = await import("@/lib/search/full-text-search");
+		const { searchCustomersFullText } = await import(
+			"@/lib/search/full-text-search"
+		);
 
-		const customers = await searchCustomersFullText(supabase, teamMember.company_id, searchTerm, {
-			limit: options?.limit || DEFAULT_SEARCH_LIMIT,
-			offset: options?.offset || 0,
-		});
+		const customers = await searchCustomersFullText(
+			supabase,
+			teamMember.company_id,
+			searchTerm,
+			{
+				limit: options?.limit || DEFAULT_SEARCH_LIMIT,
+				offset: options?.offset || 0,
+			},
+		);
 
 		return customers;
 	});
@@ -977,11 +1202,16 @@ export async function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
+export async function getTopCustomers(
+	limit = 10,
+): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -996,7 +1226,11 @@ export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		const { data: customers, error } = await supabase
@@ -1009,7 +1243,10 @@ export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[
 			.limit(limit);
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch top customers"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch top customers"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return customers || [];
@@ -1025,11 +1262,16 @@ type CustomerWithBalance = {
 	balance: number;
 };
 
-export async function getCustomersWithBalance(): Promise<ActionResult<CustomerWithBalance[]>> {
+export async function getCustomersWithBalance(): Promise<
+	ActionResult<CustomerWithBalance[]>
+> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1044,7 +1286,11 @@ export async function getCustomersWithBalance(): Promise<ActionResult<CustomerWi
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		const { data: customers, error } = await supabase
@@ -1056,7 +1302,10 @@ export async function getCustomersWithBalance(): Promise<ActionResult<CustomerWi
 			.order("outstanding_balance", { ascending: false });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers with balance"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch customers with balance"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return customers || [];
@@ -1117,7 +1366,10 @@ export async function getCustomersForDialer(): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1127,19 +1379,28 @@ export async function getCustomersForDialer(): Promise<
 
 		const activeCompanyId = await getActiveCompanyId();
 		if (!activeCompanyId) {
-			throw new ActionError("No active company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"No active company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Single lightweight query - no joins, no enrichment
 		const { data: customers, error } = await supabase
 			.from("customers")
-			.select("id, first_name, last_name, display_name, email, phone, company_name")
+			.select(
+				"id, first_name, last_name, display_name, email, phone, company_name",
+			)
 			.eq("company_id", activeCompanyId)
 			.is("deleted_at", null)
 			.order("display_name", { ascending: true });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch customers"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return customers || [];
@@ -1157,11 +1418,16 @@ export async function getCustomersForDialer(): Promise<
  *
  * Only use this on dedicated customer list pages where the enriched data is needed.
  */
-export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
+export async function getAllCustomers(): Promise<
+	ActionResult<CustomerRecord[]>
+> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1174,7 +1440,11 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
 
 		const FORBIDDEN_STATUS_CODE = 403;
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, FORBIDDEN_STATUS_CODE);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				FORBIDDEN_STATUS_CODE,
+			);
 		}
 
 		// Verify user has access to the active company
@@ -1187,7 +1457,11 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
 			.maybeSingle();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You don't have access to this company", ERROR_CODES.AUTH_FORBIDDEN, FORBIDDEN_STATUS_CODE);
+			throw new ActionError(
+				"You don't have access to this company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				FORBIDDEN_STATUS_CODE,
+			);
 		}
 
 		const { data: customers, error } = await supabase
@@ -1198,7 +1472,10 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
 			.order("display_name", { ascending: true });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch customers"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Enrich customers with real job data
@@ -1235,16 +1512,20 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
 					.eq("company_id", teamMember.company_id);
 
 				const total_jobs = jobStats?.length || 0;
-				const total_revenue = jobStats?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
+				const total_revenue =
+					jobStats?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
 
 				return {
 					...customer,
-					last_job_date: lastJob?.actual_end || lastJob?.scheduled_end || lastJob?.created_at,
+					last_job_date:
+						lastJob?.actual_end ||
+						lastJob?.scheduled_end ||
+						lastJob?.created_at,
 					next_scheduled_job: nextJob?.scheduled_start,
 					total_jobs,
 					total_revenue,
 				};
-			})
+			}),
 		);
 
 		return enrichedCustomers as CustomerRecord[];
@@ -1259,12 +1540,15 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
  */
 export async function updateCustomerPageContent(
 	customerId: string,
-	pageContent: Record<string, unknown>
+	pageContent: Record<string, unknown>,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1279,7 +1563,11 @@ export async function updateCustomerPageContent(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Verify customer exists and belongs to company
@@ -1293,7 +1581,11 @@ export async function updateCustomerPageContent(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError(ERROR_MESSAGES.forbidden("customer"), ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
+			throw new ActionError(
+				ERROR_MESSAGES.forbidden("customer"),
+				ERROR_CODES.AUTH_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN,
+			);
 		}
 
 		// Update page content
@@ -1306,7 +1598,10 @@ export async function updateCustomerPageContent(
 			.eq("id", customerId);
 
 		if (updateError) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update customer page"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update customer page"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath(`/dashboard/customers/${customerId}`);

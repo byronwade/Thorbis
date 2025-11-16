@@ -10,9 +10,16 @@ const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const MILLISECONDS_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const MILLISECONDS_PER_DAY =
+	HOURS_PER_DAY *
+	MINUTES_PER_HOUR *
+	SECONDS_PER_MINUTE *
+	MILLISECONDS_PER_SECOND;
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 /**
  * Server Actions for Contract Management
@@ -68,13 +75,20 @@ async function getAuthContext() {
 /**
  * Generate unique contract number
  */
-async function generateContractNumber(companyId: string, supabase: SupabaseServerClient): Promise<string> {
+async function generateContractNumber(
+	companyId: string,
+	supabase: SupabaseServerClient,
+): Promise<string> {
 	const year = new Date().getFullYear();
 	const prefix = `CON-${year}-`;
 
-	const { data: contracts } = await supabase.from("contracts").select("contract_number").eq("company_id", companyId);
+	const { data: contracts } = await supabase
+		.from("contracts")
+		.select("contract_number")
+		.eq("company_id", companyId);
 
-	const yearContracts = contracts?.filter((c) => c.contract_number?.startsWith(prefix)) || [];
+	const yearContracts =
+		contracts?.filter((c) => c.contract_number?.startsWith(prefix)) || [];
 
 	const nextNumber = yearContracts.length + 1;
 	return `${prefix}${String(nextNumber).padStart(CONTRACT_NUMBER_PAD_LENGTH, "0")}`;
@@ -103,7 +117,10 @@ const contractSchema = z
 		notes: z.string().optional(),
 		// Signer info - email is required to send the contract
 		signerName: z.string().optional(),
-		signerEmail: z.string().email("Valid email required").min(1, "Signer email is required"),
+		signerEmail: z
+			.string()
+			.email("Valid email required")
+			.min(1, "Signer email is required"),
 		signerTitle: z.string().optional(),
 		signerCompany: z.string().optional(),
 	})
@@ -175,7 +192,9 @@ const buildContractInsertPayload = ({
 	status: "draft",
 });
 
-const buildContractUpdatePayload = (data: Partial<z.infer<typeof contractSchema>>): Record<string, unknown> => {
+const buildContractUpdatePayload = (
+	data: Partial<z.infer<typeof contractSchema>>,
+): Record<string, unknown> => {
 	const update: Record<string, unknown> = {};
 
 	const assign = (condition: unknown, key: string, value: unknown) => {
@@ -211,7 +230,7 @@ const reportContractIssue = (_message: string, _error?: unknown) => {
  * Create a new contract
  */
 export async function createContract(
-	formData: FormData
+	formData: FormData,
 ): Promise<{ success: boolean; error?: string; contractId?: string }> {
 	try {
 		const data = contractSchema.parse({
@@ -245,7 +264,11 @@ export async function createContract(
 			data,
 		});
 
-		const { data: contract, error } = await supabase.from("contracts").insert(contractPayload).select().single();
+		const { data: contract, error } = await supabase
+			.from("contracts")
+			.insert(contractPayload)
+			.select()
+			.single();
 
 		if (error) {
 			reportContractIssue("Error creating contract", error);
@@ -273,7 +296,7 @@ export async function createContract(
  */
 export async function updateContract(
 	contractId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const data = contractSchema.partial().parse({
@@ -333,7 +356,9 @@ export async function updateContract(
  *
  * Archives instead of permanently deleting. Can be restored within 90 days.
  */
-export async function archiveContract(contractId: string): Promise<{ success: boolean; error?: string }> {
+export async function archiveContract(
+	contractId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
 		const { companyId, supabase, userId } = await getAuthContext();
@@ -349,13 +374,16 @@ export async function archiveContract(contractId: string): Promise<{ success: bo
 		if (contract?.status === "signed" || contract?.status === "active") {
 			return {
 				success: false,
-				error: "Cannot archive signed or active contracts. Signed contracts must be retained for records.",
+				error:
+					"Cannot archive signed or active contracts. Signed contracts must be retained for records.",
 			};
 		}
 
 		// Archive contract (soft delete)
 		const now = new Date().toISOString();
-		const scheduledDeletion = new Date(Date.now() + ARCHIVE_RETENTION_DAYS * MILLISECONDS_PER_DAY).toISOString();
+		const scheduledDeletion = new Date(
+			Date.now() + ARCHIVE_RETENTION_DAYS * MILLISECONDS_PER_DAY,
+		).toISOString();
 
 		const { error } = await supabase
 			.from("contracts")
@@ -385,7 +413,9 @@ export async function archiveContract(contractId: string): Promise<{ success: bo
 /**
  * Restore archived contract
  */
-export async function restoreContract(contractId: string): Promise<{ success: boolean; error?: string }> {
+export async function restoreContract(
+	contractId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
 		const { companyId, supabase } = await getAuthContext();
@@ -432,14 +462,18 @@ export async function restoreContract(contractId: string): Promise<{ success: bo
  * Delete a contract (legacy - deprecated)
  * @deprecated Use archiveContract() instead
  */
-export async function deleteContract(contractId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteContract(
+	contractId: string,
+): Promise<{ success: boolean; error?: string }> {
 	return archiveContract(contractId);
 }
 
 /**
  * Send contract for signature
  */
-export async function sendContract(contractId: string): Promise<{ success: boolean; error?: string }> {
+export async function sendContract(
+	contractId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
 		const { companyId, supabase } = await getAuthContext();
@@ -473,7 +507,9 @@ export async function sendContract(contractId: string): Promise<{ success: boole
 /**
  * Sign a contract (customer-facing action)
  */
-export async function signContract(formData: FormData): Promise<{ success: boolean; error?: string }> {
+export async function signContract(
+	formData: FormData,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const data = signContractSchema.parse({
 			contractId: formData.get("contractId"),
@@ -530,7 +566,7 @@ export async function signContract(formData: FormData): Promise<{ success: boole
  */
 export async function rejectContract(
 	contractId: string,
-	reason?: string
+	reason?: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
@@ -562,7 +598,9 @@ export async function rejectContract(
 /**
  * Track contract view (when customer opens the contract)
  */
-export async function trackContractView(contractId: string): Promise<{ success: boolean; error?: string }> {
+export async function trackContractView(
+	contractId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get contract to check current status (public action, no auth needed)
 		const supabase = await createClient();

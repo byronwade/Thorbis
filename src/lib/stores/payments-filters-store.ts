@@ -48,6 +48,6 @@ export const usePaymentsFiltersStore = create<PaymentsFiltersStore>()(
 		{
 			name: "payments-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		}
-	)
+		},
+	),
 );

@@ -38,10 +38,16 @@ export class DataSyncManager {
 	/**
 	 * Update a field from AI extraction
 	 */
-	updateFromAI(formType: keyof FormData, fieldName: string, value: any, confidence: number) {
+	updateFromAI(
+		formType: keyof FormData,
+		fieldName: string,
+		value: any,
+		confidence: number,
+	) {
 		// Only update if field is not user-edited, or confidence is very high
 		const existing = this.formData[formType][fieldName];
-		const shouldUpdate = !existing || (existing.source === "user" ? confidence > 90 : true);
+		const shouldUpdate =
+			!existing || (existing.source === "user" ? confidence > 90 : true);
 
 		if (shouldUpdate && value != null) {
 			this.formData[formType][fieldName] = {
@@ -92,7 +98,10 @@ export class DataSyncManager {
 	/**
 	 * Get current value for a field
 	 */
-	getField(formType: keyof FormData, fieldName: string): FieldState | undefined {
+	getField(
+		formType: keyof FormData,
+		fieldName: string,
+	): FieldState | undefined {
 		return this.formData[formType][fieldName];
 	}
 
@@ -118,7 +127,10 @@ export class DataSyncManager {
 			Object.entries(fields).forEach(([fieldName, fieldState]) => {
 				// Only sync if local field doesn't exist or is older
 				const existing = this.formData[formType as keyof FormData][fieldName];
-				if (!existing || existing.timestamp < (fieldState as FieldState).timestamp) {
+				if (
+					!existing ||
+					existing.timestamp < (fieldState as FieldState).timestamp
+				) {
 					this.formData[formType as keyof FormData][fieldName] = {
 						...(fieldState as FieldState),
 						source: "synced",
@@ -167,66 +179,151 @@ export class DataSyncManager {
 			const firstName = nameParts[0];
 			const lastName = nameParts.slice(1).join(" ");
 
-			this.updateFromAI("customer", "firstName", firstName, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"firstName",
+				firstName,
+				data.customerInfo.confidence,
+			);
 			if (lastName) {
-				this.updateFromAI("customer", "lastName", lastName, data.customerInfo.confidence);
+				this.updateFromAI(
+					"customer",
+					"lastName",
+					lastName,
+					data.customerInfo.confidence,
+				);
 			}
 		}
 		if (data.customerInfo.email) {
-			this.updateFromAI("customer", "email", data.customerInfo.email, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"email",
+				data.customerInfo.email,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.phone) {
-			this.updateFromAI("customer", "phone", data.customerInfo.phone, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"phone",
+				data.customerInfo.phone,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.company) {
-			this.updateFromAI("customer", "company", data.customerInfo.company, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"company",
+				data.customerInfo.company,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.address.street) {
-			this.updateFromAI("customer", "address", data.customerInfo.address.street, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"address",
+				data.customerInfo.address.street,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.address.city) {
-			this.updateFromAI("customer", "city", data.customerInfo.address.city, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"city",
+				data.customerInfo.address.city,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.address.state) {
-			this.updateFromAI("customer", "state", data.customerInfo.address.state, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"state",
+				data.customerInfo.address.state,
+				data.customerInfo.confidence,
+			);
 		}
 		if (data.customerInfo.address.zipCode) {
-			this.updateFromAI("customer", "zipCode", data.customerInfo.address.zipCode, data.customerInfo.confidence);
+			this.updateFromAI(
+				"customer",
+				"zipCode",
+				data.customerInfo.address.zipCode,
+				data.customerInfo.confidence,
+			);
 		}
 
 		// Job details
 		if (data.jobDetails.title) {
-			this.updateFromAI("job", "title", data.jobDetails.title, data.jobDetails.confidence);
+			this.updateFromAI(
+				"job",
+				"title",
+				data.jobDetails.title,
+				data.jobDetails.confidence,
+			);
 		}
 		if (data.jobDetails.description) {
-			this.updateFromAI("job", "description", data.jobDetails.description, data.jobDetails.confidence);
+			this.updateFromAI(
+				"job",
+				"description",
+				data.jobDetails.description,
+				data.jobDetails.confidence,
+			);
 		}
 		if (data.jobDetails.urgency) {
-			this.updateFromAI("job", "priority", data.jobDetails.urgency, data.jobDetails.confidence);
+			this.updateFromAI(
+				"job",
+				"priority",
+				data.jobDetails.urgency,
+				data.jobDetails.confidence,
+			);
 		}
 		if (data.jobDetails.type) {
-			this.updateFromAI("job", "jobType", data.jobDetails.type, data.jobDetails.confidence);
+			this.updateFromAI(
+				"job",
+				"jobType",
+				data.jobDetails.type,
+				data.jobDetails.confidence,
+			);
 		}
 		if (data.jobDetails.estimatedDuration) {
-			this.updateFromAI("job", "estimatedDuration", data.jobDetails.estimatedDuration, data.jobDetails.confidence);
+			this.updateFromAI(
+				"job",
+				"estimatedDuration",
+				data.jobDetails.estimatedDuration,
+				data.jobDetails.confidence,
+			);
 		}
 
 		// Appointment needs
 		if (data.appointmentNeeds.preferredDate) {
-			this.updateFromAI("appointment", "date", data.appointmentNeeds.preferredDate, data.appointmentNeeds.confidence);
+			this.updateFromAI(
+				"appointment",
+				"date",
+				data.appointmentNeeds.preferredDate,
+				data.appointmentNeeds.confidence,
+			);
 		}
 		if (data.appointmentNeeds.preferredTime) {
-			this.updateFromAI("appointment", "time", data.appointmentNeeds.preferredTime, data.appointmentNeeds.confidence);
+			this.updateFromAI(
+				"appointment",
+				"time",
+				data.appointmentNeeds.preferredTime,
+				data.appointmentNeeds.confidence,
+			);
 		}
 		if (data.appointmentNeeds.duration) {
-			this.updateFromAI("appointment", "duration", data.appointmentNeeds.duration, data.appointmentNeeds.confidence);
+			this.updateFromAI(
+				"appointment",
+				"duration",
+				data.appointmentNeeds.duration,
+				data.appointmentNeeds.confidence,
+			);
 		}
 		if (data.appointmentNeeds.specialRequirements) {
 			this.updateFromAI(
 				"appointment",
 				"notes",
 				data.appointmentNeeds.specialRequirements,
-				data.appointmentNeeds.confidence
+				data.appointmentNeeds.confidence,
 			);
 		}
 	}

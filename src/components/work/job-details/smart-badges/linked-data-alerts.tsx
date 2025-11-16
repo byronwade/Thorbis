@@ -7,7 +7,11 @@
 
 import { AlertCircle, Clock, DollarSign, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type LinkedDataAlertsProps = {
@@ -35,7 +39,11 @@ type LinkedDataAlertsProps = {
 	}>;
 };
 
-export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedDataAlertsProps) {
+export function LinkedDataAlerts({
+	job,
+	invoices = [],
+	estimates = [],
+}: LinkedDataAlertsProps) {
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-US", {
 			style: "currency",
@@ -56,17 +64,27 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 		return dueDate < today;
 	});
 
-	const totalPastDue = pastDueInvoices.reduce((sum, inv) => sum + (inv.balance_amount || 0), 0);
+	const totalPastDue = pastDueInvoices.reduce(
+		(sum, inv) => sum + (inv.balance_amount || 0),
+		0,
+	);
 
 	// Calculate outstanding estimates
 	const outstandingEstimates = estimates.filter(
-		(est) => est.status === "pending" || est.status === "sent" || est.status === "draft"
+		(est) =>
+			est.status === "pending" ||
+			est.status === "sent" ||
+			est.status === "draft",
 	);
 
-	const totalEstimated = outstandingEstimates.reduce((sum, est) => sum + (est.total_amount || 0), 0);
+	const totalEstimated = outstandingEstimates.reduce(
+		(sum, est) => sum + (est.total_amount || 0),
+		0,
+	);
 
 	// Check unpaid deposit
-	const hasUnpaidDeposit = job.deposit_amount && job.deposit_amount > 0 && !job.deposit_paid_at;
+	const hasUnpaidDeposit =
+		job.deposit_amount && job.deposit_amount > 0 && !job.deposit_paid_at;
 
 	// Check completion overdue
 	const isCompletionOverdue =
@@ -91,13 +109,16 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 					<div className="space-y-3">
 						<div>
 							<h4 className="font-semibold text-sm">Past Due Invoices</h4>
-							<p className="text-muted-foreground text-xs">Invoices that are overdue for payment</p>
+							<p className="text-muted-foreground text-xs">
+								Invoices that are overdue for payment
+							</p>
 						</div>
 						<Separator />
 						<div className="space-y-2">
 							{pastDueInvoices.map((inv) => {
 								const daysPastDue = Math.floor(
-									(today.getTime() - new Date(inv.due_date!).getTime()) / (1000 * 60 * 60 * 24)
+									(today.getTime() - new Date(inv.due_date!).getTime()) /
+										(1000 * 60 * 60 * 24),
 								);
 								return (
 									<div
@@ -105,7 +126,9 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 										key={inv.id}
 									>
 										<div className="flex flex-col gap-0.5">
-											<span className="font-medium text-sm">#{inv.invoice_number || inv.id.slice(0, 8)}</span>
+											<span className="font-medium text-sm">
+												#{inv.invoice_number || inv.id.slice(0, 8)}
+											</span>
 											<span className="text-muted-foreground text-xs">
 												{daysPastDue} day{daysPastDue !== 1 ? "s" : ""} overdue
 											</span>
@@ -120,11 +143,13 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 						<Separator />
 						<div className="flex items-center justify-between">
 							<span className="font-semibold text-sm">Total Past Due</span>
-							<span className="font-bold text-base text-red-600 dark:text-red-400">{formatCurrency(totalPastDue)}</span>
+							<span className="font-bold text-base text-red-600 dark:text-red-400">
+								{formatCurrency(totalPastDue)}
+							</span>
 						</div>
 					</div>
 				</HoverCardContent>
-			</HoverCard>
+			</HoverCard>,
 		);
 	}
 
@@ -135,14 +160,17 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 				<HoverCardTrigger asChild>
 					<button className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-amber-700 text-sm transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400">
 						<FileText className="size-4" />
-						{outstandingEstimates.length} Pending • {formatCurrency(totalEstimated)}
+						{outstandingEstimates.length} Pending •{" "}
+						{formatCurrency(totalEstimated)}
 					</button>
 				</HoverCardTrigger>
 				<HoverCardContent align="start" className="w-96" side="bottom">
 					<div className="space-y-3">
 						<div>
 							<h4 className="font-semibold text-sm">Outstanding Estimates</h4>
-							<p className="text-muted-foreground text-xs">Estimates awaiting customer approval</p>
+							<p className="text-muted-foreground text-xs">
+								Estimates awaiting customer approval
+							</p>
 						</div>
 						<Separator />
 						<div className="space-y-2">
@@ -152,12 +180,16 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 									key={est.id}
 								>
 									<div className="flex flex-col gap-0.5">
-										<span className="font-medium text-sm">#{est.estimate_number || est.id.slice(0, 8)}</span>
+										<span className="font-medium text-sm">
+											#{est.estimate_number || est.id.slice(0, 8)}
+										</span>
 										<Badge className="w-fit capitalize" variant="outline">
 											{est.status}
 										</Badge>
 									</div>
-									<span className="font-semibold text-sm">{formatCurrency(est.total_amount || 0)}</span>
+									<span className="font-semibold text-sm">
+										{formatCurrency(est.total_amount || 0)}
+									</span>
 								</div>
 							))}
 						</div>
@@ -170,7 +202,7 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 						</div>
 					</div>
 				</HoverCardContent>
-			</HoverCard>
+			</HoverCard>,
 		);
 	}
 
@@ -183,13 +215,16 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 			>
 				<DollarSign className="size-4" />
 				Deposit Due • {formatCurrency(job.deposit_amount || 0)}
-			</button>
+			</button>,
 		);
 	}
 
 	// Completion Overdue Alert
 	if (isCompletionOverdue) {
-		const daysPastDue = Math.floor((today.getTime() - new Date(job.scheduled_end!).getTime()) / (1000 * 60 * 60 * 24));
+		const daysPastDue = Math.floor(
+			(today.getTime() - new Date(job.scheduled_end!).getTime()) /
+				(1000 * 60 * 60 * 24),
+		);
 		alerts.push(
 			<button
 				className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-2 font-medium text-amber-700 text-sm transition-colors hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400"
@@ -197,7 +232,7 @@ export function LinkedDataAlerts({ job, invoices = [], estimates = [] }: LinkedD
 			>
 				<Clock className="size-4" />
 				{daysPastDue} Day{daysPastDue !== 1 ? "s" : ""} Overdue
-			</button>
+			</button>,
 		);
 	}
 

@@ -5,7 +5,11 @@
  * Each preset is optimized for the specific needs of that trade.
  */
 
-import type { IndustryType, JobWidget, LayoutPreset } from "@/lib/stores/job-details-layout-store";
+import type {
+	IndustryType,
+	JobWidget,
+	LayoutPreset,
+} from "@/lib/stores/job-details-layout-store";
 
 // ============================================================================
 // Helper Functions
@@ -22,7 +26,7 @@ function createWidget(
 	y: number,
 	width: number,
 	height: number,
-	options: Partial<JobWidget> = {}
+	options: Partial<JobWidget> = {},
 ): JobWidget {
 	return {
 		id,
@@ -50,7 +54,8 @@ function createWidget(
 export const hvacPreset: LayoutPreset = {
 	id: "hvac-preset",
 	name: "HVAC Contractor",
-	description: "Optimized for HVAC installation and repair jobs with equipment tracking",
+	description:
+		"Optimized for HVAC installation and repair jobs with equipment tracking",
 	industry: "hvac",
 	widgets: [
 		// Row 1: Header (always first)
@@ -61,11 +66,35 @@ export const hvacPreset: LayoutPreset = {
 		}),
 
 		// Row 2: Main content (Timeline is permanent at top of page)
-		createWidget("hvac-equipment", "hvac-equipment", "HVAC Equipment", 0, 2, 2, 2),
-		createWidget("property-enrichment", "property-enrichment", "Property Intelligence", 2, 2, 2, 2),
+		createWidget(
+			"hvac-equipment",
+			"hvac-equipment",
+			"HVAC Equipment",
+			0,
+			2,
+			2,
+			2,
+		),
+		createWidget(
+			"property-enrichment",
+			"property-enrichment",
+			"Property Intelligence",
+			2,
+			2,
+			2,
+			2,
+		),
 
 		// Row 5-7: Financial and details
-		createWidget("job-financials", "job-financials", "Financial Summary", 0, 4, 1, 2),
+		createWidget(
+			"job-financials",
+			"job-financials",
+			"Financial Summary",
+			0,
+			4,
+			1,
+			2,
+		),
 		createWidget("job-costing", "job-costing", "Job Costing", 1, 4, 1, 2),
 		createWidget("job-details", "job-details", "Job Information", 2, 4, 2, 3),
 
@@ -91,8 +120,24 @@ export const plumbingPreset: LayoutPreset = {
 			isResizable: false,
 			isDraggable: false,
 		}),
-		createWidget("plumbing-fixtures", "plumbing-fixtures", "Plumbing Fixtures", 0, 2, 2, 2),
-		createWidget("property-details", "property-details", "Property Details", 2, 2, 2, 2),
+		createWidget(
+			"plumbing-fixtures",
+			"plumbing-fixtures",
+			"Plumbing Fixtures",
+			0,
+			2,
+			2,
+			2,
+		),
+		createWidget(
+			"property-details",
+			"property-details",
+			"Property Details",
+			2,
+			2,
+			2,
+			2,
+		),
 		createWidget("permits", "permits", "Permits & Inspections", 0, 4, 2, 2),
 		createWidget("materials-list", "materials-list", "Materials", 2, 4, 2, 2),
 		createWidget("job-financials", "job-financials", "Financials", 0, 6, 2, 2),
@@ -115,9 +160,25 @@ export const electricalPreset: LayoutPreset = {
 			isResizable: false,
 			isDraggable: false,
 		}),
-		createWidget("electrical-panels", "electrical-panels", "Electrical Panels", 0, 2, 2, 2),
+		createWidget(
+			"electrical-panels",
+			"electrical-panels",
+			"Electrical Panels",
+			0,
+			2,
+			2,
+			2,
+		),
 		createWidget("permits", "permits", "Permits & Inspections", 2, 2, 2, 2),
-		createWidget("property-details", "property-details", "Property Details", 0, 4, 2, 2),
+		createWidget(
+			"property-details",
+			"property-details",
+			"Property Details",
+			0,
+			4,
+			2,
+			2,
+		),
 		createWidget("materials-list", "materials-list", "Materials", 2, 4, 2, 2),
 		createWidget("job-financials", "job-financials", "Financials", 0, 6, 2, 2),
 		createWidget("photos", "photos", "Photos", 2, 6, 2, 2),
@@ -139,8 +200,24 @@ export const roofingPreset: LayoutPreset = {
 			isResizable: false,
 			isDraggable: false,
 		}),
-		createWidget("roofing-materials", "roofing-materials", "Roofing Materials", 0, 2, 2, 2),
-		createWidget("property-enrichment", "property-enrichment", "Property Intelligence", 2, 2, 2, 2),
+		createWidget(
+			"roofing-materials",
+			"roofing-materials",
+			"Roofing Materials",
+			0,
+			2,
+			2,
+			2,
+		),
+		createWidget(
+			"property-enrichment",
+			"property-enrichment",
+			"Property Intelligence",
+			2,
+			2,
+			2,
+			2,
+		),
 		createWidget("photos", "photos", "Photo Gallery", 0, 4, 2, 3),
 		createWidget("job-details", "job-details", "Job Information", 2, 4, 2, 3),
 		createWidget("job-financials", "job-financials", "Financials", 0, 7, 2, 2),
@@ -155,7 +232,8 @@ export const roofingPreset: LayoutPreset = {
 export const landscapingPreset: LayoutPreset = {
 	id: "landscaping-preset",
 	name: "Landscaping Contractor",
-	description: "Optimized for landscaping projects with zone and material tracking",
+	description:
+		"Optimized for landscaping projects with zone and material tracking",
 	industry: "landscaping",
 	widgets: [
 		createWidget("header", "job-header", "Job Header", 0, 0, 4, 1, {
@@ -163,7 +241,15 @@ export const landscapingPreset: LayoutPreset = {
 			isResizable: false,
 			isDraggable: false,
 		}),
-		createWidget("landscape-zones", "landscape-zones", "Landscape Zones", 0, 2, 2, 2),
+		createWidget(
+			"landscape-zones",
+			"landscape-zones",
+			"Landscape Zones",
+			0,
+			2,
+			2,
+			2,
+		),
 		createWidget("location-map", "location-map", "Location Map", 2, 2, 2, 2),
 		createWidget("materials-list", "materials-list", "Materials", 0, 4, 2, 2),
 		createWidget("photos", "photos", "Photos", 2, 4, 2, 2),
@@ -188,7 +274,15 @@ export const generalContractorPreset: LayoutPreset = {
 			isDraggable: false,
 		}),
 		createWidget("job-details", "job-details", "Job Information", 0, 2, 2, 3),
-		createWidget("property-enrichment", "property-enrichment", "Property Intelligence", 2, 2, 2, 3),
+		createWidget(
+			"property-enrichment",
+			"property-enrichment",
+			"Property Intelligence",
+			2,
+			2,
+			2,
+			3,
+		),
 		createWidget("job-costing", "job-costing", "Job Costing", 0, 5, 2, 2),
 		createWidget("profitability", "profitability", "Profitability", 2, 5, 2, 2),
 		createWidget("schedule", "schedule", "Schedule", 0, 7, 2, 2),
@@ -238,12 +332,28 @@ export const commercialPreset: LayoutPreset = {
 			isDraggable: false,
 		}),
 		createWidget("job-details", "job-details", "Job Information", 0, 2, 2, 3),
-		createWidget("property-enrichment", "property-enrichment", "Property Intelligence", 2, 2, 2, 3),
+		createWidget(
+			"property-enrichment",
+			"property-enrichment",
+			"Property Intelligence",
+			2,
+			2,
+			2,
+			3,
+		),
 		createWidget("schedule", "schedule", "Project Schedule", 0, 5, 2, 2),
 		createWidget("team-assignments", "team-assignments", "Teams", 2, 5, 2, 2),
 		createWidget("job-costing", "job-costing", "Job Costing", 0, 7, 2, 2),
 		createWidget("profitability", "profitability", "Profitability", 2, 7, 2, 2),
-		createWidget("purchase-orders", "purchase-orders", "Purchase Orders", 0, 9, 2, 2),
+		createWidget(
+			"purchase-orders",
+			"purchase-orders",
+			"Purchase Orders",
+			0,
+			9,
+			2,
+			2,
+		),
 		createWidget("permits", "permits", "Permits & Inspections", 2, 9, 2, 2),
 		createWidget("photos", "photos", "Photos", 0, 11, 2, 2),
 		createWidget("documents", "documents", "Documents", 2, 11, 2, 2),
@@ -268,14 +378,18 @@ export const ALL_PRESETS: LayoutPreset[] = [
 /**
  * Get preset by industry type
  */
-export function getPresetByIndustry(industry: IndustryType): LayoutPreset | undefined {
+export function getPresetByIndustry(
+	industry: IndustryType,
+): LayoutPreset | undefined {
 	return ALL_PRESETS.find((preset) => preset.industry === industry);
 }
 
 /**
  * Get all presets for a specific category
  */
-export function getPresetsByCategory(category: "residential" | "commercial" | "specialty"): LayoutPreset[] {
+export function getPresetsByCategory(
+	category: "residential" | "commercial" | "specialty",
+): LayoutPreset[] {
 	const residentialIndustries: IndustryType[] = [
 		"hvac",
 		"plumbing",
@@ -284,14 +398,21 @@ export function getPresetsByCategory(category: "residential" | "commercial" | "s
 		"landscaping",
 		"remodeling",
 	];
-	const commercialIndustries: IndustryType[] = ["commercial", "general_contractor"];
+	const commercialIndustries: IndustryType[] = [
+		"commercial",
+		"general_contractor",
+	];
 
 	if (category === "residential") {
-		return ALL_PRESETS.filter((preset) => residentialIndustries.includes(preset.industry));
+		return ALL_PRESETS.filter((preset) =>
+			residentialIndustries.includes(preset.industry),
+		);
 	}
 
 	if (category === "commercial") {
-		return ALL_PRESETS.filter((preset) => commercialIndustries.includes(preset.industry));
+		return ALL_PRESETS.filter((preset) =>
+			commercialIndustries.includes(preset.industry),
+		);
 	}
 
 	return ALL_PRESETS;

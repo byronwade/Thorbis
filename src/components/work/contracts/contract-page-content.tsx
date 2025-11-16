@@ -12,16 +12,31 @@ import {
 	User,
 } from "lucide-react";
 import Link from "next/link";
-import { type ElementType, type ReactElement, type ReactNode, useMemo } from "react";
+import {
+	type ElementType,
+	type ReactElement,
+	type ReactNode,
+	useMemo,
+} from "react";
 import type { DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Badge } from "@/components/ui/badge";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { WorkflowTimeline } from "@/components/ui/workflow-timeline";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-type ContractStatus = "draft" | "sent" | "viewed" | "signed" | "rejected" | "expired" | string;
+type ContractStatus =
+	| "draft"
+	| "sent"
+	| "viewed"
+	| "signed"
+	| "rejected"
+	| "expired"
+	| string;
 
 export type ContractRecord = {
 	id: string;
@@ -99,7 +114,11 @@ export type AppointmentRecord = {
 	type?: string | null;
 };
 
-type RelatedItemBadgeVariant = "default" | "secondary" | "destructive" | "outline";
+type RelatedItemBadgeVariant =
+	| "default"
+	| "secondary"
+	| "destructive"
+	| "outline";
 
 type RelatedItem = {
 	id: string;
@@ -167,7 +186,10 @@ function getStatusBadgeStyles(status: ContractStatus | null | undefined) {
 	}
 }
 
-function getCustomerDisplayName(customer?: CustomerRecord | null, fallback?: string): string {
+function getCustomerDisplayName(
+	customer?: CustomerRecord | null,
+	fallback?: string,
+): string {
 	if (!customer) {
 		return fallback || "Unknown Customer";
 	}
@@ -176,7 +198,8 @@ function getCustomerDisplayName(customer?: CustomerRecord | null, fallback?: str
 		return customer.display_name;
 	}
 
-	const fullName = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+	const fullName =
+		`${customer.first_name || ""} ${customer.last_name || ""}`.trim();
 	if (fullName) {
 		return fullName;
 	}
@@ -189,15 +212,21 @@ function getPropertyDisplayName(property?: PropertyRecord | null): string {
 		return "Property";
 	}
 
-	return property.address || property.name || [property.city, property.state].filter(Boolean).join(", ") || "Property";
+	return (
+		property.address ||
+		property.name ||
+		[property.city, property.state].filter(Boolean).join(", ") ||
+		"Property"
+	);
 }
 
 function buildHeaderConfig(
 	contract: ContractRecord,
 	customerName: string,
-	statusBadge: ReactElement | null
+	statusBadge: ReactElement | null,
 ): DetailPageHeaderConfig {
-	const contractNumber = contract.contractNumber || `CON-${contract.id.slice(0, 8).toUpperCase()}`;
+	const contractNumber =
+		contract.contractNumber || `CON-${contract.id.slice(0, 8).toUpperCase()}`;
 
 	const badges: ReactElement[] = [
 		<Badge key="contract-number" variant="outline">
@@ -213,7 +242,7 @@ function buildHeaderConfig(
 		badges.push(
 			<Badge className="capitalize" key="contract-type" variant="secondary">
 				{contract.contractType}
-			</Badge>
+			</Badge>,
 		);
 	}
 
@@ -225,12 +254,24 @@ function buildHeaderConfig(
 }
 
 export function ContractPageContent({ entityData }: ContractPageContentProps) {
-	const { contract, customer, property, estimate, invoice, job, appointments = [] } = entityData;
+	const {
+		contract,
+		customer,
+		property,
+		estimate,
+		invoice,
+		job,
+		appointments = [],
+	} = entityData;
 
 	const customerName = getCustomerDisplayName(customer, contract.customerName);
 	const statusLabel = formatStatusLabel(contract.status);
 	const statusBadge = contract.status ? (
-		<Badge className={cn("capitalize", getStatusBadgeStyles(contract.status))} key="status-badge" variant="outline">
+		<Badge
+			className={cn("capitalize", getStatusBadgeStyles(contract.status))}
+			key="status-badge"
+			variant="outline"
+		>
 			{statusLabel}
 		</Badge>
 	) : null;
@@ -257,7 +298,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			icon: Send,
 			label: "Sent At",
 			value:
-				contract.sentAt && contract.sentAt !== "" ? formatDate(contract.sentAt, { preset: "datetime" }) : "Not sent",
+				contract.sentAt && contract.sentAt !== ""
+					? formatDate(contract.sentAt, { preset: "datetime" })
+					: "Not sent",
 		});
 
 		items.push({
@@ -308,7 +351,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				id: `property-${property.id}`,
 				type: "property",
 				title: getPropertyDisplayName(property),
-				subtitle: [property.city, property.state].filter(Boolean).join(", ") || undefined,
+				subtitle:
+					[property.city, property.state].filter(Boolean).join(", ") ||
+					undefined,
 				href: `/dashboard/work/properties/${property.id}`,
 			});
 		}
@@ -320,7 +365,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				title: job.title || `Job #${job.job_number || job.id.slice(0, 8)}`,
 				subtitle: job.status || undefined,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status ? { label: formatStatusLabel(job.status), variant: "outline" } : undefined,
+				badge: job.status
+					? { label: formatStatusLabel(job.status), variant: "outline" }
+					: undefined,
 			});
 		}
 
@@ -328,10 +375,14 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			items.push({
 				id: `estimate-${estimate.id}`,
 				type: "estimate",
-				title: estimate.title || `Estimate #${estimate.estimate_number || estimate.id.slice(0, 8)}`,
+				title:
+					estimate.title ||
+					`Estimate #${estimate.estimate_number || estimate.id.slice(0, 8)}`,
 				subtitle: estimate.status || undefined,
 				href: `/dashboard/work/estimates/${estimate.id}`,
-				badge: estimate.status ? { label: formatStatusLabel(estimate.status), variant: "secondary" } : undefined,
+				badge: estimate.status
+					? { label: formatStatusLabel(estimate.status), variant: "secondary" }
+					: undefined,
 			});
 		}
 
@@ -339,10 +390,14 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			items.push({
 				id: `invoice-${invoice.id}`,
 				type: "invoice",
-				title: invoice.title || `Invoice #${invoice.invoice_number || invoice.id.slice(0, 8)}`,
+				title:
+					invoice.title ||
+					`Invoice #${invoice.invoice_number || invoice.id.slice(0, 8)}`,
 				subtitle: invoice.status || undefined,
 				href: `/dashboard/work/invoices/${invoice.id}`,
-				badge: invoice.status ? { label: formatStatusLabel(invoice.status), variant: "outline" } : undefined,
+				badge: invoice.status
+					? { label: formatStatusLabel(invoice.status), variant: "outline" }
+					: undefined,
 			});
 		}
 
@@ -360,8 +415,12 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				label: "Estimate Created",
 				status: estimate ? "completed" : "pending",
 				date: estimate?.created_at || undefined,
-				href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
-				description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
+				href: estimate?.id
+					? `/dashboard/work/estimates/${estimate.id}`
+					: undefined,
+				description: estimate?.estimate_number
+					? `#${estimate.estimate_number}`
+					: undefined,
 			},
 			{
 				id: "contract",
@@ -369,20 +428,30 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				status: "completed",
 				date: contract.createdAt || undefined,
 				href: `/dashboard/work/contracts/${contract.id}`,
-				description: contract.status === "signed" ? "Signed" : "Pending signature",
+				description:
+					contract.status === "signed" ? "Signed" : "Pending signature",
 			},
 			{
 				id: "invoice",
 				label: "Invoice Created",
 				status: invoice ? "completed" : "pending",
 				date: invoice?.created_at || undefined,
-				href: invoice?.id ? `/dashboard/work/invoices/${invoice.id}` : undefined,
-				description: invoice?.invoice_number ? `#${invoice.invoice_number}` : undefined,
+				href: invoice?.id
+					? `/dashboard/work/invoices/${invoice.id}`
+					: undefined,
+				description: invoice?.invoice_number
+					? `#${invoice.invoice_number}`
+					: undefined,
 			},
 			{
 				id: "payment",
 				label: "Payment Received",
-				status: invoice?.status === "paid" ? "completed" : invoice ? "current" : "pending",
+				status:
+					invoice?.status === "paid"
+						? "completed"
+						: invoice
+							? "current"
+							: "pending",
 				date: invoice?.paid_at || undefined,
 				description: invoice?.paid_at
 					? "Completed"
@@ -394,7 +463,8 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 	}, [contract, estimate, invoice]);
 
 	const overviewSection = useMemo<UnifiedAccordionSection>(() => {
-		const contractNumber = contract.contractNumber || `CON-${contract.id.slice(0, 8).toUpperCase()}`;
+		const contractNumber =
+			contract.contractNumber || `CON-${contract.id.slice(0, 8).toUpperCase()}`;
 
 		return {
 			id: "contract-overview",
@@ -406,10 +476,24 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 					<div className="grid gap-6 md:grid-cols-2">
 						<InfoBlock label="Contract Number" value={`#${contractNumber}`} />
 						<InfoBlock label="Status" value={statusLabel} />
-						<InfoBlock label="Contract Type" value={contract.contractType ? contract.contractType : "Not specified"} />
-						<InfoBlock label="Created" value={formatDate(contract.createdAt, { preset: "datetime" })} />
-						<InfoBlock label="Valid From" value={formatDate(contract.validFrom, { preset: "long" })} />
-						<InfoBlock label="Valid Until" value={formatDate(contract.validUntil, { preset: "long" })} />
+						<InfoBlock
+							label="Contract Type"
+							value={
+								contract.contractType ? contract.contractType : "Not specified"
+							}
+						/>
+						<InfoBlock
+							label="Created"
+							value={formatDate(contract.createdAt, { preset: "datetime" })}
+						/>
+						<InfoBlock
+							label="Valid From"
+							value={formatDate(contract.validFrom, { preset: "long" })}
+						/>
+						<InfoBlock
+							label="Valid Until"
+							value={formatDate(contract.validUntil, { preset: "long" })}
+						/>
 						<InfoBlock
 							label="Customer"
 							value={
@@ -457,13 +541,15 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 						{contract.content && contract.content.trim().length > 0 ? (
 							<p className="whitespace-pre-wrap">{contract.content}</p>
 						) : (
-							<p className="text-muted-foreground">No contract terms provided.</p>
+							<p className="text-muted-foreground">
+								No contract terms provided.
+							</p>
 						)}
 					</div>
 				</UnifiedAccordionContent>
 			),
 		}),
-		[contract.content]
+		[contract.content],
 	);
 
 	const signerSection = useMemo<UnifiedAccordionSection | null>(() => {
@@ -482,16 +568,27 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 							<FileSignature className="size-6 text-muted-foreground" />
 						</div>
 						<div className="flex-1 space-y-1">
-							<p className="font-medium text-sm">{contract.signerName || "Signer name not provided"}</p>
+							<p className="font-medium text-sm">
+								{contract.signerName || "Signer name not provided"}
+							</p>
 							{contract.signerTitle && (
 								<p className="text-muted-foreground text-sm">
 									{contract.signerTitle}
-									{contract.signerCompany ? ` at ${contract.signerCompany}` : ""}
+									{contract.signerCompany
+										? ` at ${contract.signerCompany}`
+										: ""}
 								</p>
 							)}
-							{contract.signerEmail && <p className="text-muted-foreground text-xs">{contract.signerEmail}</p>}
+							{contract.signerEmail && (
+								<p className="text-muted-foreground text-xs">
+									{contract.signerEmail}
+								</p>
+							)}
 							<div className="text-muted-foreground text-xs">
-								<p>Signed on {formatDate(contract.signedAt, { preset: "datetime" })}</p>
+								<p>
+									Signed on{" "}
+									{formatDate(contract.signedAt, { preset: "datetime" })}
+								</p>
 								{contract.ipAddress && <p>IP: {contract.ipAddress}</p>}
 							</div>
 						</div>
@@ -560,7 +657,12 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 				</UnifiedAccordionContent>
 			),
 		};
-	}, [contract.createdAt, contract.sentAt, contract.signedAt, contract.viewedAt]);
+	}, [
+		contract.createdAt,
+		contract.sentAt,
+		contract.signedAt,
+		contract.viewedAt,
+	]);
 
 	const appointmentsSection = useMemo<UnifiedAccordionSection | null>(() => {
 		if (appointments.length === 0) {
@@ -597,7 +699,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 											: ""}
 									</p>
 								</div>
-								<Badge variant="outline">{formatStatusLabel(appointment.status || "scheduled")}</Badge>
+								<Badge variant="outline">
+									{formatStatusLabel(appointment.status || "scheduled")}
+								</Badge>
 							</Link>
 						))}
 					</div>
@@ -617,7 +721,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			icon: <NotebookPen className="size-4" />,
 			content: (
 				<UnifiedAccordionContent>
-					<p className="whitespace-pre-wrap text-sm leading-relaxed">{contract.terms}</p>
+					<p className="whitespace-pre-wrap text-sm leading-relaxed">
+						{contract.terms}
+					</p>
 				</UnifiedAccordionContent>
 			),
 		};
@@ -634,7 +740,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			icon: <NotebookPen className="size-4" />,
 			content: (
 				<UnifiedAccordionContent>
-					<p className="whitespace-pre-wrap text-muted-foreground text-sm">{contract.notes}</p>
+					<p className="whitespace-pre-wrap text-muted-foreground text-sm">
+						{contract.notes}
+					</p>
 				</UnifiedAccordionContent>
 			),
 		};
@@ -659,7 +767,7 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 			signerSection,
 			termsSection,
 			internalNotesSection,
-		]
+		],
 	);
 
 	const shouldShowWorkflowTimeline = workflowStages.length > 0;
@@ -675,7 +783,9 @@ export function ContractPageContent({ entityData }: ContractPageContentProps) {
 					</div>
 				) : undefined
 			}
-			customHeader={<HeaderSurface config={headerConfig} quickInfo={quickInfo} />}
+			customHeader={
+				<HeaderSurface config={headerConfig} quickInfo={quickInfo} />
+			}
 			customSections={customSections}
 			defaultOpenSection="contract-overview"
 			relatedItems={relatedItems}
@@ -718,9 +828,19 @@ function DetailPageHeader({ config }: { config: DetailPageHeaderConfig }) {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex flex-col gap-2">
-				{config.title ? <h1 className="font-semibold text-2xl leading-tight md:text-3xl">{config.title}</h1> : null}
-				{config.subtitle ? <p className="text-muted-foreground text-sm md:text-base">{config.subtitle}</p> : null}
-				{config.description ? <p className="text-muted-foreground text-sm">{config.description}</p> : null}
+				{config.title ? (
+					<h1 className="font-semibold text-2xl leading-tight md:text-3xl">
+						{config.title}
+					</h1>
+				) : null}
+				{config.subtitle ? (
+					<p className="text-muted-foreground text-sm md:text-base">
+						{config.subtitle}
+					</p>
+				) : null}
+				{config.description ? (
+					<p className="text-muted-foreground text-sm">{config.description}</p>
+				) : null}
 			</div>
 			{config.badges && config.badges.length > 0 ? (
 				<div className="flex flex-wrap items-center gap-2">{config.badges}</div>
@@ -748,12 +868,17 @@ function QuickInfoGrid({
 			{items.map((item) => {
 				const Icon = item.icon;
 				return (
-					<div className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 p-3" key={item.key}>
+					<div
+						className="flex items-start gap-3 rounded-lg border border-border/60 bg-muted/30 p-3"
+						key={item.key}
+					>
 						<div className="rounded-md bg-background p-2 shadow-sm">
 							<Icon className="size-4 text-muted-foreground" />
 						</div>
 						<div className="flex flex-col">
-							<span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{item.label}</span>
+							<span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+								{item.label}
+							</span>
 							<span className="font-medium text-sm">{item.value}</span>
 						</div>
 					</div>
@@ -766,7 +891,9 @@ function QuickInfoGrid({
 function InfoBlock({ label, value }: { label: string; value: ReactNode }) {
 	return (
 		<div className="space-y-1">
-			<span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">{label}</span>
+			<span className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+				{label}
+			</span>
 			<div className="font-medium text-sm">{value}</div>
 		</div>
 	);
@@ -790,15 +917,22 @@ function TimelineEvent({
 	const Icon = event.icon;
 
 	const toneClasses: Record<typeof event.tone, string> = {
-		default: "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground",
-		accent: "bg-accent/10 text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+		default:
+			"bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary-foreground",
+		accent:
+			"bg-accent/10 text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 		success: "bg-success/10 text-success dark:bg-success/20 dark:text-success",
 		muted: "bg-muted text-muted-foreground",
 	};
 
 	return (
 		<div className="flex items-start gap-3">
-			<span className={cn("flex size-10 shrink-0 items-center justify-center rounded-full", toneClasses[event.tone])}>
+			<span
+				className={cn(
+					"flex size-10 shrink-0 items-center justify-center rounded-full",
+					toneClasses[event.tone],
+				)}
+			>
 				<Icon className="size-4" />
 			</span>
 			<div className="space-y-1">

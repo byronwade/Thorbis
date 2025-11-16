@@ -25,8 +25,13 @@ const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const MILLISECONDS_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
-const PERMANENT_DELETE_DELAY_MS = DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
+const MILLISECONDS_PER_DAY =
+	HOURS_PER_DAY *
+	MINUTES_PER_HOUR *
+	SECONDS_PER_MINUTE *
+	MILLISECONDS_PER_SECOND;
+const PERMANENT_DELETE_DELAY_MS =
+	DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
 
 type CompanyRecord = {
 	id: string;
@@ -50,7 +55,8 @@ async function cleanupIncompleteCompanies() {
 		const userEmail = "bcw1995@gmail.com";
 
 		// Find user by email
-		const { data: authUsers, error: userError } = await supabase.auth.admin.listUsers();
+		const { data: authUsers, error: userError } =
+			await supabase.auth.admin.listUsers();
 
 		if (userError) {
 			console.error("Error fetching users:", userError);
@@ -97,7 +103,7 @@ async function cleanupIncompleteCompanies() {
 		console.log(`\nFound ${typedMemberships.length} companies:`);
 		for (const membership of typedMemberships) {
 			console.log(
-				`  - ${membership.companies.name} (${membership.companies.id}): ${membership.companies.stripe_subscription_status}`
+				`  - ${membership.companies.name} (${membership.companies.id}): ${membership.companies.stripe_subscription_status}`,
 			);
 		}
 
@@ -105,7 +111,7 @@ async function cleanupIncompleteCompanies() {
 		const completedCompany = typedMemberships.find(
 			(membership) =>
 				membership.companies.stripe_subscription_status === "active" ||
-				membership.companies.stripe_subscription_status === "trialing"
+				membership.companies.stripe_subscription_status === "trialing",
 		);
 
 		if (!completedCompany) {
@@ -114,12 +120,12 @@ async function cleanupIncompleteCompanies() {
 		}
 
 		console.log(
-			`\n✅ Keeping completed company: ${completedCompany.companies.name} (${completedCompany.companies.id})`
+			`\n✅ Keeping completed company: ${completedCompany.companies.name} (${completedCompany.companies.id})`,
 		);
 
 		// Archive all incomplete companies
 		const incompleteCompanies = typedMemberships.filter(
-			(membership) => membership.companies.id !== completedCompany.companies.id
+			(membership) => membership.companies.id !== completedCompany.companies.id,
 		);
 
 		if (incompleteCompanies.length === 0) {
@@ -127,7 +133,9 @@ async function cleanupIncompleteCompanies() {
 			return;
 		}
 
-		console.log(`\n🗑️  Archiving ${incompleteCompanies.length} incomplete companies...`);
+		console.log(
+			`\n🗑️  Archiving ${incompleteCompanies.length} incomplete companies...`,
+		);
 
 		for (const membership of incompleteCompanies) {
 			const companyId = membership.companies.id;
@@ -147,7 +155,10 @@ async function cleanupIncompleteCompanies() {
 				.eq("id", companyId);
 
 			if (archiveError) {
-				console.error(`  ❌ Error archiving company ${companyName}:`, archiveError);
+				console.error(
+					`  ❌ Error archiving company ${companyName}:`,
+					archiveError,
+				);
 				continue;
 			}
 
@@ -169,7 +180,7 @@ async function cleanupIncompleteCompanies() {
 		}
 
 		console.log(
-			`\n✅ Cleanup complete! Kept 1 completed company, archived ${incompleteCompanies.length} incomplete companies.`
+			`\n✅ Cleanup complete! Kept 1 completed company, archived ${incompleteCompanies.length} incomplete companies.`,
 		);
 	} catch (error) {
 		console.error("Unexpected error:", error);

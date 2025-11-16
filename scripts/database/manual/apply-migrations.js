@@ -36,12 +36,18 @@ async function _applyMigration(filePath) {
 				try {
 					const result = await supabase.rpc("exec_sql", { sql_query: stmt });
 					if (result.error) {
-						console.log(`⚠️  Statement ${i + 1}/${statements.length} error:`, result.error.message);
+						console.log(
+							`⚠️  Statement ${i + 1}/${statements.length} error:`,
+							result.error.message,
+						);
 					} else {
 						console.log(`✅ Statement ${i + 1}/${statements.length} executed`);
 					}
 				} catch (e) {
-					console.log(`❌ Statement ${i + 1}/${statements.length} failed:`, e.message);
+					console.log(
+						`❌ Statement ${i + 1}/${statements.length} failed:`,
+						e.message,
+					);
 				}
 			}
 		}
@@ -52,8 +58,12 @@ async function _applyMigration(filePath) {
 
 function main() {
 	console.log("🚀 Starting migration application...\n");
-	console.log("⚠️  NOTE: Supabase hosted instances require manual migration application.");
-	console.log("Please apply these migrations manually through the Supabase Dashboard SQL Editor:\n");
+	console.log(
+		"⚠️  NOTE: Supabase hosted instances require manual migration application.",
+	);
+	console.log(
+		"Please apply these migrations manually through the Supabase Dashboard SQL Editor:\n",
+	);
 
 	const migrations = [
 		"supabase/migrations/20250211000000_add_rbac_system.sql",
@@ -74,12 +84,20 @@ function main() {
 	}
 
 	console.log("\n\n📋 INSTRUCTIONS TO APPLY MIGRATIONS:");
-	console.log("1. Go to: https://supabase.com/dashboard/project/togejqdwggezkxahomeh/sql/new");
-	console.log("2. Copy the contents of: supabase/migrations/20250211000000_add_rbac_system.sql");
+	console.log(
+		"1. Go to: https://supabase.com/dashboard/project/togejqdwggezkxahomeh/sql/new",
+	);
+	console.log(
+		"2. Copy the contents of: supabase/migrations/20250211000000_add_rbac_system.sql",
+	);
 	console.log('3. Paste into SQL Editor and click "Run"');
-	console.log("4. Copy the contents of: supabase/migrations/20250211000001_owner_protections.sql");
+	console.log(
+		"4. Copy the contents of: supabase/migrations/20250211000001_owner_protections.sql",
+	);
 	console.log('5. Paste into SQL Editor and click "Run"');
-	console.log("6. Run: node scripts/database/manual/test-migration.js to verify\n");
+	console.log(
+		"6. Run: node scripts/database/manual/test-migration.js to verify\n",
+	);
 }
 
 try {

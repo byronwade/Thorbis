@@ -5,7 +5,10 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
-import { checkEnrichmentQuota, getEnrichmentUsageStats } from "@/actions/customer-enrichment";
+import {
+	checkEnrichmentQuota,
+	getEnrichmentUsageStats,
+} from "@/actions/customer-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -16,7 +19,10 @@ export async function GET(request: NextRequest) {
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database connection failed" },
+				{ status: 500 },
+			);
 		}
 
 		const {
@@ -48,6 +54,9 @@ export async function GET(request: NextRequest) {
 
 		return NextResponse.json({ data: result.data });
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

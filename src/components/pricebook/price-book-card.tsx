@@ -16,7 +16,12 @@ import { Box, Edit, Package, Plus, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from "@/components/ui/card";
 import type { PriceBookItem } from "@/components/work/price-book-table";
 
 type PriceBookCardProps = {
@@ -43,7 +48,11 @@ const itemTypeConfig = {
 	},
 };
 
-export function PriceBookCard({ item, onEdit, onAddToEstimate }: PriceBookCardProps) {
+export function PriceBookCard({
+	item,
+	onEdit,
+	onAddToEstimate,
+}: PriceBookCardProps) {
 	const config = itemTypeConfig[item.itemType];
 	const TypeIcon = config.icon;
 
@@ -143,9 +152,13 @@ export function PriceBookCard({ item, onEdit, onAddToEstimate }: PriceBookCardPr
 
 					{/* Price */}
 					<div className="flex items-baseline gap-2">
-						<span className="font-semibold text-2xl">${item.price.toFixed(2)}</span>
+						<span className="font-semibold text-2xl">
+							${item.price.toFixed(2)}
+						</span>
 						{item.cost && item.cost < item.price && (
-							<span className="text-muted-foreground text-sm">({item.markupPercent}% markup)</span>
+							<span className="text-muted-foreground text-sm">
+								({item.markupPercent}% markup)
+							</span>
 						)}
 					</div>
 
@@ -158,7 +171,9 @@ export function PriceBookCard({ item, onEdit, onAddToEstimate }: PriceBookCardPr
 
 					{/* Unit */}
 					{item.unit && item.unit !== "each" && (
-						<div className="mt-1 text-muted-foreground text-xs">per {item.unit}</div>
+						<div className="mt-1 text-muted-foreground text-xs">
+							per {item.unit}
+						</div>
 					)}
 				</CardContent>
 

@@ -10,11 +10,25 @@
  * - Configure settings
  */
 
-import { AlertCircle, CheckCircle2, ExternalLink, MoreVertical, RefreshCw, Settings, XCircle } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	ExternalLink,
+	MoreVertical,
+	RefreshCw,
+	Settings,
+	XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -33,25 +47,29 @@ const statusConfig = {
 	connected: {
 		icon: CheckCircle2,
 		badge: "Connected",
-		badgeClassName: "border-success/50 bg-success/10 text-success dark:text-success",
+		badgeClassName:
+			"border-success/50 bg-success/10 text-success dark:text-success",
 		iconClassName: "text-success dark:text-success",
 	},
 	syncing: {
 		icon: RefreshCw,
 		badge: "Syncing...",
-		badgeClassName: "border-primary/50 bg-primary/10 text-primary dark:text-primary",
+		badgeClassName:
+			"border-primary/50 bg-primary/10 text-primary dark:text-primary",
 		iconClassName: "text-primary dark:text-primary animate-spin",
 	},
 	error: {
 		icon: XCircle,
 		badge: "Error",
-		badgeClassName: "border-destructive/50 bg-destructive/10 text-destructive dark:text-destructive",
+		badgeClassName:
+			"border-destructive/50 bg-destructive/10 text-destructive dark:text-destructive",
 		iconClassName: "text-destructive dark:text-destructive",
 	},
 	warning: {
 		icon: AlertCircle,
 		badge: "Warning",
-		badgeClassName: "border-warning/50 bg-warning/10 text-warning dark:text-warning",
+		badgeClassName:
+			"border-warning/50 bg-warning/10 text-warning dark:text-warning",
 		iconClassName: "text-warning dark:text-warning",
 	},
 	disconnected: {
@@ -85,7 +103,9 @@ function formatLastSync(date: Date | null): string {
 	return `${diffDays}d ago`;
 }
 
-export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps) {
+export function SupplierConnectionCard({
+	supplier,
+}: SupplierConnectionCardProps) {
 	const [isSyncing, setIsSyncing] = useState(false);
 	const config = statusConfig[supplier.status];
 	const StatusIcon = config.icon;
@@ -112,13 +132,15 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 							className={cn(
 								"flex h-10 w-10 items-center justify-center rounded-lg bg-muted",
 								supplier.status === "connected" && "bg-success/10",
-								supplier.status === "error" && "bg-destructive/10"
+								supplier.status === "error" && "bg-destructive/10",
 							)}
 						>
 							<StatusIcon className={cn("h-5 w-5", config.iconClassName)} />
 						</div>
 						<div>
-							<CardTitle className="text-base">{supplier.displayName}</CardTitle>
+							<CardTitle className="text-base">
+								{supplier.displayName}
+							</CardTitle>
 							<CardDescription className="text-xs">
 								{supplier.apiEnabled ? "API Enabled" : "API Not Configured"}
 							</CardDescription>
@@ -126,7 +148,10 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 					</div>
 
 					<div className="flex items-center gap-2">
-						<Badge className={cn("font-medium text-xs", config.badgeClassName)} variant="outline">
+						<Badge
+							className={cn("font-medium text-xs", config.badgeClassName)}
+							variant="outline"
+						>
 							{config.badge}
 						</Badge>
 						<DropdownMenu>
@@ -156,7 +181,10 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 									</DropdownMenuItem>
 								)}
 								{supplier.status === "connected" && (
-									<DropdownMenuItem className="text-destructive" onClick={handleDisconnect}>
+									<DropdownMenuItem
+										className="text-destructive"
+										onClick={handleDisconnect}
+									>
 										<XCircle className="mr-2 h-4 w-4" />
 										Disconnect
 									</DropdownMenuItem>
@@ -176,7 +204,9 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 				{/* Error Message */}
 				{supplier.errorMessage && (
 					<div className="rounded-md border border-destructive bg-destructive p-3 dark:border-destructive/50 dark:bg-destructive/30">
-						<p className="text-destructive text-sm dark:text-destructive">{supplier.errorMessage}</p>
+						<p className="text-destructive text-sm dark:text-destructive">
+							{supplier.errorMessage}
+						</p>
 					</div>
 				)}
 
@@ -184,12 +214,16 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 				<div className="grid grid-cols-2 gap-3">
 					<div className="rounded-lg border bg-muted/30 p-3">
 						<p className="text-muted-foreground text-xs">Items Imported</p>
-						<p className="font-semibold text-lg">{supplier.itemsImported.toLocaleString()}</p>
+						<p className="font-semibold text-lg">
+							{supplier.itemsImported.toLocaleString()}
+						</p>
 					</div>
 
 					<div className="rounded-lg border bg-muted/30 p-3">
 						<p className="text-muted-foreground text-xs">Last Sync</p>
-						<p className="font-semibold text-lg">{formatLastSync(supplier.lastSyncAt)}</p>
+						<p className="font-semibold text-lg">
+							{formatLastSync(supplier.lastSyncAt)}
+						</p>
 					</div>
 				</div>
 
@@ -197,7 +231,13 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 				<div className="flex gap-2">
 					{supplier.status === "connected" ? (
 						<>
-							<Button className="flex-1" disabled={isSyncing} onClick={handleSync} size="sm" variant="outline">
+							<Button
+								className="flex-1"
+								disabled={isSyncing}
+								onClick={handleSync}
+								size="sm"
+								variant="outline"
+							>
 								{isSyncing ? (
 									<>
 										<RefreshCw className="mr-2 h-4 w-4 animate-spin" />

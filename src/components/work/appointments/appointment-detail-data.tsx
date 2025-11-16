@@ -24,7 +24,9 @@ type AppointmentDetailDataProps = {
 	appointmentId: string;
 };
 
-export async function AppointmentDetailData({ appointmentId }: AppointmentDetailDataProps) {
+export async function AppointmentDetailData({
+	appointmentId,
+}: AppointmentDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -79,36 +81,43 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 	}
 
 	// Get related data
-	const customer = Array.isArray(appointment.customer) ? appointment.customer[0] : appointment.customer;
-	const property = Array.isArray(appointment.property) ? appointment.property[0] : appointment.property;
-	const job = Array.isArray(appointment.job) ? appointment.job[0] : appointment.job;
+	const customer = Array.isArray(appointment.customer)
+		? appointment.customer[0]
+		: appointment.customer;
+	const property = Array.isArray(appointment.property)
+		? appointment.property[0]
+		: appointment.property;
+	const job = Array.isArray(appointment.job)
+		? appointment.job[0]
+		: appointment.job;
 	const assignedUser = Array.isArray(appointment.assigned_user)
 		? appointment.assigned_user[0]
 		: appointment.assigned_user;
 
 	// Fetch all related data in parallel
-	const [{ data: activities }, { data: notes }, { data: attachments }] = await Promise.all([
-		supabase
-			.from("activity_log")
-			.select("*, user:users!user_id(*)")
-			.eq("entity_type", "schedule")
-			.eq("entity_id", appointmentId)
-			.order("created_at", { ascending: false })
-			.limit(50),
-		supabase
-			.from("notes")
-			.select("*")
-			.eq("entity_type", "schedule")
-			.eq("entity_id", appointmentId)
-			.is("deleted_at", null)
-			.order("created_at", { ascending: false }),
-		supabase
-			.from("attachments")
-			.select("*")
-			.eq("entity_type", "schedule")
-			.eq("entity_id", appointmentId)
-			.order("created_at", { ascending: false }),
-	]);
+	const [{ data: activities }, { data: notes }, { data: attachments }] =
+		await Promise.all([
+			supabase
+				.from("activity_log")
+				.select("*, user:users!user_id(*)")
+				.eq("entity_type", "schedule")
+				.eq("entity_id", appointmentId)
+				.order("created_at", { ascending: false })
+				.limit(50),
+			supabase
+				.from("notes")
+				.select("*")
+				.eq("entity_type", "schedule")
+				.eq("entity_id", appointmentId)
+				.is("deleted_at", null)
+				.order("created_at", { ascending: false }),
+			supabase
+				.from("attachments")
+				.select("*")
+				.eq("entity_type", "schedule")
+				.eq("entity_id", appointmentId)
+				.order("created_at", { ascending: false }),
+		]);
 
 	const appointmentData = {
 		appointment,
@@ -122,10 +131,18 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 	};
 
 	// Calculate metrics
-	const scheduledStart = appointment.scheduled_start ? new Date(appointment.scheduled_start) : null;
-	const scheduledEnd = appointment.scheduled_end ? new Date(appointment.scheduled_end) : null;
+	const scheduledStart = appointment.scheduled_start
+		? new Date(appointment.scheduled_start)
+		: null;
+	const scheduledEnd = appointment.scheduled_end
+		? new Date(appointment.scheduled_end)
+		: null;
 	const duration =
-		scheduledStart && scheduledEnd ? Math.round((scheduledEnd.getTime() - scheduledStart.getTime()) / (1000 * 60)) : 0;
+		scheduledStart && scheduledEnd
+			? Math.round(
+					(scheduledEnd.getTime() - scheduledStart.getTime()) / (1000 * 60),
+				)
+			: 0;
 
 	const metrics = {
 		status: appointment.status || "scheduled",

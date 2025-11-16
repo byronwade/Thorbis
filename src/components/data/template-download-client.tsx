@@ -9,14 +9,22 @@
 import { Download, FileSpreadsheet, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { downloadExcelTemplate } from "@/lib/data/excel-template-generator";
 
 type TemplateDownloadClientProps = {
 	dataType: string;
 };
 
-export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps) {
+export function TemplateDownloadClient({
+	dataType,
+}: TemplateDownloadClientProps) {
 	const formatDataType = (type: string) =>
 		type
 			.split("-")
@@ -30,8 +38,12 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 	return (
 		<div className="container mx-auto max-w-3xl space-y-6 py-8">
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Download {formatDataType(dataType)} Template</h1>
-				<p className="mt-2 text-muted-foreground">Get a pre-formatted Excel template for importing your data</p>
+				<h1 className="font-bold text-3xl tracking-tight">
+					Download {formatDataType(dataType)} Template
+				</h1>
+				<p className="mt-2 text-muted-foreground">
+					Get a pre-formatted Excel template for importing your data
+				</p>
 			</div>
 
 			<Card>
@@ -40,14 +52,18 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 						<FileSpreadsheet className="size-5 text-success" />
 						Excel Import Template
 					</CardTitle>
-					<CardDescription>This template includes all required fields and example data</CardDescription>
+					<CardDescription>
+						This template includes all required fields and example data
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">File Format</p>
-								<p className="text-muted-foreground text-xs">Microsoft Excel (.xlsx)</p>
+								<p className="text-muted-foreground text-xs">
+									Microsoft Excel (.xlsx)
+								</p>
 							</div>
 							<Badge>Excel</Badge>
 						</div>
@@ -63,7 +79,9 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="font-medium text-sm">Includes</p>
-								<p className="text-muted-foreground text-xs">Headers, validation, examples, instructions</p>
+								<p className="text-muted-foreground text-xs">
+									Headers, validation, examples, instructions
+								</p>
 							</div>
 							<Badge>Complete</Badge>
 						</div>
@@ -115,7 +133,9 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 							</div>
 							<div>
 								<p className="font-medium text-sm">Download the template</p>
-								<p className="text-muted-foreground text-xs">Click the button above to get your Excel template</p>
+								<p className="text-muted-foreground text-xs">
+									Click the button above to get your Excel template
+								</p>
 							</div>
 						</li>
 						<li className="flex gap-3">
@@ -124,7 +144,9 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 							</div>
 							<div>
 								<p className="font-medium text-sm">Fill in your data</p>
-								<p className="text-muted-foreground text-xs">Replace example rows with your actual data</p>
+								<p className="text-muted-foreground text-xs">
+									Replace example rows with your actual data
+								</p>
 							</div>
 						</li>
 						<li className="flex gap-3">
@@ -133,7 +155,9 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 							</div>
 							<div>
 								<p className="font-medium text-sm">Import your data</p>
-								<p className="text-muted-foreground text-xs">Go to the import page and upload your filled template</p>
+								<p className="text-muted-foreground text-xs">
+									Go to the import page and upload your filled template
+								</p>
 							</div>
 						</li>
 					</ol>

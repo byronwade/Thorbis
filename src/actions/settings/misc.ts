@@ -8,8 +8,16 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
-import { type ActionResult, assertAuthenticated, withErrorHandling } from "@/lib/errors/with-error-handling";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
+import {
+	type ActionResult,
+	assertAuthenticated,
+	withErrorHandling,
+} from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
@@ -25,7 +33,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -43,11 +55,16 @@ const tagSettingsSchema = z.object({
 	autoAssignColors: z.boolean().default(true),
 });
 
-export async function updateTagSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateTagSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -75,7 +92,10 @@ export async function updateTagSettings(formData: FormData): Promise<ActionResul
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update tag settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update tag settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/tags");
@@ -86,7 +106,10 @@ export async function getTagSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -96,10 +119,17 @@ export async function getTagSettings(): Promise<ActionResult<any>> {
 
 		const companyId = await getCompanyId(supabase, user.id);
 
-		const { data, error } = await supabase.from("tag_settings").select("*").eq("company_id", companyId).single();
+		const { data, error } = await supabase
+			.from("tag_settings")
+			.select("*")
+			.eq("company_id", companyId)
+			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch tag settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch tag settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -117,11 +147,16 @@ const checklistSettingsSchema = z.object({
 	autoAssignByJobType: z.boolean().default(true),
 });
 
-export async function updateChecklistSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateChecklistSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -132,9 +167,11 @@ export async function updateChecklistSettings(formData: FormData): Promise<Actio
 		const companyId = await getCompanyId(supabase, user.id);
 
 		const data = checklistSettingsSchema.parse({
-			requireChecklistCompletion: formData.get("requireChecklistCompletion") === "true",
+			requireChecklistCompletion:
+				formData.get("requireChecklistCompletion") === "true",
 			allowSkipItems: formData.get("allowSkipItems") !== "false",
-			requirePhotosForChecklist: formData.get("requirePhotosForChecklist") === "true",
+			requirePhotosForChecklist:
+				formData.get("requirePhotosForChecklist") === "true",
 			autoAssignByJobType: formData.get("autoAssignByJobType") !== "false",
 		});
 
@@ -147,7 +184,10 @@ export async function updateChecklistSettings(formData: FormData): Promise<Actio
 		});
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update checklist settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update checklist settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/checklists");
@@ -158,7 +198,10 @@ export async function getChecklistSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -168,10 +211,17 @@ export async function getChecklistSettings(): Promise<ActionResult<any>> {
 
 		const companyId = await getCompanyId(supabase, user.id);
 
-		const { data, error } = await supabase.from("checklist_settings").select("*").eq("company_id", companyId).single();
+		const { data, error } = await supabase
+			.from("checklist_settings")
+			.select("*")
+			.eq("company_id", companyId)
+			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch checklist settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch checklist settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;
@@ -188,11 +238,16 @@ const leadSourceSchema = z.object({
 	isActive: z.boolean().default(true),
 });
 
-export async function createLeadSource(formData: FormData): Promise<ActionResult<string>> {
+export async function createLeadSource(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -220,7 +275,10 @@ export async function createLeadSource(formData: FormData): Promise<ActionResult
 			.single();
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("create lead source"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("create lead source"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/lead-sources");
@@ -228,11 +286,17 @@ export async function createLeadSource(formData: FormData): Promise<ActionResult
 	});
 }
 
-export async function updateLeadSource(sourceId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function updateLeadSource(
+	sourceId: string,
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -259,18 +323,26 @@ export async function updateLeadSource(sourceId: string, formData: FormData): Pr
 			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("update lead source"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("update lead source"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/lead-sources");
 	});
 }
 
-export async function deleteLeadSource(sourceId: string): Promise<ActionResult<void>> {
+export async function deleteLeadSource(
+	sourceId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -280,10 +352,17 @@ export async function deleteLeadSource(sourceId: string): Promise<ActionResult<v
 
 		const companyId = await getCompanyId(supabase, user.id);
 
-		const { error } = await supabase.from("lead_sources").delete().eq("id", sourceId).eq("company_id", companyId);
+		const { error } = await supabase
+			.from("lead_sources")
+			.delete()
+			.eq("id", sourceId)
+			.eq("company_id", companyId);
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("delete lead source"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("delete lead source"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/lead-sources");
@@ -294,7 +373,10 @@ export async function getLeadSources(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -311,7 +393,10 @@ export async function getLeadSources(): Promise<ActionResult<any[]>> {
 			.order("name", { ascending: true });
 
 		if (error) {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch lead sources"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch lead sources"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || [];
@@ -333,11 +418,16 @@ const importExportSettingsSchema = z.object({
 	autoExportEmail: z.string().optional(),
 });
 
-export async function updateImportExportSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateImportExportSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -358,22 +448,24 @@ export async function updateImportExportSettings(formData: FormData): Promise<Ac
 			autoExportEmail: formData.get("autoExportEmail") || undefined,
 		});
 
-		const { error } = await supabase.from("data_import_export_settings").upsert({
-			company_id: companyId,
-			allow_bulk_import: data.allowBulkImport,
-			require_import_approval: data.requireImportApproval,
-			auto_deduplicate: data.autoDeduplicate,
-			default_export_format: data.defaultExportFormat,
-			include_metadata: data.includeMetadata,
-			auto_export_enabled: data.autoExportEnabled,
-			auto_export_frequency: data.autoExportFrequency,
-			auto_export_email: data.autoExportEmail,
-		});
+		const { error } = await supabase
+			.from("data_import_export_settings")
+			.upsert({
+				company_id: companyId,
+				allow_bulk_import: data.allowBulkImport,
+				require_import_approval: data.requireImportApproval,
+				auto_deduplicate: data.autoDeduplicate,
+				default_export_format: data.defaultExportFormat,
+				include_metadata: data.includeMetadata,
+				auto_export_enabled: data.autoExportEnabled,
+				auto_export_frequency: data.autoExportFrequency,
+				auto_export_email: data.autoExportEmail,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update import/export settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -385,7 +477,10 @@ export async function getImportExportSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -402,7 +497,10 @@ export async function getImportExportSettings(): Promise<ActionResult<any>> {
 			.single();
 
 		if (error && error.code !== "PGRST116") {
-			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch import/export settings"), ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				ERROR_MESSAGES.operationFailed("fetch import/export settings"),
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		return data || null;

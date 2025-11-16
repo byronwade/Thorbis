@@ -13,7 +13,12 @@ type AttachmentsSectionProps = {
 	onUpload?: (files: FileList) => Promise<void>;
 };
 
-export function AttachmentsSection({ attachments, entityType, entityId, onUpload }: AttachmentsSectionProps) {
+export function AttachmentsSection({
+	attachments,
+	entityType,
+	entityId,
+	onUpload,
+}: AttachmentsSectionProps) {
 	const { toast } = useToast();
 	const [isUploading, setIsUploading] = useState(false);
 
@@ -53,7 +58,13 @@ export function AttachmentsSection({ attachments, entityType, entityId, onUpload
 							type="file"
 						/>
 						<label htmlFor="file-upload">
-							<Button asChild className="w-full cursor-pointer" disabled={isUploading} size="sm" variant="outline">
+							<Button
+								asChild
+								className="w-full cursor-pointer"
+								disabled={isUploading}
+								size="sm"
+								variant="outline"
+							>
 								<span>
 									{isUploading ? (
 										<>
@@ -84,16 +95,30 @@ export function AttachmentsSection({ attachments, entityType, entityId, onUpload
 									<FileText className="size-4 flex-shrink-0 text-muted-foreground" />
 									<div className="min-w-0 flex-1">
 										<p className="truncate font-medium text-sm">
-											{attachment.original_file_name || attachment.file_name || "Untitled"}
+											{attachment.original_file_name ||
+												attachment.file_name ||
+												"Untitled"}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : ""}
+											{attachment.file_size
+												? `${(attachment.file_size / 1024).toFixed(1)} KB`
+												: ""}
 											{attachment.category && ` • ${attachment.category}`}
 										</p>
 									</div>
 								</div>
-								<Button asChild className="flex-shrink-0" size="sm" variant="ghost">
-									<a download href={attachment.storage_url || attachment.url} rel="noopener noreferrer" target="_blank">
+								<Button
+									asChild
+									className="flex-shrink-0"
+									size="sm"
+									variant="ghost"
+								>
+									<a
+										download
+										href={attachment.storage_url || attachment.url}
+										rel="noopener noreferrer"
+										target="_blank"
+									>
 										<Download className="size-4" />
 									</a>
 								</Button>
@@ -104,7 +129,9 @@ export function AttachmentsSection({ attachments, entityType, entityId, onUpload
 					<div className="flex h-32 items-center justify-center">
 						<div className="text-center">
 							<Paperclip className="mx-auto size-8 text-muted-foreground/50" />
-							<p className="mt-2 text-muted-foreground text-sm">No attachments yet</p>
+							<p className="mt-2 text-muted-foreground text-sm">
+								No attachments yet
+							</p>
 						</div>
 					</div>
 				)}

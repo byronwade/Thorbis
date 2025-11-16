@@ -18,7 +18,14 @@
  * - State management for form inputs
  */
 
-import { Calculator, Clock, DollarSign, Plus, TrendingUp, Users } from "lucide-react";
+import {
+	Calculator,
+	Clock,
+	DollarSign,
+	Plus,
+	TrendingUp,
+	Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +40,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
@@ -89,14 +102,21 @@ type LaborCalculation = {
 
 type LaborCalculatorModalProps = {
 	trigger?: React.ReactNode;
-	onAddLabor?: (calculation: LaborCalculation & { description: string }) => void;
+	onAddLabor?: (
+		calculation: LaborCalculation & { description: string },
+	) => void;
 };
 
-export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorModalProps) {
+export function LaborCalculatorModal({
+	trigger,
+	onAddLabor,
+}: LaborCalculatorModalProps) {
 	// Prevent hydration mismatch by only rendering Dialog after mount
 	const [mounted, setMounted] = useState(false);
 	const [open, setOpen] = useState(false);
-	const [selectedRateId, setSelectedRateId] = useState<string>(mockLaborRates[0]?.id || "");
+	const [selectedRateId, setSelectedRateId] = useState<string>(
+		mockLaborRates[0]?.id || "",
+	);
 	const [hours, setHours] = useState("0");
 	const [minutes, setMinutes] = useState("0");
 	const [numWorkers, setNumWorkers] = useState("1");
@@ -111,7 +131,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 	const [markupPercent, setMarkupPercent] = useState("50"); // Suggested markup
 	const [description, setDescription] = useState("");
 
-	const selectedRate = mockLaborRates.find((rate) => rate.id === selectedRateId);
+	const selectedRate = mockLaborRates.find(
+		(rate) => rate.id === selectedRateId,
+	);
 
 	// Calculate labor costs
 	const calculation = calculateLabor();
@@ -161,7 +183,8 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 
 		// Calculate costs
 		const regularCost = regularHours * selectedRate.baseRate;
-		const overtimeCost = overtimeHours * selectedRate.baseRate * selectedRate.overtimeMultiplier;
+		const overtimeCost =
+			overtimeHours * selectedRate.baseRate * selectedRate.overtimeMultiplier;
 		const travelCost = travelHoursTotal * selectedRate.baseRate * workers;
 		const subtotal = regularCost + overtimeCost + travelCost;
 		const overhead = subtotal * (overheadPct / 100);
@@ -189,7 +212,8 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 		if (onAddLabor) {
 			onAddLabor({
 				...calculation,
-				description: description || `${selectedRate?.name} - ${hours}h ${minutes}m`,
+				description:
+					description || `${selectedRate?.name} - ${hours}h ${minutes}m`,
 			});
 		}
 		setOpen(false);
@@ -232,7 +256,8 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 						Labor Cost Calculator
 					</DialogTitle>
 					<DialogDescription>
-						Calculate labor costs based on rates, time, and crew size. Results can be added to price book items.
+						Calculate labor costs based on rates, time, and crew size. Results
+						can be added to price book items.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -275,7 +300,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 									/>
 								</div>
 								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">Minutes</Label>
+									<Label className="text-muted-foreground text-xs">
+										Minutes
+									</Label>
 									<Input
 										max="59"
 										min="0"
@@ -309,15 +336,22 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 							<div className="space-y-0.5">
 								<Label htmlFor="overtime">Overtime Hours</Label>
 								<p className="text-muted-foreground text-sm">
-									Apply {selectedRate?.overtimeMultiplier}x rate for hours over 8
+									Apply {selectedRate?.overtimeMultiplier}x rate for hours over
+									8
 								</p>
 							</div>
-							<Switch checked={isOvertime} id="overtime" onCheckedChange={setIsOvertime} />
+							<Switch
+								checked={isOvertime}
+								id="overtime"
+								onCheckedChange={setIsOvertime}
+							/>
 						</div>
 
 						{/* Travel Time */}
 						<div className="space-y-2">
-							<Label className="flex items-center gap-2">Travel Time (total)</Label>
+							<Label className="flex items-center gap-2">
+								Travel Time (total)
+							</Label>
 							<div className="grid grid-cols-2 gap-2">
 								<div className="space-y-1">
 									<Label className="text-muted-foreground text-xs">Hours</Label>
@@ -331,7 +365,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 									/>
 								</div>
 								<div className="space-y-1">
-									<Label className="text-muted-foreground text-xs">Minutes</Label>
+									<Label className="text-muted-foreground text-xs">
+										Minutes
+									</Label>
 									<Input
 										max="59"
 										min="0"
@@ -356,7 +392,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 								type="number"
 								value={overheadPercent}
 							/>
-							<p className="text-muted-foreground text-xs">Insurance, benefits, equipment, etc. (typically 25-40%)</p>
+							<p className="text-muted-foreground text-xs">
+								Insurance, benefits, equipment, etc. (typically 25-40%)
+							</p>
 						</div>
 
 						<div className="space-y-2">
@@ -400,7 +438,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 										<span className="text-muted-foreground">
 											Regular Hours ({calculation.regularHours.toFixed(2)} hrs)
 										</span>
-										<span className="font-medium">{formatCurrency(calculation.regularCost)}</span>
+										<span className="font-medium">
+											{formatCurrency(calculation.regularCost)}
+										</span>
 									</div>
 								)}
 
@@ -408,9 +448,12 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 								{calculation.overtimeHours > 0 && (
 									<div className="flex items-center justify-between text-sm">
 										<span className="text-muted-foreground">
-											Overtime Hours ({calculation.overtimeHours.toFixed(2)} hrs @ {selectedRate?.overtimeMultiplier}x)
+											Overtime Hours ({calculation.overtimeHours.toFixed(2)} hrs
+											@ {selectedRate?.overtimeMultiplier}x)
 										</span>
-										<span className="font-medium">{formatCurrency(calculation.overtimeCost)}</span>
+										<span className="font-medium">
+											{formatCurrency(calculation.overtimeCost)}
+										</span>
 									</div>
 								)}
 
@@ -418,7 +461,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 								{calculation.travelCost > 0 && (
 									<div className="flex items-center justify-between text-sm">
 										<span className="text-muted-foreground">Travel Time</span>
-										<span className="font-medium">{formatCurrency(calculation.travelCost)}</span>
+										<span className="font-medium">
+											{formatCurrency(calculation.travelCost)}
+										</span>
 									</div>
 								)}
 
@@ -426,14 +471,22 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 
 								{/* Subtotal */}
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">Subtotal (Labor)</span>
-									<span className="font-medium">{formatCurrency(calculation.subtotal)}</span>
+									<span className="text-muted-foreground">
+										Subtotal (Labor)
+									</span>
+									<span className="font-medium">
+										{formatCurrency(calculation.subtotal)}
+									</span>
 								</div>
 
 								{/* Overhead */}
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">Overhead ({overheadPercent}%)</span>
-									<span className="font-medium">{formatCurrency(calculation.overhead)}</span>
+									<span className="text-muted-foreground">
+										Overhead ({overheadPercent}%)
+									</span>
+									<span className="font-medium">
+										{formatCurrency(calculation.overhead)}
+									</span>
 								</div>
 
 								<Separator />
@@ -441,7 +494,9 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 								{/* Total Cost */}
 								<div className="flex items-center justify-between">
 									<span className="font-semibold">Total Cost</span>
-									<span className="font-bold text-lg">{formatCurrency(calculation.total)}</span>
+									<span className="font-bold text-lg">
+										{formatCurrency(calculation.total)}
+									</span>
 								</div>
 							</CardContent>
 						</Card>
@@ -455,19 +510,28 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 							</CardHeader>
 							<CardContent className="space-y-3">
 								<div className="flex items-center justify-between text-sm">
-									<span className="text-muted-foreground">Markup ({markupPercent}%)</span>
-									<span className="font-medium">{formatCurrency(calculation.suggestedMarkup)}</span>
+									<span className="text-muted-foreground">
+										Markup ({markupPercent}%)
+									</span>
+									<span className="font-medium">
+										{formatCurrency(calculation.suggestedMarkup)}
+									</span>
 								</div>
 
 								<Separator />
 
 								<div className="flex items-center justify-between">
-									<span className="font-semibold">Suggested Customer Price</span>
-									<span className="font-bold text-primary text-xl">{formatCurrency(calculation.suggestedPrice)}</span>
+									<span className="font-semibold">
+										Suggested Customer Price
+									</span>
+									<span className="font-bold text-primary text-xl">
+										{formatCurrency(calculation.suggestedPrice)}
+									</span>
 								</div>
 
 								<p className="text-muted-foreground text-xs">
-									This is the recommended price to charge your customer, including all costs and markup.
+									This is the recommended price to charge your customer,
+									including all costs and markup.
 								</p>
 							</CardContent>
 						</Card>
@@ -475,15 +539,27 @@ export function LaborCalculatorModal({ trigger, onAddLabor }: LaborCalculatorMod
 						{/* Summary Stats */}
 						<div className="grid grid-cols-2 gap-2 text-center text-sm">
 							<div className="rounded-lg border bg-muted/50 p-3">
-								<div className="font-medium text-muted-foreground">Total Hours</div>
+								<div className="font-medium text-muted-foreground">
+									Total Hours
+								</div>
 								<div className="font-semibold text-lg">
-									{(calculation.regularHours + calculation.overtimeHours).toFixed(2)}
+									{(
+										calculation.regularHours + calculation.overtimeHours
+									).toFixed(2)}
 								</div>
 							</div>
 							<div className="rounded-lg border bg-muted/50 p-3">
-								<div className="font-medium text-muted-foreground">Profit Margin</div>
+								<div className="font-medium text-muted-foreground">
+									Profit Margin
+								</div>
 								<div className="font-semibold text-lg">
-									{calculation.total > 0 ? ((calculation.suggestedMarkup / calculation.total) * 100).toFixed(0) : 0}%
+									{calculation.total > 0
+										? (
+												(calculation.suggestedMarkup / calculation.total) *
+												100
+											).toFixed(0)
+										: 0}
+									%
 								</div>
 							</div>
 						</div>

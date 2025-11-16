@@ -18,7 +18,7 @@ export async function POST() {
 					error: "Missing environment variables",
 					hint: "Set SUPABASE_SERVICE_ROLE_KEY in .env.local",
 				},
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -44,7 +44,10 @@ export async function POST() {
 			.single();
 
 		if (companyError) {
-			return NextResponse.json({ error: "Failed to create company", details: companyError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create company", details: companyError },
+				{ status: 500 },
+			);
 		}
 
 		// Create team member
@@ -60,7 +63,10 @@ export async function POST() {
 			.single();
 
 		if (teamMemberError) {
-			return NextResponse.json({ error: "Failed to create team member", details: teamMemberError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create team member", details: teamMemberError },
+				{ status: 500 },
+			);
 		}
 
 		// Create customer
@@ -80,7 +86,10 @@ export async function POST() {
 			.single();
 
 		if (customerError) {
-			return NextResponse.json({ error: "Failed to create customer", details: customerError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create customer", details: customerError },
+				{ status: 500 },
+			);
 		}
 
 		// Create property
@@ -103,7 +112,10 @@ export async function POST() {
 			.single();
 
 		if (propertyError) {
-			return NextResponse.json({ error: "Failed to create property", details: propertyError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create property", details: propertyError },
+				{ status: 500 },
+			);
 		}
 
 		// Create job
@@ -125,7 +137,10 @@ export async function POST() {
 			.single();
 
 		if (jobError) {
-			return NextResponse.json({ error: "Failed to create job", details: jobError }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to create job", details: jobError },
+				{ status: 500 },
+			);
 		}
 
 		return NextResponse.json({
@@ -155,6 +170,9 @@ export async function POST() {
 			],
 		});
 	} catch (error: any) {
-		return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error", details: error.message },
+			{ status: 500 },
+		);
 	}
 }

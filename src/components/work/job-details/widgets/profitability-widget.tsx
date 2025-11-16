@@ -10,7 +10,14 @@
  * - Minimal JavaScript to client
  */
 
-import { AlertTriangle, ArrowDown, ArrowUp, DollarSign, TrendingDown, TrendingUp } from "lucide-react";
+import {
+	AlertTriangle,
+	ArrowDown,
+	ArrowUp,
+	DollarSign,
+	TrendingDown,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +49,10 @@ type RevenueBreakdown = {
 	other: number;
 };
 
-export function ProfitabilityWidget({ job, materials: materialsData = [] }: ProfitabilityWidgetProps) {
+export function ProfitabilityWidget({
+	job,
+	materials: materialsData = [],
+}: ProfitabilityWidgetProps) {
 	// Calculate revenue and costs from job line items
 	const lineItems = materialsData as any[];
 
@@ -50,11 +60,16 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 	const revenue: RevenueBreakdown = {
 		services:
 			lineItems
-				.filter((item) => item.item_type === "service" || item.item_type === "labor")
+				.filter(
+					(item) => item.item_type === "service" || item.item_type === "labor",
+				)
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 		materials:
 			lineItems
-				.filter((item) => item.item_type === "material" || item.item_type === "product")
+				.filter(
+					(item) =>
+						item.item_type === "material" || item.item_type === "product",
+				)
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 		equipment:
 			lineItems
@@ -62,7 +77,12 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 		other:
 			lineItems
-				.filter((item) => !["service", "labor", "material", "product", "equipment"].includes(item.item_type))
+				.filter(
+					(item) =>
+						!["service", "labor", "material", "product", "equipment"].includes(
+							item.item_type,
+						),
+				)
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 	};
 
@@ -70,16 +90,30 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 	const costs: CostBreakdown = {
 		labor:
 			lineItems
-				.filter((item) => item.item_type === "service" || item.item_type === "labor")
-				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.6 || 0), 0) / 100,
+				.filter(
+					(item) => item.item_type === "service" || item.item_type === "labor",
+				)
+				.reduce(
+					(sum, item) => sum + (item.cost || item.total_price * 0.6 || 0),
+					0,
+				) / 100,
 		materials:
 			lineItems
-				.filter((item) => item.item_type === "material" || item.item_type === "product")
-				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.7 || 0), 0) / 100,
+				.filter(
+					(item) =>
+						item.item_type === "material" || item.item_type === "product",
+				)
+				.reduce(
+					(sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
+					0,
+				) / 100,
 		equipment:
 			lineItems
 				.filter((item) => item.item_type === "equipment")
-				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.7 || 0), 0) / 100,
+				.reduce(
+					(sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
+					0,
+				) / 100,
 		permits: 0, // TODO: Track permit costs separately
 		overhead: ((job.totalAmount || 0) * 0.1) / 100, // 10% overhead estimate
 		other: 0,
@@ -93,10 +127,14 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 	}
 
 	// Calculate totals
-	const totalRevenue = Object.values(revenue).reduce((sum, val) => sum + val, 0);
+	const totalRevenue = Object.values(revenue).reduce(
+		(sum, val) => sum + val,
+		0,
+	);
 	const totalCosts = Object.values(costs).reduce((sum, val) => sum + val, 0);
 	const grossProfit = totalRevenue - totalCosts;
-	const profitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+	const profitMargin =
+		totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
 
 	// Determine profit status
 	const isProfitable = grossProfit > 0;
@@ -120,7 +158,10 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<h4 className="font-semibold text-sm">Job Profitability</h4>
-				<Badge className="text-xs" variant={isLoss ? "destructive" : isLowMargin ? "outline" : "default"}>
+				<Badge
+					className="text-xs"
+					variant={isLoss ? "destructive" : isLowMargin ? "outline" : "default"}
+				>
 					{profitMargin > 0 ? "+" : ""}
 					{profitMargin.toFixed(2)}% margin
 				</Badge>
@@ -134,7 +175,9 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 						<DollarSign className="size-4 text-success" />
 						<span className="text-muted-foreground text-xs">Revenue</span>
 					</div>
-					<p className="font-bold text-lg text-success dark:text-success">{formatCurrency(totalRevenue)}</p>
+					<p className="font-bold text-lg text-success dark:text-success">
+						{formatCurrency(totalRevenue)}
+					</p>
 				</div>
 
 				{/* Costs */}
@@ -143,7 +186,9 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 						<TrendingDown className="size-4 text-destructive" />
 						<span className="text-muted-foreground text-xs">Costs</span>
 					</div>
-					<p className="font-bold text-destructive text-lg dark:text-destructive">{formatCurrency(totalCosts)}</p>
+					<p className="font-bold text-destructive text-lg dark:text-destructive">
+						{formatCurrency(totalCosts)}
+					</p>
 				</div>
 
 				{/* Gross Profit */}
@@ -161,7 +206,9 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 							) : (
 								<TrendingDown className="size-4 text-destructive" />
 							)}
-							<span className="text-muted-foreground text-xs">Gross Profit</span>
+							<span className="text-muted-foreground text-xs">
+								Gross Profit
+							</span>
 						</div>
 						{isOverPerforming ? (
 							<Badge className="text-xs" variant="default">
@@ -194,10 +241,16 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 						return (
 							<div className="space-y-1" key={category}>
 								<div className="flex items-center justify-between text-xs">
-									<span className="text-muted-foreground capitalize">{category}</span>
+									<span className="text-muted-foreground capitalize">
+										{category}
+									</span>
 									<div className="flex items-center gap-2">
-										<span className="text-muted-foreground">{percentage.toFixed(2)}%</span>
-										<span className="font-medium">{formatCurrency(amount)}</span>
+										<span className="text-muted-foreground">
+											{percentage.toFixed(2)}%
+										</span>
+										<span className="font-medium">
+											{formatCurrency(amount)}
+										</span>
 									</div>
 								</div>
 								<Progress className="h-1.5" value={percentage} />
@@ -218,13 +271,22 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 						return (
 							<div className="space-y-1" key={category}>
 								<div className="flex items-center justify-between text-xs">
-									<span className="text-muted-foreground capitalize">{category}</span>
+									<span className="text-muted-foreground capitalize">
+										{category}
+									</span>
 									<div className="flex items-center gap-2">
-										<span className="text-muted-foreground">{percentage.toFixed(2)}%</span>
-										<span className="font-medium">{formatCurrency(amount)}</span>
+										<span className="text-muted-foreground">
+											{percentage.toFixed(2)}%
+										</span>
+										<span className="font-medium">
+											{formatCurrency(amount)}
+										</span>
 									</div>
 								</div>
-								<Progress className="h-1.5 [&>div]:bg-destructive" value={percentage} />
+								<Progress
+									className="h-1.5 [&>div]:bg-destructive"
+									value={percentage}
+								/>
 							</div>
 						);
 					})}
@@ -238,9 +300,12 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 					<div className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30">
 						<AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
 						<div>
-							<p className="font-medium text-destructive text-sm dark:text-destructive">Loss Alert</p>
+							<p className="font-medium text-destructive text-sm dark:text-destructive">
+								Loss Alert
+							</p>
 							<p className="text-destructive text-xs dark:text-destructive">
-								This job is currently unprofitable. Review costs and consider price adjustments.
+								This job is currently unprofitable. Review costs and consider
+								price adjustments.
 							</p>
 						</div>
 					</div>
@@ -253,7 +318,9 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 					<div className="flex items-start gap-2 rounded-lg border-warning border-l-4 bg-warning p-3 dark:bg-warning/30">
 						<AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
 						<div>
-							<p className="font-medium text-sm text-warning dark:text-warning">Low Margin Warning</p>
+							<p className="font-medium text-sm text-warning dark:text-warning">
+								Low Margin Warning
+							</p>
 							<p className="text-warning text-xs dark:text-warning">
 								Profit margin is below 15%. Monitor costs closely.
 							</p>
@@ -268,9 +335,12 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 					<div className="flex items-start gap-2 rounded-lg border-success border-l-4 bg-success p-3 dark:bg-success/30">
 						<TrendingUp className="mt-0.5 size-4 shrink-0 text-success" />
 						<div>
-							<p className="font-medium text-sm text-success dark:text-success">Healthy Margin</p>
+							<p className="font-medium text-sm text-success dark:text-success">
+								Healthy Margin
+							</p>
 							<p className="text-success text-xs dark:text-success">
-								Great work! This job has a strong profit margin of {profitMargin.toFixed(2)}
+								Great work! This job has a strong profit margin of{" "}
+								{profitMargin.toFixed(2)}
 								%.
 							</p>
 						</div>
@@ -282,10 +352,14 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 			<Separator />
 			<div className="space-y-2">
 				<Button asChild className="w-full" size="sm" variant="outline">
-					<Link href={`/dashboard/work/${job.id}/financials`}>View Detailed Financials</Link>
+					<Link href={`/dashboard/work/${job.id}/financials`}>
+						View Detailed Financials
+					</Link>
 				</Button>
 				<Button asChild className="w-full" size="sm" variant="outline">
-					<Link href={"/dashboard/reports/jobs"}>Compare with Similar Jobs</Link>
+					<Link href={"/dashboard/reports/jobs"}>
+						Compare with Similar Jobs
+					</Link>
 				</Button>
 			</div>
 
@@ -293,15 +367,21 @@ export function ProfitabilityWidget({ job, materials: materialsData = [] }: Prof
 			<div className="grid grid-cols-2 gap-2 rounded-lg bg-muted p-3 text-xs">
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Labor Cost %</p>
-					<p className="font-semibold">{getCostPercentage(costs.labor).toFixed(2)}%</p>
+					<p className="font-semibold">
+						{getCostPercentage(costs.labor).toFixed(2)}%
+					</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Material Cost %</p>
-					<p className="font-semibold">{getCostPercentage(costs.materials).toFixed(2)}%</p>
+					<p className="font-semibold">
+						{getCostPercentage(costs.materials).toFixed(2)}%
+					</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Overhead %</p>
-					<p className="font-semibold">{getCostPercentage(costs.overhead).toFixed(2)}%</p>
+					<p className="font-semibold">
+						{getCostPercentage(costs.overhead).toFixed(2)}%
+					</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Target Margin</p>

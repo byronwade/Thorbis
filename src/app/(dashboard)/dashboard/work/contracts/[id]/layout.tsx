@@ -11,7 +11,11 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function ContractsDetailLayout({ children }: { children: ReactNode }) {
+export default function ContractsDetailLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -27,7 +31,9 @@ export default function ContractsDetailLayout({ children }: { children: ReactNod
 		},
 		toolbar: {
 			show: true,
-			back: <DetailBackButton href="/dashboard/work/contracts" label="Contracts" />,
+			back: (
+				<DetailBackButton href="/dashboard/work/contracts" label="Contracts" />
+			),
 			// TODO: Create ContractDetailToolbar component
 			// actions: <ContractDetailToolbar />,
 		},

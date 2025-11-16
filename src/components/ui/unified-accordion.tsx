@@ -131,16 +131,18 @@ function SortableSection({
 					className={cn(
 						"flex items-center transition-colors",
 						!isLast && "border-border/60 border-b",
-						isOpen ? "bg-muted/60" : "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
+						isOpen
+							? "bg-muted/60"
+							: "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
 						isLast && !isOpen && "rounded-b-md",
-						isSortableDragging && "shadow-lg ring-2 ring-primary"
+						isSortableDragging && "shadow-lg ring-2 ring-primary",
 					)}
 				>
 					{/* Section Button */}
 					<button
 						className={cn(
 							"flex h-12 w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-							section.actions && "pr-2"
+							section.actions && "pr-2",
 						)}
 						data-radix-collection-item=""
 						onClick={onToggle}
@@ -149,15 +151,21 @@ function SortableSection({
 						<ChevronRight
 							className={cn(
 								"size-4 flex-shrink-0 transition-transform duration-200 ease-[ease]",
-								isOpen && "rotate-90"
+								isOpen && "rotate-90",
 							)}
 						/>
 						{section.icon && (
-							<span className="flex flex-shrink-0 items-center text-muted-foreground">{section.icon}</span>
+							<span className="flex flex-shrink-0 items-center text-muted-foreground">
+								{section.icon}
+							</span>
 						)}
 						<span className="flex flex-1 items-center gap-2">
 							<span className="font-medium text-sm">{section.title}</span>
-							{section.count !== undefined && <span className="text-muted-foreground text-xs">{section.count}</span>}
+							{section.count !== undefined && (
+								<span className="text-muted-foreground text-xs">
+									{section.count}
+								</span>
+							)}
 							{showShortcut && (
 								<span
 									className="ml-auto hidden rounded border border-border/60 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-opacity group-hover:opacity-100 sm:inline-block sm:opacity-60"
@@ -182,7 +190,7 @@ function SortableSection({
 					className={cn(
 						"overflow-hidden will-change-[height]",
 						!isLast && "border-border border-b",
-						isLast && "rounded-b-md"
+						isLast && "rounded-b-md",
 					)}
 					data-state={isOpen ? "open" : "closed"}
 					hidden={!isOpen}
@@ -232,7 +240,7 @@ export function UnifiedAccordion({
 	});
 
 	const [openSection, setOpenSection] = useState<string | null>(
-		defaultOpenSection ?? sections.find((s) => s.defaultOpen)?.id ?? null
+		defaultOpenSection ?? sections.find((s) => s.defaultOpen)?.id ?? null,
 	);
 
 	const [isDragging, setIsDragging] = useState(false);
@@ -276,7 +284,7 @@ export function UnifiedAccordion({
 		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		})
+		}),
 	);
 
 	// Handle drag end
@@ -294,7 +302,7 @@ export function UnifiedAccordion({
 				if (storageKey) {
 					saveSectionOrder(
 						storageKey,
-						newOrder.map((s) => s.id)
+						newOrder.map((s) => s.id),
 					);
 				}
 
@@ -330,7 +338,9 @@ export function UnifiedAccordion({
 			// Toggle the section
 			const targetSection = sections[sectionIndex];
 			if (targetSection) {
-				setOpenSection((prev) => (prev === targetSection.id ? null : targetSection.id));
+				setOpenSection((prev) =>
+					prev === targetSection.id ? null : targetSection.id,
+				);
 			}
 		};
 
@@ -341,12 +351,18 @@ export function UnifiedAccordion({
 	if (!enableReordering) {
 		// Render without drag-and-drop if disabled
 		return (
-			<div className={cn("overflow-visible rounded-md bg-muted/50 shadow-sm", className)}>
+			<div
+				className={cn(
+					"overflow-visible rounded-md bg-muted/50 shadow-sm",
+					className,
+				)}
+			>
 				<div className="overflow-visible rounded-b" data-orientation="vertical">
 					{sections.map((section, index) => {
 						const isOpen = openSection === section.id;
 						const isLast = index === sections.length - 1;
-						const shortcutKey = index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
+						const shortcutKey =
+							index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
 						const showShortcut = shortcutKey !== null;
 
 						return (
@@ -376,13 +392,25 @@ export function UnifiedAccordion({
 			onDragStart={() => setIsDragging(true)}
 			sensors={sensors}
 		>
-			<div className={cn("overflow-visible rounded-md bg-muted/50 shadow-sm", className)}>
-				<SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-					<div className="overflow-visible rounded-b" data-orientation="vertical">
+			<div
+				className={cn(
+					"overflow-visible rounded-md bg-muted/50 shadow-sm",
+					className,
+				)}
+			>
+				<SortableContext
+					items={sections.map((s) => s.id)}
+					strategy={verticalListSortingStrategy}
+				>
+					<div
+						className="overflow-visible rounded-b"
+						data-orientation="vertical"
+					>
 						{sections.map((section, index) => {
 							const isOpen = openSection === section.id;
 							const isLast = index === sections.length - 1;
-							const shortcutKey = index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
+							const shortcutKey =
+								index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
 							const showShortcut = shortcutKey !== null;
 
 							return (
@@ -407,6 +435,12 @@ export function UnifiedAccordion({
 }
 
 // Section content wrapper for consistent padding
-export function UnifiedAccordionContent({ children, className }: { children: ReactNode; className?: string }) {
+export function UnifiedAccordionContent({
+	children,
+	className,
+}: {
+	children: ReactNode;
+	className?: string;
+}) {
 	return <div className={cn("p-4 sm:p-6", className)}>{children}</div>;
 }

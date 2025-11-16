@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { ServiceAgreementsKanban } from "@/components/work/service-agreements-kanban";
-import { type ServiceAgreement, ServiceAgreementsTable } from "@/components/work/service-agreements-table";
+import {
+	type ServiceAgreement,
+	ServiceAgreementsTable,
+} from "@/components/work/service-agreements-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -44,10 +47,14 @@ export async function ServiceAgreementsData() {
 	const agreements: ServiceAgreement[] =
 		// biome-ignore lint/suspicious/noExplicitAny: Supabase query result type
 		(agreementsRaw || []).map((agreement: any): ServiceAgreement => {
-			const customer = Array.isArray(agreement.customer) ? agreement.customer[0] : agreement.customer;
+			const customer = Array.isArray(agreement.customer)
+				? agreement.customer[0]
+				: agreement.customer;
 
 			const customerName =
-				customer?.display_name || `${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() || "Unknown";
+				customer?.display_name ||
+				`${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
+				"Unknown";
 
 			const startDate =
 				agreement.start_date &&
@@ -67,7 +74,9 @@ export async function ServiceAgreementsData() {
 
 			// Map backend type (e.g. "contract", "sla") to UI-friendly label
 			let type: ServiceAgreement["type"] = "Maintenance Contract";
-			const rawType = String(agreement.plan_type || agreement.type || "").toLowerCase();
+			const rawType = String(
+				agreement.plan_type || agreement.type || "",
+			).toLowerCase();
 			if (rawType.includes("sla")) {
 				type = "Service Level Agreement";
 			} else if (rawType.includes("warranty")) {
@@ -94,7 +103,9 @@ export async function ServiceAgreementsData() {
 		<WorkDataView
 			kanban={<ServiceAgreementsKanban agreements={agreements} />}
 			section="serviceAgreements"
-			table={<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />}
+			table={
+				<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />
+			}
 		/>
 	);
 }

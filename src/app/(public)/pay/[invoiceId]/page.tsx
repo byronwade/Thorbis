@@ -11,13 +11,27 @@
  */
 
 import { format } from "date-fns";
-import { Building2, Calendar, CreditCard, FileText, Mail, Phone, User } from "lucide-react";
+import {
+	Building2,
+	Calendar,
+	CreditCard,
+	FileText,
+	Mail,
+	Phone,
+	User,
+} from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { InvoicePaymentForm } from "@/components/payment/invoice-payment-form";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/formatters";
 import { validatePaymentToken } from "@/lib/payments/payment-tokens";
@@ -37,7 +51,10 @@ type PageProps = {
 	}>;
 };
 
-export default async function InvoicePaymentPage({ params, searchParams }: PageProps) {
+export default async function InvoicePaymentPage({
+	params,
+	searchParams,
+}: PageProps) {
 	const { invoiceId } = await params;
 	const { token } = await searchParams;
 
@@ -47,8 +64,13 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-destructive">Invalid Payment Link</CardTitle>
-						<CardDescription>No payment token was provided. Please use the link from your email.</CardDescription>
+						<CardTitle className="text-destructive">
+							Invalid Payment Link
+						</CardTitle>
+						<CardDescription>
+							No payment token was provided. Please use the link from your
+							email.
+						</CardDescription>
 					</CardHeader>
 				</Card>
 			</div>
@@ -58,7 +80,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 	// Get client IP for security tracking
 	const headersList = await headers();
 	const forwardedFor = headersList.get("x-forwarded-for");
-	const clientIp = forwardedFor ? forwardedFor.split(",")[0] : headersList.get("x-real-ip") || undefined;
+	const clientIp = forwardedFor
+		? forwardedFor.split(",")[0]
+		: headersList.get("x-real-ip") || undefined;
 
 	// Validate the payment token
 	const validation = await validatePaymentToken(token, clientIp);
@@ -68,13 +92,15 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-destructive">Invalid Payment Link</CardTitle>
+						<CardTitle className="text-destructive">
+							Invalid Payment Link
+						</CardTitle>
 						<CardDescription>{validation.message}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							This payment link may have expired or already been used. Please contact the company for a new payment
-							link.
+							This payment link may have expired or already been used. Please
+							contact the company for a new payment link.
 						</p>
 					</CardContent>
 				</Card>
@@ -119,7 +145,7 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
         state,
         postal_code
       )
-    `
+    `,
 		)
 		.eq("id", invoiceId)
 		.single();
@@ -134,23 +160,37 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-green-600">Invoice Already Paid</CardTitle>
-						<CardDescription>This invoice has already been paid. Thank you for your payment!</CardDescription>
+						<CardTitle className="text-green-600">
+							Invoice Already Paid
+						</CardTitle>
+						<CardDescription>
+							This invoice has already been paid. Thank you for your payment!
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-2">
 							<div className="flex justify-between">
-								<span className="text-muted-foreground text-sm">Invoice Number:</span>
-								<span className="font-medium text-sm">{invoice.invoice_number}</span>
+								<span className="text-muted-foreground text-sm">
+									Invoice Number:
+								</span>
+								<span className="font-medium text-sm">
+									{invoice.invoice_number}
+								</span>
 							</div>
 							<div className="flex justify-between">
 								<span className="text-muted-foreground text-sm">Amount:</span>
-								<span className="font-medium text-sm">{formatCurrency(invoice.total_amount / 100)}</span>
+								<span className="font-medium text-sm">
+									{formatCurrency(invoice.total_amount / 100)}
+								</span>
 							</div>
 							{invoice.paid_at && (
 								<div className="flex justify-between">
-									<span className="text-muted-foreground text-sm">Paid On:</span>
-									<span className="font-medium text-sm">{format(new Date(invoice.paid_at), "MMM dd, yyyy")}</span>
+									<span className="text-muted-foreground text-sm">
+										Paid On:
+									</span>
+									<span className="font-medium text-sm">
+										{format(new Date(invoice.paid_at), "MMM dd, yyyy")}
+									</span>
 								</div>
 							)}
 						</div>
@@ -161,8 +201,12 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 	}
 
 	// Normalize customer data
-	const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
-	const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+	const customer = Array.isArray(invoice.customer)
+		? invoice.customer[0]
+		: invoice.customer;
+	const company = Array.isArray(invoice.company)
+		? invoice.company[0]
+		: invoice.company;
 
 	if (!(customer && company)) {
 		return notFound();
@@ -174,7 +218,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 				{/* Header */}
 				<div className="text-center">
 					<h1 className="font-bold text-3xl">Pay Invoice</h1>
-					<p className="mt-2 text-muted-foreground">Securely pay your invoice with {company.name}</p>
+					<p className="mt-2 text-muted-foreground">
+						Securely pay your invoice with {company.name}
+					</p>
 				</div>
 
 				{/* Invoice Details */}
@@ -183,9 +229,16 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 						<div className="flex items-center justify-between">
 							<div>
 								<CardTitle>Invoice {invoice.invoice_number}</CardTitle>
-								<CardDescription>Issued {format(new Date(invoice.created_at), "MMMM dd, yyyy")}</CardDescription>
+								<CardDescription>
+									Issued {format(new Date(invoice.created_at), "MMMM dd, yyyy")}
+								</CardDescription>
 							</div>
-							<Badge className="text-sm" variant={invoice.status === "overdue" ? "destructive" : "secondary"}>
+							<Badge
+								className="text-sm"
+								variant={
+									invoice.status === "overdue" ? "destructive" : "secondary"
+								}
+							>
 								{invoice.status}
 							</Badge>
 						</div>
@@ -199,8 +252,16 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 							</h3>
 							<div className="space-y-1 text-sm">
 								<p className="font-medium">{company.name}</p>
-								{company.address_line1 && <p className="text-muted-foreground">{company.address_line1}</p>}
-								{company.address_line2 && <p className="text-muted-foreground">{company.address_line2}</p>}
+								{company.address_line1 && (
+									<p className="text-muted-foreground">
+										{company.address_line1}
+									</p>
+								)}
+								{company.address_line2 && (
+									<p className="text-muted-foreground">
+										{company.address_line2}
+									</p>
+								)}
 								{company.city && (
 									<p className="text-muted-foreground">
 										{company.city}, {company.state} {company.postal_code}
@@ -230,8 +291,15 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 								Bill To
 							</h3>
 							<div className="space-y-1 text-sm">
-								<p className="font-medium">{customer.display_name || `${customer.first_name} ${customer.last_name}`}</p>
-								{customer.company_name && <p className="text-muted-foreground">{customer.company_name}</p>}
+								<p className="font-medium">
+									{customer.display_name ||
+										`${customer.first_name} ${customer.last_name}`}
+								</p>
+								{customer.company_name && (
+									<p className="text-muted-foreground">
+										{customer.company_name}
+									</p>
+								)}
 								{customer.email && (
 									<p className="flex items-center gap-1.5 text-muted-foreground">
 										<Mail className="h-3 w-3" />
@@ -264,7 +332,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 									Due Date
 								</span>
 								<span className="font-medium">
-									{invoice.due_date ? format(new Date(invoice.due_date), "MMM dd, yyyy") : "Upon receipt"}
+									{invoice.due_date
+										? format(new Date(invoice.due_date), "MMM dd, yyyy")
+										: "Upon receipt"}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
@@ -272,7 +342,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 									<CreditCard className="h-3 w-3" />
 									Amount Due
 								</span>
-								<span className="font-bold text-2xl">{formatCurrency(invoice.total_amount / 100)}</span>
+								<span className="font-bold text-2xl">
+									{formatCurrency(invoice.total_amount / 100)}
+								</span>
 							</div>
 						</div>
 
@@ -281,7 +353,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 								<Separator />
 								<div>
 									<h3 className="mb-2 font-semibold text-sm">Notes</h3>
-									<p className="text-muted-foreground text-sm">{invoice.notes}</p>
+									<p className="text-muted-foreground text-sm">
+										{invoice.notes}
+									</p>
 								</div>
 							</>
 						)}
@@ -289,11 +363,19 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 				</Card>
 
 				{/* Payment Form */}
-				<InvoicePaymentForm company={company} customer={customer} invoice={invoice} token={token} />
+				<InvoicePaymentForm
+					company={company}
+					customer={customer}
+					invoice={invoice}
+					token={token}
+				/>
 
 				{/* Security Notice */}
 				<div className="text-center text-muted-foreground text-xs">
-					<p>Your payment is secure and encrypted. By submitting payment, you agree to pay the amount shown above.</p>
+					<p>
+						Your payment is secure and encrypted. By submitting payment, you
+						agree to pay the amount shown above.
+					</p>
 				</div>
 			</div>
 		</div>

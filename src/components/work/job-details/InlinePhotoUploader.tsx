@@ -6,7 +6,13 @@ import { useCallback, useState } from "react";
 import { uploadDocument } from "@/actions/documents";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import type { PhotoCategory } from "./photo-types";
 
@@ -37,23 +43,33 @@ const ACCEPTED_FILE_TYPES = {
 	"image/tiff": [".tiff", ".tif"],
 	"application/pdf": [".pdf"],
 	"application/msword": [".doc"],
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+		".docx",
+	],
 	"application/vnd.ms-excel": [".xls"],
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+		".xlsx",
+	],
 	"text/plain": [".txt"],
 	"text/csv": [".csv"],
 };
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCancel }: InlinePhotoUploaderProps) {
+export function InlinePhotoUploader({
+	jobId,
+	companyId,
+	onUploadComplete,
+	onCancel,
+}: InlinePhotoUploaderProps) {
 	const { toast } = useToast();
 	const [files, setFiles] = useState<PhotoFile[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
 
 	const generateId = () => Math.random().toString(36).substring(2, 15);
-	const isImageFile = (mimeType: string): boolean => mimeType.startsWith("image/");
+	const isImageFile = (mimeType: string): boolean =>
+		mimeType.startsWith("image/");
 
 	const validateFile = (file: File): string | null => {
 		const fileType = file.type;
@@ -102,7 +118,7 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 
 			setFiles((prev) => [...prev, ...newFiles]);
 		},
-		[toast, generateId, isImageFile, validateFile]
+		[toast, generateId, isImageFile, validateFile],
 	);
 
 	const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,27 +194,32 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 						// Show specific error messages
 						if (errorMessage.includes("Access denied")) {
 							toast.error(
-								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`
+								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`,
 							);
 						} else if (errorMessage.includes("Storage upload failed")) {
 							toast.error(
-								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`
+								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`,
 							);
 						} else {
-							toast.error(`Failed to upload ${photoFile.file.name}: ${errorMessage}`);
+							toast.error(
+								`Failed to upload ${photoFile.file.name}: ${errorMessage}`,
+							);
 						}
 					}
 				} catch (error) {
 					errorCount++;
-					const errorMessage = error instanceof Error ? error.message : String(error);
+					const errorMessage =
+						error instanceof Error ? error.message : String(error);
 
 					// Handle different error types
 					if (errorMessage.includes("unexpected response")) {
 						toast.error(
-							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`
+							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`,
 						);
 					} else {
-						toast.error(`Error uploading ${photoFile.file.name}: ${errorMessage}`);
+						toast.error(
+							`Error uploading ${photoFile.file.name}: ${errorMessage}`,
+						);
 					}
 				}
 
@@ -207,12 +228,14 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 
 			if (successCount > 0) {
 				toast.success(
-					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
+					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`,
 				);
 			}
 
 			if (errorCount > 0 && successCount === 0) {
-				toast.error("All uploads failed. Please check your permissions and try again.");
+				toast.error(
+					"All uploads failed. Please check your permissions and try again.",
+				);
 			}
 
 			// Clean up object URLs
@@ -231,7 +254,8 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 				setTimeout(() => onCancel(), 100);
 			}
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Failed to upload files";
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to upload files";
 			toast.error(errorMessage);
 		} finally {
 			setIsUploading(false);
@@ -272,7 +296,9 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 					</div>
 					<div className="flex-1">
 						<p className="font-medium text-sm">Click or drag files here</p>
-						<p className="text-muted-foreground text-xs">Images & documents up to 100MB</p>
+						<p className="text-muted-foreground text-xs">
+							Images & documents up to 100MB
+						</p>
 					</div>
 					<Upload className="size-5 text-muted-foreground" />
 				</div>
@@ -285,14 +311,21 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 						<span className="font-medium text-sm">
 							{files.length} file{files.length !== 1 ? "s" : ""} selected
 						</span>
-						<Button onClick={() => files.forEach((f) => removeFile(f.id))} size="sm" variant="ghost">
+						<Button
+							onClick={() => files.forEach((f) => removeFile(f.id))}
+							size="sm"
+							variant="ghost"
+						>
 							Clear all
 						</Button>
 					</div>
 
 					<div className="grid gap-2">
 						{files.map((photoFile) => (
-							<div className="flex items-center gap-3 rounded-md border bg-background p-2" key={photoFile.id}>
+							<div
+								className="flex items-center gap-3 rounded-md border bg-background p-2"
+								key={photoFile.id}
+							>
 								{/* Thumbnail */}
 								<div className="relative size-12 shrink-0 overflow-hidden rounded bg-muted">
 									{photoFile.isDocument ? (
@@ -300,20 +333,31 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 											<FileText className="size-6 text-muted-foreground" />
 										</div>
 									) : (
-										<Image alt={photoFile.file.name} className="object-cover" fill src={photoFile.preview} />
+										<Image
+											alt={photoFile.file.name}
+											className="object-cover"
+											fill
+											src={photoFile.preview}
+										/>
 									)}
 								</div>
 
 								{/* Details */}
 								<div className="flex min-w-0 flex-1 items-center gap-2">
 									<div className="min-w-0 flex-1">
-										<p className="truncate font-medium text-sm">{photoFile.file.name}</p>
-										<p className="text-muted-foreground text-xs">{formatFileSize(photoFile.file.size)}</p>
+										<p className="truncate font-medium text-sm">
+											{photoFile.file.name}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{formatFileSize(photoFile.file.size)}
+										</p>
 									</div>
 
 									{/* Category */}
 									<Select
-										onValueChange={(value) => updateFileCategory(photoFile.id, value as PhotoCategory)}
+										onValueChange={(value) =>
+											updateFileCategory(photoFile.id, value as PhotoCategory)
+										}
 										value={photoFile.category}
 									>
 										<SelectTrigger className="h-7 w-24 text-xs">
@@ -330,13 +374,20 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 									{/* Caption */}
 									<Input
 										className="h-7 w-32 text-xs"
-										onChange={(e) => updateFileCaption(photoFile.id, e.target.value)}
+										onChange={(e) =>
+											updateFileCaption(photoFile.id, e.target.value)
+										}
 										placeholder="Caption"
 										value={photoFile.caption}
 									/>
 
 									{/* Remove */}
-									<Button className="size-7 p-0" onClick={() => removeFile(photoFile.id)} size="sm" variant="ghost">
+									<Button
+										className="size-7 p-0"
+										onClick={() => removeFile(photoFile.id)}
+										size="sm"
+										variant="ghost"
+									>
 										<X className="size-4" />
 									</Button>
 								</div>
@@ -362,10 +413,19 @@ export function InlinePhotoUploader({ jobId, companyId, onUploadComplete, onCanc
 
 					{/* Actions */}
 					<div className="flex justify-end gap-2">
-						<Button disabled={isUploading} onClick={onCancel} size="sm" variant="outline">
+						<Button
+							disabled={isUploading}
+							onClick={onCancel}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={files.length === 0 || isUploading} onClick={handleUpload} size="sm">
+						<Button
+							disabled={files.length === 0 || isUploading}
+							onClick={handleUpload}
+							size="sm"
+						>
 							{isUploading ? (
 								<>Uploading...</>
 							) : (

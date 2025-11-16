@@ -62,12 +62,18 @@ export async function CustomersSettingsData() {
 							<Card className="group transition-all hover:border-primary/50 hover:shadow-md">
 								<CardContent className="p-6">
 									<div className="flex items-start gap-4">
-										<div className={`flex size-12 items-center justify-center rounded-lg ${section.bgColor}`}>
+										<div
+											className={`flex size-12 items-center justify-center rounded-lg ${section.bgColor}`}
+										>
 											<Icon className={`size-6 ${section.color}`} />
 										</div>
 										<div className="flex-1 space-y-1">
-											<h3 className="font-semibold group-hover:text-primary">{section.title}</h3>
-											<p className="text-muted-foreground text-sm">{section.description}</p>
+											<h3 className="font-semibold group-hover:text-primary">
+												{section.title}
+											</h3>
+											<p className="text-muted-foreground text-sm">
+												{section.description}
+											</p>
 										</div>
 									</div>
 								</CardContent>
@@ -84,9 +90,11 @@ export async function CustomersSettingsData() {
 						<div className="space-y-1">
 							<p className="font-medium text-sm">Customer Settings Overview</p>
 							<p className="text-muted-foreground text-sm">
-								These settings control how customer data is managed, stored, and used throughout the system. Configure
-								default preferences, set up loyalty programs, manage notifications, ensure privacy compliance, and
-								customize customer profile fields to match your business needs.
+								These settings control how customer data is managed, stored, and
+								used throughout the system. Configure default preferences, set
+								up loyalty programs, manage notifications, ensure privacy
+								compliance, and customize customer profile fields to match your
+								business needs.
 							</p>
 						</div>
 					</div>

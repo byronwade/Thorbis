@@ -1,6 +1,7 @@
 import type { Database } from "@/types/supabase";
 
-export type EmailSettingsRow = Database["public"]["Tables"]["communication_email_settings"]["Row"];
+export type EmailSettingsRow =
+	Database["public"]["Tables"]["communication_email_settings"]["Row"];
 
 export type EmailSettingsState = {
 	smtpEnabled: boolean;
@@ -38,7 +39,9 @@ export const DEFAULT_EMAIL_SETTINGS: EmailSettingsState = {
 	primaryColor: "#3b82f6",
 };
 
-export function mapEmailSettings(row: EmailSettingsRow | null): Partial<EmailSettingsState> {
+export function mapEmailSettings(
+	row: EmailSettingsRow | null,
+): Partial<EmailSettingsState> {
 	if (!row) {
 		return {};
 	}

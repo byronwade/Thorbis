@@ -10,7 +10,13 @@ import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function TechniciansError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function TechniciansError({
+	error,
+	reset,
+}: {
+	error: Error & { digest?: string };
+	reset: () => void;
+}) {
 	useEffect(() => {}, []);
 
 	return (
@@ -24,8 +30,14 @@ export default function TechniciansError({ error, reset }: { error: Error & { di
 
 				<div className="space-y-2">
 					<h2 className="font-semibold text-2xl">Technicians Error</h2>
-					<p className="text-muted-foreground">{error.message || "An error occurred in the technicians section."}</p>
-					{error.digest && <p className="font-mono text-muted-foreground text-xs">Error ID: {error.digest}</p>}
+					<p className="text-muted-foreground">
+						{error.message || "An error occurred in the technicians section."}
+					</p>
+					{error.digest && (
+						<p className="font-mono text-muted-foreground text-xs">
+							Error ID: {error.digest}
+						</p>
+					)}
 				</div>
 
 				<div className="flex justify-center gap-3">
@@ -33,7 +45,10 @@ export default function TechniciansError({ error, reset }: { error: Error & { di
 						<RefreshCw className="mr-2 size-4" />
 						Try Again
 					</Button>
-					<Button onClick={() => (window.location.href = "/dashboard")} variant="outline">
+					<Button
+						onClick={() => (window.location.href = "/dashboard")}
+						variant="outline"
+					>
 						<Home className="mr-2 size-4" />
 						Dashboard
 					</Button>

@@ -27,7 +27,9 @@ export type NetworkStatus = {
  * Hook to monitor network status and pending sync operations
  */
 export function useNetworkStatus(): NetworkStatus {
-	const [isOnline, setIsOnline] = useState(typeof navigator !== "undefined" ? navigator.onLine : true);
+	const [isOnline, setIsOnline] = useState(
+		typeof navigator !== "undefined" ? navigator.onLine : true,
+	);
 	const [pendingOperations, setPendingOperations] = useState(0);
 	const [lastSync, setLastSync] = useState<Date | null>(null);
 	const [isSyncing, setIsSyncing] = useState(false);
@@ -93,7 +95,11 @@ export function useNetworkStatus(): NetworkStatus {
 		// Listen for visibility change (page becomes visible after being hidden)
 		const handleVisibilityChange = async () => {
 			// Guard: prevent concurrent sync operations
-			if (document.visibilityState === "visible" && navigator.onLine && !isSyncingRef.current) {
+			if (
+				document.visibilityState === "visible" &&
+				navigator.onLine &&
+				!isSyncingRef.current
+			) {
 				isSyncingRef.current = true;
 
 				// Trigger sync when user returns to the tab

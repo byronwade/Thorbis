@@ -32,7 +32,12 @@ import {
 } from "@/actions/customer-badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -43,7 +48,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { type CustomerBadge, PREMADE_BADGES } from "@/types/customer-badges";
 
@@ -153,7 +164,10 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 				return (
 					<div className="group relative" key={badge.id}>
 						<Badge
-							className={cn("gap-1.5 pr-7 font-medium text-xs", badge.badge_type === "auto_generated" && "opacity-90")}
+							className={cn(
+								"gap-1.5 pr-7 font-medium text-xs",
+								badge.badge_type === "auto_generated" && "opacity-90",
+							)}
 							variant={badge.variant as any}
 						>
 							{Icon && <Icon className="size-3.5" />}
@@ -180,7 +194,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="start" className="w-64">
-					<DropdownMenuLabel className="text-xs">Premade Badges</DropdownMenuLabel>
+					<DropdownMenuLabel className="text-xs">
+						Premade Badges
+					</DropdownMenuLabel>
 					{PREMADE_BADGES.map((premade) => {
 						const Icon = ICON_MAP[premade.icon];
 						return (
@@ -195,12 +211,18 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 						);
 					})}
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="cursor-pointer" onClick={() => setShowCustomDialog(true)}>
+					<DropdownMenuItem
+						className="cursor-pointer"
+						onClick={() => setShowCustomDialog(true)}
+					>
 						<Plus className="mr-2 size-4" />
 						<span className="text-sm">Custom Badge</span>
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="cursor-pointer" onClick={handleGenerateAuto}>
+					<DropdownMenuItem
+						className="cursor-pointer"
+						onClick={handleGenerateAuto}
+					>
 						<LayoutGrid className="mr-2 size-4" />
 						<span className="text-sm">Generate Auto Badges</span>
 					</DropdownMenuItem>
@@ -252,7 +274,11 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 							</Select>
 						</div>
 						<div className="flex gap-2 pt-2">
-							<Button className="flex-1" onClick={() => setShowCustomDialog(false)} variant="outline">
+							<Button
+								className="flex-1"
+								onClick={() => setShowCustomDialog(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
 							<Button className="flex-1" onClick={handleAddCustomBadge}>

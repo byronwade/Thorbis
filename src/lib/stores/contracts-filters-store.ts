@@ -46,6 +46,6 @@ export const useContractsFiltersStore = create<ContractsFiltersStore>()(
 		{
 			name: "contracts-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		}
-	)
+		},
+	),
 );

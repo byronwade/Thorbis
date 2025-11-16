@@ -25,7 +25,9 @@ const TEAM_COLUMNS: Array<{
 	{ id: "suspended", name: "Suspended", accentColor: "#EF4444" },
 ];
 
-const _columnLabel = new Map(TEAM_COLUMNS.map((column) => [column.id, column.name]));
+const _columnLabel = new Map(
+	TEAM_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 function getInitials(name: string) {
 	return name
@@ -43,23 +45,36 @@ function MemberCard({ item }: { item: TeamsKanbanItem }) {
 			<div className="flex items-start gap-3">
 				<Avatar className="h-10 w-10">
 					<AvatarImage src={member.avatar} />
-					<AvatarFallback className="text-xs">{getInitials(member.name)}</AvatarFallback>
+					<AvatarFallback className="text-xs">
+						{getInitials(member.name)}
+					</AvatarFallback>
 				</Avatar>
 				<div className="min-w-0 flex-1">
 					<div className="flex items-start justify-between gap-2">
 						<div className="min-w-0">
 							<p className="truncate font-medium text-sm">{member.name}</p>
-							<p className="truncate text-muted-foreground text-xs">{member.email}</p>
+							<p className="truncate text-muted-foreground text-xs">
+								{member.email}
+							</p>
 						</div>
 						<Link href={`/dashboard/work/team/${member.id}`}>
-							<Button className="h-6 w-6" size="icon" type="button" variant="ghost">
+							<Button
+								className="h-6 w-6"
+								size="icon"
+								type="button"
+								variant="ghost"
+							>
 								<ArrowUpRight className="h-3 w-3" />
 								<span className="sr-only">View member</span>
 							</Button>
 						</Link>
 					</div>
 
-					{member.jobTitle && <p className="mt-1 text-muted-foreground text-xs">{member.jobTitle}</p>}
+					{member.jobTitle && (
+						<p className="mt-1 text-muted-foreground text-xs">
+							{member.jobTitle}
+						</p>
+					)}
 
 					<div className="mt-3 flex flex-wrap items-center gap-2">
 						{member.roleName && (
@@ -112,10 +127,16 @@ export function TeamsKanban({ members }: { members: TeamMember[] }) {
 				entity: member,
 				member,
 			})}
-			renderCard={(item) => <MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />}
+			renderCard={(item) => (
+				<MemberCard
+					item={{ ...item, member: item.entity } as TeamsKanbanItem}
+				/>
+			)}
 			renderDragOverlay={(item) => (
 				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<MemberCard item={{ ...item, member: item.entity } as TeamsKanbanItem} />
+					<MemberCard
+						item={{ ...item, member: item.entity } as TeamsKanbanItem}
+					/>
 				</div>
 			)}
 			updateEntityStatus={(member, newStatus) => ({

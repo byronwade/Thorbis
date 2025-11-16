@@ -10,7 +10,13 @@
  * - Fast UX for routine payments
  */
 
-import { AlertCircle, AlertTriangle, Check, CreditCard, Loader2 } from "lucide-react";
+import {
+	AlertCircle,
+	AlertTriangle,
+	Check,
+	CreditCard,
+	Loader2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { processInvoicePayment } from "@/actions/invoice-payments";
 import { getPaymentMethods } from "@/actions/payment-methods";
@@ -67,7 +73,9 @@ export function QuickPayDialog({
 			return;
 		}
 
-		const defaultPM = result.paymentMethods.find((pm: any) => pm.is_default) ?? result.paymentMethods[0];
+		const defaultPM =
+			result.paymentMethods.find((pm: any) => pm.is_default) ??
+			result.paymentMethods[0];
 
 		if (defaultPM) {
 			// Normalize shape for this component
@@ -160,7 +168,9 @@ export function QuickPayDialog({
 			<DialogContent className="sm:max-w-[450px]">
 				<DialogHeader>
 					<DialogTitle>Confirm Payment</DialogTitle>
-					<DialogDescription>Quick payment for {invoiceNumber}</DialogDescription>
+					<DialogDescription>
+						Quick payment for {invoiceNumber}
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4">
@@ -168,24 +178,34 @@ export function QuickPayDialog({
 					<div className="rounded-lg border bg-muted/30 p-4">
 						<div className="flex items-center justify-between">
 							<span className="text-sm">Amount to Pay:</span>
-							<span className="font-bold text-xl">{formatCurrency(amount)}</span>
+							<span className="font-bold text-xl">
+								{formatCurrency(amount)}
+							</span>
 						</div>
 					</div>
 
 					{/* Payment Method */}
 					{defaultPaymentMethod ? (
 						<div className="rounded-lg border p-4">
-							<p className="mb-2 text-muted-foreground text-xs">Payment Method:</p>
+							<p className="mb-2 text-muted-foreground text-xs">
+								Payment Method:
+							</p>
 							<div className="flex items-center gap-3">
 								<span className="text-2xl">💳</span>
 								<div>
 									<p className="font-medium text-sm">
-										{defaultPaymentMethod.card_brand.toUpperCase()} •••• {defaultPaymentMethod.card_last4}
+										{defaultPaymentMethod.card_brand.toUpperCase()} ••••{" "}
+										{defaultPaymentMethod.card_last4}
 									</p>
 									<p className="text-muted-foreground text-xs">
-										Expires {String(defaultPaymentMethod.card_exp_month).padStart(2, "0")}/
-										{defaultPaymentMethod.card_exp_year}
-										{defaultPaymentMethod.nickname && ` • ${defaultPaymentMethod.nickname}`}
+										Expires{" "}
+										{String(defaultPaymentMethod.card_exp_month).padStart(
+											2,
+											"0",
+										)}
+										/{defaultPaymentMethod.card_exp_year}
+										{defaultPaymentMethod.nickname &&
+											` • ${defaultPaymentMethod.nickname}`}
 									</p>
 								</div>
 								{defaultPaymentMethod.is_default && (
@@ -199,7 +219,8 @@ export function QuickPayDialog({
 						<Alert variant="destructive">
 							<AlertTriangle className="size-4" />
 							<AlertDescription>
-								No payment method available. Please add a payment method in the Billing Information section.
+								No payment method available. Please add a payment method in the
+								Billing Information section.
 							</AlertDescription>
 						</Alert>
 					)}
@@ -208,8 +229,9 @@ export function QuickPayDialog({
 					<Alert>
 						<AlertCircle className="size-4" />
 						<AlertDescription className="text-sm">
-							This will charge {formatCurrency(amount)} to your {defaultPaymentMethod?.card_brand.toUpperCase()} card
-							ending in {defaultPaymentMethod?.card_last4}.
+							This will charge {formatCurrency(amount)} to your{" "}
+							{defaultPaymentMethod?.card_brand.toUpperCase()} card ending in{" "}
+							{defaultPaymentMethod?.card_last4}.
 						</AlertDescription>
 					</Alert>
 
@@ -223,10 +245,17 @@ export function QuickPayDialog({
 				</div>
 
 				<DialogFooter>
-					<Button disabled={isProcessing} onClick={() => onOpenChange(false)} variant="outline">
+					<Button
+						disabled={isProcessing}
+						onClick={() => onOpenChange(false)}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={isProcessing || !defaultPaymentMethod} onClick={handleConfirmPayment}>
+					<Button
+						disabled={isProcessing || !defaultPaymentMethod}
+						onClick={handleConfirmPayment}
+					>
 						{isProcessing ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />

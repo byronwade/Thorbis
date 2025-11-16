@@ -67,7 +67,9 @@ export function WorkPageLayout({ stats, children }: WorkPageLayoutProps) {
 			{stats && (
 				<div
 					className={`${
-						hideStats ? "-translate-y-full h-0 opacity-0" : "translate-y-0 opacity-100 transition-all duration-200"
+						hideStats
+							? "-translate-y-full h-0 opacity-0"
+							: "translate-y-0 opacity-100 transition-all duration-200"
 					}`}
 				>
 					{stats}

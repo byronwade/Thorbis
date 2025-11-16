@@ -44,14 +44,24 @@ export async function ContractsStats() {
 	}
 
 	// Filter to active contracts for stats calculations
-	const activeContracts = (contractsRaw || []).filter((c: any) => !(c.archived_at || c.deleted_at));
+	const activeContracts = (contractsRaw || []).filter(
+		(c: any) => !(c.archived_at || c.deleted_at),
+	);
 
 	// Calculate contract stats (from active contracts only)
 	const totalContracts = activeContracts.length;
-	const signedCount = activeContracts.filter((c: any) => c.status === "signed").length;
-	const pendingCount = activeContracts.filter((c: any) => c.status === "sent" || c.status === "viewed").length;
-	const draftCount = activeContracts.filter((c: any) => c.status === "draft").length;
-	const expiredCount = activeContracts.filter((c: any) => c.status === "expired").length;
+	const signedCount = activeContracts.filter(
+		(c: any) => c.status === "signed",
+	).length;
+	const pendingCount = activeContracts.filter(
+		(c: any) => c.status === "sent" || c.status === "viewed",
+	).length;
+	const draftCount = activeContracts.filter(
+		(c: any) => c.status === "draft",
+	).length;
+	const expiredCount = activeContracts.filter(
+		(c: any) => c.status === "expired",
+	).length;
 
 	const CHANGE_PERCENTAGE_DRAFT_POSITIVE = 5.1;
 	const CHANGE_PERCENTAGE_PENDING_POSITIVE = 6.8;
@@ -82,8 +92,12 @@ export async function ContractsStats() {
 		{
 			label: "Expired",
 			value: expiredCount,
-			change: expiredCount > 0 ? CHANGE_PERCENTAGE_EXPIRED_NEGATIVE : CHANGE_PERCENTAGE_EXPIRED_POSITIVE,
-			changeLabel: expiredCount > 0 ? `${expiredCount} expired` : "none expired",
+			change:
+				expiredCount > 0
+					? CHANGE_PERCENTAGE_EXPIRED_NEGATIVE
+					: CHANGE_PERCENTAGE_EXPIRED_POSITIVE,
+			changeLabel:
+				expiredCount > 0 ? `${expiredCount} expired` : "none expired",
 		},
 		{
 			label: "Total Contracts",

@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { CustomersKanban } from "@/components/customers/customers-kanban";
-import { type Customer, CustomersTable } from "@/components/customers/customers-table";
+import {
+	type Customer,
+	CustomersTable,
+} from "@/components/customers/customers-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getCustomersWithStats } from "@/lib/queries/customers";
 
@@ -33,9 +36,18 @@ export async function CustomersData() {
 		city: c.city,
 		state: c.state,
 		zipCode: c.zip_code,
-		status: c.status === "active" ? "active" : c.status === "inactive" ? "inactive" : "prospect",
-		lastService: c.last_job_date ? new Date(c.last_job_date).toLocaleDateString() : "None",
-		nextService: c.next_scheduled_job ? new Date(c.next_scheduled_job).toLocaleDateString() : "TBD",
+		status:
+			c.status === "active"
+				? "active"
+				: c.status === "inactive"
+					? "inactive"
+					: "prospect",
+		lastService: c.last_job_date
+			? new Date(c.last_job_date).toLocaleDateString()
+			: "None",
+		nextService: c.next_scheduled_job
+			? new Date(c.next_scheduled_job).toLocaleDateString()
+			: "TBD",
 		totalValue: c.total_revenue || 0,
 		archived_at: c.archived_at,
 		deleted_at: c.deleted_at,

@@ -5,10 +5,22 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createContract } from "@/actions/contracts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 /**
@@ -38,7 +50,12 @@ type ContractFormProps = {
 	};
 };
 
-export function ContractForm({ jobId, estimateId, invoiceId, initialData }: ContractFormProps) {
+export function ContractForm({
+	jobId,
+	estimateId,
+	invoiceId,
+	initialData,
+}: ContractFormProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -105,13 +122,19 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 
 						<div className="space-y-2">
 							<Label htmlFor="contractType">Contract Type *</Label>
-							<Select defaultValue={initialData?.contractType || "service"} name="contractType" required>
+							<Select
+								defaultValue={initialData?.contractType || "service"}
+								name="contractType"
+								required
+							>
 								<SelectTrigger id="contractType">
 									<SelectValue />
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="service">Service Agreement</SelectItem>
-									<SelectItem value="maintenance">Maintenance Contract</SelectItem>
+									<SelectItem value="maintenance">
+										Maintenance Contract
+									</SelectItem>
 									<SelectItem value="custom">Custom Contract</SelectItem>
 								</SelectContent>
 							</Select>
@@ -126,7 +149,9 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 				<Card>
 					<CardHeader>
 						<CardTitle>Contract Terms</CardTitle>
-						<CardDescription>The main body of the contract that will be signed</CardDescription>
+						<CardDescription>
+							The main body of the contract that will be signed
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
@@ -143,13 +168,19 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 								required
 							/>
 							<p className="text-muted-foreground text-xs">
-								Use placeholders like [DATE], [COMPANY], [CUSTOMER] that can be replaced automatically
+								Use placeholders like [DATE], [COMPANY], [CUSTOMER] that can be
+								replaced automatically
 							</p>
 						</div>
 
 						<div className="space-y-2">
 							<Label htmlFor="terms">Additional Terms</Label>
-							<Textarea id="terms" name="terms" placeholder="Any additional legal terms or conditions..." rows={4} />
+							<Textarea
+								id="terms"
+								name="terms"
+								placeholder="Any additional legal terms or conditions..."
+								rows={4}
+							/>
 						</div>
 					</CardContent>
 				</Card>
@@ -158,7 +189,9 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 				<Card>
 					<CardHeader>
 						<CardTitle>Validity Period</CardTitle>
-						<CardDescription>When this contract is valid from and until</CardDescription>
+						<CardDescription>
+							When this contract is valid from and until
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -179,7 +212,10 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 				<Card>
 					<CardHeader>
 						<CardTitle>Signer Information</CardTitle>
-						<CardDescription>Person who will sign this contract - we'll email them the signing link</CardDescription>
+						<CardDescription>
+							Person who will sign this contract - we'll email them the signing
+							link
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -203,19 +239,29 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 									required
 									type="email"
 								/>
-								<p className="text-muted-foreground text-xs">Required to send the contract for signature</p>
+								<p className="text-muted-foreground text-xs">
+									Required to send the contract for signature
+								</p>
 							</div>
 						</div>
 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="signerTitle">Signer Title</Label>
-								<Input id="signerTitle" name="signerTitle" placeholder="e.g., CEO, Director" />
+								<Input
+									id="signerTitle"
+									name="signerTitle"
+									placeholder="e.g., CEO, Director"
+								/>
 							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="signerCompany">Signer Company</Label>
-								<Input id="signerCompany" name="signerCompany" placeholder="Company name" />
+								<Input
+									id="signerCompany"
+									name="signerCompany"
+									placeholder="Company name"
+								/>
 							</div>
 						</div>
 					</CardContent>
@@ -225,10 +271,17 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 				<Card>
 					<CardHeader>
 						<CardTitle>Internal Notes</CardTitle>
-						<CardDescription>Notes for internal use only (not visible to customer)</CardDescription>
+						<CardDescription>
+							Notes for internal use only (not visible to customer)
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Textarea id="notes" name="notes" placeholder="Any internal notes or reminders..." rows={3} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Any internal notes or reminders..."
+							rows={3}
+						/>
 					</CardContent>
 				</Card>
 
@@ -241,7 +294,12 @@ export function ContractForm({ jobId, estimateId, invoiceId, initialData }: Cont
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-3">
-					<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+					<Button
+						disabled={isLoading}
+						onClick={() => router.back()}
+						type="button"
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button disabled={isLoading} type="submit">

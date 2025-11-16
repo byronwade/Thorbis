@@ -111,7 +111,8 @@ export async function getMessage(messageId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to retrieve message",
+			error:
+				error instanceof Error ? error.message : "Failed to retrieve message",
 		};
 	}
 }
@@ -155,7 +156,12 @@ export async function listMessages(params?: {
 /**
  * Send a bulk SMS message to multiple recipients
  */
-export async function sendBulkSMS(params: { to: string[]; from: string; text: string; webhookUrl?: string }) {
+export async function sendBulkSMS(params: {
+	to: string[];
+	from: string;
+	text: string;
+	webhookUrl?: string;
+}) {
 	try {
 		const results = await Promise.allSettled(
 			params.to.map((recipient) =>
@@ -164,8 +170,8 @@ export async function sendBulkSMS(params: { to: string[]; from: string; text: st
 					from: params.from,
 					text: params.text,
 					webhookUrl: params.webhookUrl,
-				})
-			)
+				}),
+			),
 		);
 
 		const successful = results.filter((r) => r.status === "fulfilled").length;
@@ -203,7 +209,9 @@ export async function validatePhoneNumber(phoneNumber: string) {
 		}
 
 		// Ensure it starts with + for international format
-		const formattedNumber = cleanNumber.startsWith("+") ? cleanNumber : `+${cleanNumber}`;
+		const formattedNumber = cleanNumber.startsWith("+")
+			? cleanNumber
+			: `+${cleanNumber}`;
 
 		return {
 			success: true,
@@ -212,7 +220,10 @@ export async function validatePhoneNumber(phoneNumber: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to validate phone number",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to validate phone number",
 		};
 	}
 }

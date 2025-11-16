@@ -1,6 +1,9 @@
 "use client";
 
-import { LazyMotionPath as motion_circle, LazyMotionDiv as motion_div } from "@/components/lazy/framer-motion";
+import {
+	LazyMotionPath as motion_circle,
+	LazyMotionDiv as motion_div,
+} from "@/components/lazy/framer-motion";
 import { cn } from "@/lib/utils";
 
 // Alias for backward compatibility
@@ -15,7 +18,11 @@ type ProgressRingProps = {
 	className?: string;
 };
 
-export function ProgressRing({ progress, isPaused, className }: ProgressRingProps) {
+export function ProgressRing({
+	progress,
+	isPaused,
+	className,
+}: ProgressRingProps) {
 	const size = 32;
 	const strokeWidth = 3;
 	const radius = (size - strokeWidth) / 2;

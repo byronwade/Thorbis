@@ -150,27 +150,40 @@ export function QuickAddDropdown() {
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-64 rounded-lg">
-				<DropdownMenuLabel className="font-semibold">Quick Add</DropdownMenuLabel>
+				<DropdownMenuLabel className="font-semibold">
+					Quick Add
+				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 
 				{Object.entries(quickAddActions).map(([category, actions], index) => (
 					<div key={category}>
 						{index > 0 && <DropdownMenuSeparator />}
-						<DropdownMenuLabel className="text-muted-foreground text-xs">{category}</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-muted-foreground text-xs">
+							{category}
+						</DropdownMenuLabel>
 						<DropdownMenuGroup>
 							{actions.map((action) => {
 								const Icon = action.icon;
 								return (
 									<DropdownMenuItem asChild key={action.href}>
-										<Link className="flex items-center gap-2" href={action.href}>
+										<Link
+											className="flex items-center gap-2"
+											href={action.href}
+										>
 											<Icon className="size-4" />
 											<div className="flex flex-1 flex-col">
 												<span className="text-sm">{action.label}</span>
 												{action.description && (
-													<span className="text-muted-foreground text-xs">{action.description}</span>
+													<span className="text-muted-foreground text-xs">
+														{action.description}
+													</span>
 												)}
 											</div>
-											{action.shortcut && <DropdownMenuShortcut>{action.shortcut}</DropdownMenuShortcut>}
+											{action.shortcut && (
+												<DropdownMenuShortcut>
+													{action.shortcut}
+												</DropdownMenuShortcut>
+											)}
 										</Link>
 									</DropdownMenuItem>
 								);

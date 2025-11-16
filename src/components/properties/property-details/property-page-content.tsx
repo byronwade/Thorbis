@@ -40,11 +40,17 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { _updateProperty as updateProperty } from "@/actions/properties";
-import { DetailPageContentLayout, type DetailPageHeaderConfig } from "@/components/layout/detail-page-content-layout";
+import {
+	DetailPageContentLayout,
+	type DetailPageHeaderConfig,
+} from "@/components/layout/detail-page-content-layout";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { TravelTime } from "@/components/work/job-details/travel-time";
 import { PropertyLocationVisual } from "@/components/work/job-details/widgets/property-location-visual";
 import { useToast } from "@/hooks/use-toast";
@@ -76,7 +82,10 @@ type PropertyPageContentProps = {
 	};
 };
 
-export function PropertyPageContent({ entityData, metrics }: PropertyPageContentProps) {
+export function PropertyPageContent({
+	entityData,
+	metrics,
+}: PropertyPageContentProps) {
 	const propertyData = entityData;
 	const router = useRouter();
 	const { toast } = useToast();
@@ -155,7 +164,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 			label: "Square Footage",
 			icon: <Ruler className="h-3.5 w-3.5" />,
 			value: property.square_footage?.toString() || "Not specified",
-			helperText: property.square_footage ? `${property.square_footage.toLocaleString()} sq ft` : undefined,
+			helperText: property.square_footage
+				? `${property.square_footage.toLocaleString()} sq ft`
+				: undefined,
 		},
 		{
 			label: "Year Built",
@@ -166,19 +177,29 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 			label: "Best Access Time",
 			icon: <Clock className="h-3.5 w-3.5" />,
 			value: property.best_access_time || "Anytime",
-			helperText: property.requires_appointment ? "Appointment required" : undefined,
+			helperText: property.requires_appointment
+				? "Appointment required"
+				: undefined,
 		},
 		{
 			label: "Owner",
 			icon: <User className="h-3.5 w-3.5" />,
-			value: customer ? `${customer.first_name} ${customer.last_name}` : "Not assigned",
+			value: customer
+				? `${customer.first_name} ${customer.last_name}`
+				: "Not assigned",
 			helperText: customer?.email,
 		},
 		{
 			label: "GPS Coordinates",
 			icon: <MapPin className="h-3.5 w-3.5" />,
-			value: property.lat && property.lon ? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}` : "Not set",
-			helperText: property.lat && property.lon ? "Geocoded" : "Click Location section to geocode",
+			value:
+				property.lat && property.lon
+					? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}`
+					: "Not set",
+			helperText:
+				property.lat && property.lon
+					? "Geocoded"
+					: "Click Location section to geocode",
 		},
 		{
 			label: "Total Jobs",
@@ -204,11 +225,14 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 		{
 			label: "Last Service",
 			icon: <Clock className="h-3.5 w-3.5" />,
-			value: metrics.lastServiceDate ? new Date(metrics.lastServiceDate).toLocaleDateString() : "Never",
+			value: metrics.lastServiceDate
+				? new Date(metrics.lastServiceDate).toLocaleDateString()
+				: "Never",
 			helperText: metrics.lastServiceDate
 				? (() => {
 						const diffDays = Math.floor(
-							(Date.now() - new Date(metrics.lastServiceDate).getTime()) / (1000 * 60 * 60 * 24)
+							(Date.now() - new Date(metrics.lastServiceDate).getTime()) /
+								(1000 * 60 * 60 * 24),
 						);
 						return diffDays === 0 ? "Today" : `${diffDays} days ago`;
 					})()
@@ -220,22 +244,36 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 		<div className="space-y-3">
 			{items.slice(0, 25).map((communication) => {
 				const contactName =
-					communication.customer?.first_name || communication.customer?.last_name
+					communication.customer?.first_name ||
+					communication.customer?.last_name
 						? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
 						: communication.direction === "inbound"
 							? communication.from_address
 							: communication.to_address;
-				const preview = communication.subject || communication.body?.slice(0, 160) || "No additional details";
+				const preview =
+					communication.subject ||
+					communication.body?.slice(0, 160) ||
+					"No additional details";
 				const timestamp = new Date(communication.created_at).toLocaleString();
 
 				return (
 					<div className="rounded-lg border p-3" key={communication.id}>
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant="outline">{communication.type?.toUpperCase()}</Badge>
-							<Badge variant={communication.direction === "inbound" ? "secondary" : "default"}>
+							<Badge variant="outline">
+								{communication.type?.toUpperCase()}
+							</Badge>
+							<Badge
+								variant={
+									communication.direction === "inbound"
+										? "secondary"
+										: "default"
+								}
+							>
 								{communication.direction === "inbound" ? "Inbound" : "Outbound"}
 							</Badge>
-							{communication.status && <Badge variant="outline">{communication.status}</Badge>}
+							{communication.status && (
+								<Badge variant="outline">{communication.status}</Badge>
+							)}
 							<span className="text-muted-foreground text-xs">{timestamp}</span>
 						</div>
 						<div className="mt-2">
@@ -271,7 +309,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 						<PropertyLocationVisual nearbySuppliers={[]} property={property} />
 
 						{/* Access Instructions */}
-						{(property.directions || property.parking_instructions || property.service_entrance_notes) && (
+						{(property.directions ||
+							property.parking_instructions ||
+							property.service_entrance_notes) && (
 							<div className="space-y-3">
 								<h3 className="font-semibold text-sm">Access Information</h3>
 								<div className="space-y-2">
@@ -281,16 +321,22 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 												<Navigation className="size-4 text-muted-foreground" />
 												<p className="font-medium text-sm">Directions</p>
 											</div>
-											<p className="text-muted-foreground text-sm">{property.directions}</p>
+											<p className="text-muted-foreground text-sm">
+												{property.directions}
+											</p>
 										</div>
 									)}
 									{property.parking_instructions && (
 										<div className="rounded-lg border bg-muted/50 p-3">
 											<div className="mb-1 flex items-center gap-2">
 												<Info className="size-4 text-muted-foreground" />
-												<p className="font-medium text-sm">Parking Instructions</p>
+												<p className="font-medium text-sm">
+													Parking Instructions
+												</p>
 											</div>
-											<p className="text-muted-foreground text-sm">{property.parking_instructions}</p>
+											<p className="text-muted-foreground text-sm">
+												{property.parking_instructions}
+											</p>
 										</div>
 									)}
 									{property.service_entrance_notes && (
@@ -299,7 +345,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 												<AlertCircle className="size-4 text-muted-foreground" />
 												<p className="font-medium text-sm">Service Entrance</p>
 											</div>
-											<p className="text-muted-foreground text-sm">{property.service_entrance_notes}</p>
+											<p className="text-muted-foreground text-sm">
+												{property.service_entrance_notes}
+											</p>
 										</div>
 									)}
 								</div>
@@ -344,9 +392,13 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 					<UnifiedAccordionContent>
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Briefcase className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No jobs found for this property</p>
+							<p className="text-muted-foreground text-sm">
+								No jobs found for this property
+							</p>
 							<Button asChild className="mt-4" size="sm">
-								<Link href={`/dashboard/work/new?propertyId=${property.id}`}>Create First Job</Link>
+								<Link href={`/dashboard/work/new?propertyId=${property.id}`}>
+									Create First Job
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -363,7 +415,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 			count: equipment.length,
 			actions: (
 				<Button asChild size="sm" variant="outline">
-					<Link href={`/dashboard/work/equipment/new?propertyId=${property.id}`}>
+					<Link
+						href={`/dashboard/work/equipment/new?propertyId=${property.id}`}
+					>
 						<Settings className="mr-2 size-4" />
 						Add Equipment
 					</Link>
@@ -374,9 +428,15 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 					<UnifiedAccordionContent>
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Settings className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">No equipment installed at this property</p>
+							<p className="text-muted-foreground text-sm">
+								No equipment installed at this property
+							</p>
 							<Button asChild className="mt-4" size="sm" variant="outline">
-								<Link href={`/dashboard/work/equipment/new?propertyId=${property.id}`}>Add Equipment</Link>
+								<Link
+									href={`/dashboard/work/equipment/new?propertyId=${property.id}`}
+								>
+									Add Equipment
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -402,21 +462,44 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Estimate #</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Estimate #
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Title
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Date
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Total
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{estimates.map((estimate: any) => (
-										<tr className="border-b hover:bg-muted/30" key={estimate.id}>
-											<td className="px-6 py-4 text-sm">#{estimate.estimate_number || estimate.id.slice(0, 8)}</td>
-											<td className="px-6 py-4 text-sm">{estimate.title || "-"}</td>
-											<td className="px-6 py-4 text-sm">{new Date(estimate.created_at).toLocaleDateString()}</td>
-											<td className="px-6 py-4 font-medium text-sm">{formatCurrency(estimate.total_amount)}</td>
+										<tr
+											className="border-b hover:bg-muted/30"
+											key={estimate.id}
+										>
+											<td className="px-6 py-4 text-sm">
+												#{estimate.estimate_number || estimate.id.slice(0, 8)}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												{estimate.title || "-"}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												{new Date(estimate.created_at).toLocaleDateString()}
+											</td>
+											<td className="px-6 py-4 font-medium text-sm">
+												{formatCurrency(estimate.total_amount)}
+											</td>
 											<td className="px-6 py-4 text-sm">
 												<Badge variant="outline">{estimate.status}</Badge>
 											</td>
@@ -436,7 +519,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
 							<FileText className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">No estimates for this property yet.</p>
+							<p className="mt-2 text-muted-foreground text-sm">
+								No estimates for this property yet.
+							</p>
 						</div>
 					)}
 				</UnifiedAccordionContent>
@@ -458,28 +543,61 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Invoice #</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Title</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Date</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Total</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Balance</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Invoice #
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Title
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Date
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Total
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Balance
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{invoices.map((invoice: any) => (
 										<tr className="border-b hover:bg-muted/30" key={invoice.id}>
-											<td className="px-6 py-4 text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</td>
-											<td className="px-6 py-4 text-sm">{invoice.title || "-"}</td>
-											<td className="px-6 py-4 text-sm">{new Date(invoice.created_at).toLocaleDateString()}</td>
-											<td className="px-6 py-4 font-medium text-sm">{formatCurrency(invoice.total_amount)}</td>
-											<td className="px-6 py-4 font-medium text-sm">{formatCurrency(invoice.balance_amount)}</td>
 											<td className="px-6 py-4 text-sm">
-												<Badge variant={invoice.status === "paid" ? "default" : "outline"}>{invoice.status}</Badge>
+												#{invoice.invoice_number || invoice.id.slice(0, 8)}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Link className="text-primary hover:underline" href={`/dashboard/work/invoices/${invoice.id}`}>
+												{invoice.title || "-"}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												{new Date(invoice.created_at).toLocaleDateString()}
+											</td>
+											<td className="px-6 py-4 font-medium text-sm">
+												{formatCurrency(invoice.total_amount)}
+											</td>
+											<td className="px-6 py-4 font-medium text-sm">
+												{formatCurrency(invoice.balance_amount)}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												<Badge
+													variant={
+														invoice.status === "paid" ? "default" : "outline"
+													}
+												>
+													{invoice.status}
+												</Badge>
+											</td>
+											<td className="px-6 py-4 text-sm">
+												<Link
+													className="text-primary hover:underline"
+													href={`/dashboard/work/invoices/${invoice.id}`}
+												>
 													View
 												</Link>
 											</td>
@@ -491,7 +609,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
 							<Receipt className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">No invoices for this property yet.</p>
+							<p className="mt-2 text-muted-foreground text-sm">
+								No invoices for this property yet.
+							</p>
 						</div>
 					)}
 				</UnifiedAccordionContent>
@@ -513,23 +633,43 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 							<table className="w-full">
 								<thead className="border-b bg-muted/50">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">Plan Name</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Frequency</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Next Service</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Status</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">Actions</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Plan Name
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Frequency
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Next Service
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Status
+										</th>
+										<th className="px-6 py-3 text-left font-medium text-sm">
+											Actions
+										</th>
 									</tr>
 								</thead>
 								<tbody>
 									{maintenancePlans.map((plan: any) => (
 										<tr className="border-b hover:bg-muted/30" key={plan.id}>
-											<td className="px-6 py-4 font-medium text-sm">{plan.name || `Plan ${plan.id.slice(0, 8)}`}</td>
-											<td className="px-6 py-4 text-sm capitalize">{plan.frequency || "Monthly"}</td>
-											<td className="px-6 py-4 text-sm">
-												{plan.next_service_date ? new Date(plan.next_service_date).toLocaleDateString() : "-"}
+											<td className="px-6 py-4 font-medium text-sm">
+												{plan.name || `Plan ${plan.id.slice(0, 8)}`}
+											</td>
+											<td className="px-6 py-4 text-sm capitalize">
+												{plan.frequency || "Monthly"}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Badge variant="outline">{plan.status || "active"}</Badge>
+												{plan.next_service_date
+													? new Date(
+															plan.next_service_date,
+														).toLocaleDateString()
+													: "-"}
+											</td>
+											<td className="px-6 py-4 text-sm">
+												<Badge variant="outline">
+													{plan.status || "active"}
+												</Badge>
 											</td>
 											<td className="px-6 py-4 text-sm">
 												<Link
@@ -547,7 +687,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
 							<ShieldCheck className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">No maintenance plans for this property.</p>
+							<p className="mt-2 text-muted-foreground text-sm">
+								No maintenance plans for this property.
+							</p>
 						</div>
 					)}
 				</UnifiedAccordionContent>
@@ -579,9 +721,13 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 										<p className="text-sm">{note.content || note.note}</p>
 										<div className="mt-2 flex items-center justify-between">
 											{note.user && (
-												<p className="text-muted-foreground text-xs">by {note.user.name || note.user.email}</p>
+												<p className="text-muted-foreground text-xs">
+													by {note.user.name || note.user.email}
+												</p>
 											)}
-											<p className="text-muted-foreground text-xs">{new Date(note.created_at).toLocaleString()}</p>
+											<p className="text-muted-foreground text-xs">
+												{new Date(note.created_at).toLocaleString()}
+											</p>
 										</div>
 									</div>
 								))}
@@ -608,17 +754,26 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 						{attachments.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-12 text-center">
 								<Paperclip className="mb-4 size-12 text-muted-foreground" />
-								<p className="text-muted-foreground text-sm">No attachments yet</p>
+								<p className="text-muted-foreground text-sm">
+									No attachments yet
+								</p>
 							</div>
 						) : (
 							<div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
 								{attachments.map((attachment: any, idx: number) => (
-									<div className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent" key={idx}>
+									<div
+										className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent"
+										key={idx}
+									>
 										<Paperclip className="size-4 text-muted-foreground" />
 										<div className="flex-1 overflow-hidden">
-											<p className="truncate font-medium text-sm">{attachment.filename || "Untitled"}</p>
+											<p className="truncate font-medium text-sm">
+												{attachment.filename || "Untitled"}
+											</p>
 											<p className="text-muted-foreground text-xs">
-												{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : "Unknown size"}
+												{attachment.file_size
+													? `${(attachment.file_size / 1024).toFixed(1)} KB`
+													: "Unknown size"}
 											</p>
 										</div>
 									</div>
@@ -633,7 +788,10 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 
 	// Custom Header with Travel Time
 	const propertyTags =
-		(property?.metadata?.tags && Array.isArray(property.metadata.tags) && property.metadata.tags) || [];
+		(property?.metadata?.tags &&
+			Array.isArray(property.metadata.tags) &&
+			property.metadata.tags) ||
+		[];
 
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
@@ -647,7 +805,9 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 									<Building2 className="size-8 text-primary" />
 								</div>
 								<div>
-									<h1 className="font-semibold text-2xl">{property.name || property.address}</h1>
+									<h1 className="font-semibold text-2xl">
+										{property.name || property.address}
+									</h1>
 									<p className="text-muted-foreground text-sm">
 										{property.city}, {property.state} {property.zip_code}
 									</p>
@@ -684,11 +844,15 @@ export function PropertyPageContent({ entityData, metrics }: PropertyPageContent
 
 					{/* Tags */}
 					<div className="flex flex-wrap items-center gap-2">
-						<span className="font-medium text-muted-foreground text-xs">Tags:</span>
+						<span className="font-medium text-muted-foreground text-xs">
+							Tags:
+						</span>
 						<EntityTags
 							entityId={property.id}
 							entityType="property"
-							onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+							onUpdateTags={(id, tags) =>
+								updateEntityTags("property", id, tags)
+							}
 							tags={propertyTags}
 						/>
 					</div>

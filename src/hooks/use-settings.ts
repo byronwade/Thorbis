@@ -87,7 +87,9 @@ export function useSettings<T extends Record<string, any>>({
 			const result = await getter();
 
 			if (result.success && result.data) {
-				const transformed = transformLoad ? transformLoad(result.data) : (result.data as Partial<T>);
+				const transformed = transformLoad
+					? transformLoad(result.data)
+					: (result.data as Partial<T>);
 				const merged = { ...initialState, ...transformed } as T;
 				setSettings(merged);
 				setBaseline(merged);
@@ -125,19 +127,27 @@ export function useSettings<T extends Record<string, any>>({
 	const saveSettings = async (customFormData?: FormData) => {
 		startTransition(async () => {
 			try {
-				const formData = customFormData || (transformSave ? transformSave(settings) : new FormData());
+				const formData =
+					customFormData ||
+					(transformSave ? transformSave(settings) : new FormData());
 
 				const result = await setter(formData);
 
 				if (result.success) {
 					setBaseline(settings);
 					setHasUnsavedChanges(false);
-					toast.success(`${settingsName.charAt(0).toUpperCase() + settingsName.slice(1)} settings saved successfully`);
+					toast.success(
+						`${settingsName.charAt(0).toUpperCase() + settingsName.slice(1)} settings saved successfully`,
+					);
 				} else {
-					toast.error(result.error || `Failed to save ${settingsName} settings`);
+					toast.error(
+						result.error || `Failed to save ${settingsName} settings`,
+					);
 				}
 			} catch (_error) {
-				toast.error(`An unexpected error occurred while saving ${settingsName} settings`);
+				toast.error(
+					`An unexpected error occurred while saving ${settingsName} settings`,
+				);
 			}
 		});
 	};

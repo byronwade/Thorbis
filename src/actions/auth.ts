@@ -8,13 +8,28 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { clearActiveCompany } from "@/lib/auth/company-context";
-import { createEmailVerificationToken, verifyAndConsumeToken } from "@/lib/auth/tokens";
+import {
+	createEmailVerificationToken,
+	verifyAndConsumeToken,
+} from "@/lib/auth/tokens";
 import { emailConfig } from "@/lib/email/resend-client";
 import { clearCSRFToken } from "@/lib/security/csrf";
-import { authRateLimiter, checkRateLimit, passwordResetRateLimiter, RateLimitError } from "@/lib/security/rate-limit";
+import {
+	authRateLimiter,
+	checkRateLimit,
+	passwordResetRateLimiter,
+	RateLimitError,
+} from "@/lib/security/rate-limit";
 import { createClient } from "@/lib/supabase/server";
-import { createServiceSupabaseClient, type ServiceSupabaseClient } from "@/lib/supabase/service-client";
-import { sendEmailVerification, sendPasswordChanged, sendWelcomeEmail } from "./emails";
+import {
+	createServiceSupabaseClient,
+	type ServiceSupabaseClient,
+} from "@/lib/supabase/service-client";
+import {
+	sendEmailVerification,
+	sendPasswordChanged,
+	sendWelcomeEmail,
+} from "./emails";
 
 const NAME_MIN_LENGTH = 2;
 const NAME_MAX_LENGTH = 100;
@@ -55,19 +70,27 @@ const signUpSchema = z.object({
 		.string()
 		.trim()
 		.min(PHONE_MIN_DIGITS, "Phone number is required")
-		.refine((value) => value.replace(/\D/g, "").length >= PHONE_MIN_DIGITS, "Enter a valid phone number"),
+		.refine(
+			(value) => value.replace(/\D/g, "").length >= PHONE_MIN_DIGITS,
+			"Enter a valid phone number",
+		),
 	password: z
 		.string()
 		.min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
 		.max(PASSWORD_MAX_LENGTH, "Password is too long")
-		.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+		.regex(
+			/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+			"Password must contain uppercase, lowercase, and number",
+		),
 	companyName: z
 		.string()
 		.trim()
 		.min(COMPANY_NAME_MIN_LENGTH, "Company name must be at least 2 characters")
 		.max(COMPANY_NAME_MAX_LENGTH, "Company name is too long")
 		.optional(),
-	terms: z.boolean().refine((val) => val === true, "You must accept the terms and conditions"),
+	terms: z
+		.boolean()
+		.refine((val) => val === true, "You must accept the terms and conditions"),
 });
 
 const signInSchema = z.object({
@@ -85,7 +108,10 @@ const resetPasswordSchema = z
 			.string()
 			.min(PASSWORD_MIN_LENGTH, "Password must be at least 8 characters")
 			.max(PASSWORD_MAX_LENGTH, "Password is too long")
-			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain uppercase, lowercase, and number"),
+			.regex(
+				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+				"Password must contain uppercase, lowercase, and number",
+			),
 		confirmPassword: z.string(),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
@@ -102,8 +128,14 @@ const delay = (ms: number) =>
 		setTimeout(resolve, ms);
 	});
 
-const withSupabaseRateLimitRetry = async <T extends { error?: unknown }>(operation: () => Promise<T>): Promise<T> => {
-	for (let attempt = 1; attempt <= SUPABASE_RATE_LIMIT_MAX_RETRIES; attempt += 1) {
+const withSupabaseRateLimitRetry = async <T extends { error?: unknown }>(
+	operation: () => Promise<T>,
+): Promise<T> => {
+	for (
+		let attempt = 1;
+		attempt <= SUPABASE_RATE_LIMIT_MAX_RETRIES;
+		attempt += 1
+	) {
 		try {
 			const result = await operation();
 
@@ -141,7 +173,10 @@ const withSupabaseRateLimitRetry = async <T extends { error?: unknown }>(operati
 
 type SignUpFormInput = z.infer<typeof signUpSchema>;
 
-type SupabaseBrowserClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseBrowserClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 function normalizePhoneNumber(input: string): string {
 	const trimmed = input.trim();
@@ -155,7 +190,10 @@ function normalizePhoneNumber(input: string): string {
 		return `+${digitsOnly}`;
 	}
 
-	if (digitsOnly.length === EXTENDED_US_NUMBER_DIGITS && digitsOnly.startsWith(COUNTRY_CODE_US)) {
+	if (
+		digitsOnly.length === EXTENDED_US_NUMBER_DIGITS &&
+		digitsOnly.startsWith(COUNTRY_CODE_US)
+	) {
 		return `+${digitsOnly}`;
 	}
 
@@ -170,7 +208,10 @@ const reportAuthIssue = (_message: string, _error?: unknown) => {
 	// TODO: Integrate structured logging/monitoring
 };
 
-const getMetadataString = (metadata: unknown, key: string): string | undefined => {
+const getMetadataString = (
+	metadata: unknown,
+	key: string,
+): string | undefined => {
 	if (metadata && typeof metadata === "object") {
 		const value = (metadata as Record<string, unknown>)[key];
 		if (typeof value === "string") {
@@ -184,7 +225,7 @@ const getMetadataString = (metadata: unknown, key: string): string | undefined =
 async function uploadAvatarForNewUser(
 	supabase: ServiceSupabaseClient,
 	file: File,
-	userId: string
+	userId: string,
 ): Promise<string | null> {
 	if (!file.type.startsWith("image/")) {
 		throw new Error("Avatar must be an image");
@@ -238,7 +279,9 @@ type ParsedSignUpForm = {
 const parseSignUpFormData = (formData: FormData): ParsedSignUpForm => {
 	const companyNameEntry = formData.get("companyName");
 	const normalizedCompanyName =
-		typeof companyNameEntry === "string" && companyNameEntry.trim().length > 0 ? companyNameEntry : undefined;
+		typeof companyNameEntry === "string" && companyNameEntry.trim().length > 0
+			? companyNameEntry
+			: undefined;
 
 	const rawData = {
 		name: (formData.get("name") as string) ?? "",
@@ -251,7 +294,8 @@ const parseSignUpFormData = (formData: FormData): ParsedSignUpForm => {
 
 	const validated = signUpSchema.parse(rawData);
 	const avatarEntry = formData.get("avatar");
-	const avatarFile = avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
+	const avatarFile =
+		avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
 
 	return {
 		validated,
@@ -261,15 +305,18 @@ const parseSignUpFormData = (formData: FormData): ParsedSignUpForm => {
 	};
 };
 
-const requireSupabaseBrowserClient = async (): Promise<SupabaseBrowserClient> => {
-	const supabase = await createClient();
+const requireSupabaseBrowserClient =
+	async (): Promise<SupabaseBrowserClient> => {
+		const supabase = await createClient();
 
-	if (!supabase) {
-		throw new Error("Authentication service is not configured. Please check your environment variables.");
-	}
+		if (!supabase) {
+			throw new Error(
+				"Authentication service is not configured. Please check your environment variables.",
+			);
+		}
 
-	return supabase as SupabaseBrowserClient;
-};
+		return supabase as SupabaseBrowserClient;
+	};
 
 type RegisterSupabaseUserParams = {
 	supabase: SupabaseBrowserClient;
@@ -296,7 +343,7 @@ const registerSupabaseUser = async ({
 				},
 				emailRedirectTo: `${emailConfig.siteUrl}/auth/callback`,
 			},
-		})
+		}),
 	);
 
 	if (error) {
@@ -386,7 +433,11 @@ const handlePostSignUpEmails = async ({
 	userId,
 }: PostSignUpEmailParams): Promise<AuthActionResult | null> => {
 	if (requiresConfirmation) {
-		const { token, expiresAt } = await createEmailVerificationToken(email, userId, CONFIRMATION_TOKEN_TTL_HOURS);
+		const { token, expiresAt } = await createEmailVerificationToken(
+			email,
+			userId,
+			CONFIRMATION_TOKEN_TTL_HOURS,
+		);
 
 		const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
 		const verificationResult = await sendEmailVerification(email, {
@@ -395,14 +446,18 @@ const handlePostSignUpEmails = async ({
 		});
 
 		if (!verificationResult.success) {
-			reportAuthIssue("Failed to send verification email", verificationResult.error);
+			reportAuthIssue(
+				"Failed to send verification email",
+				verificationResult.error,
+			);
 		}
 
 		return {
 			success: true,
 			data: {
 				requiresEmailConfirmation: true,
-				message: "Account created! Please check your email to verify your account.",
+				message:
+					"Account created! Please check your email to verify your account.",
 				expiresAt: expiresAt.toISOString(),
 			},
 		};
@@ -427,7 +482,9 @@ const normalizeOptionalPhone = (phone: string | null): string | null => {
 
 	const digitsOnly = phone.replace(/\D/g, "");
 	if (digitsOnly.length < PHONE_MIN_DIGITS) {
-		throw new Error("Please enter a valid phone number with at least 10 digits.");
+		throw new Error(
+			"Please enter a valid phone number with at least 10 digits.",
+		);
 	}
 
 	return normalizePhoneNumber(phone);
@@ -441,7 +498,8 @@ type CompleteProfileForm = {
 
 const parseCompleteProfileForm = (formData: FormData): CompleteProfileForm => {
 	const avatarEntry = formData.get("avatar");
-	const avatarFile = avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
+	const avatarFile =
+		avatarEntry instanceof File && avatarEntry.size > 0 ? avatarEntry : null;
 
 	const name = (formData.get("name") as string | null) ?? null;
 	const phone = (formData.get("phone") as string | null) ?? null;
@@ -531,7 +589,10 @@ const updateUserTableRecord = async ({
 	try {
 		const adminClient = await ensureServiceSupabase();
 		// @ts-expect-error - Database schema may be out of sync with types
-		const { error } = await adminClient.from("users").update(updatePayload).eq("id", userId);
+		const { error } = await adminClient
+			.from("users")
+			.update(updatePayload)
+			.eq("id", userId);
 
 		if (error) {
 			reportAuthIssue("Failed to update user profile", error);
@@ -732,7 +793,10 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
 			};
 		}
 
-		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
+		if (
+			caughtError instanceof Error &&
+			caughtError.message !== "NEXT_REDIRECT"
+		) {
 			return {
 				success: false,
 				error: caughtError.message,
@@ -753,7 +817,9 @@ export async function signUp(formData: FormData): Promise<AuthActionResult> {
  * - Updates both auth metadata and public.users table
  * - Company name is collected during onboarding, not here
  */
-export async function completeProfile(formData: FormData): Promise<AuthActionResult> {
+export async function completeProfile(
+	formData: FormData,
+): Promise<AuthActionResult> {
 	try {
 		const supabase = await requireSupabaseBrowserClient();
 		const user = await requireAuthenticatedUser(supabase);
@@ -766,7 +832,8 @@ export async function completeProfile(formData: FormData): Promise<AuthActionRes
 			name: parsedForm.name,
 			normalizedPhone: parsedForm.normalizedPhone,
 			avatarFile: parsedForm.avatarFile,
-			existingAvatar: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+			existingAvatar:
+				user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
 			existingMetadata: user.user_metadata,
 		});
 
@@ -792,7 +859,10 @@ export async function completeProfile(formData: FormData): Promise<AuthActionRes
 			};
 		}
 
-		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
+		if (
+			caughtError instanceof Error &&
+			caughtError.message !== "NEXT_REDIRECT"
+		) {
 			return {
 				success: false,
 				error: caughtError.message,
@@ -850,7 +920,8 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 		if (!supabase) {
 			return {
 				success: false,
-				error: "Authentication service is not configured. Please check your environment variables.",
+				error:
+					"Authentication service is not configured. Please check your environment variables.",
 			};
 		}
 
@@ -859,7 +930,7 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 			supabase.auth.signInWithPassword({
 				email: validatedData.email,
 				password: validatedData.password,
-			})
+			}),
 		);
 
 		if (signInError) {
@@ -887,7 +958,10 @@ export async function signIn(formData: FormData): Promise<AuthActionResult> {
 			};
 		}
 
-		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
+		if (
+			caughtError instanceof Error &&
+			caughtError.message !== "NEXT_REDIRECT"
+		) {
 			return {
 				success: false,
 				error: caughtError.message,
@@ -924,7 +998,9 @@ export async function signOut(): Promise<AuthActionResult> {
 		}
 
 		// Sign out from Supabase (clears auth cookies)
-		const { error: signOutError } = await withSupabaseRateLimitRetry(() => supabase.auth.signOut());
+		const { error: signOutError } = await withSupabaseRateLimitRetry(() =>
+			supabase.auth.signOut(),
+		);
 
 		if (signOutError) {
 			return {
@@ -941,7 +1017,10 @@ export async function signOut(): Promise<AuthActionResult> {
 		revalidatePath("/", "layout");
 		redirect("/login");
 	} catch (caughtError) {
-		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
+		if (
+			caughtError instanceof Error &&
+			caughtError.message !== "NEXT_REDIRECT"
+		) {
 			return {
 				success: false,
 				error: caughtError.message,
@@ -962,7 +1041,9 @@ export async function signOut(): Promise<AuthActionResult> {
  * - Redirects to provider login page
  * - After callback, checks if profile is complete (phone, name)
  */
-export async function signInWithOAuth(provider: "google" | "facebook"): Promise<AuthActionResult> {
+export async function signInWithOAuth(
+	provider: "google" | "facebook",
+): Promise<AuthActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -979,7 +1060,7 @@ export async function signInWithOAuth(provider: "google" | "facebook"): Promise<
 				options: {
 					redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
 				},
-			})
+			}),
 		);
 
 		if (oauthError) {
@@ -998,7 +1079,10 @@ export async function signInWithOAuth(provider: "google" | "facebook"): Promise<
 			success: true,
 		};
 	} catch (caughtError) {
-		if (caughtError instanceof Error && caughtError.message !== "NEXT_REDIRECT") {
+		if (
+			caughtError instanceof Error &&
+			caughtError.message !== "NEXT_REDIRECT"
+		) {
 			return {
 				success: false,
 				error: caughtError.message,
@@ -1017,7 +1101,9 @@ export async function signInWithOAuth(provider: "google" | "facebook"): Promise<
  * - Secure token generation via Supabase
  * - Custom email template with security information
  */
-export async function forgotPassword(formData: FormData): Promise<AuthActionResult> {
+export async function forgotPassword(
+	formData: FormData,
+): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
 		const botCheck = await checkBotId();
@@ -1060,7 +1146,7 @@ export async function forgotPassword(formData: FormData): Promise<AuthActionResu
 		const { error: resetPasswordError } = await withSupabaseRateLimitRetry(() =>
 			supabase.auth.resetPasswordForEmail(validatedData.email, {
 				redirectTo: `${emailConfig.siteUrl}/auth/reset-password`,
-			})
+			}),
 		);
 
 		if (resetPasswordError) {
@@ -1105,7 +1191,10 @@ export async function forgotPassword(formData: FormData): Promise<AuthActionResu
 
 		return {
 			success: false,
-			error: caughtError instanceof Error ? caughtError.message : "Failed to send reset email",
+			error:
+				caughtError instanceof Error
+					? caughtError.message
+					: "Failed to send reset email",
 		};
 	}
 }
@@ -1119,7 +1208,9 @@ export async function forgotPassword(formData: FormData): Promise<AuthActionResu
  * - Invalidates reset token after use
  * - Sends custom password changed confirmation via Resend
  */
-export async function resetPassword(formData: FormData): Promise<AuthActionResult> {
+export async function resetPassword(
+	formData: FormData,
+): Promise<AuthActionResult> {
 	try {
 		// Bot protection check (Vercel BotID)
 		const botCheck = await checkBotId();
@@ -1154,7 +1245,7 @@ export async function resetPassword(formData: FormData): Promise<AuthActionResul
 		const { error: updateUserError } = await withSupabaseRateLimitRetry(() =>
 			supabase.auth.updateUser({
 				password: validatedData.password,
-			})
+			}),
 		);
 
 		if (updateUserError) {
@@ -1173,14 +1264,18 @@ export async function resetPassword(formData: FormData): Promise<AuthActionResul
 
 			// Log email send failure but don't block password reset
 			if (!emailResult.success) {
-				reportAuthIssue("Failed to send password changed email", emailResult.error);
+				reportAuthIssue(
+					"Failed to send password changed email",
+					emailResult.error,
+				);
 			}
 		}
 
 		return {
 			success: true,
 			data: {
-				message: "Password updated successfully. A confirmation email has been sent.",
+				message:
+					"Password updated successfully. A confirmation email has been sent.",
 			},
 		};
 	} catch (caughtError) {
@@ -1193,7 +1288,10 @@ export async function resetPassword(formData: FormData): Promise<AuthActionResul
 
 		return {
 			success: false,
-			error: caughtError instanceof Error ? caughtError.message : "Failed to reset password",
+			error:
+				caughtError instanceof Error
+					? caughtError.message
+					: "Failed to reset password",
 		};
 	}
 }
@@ -1264,12 +1362,16 @@ export async function getSession() {
 export async function verifyEmail(token: string): Promise<AuthActionResult> {
 	try {
 		// Verify and consume the token
-		const tokenRecord = await verifyAndConsumeToken(token, "email_verification");
+		const tokenRecord = await verifyAndConsumeToken(
+			token,
+			"email_verification",
+		);
 
 		if (!tokenRecord) {
 			return {
 				success: false,
-				error: "Invalid or expired verification link. Please request a new one.",
+				error:
+					"Invalid or expired verification link. Please request a new one.",
 			};
 		}
 
@@ -1291,7 +1393,10 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 				.eq("id", tokenRecord.userId);
 
 			if (updateError) {
-				reportAuthIssue("Failed to update email verification status", updateError);
+				reportAuthIssue(
+					"Failed to update email verification status",
+					updateError,
+				);
 				return {
 					success: false,
 					error: "Failed to verify email. Please contact support.",
@@ -1320,7 +1425,10 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
 		reportAuthIssue("Error verifying email", caughtError);
 		return {
 			success: false,
-			error: caughtError instanceof Error ? caughtError.message : "Failed to verify email",
+			error:
+				caughtError instanceof Error
+					? caughtError.message
+					: "Failed to verify email",
 		};
 	}
 }
@@ -1333,7 +1441,9 @@ export async function verifyEmail(token: string): Promise<AuthActionResult> {
  * - Deletes old tokens for the email
  * - Sends fresh verification email
  */
-export async function resendVerificationEmail(email: string): Promise<AuthActionResult> {
+export async function resendVerificationEmail(
+	email: string,
+): Promise<AuthActionResult> {
 	try {
 		const supabase = await createClient();
 
@@ -1345,20 +1455,29 @@ export async function resendVerificationEmail(email: string): Promise<AuthAction
 		}
 
 		// Check if user exists
-		const { data: userData } = await supabase.from("users").select("id, name, email").eq("email", email).single();
+		const { data: userData } = await supabase
+			.from("users")
+			.select("id, name, email")
+			.eq("email", email)
+			.single();
 
 		if (!userData) {
 			// Don't reveal if user exists or not for security
 			return {
 				success: true,
 				data: {
-					message: "If an account exists with this email, a verification link has been sent.",
+					message:
+						"If an account exists with this email, a verification link has been sent.",
 				},
 			};
 		}
 
 		// Generate new verification token
-		const { token, expiresAt } = await createEmailVerificationToken(email, userData.id, CONFIRMATION_TOKEN_TTL_HOURS);
+		const { token, expiresAt } = await createEmailVerificationToken(
+			email,
+			userData.id,
+			CONFIRMATION_TOKEN_TTL_HOURS,
+		);
 
 		// Send verification email
 		const verificationUrl = `${emailConfig.siteUrl}/auth/verify-email?token=${token}`;
@@ -1387,7 +1506,10 @@ export async function resendVerificationEmail(email: string): Promise<AuthAction
 		reportAuthIssue("Error resending verification email", caughtError);
 		return {
 			success: false,
-			error: caughtError instanceof Error ? caughtError.message : "Failed to resend verification email",
+			error:
+				caughtError instanceof Error
+					? caughtError.message
+					: "Failed to resend verification email",
 		};
 	}
 }

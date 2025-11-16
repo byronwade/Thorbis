@@ -26,19 +26,28 @@ const AGREEMENT_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#6B7280" },
 ];
 
-const columnLabel = new Map(AGREEMENT_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	AGREEMENT_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
 });
 
-export function ServiceAgreementsKanban({ agreements }: { agreements: ServiceAgreement[] }) {
+export function ServiceAgreementsKanban({
+	agreements,
+}: {
+	agreements: ServiceAgreement[];
+}) {
 	return (
 		<EntityKanban<ServiceAgreement, AgreementStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce((sum, item) => sum + (item.entity as ServiceAgreement).value, 0);
+				const total = columnItems.reduce(
+					(sum, item) => sum + (item.entity as ServiceAgreement).value,
+					0,
+				);
 				return { count: columnItems.length, total };
 			}}
 			columns={AGREEMENT_COLUMNS}
@@ -52,11 +61,19 @@ export function ServiceAgreementsKanban({ agreements }: { agreements: ServiceAgr
 				agreement,
 			})}
 			renderCard={(item) => (
-				<ServiceAgreementCard item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem} />
+				<ServiceAgreementCard
+					item={
+						{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem
+					}
+				/>
 			)}
 			renderDragOverlay={(item) => (
 				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<ServiceAgreementCard item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem} />
+					<ServiceAgreementCard
+						item={
+							{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem
+						}
+					/>
 				</div>
 			)}
 			showTotals={true}
@@ -78,13 +95,16 @@ function ServiceAgreementCard({ item }: { item: ServiceAgreementKanbanItem }) {
 					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
 						{agreement.agreementNumber}
 					</p>
-					<h3 className="font-semibold text-foreground text-sm">{agreement.customer}</h3>
+					<h3 className="font-semibold text-foreground text-sm">
+						{agreement.customer}
+					</h3>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
-								(columnId === "expired" || columnId === "cancelled") && "bg-destructive/10 text-destructive",
-								columnId === "active" && "bg-primary/10 text-primary"
+								(columnId === "expired" || columnId === "cancelled") &&
+									"bg-destructive/10 text-destructive",
+								columnId === "active" && "bg-primary/10 text-primary",
 							)}
 							variant={
 								columnId === "active"
@@ -119,7 +139,12 @@ function ServiceAgreementCard({ item }: { item: ServiceAgreementKanbanItem }) {
 				</div>
 			</div>
 
-			<Button asChild className="w-full justify-between text-primary text-xs" size="sm" variant="ghost">
+			<Button
+				asChild
+				className="w-full justify-between text-primary text-xs"
+				size="sm"
+				variant="ghost"
+			>
 				<Link href={`/dashboard/work/service-agreements/${agreement.id}`}>
 					View agreement
 					<ArrowUpRight className="size-3.5" />

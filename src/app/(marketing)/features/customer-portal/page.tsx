@@ -16,7 +16,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -64,7 +70,7 @@ export default function CustomerPortalPage() {
 								name: "Customer Portal",
 								url: `${siteUrl}/features/customer-portal`,
 							},
-						])
+						]),
 					),
 				}}
 				id="customer-portal-breadcrumb-ld"
@@ -94,11 +100,16 @@ export default function CustomerPortalPage() {
 								Your customers' command center
 							</h1>
 							<p className="mb-8 text-lg text-muted-foreground sm:text-xl">
-								A beautiful, branded portal where customers can book, pay, and track jobs 24/7. Reduce phone calls,
-								speed up payments, and look more professional—all at once.
+								A beautiful, branded portal where customers can book, pay, and
+								track jobs 24/7. Reduce phone calls, speed up payments, and look
+								more professional—all at once.
 							</p>
 							<div className="flex flex-wrap items-center gap-4">
-								<Button asChild className="shadow-lg shadow-primary/20" size="lg">
+								<Button
+									asChild
+									className="shadow-lg shadow-primary/20"
+									size="lg"
+								>
 									<Link href="/register">
 										Launch Your Portal
 										<Zap className="ml-2 size-4" />
@@ -117,7 +128,9 @@ export default function CustomerPortalPage() {
 									</div>
 									<div>
 										<div className="font-semibold text-sm">65% Fewer Calls</div>
-										<div className="text-muted-foreground text-xs">Self-service booking</div>
+										<div className="text-muted-foreground text-xs">
+											Self-service booking
+										</div>
 									</div>
 								</div>
 								<div className="flex items-center gap-3">
@@ -125,8 +138,12 @@ export default function CustomerPortalPage() {
 										<CreditCard className="size-5 text-primary" />
 									</div>
 									<div>
-										<div className="font-semibold text-sm">2x Faster Payment</div>
-										<div className="text-muted-foreground text-xs">One-click pay</div>
+										<div className="font-semibold text-sm">
+											2x Faster Payment
+										</div>
+										<div className="text-muted-foreground text-xs">
+											One-click pay
+										</div>
 									</div>
 								</div>
 							</div>
@@ -140,11 +157,15 @@ export default function CustomerPortalPage() {
 									<div className="flex items-center justify-between">
 										<div className="flex items-center gap-3">
 											<div className="flex size-10 items-center justify-center rounded-lg bg-primary">
-												<span className="font-bold text-primary-foreground text-xl">R</span>
+												<span className="font-bold text-primary-foreground text-xl">
+													R
+												</span>
 											</div>
 											<div>
 												<div className="font-semibold">Rodriguez HVAC</div>
-												<div className="text-muted-foreground text-xs">Customer Portal</div>
+												<div className="text-muted-foreground text-xs">
+													Customer Portal
+												</div>
 											</div>
 										</div>
 										<div className="flex items-center gap-2">
@@ -187,9 +208,12 @@ export default function CustomerPortalPage() {
 								<div className="p-6">
 									{/* Welcome Message */}
 									<div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
-										<div className="mb-2 font-semibold text-sm">Welcome back, Sarah!</div>
+										<div className="mb-2 font-semibold text-sm">
+											Welcome back, Sarah!
+										</div>
 										<p className="text-muted-foreground text-xs">
-											Your next maintenance is due in 3 weeks. Book now and save 10%.
+											Your next maintenance is due in 3 weeks. Book now and save
+											10%.
 										</p>
 										<Button className="mt-3" size="sm">
 											Schedule Maintenance
@@ -198,14 +222,18 @@ export default function CustomerPortalPage() {
 
 									{/* Quick Actions */}
 									<div className="mb-6">
-										<div className="mb-3 font-semibold text-sm">Quick Actions</div>
+										<div className="mb-3 font-semibold text-sm">
+											Quick Actions
+										</div>
 										<div className="grid grid-cols-2 gap-3">
 											<button
 												className="flex flex-col items-center gap-2 rounded-lg border bg-background p-4 transition-all hover:border-primary/50 hover:bg-primary/5"
 												type="button"
 											>
 												<Calendar className="size-6 text-primary" />
-												<span className="font-medium text-xs">Book Service</span>
+												<span className="font-medium text-xs">
+													Book Service
+												</span>
 											</button>
 											<button
 												className="flex flex-col items-center gap-2 rounded-lg border bg-background p-4 transition-all hover:border-primary/50 hover:bg-primary/5"
@@ -226,19 +254,27 @@ export default function CustomerPortalPage() {
 												type="button"
 											>
 												<FileText className="size-6 text-primary" />
-												<span className="font-medium text-xs">View History</span>
+												<span className="font-medium text-xs">
+													View History
+												</span>
 											</button>
 										</div>
 									</div>
 
 									{/* Upcoming Appointment */}
 									<div className="mb-4">
-										<div className="mb-3 font-semibold text-sm">Upcoming Appointment</div>
+										<div className="mb-3 font-semibold text-sm">
+											Upcoming Appointment
+										</div>
 										<div className="rounded-lg border bg-background p-4">
 											<div className="mb-2 flex items-start justify-between">
 												<div>
-													<div className="mb-1 font-semibold text-sm">AC Maintenance</div>
-													<div className="text-muted-foreground text-xs">Tomorrow, 2:00 PM - 4:00 PM</div>
+													<div className="mb-1 font-semibold text-sm">
+														AC Maintenance
+													</div>
+													<div className="text-muted-foreground text-xs">
+														Tomorrow, 2:00 PM - 4:00 PM
+													</div>
 												</div>
 												<Badge className="bg-green-500" variant="secondary">
 													Confirmed
@@ -261,12 +297,18 @@ export default function CustomerPortalPage() {
 
 									{/* Outstanding Invoice */}
 									<div>
-										<div className="mb-3 font-semibold text-sm">Outstanding Balance</div>
+										<div className="mb-3 font-semibold text-sm">
+											Outstanding Balance
+										</div>
 										<div className="rounded-lg border border-orange-500/30 bg-orange-500/5 p-4">
 											<div className="mb-2 flex items-start justify-between">
 												<div>
-													<div className="mb-1 font-semibold text-sm">Invoice #2847</div>
-													<div className="text-muted-foreground text-xs">Due: Jan 15, 2024</div>
+													<div className="mb-1 font-semibold text-sm">
+														Invoice #2847
+													</div>
+													<div className="text-muted-foreground text-xs">
+														Due: Jan 15, 2024
+													</div>
 												</div>
 												<div className="font-bold text-lg">$621.36</div>
 											</div>
@@ -287,7 +329,9 @@ export default function CustomerPortalPage() {
 									</div>
 									<span className="font-semibold text-sm">Mobile-First</span>
 								</div>
-								<p className="text-muted-foreground text-xs">Looks perfect on any device</p>
+								<p className="text-muted-foreground text-xs">
+									Looks perfect on any device
+								</p>
 							</div>
 						</div>
 					</div>
@@ -300,19 +344,27 @@ export default function CustomerPortalPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">65%</div>
-							<div className="font-medium text-muted-foreground text-sm">Fewer Phone Calls</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Fewer Phone Calls
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">2x</div>
-							<div className="font-medium text-muted-foreground text-sm">Faster Payments</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Faster Payments
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">24/7</div>
-							<div className="font-medium text-muted-foreground text-sm">Self-Service Access</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Self-Service Access
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="mb-2 font-bold text-4xl text-primary">4.9★</div>
-							<div className="font-medium text-muted-foreground text-sm">Customer Satisfaction</div>
+							<div className="font-medium text-muted-foreground text-sm">
+								Customer Satisfaction
+							</div>
 						</div>
 					</div>
 				</div>
@@ -338,12 +390,16 @@ export default function CustomerPortalPage() {
 									<Calendar className="size-6 text-primary" />
 								</div>
 								<CardTitle>24/7 Online Booking</CardTitle>
-								<CardDescription>Let customers schedule appointments anytime, anywhere</CardDescription>
+								<CardDescription>
+									Let customers schedule appointments anytime, anywhere
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-4">
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Real-Time Availability</div>
+										<div className="mb-3 font-semibold text-sm">
+											Real-Time Availability
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• See open slots instantly</li>
 											<li>• Tech availability synced live</li>
@@ -352,7 +408,9 @@ export default function CustomerPortalPage() {
 										</ul>
 									</div>
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Smart Scheduling</div>
+										<div className="mb-3 font-semibold text-sm">
+											Smart Scheduling
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Service-specific questions</li>
 											<li>• Equipment history pre-filled</li>
@@ -364,8 +422,9 @@ export default function CustomerPortalPage() {
 								<div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
 									<div className="mb-1 font-semibold text-sm">Impact</div>
 									<p className="text-muted-foreground text-xs">
-										Customers book 65% more often when they can do it themselves, and 40% of bookings happen outside
-										business hours.
+										Customers book 65% more often when they can do it
+										themselves, and 40% of bookings happen outside business
+										hours.
 									</p>
 								</div>
 							</CardContent>
@@ -378,12 +437,16 @@ export default function CustomerPortalPage() {
 									<CreditCard className="size-6 text-green-600" />
 								</div>
 								<CardTitle>One-Click Payments</CardTitle>
-								<CardDescription>Get paid faster with instant payment options</CardDescription>
+								<CardDescription>
+									Get paid faster with instant payment options
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-4">
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Instant Payment</div>
+										<div className="mb-3 font-semibold text-sm">
+											Instant Payment
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• One-click from email/SMS</li>
 											<li>• Saved payment methods</li>
@@ -392,7 +455,9 @@ export default function CustomerPortalPage() {
 										</ul>
 									</div>
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Payment Plans</div>
+										<div className="mb-3 font-semibold text-sm">
+											Payment Plans
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Flexible payment options</li>
 											<li>• Automatic installments</li>
@@ -404,8 +469,9 @@ export default function CustomerPortalPage() {
 								<div className="rounded-lg border border-green-500/30 bg-green-500/5 p-4">
 									<div className="mb-1 font-semibold text-sm">Impact</div>
 									<p className="text-muted-foreground text-xs">
-										Customers pay 2x faster through the portal, and you collect 92% of invoices within 7 days vs. 45
-										days with traditional billing.
+										Customers pay 2x faster through the portal, and you collect
+										92% of invoices within 7 days vs. 45 days with traditional
+										billing.
 									</p>
 								</div>
 							</CardContent>
@@ -418,12 +484,16 @@ export default function CustomerPortalPage() {
 									<FileText className="size-6 text-blue-600" />
 								</div>
 								<CardTitle>Complete Service History</CardTitle>
-								<CardDescription>Every job, invoice, and interaction in one place</CardDescription>
+								<CardDescription>
+									Every job, invoice, and interaction in one place
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-4">
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Job Records</div>
+										<div className="mb-3 font-semibold text-sm">
+											Job Records
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Complete work history</li>
 											<li>• Before/after photos</li>
@@ -432,7 +502,9 @@ export default function CustomerPortalPage() {
 										</ul>
 									</div>
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Equipment Tracking</div>
+										<div className="mb-3 font-semibold text-sm">
+											Equipment Tracking
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Equipment age & model</li>
 											<li>• Maintenance schedules</li>
@@ -444,8 +516,8 @@ export default function CustomerPortalPage() {
 								<div className="rounded-lg border border-blue-500/30 bg-blue-500/5 p-4">
 									<div className="mb-1 font-semibold text-sm">Impact</div>
 									<p className="text-muted-foreground text-xs">
-										Customers who can see their history are 3x more likely to book maintenance and 2x more likely to
-										accept upsells.
+										Customers who can see their history are 3x more likely to
+										book maintenance and 2x more likely to accept upsells.
 									</p>
 								</div>
 							</CardContent>
@@ -458,12 +530,16 @@ export default function CustomerPortalPage() {
 									<MessageSquare className="size-6 text-purple-600" />
 								</div>
 								<CardTitle>Direct Messaging</CardTitle>
-								<CardDescription>Two-way communication without phone tag</CardDescription>
+								<CardDescription>
+									Two-way communication without phone tag
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-4">
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Real-Time Chat</div>
+										<div className="mb-3 font-semibold text-sm">
+											Real-Time Chat
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Ask questions anytime</li>
 											<li>• Photo sharing</li>
@@ -472,7 +548,9 @@ export default function CustomerPortalPage() {
 										</ul>
 									</div>
 									<div className="rounded-lg border bg-muted/30 p-4">
-										<div className="mb-3 font-semibold text-sm">Job Updates</div>
+										<div className="mb-3 font-semibold text-sm">
+											Job Updates
+										</div>
 										<ul className="space-y-2 text-muted-foreground text-sm">
 											<li>• Tech on the way alerts</li>
 											<li>• Job completion notices</li>
@@ -484,7 +562,8 @@ export default function CustomerPortalPage() {
 								<div className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-4">
 									<div className="mb-1 font-semibold text-sm">Impact</div>
 									<p className="text-muted-foreground text-xs">
-										Portal messaging reduces phone calls by 65% and improves customer satisfaction scores by 28%.
+										Portal messaging reduces phone calls by 65% and improves
+										customer satisfaction scores by 28%.
 									</p>
 								</div>
 							</CardContent>
@@ -497,9 +576,12 @@ export default function CustomerPortalPage() {
 			<section className="border-t bg-muted/20 py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Built for modern customers</h2>
+						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+							Built for modern customers
+						</h2>
 						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Every feature designed to delight your customers and save your team time
+							Every feature designed to delight your customers and save your
+							team time
 						</p>
 					</div>
 
@@ -510,7 +592,9 @@ export default function CustomerPortalPage() {
 									<Smartphone className="size-6 text-primary" />
 								</div>
 								<CardTitle>Mobile-First Design</CardTitle>
-								<CardDescription>Perfect experience on any device</CardDescription>
+								<CardDescription>
+									Perfect experience on any device
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -540,7 +624,9 @@ export default function CustomerPortalPage() {
 									<Shield className="size-6 text-primary" />
 								</div>
 								<CardTitle>Secure & Private</CardTitle>
-								<CardDescription>Bank-level security for customer data</CardDescription>
+								<CardDescription>
+									Bank-level security for customer data
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -570,7 +656,9 @@ export default function CustomerPortalPage() {
 									<Star className="size-6 text-primary" />
 								</div>
 								<CardTitle>Your Branding</CardTitle>
-								<CardDescription>Fully customizable to match your brand</CardDescription>
+								<CardDescription>
+									Fully customizable to match your brand
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -600,7 +688,9 @@ export default function CustomerPortalPage() {
 									<Phone className="size-6 text-primary" />
 								</div>
 								<CardTitle>Smart Notifications</CardTitle>
-								<CardDescription>Keep customers informed automatically</CardDescription>
+								<CardDescription>
+									Keep customers informed automatically
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -630,7 +720,9 @@ export default function CustomerPortalPage() {
 									<FileText className="size-6 text-primary" />
 								</div>
 								<CardTitle>Document Library</CardTitle>
-								<CardDescription>All important files in one place</CardDescription>
+								<CardDescription>
+									All important files in one place
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -699,13 +791,17 @@ export default function CustomerPortalPage() {
 									</div>
 									<div>
 										<div className="font-semibold text-lg">Karen Martinez</div>
-										<div className="text-muted-foreground text-sm">Owner, Martinez Plumbing</div>
+										<div className="text-muted-foreground text-sm">
+											Owner, Martinez Plumbing
+										</div>
 									</div>
 								</div>
 								<blockquote className="text-lg leading-relaxed">
-									"Our phone used to ring 200 times a day with 'when can you come?' and 'did you get my payment?' Now
-									customers book and pay themselves through the portal. Our office staff went from 3 people to 1, and
-									customer satisfaction is at an all-time high."
+									"Our phone used to ring 200 times a day with 'when can you
+									come?' and 'did you get my payment?' Now customers book and
+									pay themselves through the portal. Our office staff went from
+									3 people to 1, and customer satisfaction is at an all-time
+									high."
 								</blockquote>
 								<div className="mt-6 flex items-center gap-4">
 									<Badge className="bg-cyan-500">65% Fewer Calls</Badge>
@@ -721,18 +817,30 @@ export default function CustomerPortalPage() {
 			{/* CTA Section */}
 			<section className="bg-gradient-to-br from-cyan-500 via-blue-500 to-cyan-500 py-20 text-white">
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">Launch your customer portal today</h2>
+					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+						Launch your customer portal today
+					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-white/90">
-						Join service businesses reducing calls by 65% and getting paid 2x faster with Thorbis.
+						Join service businesses reducing calls by 65% and getting paid 2x
+						faster with Thorbis.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
-						<Button asChild className="bg-white text-cyan-600 shadow-lg hover:bg-white/90" size="lg">
+						<Button
+							asChild
+							className="bg-white text-cyan-600 shadow-lg hover:bg-white/90"
+							size="lg"
+						>
 							<Link href="/register">
 								Start 14-day Free Trial
 								<Zap className="ml-2 size-4" />
 							</Link>
 						</Button>
-						<Button asChild className="border-white/20 bg-white/10 hover:bg-white/20" size="lg" variant="outline">
+						<Button
+							asChild
+							className="border-white/20 bg-white/10 hover:bg-white/20"
+							size="lg"
+							variant="outline"
+						>
 							<Link href="/contact">See Live Demo</Link>
 						</Button>
 					</div>

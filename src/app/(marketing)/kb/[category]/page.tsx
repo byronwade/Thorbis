@@ -9,7 +9,12 @@ import Script from "next/script";
 import { getKBArticles, getKBCategories } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { generateCategoryMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
 import { createBreadcrumbSchema } from "@/lib/seo/structured-data";
@@ -46,7 +51,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		getKBArticles({ category: categorySlug }),
 	]);
 
-	const categories = categoriesResult.success ? categoriesResult.categories : [];
+	const categories = categoriesResult.success
+		? categoriesResult.categories
+		: [];
 	const category = (categories || [])
 		.flatMap((cat) => [cat, ...(cat.children || [])])
 		.find((cat) => cat.slug === categorySlug);
@@ -55,12 +62,19 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const articles = articlesResult.success && articlesResult.articles ? articlesResult.articles : [];
+	const articles =
+		articlesResult.success && articlesResult.articles
+			? articlesResult.articles
+			: [];
 
 	return (
 		<>
 			{/* Breadcrumb Structured Data */}
-			<Script id={`kb-category-breadcrumb-${category.slug}`} strategy="afterInteractive" type="application/ld+json">
+			<Script
+				id={`kb-category-breadcrumb-${category.slug}`}
+				strategy="afterInteractive"
+				type="application/ld+json"
+			>
 				{JSON.stringify(
 					createBreadcrumbSchema([
 						{ name: "Home", url: SEO_URLS.site },
@@ -69,17 +83,25 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 							name: String(category.title),
 							url: `${SEO_URLS.site}/kb/${category.slug}`,
 						},
-					])
+					]),
 				)}
 			</Script>
 			<KBSidebarWrapper currentCategory={String(category.slug)}>
 				<div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
 					{/* Category Header */}
 					<div className="mb-8">
-						{category.icon ? <span className="mb-4 block text-4xl">{String(category.icon)}</span> : null}
-						<h1 className="mb-2 font-bold text-4xl tracking-tight">{String(category.title)}</h1>
+						{category.icon ? (
+							<span className="mb-4 block text-4xl">
+								{String(category.icon)}
+							</span>
+						) : null}
+						<h1 className="mb-2 font-bold text-4xl tracking-tight">
+							{String(category.title)}
+						</h1>
 						{category.description ? (
-							<p className="text-lg text-muted-foreground">{String(category.description)}</p>
+							<p className="text-lg text-muted-foreground">
+								{String(category.description)}
+							</p>
 						) : null}
 					</div>
 
@@ -94,7 +116,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 						<Card>
 							<CardHeader>
 								<CardTitle>No articles yet</CardTitle>
-								<CardDescription>Articles in this category will appear here once published.</CardDescription>
+								<CardDescription>
+									Articles in this category will appear here once published.
+								</CardDescription>
 							</CardHeader>
 						</Card>
 					)}

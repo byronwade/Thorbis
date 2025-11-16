@@ -10,7 +10,10 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -33,8 +36,12 @@ type SMSViewProps = {
 export function SMSView({ messages }: SMSViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
 	const openComposer = useCommunicationStore((state) => state.openComposer);
 
 	const handleOpenMessage = (message: SMSMessage) => {
@@ -46,7 +53,9 @@ export function SMSView({ messages }: SMSViewProps) {
 	const handleReply = (event: React.MouseEvent, message: SMSMessage) => {
 		event.stopPropagation();
 		const phoneNumber =
-			message.direction === "inbound" ? message.fromPhone || message.from : message.toPhone || message.from;
+			message.direction === "inbound"
+				? message.fromPhone || message.from
+				: message.toPhone || message.from;
 		openComposer("sms", {
 			customerId: message.customerId || undefined,
 			phone: phoneNumber,
@@ -91,12 +100,16 @@ export function SMSView({ messages }: SMSViewProps) {
 						<MessageCircle className="size-4 text-muted-foreground" />
 					</div>
 					<div className="flex flex-col">
-						<span className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+						<span
+							className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+						>
 							{message.from}
 						</span>
 						{(message.fromPhone || message.toPhone) && (
 							<span className="text-muted-foreground text-xs">
-								{message.direction === "inbound" ? message.fromPhone : message.toPhone}
+								{message.direction === "inbound"
+									? message.fromPhone
+									: message.toPhone}
 							</span>
 						)}
 					</div>
@@ -107,14 +120,21 @@ export function SMSView({ messages }: SMSViewProps) {
 			key: "message",
 			header: "Message",
 			width: "flex-1",
-			render: (message) => <p className="line-clamp-1 text-muted-foreground text-xs">{message.preview}</p>,
+			render: (message) => (
+				<p className="line-clamp-1 text-muted-foreground text-xs">
+					{message.preview}
+				</p>
+			),
 		},
 		{
 			key: "direction",
 			header: "Direction",
 			width: "w-28",
 			render: (message) => (
-				<Badge className="capitalize" variant={message.direction === "inbound" ? "secondary" : "outline"}>
+				<Badge
+					className="capitalize"
+					variant={message.direction === "inbound" ? "secondary" : "outline"}
+				>
 					{message.direction}
 				</Badge>
 			),
@@ -123,7 +143,11 @@ export function SMSView({ messages }: SMSViewProps) {
 			key: "status",
 			header: "Status",
 			width: "w-24",
-			render: (message) => <span className="text-muted-foreground text-xs capitalize">{message.status}</span>,
+			render: (message) => (
+				<span className="text-muted-foreground text-xs capitalize">
+					{message.status}
+				</span>
+			),
 		},
 		{
 			key: "timestamp",
@@ -131,7 +155,11 @@ export function SMSView({ messages }: SMSViewProps) {
 			width: "w-32",
 			align: "right",
 			sortable: true,
-			render: (message) => <span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>,
+			render: (message) => (
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
+			),
 		},
 		{
 			key: "actions",
@@ -139,7 +167,12 @@ export function SMSView({ messages }: SMSViewProps) {
 			width: "w-32",
 			align: "right",
 			render: (message) => (
-				<Button onClick={(event) => handleReply(event, message)} size="sm" type="button" variant="ghost">
+				<Button
+					onClick={(event) => handleReply(event, message)}
+					size="sm"
+					type="button"
+					variant="ghost"
+				>
 					<MessageSquareText className="mr-2 size-4" />
 					Reply
 				</Button>
@@ -155,7 +188,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			const noun = selectedIds.size === 1 ? "conversation" : "conversations";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast]
+		[toast],
 	);
 
 	const bulkActions = [
@@ -182,7 +215,9 @@ export function SMSView({ messages }: SMSViewProps) {
 			bulkActions={bulkActions}
 			columns={columns}
 			data={messages}
-			emptyIcon={<MessageSquareText className="size-10 text-muted-foreground" />}
+			emptyIcon={
+				<MessageSquareText className="size-10 text-muted-foreground" />
+			}
 			emptyMessage="No text messages"
 			enableSelection
 			entity="communications-sms"

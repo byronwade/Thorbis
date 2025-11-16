@@ -12,7 +12,14 @@
  * - Click to view payment details
  */
 
-import { Archive, CreditCard, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
+import {
+	Archive,
+	CreditCard,
+	Edit,
+	Eye,
+	MoreHorizontal,
+	Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -35,7 +42,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 import { cn } from "@/lib/utils";
 
@@ -109,7 +120,8 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		failed: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Failed",
 		},
 		refunded: {
@@ -133,7 +145,10 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge className={cn("font-medium text-xs", config.className)} variant="outline">
+		<Badge
+			className={cn("font-medium text-xs", config.className)}
+			variant="outline"
+		>
 			{config.label}
 		</Badge>
 	);
@@ -212,7 +227,11 @@ export function PaymentsTable({
 			shrink: true,
 			sortable: true,
 			hideable: false, // CRITICAL: Always show customer for quick identification
-			render: (payment) => <span className="text-muted-foreground text-sm">{getCustomerName(payment)}</span>,
+			render: (payment) => (
+				<span className="text-muted-foreground text-sm">
+					{getCustomerName(payment)}
+				</span>
+			),
 		},
 		{
 			key: "amount",
@@ -222,7 +241,11 @@ export function PaymentsTable({
 			align: "right",
 			sortable: true,
 			hideable: false, // CRITICAL: Financial data essential
-			render: (payment) => <span className="font-semibold tabular-nums">{formatCurrency(payment.amount)}</span>,
+			render: (payment) => (
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(payment.amount)}
+				</span>
+			),
 		},
 		{
 			key: "payment_method",
@@ -233,7 +256,9 @@ export function PaymentsTable({
 			sortable: true,
 			hideable: true,
 			render: (payment) => (
-				<span className="text-muted-foreground text-sm">{getPaymentMethodLabel(payment.payment_method)}</span>
+				<span className="text-muted-foreground text-sm">
+					{getPaymentMethodLabel(payment.payment_method)}
+				</span>
 			),
 		},
 		{
@@ -254,7 +279,9 @@ export function PaymentsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (payment) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{formatDate(payment.processed_at)}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{formatDate(payment.processed_at)}
+				</span>
 			),
 		},
 		{
@@ -358,7 +385,9 @@ export function PaymentsTable({
 				enableSelection={true}
 				entity="payments"
 				getItemId={(payment) => payment.id}
-				isArchived={(payment) => Boolean(payment.archived_at || payment.deleted_at)}
+				isArchived={(payment) =>
+					Boolean(payment.archived_at || payment.deleted_at)
+				}
 				itemsPerPage={itemsPerPage}
 				onRefresh={handleRefresh}
 				onRowClick={handleRowClick}
@@ -369,13 +398,16 @@ export function PaymentsTable({
 			/>
 
 			{/* Archive Payment Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Payment?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This payment will be archived and can be restored within 90 days. After 90 days, it will be permanently
-							deleted.
+							This payment will be archived and can be restored within 90 days.
+							After 90 days, it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

@@ -1,4 +1,10 @@
-import type { BlogAuthor, BlogCategory, BlogPost, ContentTag, ResourceItem } from "./types";
+import type {
+	BlogAuthor,
+	BlogCategory,
+	BlogPost,
+	ContentTag,
+	ResourceItem,
+} from "./types";
 
 type RawTag = {
 	tag?: {
@@ -131,7 +137,10 @@ export function mapBlogCategory(raw?: RawCategory | null): BlogCategory | null {
 }
 
 export function mapBlogPost(raw: RawBlogPost): BlogPost {
-	const tags = raw.tags?.map(mapContentTag).filter((tag): tag is ContentTag => Boolean(tag)) ?? [];
+	const tags =
+		raw.tags
+			?.map(mapContentTag)
+			.filter((tag): tag is ContentTag => Boolean(tag)) ?? [];
 
 	return {
 		id: raw.id,
@@ -160,7 +169,10 @@ export function mapBlogPost(raw: RawBlogPost): BlogPost {
 }
 
 export function mapResourceItem(raw: RawResourceItem): ResourceItem {
-	const tags = raw.tags?.map(mapContentTag).filter((tag): tag is ContentTag => Boolean(tag)) ?? [];
+	const tags =
+		raw.tags
+			?.map(mapContentTag)
+			.filter((tag): tag is ContentTag => Boolean(tag)) ?? [];
 
 	return {
 		id: raw.id,

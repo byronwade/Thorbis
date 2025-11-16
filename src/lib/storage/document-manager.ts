@@ -12,14 +12,26 @@
 
 import crypto from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
-import { formatFileSize, sanitizeFileName, type ValidationOptions, validateFile } from "./file-validator";
+import {
+	formatFileSize,
+	sanitizeFileName,
+	type ValidationOptions,
+	validateFile,
+} from "./file-validator";
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
 export type DocumentContext = {
-	type: "customer" | "job" | "equipment" | "general" | "invoice" | "estimate" | "contract";
+	type:
+		| "customer"
+		| "job"
+		| "equipment"
+		| "general"
+		| "invoice"
+		| "estimate"
+		| "contract";
 	id?: string; // Entity ID (customer_id, job_id, etc.)
 	folder?: string; // Custom folder within context
 };
@@ -101,7 +113,10 @@ export type ListFilesOptions = {
 /**
  * Determine appropriate storage bucket based on context
  */
-function selectBucket(context: DocumentContext, customBucket?: StorageBucket): StorageBucket {
+function selectBucket(
+	context: DocumentContext,
+	customBucket?: StorageBucket,
+): StorageBucket {
 	if (customBucket) {
 		return customBucket;
 	}
@@ -130,7 +145,11 @@ function selectBucket(context: DocumentContext, customBucket?: StorageBucket): S
  * Generate storage path based on context
  * Format: {companyId}/{contextType}/{entityId?}/{folder?}/{timestamp}-{filename}
  */
-export function generateStoragePath(companyId: string, context: DocumentContext, fileName: string): string {
+export function generateStoragePath(
+	companyId: string,
+	context: DocumentContext,
+	fileName: string,
+): string {
 	const sanitized = sanitizeFileName(fileName);
 	const timestamp = Date.now();
 	const random = Math.random().toString(36).substring(2, 8);
@@ -195,7 +214,9 @@ async function generateChecksum(file: File): Promise<string> {
 	const buffer = await file.arrayBuffer();
 	const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
 	const hashArray = Array.from(new Uint8Array(hashBuffer));
-	const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+	const hashHex = hashArray
+		.map((b) => b.toString(16).padStart(2, "0"))
+		.join("");
 	return hashHex;
 }
 
@@ -206,7 +227,10 @@ async function generateChecksum(file: File): Promise<string> {
 /**
  * Upload document to storage and track in database
  */
-export async function uploadDocument(file: File, options: UploadOptions): Promise<UploadResult> {
+export async function uploadDocument(
+	file: File,
+	options: UploadOptions,
+): Promise<UploadResult> {
 	try {
 		// 1. Validate file
 		const validation = await validateFile(file, options.validationOptions);
@@ -259,14 +283,16 @@ export async function uploadDocument(file: File, options: UploadOptions): Promis
 		const storagePath = generateStoragePath(
 			options.companyId,
 			options.context,
-			validation.metadata?.sanitizedName || file.name
+			validation.metadata?.sanitizedName || file.name,
 		);
 
 		// 5. Upload to storage
-		const { data: storageData, error: storageError } = await supabase.storage.from(bucket).upload(storagePath, file, {
-			cacheControl: "3600",
-			upsert: false,
-		});
+		const { data: storageData, error: storageError } = await supabase.storage
+			.from(bucket)
+			.upload(storagePath, file, {
+				cacheControl: "3600",
+				upsert: false,
+			});
 
 		if (storageError) {
 			return {
@@ -303,7 +329,8 @@ export async function uploadDocument(file: File, options: UploadOptions): Promis
 				folder_path: folderPath,
 				checksum,
 				is_image: file.type.startsWith("image/"),
-				is_document: file.type.includes("pdf") || file.type.includes("document"),
+				is_document:
+					file.type.includes("pdf") || file.type.includes("document"),
 				is_video: file.type.startsWith("video/"),
 				is_public: options.isPublic ?? false,
 				is_internal: options.isInternal ?? false,
@@ -327,7 +354,9 @@ export async function uploadDocument(file: File, options: UploadOptions): Promis
 		}
 
 		// 9. Queue virus scan (async)
-		queueVirusScan(attachment.id, bucket, storageData.path).catch(console.error);
+		queueVirusScan(attachment.id, bucket, storageData.path).catch(
+			console.error,
+		);
 
 		return {
 			success: true,
@@ -348,7 +377,10 @@ export async function uploadDocument(file: File, options: UploadOptions): Promis
 /**
  * Upload multiple documents
  */
-export async function uploadDocuments(files: File[], options: UploadOptions): Promise<UploadResult[]> {
+export async function uploadDocuments(
+	files: File[],
+	options: UploadOptions,
+): Promise<UploadResult[]> {
 	const results: UploadResult[] = [];
 
 	for (const file of files) {
@@ -374,7 +406,7 @@ export async function uploadDocuments(files: File[], options: UploadOptions): Pr
  */
 export async function getDownloadUrl(
 	attachmentId: string,
-	expiresIn = 3600
+	expiresIn = 3600,
 ): Promise<{ url?: string; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -435,7 +467,10 @@ export async function getDownloadUrl(
 		return { url: data.signedUrl };
 	} catch (error) {
 		return {
-			error: error instanceof Error ? error.message : "Failed to generate download URL",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to generate download URL",
 		};
 	}
 }
@@ -448,7 +483,7 @@ export async function getDownloadUrl(
  * List documents with filtering and pagination
  */
 export async function listDocuments(
-	options: ListFilesOptions
+	options: ListFilesOptions,
 ): Promise<{ documents: DocumentMetadata[]; total: number; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -480,7 +515,9 @@ export async function listDocuments(
 		}
 
 		if (options.search) {
-			query = query.or(`file_name.ilike.%${options.search}%,description.ilike.%${options.search}%`);
+			query = query.or(
+				`file_name.ilike.%${options.search}%,description.ilike.%${options.search}%`,
+			);
 		}
 
 		if (options.mimeTypes && options.mimeTypes.length > 0) {
@@ -519,7 +556,8 @@ export async function listDocuments(
 		return {
 			documents: [],
 			total: 0,
-			error: error instanceof Error ? error.message : "Failed to list documents",
+			error:
+				error instanceof Error ? error.message : "Failed to list documents",
 		};
 	}
 }
@@ -531,7 +569,9 @@ export async function listDocuments(
 /**
  * Delete document (soft delete)
  */
-export async function deleteDocument(attachmentId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteDocument(
+	attachmentId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -596,7 +636,7 @@ export async function deleteDocument(attachmentId: string): Promise<{ success: b
  */
 export async function moveDocument(
 	attachmentId: string,
-	newFolderPath: string
+	newFolderPath: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -636,7 +676,7 @@ export async function updateDocumentMetadata(
 		isPublic?: boolean;
 		isInternal?: boolean;
 		isFavorite?: boolean;
-	}
+	},
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -669,7 +709,11 @@ export async function updateDocumentMetadata(
 /**
  * Queue file for virus scanning
  */
-async function queueVirusScan(attachmentId: string, bucket: string, path: string): Promise<void> {
+async function queueVirusScan(
+	attachmentId: string,
+	bucket: string,
+	path: string,
+): Promise<void> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {

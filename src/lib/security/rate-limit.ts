@@ -17,7 +17,10 @@
 // Simple in-memory rate limiter using LRU cache
 // For production, replace with @upstash/ratelimit + @upstash/redis
 class InMemoryRateLimiter {
-	private requests: Map<string, { count: number; resetAt: number; requests: number[] }>;
+	private requests: Map<
+		string,
+		{ count: number; resetAt: number; requests: number[] }
+	>;
 	private readonly maxRequests: number;
 	private readonly windowMs: number;
 
@@ -52,7 +55,9 @@ class InMemoryRateLimiter {
 		}
 
 		// Remove requests outside the sliding window
-		record.requests = record.requests.filter((timestamp) => timestamp > now - this.windowMs);
+		record.requests = record.requests.filter(
+			(timestamp) => timestamp > now - this.windowMs,
+		);
 
 		// Check if limit exceeded
 		if (record.requests.length >= this.maxRequests) {
@@ -79,7 +84,9 @@ class InMemoryRateLimiter {
 	private cleanup() {
 		const now = Date.now();
 		for (const [key, record] of this.requests.entries()) {
-			record.requests = record.requests.filter((timestamp) => timestamp > now - this.windowMs);
+			record.requests = record.requests.filter(
+				(timestamp) => timestamp > now - this.windowMs,
+			);
 			if (record.requests.length === 0) {
 				this.requests.delete(key);
 			}
@@ -98,17 +105,17 @@ class InMemoryRateLimiter {
 // Rate limiter instances for different operations
 const authRateLimiterInstance = new InMemoryRateLimiter(
 	5, // 5 requests
-	15 * 60 * 1000 // per 15 minutes
+	15 * 60 * 1000, // per 15 minutes
 );
 
 const apiRateLimiterInstance = new InMemoryRateLimiter(
 	100, // 100 requests
-	60 * 1000 // per 1 minute
+	60 * 1000, // per 1 minute
 );
 
 const passwordResetRateLimiterInstance = new InMemoryRateLimiter(
 	3, // 3 requests
-	60 * 60 * 1000 // per 1 hour
+	60 * 60 * 1000, // per 1 hour
 );
 
 /**
@@ -140,8 +147,10 @@ export const apiRateLimiter = {
  * Limit: 3 requests per hour per identifier
  */
 export const passwordResetRateLimiter = {
-	limit: (identifier: string) => passwordResetRateLimiterInstance.limit(identifier),
-	reset: (identifier: string) => passwordResetRateLimiterInstance.reset(identifier),
+	limit: (identifier: string) =>
+		passwordResetRateLimiterInstance.limit(identifier),
+	reset: (identifier: string) =>
+		passwordResetRateLimiterInstance.reset(identifier),
 };
 
 /**
@@ -152,7 +161,7 @@ export class RateLimitError extends Error {
 		message: string,
 		public limit: number,
 		public remaining: number,
-		public reset: number
+		public reset: number,
 	) {
 		super(message);
 		this.name = "RateLimitError";
@@ -169,7 +178,7 @@ export class RateLimitError extends Error {
  */
 export async function checkRateLimit(
 	identifier: string,
-	limiter: typeof authRateLimiter = apiRateLimiter
+	limiter: typeof authRateLimiter = apiRateLimiter,
 ): Promise<void> {
 	const { success, limit, remaining, reset } = await limiter.limit(identifier);
 
@@ -179,7 +188,7 @@ export async function checkRateLimit(
 			`Too many requests. Please try again after ${resetDate.toLocaleTimeString()}.`,
 			limit,
 			remaining,
-			reset
+			reset,
 		);
 	}
 }

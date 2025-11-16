@@ -121,7 +121,9 @@ export async function getCommonTags(companyId: string) {
 
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 
-async function getAuthenticatedUserId(supabase: SupabaseClientType): Promise<string | null> {
+async function getAuthenticatedUserId(
+	supabase: SupabaseClientType,
+): Promise<string | null> {
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
@@ -130,14 +132,22 @@ async function getAuthenticatedUserId(supabase: SupabaseClientType): Promise<str
 
 async function fetchTagSources(
 	supabase: SupabaseClientType,
-	companyId: string
+	companyId: string,
 ): Promise<{
 	customers: { tags: unknown }[] | null;
 	jobs: { metadata: unknown }[] | null;
 }> {
 	const [{ data: customers }, { data: jobs }] = await Promise.all([
-		supabase.from("customers").select("tags").eq("company_id", companyId).not("tags", "is", null),
-		supabase.from("jobs").select("metadata").eq("company_id", companyId).not("metadata", "is", null),
+		supabase
+			.from("customers")
+			.select("tags")
+			.eq("company_id", companyId)
+			.not("tags", "is", null),
+		supabase
+			.from("jobs")
+			.select("metadata")
+			.eq("company_id", companyId)
+			.not("metadata", "is", null),
 	]);
 
 	return { customers: customers ?? null, jobs: jobs ?? null };
@@ -145,7 +155,7 @@ async function fetchTagSources(
 
 function aggregateTagCounts(
 	customers: { tags: unknown }[] | null,
-	jobs: { metadata: unknown }[] | null
+	jobs: { metadata: unknown }[] | null,
 ): Record<string, number> {
 	const tagCounts: Record<string, number> = {};
 
@@ -155,7 +165,10 @@ function aggregateTagCounts(
 	return tagCounts;
 }
 
-function accumulateCustomerTagCounts(customers: { tags: unknown }[] | null, tagCounts: Record<string, number>) {
+function accumulateCustomerTagCounts(
+	customers: { tags: unknown }[] | null,
+	tagCounts: Record<string, number>,
+) {
 	if (!customers) {
 		return;
 	}
@@ -171,7 +184,10 @@ function accumulateCustomerTagCounts(customers: { tags: unknown }[] | null, tagC
 	}
 }
 
-function accumulateJobTagCounts(jobs: { metadata: unknown }[] | null, tagCounts: Record<string, number>) {
+function accumulateJobTagCounts(
+	jobs: { metadata: unknown }[] | null,
+	tagCounts: Record<string, number>,
+) {
 	if (!jobs) {
 		return;
 	}
@@ -188,7 +204,10 @@ function accumulateJobTagCounts(jobs: { metadata: unknown }[] | null, tagCounts:
 	}
 }
 
-function getTopTags(tagCounts: Record<string, number>, limit: number): string[] {
+function getTopTags(
+	tagCounts: Record<string, number>,
+	limit: number,
+): string[] {
 	return Object.entries(tagCounts)
 		.sort(([, a], [, b]) => b - a)
 		.slice(0, limit)

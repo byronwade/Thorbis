@@ -18,7 +18,18 @@
 
 "use client";
 
-import { Calendar, Clock, Mail, MapPin, Phone, Save, User, Users, Wrench, X } from "lucide-react";
+import {
+	Calendar,
+	Clock,
+	Mail,
+	MapPin,
+	Phone,
+	Save,
+	User,
+	Users,
+	Wrench,
+	X,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -27,8 +38,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 
 export type AppointmentData = {
 	appointment: any;
@@ -46,21 +66,37 @@ export type AppointmentPageContentProps = {
 	metrics: any;
 };
 
-export function AppointmentPageContent({ entityData }: AppointmentPageContentProps) {
+export function AppointmentPageContent({
+	entityData,
+}: AppointmentPageContentProps) {
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, _setIsSaving] = useState(false);
 
-	const { appointment, customer, property, job, teamAssignments = [], notes = [], activities = [] } = entityData;
+	const {
+		appointment,
+		customer,
+		property,
+		job,
+		teamAssignments = [],
+		notes = [],
+		activities = [],
+	} = entityData;
 
 	const appointmentStart = new Date(appointment.start_time);
 	const appointmentEnd = new Date(appointment.end_time);
 	const durationMinutes = Math.max(
 		0,
-		Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
+		Math.floor(
+			(appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60),
+		),
 	);
 
 	const statusBadgeVariant =
-		appointment.status === "confirmed" ? "default" : appointment.status === "completed" ? "secondary" : "outline";
+		appointment.status === "confirmed"
+			? "default"
+			: appointment.status === "completed"
+				? "secondary"
+				: "outline";
 
 	const headerBadges = [
 		<Badge key="id" variant="outline">
@@ -82,7 +118,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="font-semibold text-2xl sm:text-3xl">
 									{appointmentStart.toLocaleDateString("en-US", {
@@ -108,7 +146,11 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 
 						{hasChanges && (
 							<div className="flex flex-wrap gap-2">
-								<Button onClick={() => setHasChanges(false)} size="sm" variant="ghost">
+								<Button
+									onClick={() => setHasChanges(false)}
+									size="sm"
+									variant="ghost"
+								>
 									<X className="mr-2 size-4" />
 									Cancel
 								</Button>
@@ -198,7 +240,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								<Input
 									readOnly
 									type="datetime-local"
-									value={new Date(appointment.start_time).toISOString().slice(0, 16)}
+									value={new Date(appointment.start_time)
+										.toISOString()
+										.slice(0, 16)}
 								/>
 							</div>
 							<div>
@@ -206,7 +250,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								<Input
 									readOnly
 									type="datetime-local"
-									value={new Date(appointment.end_time).toISOString().slice(0, 16)}
+									value={new Date(appointment.end_time)
+										.toISOString()
+										.slice(0, 16)}
 								/>
 							</div>
 							<div>
@@ -226,7 +272,10 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 							</div>
 							<div>
 								<Label>Type</Label>
-								<Input readOnly value={appointment.appointment_type || "Service"} />
+								<Input
+									readOnly
+									value={appointment.appointment_type || "Service"}
+								/>
 							</div>
 						</div>
 					</UnifiedAccordionContent>
@@ -263,7 +312,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>
+									View Full Profile
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -292,7 +343,7 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 							<Button asChild size="sm" variant="outline">
 								<a
 									href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-										`${property.address}, ${property.city}, ${property.state}`
+										`${property.address}, ${property.city}, ${property.state}`,
 									)}`}
 									rel="noopener noreferrer"
 									target="_blank"
@@ -317,7 +368,10 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 					<div className="space-y-3">
 						{teamAssignments.length > 0 ? (
 							teamAssignments.map((assignment: any) => (
-								<div className="flex items-center gap-4 rounded-lg border p-4" key={assignment.id}>
+								<div
+									className="flex items-center gap-4 rounded-lg border p-4"
+									key={assignment.id}
+								>
 									<Avatar>
 										<AvatarImage src={assignment.user?.avatar} />
 										<AvatarFallback>
@@ -329,14 +383,22 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 										</AvatarFallback>
 									</Avatar>
 									<div className="flex-1">
-										<p className="font-medium">{assignment.user?.name || "Unknown"}</p>
-										<p className="text-muted-foreground text-sm">{assignment.role || "Technician"}</p>
+										<p className="font-medium">
+											{assignment.user?.name || "Unknown"}
+										</p>
+										<p className="text-muted-foreground text-sm">
+											{assignment.role || "Technician"}
+										</p>
 									</div>
-									<Badge variant="outline">{assignment.status || "assigned"}</Badge>
+									<Badge variant="outline">
+										{assignment.status || "assigned"}
+									</Badge>
 								</div>
 							))
 						) : (
-							<p className="text-center text-muted-foreground text-sm">No team members assigned</p>
+							<p className="text-center text-muted-foreground text-sm">
+								No team members assigned
+							</p>
 						)}
 					</div>
 				</UnifiedAccordionContent>
@@ -411,7 +473,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 				title: job.title || `Job #${job.job_number}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
+				badge: job.status
+					? { label: job.status, variant: "outline" as const }
+					: undefined,
 			});
 		}
 

@@ -30,7 +30,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Asset Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track all your tools, equipment, and vehicles with detailed records and serial numbers
+							Track all your tools, equipment, and vehicles with detailed
+							records and serial numbers
 						</p>
 					</div>
 
@@ -41,7 +42,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">GPS Location</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							See real-time location of trucks and equipment to optimize dispatching and prevent theft
+							See real-time location of trucks and equipment to optimize
+							dispatching and prevent theft
 						</p>
 					</div>
 
@@ -52,7 +54,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">QR Code Tagging</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Tag equipment with QR codes for instant check-in/check-out and maintenance logs
+							Tag equipment with QR codes for instant check-in/check-out and
+							maintenance logs
 						</p>
 					</div>
 
@@ -63,7 +66,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="font-semibold text-lg">Maintenance Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Schedule preventive maintenance, track repairs, and maintain service records for all equipment
+							Schedule preventive maintenance, track repairs, and maintain
+							service records for all equipment
 						</p>
 					</div>
 				</div>
@@ -71,7 +75,9 @@ export async function EquipmentData() {
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Protect Your Assets</h3>
-					<p className="mb-6 text-muted-foreground">Know where your equipment is and keep it in top condition</p>
+					<p className="mb-6 text-muted-foreground">
+						Know where your equipment is and keep it in top condition
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

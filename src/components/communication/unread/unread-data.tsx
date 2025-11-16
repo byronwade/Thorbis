@@ -58,8 +58,12 @@ export async function UnreadMessagesData() {
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Stay on Top of Messages</h3>
-					<p className="mb-6 text-muted-foreground">Never miss an important customer communication</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Stay on Top of Messages
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Never miss an important customer communication
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

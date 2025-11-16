@@ -25,7 +25,10 @@ export function WelcomeSkeleton() {
 						{/* Progress Indicator */}
 						<div className="flex justify-center gap-2">
 							{[1, 2, 3, 4].map((i) => (
-								<div className="size-3 animate-pulse rounded-full bg-muted" key={i} />
+								<div
+									className="size-3 animate-pulse rounded-full bg-muted"
+									key={i}
+								/>
 							))}
 						</div>
 

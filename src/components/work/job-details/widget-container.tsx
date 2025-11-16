@@ -18,8 +18,16 @@ import { GripVertical, Maximize2, Minimize2, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { type JobWidget, useJobDetailsLayoutStore } from "@/lib/stores/job-details-layout-store";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+	type JobWidget,
+	useJobDetailsLayoutStore,
+} from "@/lib/stores/job-details-layout-store";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -39,7 +47,12 @@ const DRAG_OPACITY = 0.5;
 // Widget Container Component
 // ============================================================================
 
-export function WidgetContainer({ widget, isEditMode, isDragging = false, children }: WidgetContainerProps) {
+export function WidgetContainer({
+	widget,
+	isEditMode,
+	isDragging = false,
+	children,
+}: WidgetContainerProps) {
 	const removeWidget = useJobDetailsLayoutStore((state) => state.removeWidget);
 	const resizeWidget = useJobDetailsLayoutStore((state) => state.resizeWidget);
 
@@ -89,7 +102,8 @@ export function WidgetContainer({ widget, isEditMode, isDragging = false, childr
 				"flex h-full flex-col rounded-lg border bg-card transition-all duration-200",
 				isEditMode && "ring-2 ring-primary/20 hover:ring-primary/40",
 				isDragging && "shadow-2xl",
-				isSortableDragging && "scale-95 opacity-30 ring-2 ring-dashed ring-primary/50"
+				isSortableDragging &&
+					"scale-95 opacity-30 ring-2 ring-dashed ring-primary/50",
 			)}
 			ref={setNodeRef}
 			style={style}
@@ -99,7 +113,11 @@ export function WidgetContainer({ widget, isEditMode, isDragging = false, childr
 				{/* Left side: Drag handle + Title */}
 				<div className="flex flex-1 items-center gap-2">
 					{isEditMode && widget.isDraggable ? (
-						<div {...attributes} {...listeners} className="cursor-grab touch-none active:cursor-grabbing">
+						<div
+							{...attributes}
+							{...listeners}
+							className="cursor-grab touch-none active:cursor-grabbing"
+						>
 							<TooltipProvider>
 								<Tooltip>
 									<TooltipTrigger asChild>
@@ -117,11 +135,16 @@ export function WidgetContainer({ widget, isEditMode, isDragging = false, childr
 						<div className="min-w-0 flex-1">
 							<h3 className="truncate font-semibold text-sm">{widget.title}</h3>
 							{widget.description ? (
-								<p className="truncate text-muted-foreground text-xs">{widget.description}</p>
+								<p className="truncate text-muted-foreground text-xs">
+									{widget.description}
+								</p>
 							) : null}
 						</div>
 						{isEditMode ? (
-							<Badge className="shrink-0 text-xs" variant={isFullWidth ? "default" : "secondary"}>
+							<Badge
+								className="shrink-0 text-xs"
+								variant={isFullWidth ? "default" : "secondary"}
+							>
 								{isFullWidth ? "Full" : "Half"}
 							</Badge>
 						) : null}
@@ -141,11 +164,19 @@ export function WidgetContainer({ widget, isEditMode, isDragging = false, childr
 										size="sm"
 										variant="ghost"
 									>
-										{isFullWidth ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+										{isFullWidth ? (
+											<Minimize2 className="size-4" />
+										) : (
+											<Maximize2 className="size-4" />
+										)}
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent>
-									<p>{isFullWidth ? "Resize to half width" : "Resize to full width"}</p>
+									<p>
+										{isFullWidth
+											? "Resize to half width"
+											: "Resize to full width"}
+									</p>
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>

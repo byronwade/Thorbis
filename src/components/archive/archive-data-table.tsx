@@ -32,7 +32,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { type ArchivableEntityType, type ArchivedItem, bulkRestore, getArchivedItems } from "@/actions/archive";
+import {
+	type ArchivableEntityType,
+	type ArchivedItem,
+	bulkRestore,
+	getArchivedItems,
+} from "@/actions/archive";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -44,7 +49,11 @@ import {
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type ArchiveDataTableProps = {
@@ -53,7 +62,11 @@ type ArchiveDataTableProps = {
 	searchQuery?: string;
 };
 
-export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", searchQuery }: ArchiveDataTableProps) {
+export function ArchiveDataTable({
+	entityFilter = "all",
+	dateRange = "30days",
+	searchQuery,
+}: ArchiveDataTableProps) {
 	const _router = useRouter();
 	const [data, setData] = useState<ArchivedItem[]>([]);
 	const [_loading, setLoading] = useState(true);
@@ -149,7 +162,11 @@ export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", s
 			render: (item) => (
 				<div>
 					<div className="font-medium">{item.displayName}</div>
-					{item.entityNumber && <div className="text-muted-foreground text-xs">{item.entityNumber}</div>}
+					{item.entityNumber && (
+						<div className="text-muted-foreground text-xs">
+							{item.entityNumber}
+						</div>
+					)}
 				</div>
 			),
 			width: "flex-1",
@@ -207,7 +224,9 @@ export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", s
 			label: "Permanently Delete",
 			icon: <Trash2 className="h-4 w-4" />,
 			onClick: (_selectedIds: Set<string>) => {
-				toast.error("Permanent deletion not yet implemented. Items will auto-delete after 90 days.");
+				toast.error(
+					"Permanent deletion not yet implemented. Items will auto-delete after 90 days.",
+				);
 			},
 			variant: "destructive",
 		},
@@ -292,10 +311,12 @@ export function ArchiveDataTable({ entityFilter = "all", dateRange = "30days", s
 			<AlertDialog onOpenChange={setShowRestoreDialog} open={showRestoreDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Restore {selectedItems.size} Item(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Restore {selectedItems.size} Item(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will restore the selected items to their active state. They will reappear in their original
-							locations.
+							This will restore the selected items to their active state. They
+							will reappear in their original locations.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

@@ -4,13 +4,16 @@ export default function SchedulerShowcase() {
 	return (
 		<div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-gradient-to-br from-background via-muted to-background px-6 py-16 text-center">
 			<div className="max-w-2xl space-y-4">
-				<p className="font-semibold text-primary text-xs uppercase tracking-[0.3em]">Scheduler Prototype</p>
+				<p className="font-semibold text-primary text-xs uppercase tracking-[0.3em]">
+					Scheduler Prototype
+				</p>
 				<h1 className="font-bold text-3xl tracking-tight sm:text-4xl">
 					Scheduler experience lives in a separate playground for now
 				</h1>
 				<p className="text-base text-muted-foreground">
-					We&apos;re actively iterating on a full scheduling workspace. Visit the dedicated prototype to explore the
-					latest concepts, or stay tuned as we bring it directly into the dashboard.
+					We&apos;re actively iterating on a full scheduling workspace. Visit
+					the dedicated prototype to explore the latest concepts, or stay tuned
+					as we bring it directly into the dashboard.
 				</p>
 			</div>
 			<div className="flex flex-wrap items-center justify-center gap-3">

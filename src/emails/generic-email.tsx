@@ -4,7 +4,16 @@
  * A simple, clean email template for general communications
  */
 
-import { Body, Container, Head, Heading, Html, Preview, Section, Text } from "@react-email/components";
+import {
+	Body,
+	Container,
+	Head,
+	Heading,
+	Html,
+	Preview,
+	Section,
+	Text,
+} from "@react-email/components";
 
 type GenericEmailProps = {
 	recipientName: string;
@@ -12,7 +21,11 @@ type GenericEmailProps = {
 	companyName?: string;
 };
 
-export function GenericEmail({ recipientName, message, companyName = "Thorbis" }: GenericEmailProps) {
+export function GenericEmail({
+	recipientName,
+	message,
+	companyName = "Thorbis",
+}: GenericEmailProps) {
 	return (
 		<Html>
 			<Head />
@@ -36,7 +49,8 @@ export function GenericEmail({ recipientName, message, companyName = "Thorbis" }
 
 const main = {
 	backgroundColor: "#f6f9fc",
-	fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
+	fontFamily:
+		'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {

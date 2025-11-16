@@ -1,6 +1,13 @@
 "use client";
 
-import { Archive, Calendar, Download, FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Archive,
+	Calendar,
+	Download,
+	FileText,
+	MoreHorizontal,
+	Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,7 +18,11 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type BulkAction, type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type BulkAction,
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { GenericStatusBadge } from "@/components/ui/generic-status-badge";
 import { formatCurrency } from "@/lib/formatters";
 import { useArchiveStore } from "@/lib/stores/archive-store";
@@ -39,11 +50,13 @@ const MAINTENANCE_PLAN_STATUS_CONFIG = {
 		label: "Pending",
 	},
 	paused: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Paused",
 	},
 	cancelled: {
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		label: "Cancelled",
 	},
 } as const;
@@ -56,7 +69,9 @@ export function MaintenancePlansTable({
 	itemsPerPage?: number;
 }) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.maintenance_plans);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.maintenance_plans,
+	);
 
 	// Filter plans based on archive status
 	const filteredPlans = plans.filter((plan) => {
@@ -101,7 +116,9 @@ export function MaintenancePlansTable({
 					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
 						{plan.customer}
 					</div>
-					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">{plan.serviceType}</div>
+					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+						{plan.serviceType}
+					</div>
 				</Link>
 			),
 		},
@@ -112,7 +129,9 @@ export function MaintenancePlansTable({
 			shrink: true,
 			sortable: true,
 			hideOnMobile: true,
-			render: (plan) => <span className="text-foreground text-sm">{plan.frequency}</span>,
+			render: (plan) => (
+				<span className="text-foreground text-sm">{plan.frequency}</span>
+			),
 		},
 		{
 			key: "nextVisit",
@@ -121,7 +140,11 @@ export function MaintenancePlansTable({
 			shrink: true,
 			sortable: true,
 			hideOnMobile: true,
-			render: (plan) => <span className="text-muted-foreground text-sm tabular-nums">{plan.nextVisit}</span>,
+			render: (plan) => (
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{plan.nextVisit}
+				</span>
+			),
 		},
 		{
 			key: "monthlyFee",
@@ -130,7 +153,11 @@ export function MaintenancePlansTable({
 			shrink: true,
 			sortable: true,
 			align: "right",
-			render: (plan) => <span className="font-semibold tabular-nums">{formatCurrency(plan.monthlyFee)}/mo</span>,
+			render: (plan) => (
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(plan.monthlyFee)}/mo
+				</span>
+			),
 		},
 		{
 			key: "status",
@@ -139,7 +166,11 @@ export function MaintenancePlansTable({
 			shrink: true,
 			sortable: true,
 			render: (plan) => (
-				<GenericStatusBadge config={MAINTENANCE_PLAN_STATUS_CONFIG} defaultStatus="pending" status={plan.status} />
+				<GenericStatusBadge
+					config={MAINTENANCE_PLAN_STATUS_CONFIG}
+					defaultStatus="pending"
+					status={plan.status}
+				/>
 			),
 		},
 		{
@@ -219,7 +250,9 @@ export function MaintenancePlansTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredPlans}
-			emptyIcon={<Calendar className="mx-auto h-12 w-12 text-muted-foreground" />}
+			emptyIcon={
+				<Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
+			}
 			emptyMessage="No maintenance plans found"
 			enableSelection={true}
 			entity="maintenance_plans"
@@ -229,7 +262,9 @@ export function MaintenancePlansTable({
 			isHighlighted={(plan) => plan.status === "active"}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
-			onRowClick={(plan) => (window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)}
+			onRowClick={(plan) =>
+				(window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
 			showArchived={archiveFilter !== "active"}

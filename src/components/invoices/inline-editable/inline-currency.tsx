@@ -18,7 +18,13 @@ type InlineCurrencyProps = {
 	readOnly?: boolean;
 };
 
-export function InlineCurrency({ value, onUpdate, isEditable, className = "", readOnly = false }: InlineCurrencyProps) {
+export function InlineCurrency({
+	value,
+	onUpdate,
+	isEditable,
+	className = "",
+	readOnly = false,
+}: InlineCurrencyProps) {
 	const [isEditing, setIsEditing] = useState(false);
 
 	const formatCurrency = (cents: number) =>
@@ -56,7 +62,12 @@ export function InlineCurrency({ value, onUpdate, isEditable, className = "", re
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		// Only allow numbers and decimal point
-		if (e.key.length === 1 && !/[0-9.]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+		if (
+			e.key.length === 1 &&
+			!/[0-9.]/.test(e.key) &&
+			!e.ctrlKey &&
+			!e.metaKey
+		) {
 			e.preventDefault();
 		}
 
@@ -68,7 +79,11 @@ export function InlineCurrency({ value, onUpdate, isEditable, className = "", re
 	};
 
 	if (readOnly) {
-		return <span className={cn("font-mono font-semibold tabular-nums", className)}>{formatCurrency(value)}</span>;
+		return (
+			<span className={cn("font-mono font-semibold tabular-nums", className)}>
+				{formatCurrency(value)}
+			</span>
+		);
 	}
 
 	return (
@@ -86,7 +101,7 @@ export function InlineCurrency({ value, onUpdate, isEditable, className = "", re
 						"px-1",
 						"-mx-1",
 					],
-				className
+				className,
 			)}
 			contentEditable={isEditable && !readOnly}
 			onBlur={handleBlur}

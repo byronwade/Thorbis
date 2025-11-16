@@ -29,7 +29,8 @@ export async function PricebookData() {
 						</div>
 						<h3 className="font-semibold text-lg">Service Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Define pricing for all your services with tier-based rates and custom packages
+							Define pricing for all your services with tier-based rates and
+							custom packages
 						</p>
 					</div>
 
@@ -69,8 +70,12 @@ export async function PricebookData() {
 
 				{/* CTA section */}
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Maximize Your Profitability</h3>
-					<p className="mb-6 text-muted-foreground">Smart pricing strategies for every job</p>
+					<h3 className="mb-3 font-semibold text-xl">
+						Maximize Your Profitability
+					</h3>
+					<p className="mb-6 text-muted-foreground">
+						Smart pricing strategies for every job
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

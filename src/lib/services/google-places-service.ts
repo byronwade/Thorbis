@@ -51,7 +51,10 @@ const _EARTH_RADIUS_METERS = 6_371_000;
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class GooglePlacesService {
 	private readonly apiKey: string | undefined;
-	private readonly cache: Map<string, { data: GooglePlaces; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: GooglePlaces; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = CACHE_TTL_MS;
 
 	constructor() {
@@ -61,7 +64,11 @@ export class GooglePlacesService {
 	/**
 	 * Find nearby home improvement stores with reviews and ratings
 	 */
-	async findNearbySuppliers(lat: number, lon: number, radius = 8000): Promise<GooglePlaces | null> {
+	async findNearbySuppliers(
+		lat: number,
+		lon: number,
+		radius = 8000,
+	): Promise<GooglePlaces | null> {
 		if (!this.apiKey) {
 			return null;
 		}
@@ -76,7 +83,13 @@ export class GooglePlacesService {
 		try {
 			// Search for home improvement stores, hardware stores
 			// Using keyword search for better results
-			const keywords = ["home depot", "lowes", "hardware store", "lumber yard", "building supplies"];
+			const keywords = [
+				"home depot",
+				"lowes",
+				"hardware store",
+				"lumber yard",
+				"building supplies",
+			];
 			const allPlaces: Place[] = [];
 
 			for (const keyword of keywords) {
@@ -102,7 +115,7 @@ export class GooglePlacesService {
 							lat,
 							lon,
 							result.geometry.location.lat,
-							result.geometry.location.lng
+							result.geometry.location.lng,
 						);
 
 						// Get photo URL if available
@@ -141,7 +154,9 @@ export class GooglePlacesService {
 
 			// Get additional details for top 5 places (phone, website, etc.)
 			const topPlaces = allPlaces.slice(0, 5);
-			const enrichedPlaces = await Promise.all(topPlaces.map((place) => this.enrichPlaceDetails(place)));
+			const enrichedPlaces = await Promise.all(
+				topPlaces.map((place) => this.enrichPlaceDetails(place)),
+			);
 
 			const googlePlaces: GooglePlaces = {
 				places: enrichedPlaces,
@@ -192,14 +207,21 @@ export class GooglePlacesService {
 	/**
 	 * Calculate distance between two points using Haversine formula
 	 */
-	private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+	private calculateDistance(
+		lat1: number,
+		lon1: number,
+		lat2: number,
+		lon2: number,
+	): number {
 		const R = 6_371_000; // Earth's radius in meters
 		const φ1 = (lat1 * Math.PI) / 180;
 		const φ2 = (lat2 * Math.PI) / 180;
 		const Δφ = ((lat2 - lat1) * Math.PI) / 180;
 		const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
-		const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+		const a =
+			Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+			Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
 		return R * c;

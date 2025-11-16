@@ -2,7 +2,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
@@ -17,13 +23,19 @@ export const metadata = generateSEOMetadata({
 		"Build on the Thorbis platform with secure REST and GraphQL APIs. Access authentication guides, webhooks, and developer tooling.",
 	path: "/api-docs",
 	section: "Resources",
-	keywords: ["thorbis api", "thorbis developer docs", "field service api", "thorbis webhooks"],
+	keywords: [
+		"thorbis api",
+		"thorbis developer docs",
+		"field service api",
+		"thorbis webhooks",
+	],
 });
 
 const FAQ_DATA = [
 	{
 		question: "Where can I access the Thorbis API reference?",
-		answer: "Visit developer.thorbis.com for the full OpenAPI specification, SDK downloads, and interactive console.",
+		answer:
+			"Visit developer.thorbis.com for the full OpenAPI specification, SDK downloads, and interactive console.",
 	},
 	{
 		question: "How do I authenticate?",
@@ -40,7 +52,8 @@ const FAQ_DATA = [
 const RESOURCES = [
 	{
 		title: "Quickstart Guide",
-		description: "Spin up a Thorbis API client in under 10 minutes with sample requests and Postman collections.",
+		description:
+			"Spin up a Thorbis API client in under 10 minutes with sample requests and Postman collections.",
 		action: {
 			label: "View quickstart",
 			href: "https://developer.thorbis.com/quickstart",
@@ -48,7 +61,8 @@ const RESOURCES = [
 	},
 	{
 		title: "Authentication Reference",
-		description: "Learn how to generate OAuth tokens, refresh credentials, and scope access for your integrations.",
+		description:
+			"Learn how to generate OAuth tokens, refresh credentials, and scope access for your integrations.",
 		action: {
 			label: "Read auth guide",
 			href: "https://developer.thorbis.com/authentication",
@@ -103,19 +117,30 @@ export default function ApiDocsPage() {
 					<Badge className="uppercase tracking-wide" variant="secondary">
 						Developer Platform
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">Thorbis API Documentation</h1>
+					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						Thorbis API Documentation
+					</h1>
 					<p className="text-lg text-muted-foreground leading-relaxed">
-						Build integrations that automate workflows, surface analytics, and keep your tech stack in sync. Thorbis
-						provides secure REST and GraphQL endpoints with robust webhooks and SDK support.
+						Build integrations that automate workflows, surface analytics, and
+						keep your tech stack in sync. Thorbis provides secure REST and
+						GraphQL endpoints with robust webhooks and SDK support.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild size="lg">
-							<a href="https://developer.thorbis.com" rel="noopener" target="_blank">
+							<a
+								href="https://developer.thorbis.com"
+								rel="noopener"
+								target="_blank"
+							>
 								Open developer portal
 							</a>
 						</Button>
 						<Button asChild size="lg" variant="outline">
-							<a href="mailto:partners@thorbis.com?subject=Thorbis%20API%20Access" rel="noopener" target="_blank">
+							<a
+								href="mailto:partners@thorbis.com?subject=Thorbis%20API%20Access"
+								rel="noopener"
+								target="_blank"
+							>
 								Request sandbox keys
 							</a>
 						</Button>
@@ -131,9 +156,15 @@ export default function ApiDocsPage() {
 									<CardTitle>{resource.title}</CardTitle>
 								</CardHeader>
 								<CardContent className="space-y-4">
-									<CardDescription className="leading-relaxed">{resource.description}</CardDescription>
+									<CardDescription className="leading-relaxed">
+										{resource.description}
+									</CardDescription>
 									<Button asChild variant="outline">
-										<a href={resource.action.href} rel="noopener" target="_blank">
+										<a
+											href={resource.action.href}
+											rel="noopener"
+											target="_blank"
+										>
 											{resource.action.label}
 										</a>
 									</Button>
@@ -146,10 +177,22 @@ export default function ApiDocsPage() {
 				<section className="mt-16 space-y-4">
 					<h2 className="font-semibold text-2xl">Key capabilities</h2>
 					<ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
-						<li>• Comprehensive REST endpoints for customers, jobs, schedules, invoices, payments, and equipment.</li>
-						<li>• Real-time webhooks with configurable retry policies and signing secrets for verification.</li>
-						<li>• SDKs for TypeScript, Python, and Go plus OpenAPI specs for generated clients.</li>
-						<li>• Robust rate limits, audit logging, and scoped OAuth permissions to keep integrations secure.</li>
+						<li>
+							• Comprehensive REST endpoints for customers, jobs, schedules,
+							invoices, payments, and equipment.
+						</li>
+						<li>
+							• Real-time webhooks with configurable retry policies and signing
+							secrets for verification.
+						</li>
+						<li>
+							• SDKs for TypeScript, Python, and Go plus OpenAPI specs for
+							generated clients.
+						</li>
+						<li>
+							• Robust rate limits, audit logging, and scoped OAuth permissions
+							to keep integrations secure.
+						</li>
 					</ul>
 				</section>
 
@@ -162,7 +205,9 @@ export default function ApiDocsPage() {
 									<CardTitle className="text-base">{item.question}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<CardDescription className="text-sm leading-relaxed">{item.answer}</CardDescription>
+									<CardDescription className="text-sm leading-relaxed">
+										{item.answer}
+									</CardDescription>
 								</CardContent>
 							</Card>
 						))}

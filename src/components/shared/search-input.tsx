@@ -30,7 +30,11 @@ type SearchInputProps = {
 	debounceMs?: number;
 };
 
-export function SearchInput({ placeholder = "Search...", className = "max-w-sm", debounceMs = 300 }: SearchInputProps) {
+export function SearchInput({
+	placeholder = "Search...",
+	className = "max-w-sm",
+	debounceMs = 300,
+}: SearchInputProps) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");

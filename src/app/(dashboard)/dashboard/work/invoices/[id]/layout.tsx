@@ -12,7 +12,11 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function InvoiceDetailLayout({ children }: { children: ReactNode }) {
+export default function InvoiceDetailLayout({
+	children,
+}: {
+	children: ReactNode;
+}) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -28,7 +32,9 @@ export default function InvoiceDetailLayout({ children }: { children: ReactNode 
 		},
 		toolbar: {
 			show: true,
-			back: <DetailBackButton href="/dashboard/work/invoices" label="Invoices" />,
+			back: (
+				<DetailBackButton href="/dashboard/work/invoices" label="Invoices" />
+			),
 			actions: <InvoiceToolbarActions />,
 		},
 		sidebar: {

@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { VendorDetailData } from "@/components/work/vendors/vendor-detail-data";
 import { VendorDetailSkeleton } from "@/components/work/vendors/vendor-detail-skeleton";
 
-export default async function WorkVendorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function WorkVendorDetailPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: vendorId } = await params;
 
 	return (

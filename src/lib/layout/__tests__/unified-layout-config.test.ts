@@ -1,5 +1,8 @@
 import { beforeEach, describe, expect, it } from "@jest/globals";
-import { clearUnifiedLayoutCache, getUnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
+import {
+	clearUnifiedLayoutCache,
+	getUnifiedLayoutConfig,
+} from "@/lib/layout/unified-layout-config";
 
 describe("getUnifiedLayoutConfig", () => {
 	beforeEach(() => {

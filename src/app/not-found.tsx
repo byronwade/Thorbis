@@ -14,13 +14,18 @@ export default function NotFound() {
 
 				<div className="space-y-2">
 					<h1 className="font-bold text-6xl text-foreground">404</h1>
-					<h2 className="font-semibold text-2xl text-foreground">Page Not Found</h2>
+					<h2 className="font-semibold text-2xl text-foreground">
+						Page Not Found
+					</h2>
 				</div>
 
 				<div className="space-y-4 text-muted-foreground">
-					<p className="text-lg">Looks like this page went on a coffee break and never came back.</p>
+					<p className="text-lg">
+						Looks like this page went on a coffee break and never came back.
+					</p>
 					<p className="text-sm">
-						We searched high and low, but couldn't find what you're looking for. Maybe it's still in the truck? 🚚
+						We searched high and low, but couldn't find what you're looking for.
+						Maybe it's still in the truck? 🚚
 					</p>
 				</div>
 

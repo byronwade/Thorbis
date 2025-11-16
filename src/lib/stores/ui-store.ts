@@ -99,7 +99,9 @@ type UIActions = {
 	setSidebarOpen: (open: boolean) => void;
 	openModal: (type: string, data?: unknown) => void;
 	closeModal: (type: string) => void;
-	addNotification: (notification: Omit<UIState["notifications"][0], "id">) => void;
+	addNotification: (
+		notification: Omit<UIState["notifications"][0], "id">,
+	) => void;
 	removeNotification: (id: string) => void;
 	// Call actions
 	setIncomingCall: (caller: CallState["caller"]) => void;
@@ -208,7 +210,7 @@ export const useUIStore = create<UIStore>()(
 							state.sidebarOpen = !state.sidebarOpen;
 						},
 						false,
-						"toggleSidebar"
+						"toggleSidebar",
 					),
 
 				setSidebarOpen: (open) =>
@@ -217,7 +219,7 @@ export const useUIStore = create<UIStore>()(
 							state.sidebarOpen = open;
 						},
 						false,
-						"setSidebarOpen"
+						"setSidebarOpen",
 					),
 
 				openModal: (type, data) =>
@@ -230,7 +232,7 @@ export const useUIStore = create<UIStore>()(
 							};
 						},
 						false,
-						"openModal"
+						"openModal",
 					),
 
 				closeModal: (type) =>
@@ -241,7 +243,7 @@ export const useUIStore = create<UIStore>()(
 							}
 						},
 						false,
-						"closeModal"
+						"closeModal",
 					),
 
 				addNotification: (notification) =>
@@ -255,25 +257,28 @@ export const useUIStore = create<UIStore>()(
 								setTimeout(() => {
 									set(
 										(currentState) => {
-											currentState.notifications = currentState.notifications.filter((n) => n.id !== id);
+											currentState.notifications =
+												currentState.notifications.filter((n) => n.id !== id);
 										},
 										false,
-										"autoRemoveNotification"
+										"autoRemoveNotification",
 									);
 								}, notification.duration);
 							}
 						},
 						false,
-						"addNotification"
+						"addNotification",
 					),
 
 				removeNotification: (id) =>
 					set(
 						(state) => {
-							state.notifications = state.notifications.filter((n) => n.id !== id);
+							state.notifications = state.notifications.filter(
+								(n) => n.id !== id,
+							);
 						},
 						false,
-						"removeNotification"
+						"removeNotification",
 					),
 
 				// Call actions
@@ -285,7 +290,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.startTime = Date.now();
 						},
 						false,
-						"setIncomingCall"
+						"setIncomingCall",
 					),
 
 				answerCall: () =>
@@ -299,7 +304,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "1",
 										name: "Sarah Johnson",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: true,
@@ -308,7 +313,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "2",
 										name: "Michael Chen",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -317,7 +322,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "3",
 										name: "Emily Rodriguez",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: true,
 										isVideoEnabled: false,
 										isSpeaking: false,
@@ -326,7 +331,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "4",
 										name: "David Kim",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -335,7 +340,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "5",
 										name: "Lisa Anderson",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -344,7 +349,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "6",
 										name: "James Wilson",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: true,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -353,7 +358,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "7",
 										name: "Maria Garcia",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: false,
 										isSpeaking: false,
@@ -362,7 +367,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "8",
 										name: "Robert Taylor",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -371,7 +376,7 @@ export const useUIStore = create<UIStore>()(
 									{
 										id: "9",
 										name: "Jennifer Lee",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+										skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 										isMuted: false,
 										isVideoEnabled: true,
 										isSpeaking: false,
@@ -381,7 +386,7 @@ export const useUIStore = create<UIStore>()(
 							}
 						},
 						false,
-						"answerCall"
+						"answerCall",
 					),
 
 				endCall: () =>
@@ -404,7 +409,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.participants = [];
 						},
 						false,
-						"endCall"
+						"endCall",
 					),
 
 				toggleMute: () =>
@@ -413,7 +418,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isMuted = !state.call.isMuted;
 						},
 						false,
-						"toggleMute"
+						"toggleMute",
 					),
 
 				toggleHold: () =>
@@ -422,7 +427,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isOnHold = !state.call.isOnHold;
 						},
 						false,
-						"toggleHold"
+						"toggleHold",
 					),
 
 				toggleRecording: () =>
@@ -431,7 +436,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isRecording = !state.call.isRecording;
 						},
 						false,
-						"toggleRecording"
+						"toggleRecording",
 					),
 
 				// Video actions
@@ -449,7 +454,7 @@ export const useUIStore = create<UIStore>()(
 										}
 									},
 									false,
-									"videoRinging"
+									"videoRinging",
 								);
 								// Auto-accept after 3 seconds for demo
 								setTimeout(() => {
@@ -461,13 +466,13 @@ export const useUIStore = create<UIStore>()(
 											}
 										},
 										false,
-										"videoAutoAccept"
+										"videoAutoAccept",
 									);
 								}, 3000);
 							}, 1000);
 						},
 						false,
-						"requestVideo"
+						"requestVideo",
 					),
 
 				acceptVideo: () =>
@@ -478,7 +483,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isRemoteVideoEnabled = true;
 						},
 						false,
-						"acceptVideo"
+						"acceptVideo",
 					),
 
 				declineVideo: () =>
@@ -494,12 +499,12 @@ export const useUIStore = create<UIStore>()(
 										currentState.call.videoStatus = "off";
 									},
 									false,
-									"videoResetAfterDecline"
+									"videoResetAfterDecline",
 								);
 							}, 2000);
 						},
 						false,
-						"declineVideo"
+						"declineVideo",
 					),
 
 				endVideo: () =>
@@ -510,7 +515,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isRemoteVideoEnabled = false;
 						},
 						false,
-						"endVideo"
+						"endVideo",
 					),
 
 				toggleLocalVideo: () =>
@@ -519,7 +524,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.isLocalVideoEnabled = !state.call.isLocalVideoEnabled;
 						},
 						false,
-						"toggleLocalVideo"
+						"toggleLocalVideo",
 					),
 
 				// Enhanced feature actions
@@ -529,16 +534,17 @@ export const useUIStore = create<UIStore>()(
 							state.call.isScreenSharing = !state.call.isScreenSharing;
 						},
 						false,
-						"toggleScreenShare"
+						"toggleScreenShare",
 					),
 
 				toggleVirtualBackground: () =>
 					set(
 						(state) => {
-							state.call.hasVirtualBackground = !state.call.hasVirtualBackground;
+							state.call.hasVirtualBackground =
+								!state.call.hasVirtualBackground;
 						},
 						false,
-						"toggleVirtualBackground"
+						"toggleVirtualBackground",
 					),
 
 				addReaction: (type) =>
@@ -554,18 +560,20 @@ export const useUIStore = create<UIStore>()(
 							setTimeout(() => {
 								set(
 									(currentState) => {
-										const index = currentState.call.reactions.findIndex((r) => r.id === reaction.id);
+										const index = currentState.call.reactions.findIndex(
+											(r) => r.id === reaction.id,
+										);
 										if (index !== -1) {
 											currentState.call.reactions.splice(index, 1);
 										}
 									},
 									false,
-									"removeReaction"
+									"removeReaction",
 								);
 							}, 3000);
 						},
 						false,
-						"addReaction"
+						"addReaction",
 					),
 
 				clearReactions: () =>
@@ -574,7 +582,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.reactions = [];
 						},
 						false,
-						"clearReactions"
+						"clearReactions",
 					),
 
 				sendChatMessage: (message) =>
@@ -588,7 +596,7 @@ export const useUIStore = create<UIStore>()(
 							});
 						},
 						false,
-						"sendChatMessage"
+						"sendChatMessage",
 					),
 
 				clearChat: () =>
@@ -597,7 +605,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.chatMessages = [];
 						},
 						false,
-						"clearChat"
+						"clearChat",
 					),
 
 				setConnectionQuality: (quality) =>
@@ -606,7 +614,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.connectionQuality = quality;
 						},
 						false,
-						"setConnectionQuality"
+						"setConnectionQuality",
 					),
 
 				// Customer data actions
@@ -614,11 +622,13 @@ export const useUIStore = create<UIStore>()(
 					set(
 						(state) => {
 							state.call.customerData = data;
-							const customer = (data as { customer?: { id?: string | null } } | null)?.customer ?? null;
+							const customer =
+								(data as { customer?: { id?: string | null } } | null)
+									?.customer ?? null;
 							state.call.customerId = customer?.id || null;
 						},
 						false,
-						"setCustomerData"
+						"setCustomerData",
 					),
 
 				clearCustomerData: () =>
@@ -628,7 +638,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.customerId = null;
 						},
 						false,
-						"clearCustomerData"
+						"clearCustomerData",
 					),
 
 				// Telnyx state actions
@@ -638,7 +648,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.telnyxCallState = telnyxState;
 						},
 						false,
-						"setTelnyxCallState"
+						"setTelnyxCallState",
 					),
 
 				setTelnyxError: (error) =>
@@ -647,7 +657,7 @@ export const useUIStore = create<UIStore>()(
 							state.call.telnyxError = error;
 						},
 						false,
-						"setTelnyxError"
+						"setTelnyxError",
 					),
 
 				setCallMetadata: (metadata) =>
@@ -658,21 +668,21 @@ export const useUIStore = create<UIStore>()(
 							state.call.direction = metadata.direction;
 						},
 						false,
-						"setCallMetadata"
+						"setCallMetadata",
 					),
 
 				reset: () => set(initialState, false, "reset"),
 			})),
 			{
 				name: "ui-store",
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({
 					sidebarOpen: state.sidebarOpen,
 				}),
-			}
+			},
 		),
-		{ name: "UIStore" }
-	)
+		{ name: "UIStore" },
+	),
 );
 
 /**

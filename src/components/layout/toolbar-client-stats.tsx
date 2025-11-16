@@ -13,7 +13,9 @@ export function ToolbarClientStats({ pathname }: ToolbarClientStatsProps) {
 
 	useEffect(() => {
 		if (stats && stats.length > 0) {
-			document.querySelector(`[data-toolbar-default-stats="${CSS.escape(pathname)}"]`)?.setAttribute("hidden", "true");
+			document
+				.querySelector(`[data-toolbar-default-stats="${CSS.escape(pathname)}"]`)
+				?.setAttribute("hidden", "true");
 		}
 	}, [pathname, stats]);
 

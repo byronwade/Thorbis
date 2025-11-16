@@ -12,7 +12,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type PropertyJob = {
 	id: string;
@@ -50,7 +53,10 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			statusColors[status.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const getPriorityColor = (priority?: string) => {
@@ -63,7 +69,10 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 			high: "bg-warning/10 text-warning",
 			urgent: "bg-destructive/10 text-destructive",
 		};
-		return priorityColors[priority.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
+		return (
+			priorityColors[priority.toLowerCase()] ||
+			"bg-secondary0/10 text-muted-foreground"
+		);
 	};
 
 	const formatCurrency = (cents?: number) => {
@@ -86,7 +95,10 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				width: "w-32",
 				shrink: true,
 				render: (job) => (
-					<Link className="font-medium font-mono text-sm hover:underline" href={`/dashboard/work/${job.id}`}>
+					<Link
+						className="font-medium font-mono text-sm hover:underline"
+						href={`/dashboard/work/${job.id}`}
+					>
 						{job.job_number}
 					</Link>
 				),
@@ -95,8 +107,14 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				key: "title",
 				header: "Title",
 				render: (job) => (
-					<Link className="block min-w-0" href={`/dashboard/work/${job.id}`} onClick={(e) => e.stopPropagation()}>
-						<span className="font-medium text-sm leading-tight hover:underline">{job.title}</span>
+					<Link
+						className="block min-w-0"
+						href={`/dashboard/work/${job.id}`}
+						onClick={(e) => e.stopPropagation()}
+					>
+						<span className="font-medium text-sm leading-tight hover:underline">
+							{job.title}
+						</span>
 					</Link>
 				),
 			},
@@ -127,7 +145,9 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				header: "Status",
 				width: "w-32",
 				shrink: true,
-				render: (job) => <Badge className={getStatusColor(job.status)}>{job.status}</Badge>,
+				render: (job) => (
+					<Badge className={getStatusColor(job.status)}>{job.status}</Badge>
+				),
 			},
 			{
 				key: "priority",
@@ -152,9 +172,13 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				align: "right",
 				render: (job) => (
 					<div className="flex flex-col items-end gap-1">
-						<span className="font-medium text-sm">{formatCurrency(job.total_amount)}</span>
+						<span className="font-medium text-sm">
+							{formatCurrency(job.total_amount)}
+						</span>
 						{job.paid_amount && job.total_amount && (
-							<span className="text-muted-foreground text-xs">{formatCurrency(job.paid_amount)} paid</span>
+							<span className="text-muted-foreground text-xs">
+								{formatCurrency(job.paid_amount)} paid
+							</span>
 						)}
 					</div>
 				),
@@ -212,7 +236,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				),
 			},
 		],
-		[formatCurrency, getPriorityColor, getStatusColor]
+		[formatCurrency, getPriorityColor, getStatusColor],
 	);
 
 	return (

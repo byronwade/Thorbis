@@ -39,7 +39,11 @@ export function NavChatHistory() {
 
 					return (
 						<SidebarMenuItem key={chat.id}>
-							<SidebarMenuButton isActive={isActive} onClick={() => handleSelectChat(chat.id)} title={chat.title}>
+							<SidebarMenuButton
+								isActive={isActive}
+								onClick={() => handleSelectChat(chat.id)}
+								title={chat.title}
+							>
 								<span className="flex-1 truncate text-left">{chat.title}</span>
 							</SidebarMenuButton>
 							<SidebarMenuAction

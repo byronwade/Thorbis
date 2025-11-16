@@ -22,7 +22,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">KPI Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor key performance indicators and measure progress toward strategic goals
+							Monitor key performance indicators and measure progress toward
+							strategic goals
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Team Performance</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Evaluate technician performance, identify top performers, and areas for improvement
+							Evaluate technician performance, identify top performers, and
+							areas for improvement
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Growth Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track revenue growth, customer acquisition, and market share expansion
+							Track revenue growth, customer acquisition, and market share
+							expansion
 						</p>
 					</div>
 
@@ -52,14 +55,17 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Efficiency Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Measure operational efficiency, resource utilization, and productivity trends
+							Measure operational efficiency, resource utilization, and
+							productivity trends
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Measure What Matters</h3>
-					<p className="mb-6 text-muted-foreground">Data-driven insights to achieve your business goals</p>
+					<p className="mb-6 text-muted-foreground">
+						Data-driven insights to achieve your business goals
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

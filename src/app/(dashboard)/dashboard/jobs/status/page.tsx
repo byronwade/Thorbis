@@ -27,7 +27,9 @@ export default function JobStatusPage() {
 			{/* Page header */}
 			<div>
 				<h1 className="font-bold text-3xl tracking-tight">Job Status</h1>
-				<p className="text-muted-foreground">Track job progress, status updates, and completion metrics</p>
+				<p className="text-muted-foreground">
+					Track job progress, status updates, and completion metrics
+				</p>
 			</div>
 
 			{/* Stats - Streams in first */}

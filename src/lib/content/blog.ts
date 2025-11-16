@@ -1,6 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
-import { mapBlogAuthor, mapBlogCategory, mapBlogPost, mapContentTag } from "./transformers";
-import type { BlogAuthor, BlogCategory, BlogPost, BlogPostCollection, BlogPostQuery, ContentTag } from "./types";
+import {
+	mapBlogAuthor,
+	mapBlogCategory,
+	mapBlogPost,
+	mapContentTag,
+} from "./transformers";
+import type {
+	BlogAuthor,
+	BlogCategory,
+	BlogPost,
+	BlogPostCollection,
+	BlogPostQuery,
+	ContentTag,
+} from "./types";
 
 const BLOG_POST_SELECT = `
   id,
@@ -63,11 +75,14 @@ const BLOG_POST_BY_TAG_SELECT = `
 
 const DEFAULT_PAGE_SIZE = 10;
 
-const sanitizeSearch = (value: string): string => value.replace(/[&|!:*<>@()]/g, " ").trim();
+const sanitizeSearch = (value: string): string =>
+	value.replace(/[&|!:*<>@()]/g, " ").trim();
 
 const nowUtcIso = (): string => new Date().toISOString();
 
-export async function getBlogPosts(options: BlogPostQuery = {}): Promise<BlogPostCollection> {
+export async function getBlogPosts(
+	options: BlogPostQuery = {},
+): Promise<BlogPostCollection> {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -88,7 +103,9 @@ export async function getBlogPosts(options: BlogPostQuery = {}): Promise<BlogPos
 			.eq("tag.slug", options.tagSlug);
 
 		if (!includeUnpublished) {
-			query = query.eq("post.status", "published").lte("post.published_at", now);
+			query = query
+				.eq("post.status", "published")
+				.lte("post.published_at", now);
 		}
 
 		if (options.categorySlug) {
@@ -136,7 +153,9 @@ export async function getBlogPosts(options: BlogPostQuery = {}): Promise<BlogPos
 		};
 	}
 
-	let query = supabase.from("blog_posts").select(BLOG_POST_SELECT, { count: "exact" });
+	let query = supabase
+		.from("blog_posts")
+		.select(BLOG_POST_SELECT, { count: "exact" });
 
 	if (!includeUnpublished) {
 		query = query.eq("status", "published").lte("published_at", now);
@@ -179,7 +198,7 @@ export async function getBlogPosts(options: BlogPostQuery = {}): Promise<BlogPos
 
 export async function getBlogPostBySlug(
 	slug: string,
-	options: { includeUnpublished?: boolean } = {}
+	options: { includeUnpublished?: boolean } = {},
 ): Promise<BlogPost | null> {
 	const supabase = await createClient();
 
@@ -190,7 +209,11 @@ export async function getBlogPostBySlug(
 	const includeUnpublished = options.includeUnpublished ?? false;
 	const now = nowUtcIso();
 
-	let query = supabase.from("blog_posts").select(BLOG_POST_SELECT).eq("slug", slug).limit(1);
+	let query = supabase
+		.from("blog_posts")
+		.select(BLOG_POST_SELECT)
+		.eq("slug", slug)
+		.limit(1);
 
 	if (!includeUnpublished) {
 		query = query.eq("status", "published").lte("published_at", now);
@@ -224,7 +247,8 @@ export async function getBlogCategories(): Promise<BlogCategory[]> {
 		throw error;
 	}
 
-	return (data?.map((row) => mapBlogCategory(row)).filter(Boolean) ?? []) as BlogCategory[];
+	return (data?.map((row) => mapBlogCategory(row)).filter(Boolean) ??
+		[]) as BlogCategory[];
 }
 
 export async function getBlogTags(): Promise<ContentTag[]> {
@@ -243,7 +267,8 @@ export async function getBlogTags(): Promise<ContentTag[]> {
 		throw error;
 	}
 
-	return (data?.map((tag) => mapContentTag({ tag })).filter(Boolean) ?? []) as ContentTag[];
+	return (data?.map((tag) => mapContentTag({ tag })).filter(Boolean) ??
+		[]) as ContentTag[];
 }
 
 export async function getBlogAuthors(): Promise<BlogAuthor[]> {
@@ -255,14 +280,17 @@ export async function getBlogAuthors(): Promise<BlogAuthor[]> {
 
 	const { data, error } = await supabase
 		.from("blog_authors")
-		.select("id, slug, name, title, bio, avatar_url, website_url, linkedin_url, twitter_url")
+		.select(
+			"id, slug, name, title, bio, avatar_url, website_url, linkedin_url, twitter_url",
+		)
 		.order("name", { ascending: true });
 
 	if (error) {
 		throw error;
 	}
 
-	return (data?.map((author) => mapBlogAuthor(author)).filter(Boolean) ?? []) as BlogAuthor[];
+	return (data?.map((author) => mapBlogAuthor(author)).filter(Boolean) ??
+		[]) as BlogAuthor[];
 }
 
 export async function getFeaturedBlogPosts(limit = 3): Promise<BlogPost[]> {

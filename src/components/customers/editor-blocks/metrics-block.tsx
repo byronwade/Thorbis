@@ -18,7 +18,8 @@ import { cn } from "@/lib/utils";
 
 // React component that renders the block
 export function MetricsBlockComponent({ node }: any) {
-	const { totalRevenue, totalJobs, totalProperties, outstandingBalance } = node.attrs;
+	const { totalRevenue, totalJobs, totalProperties, outstandingBalance } =
+		node.attrs;
 
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-US", {
@@ -52,8 +53,12 @@ export function MetricsBlockComponent({ node }: any) {
 			label: "Outstanding",
 			value: formatCurrency(outstandingBalance || 0),
 			icon: AlertCircle,
-			iconColor: outstandingBalance > 0 ? "text-warning" : "text-muted-foreground",
-			bgColor: outstandingBalance > 0 ? "bg-warning dark:bg-warning" : "bg-secondary dark:bg-foreground",
+			iconColor:
+				outstandingBalance > 0 ? "text-warning" : "text-muted-foreground",
+			bgColor:
+				outstandingBalance > 0
+					? "bg-warning dark:bg-warning"
+					: "bg-secondary dark:bg-foreground",
 		},
 	];
 
@@ -69,7 +74,9 @@ export function MetricsBlockComponent({ node }: any) {
 								<CardContent className="p-6">
 									<div className="flex items-start justify-between">
 										<div>
-											<p className="font-medium text-muted-foreground text-sm">{metric.label}</p>
+											<p className="font-medium text-muted-foreground text-sm">
+												{metric.label}
+											</p>
 											<p className="mt-2 font-bold text-2xl">{metric.value}</p>
 										</div>
 										<div className={cn("rounded-full p-2", metric.bgColor)}>
@@ -120,7 +127,11 @@ export const MetricsBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "metrics-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "metrics-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

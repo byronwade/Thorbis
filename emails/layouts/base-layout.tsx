@@ -9,7 +9,17 @@
  * - Professional footer with company info
  */
 
-import { Body, Container, Head, Hr, Html, Link, Preview, Section, Text } from "@react-email/components";
+import {
+	Body,
+	Container,
+	Head,
+	Hr,
+	Html,
+	Link,
+	Preview,
+	Section,
+	Text,
+} from "@react-email/components";
 import type { ReactNode } from "react";
 import { EMAIL_COLORS } from "../theme";
 
@@ -62,7 +72,9 @@ export function BaseLayout({ children, previewText }: BaseLayoutProps) {
 								Unsubscribe
 							</Link>
 						</Text>
-						<Text style={footerCopyright}>© {new Date().getFullYear()} Thorbis. All rights reserved.</Text>
+						<Text style={footerCopyright}>
+							© {new Date().getFullYear()} Thorbis. All rights reserved.
+						</Text>
 					</Section>
 				</Container>
 			</Body>
@@ -73,7 +85,8 @@ export function BaseLayout({ children, previewText }: BaseLayoutProps) {
 // Styles matching dashboard design system
 const main = {
 	backgroundColor: EMAIL_COLORS.background, // Light background
-	fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+	fontFamily:
+		'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 	padding: "40px 20px",
 };
 

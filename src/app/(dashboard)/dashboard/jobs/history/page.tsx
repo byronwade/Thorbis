@@ -27,7 +27,9 @@ export default function JobHistoryPage() {
 			{/* Page header */}
 			<div>
 				<h1 className="font-bold text-3xl tracking-tight">Job History</h1>
-				<p className="text-muted-foreground">Complete job history, completed services, and performance analytics</p>
+				<p className="text-muted-foreground">
+					Complete job history, completed services, and performance analytics
+				</p>
 			</div>
 
 			{/* Stats - Streams in first */}

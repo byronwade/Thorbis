@@ -5,7 +5,13 @@
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 export async function WorkOrdersData() {
 	// Future: Fetch real work orders
@@ -69,18 +75,25 @@ export async function WorkOrdersData() {
 			<Card className="col-span-4">
 				<CardHeader>
 					<CardTitle>Work Orders</CardTitle>
-					<CardDescription>Current work orders and service requests</CardDescription>
+					<CardDescription>
+						Current work orders and service requests
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						{sampleOrders.map((order, index) => (
-							<div className="flex items-center gap-4 rounded-lg border p-4" key={index}>
+							<div
+								className="flex items-center gap-4 rounded-lg border p-4"
+								key={index}
+							>
 								<div className="flex size-12 items-center justify-center rounded-full bg-accent">
 									<span className="font-medium text-sm">{order.orderId}</span>
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center gap-2">
-										<p className="font-medium text-sm leading-none">{order.customer}</p>
+										<p className="font-medium text-sm leading-none">
+											{order.customer}
+										</p>
 										<span
 											className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
 												order.status === "In Progress"
@@ -109,7 +122,9 @@ export async function WorkOrdersData() {
 									<p className="text-muted-foreground text-sm">
 										{order.service} • {order.technician}
 									</p>
-									<p className="text-muted-foreground text-sm">Created: {order.created}</p>
+									<p className="text-muted-foreground text-sm">
+										Created: {order.created}
+									</p>
 								</div>
 								<div className="text-right">
 									<p className="font-medium text-sm">{order.estimated}</p>
@@ -135,17 +150,23 @@ export async function WorkOrdersData() {
 							</div>
 							<div className="text-right">
 								<p className="font-bold text-sm">92%</p>
-								<p className="text-muted-foreground text-xs">+3% from last week</p>
+								<p className="text-muted-foreground text-xs">
+									+3% from last week
+								</p>
 							</div>
 						</div>
 						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
 							<div>
 								<p className="font-medium text-sm">Average Processing</p>
-								<p className="text-muted-foreground text-xs">Time to approval</p>
+								<p className="text-muted-foreground text-xs">
+									Time to approval
+								</p>
 							</div>
 							<div className="text-right">
 								<p className="font-bold text-sm">2.3h</p>
-								<p className="text-muted-foreground text-xs">-0.5h from last month</p>
+								<p className="text-muted-foreground text-xs">
+									-0.5h from last month
+								</p>
 							</div>
 						</div>
 						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
@@ -155,13 +176,17 @@ export async function WorkOrdersData() {
 							</div>
 							<div className="text-right">
 								<p className="font-bold text-sm">96%</p>
-								<p className="text-muted-foreground text-xs">+2% from last month</p>
+								<p className="text-muted-foreground text-xs">
+									+2% from last month
+								</p>
 							</div>
 						</div>
 						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
 							<div>
 								<p className="font-medium text-sm">Revenue Impact</p>
-								<p className="text-muted-foreground text-xs">From work orders</p>
+								<p className="text-muted-foreground text-xs">
+									From work orders
+								</p>
 							</div>
 							<div className="text-right">
 								<p className="font-bold text-sm">$4,320</p>
@@ -171,7 +196,9 @@ export async function WorkOrdersData() {
 						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
 							<div>
 								<p className="font-medium text-sm">Customer Satisfaction</p>
-								<p className="text-muted-foreground text-xs">Work order quality</p>
+								<p className="text-muted-foreground text-xs">
+									Work order quality
+								</p>
 							</div>
 							<div className="text-right">
 								<p className="font-bold text-sm">4.7</p>

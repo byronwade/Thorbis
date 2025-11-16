@@ -1,12 +1,12 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/sync-bank-transactions",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/verify-telnyx-webhooks",
-      "schedule": "0 9 * * *"
-    }
-  ]
+	"crons": [
+		{
+			"path": "/api/cron/sync-bank-transactions",
+			"schedule": "0 2 * * *"
+		},
+		{
+			"path": "/api/cron/verify-telnyx-webhooks",
+			"schedule": "0 9 * * *"
+		}
+	]
 }

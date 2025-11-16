@@ -7,9 +7,21 @@
 
 "use client";
 
-import { AlertCircle, ArrowRight, Clock, Loader2, MapPin, RefreshCw, Route } from "lucide-react";
+import {
+	AlertCircle,
+	ArrowRight,
+	Clock,
+	Loader2,
+	MapPin,
+	RefreshCw,
+	Route,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 
 type TravelTimeData = {
@@ -38,7 +50,8 @@ type TravelTimeProps = {
 const REFRESH_INTERVAL_MINUTES = 5;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const REFRESH_INTERVAL_MS = REFRESH_INTERVAL_MINUTES * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const REFRESH_INTERVAL_MS =
+	REFRESH_INTERVAL_MINUTES * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const SECONDS_PER_HOUR = 3600;
 
 const splitAddress = (address: string | null | undefined) => {
@@ -55,9 +68,14 @@ const splitAddress = (address: string | null | undefined) => {
 	};
 };
 
-const buildDestinationAddress = (property: NonNullable<TravelTimeProps["property"]>) => {
+const buildDestinationAddress = (
+	property: NonNullable<TravelTimeProps["property"]>,
+) => {
 	const cityState = [property.city, property.state]
-		.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+		.filter(
+			(value): value is string =>
+				typeof value === "string" && value.trim().length > 0,
+		)
 		.join(", ");
 
 	const segments = [
@@ -65,7 +83,10 @@ const buildDestinationAddress = (property: NonNullable<TravelTimeProps["property
 		property.address2,
 		cityState || undefined,
 		property.zipCode ?? property.zip_code ?? undefined,
-	].filter((segment): segment is string => typeof segment === "string" && segment.trim().length > 0);
+	].filter(
+		(segment): segment is string =>
+			typeof segment === "string" && segment.trim().length > 0,
+	);
 
 	return segments.map((segment) => segment.trim()).join(", ");
 };
@@ -89,7 +110,8 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
 	const fetchTravelTime = useCallback(async () => {
-		const hasRequiredFields = property?.address && property?.city && property?.state;
+		const hasRequiredFields =
+			property?.address && property?.city && property?.state;
 
 		if (!hasRequiredFields) {
 			setIsLoading(false);
@@ -106,7 +128,9 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			});
 
 			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ error: "Failed to fetch travel time" }));
+				const errorData = await response
+					.json()
+					.catch(() => ({ error: "Failed to fetch travel time" }));
 				throw new Error(errorData.error || "Failed to fetch travel time");
 			}
 
@@ -115,7 +139,9 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			setLastUpdated(new Date());
 			setError(null);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to fetch travel time");
+			setError(
+				err instanceof Error ? err.message : "Failed to fetch travel time",
+			);
 			setTravelTime(null);
 		} finally {
 			setIsLoading(false);
@@ -168,7 +194,9 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	// Format duration for display
 	const formatDuration = (seconds: number): string => {
 		const hours = Math.floor(seconds / SECONDS_PER_HOUR);
-		const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+		const minutes = Math.floor(
+			(seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE,
+		);
 
 		if (hours > 0) {
 			return `${hours}h ${minutes}m`;
@@ -203,7 +231,12 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	if (isLoading || error || !travelTime) {
 		// If loading, error, or no data - show simple state without hover
 		return (
-			<div className={cn("flex h-7 items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs", className)}>
+			<div
+				className={cn(
+					"flex h-7 items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs",
+					className,
+				)}
+			>
 				{isLoading && (
 					<>
 						<Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
@@ -218,7 +251,9 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 					</>
 				)}
 
-				{!(error || travelTime || isLoading) && <span className="text-muted-foreground">No travel data</span>}
+				{!(error || travelTime || isLoading) && (
+					<span className="text-muted-foreground">No travel data</span>
+				)}
 			</div>
 		);
 	}
@@ -230,14 +265,18 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 				<div
 					className={cn(
 						"flex h-7 cursor-help items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs transition-colors hover:bg-muted",
-						className
+						className,
 					)}
 				>
 					<Clock className="h-3 w-3 text-muted-foreground" />
-					<span className="font-medium tabular-nums">{formatDuration(travelTime.duration)}</span>
+					<span className="font-medium tabular-nums">
+						{formatDuration(travelTime.duration)}
+					</span>
 					<span className="text-muted-foreground">•</span>
 					<Route className="h-3 w-3 text-muted-foreground" />
-					<span className="text-muted-foreground">{travelTime.distance.toFixed(1)} mi</span>
+					<span className="text-muted-foreground">
+						{travelTime.distance.toFixed(1)} mi
+					</span>
 					<button
 						aria-label="Refresh travel time"
 						className="ml-auto flex items-center gap-1 text-muted-foreground transition hover:text-foreground"
@@ -257,25 +296,35 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 						</div>
 						<div>
 							<div className="font-semibold text-sm">Travel Time</div>
-							<div className="text-muted-foreground text-xs">From company HQ</div>
+							<div className="text-muted-foreground text-xs">
+								From company HQ
+							</div>
 						</div>
 					</div>
 
 					{/* Main Stats */}
 					<div className="grid grid-cols-2 gap-3">
 						<div className="rounded-lg border border-border/50 bg-muted/20 p-3">
-							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">Duration</div>
+							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+								Duration
+							</div>
 							<div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
 								{formatDuration(travelTime.duration)}
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-xs">{travelTime.durationText}</div>
+							<div className="mt-0.5 text-muted-foreground text-xs">
+								{travelTime.durationText}
+							</div>
 						</div>
 						<div className="rounded-lg border border-border/50 bg-muted/20 p-3">
-							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">Distance</div>
+							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+								Distance
+							</div>
 							<div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
 								{travelTime.distance.toFixed(1)} mi
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-xs">{travelTime.distanceText}</div>
+							<div className="mt-0.5 text-muted-foreground text-xs">
+								{travelTime.distanceText}
+							</div>
 						</div>
 					</div>
 
@@ -288,15 +337,27 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 						<div className="flex items-start gap-2 text-sm">
 							<ArrowRight className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-foreground">{origin?.primary}</div>
-								{origin?.secondary && <div className="text-muted-foreground text-xs">{origin.secondary}</div>}
+								<div className="font-medium text-foreground">
+									{origin?.primary}
+								</div>
+								{origin?.secondary && (
+									<div className="text-muted-foreground text-xs">
+										{origin.secondary}
+									</div>
+								)}
 							</div>
 						</div>
 						<div className="flex items-start gap-2 text-sm">
 							<MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-foreground">{destination?.primary}</div>
-								{destination?.secondary && <div className="text-muted-foreground text-xs">{destination.secondary}</div>}
+								<div className="font-medium text-foreground">
+									{destination?.primary}
+								</div>
+								{destination?.secondary && (
+									<div className="text-muted-foreground text-xs">
+										{destination.secondary}
+									</div>
+								)}
 							</div>
 						</div>
 					</div>
@@ -305,10 +366,14 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-1.5 rounded-md bg-emerald-500/10 px-2 py-1">
 							<span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-							<span className="font-medium text-emerald-700 text-xs dark:text-emerald-400">Live traffic data</span>
+							<span className="font-medium text-emerald-700 text-xs dark:text-emerald-400">
+								Live traffic data
+							</span>
 						</div>
 						{lastUpdated && (
-							<div className="text-muted-foreground text-xs">Updated {formatRelativeTime(lastUpdated)}</div>
+							<div className="text-muted-foreground text-xs">
+								Updated {formatRelativeTime(lastUpdated)}
+							</div>
 						)}
 					</div>
 				</div>

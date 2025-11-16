@@ -3,9 +3,21 @@
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 
@@ -17,13 +29,17 @@ export function SlackSettings() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Channel Notifications</CardTitle>
-					<CardDescription>Choose which events to send to Slack</CardDescription>
+					<CardDescription>
+						Choose which events to send to Slack
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>New Customers</Label>
-							<p className="text-muted-foreground text-sm">Notify when new customers sign up</p>
+							<p className="text-muted-foreground text-sm">
+								Notify when new customers sign up
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -33,7 +49,9 @@ export function SlackSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Job Completion</Label>
-							<p className="text-muted-foreground text-sm">Notify when jobs are completed</p>
+							<p className="text-muted-foreground text-sm">
+								Notify when jobs are completed
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>

@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { MaterialsKanban } from "@/components/work/materials-kanban";
-import { type Material, MaterialsTable } from "@/components/work/materials-table";
+import {
+	type Material,
+	MaterialsTable,
+} from "@/components/work/materials-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -88,7 +91,7 @@ export async function MaterialsData() {
         unit,
         is_active
       )
-    `
+    `,
 		)
 		.eq("company_id", activeCompanyId)
 		.is("deleted_at", null)
@@ -101,21 +104,30 @@ export async function MaterialsData() {
 	const inventoryRows = (materialsRaw ?? []) as InventoryRow[];
 
 	const materials = inventoryRows.reduce<Material[]>((accumulator, row) => {
-		const item = Array.isArray(row.price_book_item) ? (row.price_book_item[0] ?? null) : row.price_book_item;
+		const item = Array.isArray(row.price_book_item)
+			? (row.price_book_item[0] ?? null)
+			: row.price_book_item;
 
 		if (!item) {
 			return accumulator;
 		}
 
-		const quantityAvailable = Number(row.quantity_available ?? row.quantity_on_hand ?? 0);
+		const quantityAvailable = Number(
+			row.quantity_available ?? row.quantity_on_hand ?? 0,
+		);
 		const unitCost = Number(row.cost_per_unit ?? 0);
 		const totalValue =
-			Number(row.total_cost_value ?? 0) || unitCost * Number(row.quantity_on_hand ?? quantityAvailable ?? 0);
+			Number(row.total_cost_value ?? 0) ||
+			unitCost * Number(row.quantity_on_hand ?? quantityAvailable ?? 0);
 
 		const isActive = item.is_active !== false;
-		const archivedAt = isActive ? null : (row.deleted_at ?? row.updated_at ?? null);
+		const archivedAt = isActive
+			? null
+			: (row.deleted_at ?? row.updated_at ?? null);
 
-		const categoryLabel = [item.category, item.subcategory].filter(Boolean).join(" • ");
+		const categoryLabel = [item.category, item.subcategory]
+			.filter(Boolean)
+			.join(" • ");
 
 		const material: Material = {
 			id: row.id,

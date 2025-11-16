@@ -21,6 +21,10 @@ type StatusPipelineProps = {
 	compact?: boolean;
 };
 
-export function StatusPipeline({ stats, variant = "ticker", compact = false }: StatusPipelineProps) {
+export function StatusPipeline({
+	stats,
+	variant = "ticker",
+	compact = false,
+}: StatusPipelineProps) {
 	return <StatsCards compact={compact} stats={stats} variant={variant} />;
 }

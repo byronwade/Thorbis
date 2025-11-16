@@ -8,7 +8,10 @@
  * Format large numbers with intelligent abbreviation
  * Adapts based on available space
  */
-export function formatNumber(value: number, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function formatNumber(
+	value: number,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): string {
 	if (stage === "tiny" || stage === "compact") {
 		// Ultra-compact: use K/M abbreviations
 		if (value >= 1_000_000) {
@@ -38,7 +41,10 @@ export function formatNumber(value: number, stage: "full" | "comfortable" | "com
 /**
  * Format currency with intelligent abbreviation
  */
-export function formatCurrency(value: number, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function formatCurrency(
+	value: number,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): string {
 	const formatted = formatNumber(value, stage);
 
 	if (stage === "tiny") {
@@ -52,7 +58,10 @@ export function formatCurrency(value: number, stage: "full" | "comfortable" | "c
 /**
  * Format percentage with adaptive precision
  */
-export function formatPercentage(value: number, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function formatPercentage(
+	value: number,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): string {
 	if (stage === "tiny" || stage === "compact") {
 		return `${Math.round(value)}%`;
 	}
@@ -63,7 +72,10 @@ export function formatPercentage(value: number, stage: "full" | "comfortable" | 
 /**
  * Truncate text based on stage
  */
-export function truncateText(text: string, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function truncateText(
+	text: string,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): string {
 	const maxLengths = {
 		full: 100,
 		comfortable: 50,
@@ -83,7 +95,10 @@ export function truncateText(text: string, stage: "full" | "comfortable" | "comp
 /**
  * Get adaptive item count for lists
  */
-export function getAdaptiveCount(totalItems: number, stage: "full" | "comfortable" | "compact" | "tiny"): number {
+export function getAdaptiveCount(
+	totalItems: number,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): number {
 	const counts = {
 		full: Math.min(totalItems, 8),
 		comfortable: Math.min(totalItems, 5),
@@ -98,7 +113,10 @@ export function getAdaptiveCount(totalItems: number, stage: "full" | "comfortabl
  * Priority sort helper
  * Returns items sorted by priority (top performers, highest values, etc.)
  */
-export function prioritySort<T>(items: T[], getValue: (item: T) => number): T[] {
+export function prioritySort<T>(
+	items: T[],
+	getValue: (item: T) => number,
+): T[] {
 	return [...items].sort((a, b) => getValue(b) - getValue(a));
 }
 
@@ -106,7 +124,10 @@ export function prioritySort<T>(items: T[], getValue: (item: T) => number): T[] 
  * Container size detector (for use in client components)
  * Returns current responsive stage based on container dimensions
  */
-export function detectStage(width: number, height: number): "full" | "comfortable" | "compact" | "tiny" {
+export function detectStage(
+	width: number,
+	height: number,
+): "full" | "comfortable" | "compact" | "tiny" {
 	// Height is priority
 	if (height >= 400 && width >= 300) {
 		return "full";
@@ -130,7 +151,10 @@ export function getTrendClass(value: number): string {
 /**
  * Format rank display (for leaderboards)
  */
-export function formatRank(rank: number, stage: "full" | "comfortable" | "compact" | "tiny"): string {
+export function formatRank(
+	rank: number,
+	stage: "full" | "comfortable" | "compact" | "tiny",
+): string {
 	if (stage === "tiny") {
 		return `#${rank}`;
 	}

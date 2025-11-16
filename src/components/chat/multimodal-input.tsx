@@ -28,7 +28,8 @@ export function MultimodalInput({
 
 	// Use controlled value if provided, otherwise use internal state
 	const input = controlledValue !== undefined ? controlledValue : internalInput;
-	const setInput = controlledValue !== undefined && onChange ? onChange : setInternalInput;
+	const setInput =
+		controlledValue !== undefined && onChange ? onChange : setInternalInput;
 
 	const handleSubmit = () => {
 		if (!input.trim() || disabled) {
@@ -76,7 +77,7 @@ export function MultimodalInput({
 						className={cn(
 							"flex min-h-[80px] w-full resize-none rounded-none border-none bg-transparent p-2 text-sm outline-none ring-0 placeholder:text-muted-foreground",
 							"focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
-							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
 						)}
 						data-testid="multimodal-input"
 						disabled={disabled}
@@ -104,7 +105,15 @@ export function MultimodalInput({
 							viewBox="0 0 24 24"
 							width="28"
 						>
-							<circle cx="12" cy="12" fill="none" opacity="0.25" r="10" stroke="currentColor" strokeWidth="2" />
+							<circle
+								cx="12"
+								cy="12"
+								fill="none"
+								opacity="0.25"
+								r="10"
+								stroke="currentColor"
+								strokeWidth="2"
+							/>
 							<circle
 								cx="12"
 								cy="12"

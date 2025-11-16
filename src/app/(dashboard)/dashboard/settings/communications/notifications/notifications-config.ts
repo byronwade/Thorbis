@@ -1,6 +1,8 @@
 import type { Database } from "@/types/supabase";
 
-type NotificationSettingsRow = Database["public"]["Tables"]["communication_notification_settings"]["Row"] | null;
+type NotificationSettingsRow =
+	| Database["public"]["Tables"]["communication_notification_settings"]["Row"]
+	| null;
 
 export type NotificationSettingsState = {
 	// Customer notifications
@@ -47,7 +49,9 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettingsState = {
 	inAppNotifications: true,
 };
 
-export function mapNotificationSettings(row: NotificationSettingsRow): Partial<NotificationSettingsState> {
+export function mapNotificationSettings(
+	row: NotificationSettingsRow,
+): Partial<NotificationSettingsState> {
 	if (!row) {
 		return {};
 	}

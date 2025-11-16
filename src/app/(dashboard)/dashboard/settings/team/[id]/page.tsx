@@ -13,7 +13,11 @@ import { SettingsTeamMemberDetailData } from "@/components/settings/team/setting
 import { TeamMemberDetailShell } from "@/components/team/team-member-detail-shell";
 import { TeamMemberDetailSkeleton } from "@/components/team/team-member-detail-skeleton";
 
-export default async function TeamMemberDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TeamMemberDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: teamMemberId } = await params;
 
 	return (

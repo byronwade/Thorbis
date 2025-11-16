@@ -9,7 +9,11 @@
  */
 
 import { Briefcase, TrendingDown, TrendingUp } from "lucide-react";
-import { formatNumber, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatNumber,
+	formatPercentage,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveFlex,
@@ -46,7 +50,10 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 				{/* COMFORTABLE Stage: Title + icon inline, more compact */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="font-medium text-muted-foreground" variant="body">
+						<ResponsiveText
+							className="font-medium text-muted-foreground"
+							variant="body"
+						>
 							Jobs
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -69,15 +76,21 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 					{/* Number - uses fluid typography */}
 					<ResponsiveText className="font-bold" variant="display">
 						{/* Show abbreviated on tiny, full on others */}
-						<span className="@[120px]:inline hidden">{formatNumber(data.total, "comfortable")}</span>
-						<span className="@[120px]:hidden">{formatNumber(data.total, "tiny")}</span>
+						<span className="@[120px]:inline hidden">
+							{formatNumber(data.total, "comfortable")}
+						</span>
+						<span className="@[120px]:hidden">
+							{formatNumber(data.total, "tiny")}
+						</span>
 					</ResponsiveText>
 
 					{/* Trend - adaptive visibility and format */}
 					<div className="mt-1">
 						{/* FULL + COMFORTABLE: Show icon + percentage */}
 						<ShowAt stage="full-comfortable">
-							<span className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}>
+							<span
+								className={`inline-flex items-center gap-1 text-sm ${getTrendClass(data.change)}`}
+							>
 								<TrendIcon className="size-4" />
 								{isPositive ? "+" : ""}
 								{formatPercentage(data.change, "comfortable")}

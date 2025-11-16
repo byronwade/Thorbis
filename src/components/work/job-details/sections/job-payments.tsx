@@ -7,7 +7,14 @@
 
 import { CreditCard, DollarSign } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 
 type JobPaymentsProps = {
 	payments: any[];
@@ -57,7 +64,9 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<DollarSign className="mb-4 size-12 text-muted-foreground" />
 				<h3 className="mb-2 font-semibold text-lg">No Payments</h3>
-				<p className="text-muted-foreground text-sm">No payments have been recorded for this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No payments have been recorded for this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -78,19 +87,29 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 					<TableBody>
 						{payments.map((payment) => (
 							<TableRow key={payment.id}>
-								<TableCell>{formatDate(payment.payment_date || payment.created_at)}</TableCell>
-								<TableCell className="font-medium">{formatCurrency(payment.amount)}</TableCell>
+								<TableCell>
+									{formatDate(payment.payment_date || payment.created_at)}
+								</TableCell>
+								<TableCell className="font-medium">
+									{formatCurrency(payment.amount)}
+								</TableCell>
 								<TableCell>
 									<div className="flex items-center gap-2">
 										<CreditCard className="size-4 text-muted-foreground" />
-										{getPaymentMethodLabel(payment.payment_method || payment.method)}
+										{getPaymentMethodLabel(
+											payment.payment_method || payment.method,
+										)}
 									</div>
 								</TableCell>
 								<TableCell className="font-mono text-xs">
 									{payment.reference_number || payment.transaction_id || "—"}
 								</TableCell>
 								<TableCell>
-									<Badge variant={payment.status === "completed" ? "default" : "secondary"}>
+									<Badge
+										variant={
+											payment.status === "completed" ? "default" : "secondary"
+										}
+									>
 										{payment.status || "completed"}
 									</Badge>
 								</TableCell>
@@ -111,7 +130,12 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 					</div>
 					<div className="text-right">
 						<p className="font-bold text-2xl">
-							{formatCurrency(payments.reduce((sum, payment) => sum + (payment.amount || 0), 0))}
+							{formatCurrency(
+								payments.reduce(
+									(sum, payment) => sum + (payment.amount || 0),
+									0,
+								),
+							)}
 						</p>
 					</div>
 				</div>

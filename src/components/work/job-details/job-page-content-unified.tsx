@@ -73,14 +73,31 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { UnifiedAccordionContent, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
+	UnifiedAccordionContent,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { CustomerSearchCombobox } from "@/components/work/job-creation/customer-search-combobox";
 import { InlineCustomerForm } from "@/components/work/job-creation/inline-customer-form";
 import { InlinePropertyForm } from "@/components/work/job-creation/inline-property-form";
-import { CustomerInfoHoverCard, PropertyInfoHoverCard, TechnicianInfoHoverCard } from "./info-hover-cards";
+import {
+	CustomerInfoHoverCard,
+	PropertyInfoHoverCard,
+	TechnicianInfoHoverCard,
+} from "./info-hover-cards";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
-import { CSRJobInfo, ManagerJobMetrics, TechJobInfo } from "./role-based-headers";
+import {
+	CSRJobInfo,
+	ManagerJobMetrics,
+	TechJobInfo,
+} from "./role-based-headers";
 import { JobCustomer } from "./sections/job-customer";
 import { JobDocuments } from "./sections/job-documents";
 import { JobEquipment } from "./sections/job-equipment";
@@ -123,7 +140,14 @@ export type JobData = {
 	allProperties?: any[];
 	companyPhones?: any[];
 	enrichmentData?: any;
-	userRole?: "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr" | null;
+	userRole?:
+		| "owner"
+		| "admin"
+		| "manager"
+		| "dispatcher"
+		| "technician"
+		| "csr"
+		| null;
 };
 
 export type JobPageContentProps = {
@@ -141,21 +165,30 @@ function _formatCurrency(amount: number | null | undefined): string {
 	}).format(amount);
 }
 
-export function JobPageContentUnified({ entityData, metrics }: JobPageContentProps) {
+export function JobPageContentUnified({
+	entityData,
+	metrics,
+}: JobPageContentProps) {
 	const router = useRouter();
 	const [job, setJob] = useState(entityData.job);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
 	const [isCustomerManagerOpen, setIsCustomerManagerOpen] = useState(false);
-	const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<any | null>(null);
+	const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<
+		any | null
+	>(null);
 	const [showCustomerCreateForm, setShowCustomerCreateForm] = useState(false);
 	const [isUpdatingCustomer, setIsUpdatingCustomer] = useState(false);
-	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] = useState(false);
+	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
+		useState(false);
 	const [isPropertyManagerOpen, setIsPropertyManagerOpen] = useState(false);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
+		null,
+	);
 	const [showPropertyCreateForm, setShowPropertyCreateForm] = useState(false);
 	const [isUpdatingProperty, setIsUpdatingProperty] = useState(false);
-	const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] = useState(false);
+	const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] =
+		useState(false);
 
 	const {
 		customer,
@@ -188,7 +221,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 	useEffect(() => {
 		if (isCustomerManagerOpen) {
 			const currentFromList =
-				customer && Array.isArray(allCustomers) ? allCustomers.find((c: any) => c.id === customer.id) : null;
+				customer && Array.isArray(allCustomers)
+					? allCustomers.find((c: any) => c.id === customer.id)
+					: null;
 			setSelectedCustomerForDialog(currentFromList || customer || null);
 			setShowCustomerCreateForm(false);
 		}
@@ -248,7 +283,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 		),
 	].filter(Boolean);
 
-	const jobTags = Array.isArray(job?.metadata?.tags) ? (job.metadata.tags as any[]) : [];
+	const jobTags = Array.isArray(job?.metadata?.tags)
+		? (job.metadata.tags as any[])
+		: [];
 
 	const filteredProperties = useMemo(() => {
 		if (!(customer?.id && Array.isArray(allProperties))) {
@@ -256,11 +293,18 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 		}
 
 		const matches = allProperties.filter(
-			(prop: any) => prop.customer_id === customer.id || prop.customerId === customer.id
+			(prop: any) =>
+				prop.customer_id === customer.id || prop.customerId === customer.id,
 		);
 
-		if (property?.id && !matches.some((prop: any) => prop.id === property.id) && Array.isArray(allProperties)) {
-			const currentProp = allProperties.find((prop: any) => prop.id === property.id);
+		if (
+			property?.id &&
+			!matches.some((prop: any) => prop.id === property.id) &&
+			Array.isArray(allProperties)
+		) {
+			const currentProp = allProperties.find(
+				(prop: any) => prop.id === property.id,
+			);
 			if (currentProp) {
 				return [currentProp, ...matches];
 			}
@@ -306,7 +350,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				setIsUpdatingCustomer(false);
 			}
 		},
-		[customer?.id, job.id, property?.customerId, property?.customer_id, router]
+		[customer?.id, job.id, property?.customerId, property?.customer_id, router],
 	);
 
 	const handleRemoveCustomer = useCallback(async () => {
@@ -364,7 +408,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				setIsUpdatingProperty(false);
 			}
 		},
-		[customer?.id, job.id, property?.id, router]
+		[customer?.id, job.id, property?.id, router],
 	);
 
 	const handleRemoveProperty = useCallback(async () => {
@@ -394,11 +438,15 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 		const technicians: { id: string; name: string }[] = [];
 		const seen = new Set<string>();
 
-		const registerTechnician = (idCandidate: string | null | undefined, nameCandidate: string | null | undefined) => {
+		const registerTechnician = (
+			idCandidate: string | null | undefined,
+			nameCandidate: string | null | undefined,
+		) => {
 			if (!(idCandidate || nameCandidate)) {
 				return;
 			}
-			const identifier = idCandidate ?? nameCandidate ?? `tech-${technicians.length}`;
+			const identifier =
+				idCandidate ?? nameCandidate ?? `tech-${technicians.length}`;
 			if (seen.has(identifier)) {
 				return;
 			}
@@ -412,7 +460,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 		if (assignedUser) {
 			registerTechnician(
 				assignedUser.id || assignedUser.user_id || assignedUser.email,
-				assignedUser.name || assignedUser.email || assignedUser.phone
+				assignedUser.name || assignedUser.email || assignedUser.phone,
 			);
 		}
 
@@ -423,8 +471,14 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				: teamMember?.users || teamMember?.user || assignment?.user;
 
 			registerTechnician(
-				nestedUser?.id || teamMember?.user_id || assignment?.team_member_id || assignment?.id,
-				nestedUser?.name || teamMember?.display_name || nestedUser?.email || assignment?.role
+				nestedUser?.id ||
+					teamMember?.user_id ||
+					assignment?.team_member_id ||
+					assignment?.id,
+				nestedUser?.name ||
+					teamMember?.display_name ||
+					nestedUser?.email ||
+					assignment?.role,
 			);
 		});
 
@@ -437,13 +491,20 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 		}
 
 		const DISPLAY_LIMIT = 3;
-		const visibleNames = assignedTechnicians.slice(0, DISPLAY_LIMIT).map((tech) => tech.name || "Technician");
+		const visibleNames = assignedTechnicians
+			.slice(0, DISPLAY_LIMIT)
+			.map((tech) => tech.name || "Technician");
 		const remaining = assignedTechnicians.length - visibleNames.length;
-		const label = remaining > 0 ? `${visibleNames.join(", ")} +${remaining} more` : visibleNames.join(", ");
+		const label =
+			remaining > 0
+				? `${visibleNames.join(", ")} +${remaining} more`
+				: visibleNames.join(", ");
 
 		return {
 			label,
-			tooltip: assignedTechnicians.map((tech) => tech.name || "Technician").join(", "),
+			tooltip: assignedTechnicians
+				.map((tech) => tech.name || "Technician")
+				.join(", "),
 		};
 	}, [assignedTechnicians]);
 
@@ -453,24 +514,33 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="font-semibold text-2xl sm:text-3xl">{job.title || `Job ${job.job_number || ""}`}</h1>
+								<h1 className="font-semibold text-2xl sm:text-3xl">
+									{job.title || `Job ${job.job_number || ""}`}
+								</h1>
 								<div className="flex flex-wrap items-center gap-2">
 									<EntityTags
 										entityId={job.id}
 										entityType="job"
-										onUpdateTags={(id, tags) => updateEntityTags("job", id, tags)}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("job", id, tags)
+										}
 										tags={jobTags}
 									/>
 								</div>
 								{showCreatedDate && (
 									<p className="text-muted-foreground text-sm sm:text-base">
-										{new Date(job.created_at as string).toLocaleDateString("en-US", {
-											year: "numeric",
-											month: "long",
-											day: "numeric",
-										})}
+										{new Date(job.created_at as string).toLocaleDateString(
+											"en-US",
+											{
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+											},
+										)}
 									</p>
 								)}
 							</div>
@@ -484,7 +554,10 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 						{property && <PropertyInfoHoverCard property={property} />}
 
 						{(assignedUser || teamAssignments.length > 0) && (
-							<TechnicianInfoHoverCard teamMembers={teamAssignments} technician={assignedUser} />
+							<TechnicianInfoHoverCard
+								teamMembers={teamAssignments}
+								technician={assignedUser}
+							/>
 						)}
 					</div>
 
@@ -528,11 +601,15 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 									day: "numeric",
 								})}
 								{job.scheduled_end &&
-									new Date(job.scheduled_start).toDateString() !== new Date(job.scheduled_end).toDateString() &&
-									` - ${new Date(job.scheduled_end).toLocaleDateString("en-US", {
-										month: "short",
-										day: "numeric",
-									})}`}
+									new Date(job.scheduled_start).toDateString() !==
+										new Date(job.scheduled_end).toDateString() &&
+									` - ${new Date(job.scheduled_end).toLocaleDateString(
+										"en-US",
+										{
+											month: "short",
+											day: "numeric",
+										},
+									)}`}
 							</div>
 						)}
 
@@ -595,7 +672,8 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 								}`}
 							>
 								<CheckCircle2 className="size-4" />
-								{tasks.filter((t: any) => t.status === "completed").length}/{tasks.length} Tasks
+								{tasks.filter((t: any) => t.status === "completed").length}/
+								{tasks.length} Tasks
 							</div>
 						)}
 
@@ -603,8 +681,15 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 						{timeEntries && timeEntries.length > 0 && (
 							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
 								<Clock className="size-4" />
-								{timeEntries.reduce((sum: number, t: any) => sum + (t.total_hours || 0), 0).toFixed(1)}h
-								{job.estimated_labor_hours && ` / ${job.estimated_labor_hours}h`}
+								{timeEntries
+									.reduce(
+										(sum: number, t: any) => sum + (t.total_hours || 0),
+										0,
+									)
+									.toFixed(1)}
+								h
+								{job.estimated_labor_hours &&
+									` / ${job.estimated_labor_hours}h`}
 							</div>
 						)}
 
@@ -620,7 +705,8 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 								<FileText className="size-4" />
 								{invoices.length} Invoice
 								{invoices.length !== 1 ? "s" : ""}
-								{invoices.some((inv: any) => inv.balance_amount > 0) && " (Due)"}
+								{invoices.some((inv: any) => inv.balance_amount > 0) &&
+									" (Due)"}
 							</div>
 						)}
 
@@ -662,7 +748,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 							)}
 
 							{/* Managers see financial metrics */}
-							{userRole === "manager" && <ManagerJobMetrics metrics={metrics || {}} />}
+							{userRole === "manager" && (
+								<ManagerJobMetrics metrics={metrics || {}} />
+							)}
 
 							{/* CSRs and Dispatchers see customer and scheduling info */}
 							{(userRole === "csr" || userRole === "dispatcher") && (
@@ -695,11 +783,15 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 							{/* Customer Tags */}
 							{customer?.id && (
 								<div className="flex flex-wrap items-center gap-2">
-									<span className="font-medium text-muted-foreground text-xs">Customer:</span>
+									<span className="font-medium text-muted-foreground text-xs">
+										Customer:
+									</span>
 									<EntityTags
 										entityId={customer.id}
 										entityType="customer"
-										onUpdateTags={(id, tags) => updateEntityTags("customer", id, tags)}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("customer", id, tags)
+										}
 										tags={customer.tags || []}
 									/>
 								</div>
@@ -807,7 +899,8 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 						<JobCustomer customer={customer} />
 					) : (
 						<div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
-							No customer assigned. Use the actions above to link or create a customer for this job.
+							No customer assigned. Use the actions above to link or create a
+							customer for this job.
 						</div>
 					)}
 				</UnifiedAccordionContent>
@@ -826,7 +919,11 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 						disabled={!customer?.id || isUpdatingProperty}
 						onClick={() => setIsPropertyManagerOpen(true)}
 						size="sm"
-						title={customer?.id ? undefined : "Assign a customer before selecting a property"}
+						title={
+							customer?.id
+								? undefined
+								: "Assign a customer before selecting a property"
+						}
 						variant="outline"
 					>
 						<Link2 className="size-3.5" />
@@ -869,7 +966,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				count: estimates.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/estimates/new?jobId=${job.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/estimates/new?jobId=${job.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -894,7 +993,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				count: invoices.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/invoices/new?jobId=${job.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/invoices/new?jobId=${job.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -934,7 +1035,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				count: jobEquipment.length || equipment.length,
 				content: (
 					<UnifiedAccordionContent>
-						<JobEquipment equipment={jobEquipment.length > 0 ? jobEquipment : equipment} />
+						<JobEquipment
+							equipment={jobEquipment.length > 0 ? jobEquipment : equipment}
+						/>
 					</UnifiedAccordionContent>
 				),
 			});
@@ -964,7 +1067,11 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				count: teamAssignments.length,
 				content: (
 					<UnifiedAccordionContent>
-						<JobTeam assignedUser={assignedUser} jobId={job.id} teamAssignments={teamAssignments} />
+						<JobTeam
+							assignedUser={assignedUser}
+							jobId={job.id}
+							teamAssignments={teamAssignments}
+						/>
 					</UnifiedAccordionContent>
 				),
 			});
@@ -1102,11 +1209,18 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 			/>
 
 			{/* Customer Manager */}
-			<Dialog onOpenChange={setIsCustomerManagerOpen} open={isCustomerManagerOpen}>
+			<Dialog
+				onOpenChange={setIsCustomerManagerOpen}
+				open={isCustomerManagerOpen}
+			>
 				<DialogContent className="max-w-2xl space-y-4">
 					<DialogHeader>
-						<DialogTitle>{customer ? "Change Customer" : "Add Customer"}</DialogTitle>
-						<DialogDescription>Link an existing customer or create a new one for this job.</DialogDescription>
+						<DialogTitle>
+							{customer ? "Change Customer" : "Add Customer"}
+						</DialogTitle>
+						<DialogDescription>
+							Link an existing customer or create a new one for this job.
+						</DialogDescription>
 					</DialogHeader>
 					{showCustomerCreateForm ? (
 						<InlineCustomerForm
@@ -1122,27 +1236,40 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 							<CustomerSearchCombobox
 								customers={allCustomers || []}
 								onCreateNew={() => setShowCustomerCreateForm(true)}
-								onSelectCustomer={(selected) => setSelectedCustomerForDialog(selected)}
+								onSelectCustomer={(selected) =>
+									setSelectedCustomerForDialog(selected)
+								}
 								recentCustomerIds={[]}
 								selectedCustomer={selectedCustomerForDialog}
 							/>
 							{property &&
 								selectedCustomerForDialog?.id &&
-								(property.customer_id ?? property.customerId) !== selectedCustomerForDialog.id && (
+								(property.customer_id ?? property.customerId) !==
+									selectedCustomerForDialog.id && (
 									<div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-700 text-xs dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
-										Changing the customer will clear the currently assigned property.
+										Changing the customer will clear the currently assigned
+										property.
 									</div>
 								)}
 							<div className="flex items-center justify-end gap-2">
-								<Button onClick={() => setShowCustomerCreateForm(true)} size="sm" variant="outline">
+								<Button
+									onClick={() => setShowCustomerCreateForm(true)}
+									size="sm"
+									variant="outline"
+								>
 									<Plus className="mr-1.5 size-3.5" />
 									Create Customer
 								</Button>
 								<Button
 									disabled={
-										isUpdatingCustomer || !selectedCustomerForDialog || selectedCustomerForDialog.id === customer?.id
+										isUpdatingCustomer ||
+										!selectedCustomerForDialog ||
+										selectedCustomerForDialog.id === customer?.id
 									}
-									onClick={() => selectedCustomerForDialog && handleCustomerAssignment(selectedCustomerForDialog.id)}
+									onClick={() =>
+										selectedCustomerForDialog &&
+										handleCustomerAssignment(selectedCustomerForDialog.id)
+									}
 									size="sm"
 								>
 									{isUpdatingCustomer ? (
@@ -1161,10 +1288,15 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 			</Dialog>
 
 			{/* Property Manager */}
-			<Dialog onOpenChange={setIsPropertyManagerOpen} open={isPropertyManagerOpen}>
+			<Dialog
+				onOpenChange={setIsPropertyManagerOpen}
+				open={isPropertyManagerOpen}
+			>
 				<DialogContent className="max-w-xl space-y-4">
 					<DialogHeader>
-						<DialogTitle>{property ? "Change Property" : "Add Property"}</DialogTitle>
+						<DialogTitle>
+							{property ? "Change Property" : "Add Property"}
+						</DialogTitle>
 						<DialogDescription>
 							{customer?.id
 								? "Select or create a service location for this job."
@@ -1192,7 +1324,9 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 								<div className="space-y-2">
 									<Label htmlFor="property-select">Select Property</Label>
 									<Select
-										onValueChange={(value) => setSelectedPropertyId(value || null)}
+										onValueChange={(value) =>
+											setSelectedPropertyId(value || null)
+										}
 										value={selectedPropertyId ?? undefined}
 									>
 										<SelectTrigger id="property-select">
@@ -1214,13 +1348,24 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 									</Select>
 								</div>
 								<div className="flex items-center justify-end gap-2">
-									<Button onClick={() => setShowPropertyCreateForm(true)} size="sm" variant="outline">
+									<Button
+										onClick={() => setShowPropertyCreateForm(true)}
+										size="sm"
+										variant="outline"
+									>
 										<Plus className="mr-1.5 size-3.5" />
 										Create Property
 									</Button>
 									<Button
-										disabled={isUpdatingProperty || !selectedPropertyId || selectedPropertyId === property?.id}
-										onClick={() => selectedPropertyId && handlePropertyAssignment(selectedPropertyId)}
+										disabled={
+											isUpdatingProperty ||
+											!selectedPropertyId ||
+											selectedPropertyId === property?.id
+										}
+										onClick={() =>
+											selectedPropertyId &&
+											handlePropertyAssignment(selectedPropertyId)
+										}
 										size="sm"
 									>
 										{isUpdatingProperty ? (
@@ -1244,16 +1389,22 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 			</Dialog>
 
 			{/* Remove Customer */}
-			<AlertDialog onOpenChange={setIsRemoveCustomerDialogOpen} open={isRemoveCustomerDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsRemoveCustomerDialogOpen}
+				open={isRemoveCustomerDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove customer from job?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will clear the customer and any linked property from this job. You can reassign them later.
+							This will clear the customer and any linked property from this
+							job. You can reassign them later.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isUpdatingCustomer}>Cancel</AlertDialogCancel>
+						<AlertDialogCancel disabled={isUpdatingCustomer}>
+							Cancel
+						</AlertDialogCancel>
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							disabled={isUpdatingCustomer}
@@ -1273,16 +1424,22 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 			</AlertDialog>
 
 			{/* Remove Property */}
-			<AlertDialog onOpenChange={setIsRemovePropertyDialogOpen} open={isRemovePropertyDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsRemovePropertyDialogOpen}
+				open={isRemovePropertyDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove service location?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will detach the property from the job. You can link it again later.
+							This will detach the property from the job. You can link it again
+							later.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isUpdatingProperty}>Cancel</AlertDialogCancel>
+						<AlertDialogCancel disabled={isUpdatingProperty}>
+							Cancel
+						</AlertDialogCancel>
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							disabled={isUpdatingProperty}
@@ -1307,14 +1464,23 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 					<DialogHeader>
 						<DialogTitle>Archive Job?</DialogTitle>
 						<DialogDescription>
-							This will archive job #{job.job_number}. You can restore it from the archive within 90 days.
+							This will archive job #{job.job_number}. You can restore it from
+							the archive within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchiveJob} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchiveJob}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>

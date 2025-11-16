@@ -105,7 +105,7 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
           tag:kb_tags(*)
         )
       `,
-				{ count: "exact" }
+				{ count: "exact" },
 			)
 			.eq("published", true)
 			.order("published_at", { ascending: false });
@@ -130,7 +130,8 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
 			return { success: false, error: error.message };
 		}
 
-		const articles: KBArticleWithRelations[] = data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
+		const articles: KBArticleWithRelations[] =
+			data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
 
 		return {
 			success: true,
@@ -150,7 +151,7 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
  */
 export async function getKBArticle(
 	categorySlug: string,
-	articleSlug: string
+	articleSlug: string,
 ): Promise<{
 	success: boolean;
 	error?: string;
@@ -185,7 +186,7 @@ export async function getKBArticle(
         tags:kb_article_tags(
           tag:kb_tags(*)
         )
-      `
+      `,
 			)
 			.eq("category_id", category.id)
 			.eq("slug", articleSlug)
@@ -294,7 +295,7 @@ export async function getKBCategories(): Promise<{
  */
 export async function searchKBArticles(
 	query: string,
-	filters?: Omit<KBSearchFilters, "query">
+	filters?: Omit<KBSearchFilters, "query">,
 ): Promise<{
 	success: boolean;
 	error?: string;
@@ -333,7 +334,7 @@ export async function searchKBArticles(
           tag:kb_tags(*)
         )
       `,
-				{ count: "exact" }
+				{ count: "exact" },
 			)
 			.eq("published", true)
 			.textSearch("search_vector", searchQuery, {
@@ -349,7 +350,8 @@ export async function searchKBArticles(
 		}
 
 		// Transform data
-		const articles: KBArticleWithRelations[] = data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
+		const articles: KBArticleWithRelations[] =
+			data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
 
 		return {
 			success: true,
@@ -373,7 +375,7 @@ export async function searchKBArticles(
  */
 export async function getKBRelatedArticles(
 	articleId: string,
-	limit = 5
+	limit = 5,
 ): Promise<{
 	success: boolean;
 	error?: string;
@@ -397,7 +399,7 @@ export async function getKBRelatedArticles(
             tag:kb_tags(*)
           )
         )
-      `
+      `,
 			)
 			.eq("article_id", articleId)
 			.eq("related_article.published", true)
@@ -408,7 +410,8 @@ export async function getKBRelatedArticles(
 			return { success: false, error: error.message };
 		}
 
-		const articles: KBArticleWithRelations[] = data?.map((rel: any) => normalizeArticle(rel.related_article)) ?? [];
+		const articles: KBArticleWithRelations[] =
+			data?.map((rel: any) => normalizeArticle(rel.related_article)) ?? [];
 
 		return { success: true, articles };
 	} catch (error) {
@@ -426,7 +429,9 @@ export async function getKBRelatedArticles(
 /**
  * Increment article view count
  */
-export async function incrementArticleViews(articleId: string): Promise<{ success: boolean; error?: string }> {
+export async function incrementArticleViews(
+	articleId: string,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 
@@ -440,7 +445,11 @@ export async function incrementArticleViews(articleId: string): Promise<{ succes
 
 		// Fallback if RPC doesn't exist - get current count and increment
 		if (error) {
-			const { data: article } = await supabase.from("kb_articles").select("view_count").eq("id", articleId).single();
+			const { data: article } = await supabase
+				.from("kb_articles")
+				.select("view_count")
+				.eq("id", articleId)
+				.single();
 
 			if (article) {
 				const { error: updateError } = await supabase
@@ -470,7 +479,9 @@ export async function incrementArticleViews(articleId: string): Promise<{ succes
 /**
  * Submit feedback for an article
  */
-export async function submitKBFeedback(feedback: KBFeedbackSubmission): Promise<{ success: boolean; error?: string }> {
+export async function submitKBFeedback(
+	feedback: KBFeedbackSubmission,
+): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
 
@@ -498,7 +509,8 @@ export async function submitKBFeedback(feedback: KBFeedbackSubmission): Promise<
 				.single();
 
 			if (article) {
-				const countField = feedback.helpful === true ? "helpful_count" : "not_helpful_count";
+				const countField =
+					feedback.helpful === true ? "helpful_count" : "not_helpful_count";
 				const newCount = (article[countField] || 0) + 1;
 
 				await supabase

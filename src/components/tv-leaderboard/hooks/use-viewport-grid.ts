@@ -47,9 +47,15 @@ const GRID_BREAKPOINTS: GridBreakpoint[] = [
 /**
  * Calculate optimal grid dimensions based on viewport size
  */
-function calculateGridDimensions(viewportWidth: number, viewportHeight: number): GridDimensions {
+function calculateGridDimensions(
+	viewportWidth: number,
+	viewportHeight: number,
+): GridDimensions {
 	// Find appropriate breakpoint
-	const breakpoint = [...GRID_BREAKPOINTS].reverse().find((bp) => viewportWidth >= bp.minWidth) || GRID_BREAKPOINTS[0];
+	const breakpoint =
+		[...GRID_BREAKPOINTS]
+			.reverse()
+			.find((bp) => viewportWidth >= bp.minWidth) || GRID_BREAKPOINTS[0];
 
 	const { cols, rows, gap, padding } = breakpoint;
 
@@ -90,7 +96,10 @@ export function useViewportGrid() {
 	});
 
 	const updateDimensions = useCallback(() => {
-		const newDimensions = calculateGridDimensions(window.innerWidth, window.innerHeight);
+		const newDimensions = calculateGridDimensions(
+			window.innerWidth,
+			window.innerHeight,
+		);
 		setDimensions(newDimensions);
 	}, []);
 
@@ -118,14 +127,21 @@ export function useViewportGrid() {
 /**
  * Calculate how many views are needed for given number of widgets
  */
-export function calculateViewCount(widgetCount: number, maxWidgetsPerView: number): number {
+export function calculateViewCount(
+	widgetCount: number,
+	maxWidgetsPerView: number,
+): number {
 	return Math.ceil(widgetCount / maxWidgetsPerView);
 }
 
 /**
  * Get widgets for a specific view
  */
-export function getWidgetsForView<T>(widgets: T[], viewIndex: number, maxWidgetsPerView: number): T[] {
+export function getWidgetsForView<T>(
+	widgets: T[],
+	viewIndex: number,
+	maxWidgetsPerView: number,
+): T[] {
 	const startIndex = viewIndex * maxWidgetsPerView;
 	const endIndex = startIndex + maxWidgetsPerView;
 	return widgets.slice(startIndex, endIndex);

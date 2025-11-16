@@ -96,10 +96,10 @@ export const useArchiveStore = create<ArchiveStore>()(
 			}),
 			{
 				name: "archive-filters", // localStorage key
-			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 				partialize: (state) => ({ filters: state.filters }), // Persist only filters
-			}
+			},
 		),
-		{ name: "ArchiveStore" } // DevTools name
-	)
+		{ name: "ArchiveStore" }, // DevTools name
+	),
 );

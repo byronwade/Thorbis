@@ -32,7 +32,10 @@ type OnboardingGuardProps = {
 	isOnboardingComplete?: boolean;
 };
 
-export function OnboardingGuard({ children, isOnboardingComplete = false }: OnboardingGuardProps) {
+export function OnboardingGuard({
+	children,
+	isOnboardingComplete = false,
+}: OnboardingGuardProps) {
 	const pathname = usePathname();
 	const router = useRouter();
 
@@ -86,7 +89,10 @@ export function OnboardingGuard({ children, isOnboardingComplete = false }: Onbo
 		}
 
 		// If we've already checked and company is set up, skip
-		if (onboardingStatusRef.current?.companyId && onboardingStatusRef.current?.hasPayment) {
+		if (
+			onboardingStatusRef.current?.companyId &&
+			onboardingStatusRef.current?.hasPayment
+		) {
 			return;
 		}
 

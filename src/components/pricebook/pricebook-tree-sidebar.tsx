@@ -15,7 +15,11 @@
 import { ArrowLeft, ChevronRight, Folder } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	Sidebar,
 	SidebarContent,
@@ -71,7 +75,8 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 	};
 
 	// Calculate left padding based on depth using inline style
-	const indentStyle = depth > 0 ? { paddingLeft: `${depth * 1.5 + 0.5}rem` } : undefined;
+	const indentStyle =
+		depth > 0 ? { paddingLeft: `${depth * 1.5 + 0.5}rem` } : undefined;
 
 	// Leaf node (no children) or max depth reached - show as simple folder button
 	// Items will be shown in main content area, not in tree
@@ -79,7 +84,10 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 		return (
 			<SidebarMenuItem>
 				<SidebarMenuButton
-					className={cn("pr-8", isActive && "bg-primary/10 font-medium text-primary")}
+					className={cn(
+						"pr-8",
+						isActive && "bg-primary/10 font-medium text-primary",
+					)}
 					isActive={isActive}
 					onClick={handleClick}
 					style={indentStyle}
@@ -87,7 +95,9 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 						children: (
 							<>
 								<p className="font-medium">{node.name}</p>
-								<p className="text-muted-foreground text-xs">{node.count} items</p>
+								<p className="text-muted-foreground text-xs">
+									{node.count} items
+								</p>
 							</>
 						),
 					}}
@@ -109,7 +119,10 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 			>
 				<CollapsibleTrigger asChild>
 					<SidebarMenuButton
-						className={cn("pr-8", isActive && "bg-primary/10 font-medium text-primary")}
+						className={cn(
+							"pr-8",
+							isActive && "bg-primary/10 font-medium text-primary",
+						)}
 						isActive={isActive}
 						onClick={handleClick}
 						style={indentStyle}
@@ -117,7 +130,9 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 							children: (
 								<>
 									<p className="font-medium">{node.name}</p>
-									<p className="text-muted-foreground text-xs">{node.count} items</p>
+									<p className="text-muted-foreground text-xs">
+										{node.count} items
+									</p>
 								</>
 							),
 						}}
@@ -131,7 +146,12 @@ function TreeNode({ node, parentPath, depth = 0 }: TreeNodeProps) {
 				<CollapsibleContent>
 					<SidebarMenuSub className="mx-0 px-0">
 						{node.children?.map((child) => (
-							<TreeNode depth={depth + 1} key={child.name} node={child} parentPath={currentPath} />
+							<TreeNode
+								depth={depth + 1}
+								key={child.name}
+								node={child}
+								parentPath={currentPath}
+							/>
 						))}
 					</SidebarMenuSub>
 				</CollapsibleContent>
@@ -181,7 +201,11 @@ export function PriceBookTreeSidebar(props: PriceBookTreeSidebarProps) {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							<SidebarMenuItem>
-								<SidebarMenuButton onClick={handleBackClick} tooltip="Return to Work" type="button">
+								<SidebarMenuButton
+									onClick={handleBackClick}
+									tooltip="Return to Work"
+									type="button"
+								>
 									<ArrowLeft className="size-4 shrink-0" />
 									Back to Work
 								</SidebarMenuButton>
@@ -196,7 +220,9 @@ export function PriceBookTreeSidebar(props: PriceBookTreeSidebarProps) {
 							{/* All Items */}
 							<SidebarMenuItem>
 								<SidebarMenuButton
-									className={cn(isAtRoot && "bg-primary/10 font-medium text-primary")}
+									className={cn(
+										isAtRoot && "bg-primary/10 font-medium text-primary",
+									)}
 									isActive={isAtRoot}
 									onClick={handleRootClick}
 									tooltip="Browse all categories"
@@ -211,11 +237,21 @@ export function PriceBookTreeSidebar(props: PriceBookTreeSidebarProps) {
 								// Loading skeleton
 								<div className="space-y-2 px-2 py-2">
 									{[...new Array(3)].map((_, i) => (
-										<div className="h-8 animate-pulse rounded bg-muted" key={i} />
+										<div
+											className="h-8 animate-pulse rounded bg-muted"
+											key={i}
+										/>
 									))}
 								</div>
 							) : (
-								categories.map((category) => <TreeNode depth={0} key={category.name} node={category} parentPath={[]} />)
+								categories.map((category) => (
+									<TreeNode
+										depth={0}
+										key={category.name}
+										node={category}
+										parentPath={[]}
+									/>
+								))
 							)}
 						</SidebarMenu>
 					</SidebarGroupContent>

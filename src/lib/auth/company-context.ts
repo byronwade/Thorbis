@@ -159,7 +159,7 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
         logo,
         deleted_at
       )
-    `
+    `,
 		)
 		.eq("user_id", user.id)
 		.eq("status", "active")
@@ -184,40 +184,42 @@ export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
  * @param companyId - Company ID to verify
  * @returns true if user has access, false otherwise
  */
-const verifyCompanyAccess = cache(async (companyId: string): Promise<boolean> => {
-	const user = await getCurrentUser();
-	if (!user) {
-		return false;
-	}
+const verifyCompanyAccess = cache(
+	async (companyId: string): Promise<boolean> => {
+		const user = await getCurrentUser();
+		if (!user) {
+			return false;
+		}
 
-	const supabase = await createClient();
-	if (!supabase) {
-		return false;
-	}
+		const supabase = await createClient();
+		if (!supabase) {
+			return false;
+		}
 
-	// Parallel queries instead of sequential (saves 20-30ms)
-	const [companyResult, memberResult] = await Promise.all([
-		// Check if company exists and is not archived
-		supabase
-			.from("companies")
-			.select("id")
-			.eq("id", companyId)
-			.is("deleted_at", null)
-			.single(),
+		// Parallel queries instead of sequential (saves 20-30ms)
+		const [companyResult, memberResult] = await Promise.all([
+			// Check if company exists and is not archived
+			supabase
+				.from("companies")
+				.select("id")
+				.eq("id", companyId)
+				.is("deleted_at", null)
+				.single(),
 
-		// Check if user has active membership
-		supabase
-			.from("team_members")
-			.select("id")
-			.eq("user_id", user.id)
-			.eq("company_id", companyId)
-			.eq("status", "active")
-			.single(),
-	]);
+			// Check if user has active membership
+			supabase
+				.from("team_members")
+				.select("id")
+				.eq("user_id", user.id)
+				.eq("company_id", companyId)
+				.eq("status", "active")
+				.single(),
+		]);
 
-	// Both must succeed
-	return !!(companyResult.data && memberResult.data);
-});
+		// Both must succeed
+		return !!(companyResult.data && memberResult.data);
+	},
+);
 
 /**
  * Require Active Company
@@ -282,7 +284,9 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
 	// Check the ACTIVE company's payment status
 	const { data: teamMember } = await supabase
 		.from("team_members")
-		.select("company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)")
+		.select(
+			"company_id, companies!inner(stripe_subscription_status, onboarding_progress, onboarding_completed_at)",
+		)
 		.eq("user_id", user.id)
 		.eq("company_id", activeCompanyId)
 		.eq("status", "active")
@@ -292,14 +296,21 @@ export async function isActiveCompanyOnboardingComplete(): Promise<boolean> {
 		return false;
 	}
 
-	const companies = Array.isArray(teamMember.companies) ? teamMember.companies[0] : teamMember.companies;
+	const companies = Array.isArray(teamMember.companies)
+		? teamMember.companies[0]
+		: teamMember.companies;
 	const subscriptionStatus = companies?.stripe_subscription_status;
-	const subscriptionActive = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-	const onboardingProgress = (companies?.onboarding_progress as Record<string, unknown>) || null;
+	const subscriptionActive =
+		subscriptionStatus === "active" || subscriptionStatus === "trialing";
+	const onboardingProgress =
+		(companies?.onboarding_progress as Record<string, unknown>) || null;
 	const onboardingFinished = isOnboardingComplete({
 		progress: onboardingProgress,
 		completedAt: companies?.onboarding_completed_at ?? null,
 	});
 
-	return (subscriptionActive && onboardingFinished) || process.env.NODE_ENV === "development";
+	return (
+		(subscriptionActive && onboardingFinished) ||
+		process.env.NODE_ENV === "development"
+	);
 }

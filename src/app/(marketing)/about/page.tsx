@@ -4,7 +4,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateOrganizationStructuredData,
@@ -18,7 +24,12 @@ export const metadata = generateSEOMetadata({
 		"Thorbis builds AI-powered tools that help service companies deliver five-star customer experiences. Meet the team and values behind the platform.",
 	path: "/about",
 	section: "Company",
-	keywords: ["about thorbis", "thorbis leadership", "thorbis mission", "field service software team"],
+	keywords: [
+		"about thorbis",
+		"thorbis leadership",
+		"thorbis mission",
+		"field service software team",
+	],
 });
 
 const VALUES = [
@@ -66,7 +77,8 @@ const HISTORY = [
 	{
 		year: "2024",
 		milestone: "Introduced marketing automation & analytics suite",
-		detail: "Service businesses finally tied campaigns, proposals, and revenue together—no third-party tools required.",
+		detail:
+			"Service businesses finally tied campaigns, proposals, and revenue together—no third-party tools required.",
 	},
 ];
 
@@ -75,25 +87,29 @@ const LEADERSHIP = [
 		name: "Amelia Grant",
 		role: "CEO & Co-founder",
 		bio: "Former COO at a national HVAC brand. Amelia obsesses over building software that makes dispatchers and technicians faster, not busier.",
-		image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=400&q=80",
+		image:
+			"https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=400&q=80",
 	},
 	{
 		name: "Noah Patel",
 		role: "CTO & Co-founder",
 		bio: "Led engineering teams at high-growth SaaS companies. Noah champions resilient infrastructure and developer velocity.",
-		image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
+		image:
+			"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=400&q=80",
 	},
 	{
 		name: "Sofia Hernandez",
 		role: "Head of Product",
 		bio: "Sofia spent a decade shipping field service software. She runs product discovery, research, and our customer advisory councils.",
-		image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=80",
+		image:
+			"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=80",
 	},
 	{
 		name: "Ethan Brooks",
 		role: "Head of Customer Experience",
 		bio: "Ethan built success teams for trade-tech start-ups. He leads onboarding, enablement, and Thorbis University.",
-		image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=400&q=80",
+		image:
+			"https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=400&q=80",
 	},
 ];
 
@@ -106,7 +122,7 @@ export default function AboutPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "About", url: `${siteUrl}/about` },
-						])
+						]),
 					),
 				}}
 				id="about-breadcrumb-ld"
@@ -118,7 +134,7 @@ export default function AboutPage() {
 						generateOrganizationStructuredData({
 							name: "Thorbis",
 							contactEmail: "press@thorbis.com",
-						})
+						}),
 					),
 				}}
 				id="about-organization-ld"
@@ -134,9 +150,11 @@ export default function AboutPage() {
 							Powering the world’s most trusted service companies
 						</h1>
 						<p className="text-lg text-muted-foreground leading-relaxed">
-							Thorbis builds software that helps home service and commercial trades deliver elite customer experiences.
-							From the first phone call to final invoice, we use AI and automation to remove friction and let people
-							focus on what matters— delighting customers. Pricing stays transparent: $100/month base subscription with
+							Thorbis builds software that helps home service and commercial
+							trades deliver elite customer experiences. From the first phone
+							call to final invoice, we use AI and automation to remove friction
+							and let people focus on what matters— delighting customers.
+							Pricing stays transparent: $100/month base subscription with
 							pay-as-you-go usage, unlimited users, and zero lock-in.
 						</p>
 						<div className="flex flex-wrap gap-3">
@@ -169,7 +187,9 @@ export default function AboutPage() {
 									<CardTitle>{value.title}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<CardDescription className="leading-relaxed">{value.description}</CardDescription>
+									<CardDescription className="leading-relaxed">
+										{value.description}
+									</CardDescription>
 								</CardContent>
 							</Card>
 						))}
@@ -180,10 +200,17 @@ export default function AboutPage() {
 					<h2 className="font-semibold text-2xl">Our story</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{HISTORY.map((entry) => (
-							<div className="rounded-2xl border bg-muted/10 p-6" key={entry.year}>
-								<p className="font-semibold text-primary text-sm uppercase">{entry.year}</p>
+							<div
+								className="rounded-2xl border bg-muted/10 p-6"
+								key={entry.year}
+							>
+								<p className="font-semibold text-primary text-sm uppercase">
+									{entry.year}
+								</p>
 								<h3 className="font-semibold text-lg">{entry.milestone}</h3>
-								<p className="mt-2 text-muted-foreground text-sm leading-relaxed">{entry.detail}</p>
+								<p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+									{entry.detail}
+								</p>
 							</div>
 						))}
 					</div>
@@ -195,14 +222,22 @@ export default function AboutPage() {
 						{LEADERSHIP.map((leader) => (
 							<Card className="overflow-hidden text-center" key={leader.name}>
 								<div className="relative h-48 w-full">
-									<Image alt={leader.name} className="object-cover" fill sizes="240px" src={leader.image} />
+									<Image
+										alt={leader.name}
+										className="object-cover"
+										fill
+										sizes="240px"
+										src={leader.image}
+									/>
 								</div>
 								<CardHeader>
 									<CardTitle>{leader.name}</CardTitle>
 									<CardDescription>{leader.role}</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">{leader.bio}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{leader.bio}
+									</p>
 								</CardContent>
 							</Card>
 						))}
@@ -211,8 +246,10 @@ export default function AboutPage() {
 
 				<section className="mt-16 rounded-3xl border bg-secondary/10 p-10 text-center">
 					<p className="text-lg text-muted-foreground">
-						Thorbis operates as a distributed-first company with teammates across North America. We host quarterly
-						onsites focused on customer empathy, product discovery, and celebrating wins. Interested in joining us?
+						Thorbis operates as a distributed-first company with teammates
+						across North America. We host quarterly onsites focused on customer
+						empathy, product discovery, and celebrating wins. Interested in
+						joining us?
 					</p>
 					<Button asChild className="mt-6">
 						<a href="/careers">Explore opportunities</a>

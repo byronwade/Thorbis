@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { ServiceAgreementDetailData } from "@/components/work/service-agreements/service-agreement-detail-data";
 import { ServiceAgreementDetailSkeleton } from "@/components/work/service-agreements/service-agreement-detail-skeleton";
 
-export default async function ServiceAgreementDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ServiceAgreementDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: agreementId } = await params;
 
 	return (

@@ -13,7 +13,11 @@ import { Suspense } from "react";
 import { CommunicationDetailData } from "@/components/communication/[id]/[id]-data";
 import { CommunicationDetailSkeleton } from "@/components/communication/[id]/[id]-skeleton";
 
-export default async function CommunicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function CommunicationDetailPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id } = await params;
 
 	return (

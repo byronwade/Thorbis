@@ -37,14 +37,18 @@ export class AdyenProcessor implements PaymentProcessor {
 
 	constructor(config: AdyenConfig) {
 		this.config = config;
-		this.apiUrl = config.liveMode ? "https://api.adyen.com" : "https://api-adyen-test.adyen.com";
+		this.apiUrl = config.liveMode
+			? "https://api.adyen.com"
+			: "https://api-adyen-test.adyen.com";
 	}
 
 	getSupportedChannels(): PaymentChannel[] {
 		return ["online", "card_present", "tap_to_pay", "ach"];
 	}
 
-	async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
+	async processPayment(
+		request: ProcessPaymentRequest,
+	): Promise<ProcessPaymentResponse> {
 		try {
 			// For Adyen, we need to create a payment request
 			const paymentRequest = {
@@ -102,7 +106,10 @@ export class AdyenProcessor implements PaymentProcessor {
 					processorMetadata: data,
 				};
 			}
-			if (data.resultCode === "Pending" || data.resultCode === "RedirectShopper") {
+			if (
+				data.resultCode === "Pending" ||
+				data.resultCode === "RedirectShopper"
+			) {
 				return {
 					success: true,
 					transactionId: data.pspReference,
@@ -124,12 +131,15 @@ export class AdyenProcessor implements PaymentProcessor {
 			return {
 				success: false,
 				status: "failed",
-				error: error instanceof Error ? error.message : "Payment processing failed",
+				error:
+					error instanceof Error ? error.message : "Payment processing failed",
 			};
 		}
 	}
 
-	async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
+	async refundPayment(
+		request: RefundPaymentRequest,
+	): Promise<RefundPaymentResponse> {
 		try {
 			const refundRequest = {
 				merchantAccount: this.config.merchantAccount,
@@ -147,14 +157,17 @@ export class AdyenProcessor implements PaymentProcessor {
 				},
 			};
 
-			const response = await fetch(`${this.apiUrl}/v68/payments/${request.transactionId}/refunds`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"X-API-Key": this.config.apiKey,
+			const response = await fetch(
+				`${this.apiUrl}/v68/payments/${request.transactionId}/refunds`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"X-API-Key": this.config.apiKey,
+					},
+					body: JSON.stringify(refundRequest),
 				},
-				body: JSON.stringify(refundRequest),
-			});
+			);
 
 			const data = await response.json();
 
@@ -186,12 +199,15 @@ export class AdyenProcessor implements PaymentProcessor {
 		amount: number;
 		metadata?: Record<string, unknown>;
 	}> {
-		const response = await fetch(`${this.apiUrl}/v68/payments/${transactionId}`, {
-			method: "GET",
-			headers: {
-				"X-API-Key": this.config.apiKey,
+		const response = await fetch(
+			`${this.apiUrl}/v68/payments/${transactionId}`,
+			{
+				method: "GET",
+				headers: {
+					"X-API-Key": this.config.apiKey,
+				},
 			},
-		});
+		);
 
 		const data = await response.json();
 

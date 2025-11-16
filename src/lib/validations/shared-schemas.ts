@@ -16,7 +16,9 @@ export const emailSchema = z.string().email("Invalid email address");
  * Phone number validation schema
  * Accepts formats like: +1234567890, (123) 456-7890, 123-456-7890, etc.
  */
-export const phoneSchema = z.string().regex(/^\+?[\d\s()-]{10,}$/, "Invalid phone number");
+export const phoneSchema = z
+	.string()
+	.regex(/^\+?[\d\s()-]{10,}$/, "Invalid phone number");
 
 /**
  * UUID validation schema
@@ -39,12 +41,16 @@ export const dateOrDateTimeSchema = z.union([
 /**
  * Positive number schema
  */
-export const positiveNumberSchema = z.number().positive("Value must be positive");
+export const positiveNumberSchema = z
+	.number()
+	.positive("Value must be positive");
 
 /**
  * Non-negative number schema
  */
-export const nonNegativeNumberSchema = z.number().nonnegative("Value cannot be negative");
+export const nonNegativeNumberSchema = z
+	.number()
+	.nonnegative("Value cannot be negative");
 
 /**
  * Currency amount schema (in cents, as integer)
@@ -72,4 +78,7 @@ export const urlSchema = z.string().url("Invalid URL format");
  */
 export const slugSchema = z
 	.string()
-	.regex(/^[a-z0-9-]+$/, "Slug must contain only lowercase letters, numbers, and hyphens");
+	.regex(
+		/^[a-z0-9-]+$/,
+		"Slug must contain only lowercase letters, numbers, and hyphens",
+	);

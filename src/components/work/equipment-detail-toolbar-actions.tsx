@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function EquipmentDetailToolbarActions() {
@@ -84,7 +89,9 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}>
+								<a
+									href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}
+								>
 									<ClipboardList />
 									<span className="hidden lg:inline">Maintenance</span>
 								</a>
@@ -98,7 +105,9 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}>
+								<a
+									href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}
+								>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -139,14 +148,23 @@ export function EquipmentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Equipment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this equipment? Archived records can be restored within 90 days.
+							Are you sure you want to archive this equipment? Archived records
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isArchiving} onClick={() => setIsArchiveDialogOpen(false)} variant="outline">
+						<Button
+							disabled={isArchiving}
+							onClick={() => setIsArchiveDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Equipment"}
 						</Button>
 					</DialogFooter>

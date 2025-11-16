@@ -33,7 +33,11 @@ type TeamChatProps = {
 	messages?: Message[];
 };
 
-export function TeamChat({ channelName, channelDescription, messages: initialMessages = [] }: TeamChatProps) {
+export function TeamChat({
+	channelName,
+	channelDescription,
+	messages: initialMessages = [],
+}: TeamChatProps) {
 	const [message, setMessage] = useState("");
 	const [messages] = useState<Message[]>(initialMessages);
 
@@ -73,7 +77,11 @@ export function TeamChat({ channelName, channelDescription, messages: initialMes
 						<Hash className="h-5 w-5 text-muted-foreground" />
 						<div>
 							<h2 className="font-semibold text-lg">{channelName}</h2>
-							{channelDescription && <p className="text-muted-foreground text-sm">{channelDescription}</p>}
+							{channelDescription && (
+								<p className="text-muted-foreground text-sm">
+									{channelDescription}
+								</p>
+							)}
 						</div>
 					</div>
 					<Button size="icon" variant="ghost">
@@ -91,17 +99,24 @@ export function TeamChat({ channelName, channelDescription, messages: initialMes
 								<Hash className="h-8 w-8 text-muted-foreground" />
 							</div>
 							<h3 className="mb-2 font-semibold text-lg">No messages yet</h3>
-							<p className="text-muted-foreground text-sm">Be the first to start the conversation in #{channelName}</p>
+							<p className="text-muted-foreground text-sm">
+								Be the first to start the conversation in #{channelName}
+							</p>
 						</div>
 					) : (
 						messages.map((msg, index) => {
 							const showAvatar =
 								index === 0 ||
 								messages[index - 1]?.userId !== msg.userId ||
-								msg.timestamp.getTime() - messages[index - 1]?.timestamp.getTime() > 300_000;
+								msg.timestamp.getTime() -
+									messages[index - 1]?.timestamp.getTime() >
+									300_000;
 
 							return (
-								<div className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`} key={msg.id}>
+								<div
+									className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`}
+									key={msg.id}
+								>
 									{showAvatar ? (
 										<Avatar className="h-8 w-8">
 											<AvatarFallback className="text-xs">
@@ -118,8 +133,12 @@ export function TeamChat({ channelName, channelDescription, messages: initialMes
 									<div className="min-w-0 flex-1">
 										{showAvatar && (
 											<div className="mb-1 flex items-center gap-2">
-												<span className="font-semibold text-sm">{msg.userName}</span>
-												<span className="text-muted-foreground text-xs">{formatTimestamp(msg.timestamp)}</span>
+												<span className="font-semibold text-sm">
+													{msg.userName}
+												</span>
+												<span className="text-muted-foreground text-xs">
+													{formatTimestamp(msg.timestamp)}
+												</span>
 											</div>
 										)}
 										<div className="group relative">

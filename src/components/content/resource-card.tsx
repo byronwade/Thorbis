@@ -1,10 +1,25 @@
-import { BookOpen, Calendar, Clock, Download, ExternalLink, PlayCircle, Users } from "lucide-react";
+import {
+	BookOpen,
+	Calendar,
+	Clock,
+	Download,
+	ExternalLink,
+	PlayCircle,
+	Users,
+} from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
 import type { ComponentType } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { ResourceItem, ResourceType } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +32,10 @@ const RESOURCE_LABELS: Record<ResourceType, string> = {
 	status_update: "Status Update",
 };
 
-const RESOURCE_ICONS: Record<ResourceType, ComponentType<{ className?: string }>> = {
+const RESOURCE_ICONS: Record<
+	ResourceType,
+	ComponentType<{ className?: string }>
+> = {
 	case_study: BookOpen,
 	webinar: PlayCircle,
 	template: Download,
@@ -26,7 +44,10 @@ const RESOURCE_ICONS: Record<ResourceType, ComponentType<{ className?: string }>
 	status_update: Clock,
 };
 
-function formatDate(input?: string | null, options?: Intl.DateTimeFormatOptions) {
+function formatDate(
+	input?: string | null,
+	options?: Intl.DateTimeFormatOptions,
+) {
 	if (!input) {
 		return null;
 	}
@@ -50,7 +71,11 @@ type ResourceCardProps = {
 	showImage?: boolean;
 };
 
-export function ResourceCard({ item, className, showImage = true }: ResourceCardProps) {
+export function ResourceCard({
+	item,
+	className,
+	showImage = true,
+}: ResourceCardProps) {
 	const basePath =
 		item.type === "webinar"
 			? "/webinars"
@@ -74,7 +99,9 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 			: null;
 
 	const isUpcoming =
-		item.type === "webinar" && item.eventStartAt ? new Date(item.eventStartAt).getTime() > Date.now() : false;
+		item.type === "webinar" && item.eventStartAt
+			? new Date(item.eventStartAt).getTime() > Date.now()
+			: false;
 
 	const fallbackCtaLabel =
 		item.type === "webinar"
@@ -87,7 +114,12 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 	const ctaLabel = item.ctaLabel ?? fallbackCtaLabel;
 
 	return (
-		<Card className={cn("group relative overflow-hidden transition-shadow hover:shadow-md", className)}>
+		<Card
+			className={cn(
+				"group relative overflow-hidden transition-shadow hover:shadow-md",
+				className,
+			)}
+		>
 			{showImage && item.heroImageUrl ? (
 				<div className="relative h-48 w-full overflow-hidden">
 					<Image
@@ -118,18 +150,28 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 						{item.title}
 					</Link>
 				</CardTitle>
-				{item.excerpt ? <CardDescription className="line-clamp-3 text-base">{item.excerpt}</CardDescription> : null}
+				{item.excerpt ? (
+					<CardDescription className="line-clamp-3 text-base">
+						{item.excerpt}
+					</CardDescription>
+				) : null}
 			</CardHeader>
 			<CardContent className="space-y-4 text-muted-foreground text-sm">
 				{item.type === "webinar" && (eventDate || isUpcoming) ? (
 					<div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-2 py-1 text-primary">
 						<Calendar aria-hidden="true" className="size-4" />
-						{isUpcoming ? <span>Live on {eventDate}</span> : <span>Available on-demand</span>}
+						{isUpcoming ? (
+							<span>Live on {eventDate}</span>
+						) : (
+							<span>Available on-demand</span>
+						)}
 					</div>
 				) : null}
 				<div className="flex flex-wrap gap-2">
 					{item.author?.name ? <span>By {item.author.name}</span> : null}
-					{publishedLabel ? <span aria-label="Published date">{publishedLabel}</span> : null}
+					{publishedLabel ? (
+						<span aria-label="Published date">{publishedLabel}</span>
+					) : null}
 					{item.tags.slice(0, 3).map((tag) => (
 						<Link
 							className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-xs leading-none transition-colors hover:border-primary hover:text-primary"
@@ -156,7 +198,10 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 						</span>
 					) : null}
 				</div>
-				<Link className="font-medium text-primary text-sm transition-colors hover:text-primary/80" href={primaryHref}>
+				<Link
+					className="font-medium text-primary text-sm transition-colors hover:text-primary/80"
+					href={primaryHref}
+				>
 					{ctaLabel} →
 				</Link>
 			</CardFooter>

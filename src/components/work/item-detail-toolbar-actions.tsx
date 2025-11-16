@@ -23,7 +23,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ItemDetailToolbarActionsProps = {
 	/** Item ID for edit/delete operations */
@@ -32,7 +37,10 @@ type ItemDetailToolbarActionsProps = {
 	isActive?: boolean;
 };
 
-export function ItemDetailToolbarActions({ itemId, isActive = true }: ItemDetailToolbarActionsProps) {
+export function ItemDetailToolbarActions({
+	itemId,
+	isActive = true,
+}: ItemDetailToolbarActionsProps) {
 	return (
 		<div className="flex items-center gap-1.5">
 			{/* Back to Price Book */}

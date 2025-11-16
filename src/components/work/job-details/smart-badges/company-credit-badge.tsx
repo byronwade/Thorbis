@@ -6,7 +6,11 @@
 "use client";
 
 import { CreditCard } from "lucide-react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CompanyCreditBadgeProps = {
@@ -46,14 +50,18 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
 					}`}
 				>
 					<CreditCard className="size-4" />
-					{hasAvailableCredit ? `${formatCurrency(availableCredit)} Credit` : "Credit Limit Reached"}
+					{hasAvailableCredit
+						? `${formatCurrency(availableCredit)} Credit`
+						: "Credit Limit Reached"}
 				</button>
 			</HoverCardTrigger>
 			<HoverCardContent align="start" className="w-80" side="bottom">
 				<div className="space-y-3">
 					<div>
 						<h4 className="font-semibold text-sm">Customer Credit</h4>
-						<p className="text-muted-foreground text-xs">Available credit for this customer</p>
+						<p className="text-muted-foreground text-xs">
+							Available credit for this customer
+						</p>
 					</div>
 
 					<Separator />
@@ -61,7 +69,9 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
 					<div className="space-y-2">
 						<div className="flex items-center justify-between">
 							<span className="text-sm">Credit Limit</span>
-							<span className="font-semibold text-sm">{formatCurrency(creditLimit)}</span>
+							<span className="font-semibold text-sm">
+								{formatCurrency(creditLimit)}
+							</span>
 						</div>
 						<div className="flex items-center justify-between">
 							<span className="text-sm">Outstanding Balance</span>
@@ -74,7 +84,9 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
 							<span className="font-semibold text-sm">Available Credit</span>
 							<span
 								className={`font-bold text-base ${
-									hasAvailableCredit ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+									hasAvailableCredit
+										? "text-green-600 dark:text-green-400"
+										: "text-red-600 dark:text-red-400"
 								}`}
 							>
 								{formatCurrency(availableCredit)}
@@ -86,7 +98,8 @@ export function CompanyCreditBadge({ customer }: CompanyCreditBadgeProps) {
 						<>
 							<Separator />
 							<p className="text-muted-foreground text-xs">
-								Customer has reached their credit limit. Payment required before additional work.
+								Customer has reached their credit limit. Payment required before
+								additional work.
 							</p>
 						</>
 					)}

@@ -8,7 +8,12 @@ const INTERNAL_PATH_HEADERS = [
 	"x-middleware-request-url",
 	"next-url", // Next.js sets this to the current request URL
 ];
-const CUSTOM_PATH_HEADERS = ["x-dashboard-pathname", "x-original-url", "x-rewrite-url", "x-original-uri"];
+const CUSTOM_PATH_HEADERS = [
+	"x-dashboard-pathname",
+	"x-original-url",
+	"x-rewrite-url",
+	"x-original-uri",
+];
 
 function sanitizePathCandidate(value: string | null | undefined) {
 	if (!value) {
@@ -34,7 +39,11 @@ function sanitizePathCandidate(value: string | null | undefined) {
 
 	const pathOnly = candidate.split(/[?#]/)[0] || candidate;
 
-	if (!pathOnly.startsWith("/") || pathOnly.includes("[") || pathOnly.includes("]")) {
+	if (
+		!pathOnly.startsWith("/") ||
+		pathOnly.includes("[") ||
+		pathOnly.includes("]")
+	) {
 		return null;
 	}
 

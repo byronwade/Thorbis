@@ -22,7 +22,8 @@ export async function ProfilesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Personal Information</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Contact details, emergency contacts, employment history, and HR documentation
+							Contact details, emergency contacts, employment history, and HR
+							documentation
 						</p>
 					</div>
 
@@ -42,7 +43,8 @@ export async function ProfilesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Performance History</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Review job completion rates, customer feedback, and performance metrics
+							Review job completion rates, customer feedback, and performance
+							metrics
 						</p>
 					</div>
 
@@ -52,14 +54,17 @@ export async function ProfilesData() {
 						</div>
 						<h3 className="font-semibold text-lg">Profile Photos</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Professional photos for customer communication and mobile app profiles
+							Professional photos for customer communication and mobile app
+							profiles
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Build Your Team</h3>
-					<p className="mb-6 text-muted-foreground">Comprehensive profiles for every technician</p>
+					<p className="mb-6 text-muted-foreground">
+						Comprehensive profiles for every technician
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

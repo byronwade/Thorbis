@@ -11,7 +11,13 @@ export type CustomerBadge = {
 	customer_id: string;
 	badge_type: "custom" | "premade" | "auto_generated";
 	label: string;
-	variant: "default" | "destructive" | "warning" | "success" | "secondary" | "outline";
+	variant:
+		| "default"
+		| "destructive"
+		| "warning"
+		| "success"
+		| "secondary"
+		| "outline";
 	icon?: string;
 	auto_generated_key?: string;
 	metadata?: any;

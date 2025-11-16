@@ -10,12 +10,25 @@ import { ChevronDown, Filter } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type JobsFilters, useJobsFiltersStore } from "@/lib/stores/jobs-filters-store";
+import {
+	type JobsFilters,
+	useJobsFiltersStore,
+} from "@/lib/stores/jobs-filters-store";
 
 type JobsFilterDropdownProps = {
 	activeCount?: number;
@@ -23,7 +36,11 @@ type JobsFilterDropdownProps = {
 	totalCount?: number;
 };
 
-export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: JobsFilterDropdownProps) {
+export function JobsFilterDropdown({
+	activeCount,
+	archivedCount,
+	totalCount,
+}: JobsFilterDropdownProps) {
 	const globalFilters = useJobsFiltersStore((state) => state.filters);
 	const setFilters = useJobsFiltersStore((state) => state.setFilters);
 	const resetFilters = useJobsFiltersStore((state) => state.resetFilters);
@@ -37,15 +54,17 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 		}
 	}, [isOpen, globalFilters]);
 
-	const activeFilterCount = Object.entries(globalFilters).filter(([key, value]) => {
-		if (key === "archiveStatus") {
-			return value !== "active";
-		}
-		if (key === "status" || key === "priority") {
-			return value !== "all";
-		}
-		return value !== "";
-	}).length;
+	const activeFilterCount = Object.entries(globalFilters).filter(
+		([key, value]) => {
+			if (key === "archiveStatus") {
+				return value !== "active";
+			}
+			if (key === "status" || key === "priority") {
+				return value !== "all";
+			}
+			return value !== "";
+		},
+	).length;
 
 	const handleApplyFilters = () => {
 		setFilters(localFilters);
@@ -65,7 +84,10 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 					Filters
 					<ChevronDown className="ml-2 size-4" />
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 size-5 rounded-full p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 size-5 rounded-full p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -76,7 +98,12 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 					<div className="flex items-center justify-between">
 						<h4 className="font-semibold text-sm">Filter Jobs</h4>
 						{activeFilterCount > 0 && (
-							<Button className="h-auto p-1 text-xs" onClick={handleClearAll} size="sm" variant="ghost">
+							<Button
+								className="h-auto p-1 text-xs"
+								onClick={handleClearAll}
+								size="sm"
+								variant="ghost"
+							>
 								Clear All
 							</Button>
 						)}
@@ -97,11 +124,16 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="active">Active Only {activeCount !== undefined && `(${activeCount})`}</SelectItem>
-								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+								<SelectItem value="active">
+									Active Only {activeCount !== undefined && `(${activeCount})`}
 								</SelectItem>
-								<SelectItem value="all">All Jobs {totalCount !== undefined && `(${totalCount})`}</SelectItem>
+								<SelectItem value="archived">
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
+								</SelectItem>
+								<SelectItem value="all">
+									All Jobs {totalCount !== undefined && `(${totalCount})`}
+								</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -110,7 +142,9 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 					<div className="space-y-2">
 						<Label className="text-xs">Job Status</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, status: value })
+							}
 							value={localFilters.status}
 						>
 							<SelectTrigger className="h-9">
@@ -131,7 +165,9 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 					<div className="space-y-2">
 						<Label className="text-xs">Priority</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, priority: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, priority: value })
+							}
 							value={localFilters.priority}
 						>
 							<SelectTrigger className="h-9">
@@ -168,7 +204,9 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 						<Label className="text-xs">Assigned To</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, assignedTo: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, assignedTo: e.target.value })
+							}
 							placeholder="Search by assigned person..."
 							value={localFilters.assignedTo}
 						/>
@@ -179,7 +217,9 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 						<Label className="text-xs">Job Number</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, jobNumber: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, jobNumber: e.target.value })
+							}
 							placeholder="Search by number..."
 							value={localFilters.jobNumber}
 						/>
@@ -190,7 +230,9 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 						<Label className="text-xs">Category</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, category: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, category: e.target.value })
+							}
 							placeholder="Filter by category..."
 							value={localFilters.category}
 						/>
@@ -200,7 +242,12 @@ export function JobsFilterDropdown({ activeCount, archivedCount, totalCount }: J
 
 					{/* Actions */}
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => setIsOpen(false)}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button className="flex-1" onClick={handleApplyFilters} size="sm">

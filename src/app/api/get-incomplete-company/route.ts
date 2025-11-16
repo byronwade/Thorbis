@@ -18,7 +18,10 @@ export async function GET() {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database not configured" },
+				{ status: 500 },
+			);
 		}
 
 		// Get the active company ID
@@ -43,8 +46,10 @@ export async function GET() {
 
 		// Only return if company has incomplete onboarding
 		const subscriptionStatus = company.stripe_subscription_status;
-		const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-		const onboardingProgress = (company.onboarding_progress as Record<string, unknown>) || {};
+		const hasPayment =
+			subscriptionStatus === "active" || subscriptionStatus === "trialing";
+		const onboardingProgress =
+			(company.onboarding_progress as Record<string, unknown>) || {};
 		const onboardingComplete = isOnboardingComplete({
 			progress: onboardingProgress,
 			completedAt: company.onboarding_completed_at ?? null,
@@ -56,7 +61,8 @@ export async function GET() {
 
 		// Parse address into components
 		// Address format: "123 Main St, San Francisco, CA, 94103"
-		const addressParts = company.address?.split(",").map((s: string) => s.trim()) || [];
+		const addressParts =
+			company.address?.split(",").map((s: string) => s.trim()) || [];
 		const address = addressParts[0] || "";
 		const city = addressParts[1] || "";
 		const state = addressParts[2] || "";
@@ -97,6 +103,9 @@ export async function GET() {
 			},
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

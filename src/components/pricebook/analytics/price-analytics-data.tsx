@@ -23,7 +23,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Profit Margins</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track profit margins by service, part, and category to identify most profitable offerings
+							Track profit margins by service, part, and category to identify
+							most profitable offerings
 						</p>
 					</div>
 
@@ -33,7 +34,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Pricing Trends</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor pricing trends over time and identify opportunities for rate adjustments
+							Monitor pricing trends over time and identify opportunities for
+							rate adjustments
 						</p>
 					</div>
 
@@ -43,7 +45,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Revenue Mix</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze revenue distribution across services, parts, and labor to optimize your offerings
+							Analyze revenue distribution across services, parts, and labor to
+							optimize your offerings
 						</p>
 					</div>
 
@@ -53,14 +56,17 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="font-semibold text-lg">Competitive Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Compare your pricing to market rates and ensure competitive positioning
+							Compare your pricing to market rates and ensure competitive
+							positioning
 						</p>
 					</div>
 				</div>
 
 				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
 					<h3 className="mb-3 font-semibold text-xl">Price with Confidence</h3>
-					<p className="mb-6 text-muted-foreground">Data-driven pricing strategies that maximize profitability</p>
+					<p className="mb-6 text-muted-foreground">
+						Data-driven pricing strategies that maximize profitability
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"

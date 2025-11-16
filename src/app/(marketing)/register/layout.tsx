@@ -12,6 +12,10 @@ export const metadata = generateSEOMetadata({
 	nofollow: true,
 });
 
-export default function RegisterLayout({ children }: { children: React.ReactNode }) {
+export default function RegisterLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return <>{children}</>;
 }

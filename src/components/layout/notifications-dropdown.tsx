@@ -119,7 +119,9 @@ function EmptyState() {
 	return (
 		<div className="flex flex-col items-center justify-center py-12 text-center">
 			<Bell className="mb-3 size-12 text-muted-foreground/30" />
-			<p className="font-medium text-muted-foreground text-sm">All caught up!</p>
+			<p className="font-medium text-muted-foreground text-sm">
+				All caught up!
+			</p>
 			<p className="text-muted-foreground text-xs">No new notifications</p>
 		</div>
 	);
@@ -133,10 +135,18 @@ export function NotificationsDropdown() {
 	// Get notifications from Zustand store
 	const notifications = useNotificationsStore((state) => state.notifications);
 	const unreadCount = useNotificationsStore((state) => state.unreadCount);
-	const setNotifications = useNotificationsStore((state) => state.setNotifications);
-	const optimisticMarkAsRead = useNotificationsStore((state) => state.optimisticMarkAsRead);
-	const optimisticMarkAllAsRead = useNotificationsStore((state) => state.optimisticMarkAllAsRead);
-	const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+	const setNotifications = useNotificationsStore(
+		(state) => state.setNotifications,
+	);
+	const optimisticMarkAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAsRead,
+	);
+	const optimisticMarkAllAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAllAsRead,
+	);
+	const optimisticDelete = useNotificationsStore(
+		(state) => state.optimisticDelete,
+	);
 	const subscribe = useNotificationsStore((state) => state.subscribe);
 	const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -146,10 +156,15 @@ export function NotificationsDropdown() {
 	const clearCompleted = useSyncStore((state) => state.clearCompleted);
 
 	// Filter for active operations
-	const activeOperations = operations.filter((op) => op.status === "in_progress");
-	const recentOperations = operations.filter((op) => op.status === "completed" || op.status === "failed");
+	const activeOperations = operations.filter(
+		(op) => op.status === "in_progress",
+	);
+	const recentOperations = operations.filter(
+		(op) => op.status === "completed" || op.status === "failed",
+	);
 
-	const hasSyncActivity = activeOperations.length > 0 || offlineQueue.length > 0;
+	const hasSyncActivity =
+		activeOperations.length > 0 || offlineQueue.length > 0;
 	const syncBadgeCount = activeOperations.length + offlineQueue.length;
 	const totalBadgeCount = unreadCount + syncBadgeCount;
 
@@ -198,7 +213,10 @@ export function NotificationsDropdown() {
 	// Handle click outside to close dropdown
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		};
@@ -253,12 +271,16 @@ export function NotificationsDropdown() {
 			<button
 				className="hover-gradient relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
 				onClick={() => setIsOpen(!isOpen)}
-				title={hasSyncActivity ? "Notifications & Sync Status" : "Notifications"}
+				title={
+					hasSyncActivity ? "Notifications & Sync Status" : "Notifications"
+				}
 				type="button"
 			>
 				<div className="relative">
 					<Bell className="size-4" />
-					{hasSyncActivity && <Loader2 className="-right-1 -top-1 absolute size-2.5 animate-spin text-primary" />}
+					{hasSyncActivity && (
+						<Loader2 className="-right-1 -top-1 absolute size-2.5 animate-spin text-primary" />
+					)}
 				</div>
 				<NotificationBadge count={totalBadgeCount} />
 				<span className="sr-only">
@@ -272,7 +294,9 @@ export function NotificationsDropdown() {
 					{/* Header */}
 					<div className="flex items-center justify-between border-b px-4 py-2.5">
 						<div>
-							<h3 className="font-semibold text-sm">{hasSyncActivity ? "Sync & Notifications" : "Notifications"}</h3>
+							<h3 className="font-semibold text-sm">
+								{hasSyncActivity ? "Sync & Notifications" : "Notifications"}
+							</h3>
 							{(unreadCount > 0 || hasSyncActivity) && (
 								<p className="text-muted-foreground text-xs">
 									{hasSyncActivity && `${syncBadgeCount} syncing`}
@@ -303,18 +327,31 @@ export function NotificationsDropdown() {
 					</div>
 
 					{/* Sync Operations */}
-					{(activeOperations.length > 0 || offlineQueue.length > 0 || recentOperations.length > 0) && (
+					{(activeOperations.length > 0 ||
+						offlineQueue.length > 0 ||
+						recentOperations.length > 0) && (
 						<div className="border-b">
 							{/* Active Operations */}
 							{activeOperations.length > 0 && (
 								<div className="space-y-1 px-4 py-3">
-									<p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">Active</p>
+									<p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+										Active
+									</p>
 									{activeOperations.map((op) => (
-										<div className="flex items-start gap-2 rounded-md bg-primary/5 p-2" key={op.id}>
+										<div
+											className="flex items-start gap-2 rounded-md bg-primary/5 p-2"
+											key={op.id}
+										>
 											<Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-primary" />
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">{op.title}</p>
-												{op.description && <p className="text-muted-foreground text-xs">{op.description}</p>}
+												<p className="font-medium text-sm leading-tight">
+													{op.title}
+												</p>
+												{op.description && (
+													<p className="text-muted-foreground text-xs">
+														{op.description}
+													</p>
+												)}
 												{op.total && op.total > 0 && (
 													<div className="mt-1 space-y-0.5">
 														<div className="h-1 overflow-hidden rounded-full bg-muted">
@@ -350,7 +387,9 @@ export function NotificationsDropdown() {
 										>
 											<Clock className="mt-0.5 size-3.5 shrink-0 text-orange-500" />
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">{op.action}</p>
+												<p className="font-medium text-sm leading-tight">
+													{op.action}
+												</p>
 												<p className="mt-0.5 text-[0.625rem] text-orange-600 dark:text-orange-400">
 													Will sync when online
 												</p>
@@ -364,7 +403,9 @@ export function NotificationsDropdown() {
 							{recentOperations.length > 0 && (
 								<div className="space-y-1 px-4 py-3">
 									<div className="mb-2 flex items-center justify-between">
-										<p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">Recent</p>
+										<p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+											Recent
+										</p>
 										<button
 											className="text-muted-foreground text-xs hover:text-foreground"
 											onClick={clearCompleted}
@@ -376,7 +417,9 @@ export function NotificationsDropdown() {
 									{recentOperations.map((op) => (
 										<div
 											className={`flex items-start gap-2 rounded-md p-2 ${
-												op.status === "completed" ? "bg-green-50 dark:bg-green-950/20" : "bg-red-50 dark:bg-red-950/20"
+												op.status === "completed"
+													? "bg-green-50 dark:bg-green-950/20"
+													: "bg-red-50 dark:bg-red-950/20"
 											}`}
 											key={op.id}
 										>
@@ -386,8 +429,14 @@ export function NotificationsDropdown() {
 												<XCircle className="mt-0.5 size-3.5 shrink-0 text-red-600 dark:text-red-400" />
 											)}
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">{op.title}</p>
-												{op.error && <p className="text-red-600 text-xs dark:text-red-400">{op.error}</p>}
+												<p className="font-medium text-sm leading-tight">
+													{op.title}
+												</p>
+												{op.error && (
+													<p className="text-red-600 text-xs dark:text-red-400">
+														{op.error}
+													</p>
+												)}
 											</div>
 										</div>
 									))}
@@ -412,24 +461,34 @@ export function NotificationsDropdown() {
 											key={notification.id}
 										>
 											{/* Unread indicator */}
-											{!notification.read && <div className="absolute top-0 left-0 h-full w-0.5 bg-primary" />}
+											{!notification.read && (
+												<div className="absolute top-0 left-0 h-full w-0.5 bg-primary" />
+											)}
 
 											<div className="flex gap-3">
 												{/* Icon */}
-												<div className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}>
+												<div
+													className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}
+												>
 													<Icon className="size-4" />
 												</div>
 
 												{/* Content */}
 												<div className="min-w-0 flex-1 space-y-1">
-													<p className="font-medium text-sm leading-snug">{notification.title}</p>
-													<p className="text-muted-foreground text-xs leading-relaxed">{notification.message}</p>
+													<p className="font-medium text-sm leading-snug">
+														{notification.title}
+													</p>
+													<p className="text-muted-foreground text-xs leading-relaxed">
+														{notification.message}
+													</p>
 
 													{/* Footer */}
 													<div className="flex items-center justify-between gap-2 pt-1">
 														<div className="flex items-center gap-1 text-muted-foreground text-xs">
 															<Clock className="size-3" />
-															{formatTimestamp(new Date(notification.created_at))}
+															{formatTimestamp(
+																new Date(notification.created_at),
+															)}
 														</div>
 
 														{/* Actions */}
@@ -458,7 +517,9 @@ export function NotificationsDropdown() {
 															)}
 															<button
 																className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-destructive/10 hover:text-destructive"
-																onClick={() => deleteNotification(notification.id)}
+																onClick={() =>
+																	deleteNotification(notification.id)
+																}
 																title="Delete"
 																type="button"
 															>

@@ -70,10 +70,13 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 	const router = useRouter();
 	const _pathname = usePathname();
 	const [mounted, setMounted] = useState(false);
-	const [userStatus, setUserStatus] = useState<UserStatus>(user.status || "online");
+	const [userStatus, setUserStatus] = useState<UserStatus>(
+		user.status || "online",
+	);
 	const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 	// Find the active team based on activeCompanyId, fallback to first team
-	const initialActiveTeam = teams.find((t) => t.id === activeCompanyId) || teams[0];
+	const initialActiveTeam =
+		teams.find((t) => t.id === activeCompanyId) || teams[0];
 	const [activeTeam, setActiveTeam] = useState(initialActiveTeam);
 
 	useEffect(() => {
@@ -113,7 +116,10 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 	};
 
 	const isDark =
-		mounted && (theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+		mounted &&
+		(theme === "dark" ||
+			(theme === "system" &&
+				window.matchMedia("(prefers-color-scheme: dark)").matches));
 
 	const toggleTheme = () => {
 		setTheme(isDark ? "light" : "dark");
@@ -141,7 +147,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							<StatusIndicator size="sm" status={userStatus} />
 						</div>
 					</div>
-					<span className="hidden font-medium text-sm md:inline-block">{user.name.split(" ")[0]}</span>
+					<span className="hidden font-medium text-sm md:inline-block">
+						{user.name.split(" ")[0]}
+					</span>
 					<span className="sr-only">User menu</span>
 				</button>
 			</DropdownMenuTrigger>
@@ -171,7 +179,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				<DropdownMenuSeparator />
 
 				{/* Status Selector */}
-				<DropdownMenuLabel className="text-muted-foreground text-xs">Status</DropdownMenuLabel>
+				<DropdownMenuLabel className="text-muted-foreground text-xs">
+					Status
+				</DropdownMenuLabel>
 				<div className="px-2 pb-2">
 					<div className="space-y-1">
 						<button
@@ -184,7 +194,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						>
 							<StatusIndicator size="md" status="online" />
 							<span>Online</span>
-							{userStatus === "online" && <div className="ml-auto size-2 rounded-full bg-primary" />}
+							{userStatus === "online" && (
+								<div className="ml-auto size-2 rounded-full bg-primary" />
+							)}
 						</button>
 						<button
 							className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
@@ -196,7 +208,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						>
 							<StatusIndicator size="md" status="available" />
 							<span>Available</span>
-							{userStatus === "available" && <div className="ml-auto size-2 rounded-full bg-primary" />}
+							{userStatus === "available" && (
+								<div className="ml-auto size-2 rounded-full bg-primary" />
+							)}
 						</button>
 						<button
 							className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
@@ -208,14 +222,18 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						>
 							<StatusIndicator size="md" status="busy" />
 							<span>Busy</span>
-							{userStatus === "busy" && <div className="ml-auto size-2 rounded-full bg-primary" />}
+							{userStatus === "busy" && (
+								<div className="ml-auto size-2 rounded-full bg-primary" />
+							)}
 						</button>
 					</div>
 				</div>
 				<DropdownMenuSeparator />
 
 				{/* Teams */}
-				<DropdownMenuLabel className="text-muted-foreground text-xs">Organizations</DropdownMenuLabel>
+				<DropdownMenuLabel className="text-muted-foreground text-xs">
+					Organizations
+				</DropdownMenuLabel>
 				{teams.map((team, index) => {
 					const isActive = activeTeam?.id === team.id;
 					return (
@@ -232,22 +250,34 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 								<div className="flex items-center gap-2">
 									{team.onboardingComplete !== undefined ? (
 										team.onboardingComplete ? (
-											<Badge className="h-4 px-1.5 text-[10px]" variant="default">
+											<Badge
+												className="h-4 px-1.5 text-[10px]"
+												variant="default"
+											>
 												<CheckCircle2 className="mr-1 size-3" />
 												Complete
 											</Badge>
 										) : (
-											<Badge className="h-4 px-1.5 text-[10px]" variant="secondary">
+											<Badge
+												className="h-4 px-1.5 text-[10px]"
+												variant="secondary"
+											>
 												<XCircle className="mr-1 size-3" />
-												{team.plan === "Incomplete Onboarding" ? "Incomplete Onboarding" : "Not Complete"}
+												{team.plan === "Incomplete Onboarding"
+													? "Incomplete Onboarding"
+													: "Not Complete"}
 											</Badge>
 										)
 									) : (
-										<span className="text-muted-foreground text-xs">{team.plan}</span>
+										<span className="text-muted-foreground text-xs">
+											{team.plan}
+										</span>
 									)}
 								</div>
 							</div>
-							{isActive && <div className="ml-auto size-2 rounded-full bg-primary" />}
+							{isActive && (
+								<div className="ml-auto size-2 rounded-full bg-primary" />
+							)}
 							<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
 						</DropdownMenuItem>
 					);
@@ -257,7 +287,9 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						<div className="flex size-6 items-center justify-center rounded-md border">
 							<Plus className="size-4" />
 						</div>
-						<span className="font-medium text-muted-foreground">Add new business</span>
+						<span className="font-medium text-muted-foreground">
+							Add new business
+						</span>
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
@@ -302,8 +334,15 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						<span className="text-sm">Theme</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="text-muted-foreground text-xs">{mounted ? (isDark ? "Dark" : "Light") : "..."}</span>
-						<Switch aria-label="Toggle theme" checked={isDark} disabled={!mounted} onCheckedChange={toggleTheme} />
+						<span className="text-muted-foreground text-xs">
+							{mounted ? (isDark ? "Dark" : "Light") : "..."}
+						</span>
+						<Switch
+							aria-label="Toggle theme"
+							checked={isDark}
+							disabled={!mounted}
+							onCheckedChange={toggleTheme}
+						/>
 						<Moon className="size-4 text-muted-foreground" />
 					</div>
 				</div>

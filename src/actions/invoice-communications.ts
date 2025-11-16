@@ -13,7 +13,9 @@ import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
 
-const _resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const _resend = process.env.RESEND_API_KEY
+	? new Resend(process.env.RESEND_API_KEY)
+	: null;
 
 /**
  * Send invoice via email
@@ -59,7 +61,10 @@ export async function sendInvoiceEmail(invoiceId: string) {
 
 		// TODO: Send actual email with Resend
 		// For now, just update sent_at timestamp
-		await supabase.from("invoices").update({ sent_at: new Date().toISOString() }).eq("id", invoiceId);
+		await supabase
+			.from("invoices")
+			.update({ sent_at: new Date().toISOString() })
+			.eq("id", invoiceId);
 
 		revalidatePath(`/dashboard/customers/${invoice.customer_id}`);
 
@@ -119,7 +124,10 @@ export async function sendEstimateEmail(estimateId: string) {
 
 		// TODO: Send actual email with Resend
 		// For now, just update sent_at timestamp
-		await supabase.from("invoices").update({ sent_at: new Date().toISOString() }).eq("id", estimateId);
+		await supabase
+			.from("invoices")
+			.update({ sent_at: new Date().toISOString() })
+			.eq("id", estimateId);
 
 		revalidatePath(`/dashboard/customers/${estimate.customer_id}`);
 

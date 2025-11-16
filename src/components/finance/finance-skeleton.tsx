@@ -10,7 +10,10 @@ export function FinanceSkeleton() {
 			{/* Stats skeleton */}
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				{[1, 2, 3, 4].map((i) => (
-					<div className="h-28 animate-pulse rounded-lg border bg-muted/40 p-4" key={i}>
+					<div
+						className="h-28 animate-pulse rounded-lg border bg-muted/40 p-4"
+						key={i}
+					>
 						<div className="mb-4 flex items-center justify-between">
 							<div className="h-4 w-32 rounded bg-muted" />
 							<div className="size-5 rounded-full bg-muted" />

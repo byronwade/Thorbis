@@ -51,7 +51,10 @@ export function generateExcelTemplate(dataType: string): Blob {
 		[""],
 		["Field Validations:"],
 		[""],
-		...Object.entries(template.validations).map(([field, rules]) => [field, rules.join(", ")]),
+		...Object.entries(template.validations).map(([field, rules]) => [
+			field,
+			rules.join(", "),
+		]),
 	];
 
 	const instructionsSheet = XLSX.utils.aoa_to_sheet(instructions);

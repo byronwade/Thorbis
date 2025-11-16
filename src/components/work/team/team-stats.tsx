@@ -40,14 +40,23 @@ export async function UteamStats() {
 	}
 
 	// Filter active team members (not archived)
-	const teamMembers = (teamMembersRaw || []).filter((member) => !member.archived_at);
+	const teamMembers = (teamMembersRaw || []).filter(
+		(member) => !member.archived_at,
+	);
 
 	const totalMembers = teamMembers.length;
 	const activeMembers = teamMembers.filter((m) => m.status === "active").length;
-	const invitedMembers = teamMembers.filter((m) => m.status === "invited").length;
-	const suspendedMembers = teamMembers.filter((m) => m.status === "suspended").length;
+	const invitedMembers = teamMembers.filter(
+		(m) => m.status === "invited",
+	).length;
+	const suspendedMembers = teamMembers.filter(
+		(m) => m.status === "suspended",
+	).length;
 
-	const activePercentage = totalMembers > 0 ? Math.round((activeMembers / totalMembers) * PERCENTAGE_MULTIPLIER) : 0;
+	const activePercentage =
+		totalMembers > 0
+			? Math.round((activeMembers / totalMembers) * PERCENTAGE_MULTIPLIER)
+			: 0;
 
 	const stats: StatCard[] = [
 		{
@@ -71,7 +80,10 @@ export async function UteamStats() {
 		{
 			label: "Suspended",
 			value: suspendedMembers,
-			change: suspendedMembers > 0 ? SUSPENDED_CHANGE_NEGATIVE : SUSPENDED_CHANGE_POSITIVE,
+			change:
+				suspendedMembers > 0
+					? SUSPENDED_CHANGE_NEGATIVE
+					: SUSPENDED_CHANGE_POSITIVE,
 			changeLabel: suspendedMembers > 0 ? "requires attention" : "all active",
 		},
 	];

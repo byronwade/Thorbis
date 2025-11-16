@@ -27,7 +27,9 @@ export function CompleteProfileForm({
 	userEmail,
 }: CompleteProfileFormProps) {
 	const router = useRouter();
-	const [avatarPreview, setAvatarPreview] = useState<string | null>(existingAvatar);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(
+		existingAvatar,
+	);
 	const [hasChangedAvatar, setHasChangedAvatar] = useState(false);
 	const [avatarError, setAvatarError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -95,7 +97,11 @@ export function CompleteProfileForm({
 			// Redirect to onboarding/dashboard
 			router.push("/dashboard/welcome");
 		} catch (caughtError) {
-			setError(caughtError instanceof Error ? caughtError.message : "Something went wrong. Please try again.");
+			setError(
+				caughtError instanceof Error
+					? caughtError.message
+					: "Something went wrong. Please try again.",
+			);
 			setIsLoading(false);
 		}
 	};
@@ -104,14 +110,22 @@ export function CompleteProfileForm({
 		<div className="flex w-full max-w-lg flex-col gap-6">
 			{/* Logo */}
 			<div className="flex items-center gap-3">
-				<Image alt="Thorbis Logo" className="size-8.5" height={34} src="/ThorbisLogo.webp" width={34} />
+				<Image
+					alt="Thorbis Logo"
+					className="size-8.5"
+					height={34}
+					src="/ThorbisLogo.webp"
+					width={34}
+				/>
 				<span className="font-semibold text-xl">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
 				<h2 className="mb-1.5 font-semibold text-2xl">Complete your profile</h2>
-				<p className="text-muted-foreground">We need a few more details to get your account set up</p>
+				<p className="text-muted-foreground">
+					We need a few more details to get your account set up
+				</p>
 			</div>
 
 			{/* Error Alert */}
@@ -126,12 +140,17 @@ export function CompleteProfileForm({
 			<Alert>
 				<CheckCircle2 className="h-4 w-4" />
 				<AlertDescription>
-					You signed in with <strong>{userEmail}</strong>. Just a few more details and you're all set!
+					You signed in with <strong>{userEmail}</strong>. Just a few more
+					details and you're all set!
 				</AlertDescription>
 			</Alert>
 
 			{/* Profile Completion Form */}
-			<form className="space-y-6" encType="multipart/form-data" onSubmit={handleSubmit}>
+			<form
+				className="space-y-6"
+				encType="multipart/form-data"
+				onSubmit={handleSubmit}
+			>
 				{/* Name Field (if missing) */}
 				{!existingName && (
 					<div className="space-y-1">
@@ -167,8 +186,8 @@ export function CompleteProfileForm({
 							type="tel"
 						/>
 						<p className="text-muted-foreground text-xs">
-							We'll text urgent dispatch alerts and MFA codes here. Please verify this is a number you can receive texts
-							on.
+							We'll text urgent dispatch alerts and MFA codes here. Please
+							verify this is a number you can receive texts on.
 						</p>
 					</div>
 				)}
@@ -178,7 +197,9 @@ export function CompleteProfileForm({
 					<Label htmlFor="avatar">
 						Profile image{" "}
 						{existingAvatar && !hasChangedAvatar && (
-							<span className="font-normal text-muted-foreground text-xs">(from Google)</span>
+							<span className="font-normal text-muted-foreground text-xs">
+								(from Google)
+							</span>
 						)}
 					</Label>
 					<div className="flex flex-col gap-4 rounded-2xl border border-border/70 border-dashed p-4 sm:flex-row sm:items-center">

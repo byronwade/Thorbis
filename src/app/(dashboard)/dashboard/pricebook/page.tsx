@@ -27,7 +27,9 @@ export default function PriceBookDashboardPage() {
 			{/* Page header */}
 			<div>
 				<h1 className="font-semibold text-2xl">Price Book Dashboard</h1>
-				<p className="text-muted-foreground">Manage service pricing, parts costs, and standardized rates</p>
+				<p className="text-muted-foreground">
+					Manage service pricing, parts costs, and standardized rates
+				</p>
 			</div>
 
 			{/* Stats - Streams in first */}

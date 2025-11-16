@@ -40,7 +40,9 @@ const DEFAULT_DATA: BonusTrackerData = {
 	progress: 62.5,
 };
 
-export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetProps) {
+export function BonusTrackerWidget({
+	data = DEFAULT_DATA,
+}: BonusTrackerWidgetProps) {
 	const bonusPerPerson = Math.round(data.currentBonus / data.teamMembers);
 	const remaining = data.targetBonus - data.currentBonus;
 
@@ -63,7 +65,9 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 						</ShowAt>
 					</div>
 					<ShowAt stage="full-comfortable">
-						<div className="rounded-full bg-success/20 px-2 py-0.5 text-success text-xs">{data.daysRemaining}d</div>
+						<div className="rounded-full bg-success/20 px-2 py-0.5 text-success text-xs">
+							{data.daysRemaining}d
+						</div>
 					</ShowAt>
 				</div>
 
@@ -73,15 +77,24 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 						{/* Main metrics */}
 						<div className="grid grid-cols-2 gap-3">
 							<div className="space-y-1">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Current Bonus
 								</ResponsiveText>
-								<ResponsiveText className="font-bold text-success" variant="display">
+								<ResponsiveText
+									className="font-bold text-success"
+									variant="display"
+								>
 									{formatCurrency(data.currentBonus, "comfortable")}
 								</ResponsiveText>
 							</div>
 							<div className="space-y-1">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Target
 								</ResponsiveText>
 								<ResponsiveText className="font-bold" variant="display">
@@ -94,7 +107,9 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 						<div className="space-y-1">
 							<div className="flex justify-between text-xs">
 								<span className="text-muted-foreground">Progress</span>
-								<span className="font-bold text-success">{formatPercentage(data.progress, "full")}</span>
+								<span className="font-bold text-success">
+									{formatPercentage(data.progress, "full")}
+								</span>
 							</div>
 							<div className="relative h-2 overflow-hidden rounded-full bg-background/50">
 								<div
@@ -109,7 +124,10 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
 								<Users className="size-3.5 text-primary" />
 								<div>
-									<ResponsiveText className="text-muted-foreground" variant="caption">
+									<ResponsiveText
+										className="text-muted-foreground"
+										variant="caption"
+									>
 										Team
 									</ResponsiveText>
 									<ResponsiveText className="font-bold" variant="body">
@@ -120,10 +138,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
 								<DollarSign className="size-3.5 text-success" />
 								<div>
-									<ResponsiveText className="text-muted-foreground" variant="caption">
+									<ResponsiveText
+										className="text-muted-foreground"
+										variant="caption"
+									>
 										Each
 									</ResponsiveText>
-									<ResponsiveText className="font-bold text-success" variant="body">
+									<ResponsiveText
+										className="font-bold text-success"
+										variant="body"
+									>
 										${bonusPerPerson}
 									</ResponsiveText>
 								</div>
@@ -131,10 +155,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
 								<Target className="size-3.5 text-warning" />
 								<div>
-									<ResponsiveText className="text-muted-foreground" variant="caption">
+									<ResponsiveText
+										className="text-muted-foreground"
+										variant="caption"
+									>
 										Left
 									</ResponsiveText>
-									<ResponsiveText className="font-bold text-warning" variant="body">
+									<ResponsiveText
+										className="font-bold text-warning"
+										variant="body"
+									>
 										${(remaining / 1000).toFixed(0)}k
 									</ResponsiveText>
 								</div>
@@ -160,10 +190,16 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 								/>
 							</div>
 							<div className="flex justify-between">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									{formatPercentage(data.progress, "comfortable")}
 								</ResponsiveText>
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									{formatCurrency(data.targetBonus, "comfortable")}
 								</ResponsiveText>
 							</div>
@@ -177,7 +213,10 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Bonus
 						</ResponsiveText>
-						<ResponsiveText className="font-bold text-success" variant="display">
+						<ResponsiveText
+							className="font-bold text-success"
+							variant="display"
+						>
 							{formatCurrency(data.currentBonus, "compact")}
 						</ResponsiveText>
 						<ResponsiveText className="text-muted-foreground" variant="caption">
@@ -189,7 +228,10 @@ export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetPr
 				{/* TINY Stage: Just the current bonus */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="font-bold text-success" variant="display">
+						<ResponsiveText
+							className="font-bold text-success"
+							variant="display"
+						>
 							{formatCurrency(data.currentBonus, "tiny")}
 						</ResponsiveText>
 					</div>
