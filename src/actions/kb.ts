@@ -248,15 +248,18 @@ export async function getKBCategories(): Promise<{
     const rootCategories: KBCategoryWithChildren[] = [];
 
     // First pass: create all categories
-    data?.forEach((cat) => {
-      categoryMap.set(cat.id, {
-        ...normalizeCategory(cat),
-        children: [] as KBCategoryWithChildren[],
-      });
-    });
+    if (data) {
+      for (const cat of data) {
+        categoryMap.set(cat.id, {
+          ...normalizeCategory(cat),
+          children: [] as KBCategoryWithChildren[],
+        });
+      }
+    }
 
     // Second pass: build hierarchy
-    data?.forEach((cat) => {
+    if (data) {
+      for (const cat of data) {
       const category = categoryMap.get(cat.id);
       if (!category) {
         return;
@@ -271,7 +274,8 @@ export async function getKBCategories(): Promise<{
       } else {
         rootCategories.push(category);
       }
-    });
+    }
+    }
 
     return { success: true, categories: rootCategories };
   } catch (error) {
