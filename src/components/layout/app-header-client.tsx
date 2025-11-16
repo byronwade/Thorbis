@@ -37,14 +37,6 @@ type AppHeaderClientProps = {
 		hasPayment?: boolean;
 	}>;
 	activeCompanyId?: string | null;
-	customers?: Array<{
-		id: string;
-		first_name: string;
-		last_name: string;
-		email: string;
-		phone: string;
-		company_name?: string;
-	}>;
 	companyPhones?: Array<{
 		id: string;
 		number: string;
@@ -436,7 +428,7 @@ export function AppHeaderClient({
 					<QuickAddDropdown />
 
 					{/* Phone/Calls */}
-					<PhoneDropdown companyId={activeCompanyId || ""} companyPhones={companyPhones} customers={customers} />
+					<PhoneDropdown companyId={activeCompanyId || ""} companyPhones={companyPhones} />
 
 					{/* TV Display */}
 					<Link href="/dashboard/tv" title="TV Display">

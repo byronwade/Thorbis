@@ -263,6 +263,7 @@ export async function createProperty(formData: FormData): Promise<ActionResult<s
 		if (geocodeResult) {
 			propertyLat = geocodeResult.lat;
 			propertyLon = geocodeResult.lon;
+		}
 
 		// Create property
 		const { data: property, error: createError } = await supabase
