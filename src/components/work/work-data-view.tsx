@@ -20,7 +20,8 @@ export function WorkDataView({ section, table, kanban, fallback = null, forceVie
 		if (forceView && storedView !== forceView) {
 			setView(forceView);
 		}
-	}, [forceView, setView, storedView]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [forceView, setView]); // storedView intentionally excluded to prevent infinite loop
 
 	if (viewMode === "kanban") {
 		return <>{kanban ?? fallback}</>;

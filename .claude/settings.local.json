@@ -123,7 +123,8 @@
       "Bash(pnpm supabase gen types:*)",
       "Bash(time node:*)",
       "Bash(/tmp/add-use-cache.sh)",
-      "Bash(timeout 30 pnpm dlx:*)"
+      "Bash(timeout 30 pnpm dlx:*)",
+      "Bash(node test-performance.js)"
     ],
     "deny": [],
     "ask": []
