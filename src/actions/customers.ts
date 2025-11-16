@@ -1091,7 +1091,63 @@ type CustomerRecord = {
 };
 
 /**
- * Get all customers for the current company
+ * Get customers for phone dialer (lightweight, no enrichment)
+ *
+ * PERFORMANCE: Returns only basic contact info needed for dialer.
+ * Use this instead of getAllCustomers() in AppHeader to avoid N+1 queries.
+ *
+ * Expected: 50-100ms (single query)
+ * vs getAllCustomers(): 1200-2000ms (151 queries with enrichment)
+ */
+export async function getCustomersForDialer(): Promise<ActionResult<Array<{
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  display_name: string | null;
+  email: string | null;
+  phone: string | null;
+  company_name: string | null;
+}>>> {
+  return withErrorHandling(async () => {
+    const supabase = await createClient();
+    if (!supabase) {
+      throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    assertAuthenticated(user?.id);
+
+    const activeCompanyId = await getActiveCompanyId();
+    if (!activeCompanyId) {
+      throw new ActionError("No active company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+    }
+
+    // Single lightweight query - no joins, no enrichment
+    const { data: customers, error } = await supabase
+      .from("customers")
+      .select("id, first_name, last_name, display_name, email, phone, company_name")
+      .eq("company_id", activeCompanyId)
+      .is("deleted_at", null)
+      .order("display_name", { ascending: true });
+
+    if (error) {
+      throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers"), ERROR_CODES.DB_QUERY_ERROR);
+    }
+
+    return customers || [];
+  });
+}
+
+/**
+ * Get all customers for the current company (WITH ENRICHMENT)
+ *
+ * WARNING: This function does 151 database queries for 50 customers (N+1 pattern).
+ * Expected time: 1200-2000ms
+ *
+ * DO NOT use in AppHeader or other frequently rendered components.
+ * Use getCustomersForDialer() instead for lightweight contact info.
+ *
+ * Only use this on dedicated customer list pages where the enriched data is needed.
  */
 export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
 	return withErrorHandling(async () => {

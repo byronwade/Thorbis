@@ -270,7 +270,7 @@ async function fetchCompanyAndSettings(
 ): Promise<[CompanyRow, CompanySettingsRow | null, NormalizedHours, Record<string, unknown> | undefined]> {
 	const { data: company, error: companyError } = await supabase
 		.from("companies")
-		.select("id,name,legal_name,email,phone,website,website_url,tax_id,license_number,industry")
+		.select("*")
 		.eq("id", companyId)
 		.single();
 
@@ -280,9 +280,7 @@ async function fetchCompanyAndSettings(
 
 	const { data: settings } = await supabase
 		.from("company_settings")
-		.select(
-			"address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation"
-		)
+		.select("*")
 		.eq("company_id", companyId)
 		.single();
 
