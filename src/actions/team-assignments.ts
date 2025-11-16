@@ -71,7 +71,7 @@ export type TeamMemberAssignment = {
 /**
  * Get team assignments for a job
  */
-export function getJobTeamAssignments(
+export async function getJobTeamAssignments(
   jobId: string
 ): Promise<ActionResult<TeamMemberAssignment[]>> {
   return withErrorHandling(async () => {
@@ -270,7 +270,7 @@ export async function getAvailableTeamMembers(): Promise<
 /**
  * Assign a team member to a job
  */
-export function assignTeamMemberToJob(
+export async function assignTeamMemberToJob(
   input: z.infer<typeof assignTeamMemberSchema>
 ): Promise<ActionResult<{ id: string }>> {
   return withErrorHandling(async () => {
@@ -367,7 +367,7 @@ export function assignTeamMemberToJob(
 /**
  * Remove a team member from a job (soft delete)
  */
-export function removeTeamMemberFromJob(
+export async function removeTeamMemberFromJob(
   input: z.infer<typeof removeTeamMemberSchema>
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -420,7 +420,7 @@ export function removeTeamMemberFromJob(
 /**
  * Bulk assign team members to a job
  */
-export function bulkAssignTeamMembers(
+export async function bulkAssignTeamMembers(
   input: z.infer<typeof bulkAssignTeamMembersSchema>
 ): Promise<ActionResult<{ assigned: number }>> {
   return withErrorHandling(async () => {
@@ -490,7 +490,7 @@ export function bulkAssignTeamMembers(
 /**
  * Update team member role on a job
  */
-export function updateTeamMemberRole(
+export async function updateTeamMemberRole(
   jobId: string,
   teamMemberId: string,
   newRole: "primary" | "assistant" | "crew" | "supervisor"

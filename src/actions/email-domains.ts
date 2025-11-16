@@ -53,7 +53,7 @@ async function getCompanyId(supabase: SupabaseServerClient, userId: string) {
   return teamMember.company_id;
 }
 
-export function provisionEmailDomain(
+export async function provisionEmailDomain(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -106,7 +106,7 @@ export function provisionEmailDomain(
   });
 }
 
-export function refreshEmailDomain(
+export async function refreshEmailDomain(
   domainId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -162,7 +162,7 @@ export function refreshEmailDomain(
   });
 }
 
-export function verifyEmailDomain(
+export async function verifyEmailDomain(
   domainId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -205,7 +205,7 @@ export function verifyEmailDomain(
   });
 }
 
-export function ensureInboundRoute(): Promise<ActionResult<void>> {
+export async function ensureInboundRoute(): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

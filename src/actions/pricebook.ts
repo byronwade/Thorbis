@@ -99,7 +99,7 @@ const moveCategorySchema = z.object({
 /**
  * Create a new price book category
  */
-export function createCategory(
+export async function createCategory(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -225,7 +225,7 @@ export function createCategory(
 /**
  * Update an existing category
  */
-export function updateCategory(
+export async function updateCategory(
   categoryId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -337,7 +337,7 @@ export function updateCategory(
  * Move a category to a new parent or reorder within same level
  * This updates the materialized path for the category and all descendants
  */
-export function moveCategory(formData: FormData): Promise<ActionResult<void>> {
+export async function moveCategory(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -500,7 +500,7 @@ export function moveCategory(formData: FormData): Promise<ActionResult<void>> {
 /**
  * Delete a category (only if it has no items and no child categories)
  */
-export function deleteCategory(
+export async function deleteCategory(
   categoryId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -591,7 +591,7 @@ export function deleteCategory(
 /**
  * Get category tree for a company
  */
-export function getCategoryTree(): Promise<ActionResult<any[]>> {
+export async function getCategoryTree(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -646,7 +646,7 @@ export function getCategoryTree(): Promise<ActionResult<any[]>> {
 /**
  * Create a new price book item
  */
-export function createPriceBookItem(
+export async function createPriceBookItem(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -797,7 +797,7 @@ export function createPriceBookItem(
 /**
  * Update an existing price book item
  */
-export function updatePriceBookItem(
+export async function updatePriceBookItem(
   itemId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -973,7 +973,7 @@ export function updatePriceBookItem(
 /**
  * Delete a price book item
  */
-export function deletePriceBookItem(
+export async function deletePriceBookItem(
   itemId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1049,7 +1049,7 @@ export function deletePriceBookItem(
 /**
  * Bulk update prices for multiple items
  */
-export function bulkUpdatePrices(
+export async function bulkUpdatePrices(
   formData: FormData
 ): Promise<ActionResult<number>> {
   return withErrorHandling(async () => {
@@ -1207,7 +1207,7 @@ export function bulkUpdatePrices(
 /**
  * Bulk activate/deactivate items
  */
-export function bulkToggleActiveStatus(
+export async function bulkToggleActiveStatus(
   itemIds: string[],
   isActive: boolean
 ): Promise<ActionResult<number>> {
@@ -1267,7 +1267,7 @@ export function bulkToggleActiveStatus(
 /**
  * Bulk delete items
  */
-export function bulkDeleteItems(
+export async function bulkDeleteItems(
   itemIds: string[]
 ): Promise<ActionResult<number>> {
   return withErrorHandling(async () => {

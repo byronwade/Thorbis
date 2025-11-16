@@ -82,7 +82,7 @@ function calculateTotals(lineItems: any[]): {
 /**
  * Get a single purchase order by ID with relations
  */
-export function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
+export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -132,7 +132,7 @@ export function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
 /**
  * Create a new purchase order
  */
-export function createPurchaseOrder(
+export async function createPurchaseOrder(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -302,7 +302,7 @@ export function createPurchaseOrder(
 /**
  * Update purchase order status
  */
-export function updatePurchaseOrderStatus(
+export async function updatePurchaseOrderStatus(
   poId: string,
   status: string,
   _notes?: string
@@ -391,7 +391,7 @@ export function updatePurchaseOrderStatus(
 /**
  * Update purchase order vendor
  */
-export function updatePurchaseOrderVendor(
+export async function updatePurchaseOrderVendor(
   poId: string,
   vendorId: string | null,
   vendorName: string,
@@ -494,7 +494,7 @@ export async function approvePurchaseOrder(
 /**
  * Update purchase order line items
  */
-export function updatePurchaseOrderLineItems(
+export async function updatePurchaseOrderLineItems(
   poId: string,
   lineItems: any[]
 ): Promise<ActionResult<void>> {
@@ -611,7 +611,7 @@ export async function archivePurchaseOrder(
  * Removes the job association (sets job_id to NULL)
  * Bidirectional operation - updates both PO and job views
  */
-export function unlinkPurchaseOrderFromJob(
+export async function unlinkPurchaseOrderFromJob(
   poId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

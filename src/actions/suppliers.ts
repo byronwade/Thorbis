@@ -15,7 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * Get all supplier integrations for current user's company
  */
-export function getSupplierIntegrations(): Promise<ActionResult<any[]>> {
+export async function getSupplierIntegrations(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

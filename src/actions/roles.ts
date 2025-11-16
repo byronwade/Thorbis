@@ -60,7 +60,7 @@ const updatePermissionsSchema = z.object({
  * }
  * ```
  */
-export function getCurrentUserRole() {
+export async function getCurrentUserRole() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -99,7 +99,7 @@ export function getCurrentUserRole() {
  * }
  * ```
  */
-export function checkPermission(permission: Permission) {
+export async function checkPermission(permission: Permission) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -143,7 +143,7 @@ export function checkPermission(permission: Permission) {
  * }
  * ```
  */
-export function checkRole(role: UserRole) {
+export async function checkRole(role: UserRole) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -173,7 +173,7 @@ export function checkRole(role: UserRole) {
  *
  * @returns true if user is owner
  */
-export function checkIsOwner() {
+export async function checkIsOwner() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -218,7 +218,7 @@ export function checkIsOwner() {
  * });
  * ```
  */
-export function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
+export async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
   return withErrorHandling(async () => {
     // Validate input
     const validated = updateRoleSchema.parse(input);
@@ -308,7 +308,7 @@ export function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
  * });
  * ```
  */
-export function updateTeamMemberPermissions(
+export async function updateTeamMemberPermissions(
   input: z.infer<typeof updatePermissionsSchema>
 ) {
   return withErrorHandling(async () => {
@@ -366,7 +366,7 @@ export function updateTeamMemberPermissions(
  *
  * @returns List of team members with roles
  */
-export function getTeamMembersWithRoles() {
+export async function getTeamMembersWithRoles() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -422,7 +422,7 @@ export function getTeamMembersWithRoles() {
  * });
  * ```
  */
-export function transferOwnership(input: {
+export async function transferOwnership(input: {
   newOwnerId: string;
   password: string;
   reason?: string;
@@ -494,7 +494,7 @@ export function transferOwnership(input: {
  *
  * @returns List of ownership transfers
  */
-export function getOwnershipTransferHistory() {
+export async function getOwnershipTransferHistory() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -550,7 +550,7 @@ export function getOwnershipTransferHistory() {
  * @param teamMemberId - Team member to check
  * @returns Object with canDelete boolean and reason if not allowed
  */
-export function canDeleteTeamMember(teamMemberId: string) {
+export async function canDeleteTeamMember(teamMemberId: string) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

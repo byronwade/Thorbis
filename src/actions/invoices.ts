@@ -116,7 +116,7 @@ function calculateTotals(
 /**
  * Create a new invoice
  */
-export function createInvoice(
+export async function createInvoice(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -228,7 +228,7 @@ export function createInvoice(
 /**
  * Update an invoice
  */
-export function updateInvoice(
+export async function updateInvoice(
   invoiceId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -363,7 +363,7 @@ export function updateInvoice(
 /**
  * Send invoice to customer
  */
-export function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export async function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -444,7 +444,7 @@ export function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
 /**
  * Mark invoice as viewed (customer opened it)
  */
-export function markInvoiceViewed(
+export async function markInvoiceViewed(
   invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -491,7 +491,7 @@ export function markInvoiceViewed(
 /**
  * Record a payment for an invoice
  */
-export function recordPayment(
+export async function recordPayment(
   invoiceId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -616,7 +616,7 @@ export function recordPayment(
 /**
  * Mark invoice as overdue (automated or manual)
  */
-export function markInvoiceOverdue(
+export async function markInvoiceOverdue(
   invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -702,7 +702,7 @@ export function markInvoiceOverdue(
 /**
  * Cancel invoice
  */
-export function cancelInvoice(
+export async function cancelInvoice(
   invoiceId: string,
   reason?: string
 ): Promise<ActionResult<void>> {
@@ -799,7 +799,7 @@ export function cancelInvoice(
  * Replaces deleteInvoice - now archives instead of permanently deleting.
  * Archived invoices can be restored within 90 days.
  */
-export function archiveInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export async function archiveInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -884,7 +884,7 @@ export function archiveInvoice(invoiceId: string): Promise<ActionResult<void>> {
  *
  * Restores an archived invoice back to its previous status (draft/sent/viewed/etc.)
  */
-export function restoreInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export async function restoreInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -974,7 +974,7 @@ export async function deleteInvoice(
  *
  * Saves the TipTap editor content for the invoice
  */
-export function updateInvoiceContent(
+export async function updateInvoiceContent(
   invoiceId: string,
   content: any
 ): Promise<ActionResult<void>> {
@@ -1048,7 +1048,7 @@ export function updateInvoiceContent(
  *
  * Fetches all payments applied to an invoice via the invoice_payments junction table
  */
-export function getInvoicePayments(
+export async function getInvoicePayments(
   invoiceId: string
 ): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
@@ -1154,7 +1154,7 @@ export function getInvoicePayments(
  * Generates a PDF from the invoice TipTap content
  * Returns a URL to the generated PDF
  */
-export function generateInvoicePDF(
+export async function generateInvoicePDF(
   invoiceId: string
 ): Promise<ActionResult<{ pdfUrl: string; invoice: any }>> {
   return withErrorHandling(async () => {
@@ -1242,7 +1242,7 @@ export function generateInvoicePDF(
  * Removes the job association (sets job_id to NULL)
  * Bidirectional operation - updates both invoice and job views
  */
-export function unlinkInvoiceFromJob(
+export async function unlinkInvoiceFromJob(
   invoiceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

@@ -59,7 +59,7 @@ const createDepartmentSchema = z.object({
 /**
  * Invite team member
  */
-export function inviteTeamMember(
+export async function inviteTeamMember(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -222,7 +222,7 @@ export function inviteTeamMember(
 /**
  * Update team member
  */
-export function updateTeamMember(
+export async function updateTeamMember(
   memberId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -347,7 +347,7 @@ export function updateTeamMember(
 /**
  * Remove team member
  */
-export function removeTeamMember(
+export async function removeTeamMember(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -441,7 +441,7 @@ export function removeTeamMember(
 /**
  * Suspend team member - sets status to 'suspended'
  */
-export function suspendTeamMember(
+export async function suspendTeamMember(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -533,7 +533,7 @@ export function suspendTeamMember(
 /**
  * Activate team member - sets status to 'active'
  */
-export function activateTeamMember(
+export async function activateTeamMember(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -602,7 +602,7 @@ export function activateTeamMember(
 /**
  * Archive team member - permanently removes from team
  */
-export function archiveTeamMember(
+export async function archiveTeamMember(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -704,7 +704,7 @@ export function archiveTeamMember(
 /**
  * Restore an archived team member
  */
-export function restoreTeamMember(
+export async function restoreTeamMember(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -803,7 +803,7 @@ export function restoreTeamMember(
  * Send password reset email to team member
  * Only accessible by owners and managers
  */
-export function sendPasswordResetEmail(
+export async function sendPasswordResetEmail(
   memberId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -938,7 +938,7 @@ export function sendPasswordResetEmail(
  * Check if current user can manage team member
  * Returns true if current user is owner or manager
  */
-export function canManageTeamMember(
+export async function canManageTeamMember(
   _memberId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -976,7 +976,7 @@ export function canManageTeamMember(
  * Get team member permissions and settings
  * Only accessible by owners and managers
  */
-export function getTeamMemberPermissions(memberId: string): Promise<
+export async function getTeamMemberPermissions(memberId: string): Promise<
   ActionResult<{
     role: string;
     permissions: Record<string, boolean>;
@@ -1042,7 +1042,7 @@ export function getTeamMemberPermissions(memberId: string): Promise<
  * Update team member permissions
  * Only accessible by owners and managers
  */
-export function updateTeamMemberPermissions(
+export async function updateTeamMemberPermissions(
   memberId: string,
   newRole: string
 ): Promise<ActionResult<void>> {
@@ -1153,7 +1153,7 @@ export function updateTeamMemberPermissions(
 /**
  * Create role
  */
-export function createRole(formData: FormData): Promise<ActionResult<string>> {
+export async function createRole(formData: FormData): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1238,7 +1238,7 @@ export function createRole(formData: FormData): Promise<ActionResult<string>> {
 /**
  * Update role
  */
-export function updateRole(
+export async function updateRole(
   roleId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -1332,7 +1332,7 @@ export function updateRole(
 /**
  * Delete role
  */
-export function deleteRole(roleId: string): Promise<ActionResult<void>> {
+export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1431,7 +1431,7 @@ export function deleteRole(roleId: string): Promise<ActionResult<void>> {
 /**
  * Create department
  */
-export function createDepartment(
+export async function createDepartment(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -1511,7 +1511,7 @@ export function createDepartment(
 /**
  * Update department
  */
-export function updateDepartment(
+export async function updateDepartment(
   departmentId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -1591,7 +1591,7 @@ export function updateDepartment(
 /**
  * Delete department
  */
-export function deleteDepartment(
+export async function deleteDepartment(
   departmentId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1724,7 +1724,7 @@ export type TeamMemberWithDetails = {
 /**
  * Get all team members for current user's company
  */
-export function getTeamMembers() {
+export async function getTeamMembers() {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -2130,7 +2130,7 @@ export type TeamOverviewSnapshot = {
   };
 };
 
-export function getTeamOverview(): Promise<ActionResult<TeamOverviewSnapshot>> {
+export async function getTeamOverview(): Promise<ActionResult<TeamOverviewSnapshot>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

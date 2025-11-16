@@ -1002,7 +1002,7 @@ export async function unlinkEstimateFromJob(
  * @param estimateId - ID of the estimate to unlink from its job
  * @returns Promise<ActionResult<void>>
  */
-export function unlinkJobFromEstimate(
+export async function unlinkJobFromEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   // Just call the main function - same implementation
@@ -1013,7 +1013,7 @@ export function unlinkJobFromEstimate(
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */
-export function deleteEstimate(
+export async function deleteEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return archiveEstimate(estimateId);

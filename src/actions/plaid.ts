@@ -37,7 +37,7 @@ function formatAccountName(account: any): string {
 /**
  * Create a Plaid Link token for initiating bank account connection
  */
-export function createPlaidLinkToken(
+export async function createPlaidLinkToken(
   companyId: string
 ): Promise<ActionResult<{ linkToken: string }>> {
   return withErrorHandling(async () => {
@@ -113,7 +113,7 @@ export function createPlaidLinkToken(
 /**
  * Exchange Plaid public token for access token and fetch account data
  */
-export function exchangePlaidToken(
+export async function exchangePlaidToken(
   publicToken: string,
   companyId: string,
   metadata: any
@@ -248,7 +248,7 @@ export function exchangePlaidToken(
 /**
  * Sync transactions from Plaid for a company's bank accounts
  */
-export function syncTransactions(
+export async function syncTransactions(
   companyId: string,
   accessToken?: string
 ): Promise<ActionResult<{ synced: number }>> {

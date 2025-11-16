@@ -29,7 +29,7 @@ const INVITATION_EXPIRY_DAYS = 7;
 /**
  * Send team member invitations after onboarding payment
  */
-export function sendTeamMemberInvitations(
+export async function sendTeamMemberInvitations(
   companyId: string
 ): Promise<ActionResult<{ sent: number; failed: number }>> {
   return withErrorHandling(async () => {
@@ -173,7 +173,7 @@ export function sendTeamMemberInvitations(
 /**
  * Send a single team invitation (for adding members after onboarding)
  */
-export function sendSingleTeamInvitation(
+export async function sendSingleTeamInvitation(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -295,7 +295,7 @@ export function sendSingleTeamInvitation(
 /**
  * Cancel/revoke an invitation
  */
-export function cancelTeamInvitation(
+export async function cancelTeamInvitation(
   invitationId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
