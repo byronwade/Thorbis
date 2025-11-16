@@ -9,7 +9,6 @@
 import { BarChart3, Star, TrendingUp, Users } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function TechnicianAnalyticsData() {
 	return (
 		<ComingSoonShell

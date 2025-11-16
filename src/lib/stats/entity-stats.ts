@@ -13,8 +13,8 @@
  * ```
  */
 
-import { createClient } from "@/lib/supabase/server";
 import type { StatCard } from "@/components/ui/status-pipeline";
+import { createClient } from "@/lib/supabase/server";
 
 export type StatsMetric = "count" | "revenue" | "avgValue" | "completion" | "growth";
 

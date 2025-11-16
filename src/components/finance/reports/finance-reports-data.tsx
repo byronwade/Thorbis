@@ -3,7 +3,6 @@
 import { Settings } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function FinanceReportsData() {
 	return (
 		<ComingSoonShell description="This feature is under development" icon={Settings} title="Financial Reports">

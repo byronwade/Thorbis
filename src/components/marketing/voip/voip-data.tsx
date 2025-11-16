@@ -3,7 +3,6 @@
 import { Phone } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function VoipData() {
 	return (
 		<ComingSoonShell description="Cloud phone system" icon={Phone} title="VoIP System">

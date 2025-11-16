@@ -10,7 +10,6 @@
 import { Calendar, DollarSign, TrendingUp, Wrench } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function PricebookEquipmentData() {
 	return (
 		<ComingSoonShell

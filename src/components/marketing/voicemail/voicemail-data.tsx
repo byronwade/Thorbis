@@ -3,7 +3,6 @@
 import { Voicemail } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function VoicemailData() {
 	return (
 		<ComingSoonShell description="Voicemail management" icon={Voicemail} title="Voicemail">

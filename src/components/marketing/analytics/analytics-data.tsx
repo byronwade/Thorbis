@@ -11,7 +11,6 @@
 import { BarChart3, DollarSign, MousePointerClick, TrendingUp, Users } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function MarketingAnalyticsData() {
 	// Future: Fetch marketing analytics data
 	// const analytics = await fetchMarketingAnalytics();

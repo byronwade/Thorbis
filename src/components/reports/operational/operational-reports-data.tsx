@@ -9,7 +9,6 @@
 import { Clock, Settings, TrendingUp, Users } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function OperationalReportsData() {
 	return (
 		<ComingSoonShell

@@ -3,7 +3,6 @@
 import { CreditCard } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function ConsumerFinancingData() {
 	return (
 		<ComingSoonShell description="Offer financing options to customers" icon={CreditCard} title="Consumer Financing">

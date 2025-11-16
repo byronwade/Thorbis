@@ -21,8 +21,8 @@
 import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type SearchInputProps = {
 	placeholder?: string;
@@ -71,26 +71,26 @@ export function SearchInput({ placeholder = "Search...", className = "max-w-sm",
 
 	return (
 		<div className={`relative ${className}`}>
-			<Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+			<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
 			<Input
+				className="pr-9 pl-9"
 				id="search-input"
-				type="search"
-				placeholder={placeholder}
-				value={searchTerm}
 				onChange={(e) => setSearchTerm(e.target.value)}
-				className="pl-9 pr-9"
+				placeholder={placeholder}
+				type="search"
+				value={searchTerm}
 			/>
 			{searchTerm && (
 				<Button
-					variant="ghost"
-					size="sm"
+					className="-translate-y-1/2 absolute top-1/2 right-1 h-7 w-7 p-0"
 					onClick={clearSearch}
-					className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0"
+					size="sm"
+					variant="ghost"
 				>
 					<X className="size-4" />
 				</Button>
 			)}
-			<kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 select-none gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+			<kbd className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 hidden select-none gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-100 sm:flex">
 				<span className="text-xs">⌘</span>K
 			</kbd>
 		</div>

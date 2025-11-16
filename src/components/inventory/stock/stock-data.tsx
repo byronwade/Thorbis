@@ -3,7 +3,6 @@
 import { Package } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function StockData() {
 	return (
 		<ComingSoonShell description="Monitor stock levels and inventory" icon={Package} title="Stock Levels">

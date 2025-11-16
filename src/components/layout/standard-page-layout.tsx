@@ -110,7 +110,7 @@ export function ListPageLayout({
 	children: ReactNode;
 }) {
 	return (
-		<StandardPageLayout title={title} description={description} stats={stats} maxWidth="full">
+		<StandardPageLayout description={description} maxWidth="full" stats={stats} title={title}>
 			{/* Toolbar with search/filters/actions */}
 			{(search || filters || actions) && (
 				<div className="flex items-center justify-between gap-4">

@@ -11,7 +11,6 @@
 import { BarChart2, Download, Phone, Search, VoicemailIcon } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function CallLogsData() {
 	// Future: Fetch call log statistics
 	// const stats = await fetchCallLogStats();

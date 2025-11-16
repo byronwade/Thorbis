@@ -3,7 +3,6 @@
 import { List } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function ChartOfAccountsData() {
 	return (
 		<ComingSoonShell description="Manage your complete chart of accounts" icon={List} title="Chart of Accounts">

@@ -9,7 +9,6 @@
 import { Bell, CheckCheck, Filter, MessageSquare } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function UnreadMessagesData() {
 	return (
 		<ComingSoonShell

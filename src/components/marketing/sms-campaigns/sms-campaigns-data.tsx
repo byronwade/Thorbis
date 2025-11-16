@@ -11,7 +11,6 @@
 import { Bell, Calendar, MessageSquare, Target, Zap } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-
 export async function SmsCampaignsData() {
 	// Future: Fetch SMS campaign statistics
 	// const stats = await fetchSmsCampaignStats();
