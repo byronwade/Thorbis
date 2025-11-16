@@ -19,12 +19,17 @@ Performance analysis, optimization strategies, and benchmarking results.
 **Key Files:**
 - `PERFORMANCE_OPTIMIZATION.md` - Performance optimization strategies
 - `DASHBOARD_OPTIMIZATION_COMPLETE.md` - Dashboard-specific optimizations
+- `PERFORMANCE_SCAN_SUMMARY.md` - Performance scan results
+- `PHASE1_OPTIMIZATION_COMPLETE.md` - Phase 1 optimization summary
+- `FINAL_OPTIMIZATION_SUMMARY.md` - Final optimization results
 - `SPEED_IMPROVEMENTS_SUMMARY.md` - Summary of speed improvements
 
 ### `/architecture/` - Architecture & Design
 System architecture documentation, layout systems, and design patterns.
 
 **Key Files:**
+- `DASHBOARD_ARCHITECTURE.md` - Dashboard architecture guide
+- `RESTRUCTURE_COMPLETE.md` - Restructure completion summary
 - `ARCHITECTURE_IMPROVEMENT.md` - Architecture improvement plans
 - `LAYOUT_SYSTEM_V2.md` - Layout system documentation
 - `NESTED_LAYOUTS_IMPLEMENTATION.md` - Nested layouts implementation
@@ -33,8 +38,20 @@ System architecture documentation, layout systems, and design patterns.
 Project status reports, completion summaries, and setup documentation.
 
 **Key Files:**
+- `ROOT_CLEANUP_COMPLETE.md` - Root directory cleanup summary (NEW)
+- `ENV_CLEANUP_SUMMARY.md` - Environment variables cleanup (NEW)
 - `FINAL_IMPLEMENTATION_STATUS.md` - Current implementation status
 - `SUPABASE_SETUP_COMPLETE.md` - Supabase setup documentation
+- `BIOME_LINTING_STATUS.md` - Biome linting status
+- `CODEBASE_PERFECTION_COMPLETE.md` - Codebase perfection summary
+- `VERIFICATION_COMPLETE.md` - Verification completion
+
+### `/archive/` - Historical Documentation
+Archived documentation from completed migrations and major changes.
+
+**Subdirectories:**
+- `ppr-migration/` - Partial Prerendering migration history (6 files)
+- `root-updates/` - Previous root directory updates
 
 ### `/troubleshooting/` - Troubleshooting & Error Resolution
 Error documentation, debugging guides, and resolution steps.
@@ -46,6 +63,10 @@ Error documentation, debugging guides, and resolution steps.
 ## 🔍 Finding Documentation
 
 ### By Topic
+
+**Configuration & Setup:**
+- `ENVIRONMENT_VARIABLES.md` - Complete environment variables guide
+- See main docs for authentication setup
 
 **Authentication & Security:**
 - See main docs for authentication setup

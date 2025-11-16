@@ -27,6 +27,10 @@ import type {
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
+// Constants
+const DEFAULT_ARTICLES_LIMIT = 20;
+const SEARCH_QUERY_SPLIT_REGEX = /\s+/;
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -40,7 +44,14 @@ const publicSupabase =
       })
     : null;
 
-function normalizeCategory(raw: any): KBCategoryWithChildren {
+type RawCategory = Database["public"]["Tables"]["kb_categories"]["Row"];
+type RawArticle = Database["public"]["Tables"]["kb_articles"]["Row"] & {
+  category?: RawCategory;
+  tags?: Array<{ tag: Database["public"]["Tables"]["kb_tags"]["Row"] }>;
+};
+type RawArticleTag = { tag: Database["public"]["Tables"]["kb_tags"]["Row"] };
+
+function normalizeCategory(raw: RawCategory): KBCategoryWithChildren {
   return {
     ...raw,
     description: raw?.description ?? undefined,
@@ -48,7 +59,7 @@ function normalizeCategory(raw: any): KBCategoryWithChildren {
   };
 }
 
-function normalizeArticle(raw: any): KBArticleWithRelations {
+function normalizeArticle(raw: RawArticle): KBArticleWithRelations {
   return {
     ...raw,
     excerpt: raw?.excerpt ?? undefined,
@@ -59,7 +70,7 @@ function normalizeArticle(raw: any): KBArticleWithRelations {
     metaTitle: raw?.metaTitle ?? undefined,
     metaDescription: raw?.metaDescription ?? undefined,
     keywords: raw?.keywords ?? undefined,
-    tags: raw?.tags?.map((at: any) => at.tag) ?? [],
+    tags: raw?.tags?.map((at: RawArticleTag) => at.tag) ?? [],
     category: raw?.category ? normalizeCategory(raw.category) : raw?.category,
   };
 }
@@ -109,7 +120,7 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
     }
 
     // Limit and offset
-    const limit = filters?.limit || 20;
+    const limit = filters?.limit || DEFAULT_ARTICLES_LIMIT;
     const offset = filters?.offset || 0;
     query = query.range(offset, offset + limit - 1);
 
@@ -120,7 +131,7 @@ export async function getKBArticles(filters?: KBSearchFilters): Promise<{
     }
 
     const articles: KBArticleWithRelations[] =
-      data?.map((article: any) => normalizeArticle(article)) ?? [];
+      data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
 
     return {
       success: true,
@@ -301,19 +312,15 @@ export async function searchKBArticles(
     // Use PostgreSQL full-text search
     // Convert query to tsquery format
     const searchQuery = query
-      .split(/\s+/)
+      .split(SEARCH_QUERY_SPLIT_REGEX)
       .map((term) => `${term}:*`)
       .join(" & ");
 
-    void (supabase as any).rpc("search_kb_articles", {
-      search_query: searchQuery,
-      category_filter: filters?.category || null,
-      limit_count: filters?.limit || 20,
-      offset_count: filters?.offset || 0,
-    });
+    // Direct query using text search
+    const limit = filters?.limit || DEFAULT_ARTICLES_LIMIT;
+    const offset = filters?.offset || 0;
 
-    // If RPC doesn't exist, fall back to direct query
-    const { data, error } = await supabase
+    const { data, error, count } = await supabase
       .from("kb_articles")
       .select(
         `
@@ -331,11 +338,8 @@ export async function searchKBArticles(
         config: "english",
       })
       .order("view_count", { ascending: false })
-      .limit(filters?.limit || 20)
-      .range(
-        filters?.offset || 0,
-        (filters?.offset || 0) + (filters?.limit || 20) - 1
-      );
+      .limit(limit)
+      .range(offset, offset + limit - 1);
 
     if (error) {
       return { success: false, error: error.message };
@@ -343,12 +347,12 @@ export async function searchKBArticles(
 
     // Transform data
     const articles: KBArticleWithRelations[] =
-      data?.map((article: any) => normalizeArticle(article)) ?? [];
+      data?.map((article: RawArticle) => normalizeArticle(article)) ?? [];
 
     return {
       success: true,
       articles,
-      total: (data as any)?.length || 0,
+      total: count || 0,
     };
   } catch (error) {
     if (error instanceof Error) {

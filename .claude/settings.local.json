@@ -94,7 +94,8 @@
       "Bash(SKIP_ENV_VALIDATION=true pnpm build:*)",
       "Bash(1)",
       "Bash(pnpm biome check:*)",
-      "Bash(npx @biomejs/biome:*)"
+      "Bash(npx @biomejs/biome:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

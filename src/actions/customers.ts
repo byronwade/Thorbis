@@ -427,7 +427,6 @@ async function insertCustomerRecord(
     formData,
     tags,
     communicationPreferences,
-    customerMetadata,
   } = params;
 
   const payload = buildCustomerInsertPayload(params);
@@ -946,7 +945,7 @@ export async function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export function inviteToPortal(
+export async function inviteToPortal(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1043,7 +1042,7 @@ export function inviteToPortal(
 /**
  * Revoke portal access
  */
-export function revokePortalAccess(
+export async function revokePortalAccess(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1109,7 +1108,7 @@ export function revokePortalAccess(
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export function getCustomerByPhone(
+export async function getCustomerByPhone(
   phoneNumber: string,
   companyId: string
 ): Promise<ActionResult<unknown>> {

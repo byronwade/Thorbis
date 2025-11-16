@@ -34,7 +34,8 @@ const CENTS_PER_DOLLAR = 100;
 const HTTP_STATUS_FORBIDDEN = 403;
 const ARCHIVE_RETENTION_DAYS = 90;
 const SECONDS_PER_DAY = 24 * 60 * 60;
-const MS_PER_DAY = SECONDS_PER_DAY * 1000;
+const MS_TO_SECONDS = 1000;
+const MS_PER_DAY = SECONDS_PER_DAY * MS_TO_SECONDS;
 
 const ESTIMATE_NUMBER_REGEX = /EST-\d{4}-(\d+)/;
 const JOB_NUMBER_REGEX = /JOB-\d{4}-(\d+)/;
@@ -724,7 +725,7 @@ export function convertEstimateToJob(
     const { data: latestJob } = await supabase
       .from("jobs")
       .select("job_number")
-      .eq("company_id", teamMember.company_id)
+      .eq("company_id", companyId)
       .order("created_at", { ascending: false })
       .limit(1)
       .single();

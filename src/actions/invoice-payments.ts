@@ -187,13 +187,13 @@ export function processInvoicePayment({
       );
     }
 
-    const paymentRequest = buildProcessPaymentRequest(
+    const paymentRequest = buildProcessPaymentRequest({
       invoice,
       invoiceId,
       paymentAmount,
       paymentMethodId,
-      channel
-    );
+      channel,
+    });
     const paymentResponse = await processor.processPayment(paymentRequest);
 
     if (!paymentResponse.success) {
@@ -210,14 +210,14 @@ export function processInvoicePayment({
       );
     }
 
-    await recordProcessorTransaction(
+    await recordProcessorTransaction({
       supabase,
       processor,
-      invoice.company_id,
+      companyId: invoice.company_id,
       paymentResponse,
       channel,
-      paymentAmount
-    );
+      paymentAmount,
+    });
 
     // Generate payment number
     const paymentNumber = await generatePaymentNumber(
@@ -280,18 +280,24 @@ export function processInvoicePayment({
   });
 }
 
-function buildProcessPaymentRequest(
+type BuildPaymentRequestOptions = {
   invoice: {
     company_id: string;
     customer_id: string;
     invoice_number: string;
     title?: string | null;
-  },
-  invoiceId: string,
-  paymentAmount: number,
-  paymentMethodId: string | undefined,
-  channel: "online" | "card_present" | "tap_to_pay" | "ach"
+  };
+  invoiceId: string;
+  paymentAmount: number;
+  paymentMethodId: string | undefined;
+  channel: "online" | "card_present" | "tap_to_pay" | "ach";
+};
+
+function buildProcessPaymentRequest(
+  options: BuildPaymentRequestOptions
 ): ProcessPaymentRequest {
+  const { invoice, invoiceId, paymentAmount, paymentMethodId, channel } =
+    options;
   const descriptionSuffix = invoice.title ? ` - ${invoice.title}` : "";
   const description = `Invoice ${invoice.invoice_number}${descriptionSuffix}`;
 
@@ -310,19 +316,31 @@ function buildProcessPaymentRequest(
   };
 }
 
-async function recordProcessorTransaction(
-  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-  processor: { constructor: { name: string } },
-  companyId: string,
+type RecordProcessorTransactionOptions = {
+  supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>;
+  processor: { constructor: { name: string } };
+  companyId: string;
   paymentResponse: {
     processorTransactionId?: string;
     transactionId?: string;
     status: string;
     processorMetadata?: Record<string, unknown>;
-  },
-  channel: "online" | "card_present" | "tap_to_pay" | "ach",
-  paymentAmount: number
+  };
+  channel: "online" | "card_present" | "tap_to_pay" | "ach";
+  paymentAmount: number;
+};
+
+async function recordProcessorTransaction(
+  options: RecordProcessorTransactionOptions
 ) {
+  const {
+    supabase,
+    processor,
+    companyId,
+    paymentResponse,
+    channel,
+    paymentAmount,
+  } = options;
   await supabase.from("payment_processor_transactions").insert({
     company_id: companyId,
     processor_type: processor.constructor.name

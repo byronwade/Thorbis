@@ -29,7 +29,8 @@ pnpm install
 
 # Set up environment variables
 cp .env.example .env.local
-# Edit .env.local with your Supabase credentials
+# Edit .env.local with your credentials
+# See docs/ENVIRONMENT_VARIABLES.md for detailed configuration guide
 
 # Run database migrations
 pnpm db:push
@@ -286,6 +287,7 @@ Comprehensive documentation is available in the `/docs` directory, organized by 
 - **📖 Getting Started**
   - [Documentation Index](docs/README.md) - Complete guide to all documentation
   - [Quick Start Guide](docs/QUICK_START.md)
+  - [Environment Variables](docs/ENVIRONMENT_VARIABLES.md) - Configuration guide & best practices
   - [Authentication Setup](docs/AUTHENTICATION_SETUP_GUIDE.md)
   - [Deployment Guide](docs/DEPLOYMENT_GUIDE.md)
 

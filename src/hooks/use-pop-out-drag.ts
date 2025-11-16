@@ -49,6 +49,19 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
     }));
   }, []);
 
+  // Handle when pop-out window is closed
+  const handlePopOutClosed = useCallback(() => {
+    popOutWindowRef.current = null;
+
+    setState((prev) => ({
+      ...prev,
+      isPopOutActive: false,
+      popOutWindow: null,
+    }));
+
+    onPopOutClosed?.();
+  }, [onPopOutClosed]);
+
   // Create call window in new tab
   const createPopOut = useCallback(() => {
     if (state.isPopOutActive || popOutWindowRef.current) {
@@ -118,19 +131,6 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
       clearInterval(closeInterval);
     };
   }, [callId, state.isPopOutActive, onPopOutCreated, handlePopOutClosed]);
-
-  // Handle when pop-out window is closed
-  const handlePopOutClosed = useCallback(() => {
-    popOutWindowRef.current = null;
-
-    setState((prev) => ({
-      ...prev,
-      isPopOutActive: false,
-      popOutWindow: null,
-    }));
-
-    onPopOutClosed?.();
-  }, [onPopOutClosed]);
 
   // Close pop-out and return call to main window
   const returnToMain = useCallback(() => {

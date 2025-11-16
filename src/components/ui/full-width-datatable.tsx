@@ -49,6 +49,7 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
+import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
