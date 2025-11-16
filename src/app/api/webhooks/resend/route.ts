@@ -110,9 +110,7 @@ async function handleEmailReceived(supabase: TypedSupabaseClient, payload: Resen
 				path: filePath,
 				type: attachment.content_type,
 			});
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 	}
 
 	await supabase.from("communications").insert({

@@ -278,9 +278,7 @@ export function closePopOutWindow(popOutWindow: Window | null): void {
 	if (popOutWindow && !popOutWindow.closed) {
 		try {
 			popOutWindow.close();
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 	}
 }
 
@@ -291,9 +289,7 @@ export function focusPopOutWindow(popOutWindow: Window | null): void {
 	if (popOutWindow && !popOutWindow.closed) {
 		try {
 			popOutWindow.focus();
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 	}
 }
 

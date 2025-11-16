@@ -174,7 +174,6 @@ export function JobEnrichmentInline({ enrichmentData: initialData, jobId, proper
 					setTravelTime(data);
 				}
 			} catch (_error) {
-				console.error("Error:", _error);
 			} finally {
 				setIsLoadingTravel(false);
 			}

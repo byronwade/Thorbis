@@ -130,7 +130,6 @@ async function uploadCompanyLogo(
 			.eq("id", companyId);
 
 		if (updateError) {
-			console.error("Failed to update company logo:", updateError);
 		}
 
 		return publicUrl;
@@ -364,9 +363,7 @@ async function autoConfigureEmailInfrastructure(
 					last_synced_at: new Date().toISOString(),
 				});
 			}
-		} catch (_error) {
-			console.error("Failed to sync Resend domain:", _error);
-		}
+		} catch (_error) {}
 	}
 
 	const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
@@ -405,9 +402,7 @@ async function autoConfigureEmailInfrastructure(
 				last_synced_at: new Date().toISOString(),
 			});
 		}
-	} catch (_error) {
-		console.error("Failed to configure inbound email route:", _error);
-	}
+	} catch (_error) {}
 }
 
 async function updateOnboardingProgressRecord(
@@ -692,9 +687,7 @@ export async function saveOnboardingProgress(
 					serviceClient: serviceSupabase,
 				});
 				await startWorkflow(companyTrialWorkflow, [{ companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS }]);
-			} catch (_trialError) {
-				console.error("Error:", _trialError);
-			}
+			} catch (_trialError) {}
 		}
 
 		try {
@@ -703,9 +696,7 @@ export async function saveOnboardingProgress(
 			if (createdCompany) {
 				try {
 					await serviceSupabase.from("companies").delete().eq("id", companyId);
-				} catch (_cleanupError) {
-					console.error("Error:", _cleanupError);
-				}
+				} catch (_cleanupError) {}
 			}
 
 			return {
@@ -724,15 +715,11 @@ export async function saveOnboardingProgress(
 			if (!brandingResult.success) {
 				// TODO: Handle error case
 			}
-		} catch (_brandingError) {
-			console.error("Error:", _brandingError);
-		}
+		} catch (_brandingError) {}
 
 		try {
 			await autoConfigureEmailInfrastructure(serviceSupabase, companyId, data.orgWebsite);
-		} catch (_emailInfraError) {
-			console.error("Error:", _emailInfraError);
-		}
+		} catch (_emailInfraError) {}
 
 		const progressStep = typeof step === "number" ? step : 1;
 		const progressData = stepData ?? (progressStep === 1 ? step1Snapshot : {});
@@ -754,9 +741,7 @@ export async function saveOnboardingProgress(
 
 		try {
 			await companyContext.setActiveCompany(companyId);
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 
 		revalidatePath("/dashboard/welcome");
 		revalidatePath("/", "layout");

@@ -117,7 +117,10 @@
       "Bash(/tmp/final-ppr-check.sh)",
       "Bash(do path=/Users/byronwade/Stratos/src/components/settings/$file.tsx [ ! -f $path ])",
       "Bash(path=/Users/byronwade/Stratos/src/components/work/$file.tsx if [ -f $path ])",
-      "Bash(then echo '=== $file ===' grep ^export $path)"
+      "Bash(then echo '=== $file ===' grep ^export $path)",
+      "Bash(tr:*)",
+      "Bash(/Users/byronwade/Stratos/src/types/supabase.ts)",
+      "Bash(pnpm supabase gen types:*)"
     ],
     "deny": [],
     "ask": []

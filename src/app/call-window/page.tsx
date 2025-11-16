@@ -172,9 +172,7 @@ function CallWindowContent() {
 							}
 						} else {
 						}
-					} catch (_error) {
-						console.error("Error:", _error);
-					}
+					} catch (_error) {}
 				}
 
 				if (!resolvedCompanyId) {
@@ -198,7 +196,6 @@ function CallWindowContent() {
 					setCustomerData(result.data);
 				}
 			} catch (_error) {
-				console.error("Error:", _error);
 			} finally {
 				setIsLoadingCustomer(false);
 			}

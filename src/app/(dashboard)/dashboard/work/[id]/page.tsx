@@ -9,8 +9,8 @@
  */
 
 import { Suspense } from "react";
-import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { Skeleton } from "@/components/ui/skeleton";
+import { JobPageContent } from "@/components/work/job-details/job-page-content";
 
 function JobDetailsSkeleton() {
 	return (

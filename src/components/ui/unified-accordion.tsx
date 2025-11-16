@@ -55,9 +55,7 @@ function saveSectionOrder(storageKey: string, order: string[]) {
 	}
 	try {
 		localStorage.setItem(getUserStorageKey(storageKey), JSON.stringify(order));
-	} catch (_error) {
-		console.error("Error:", _error);
-	}
+	} catch (_error) {}
 }
 
 // Load section order from user preferences

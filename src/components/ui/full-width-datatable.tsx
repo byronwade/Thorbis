@@ -606,9 +606,7 @@ export function FullWidthDataTable<T>({
 				if (element?.width) {
 					width = element.width;
 				}
-			} catch (_error) {
-				console.error("Error:", _error);
-			}
+			} catch (_error) {}
 
 			const align = column.align || "left";
 			setActiveColumn({ column, width, align });

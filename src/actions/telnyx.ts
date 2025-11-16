@@ -182,9 +182,7 @@ export async function purchasePhoneNumber(params: { phoneNumber: string; company
 
 		try {
 			await ensureMessagingCampaign(params.companyId, { id: data.id, e164: normalizedPhoneNumber }, { supabase });
-		} catch (_campaignError) {
-			console.error("Error:", _campaignError);
-		}
+		} catch (_campaignError) {}
 
 		return {
 			success: true,

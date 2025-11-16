@@ -1099,43 +1099,49 @@ type CustomerRecord = {
  * Expected: 50-100ms (single query)
  * vs getAllCustomers(): 1200-2000ms (151 queries with enrichment)
  */
-export async function getCustomersForDialer(): Promise<ActionResult<Array<{
-  id: string;
-  first_name: string | null;
-  last_name: string | null;
-  display_name: string | null;
-  email: string | null;
-  phone: string | null;
-  company_name: string | null;
-}>>> {
-  return withErrorHandling(async () => {
-    const supabase = await createClient();
-    if (!supabase) {
-      throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
-    }
+export async function getCustomersForDialer(): Promise<
+	ActionResult<
+		Array<{
+			id: string;
+			first_name: string | null;
+			last_name: string | null;
+			display_name: string | null;
+			email: string | null;
+			phone: string | null;
+			company_name: string | null;
+		}>
+	>
+> {
+	return withErrorHandling(async () => {
+		const supabase = await createClient();
+		if (!supabase) {
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+		}
 
-    const { data: { user } } = await supabase.auth.getUser();
-    assertAuthenticated(user?.id);
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+		assertAuthenticated(user?.id);
 
-    const activeCompanyId = await getActiveCompanyId();
-    if (!activeCompanyId) {
-      throw new ActionError("No active company", ERROR_CODES.AUTH_FORBIDDEN, 403);
-    }
+		const activeCompanyId = await getActiveCompanyId();
+		if (!activeCompanyId) {
+			throw new ActionError("No active company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		}
 
-    // Single lightweight query - no joins, no enrichment
-    const { data: customers, error } = await supabase
-      .from("customers")
-      .select("id, first_name, last_name, display_name, email, phone, company_name")
-      .eq("company_id", activeCompanyId)
-      .is("deleted_at", null)
-      .order("display_name", { ascending: true });
+		// Single lightweight query - no joins, no enrichment
+		const { data: customers, error } = await supabase
+			.from("customers")
+			.select("id, first_name, last_name, display_name, email, phone, company_name")
+			.eq("company_id", activeCompanyId)
+			.is("deleted_at", null)
+			.order("display_name", { ascending: true });
 
-    if (error) {
-      throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers"), ERROR_CODES.DB_QUERY_ERROR);
-    }
+		if (error) {
+			throw new ActionError(ERROR_MESSAGES.operationFailed("fetch customers"), ERROR_CODES.DB_QUERY_ERROR);
+		}
 
-    return customers || [];
-  });
+		return customers || [];
+	});
 }
 
 /**

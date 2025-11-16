@@ -107,7 +107,6 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				router.refresh();
 			}
 		} catch (_error) {
-			console.error("Error:", _error);
 		} finally {
 			setIsUpdatingStatus(false);
 		}

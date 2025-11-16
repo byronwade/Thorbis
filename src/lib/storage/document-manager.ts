@@ -680,9 +680,7 @@ async function queueVirusScan(attachmentId: string, bucket: string, path: string
 		await supabase.functions.invoke("virus-scan", {
 			body: { attachmentId, bucket, path },
 		});
-	} catch (_error) {
-		console.error("Error:", _error);
-	}
+	} catch (_error) {}
 }
 
 // ============================================================================

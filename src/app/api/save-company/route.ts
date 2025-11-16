@@ -277,9 +277,7 @@ export async function POST(request: NextRequest) {
 			try {
 				await ensureCompanyTrialStatus({ companyId });
 				await startWorkflow(companyTrialWorkflow, [{ companyId, trialLengthDays: DEFAULT_TRIAL_LENGTH_DAYS }]);
-			} catch (_trialError) {
-				console.error("Error:", _trialError);
-			}
+			} catch (_trialError) {}
 		}
 
 		return NextResponse.json({

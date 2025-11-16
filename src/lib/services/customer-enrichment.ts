@@ -86,9 +86,7 @@ export class CustomerEnrichmentService {
 				enrichmentData.person = personData;
 				sources.push(personData.source);
 			}
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 
 		// 2. Business enrichment (if company name provided)
 		if (customer.companyName) {
@@ -103,9 +101,7 @@ export class CustomerEnrichmentService {
 					enrichmentData.business = businessData;
 					sources.push(businessData.source);
 				}
-			} catch (_error) {
-				console.error("Error:", _error);
-			}
+			} catch (_error) {}
 		}
 
 		// 3. Social enrichment
@@ -115,9 +111,7 @@ export class CustomerEnrichmentService {
 				enrichmentData.social = socialData;
 				sources.push("social");
 			}
-		} catch (_error) {
-			console.error("Error:", _error);
-		}
+		} catch (_error) {}
 
 		// 4. Property enrichment (if address provided)
 		if (customer.address && customer.city && customer.state && customer.zipCode) {
@@ -132,9 +126,7 @@ export class CustomerEnrichmentService {
 					enrichmentData.properties = [propertyData];
 					sources.push(propertyData.source);
 				}
-			} catch (_error) {
-				console.error("Error:", _error);
-			}
+			} catch (_error) {}
 		}
 
 		// Calculate overall confidence score

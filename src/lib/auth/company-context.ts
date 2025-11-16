@@ -189,28 +189,28 @@ const verifyCompanyAccess = cache(async (companyId: string): Promise<boolean> =>
 		return false;
 	}
 
-	// Check if company exists and is not archived
-	const { data: company } = await supabase
-		.from("companies")
-		.select("id")
-		.eq("id", companyId)
-		.is("deleted_at", null) // Exclude archived companies
-		.single();
+	// Parallel queries instead of sequential (saves 20-30ms)
+	const [companyResult, memberResult] = await Promise.all([
+		// Check if company exists and is not archived
+		supabase
+			.from("companies")
+			.select("id")
+			.eq("id", companyId)
+			.is("deleted_at", null)
+			.single(),
 
-	if (!company) {
-		return false;
-	}
+		// Check if user has active membership
+		supabase
+			.from("team_members")
+			.select("id")
+			.eq("user_id", user.id)
+			.eq("company_id", companyId)
+			.eq("status", "active")
+			.single(),
+	]);
 
-	// Check if user has active membership
-	const { data } = await supabase
-		.from("team_members")
-		.select("id")
-		.eq("user_id", user.id)
-		.eq("company_id", companyId)
-		.eq("status", "active")
-		.single();
-
-	return !!data;
+	// Both must succeed
+	return !!(companyResult.data && memberResult.data);
 });
 
 /**

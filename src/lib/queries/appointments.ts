@@ -11,8 +11,8 @@
  */
 
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
 
 const MAX_APPOINTMENTS = 100;
 
@@ -76,7 +76,9 @@ export type AppointmentWithRelations = Schedule & {
  */
 export const getAppointmentsWithRelations = cache(async (): Promise<AppointmentWithRelations[] | null> => {
 	const supabase = await createClient();
-	if (!supabase) return null;
+	if (!supabase) {
+		return null;
+	}
 
 	// Parallel auth checks instead of sequential (saves 50-100ms)
 	const [
@@ -86,7 +88,9 @@ export const getAppointmentsWithRelations = cache(async (): Promise<AppointmentW
 		activeCompanyId,
 	] = await Promise.all([supabase.auth.getUser(), getActiveCompanyId()]);
 
-	if (!user || !activeCompanyId) return null;
+	if (!(user && activeCompanyId)) {
+		return null;
+	}
 
 	// Parallel queries instead of JOINs (saves 400-700ms)
 	// 4 simple indexed queries in parallel vs 1 complex query with 3 JOINs
@@ -145,7 +149,9 @@ export const getAppointmentsWithRelations = cache(async (): Promise<AppointmentW
 	// Single pass with reduce (filter + map combined)
 	return schedules.reduce<AppointmentWithRelations[]>((acc, apt) => {
 		// Skip appointments without start time
-		if (!apt.start_time) return acc;
+		if (!apt.start_time) {
+			return acc;
+		}
 
 		acc.push({
 			...apt,
@@ -165,7 +171,9 @@ export const getAppointmentsWithRelations = cache(async (): Promise<AppointmentW
  */
 export const getAppointmentStats = cache(async () => {
 	const appointments = await getAppointmentsWithRelations();
-	if (!appointments) return null;
+	if (!appointments) {
+		return null;
+	}
 
 	const active = appointments.filter((a) => !(a.archived_at || a.deleted_at));
 
