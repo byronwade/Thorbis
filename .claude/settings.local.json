@@ -113,7 +113,11 @@
       "Bash(git show:*)",
       "Bash(pnpm dlx:*)",
       "Bash(/tmp/supabase-types-new.ts)",
-      "Bash(timeout 120 pnpm build:*)"
+      "Bash(timeout 120 pnpm build:*)",
+      "Bash(/tmp/final-ppr-check.sh)",
+      "Bash(do path=/Users/byronwade/Stratos/src/components/settings/$file.tsx [ ! -f $path ])",
+      "Bash(path=/Users/byronwade/Stratos/src/components/work/$file.tsx if [ -f $path ])",
+      "Bash(then echo '=== $file ===' grep ^export $path)"
     ],
     "deny": [],
     "ask": []

@@ -106,18 +106,22 @@ export async function acceptTeamInvitation(formData: FormData): Promise<ActionRe
 }
 
 async function fetchInvitation(supabase: SupabaseServerClient, token: string): Promise<InvitationRecord> {
-	const { data, error } = await supabase
-		.from("team_invitations")
-		.select("*")
-		.eq("token", token)
-		.is("used_at", null)
-		.single();
+	// TODO: team_invitations table doesn't exist - create migration
+	// const { data, error } = await supabase
+	// 	.from("team_invitations")
+	// 	.select("*")
+	// 	.eq("token", token)
+	// 	.is("used_at", null)
+	// 	.single();
 
-	if (error || !data) {
-		throw new ActionError("Invalid or expired invitation", ERROR_CODES.DB_RECORD_NOT_FOUND, HTTP_STATUS.notFound);
-	}
+	// if (error || !data) {
+	// 	throw new ActionError("Invalid or expired invitation", ERROR_CODES.DB_RECORD_NOT_FOUND, HTTP_STATUS.notFound);
+	// }
 
-	return data as InvitationRecord;
+	// return data as InvitationRecord;
+
+	// Temporary stub until migration is created
+	throw new ActionError("Team invitations feature not yet implemented", ERROR_CODES.DB_RECORD_NOT_FOUND, HTTP_STATUS.notFound);
 }
 
 function validateInvitation(invitation: InvitationRecord, email: string) {
@@ -220,12 +224,14 @@ async function upsertTeamMember({ supabase, invitation, userId, phone, photoUrl 
 }
 
 async function markInvitationUsed(supabase: SupabaseServerClient, invitationId: string) {
-	const { error } = await supabase
-		.from("team_invitations")
-		.update({ used_at: new Date().toISOString() })
-		.eq("id", invitationId);
+	// TODO: team_invitations table doesn't exist - create migration
+	// const { error } = await supabase
+	// 	.from("team_invitations")
+	// 	.update({ used_at: new Date().toISOString() })
+	// 	.eq("id", invitationId);
 
-	if (error) {
-		throw new ActionError(ERROR_MESSAGES.operationFailed("update invitation status"), ERROR_CODES.DB_QUERY_ERROR);
-	}
+	// if (error) {
+	// 	throw new ActionError(ERROR_MESSAGES.operationFailed("update invitation status"), ERROR_CODES.DB_QUERY_ERROR);
+	// }
+	return Promise.resolve();
 }
