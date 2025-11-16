@@ -31,7 +31,7 @@ export default async function CompleteProfilePage() {
 	}
 
 	// Get user profile to check what's missing
-	const { data: profile, error: profileError } = await supabase
+	const { data: profile } = await supabase
 		.from("users")
 		.select("phone, name, avatar")
 		.eq("id", user.id)

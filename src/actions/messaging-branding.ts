@@ -124,7 +124,7 @@ async function upsertCampaignRecord(
 	return inserted?.id ?? null;
 }
 
-// biome-ignore lint: Telnyx onboarding requires multiple guarded steps
+// Telnyx onboarding requires multiple guarded steps
 export async function ensureMessagingBranding(companyId: string, options?: { supabase?: TypedSupabaseClient | null }) {
 	const supabase = options?.supabase ?? (await createClient());
 	if (!supabase) {
@@ -237,7 +237,7 @@ export async function ensureMessagingBranding(companyId: string, options?: { sup
 	return { success: true };
 }
 
-// biome-ignore lint: Linking campaigns touches several Telnyx APIs sequentially
+// Linking campaigns touches several Telnyx APIs sequentially
 export async function ensureMessagingCampaign(
 	companyId: string,
 	phoneNumber: { id: string; e164: string },

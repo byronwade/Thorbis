@@ -46,6 +46,12 @@ const onboardingSchema = z.object({
 	orgTaxId: z.string().optional(),
 });
 
+// Regex constants for URL parsing (performance optimization)
+const LEADING_SLASH_REGEX = /^\/+/;
+const WWW_PREFIX_REGEX = /^www\./;
+const PROTOCOL_REGEX = /^https?:\/\//;
+const TEAM_MEMBER_FIELD_REGEX = /^teamMember_(\d+)_(\w+)$/;
+
 type OnboardingResult = {
 	success: boolean;
 	error?: string;
@@ -330,11 +336,11 @@ function extractDomainFromUrl(url?: string | null) {
 		return null;
 	}
 	try {
-		const normalized = url.startsWith("http") ? url : `https://${url.replace(/^\/+/, "")}`;
+		const normalized = url.startsWith("http") ? url : `https://${url.replace(LEADING_SLASH_REGEX, "")}`;
 		const parsed = new URL(normalized);
-		return parsed.hostname.replace(/^www\./, "");
+		return parsed.hostname.replace(WWW_PREFIX_REGEX, "");
 	} catch {
-		const sanitized = url.replace(/^https?:\/\//, "").split("/")[0];
+		const sanitized = url.replace(PROTOCOL_REGEX, "").split("/")[0];
 		return sanitized || null;
 	}
 }
@@ -479,7 +485,7 @@ function extractTeamMembers(formData: FormData): TeamMemberProgressInput[] {
 			continue;
 		}
 
-		const match = key.match(/^teamMember_(\d+)_(\w+)$/);
+		const match = key.match(TEAM_MEMBER_FIELD_REGEX);
 		if (!match) {
 			continue;
 		}
