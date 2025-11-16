@@ -406,7 +406,7 @@ export function generateAppointmentStats(metrics: {
 		},
 		{
 			label: "Team Members",
-			value: metrics.teamMemberCount.toString(),
+			value: (metrics.teamMemberCount ?? 0).toString(),
 			change: undefined,
 		},
 		{
