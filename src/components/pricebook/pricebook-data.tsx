@@ -5,8 +5,8 @@
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 import { Book, DollarSign, Package, Settings } from "lucide-react";
+import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function PricebookData() {
   // Future: Fetch pricebook items and pricing data
@@ -14,9 +14,9 @@ export async function PricebookData() {
 
   return (
     <ComingSoonShell
-      title="Price Book Management"
-      icon={Book}
       description="Manage your complete pricing catalog with services, parts, labor rates, and custom packages"
+      icon={Book}
+      title="Price Book Management"
     >
       {/* Feature cards */}
       <div className="mx-auto max-w-5xl space-y-8">
@@ -29,7 +29,8 @@ export async function PricebookData() {
             </div>
             <h3 className="font-semibold text-lg">Service Pricing</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Define pricing for all your services with tier-based rates and custom packages
+              Define pricing for all your services with tier-based rates and
+              custom packages
             </p>
           </div>
 
@@ -69,20 +70,22 @@ export async function PricebookData() {
 
         {/* CTA section */}
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Maximize Your Profitability</h3>
+          <h3 className="mb-3 font-semibold text-xl">
+            Maximize Your Profitability
+          </h3>
           <p className="mb-6 text-muted-foreground">
             Smart pricing strategies for every job
           </p>
           <div className="flex justify-center gap-4">
             <button
-              type="button"
               className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
+              type="button"
             >
               Learn More
             </button>
             <button
-              type="button"
               className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              type="button"
             >
               Request Access
             </button>

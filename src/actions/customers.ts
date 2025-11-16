@@ -1209,7 +1209,9 @@ export async function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
+export async function getTopCustomers(
+  limit = 10
+): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1341,7 +1343,9 @@ type CustomerRecord = {
 /**
  * Get all customers for the current company
  */
-export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
+export async function getAllCustomers(): Promise<
+  ActionResult<CustomerRecord[]>
+> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

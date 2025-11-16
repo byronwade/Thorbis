@@ -1,30 +1,52 @@
 /**
- * Services Data - Async Server Component
+ * Pricebook Parts Data - Async Server Component
  *
- * Displays service pricing content (Coming Soon variant).
+ * Displays parts pricing content (Coming Soon variant).
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import { Calendar, TrendingUp, Users, Wrench } from "lucide-react";
+import { BarChart, DollarSign, Package2, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function ServicesData() {
+export async function PricebookPartsData() {
   return (
     <ComingSoonShell
-      description="Define and manage pricing for all your services with flexible rate structures and custom packages"
-      icon={Wrench}
-      title="Service Pricing"
+      description="Manage comprehensive parts pricing with vendor costs, markups, and profit margin tracking"
+      icon={Package2}
+      title="Parts & Materials Pricing"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Wrench className="size-6 text-primary" />
+              <Package2 className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Service Catalog</h3>
+            <h3 className="font-semibold text-lg">Parts Catalog</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Maintain a complete catalog of services with descriptions,
-              durations, and pricing tiers
+              Comprehensive parts database with SKUs, vendor pricing, and
+              customer rates
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <DollarSign className="size-6 text-primary" />
+            </div>
+            <h3 className="font-semibold text-lg">Markup Management</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Set automatic markups by category, vendor, or individual parts for
+              consistent profitability
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <BarChart className="size-6 text-primary" />
+            </div>
+            <h3 className="font-semibold text-lg">Profit Analysis</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Track profit margins, identify top performers, and optimize
+              pricing strategies
             </p>
           </div>
 
@@ -32,42 +54,20 @@ export async function ServicesData() {
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
               <TrendingUp className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Dynamic Pricing</h3>
+            <h3 className="font-semibold text-lg">Price Updates</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Adjust pricing based on time of day, urgency, location, and
-              customer type
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Users className="size-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-lg">Customer-Specific Pricing</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Set custom rates for VIP customers, contracts, and service
-              agreements
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Calendar className="size-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-lg">Seasonal Pricing</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Implement seasonal rates and promotional pricing for peak and
-              off-peak periods
+              Automatically update pricing when vendor costs change and maintain
+              margin targets
             </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
           <h3 className="mb-3 font-semibold text-xl">
-            Price Smarter, Not Harder
+            Optimize Your Parts Pricing
           </h3>
           <p className="mb-6 text-muted-foreground">
-            Maximize revenue with intelligent pricing strategies
+            Maximize margins while staying competitive
           </p>
           <div className="flex justify-center gap-4">
             <button

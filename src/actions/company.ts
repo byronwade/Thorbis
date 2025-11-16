@@ -237,7 +237,7 @@ const businessHoursSchema = z.object({
  *
  * Returns company data from companies + company_settings tables
  */
-export async function getCompanyInfo(): Promise<ActionResult<unknown>> {
+export function getCompanyInfo(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
