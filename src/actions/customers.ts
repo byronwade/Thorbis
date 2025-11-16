@@ -110,7 +110,7 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export async function createCustomer(
+export function createCustomer(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -568,7 +568,7 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-export async function updateCustomer(
+export function updateCustomer(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -724,7 +724,7 @@ export async function updateCustomer(
 /**
  * Delete customer (soft delete/archive)
  */
-export async function deleteCustomer(
+export function deleteCustomer(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -800,7 +800,7 @@ export async function deleteCustomer(
 /**
  * Update customer status
  */
-export async function updateCustomerStatus(
+export function updateCustomerStatus(
   customerId: string,
   status: "active" | "inactive" | "archived" | "blocked"
 ): Promise<ActionResult<void>> {
@@ -862,7 +862,7 @@ export async function updateCustomerStatus(
 /**
  * Update communication preferences
  */
-export async function updateCommunicationPreferences(
+export function updateCommunicationPreferences(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -936,7 +936,7 @@ export async function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export async function inviteToPortal(
+export function inviteToPortal(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1033,7 +1033,7 @@ export async function inviteToPortal(
 /**
  * Revoke portal access
  */
-export async function revokePortalAccess(
+export function revokePortalAccess(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1099,7 +1099,7 @@ export async function revokePortalAccess(
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export async function getCustomerByPhone(
+export function getCustomerByPhone(
   phoneNumber: string,
   companyId: string
 ): Promise<ActionResult<unknown>> {
@@ -1143,7 +1143,7 @@ export async function getCustomerByPhone(
 /**
  * Search customers by name, email, phone, or company
  */
-export async function searchCustomers(
+export function searchCustomers(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<unknown[]>> {
@@ -1200,7 +1200,7 @@ export async function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomers(
+export function getTopCustomers(
   limit = 10
 ): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
@@ -1260,7 +1260,7 @@ type CustomerWithBalance = {
   balance: number;
 };
 
-export async function getCustomersWithBalance(): Promise<
+export function getCustomersWithBalance(): Promise<
   ActionResult<CustomerWithBalance[]>
 > {
   return withErrorHandling(async () => {
@@ -1342,7 +1342,7 @@ type CustomerRecord = {
 /**
  * Get all customers for the current company
  */
-export async function getAllCustomers(): Promise<
+export function getAllCustomers(): Promise<
   ActionResult<CustomerRecord[]>
 > {
   return withErrorHandling(async () => {
@@ -1463,7 +1463,7 @@ export async function getAllCustomers(): Promise<
  * Saves the customer's editable page layout and content
  * Used by the Novel editor for auto-save functionality
  */
-export async function updateCustomerPageContent(
+export function updateCustomerPageContent(
   customerId: string,
   pageContent: Record<string, unknown>
 ): Promise<ActionResult<void>> {
