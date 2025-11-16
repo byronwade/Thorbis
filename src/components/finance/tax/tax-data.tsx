@@ -1,4 +1,5 @@
 "use cache";
+
 import { Receipt } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 

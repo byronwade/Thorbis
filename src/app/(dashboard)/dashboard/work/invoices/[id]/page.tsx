@@ -20,7 +20,7 @@ import { InvoiceDetailData } from "@/components/invoices/invoice-detail-data";
 import { InvoiceDetailSkeleton } from "@/components/invoices/invoice-detail-skeleton";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-	const { id } = await params;
+	const { id: _id } = await params;
 	return {
 		title: "Invoice Details",
 	};

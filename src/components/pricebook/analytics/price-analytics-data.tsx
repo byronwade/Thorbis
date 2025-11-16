@@ -1,4 +1,5 @@
 "use cache";
+
 /**
  * Price Analytics Data - Async Server Component
  *

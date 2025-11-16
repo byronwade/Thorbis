@@ -1,4 +1,5 @@
 "use cache";
+
 /**
  * Marketing Analytics Data - Async Server Component
  *

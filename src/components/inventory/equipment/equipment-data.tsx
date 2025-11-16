@@ -1,4 +1,5 @@
 "use cache";
+
 /**
  * Equipment Data - Async Server Component
  *

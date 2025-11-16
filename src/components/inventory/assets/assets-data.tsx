@@ -1,4 +1,5 @@
 "use cache";
+
 import { Briefcase } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 

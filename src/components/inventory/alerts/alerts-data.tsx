@@ -1,4 +1,5 @@
 "use cache";
+
 /**
  * Alerts Data - Async Server Component
  *

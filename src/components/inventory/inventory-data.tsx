@@ -1,4 +1,5 @@
 "use cache";
+
 /**
  * Inventory Data - Async Server Component
  *
