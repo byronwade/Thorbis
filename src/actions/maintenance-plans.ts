@@ -202,7 +202,7 @@ function validateMaintenancePlanDates(
 /**
  * Create a new maintenance plan
  */
-export async function createMaintenancePlan(
+export function createMaintenancePlan(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -335,7 +335,7 @@ export async function createMaintenancePlan(
 /**
  * Update an existing maintenance plan
  */
-export async function updateMaintenancePlan(
+export function updateMaintenancePlan(
   planId: string,
   formData: FormData
 ): Promise<ActionResult<boolean>> {
@@ -455,7 +455,7 @@ export async function updateMaintenancePlan(
 /**
  * Activate a maintenance plan
  */
-export async function activateMaintenancePlan(
+export function activateMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -501,7 +501,7 @@ export async function activateMaintenancePlan(
 /**
  * Pause a maintenance plan
  */
-export async function pauseMaintenancePlan(
+export function pauseMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -547,7 +547,7 @@ export async function pauseMaintenancePlan(
 /**
  * Cancel a maintenance plan
  */
-export async function cancelMaintenancePlan(
+export function cancelMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -593,7 +593,7 @@ export async function cancelMaintenancePlan(
 /**
  * Delete a maintenance plan
  */
-export async function deleteMaintenancePlan(
+export function deleteMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -638,7 +638,7 @@ export async function deleteMaintenancePlan(
 /**
  * Search maintenance plans
  */
-export async function searchMaintenancePlans(
+export function searchMaintenancePlans(
   searchQuery: string,
   options?: {
     limit?: number;
@@ -689,7 +689,7 @@ export async function searchMaintenancePlans(
 /**
  * Archive a maintenance plan (soft delete)
  */
-export async function archiveMaintenancePlan(
+export function archiveMaintenancePlan(
   planId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {

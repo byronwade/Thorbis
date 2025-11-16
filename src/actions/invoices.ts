@@ -116,7 +116,7 @@ function calculateTotals(
 /**
  * Create a new invoice
  */
-export async function createInvoice(
+export function createInvoice(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
