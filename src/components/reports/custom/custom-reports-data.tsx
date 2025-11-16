@@ -1,82 +1,77 @@
 /**
- * Price Analytics Data - Async Server Component
+ * Custom Reports Data - Async Server Component
  *
- * Displays price analytics content (Coming Soon variant).
- * This component is wrapped in Suspense for PPR pattern.
+ * Displays custom reports content (Coming Soon variant).
  */
 
-import { BarChart3, DollarSign, PieChart, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
+import { LayoutDashboard, Filter, Download, Share2 } from "lucide-react";
 
-export async function PriceAnalyticsData() {
+export async function CustomReportsData() {
   return (
     <ComingSoonShell
-      description="Analyze pricing performance, track profitability, and optimize your rates with data-driven insights"
-      icon={BarChart3}
-      title="Price Analytics"
+      title="Custom Reports"
+      icon={LayoutDashboard}
+      description="Build custom reports with drag-and-drop interface to analyze exactly what matters to your business"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <DollarSign className="size-6 text-primary" />
+              <LayoutDashboard className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Profit Margins</h3>
+            <h3 className="font-semibold text-lg">Drag & Drop Builder</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track profit margins by service, part, and category to identify
-              most profitable offerings
+              Create custom reports with an intuitive drag-and-drop interface - no technical skills required
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <TrendingUp className="size-6 text-primary" />
+              <Filter className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Pricing Trends</h3>
+            <h3 className="font-semibold text-lg">Advanced Filtering</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor pricing trends over time and identify opportunities for
-              rate adjustments
+              Filter data by date range, customer, technician, service type, and more
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <PieChart className="size-6 text-primary" />
+              <Download className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Revenue Mix</h3>
+            <h3 className="font-semibold text-lg">Multiple Formats</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Analyze revenue distribution across services, parts, and labor to
-              optimize your offerings
+              Export to PDF, Excel, CSV, or share interactive dashboards with your team
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <BarChart3 className="size-6 text-primary" />
+              <Share2 className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Competitive Analysis</h3>
+            <h3 className="font-semibold text-lg">Report Sharing</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Compare your pricing to market rates and ensure competitive
-              positioning
+              Share reports with team members, clients, or external stakeholders
             </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Price with Confidence</h3>
+          <h3 className="mb-3 font-semibold text-xl">Your Data, Your Way</h3>
           <p className="mb-6 text-muted-foreground">
-            Data-driven pricing strategies that maximize profitability
+            Build reports tailored to your specific needs
           </p>
           <div className="flex justify-center gap-4">
             <button
-              className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
               type="button"
+              className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
             >
               Learn More
             </button>
             <button
-              className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               type="button"
+              className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
             >
               Request Access
             </button>

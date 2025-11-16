@@ -1,30 +1,29 @@
 /**
- * Price Analytics Data - Async Server Component
+ * Financial Reports Data - Async Server Component
  *
- * Displays price analytics content (Coming Soon variant).
- * This component is wrapped in Suspense for PPR pattern.
+ * Displays financial reports content (Coming Soon variant).
  */
 
-import { BarChart3, DollarSign, PieChart, TrendingUp } from "lucide-react";
+import { DollarSign, FileText, PieChart, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function PriceAnalyticsData() {
+export async function FinancialReportsData() {
   return (
     <ComingSoonShell
-      description="Analyze pricing performance, track profitability, and optimize your rates with data-driven insights"
-      icon={BarChart3}
-      title="Price Analytics"
+      description="Comprehensive financial reporting including P&L, balance sheets, cash flow, and profitability analysis"
+      icon={DollarSign}
+      title="Financial Reports"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <DollarSign className="size-6 text-primary" />
+              <FileText className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Profit Margins</h3>
+            <h3 className="font-semibold text-lg">P&L Statements</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track profit margins by service, part, and category to identify
-              most profitable offerings
+              Generate detailed profit and loss statements by period, service
+              line, or technician
             </p>
           </div>
 
@@ -32,10 +31,10 @@ export async function PriceAnalyticsData() {
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
               <TrendingUp className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Pricing Trends</h3>
+            <h3 className="font-semibold text-lg">Cash Flow Analysis</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor pricing trends over time and identify opportunities for
-              rate adjustments
+              Track cash inflows and outflows to maintain healthy working
+              capital
             </p>
           </div>
 
@@ -43,29 +42,29 @@ export async function PriceAnalyticsData() {
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
               <PieChart className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Revenue Mix</h3>
+            <h3 className="font-semibold text-lg">Revenue Breakdown</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Analyze revenue distribution across services, parts, and labor to
-              optimize your offerings
+              Analyze revenue by service type, customer segment, and geographic
+              area
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <BarChart3 className="size-6 text-primary" />
+              <DollarSign className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Competitive Analysis</h3>
+            <h3 className="font-semibold text-lg">Profitability Metrics</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Compare your pricing to market rates and ensure competitive
-              positioning
+              Track gross margin, net profit, and ROI across all business
+              operations
             </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Price with Confidence</h3>
+          <h3 className="mb-3 font-semibold text-xl">Financial Clarity</h3>
           <p className="mb-6 text-muted-foreground">
-            Data-driven pricing strategies that maximize profitability
+            Understand your business finances at a glance
           </p>
           <div className="flex justify-center gap-4">
             <button
