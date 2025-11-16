@@ -9,8 +9,8 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
 export async function TechniciansStats() {
-	const supabase = await createClient();
-	const companyId = await getActiveCompanyId();
+	const _supabase = await createClient();
+	const _companyId = await getActiveCompanyId();
 
 	// Future: Fetch real technician statistics
 	// const { data: stats } = await supabase

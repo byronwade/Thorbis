@@ -529,7 +529,7 @@ export async function updateJob(jobId: string, formData: FormData): Promise<Acti
 
 		if (updateError) {
 			throw new ActionError(
-				ERROR_MESSAGES.operationFailed("update job") + `: ${updateError.message}`,
+				`${ERROR_MESSAGES.operationFailed("update job")}: ${updateError.message}`,
 				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
