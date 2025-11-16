@@ -1,0 +1,28 @@
+{
+  "steps": {
+    "node_modules/.pnpm/workflow@4.0.1-beta.13_@aws-sdk+client-sts@3.932.0_@babel+core@7.28.5_@opentelemetry+api@1.9._ngfmuy4ezw7rmo57oj5ymg5lpm/node_modules/workflow/dist/stdlib.js": {
+      "fetch": {
+        "stepId": "step//node_modules/.pnpm/workflow@4.0.1-beta.13_@aws-sdk+client-sts@3.932.0_@babel+core@7.28.5_@opentelemetry+api@1.9._ngfmuy4ezw7rmo57oj5ymg5lpm/node_modules/workflow/dist/stdlib.js//fetch"
+      }
+    },
+    "node_modules/.pnpm/workflow@4.0.1-beta.13_@aws-sdk+client-sts@3.932.0_@babel+core@7.28.5_@opentelemetry+api@1.9._ngfmuy4ezw7rmo57oj5ymg5lpm/node_modules/workflow/dist/internal/builtins.js": {
+      "__builtin_response_array_buffer": {
+        "stepId": "__builtin_response_array_buffer"
+      },
+      "__builtin_response_json": {
+        "stepId": "__builtin_response_json"
+      },
+      "__builtin_response_text": {
+        "stepId": "__builtin_response_text"
+      }
+    },
+    "src/workflows/company-trial.ts": {
+      "expireTrial": {
+        "stepId": "step//src/workflows/company-trial.ts//expireTrial"
+      },
+      "markTrialStarted": {
+        "stepId": "step//src/workflows/company-trial.ts//markTrialStarted"
+      }
+    }
+  }
+}
