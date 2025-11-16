@@ -1,19 +1,15 @@
-import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 import { DollarSign } from "lucide-react";
+import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function QuickbooksData() {
-  return (
-    <ComingSoonShell
-      title="QuickBooks"
-      icon={DollarSign}
-      description="QuickBooks integration and sync"
-    >
-      <div className="mx-auto max-w-5xl">
-        <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Coming Soon</h3>
-          <p className="text-muted-foreground">This feature is under development</p>
-        </div>
-      </div>
-    </ComingSoonShell>
-  );
+	return (
+		<ComingSoonShell description="QuickBooks integration and sync" icon={DollarSign} title="QuickBooks">
+			<div className="mx-auto max-w-5xl">
+				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
+					<h3 className="mb-3 font-semibold text-xl">Coming Soon</h3>
+					<p className="text-muted-foreground">This feature is under development</p>
+				</div>
+			</div>
+		</ComingSoonShell>
+	);
 }

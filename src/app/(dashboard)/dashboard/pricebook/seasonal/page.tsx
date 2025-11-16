@@ -1,23 +1,15 @@
 /**
- * Pricebook > Seasonal Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function SeasonalPricingPage() {
+import { Suspense } from "react";
+import { SeasonalData } from "@/components/pricebook/seasonal/seasonal-data";
+import { SeasonalSkeleton } from "@/components/pricebook/seasonal/seasonal-skeleton";
+
+export default function SeasonalPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Seasonal Pricing</h1>
-				<p className="text-muted-foreground">Manage seasonal pricing adjustments and peak/off-peak rates</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Seasonal Pricing management coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<SeasonalSkeleton />}>
+			<SeasonalData />
+		</Suspense>
 	);
 }

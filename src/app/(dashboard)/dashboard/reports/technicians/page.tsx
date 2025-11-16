@@ -1,23 +1,15 @@
 /**
- * Reports > Technicians Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function TechnicianReportsPage() {
+import { Suspense } from "react";
+import { TechniciansData } from "@/components/reports/technicians/technicians-data";
+import { TechniciansSkeleton } from "@/components/reports/technicians/technicians-skeleton";
+
+export default function TechniciansPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Technician Reports</h1>
-				<p className="text-muted-foreground">Generate technician reports and analytics</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Technician Reports system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<TechniciansSkeleton />}>
+			<TechniciansData />
+		</Suspense>
 	);
 }

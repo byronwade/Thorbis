@@ -1,12 +1,14 @@
-import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 import { Settings } from "lucide-react";
+import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function 2faData() {
-  return (
+export async function
+2faData()
+{
+	return (
     <ComingSoonShell
-      title="2fa"
-      icon={Settings}
       description="This feature is under development"
+      icon={Settings}
+      title="2fa"
     >
       <div className="mx-auto max-w-5xl">
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">

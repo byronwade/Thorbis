@@ -281,7 +281,7 @@ async function fetchCompanyAndSettings(
 	const { data: settings } = await supabase
 		.from("company_settings")
 		.select(
-			"address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation,portal_settings"
+			"address,address2,city,state,zip_code,country,service_area_type,service_radius,service_areas,hours_of_operation"
 		)
 		.eq("company_id", companyId)
 		.single();
@@ -290,7 +290,8 @@ async function fetchCompanyAndSettings(
 		(settings?.hours_of_operation as Record<string, { open?: string | null; close?: string | null }>) ?? null
 	);
 
-	const portalSettings = settings?.portal_settings as Record<string, unknown> | undefined;
+	// Portal settings column removed from database - set to undefined
+	const portalSettings = undefined;
 
 	return [company, settings, hoursOfOperation, portalSettings];
 }

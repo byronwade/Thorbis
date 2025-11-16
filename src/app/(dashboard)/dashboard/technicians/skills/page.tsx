@@ -1,23 +1,15 @@
 /**
- * Technicians > Skills Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function SkillsCertificationsPage() {
+import { Suspense } from "react";
+import { SkillsData } from "@/components/technicians/skills/skills-data";
+import { SkillsSkeleton } from "@/components/technicians/skills/skills-skeleton";
+
+export default function SkillsPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Skills & Certifications</h1>
-				<p className="text-muted-foreground">Track technician skills and certifications</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Skills & Certifications system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<SkillsSkeleton />}>
+			<SkillsData />
+		</Suspense>
 	);
 }

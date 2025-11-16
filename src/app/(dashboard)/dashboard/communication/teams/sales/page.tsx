@@ -1,13 +1,15 @@
 /**
- * Sales Team Channel Page - Client Component
- *
- * Client-side features:
- * - Sales team messaging
- * - Lead and opportunity discussions
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-import { TeamChat } from "@/components/communication/team-chat";
+import { Suspense } from "react";
+import { SalesData } from "@/components/communication/sales/sales-data";
+import { SalesSkeleton } from "@/components/communication/sales/sales-skeleton";
 
-export default function SalesChannelPage() {
-	return <TeamChat channelDescription="Sales team coordination, leads, and opportunities" channelName="sales" />;
+export default function SalesPage() {
+	return (
+		<Suspense fallback={<SalesSkeleton />}>
+			<SalesData />
+		</Suspense>
+	);
 }

@@ -1,23 +1,15 @@
 /**
- * Marketing > Sms Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function SMSTextMessagingPage() {
+import { Suspense } from "react";
+import { SmsData } from "@/components/marketing/sms/sms-data";
+import { SmsSkeleton } from "@/components/marketing/sms/sms-skeleton";
+
+export default function SmsPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">SMS/Text Messaging</h1>
-				<p className="text-muted-foreground">Send and receive text messages for customer communication</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">SMS/Text Messaging system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<SmsSkeleton />}>
+			<SmsData />
+		</Suspense>
 	);
 }

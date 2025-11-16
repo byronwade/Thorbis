@@ -14,8 +14,8 @@
  * redundant database queries across components in the same request.
  */
 
-import { cache } from "react";
 import { cookies } from "next/headers";
+import { cache } from "react";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "./session";

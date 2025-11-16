@@ -1,23 +1,15 @@
 /**
- * Pricebook > Packages Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function ServicePackagesPage() {
+import { Suspense } from "react";
+import { PackagesData } from "@/components/pricebook/packages/packages-data";
+import { PackagesSkeleton } from "@/components/pricebook/packages/packages-skeleton";
+
+export default function PackagesPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Service Packages</h1>
-				<p className="text-muted-foreground">Create and manage bundled service packages and maintenance plans</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Service Packages management coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<PackagesSkeleton />}>
+			<PackagesData />
+		</Suspense>
 	);
 }

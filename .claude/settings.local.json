@@ -104,7 +104,11 @@
       "mcp__next-devtools__browser_eval",
       "Bash(pnpm build:*)",
       "Bash(time pnpm dlx ultracite check:*)",
-      "Bash(/tmp/check-ppr.sh:*)"
+      "Bash(/tmp/check-ppr.sh:*)",
+      "Bash(node -e:*)",
+      "Bash(while read file)",
+      "Bash(do if head -c 110 $file)",
+      "Bash(then echo \"$file\" fi done)"
     ],
     "deny": [],
     "ask": []

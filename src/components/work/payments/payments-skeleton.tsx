@@ -11,3 +11,6 @@ import { DataTableListSkeleton } from "@/components/ui/skeletons";
 export function PaymentsSkeleton() {
 	return <DataTableListSkeleton />;
 }
+
+// Export alias for dynamic imports
+export default PaymentsSkeleton;

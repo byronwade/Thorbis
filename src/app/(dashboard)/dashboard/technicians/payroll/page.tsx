@@ -1,23 +1,15 @@
 /**
- * Technicians > Payroll Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function PayrollIntegrationPage() {
+import { Suspense } from "react";
+import { PayrollData } from "@/components/technicians/payroll/payroll-data";
+import { PayrollSkeleton } from "@/components/technicians/payroll/payroll-skeleton";
+
+export default function PayrollPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Payroll Integration</h1>
-				<p className="text-muted-foreground">Integrate with payroll systems</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Payroll Integration system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<PayrollSkeleton />}>
+			<PayrollData />
+		</Suspense>
 	);
 }

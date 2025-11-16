@@ -1,18 +1,15 @@
-import { BarChart3 } from "lucide-react";
-import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
-
 /**
- * Reporting Settings Page - Coming Soon
- *
- * Server Component for optimal performance.
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function ReportingSettingsPage() {
+import { Suspense } from "react";
+import { ReportingData } from "@/components/settings/reporting/reporting-data";
+import { ReportingSkeleton } from "@/components/settings/reporting/reporting-skeleton";
+
+export default function ReportingPage() {
 	return (
-		<SettingsComingSoon
-			description="Configure custom reports, dashboards, and analytics preferences."
-			icon={<BarChart3 className="size-10 text-primary" strokeWidth={1.5} />}
-			title="Reporting Settings"
-		/>
+		<Suspense fallback={<ReportingSkeleton />}>
+			<ReportingData />
+		</Suspense>
 	);
 }

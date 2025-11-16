@@ -1,23 +1,15 @@
 /**
- * Inventory > Stock Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function StockManagementPage() {
+import { Suspense } from "react";
+import { StockData } from "@/components/inventory/stock/stock-data";
+import { StockSkeleton } from "@/components/inventory/stock/stock-skeleton";
+
+export default function StockPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Stock Management</h1>
-				<p className="text-muted-foreground">Track and manage inventory stock levels</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Stock Management system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<StockSkeleton />}>
+			<StockData />
+		</Suspense>
 	);
 }

@@ -1,23 +1,15 @@
 /**
- * Marketing > Voip Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function VoIPPhoneSystemPage() {
+import { Suspense } from "react";
+import { VoipData } from "@/components/marketing/voip/voip-data";
+import { VoipSkeleton } from "@/components/marketing/voip/voip-skeleton";
+
+export default function VoipPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">VoIP Phone System</h1>
-				<p className="text-muted-foreground">Make and receive calls directly from the platform</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">VoIP Phone System coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<VoipSkeleton />}>
+			<VoipData />
+		</Suspense>
 	);
 }

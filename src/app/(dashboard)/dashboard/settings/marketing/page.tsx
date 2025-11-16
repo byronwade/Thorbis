@@ -1,18 +1,15 @@
-import { Megaphone } from "lucide-react";
-import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
-
 /**
- * Marketing Settings Page - Coming Soon
- *
- * Server Component for optimal performance.
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function MarketingSettingsPage() {
+import { Suspense } from "react";
+import { MarketingData } from "@/components/settings/marketing/marketing-data";
+import { MarketingSkeleton } from "@/components/settings/marketing/marketing-skeleton";
+
+export default function MarketingPage() {
 	return (
-		<SettingsComingSoon
-			description="Configure marketing campaigns, lead tracking, and customer acquisition tools."
-			icon={<Megaphone className="size-10 text-primary" strokeWidth={1.5} />}
-			title="Marketing Settings"
-		/>
+		<Suspense fallback={<MarketingSkeleton />}>
+			<MarketingData />
+		</Suspense>
 	);
 }

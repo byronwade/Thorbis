@@ -1,23 +1,15 @@
 /**
- * Finance > Expenses Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function ExpenseTrackingPage() {
+import { Suspense } from "react";
+import { ExpensesData } from "@/components/finance/expenses/expenses-data";
+import { ExpensesSkeleton } from "@/components/finance/expenses/expenses-skeleton";
+
+export default function ExpensesPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Expense Tracking</h1>
-				<p className="text-muted-foreground">Track and categorize business expenses</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Expense Tracking system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<ExpensesSkeleton />}>
+			<ExpensesData />
+		</Suspense>
 	);
 }

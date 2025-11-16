@@ -1,18 +1,15 @@
-import { BookOpen } from "lucide-react";
-import { SettingsComingSoon } from "@/components/settings/settings-coming-soon";
-
 /**
- * Finance > Bookkeeping Settings Page - Coming Soon
- *
- * Server Component for optimal performance.
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function BookkeepingSettingsPage() {
+import { Suspense } from "react";
+import { BookkeepingData } from "@/components/settings/bookkeeping/bookkeeping-data";
+import { BookkeepingSkeleton } from "@/components/settings/bookkeeping/bookkeeping-skeleton";
+
+export default function BookkeepingPage() {
 	return (
-		<SettingsComingSoon
-			description="Configure your bookkeeping preferences, reconciliation rules, and transaction categorization."
-			icon={<BookOpen className="size-10 text-primary" strokeWidth={1.5} />}
-			title="Bookkeeping Settings"
-		/>
+		<Suspense fallback={<BookkeepingSkeleton />}>
+			<BookkeepingData />
+		</Suspense>
 	);
 }

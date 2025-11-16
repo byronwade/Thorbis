@@ -1,12 +1,15 @@
-import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 import { Settings } from "lucide-react";
+import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function [id]Data() {
-  return (
+export async function
+[id];
+Data();
+{
+	return (
     <ComingSoonShell
-      title="[id]"
-      icon={Settings}
       description="This feature is under development"
+      icon={Settings}
+      title="[id]"
     >
       <div className="mx-auto max-w-5xl">
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">

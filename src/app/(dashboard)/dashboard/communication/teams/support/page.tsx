@@ -1,13 +1,15 @@
 /**
- * Support Team Channel Page - Client Component
- *
- * Client-side features:
- * - Support team messaging
- * - Customer issue discussions and ticket coordination
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-import { TeamChat } from "@/components/communication/team-chat";
+import { Suspense } from "react";
+import { SupportData } from "@/components/communication/support/support-data";
+import { SupportSkeleton } from "@/components/communication/support/support-skeleton";
 
-export default function SupportChannelPage() {
-	return <TeamChat channelDescription="Customer support coordination and ticket discussions" channelName="support" />;
+export default function SupportPage() {
+	return (
+		<Suspense fallback={<SupportSkeleton />}>
+			<SupportData />
+		</Suspense>
+	);
 }

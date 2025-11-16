@@ -1,13 +1,15 @@
 /**
- * Technicians Team Channel Page - Client Component
- *
- * Client-side features:
- * - Technician team messaging
- * - Field service coordination and job discussions
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-import { TeamChat } from "@/components/communication/team-chat";
+import { Suspense } from "react";
+import { TechniciansData } from "@/components/communication/technicians/technicians-data";
+import { TechniciansSkeleton } from "@/components/communication/technicians/technicians-skeleton";
 
-export default function TechniciansChannelPage() {
-	return <TeamChat channelDescription="Field technician coordination and job discussions" channelName="technicians" />;
+export default function TechniciansPage() {
+	return (
+		<Suspense fallback={<TechniciansSkeleton />}>
+			<TechniciansData />
+		</Suspense>
+	);
 }

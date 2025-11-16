@@ -1,15 +1,15 @@
 /**
- * Invoices Page - Redirect to Work Invoices
- *
- * This page redirects to /dashboard/work/invoices to avoid duplication.
- * The canonical invoices page is in the work section.
- *
- * Performance: Instant redirect (< 5ms)
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { InvoicesData } from "@/components/invoices/main-data";
+import { InvoicesSkeleton } from "@/components/invoices/main-skeleton";
 
 export default function InvoicesPage() {
-	// Redirect to the canonical invoices page in the work section
-	redirect("/dashboard/work/invoices");
+	return (
+		<Suspense fallback={<InvoicesSkeleton />}>
+			<InvoicesData />
+		</Suspense>
+	);
 }

@@ -1,23 +1,15 @@
 /**
- * Reports > Visualization Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function DataVisualizationPage() {
+import { Suspense } from "react";
+import { VisualizationData } from "@/components/reports/visualization/visualization-data";
+import { VisualizationSkeleton } from "@/components/reports/visualization/visualization-skeleton";
+
+export default function VisualizationPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Data Visualization</h1>
-				<p className="text-muted-foreground">Create interactive charts and visualizations</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Data Visualization system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<VisualizationSkeleton />}>
+			<VisualizationData />
+		</Suspense>
 	);
 }

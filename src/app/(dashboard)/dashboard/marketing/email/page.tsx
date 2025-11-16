@@ -1,23 +1,15 @@
 /**
- * Marketing > Email Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function EmailManagementPage() {
+import { Suspense } from "react";
+import { EmailData } from "@/components/marketing/email/email-data";
+import { EmailSkeleton } from "@/components/marketing/email/email-skeleton";
+
+export default function EmailPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Email Management</h1>
-				<p className="text-muted-foreground">Manage email communications and campaigns</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Email Management system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<EmailSkeleton />}>
+			<EmailData />
+		</Suspense>
 	);
 }

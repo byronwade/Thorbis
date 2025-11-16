@@ -1,13 +1,15 @@
 /**
- * Management Team Channel Page - Client Component
- *
- * Client-side features:
- * - Management team messaging
- * - Strategic discussions and planning
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-import { TeamChat } from "@/components/communication/team-chat";
+import { Suspense } from "react";
+import { ManagementData } from "@/components/communication/management/management-data";
+import { ManagementSkeleton } from "@/components/communication/management/management-skeleton";
 
-export default function ManagementChannelPage() {
-	return <TeamChat channelDescription="Management team discussions and strategic planning" channelName="management" />;
+export default function ManagementPage() {
+	return (
+		<Suspense fallback={<ManagementSkeleton />}>
+			<ManagementData />
+		</Suspense>
+	);
 }

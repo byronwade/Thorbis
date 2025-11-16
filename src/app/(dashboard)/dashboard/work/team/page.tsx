@@ -11,7 +11,7 @@
 
 import { Suspense } from "react";
 import { UteamData } from "@/components/work/team/team-data";
-import { UteamSkeleton } from "@/components/work/team/team-skeleton";
+import { TeamSkeleton } from "@/components/work/team/team-skeleton";
 import { UteamStats } from "@/components/work/team/team-stats";
 
 export default function UteamPage() {
@@ -20,7 +20,7 @@ export default function UteamPage() {
 			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
 				<UteamStats />
 			</Suspense>
-			<Suspense fallback={<UteamSkeleton />}>
+			<Suspense fallback={<TeamSkeleton />}>
 				<UteamData />
 			</Suspense>
 		</>

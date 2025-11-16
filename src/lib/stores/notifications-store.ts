@@ -26,14 +26,10 @@ import { COMMUNICATION_MARK_AS_READ_EVENT, type CommunicationMarkAsReadDetail } 
 // Types
 // =====================================================================================
 
-// Re-export shared types to maintain backward compatibility
-export type {
-	Notification,
-	NotificationPriority,
-	NotificationType,
-} from "./notifications-types";
-
+// Import and re-export shared types to maintain backward compatibility
 import type { Notification, NotificationPriority, NotificationType } from "./notifications-types";
+
+export type { Notification, NotificationPriority, NotificationType };
 
 type NotificationsState = {
 	// State

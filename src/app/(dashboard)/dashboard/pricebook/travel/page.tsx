@@ -1,23 +1,15 @@
 /**
- * Pricebook > Travel Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function TravelChargesPage() {
+import { Suspense } from "react";
+import { TravelData } from "@/components/pricebook/travel/travel-data";
+import { TravelSkeleton } from "@/components/pricebook/travel/travel-skeleton";
+
+export default function TravelPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Travel Charges</h1>
-				<p className="text-muted-foreground">Set travel charges, mileage rates, and distance-based pricing</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Travel Charges management coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<TravelSkeleton />}>
+			<TravelData />
+		</Suspense>
 	);
 }

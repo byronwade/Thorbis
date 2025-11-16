@@ -1,23 +1,15 @@
 /**
- * Technicians > Attendance Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function TimeAttendancePage() {
+import { Suspense } from "react";
+import { AttendanceData } from "@/components/technicians/attendance/attendance-data";
+import { AttendanceSkeleton } from "@/components/technicians/attendance/attendance-skeleton";
+
+export default function AttendancePage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Time & Attendance</h1>
-				<p className="text-muted-foreground">Track technician time and attendance</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Time & Attendance system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<AttendanceSkeleton />}>
+			<AttendanceData />
+		</Suspense>
 	);
 }

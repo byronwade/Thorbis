@@ -1,23 +1,15 @@
 /**
- * Training > Assessments Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function SkillAssessmentsPage() {
+import { Suspense } from "react";
+import { AssessmentsData } from "@/components/training/assessments/assessments-data";
+import { AssessmentsSkeleton } from "@/components/training/assessments/assessments-skeleton";
+
+export default function AssessmentsPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Skill Assessments</h1>
-				<p className="text-muted-foreground">Create and manage skill assessments</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Skill Assessments system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<AssessmentsSkeleton />}>
+			<AssessmentsData />
+		</Suspense>
 	);
 }

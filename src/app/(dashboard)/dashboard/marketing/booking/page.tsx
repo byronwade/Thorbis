@@ -1,23 +1,15 @@
 /**
- * Marketing > Booking Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function OnlineBookingPage() {
+import { Suspense } from "react";
+import { BookingData } from "@/components/marketing/booking/booking-data";
+import { BookingSkeleton } from "@/components/marketing/booking/booking-skeleton";
+
+export default function BookingPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Online Booking</h1>
-				<p className="text-muted-foreground">Enable customers to book services online</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Online Booking system coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<BookingSkeleton />}>
+			<BookingData />
+		</Suspense>
 	);
 }

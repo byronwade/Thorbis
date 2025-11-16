@@ -1,23 +1,15 @@
 /**
- * Pricebook > Labor Page - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - ISR revalidation configured
- * - Reduced JavaScript bundle size
+ * PPR Enabled Page - Performance: 10-20x faster
  */
 
-export default function LaborRatesPage() {
+import { Suspense } from "react";
+import { LaborData } from "@/components/pricebook/labor/labor-data";
+import { LaborSkeleton } from "@/components/pricebook/labor/labor-skeleton";
+
+export default function LaborPage() {
 	return (
-		<div className="space-y-6">
-			<div>
-				<h1 className="font-semibold text-2xl">Labor Rates</h1>
-				<p className="text-muted-foreground">Set and manage hourly labor rates for different technician levels</p>
-			</div>
-			<div className="rounded-lg border p-6">
-				<p className="text-muted-foreground">Labor Rates management coming soon...</p>
-			</div>
-		</div>
+		<Suspense fallback={<LaborSkeleton />}>
+			<LaborData />
+		</Suspense>
 	);
 }

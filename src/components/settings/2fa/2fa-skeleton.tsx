@@ -1,5 +1,7 @@
-export function 2faSkeleton() {
-  return (
+export function
+2faSkeleton()
+{
+	return (
     <div className="relative space-y-10 py-8 md:py-12">
       <div className="flex justify-center">
         <div className="h-9 w-32 animate-pulse rounded-full bg-muted" />
