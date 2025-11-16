@@ -37,7 +37,7 @@ export type CustomerStats = {
   totalRevenue: number;
   openInvoices: number;
   openInvoicesAmount: number;
-  lastContactDate: string | null;
+  lastContactDate?: string | null; // TODO: Add to customers table
   customerSince: string | null;
 };
 

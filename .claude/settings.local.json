@@ -97,11 +97,20 @@
       "Bash(npx @biomejs/biome:*)",
       "Bash(tree:*)",
       "Bash(/tmp/fix-async.sh:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(NODE_ENV=production pnpm build:*)",
+      "mcp__next-devtools__nextjs_runtime",
+      "Bash(git restore:*)",
+      "mcp__next-devtools__browser_eval",
+      "Bash(pnpm build:*)",
+      "Bash(time pnpm dlx ultracite check:*)",
+      "Bash(/tmp/check-ppr.sh:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
