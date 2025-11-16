@@ -1,7 +1,7 @@
 /**
- * Job Status Data - Async Server Component
+ * Job History Data - Async Server Component
  *
- * Displays job status tracking content.
+ * Displays job history content.
  * This component is wrapped in Suspense for PPR pattern.
  */
 
@@ -13,9 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export async function JobStatusData() {
-  // Future: Fetch real job status updates
-  // const jobs = await fetchJobStatuses();
+export async function JobHistoryData() {
+  // Future: Fetch real job history
+  // const jobs = await fetchCompletedJobs();
 
   const sampleJobs = [
     {
@@ -23,50 +23,50 @@ export async function JobStatusData() {
       customer: "ABC Corporation",
       service: "HVAC Maintenance",
       technician: "John Smith",
-      status: "In Progress",
-      progress: "75%",
-      lastUpdate: "2024-01-25 2:45 PM",
-      eta: "30 minutes",
+      completed: "2024-01-25 2:30 PM",
+      duration: "2.5 hours",
+      rating: "5.0",
+      revenue: "$150",
     },
     {
       jobId: "JOB-002",
       customer: "XYZ Industries",
       service: "Plumbing Repair",
       technician: "Sarah Johnson",
-      status: "Completed",
-      progress: "100%",
-      lastUpdate: "2024-01-25 2:30 PM",
-      eta: "Completed",
+      completed: "2024-01-25 1:45 PM",
+      duration: "1.5 hours",
+      rating: "4.8",
+      revenue: "$120",
     },
     {
       jobId: "JOB-003",
       customer: "TechStart Inc",
       service: "Electrical Service",
       technician: "Mike Davis",
-      status: "Pending",
-      progress: "0%",
-      lastUpdate: "2024-01-25 1:00 PM",
-      eta: "4:15 PM",
+      completed: "2024-01-24 4:15 PM",
+      duration: "3.0 hours",
+      rating: "5.0",
+      revenue: "$200",
     },
     {
       jobId: "JOB-004",
       customer: "Global Systems",
       service: "AC Maintenance",
       technician: "Lisa Wilson",
-      status: "In Progress",
-      progress: "45%",
-      lastUpdate: "2024-01-25 2:15 PM",
-      eta: "1.5 hours",
+      completed: "2024-01-24 2:45 PM",
+      duration: "2.0 hours",
+      rating: "4.9",
+      revenue: "$150",
     },
     {
       jobId: "JOB-005",
       customer: "123 Manufacturing",
       service: "Heater Repair",
       technician: "Tom Brown",
-      status: "Overdue",
-      progress: "25%",
-      lastUpdate: "2024-01-24 3:00 PM",
-      eta: "2 hours",
+      completed: "2024-01-23 3:30 PM",
+      duration: "2.5 hours",
+      rating: "4.7",
+      revenue: "$180",
     },
   ];
 
@@ -74,9 +74,9 @@ export async function JobStatusData() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
       <Card className="col-span-4">
         <CardHeader>
-          <CardTitle>Job Status Updates</CardTitle>
+          <CardTitle>Recent Job History</CardTitle>
           <CardDescription>
-            Real-time job status and progress tracking
+            Latest completed jobs and service records
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -94,40 +94,20 @@ export async function JobStatusData() {
                     <p className="font-medium text-sm leading-none">
                       {job.customer}
                     </p>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
-                        job.status === "In Progress"
-                          ? "bg-blue-100 text-blue-800"
-                          : job.status === "Completed"
-                            ? "bg-green-100 text-green-800"
-                            : job.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {job.status}
+                    <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-1 font-medium text-green-800 text-xs">
+                      ⭐ {job.rating}
                     </span>
                   </div>
                   <p className="text-muted-foreground text-sm">
                     {job.service} • {job.technician}
                   </p>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 flex-1 rounded-full bg-muted">
-                      <div
-                        className="h-2 rounded-full bg-primary"
-                        style={{ width: job.progress }}
-                      />
-                    </div>
-                    <span className="text-muted-foreground text-xs">
-                      {job.progress}
-                    </span>
-                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Completed: {job.completed} • Duration: {job.duration}
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-sm">{job.lastUpdate}</p>
-                  <p className="text-muted-foreground text-xs">
-                    ETA: {job.eta}
-                  </p>
+                  <p className="font-medium text-sm">{job.revenue}</p>
+                  <p className="text-muted-foreground text-xs">Revenue</p>
                 </div>
               </div>
             ))}
@@ -137,71 +117,71 @@ export async function JobStatusData() {
 
       <Card className="col-span-3">
         <CardHeader>
-          <CardTitle>Status Analytics</CardTitle>
-          <CardDescription>
-            Job completion and performance metrics
-          </CardDescription>
+          <CardTitle>History Analytics</CardTitle>
+          <CardDescription>Job performance and trends</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center justify-between rounded-lg bg-accent p-3">
               <div>
-                <p className="font-medium text-sm">Completion Rate</p>
-                <p className="text-muted-foreground text-xs">This week</p>
+                <p className="font-medium text-sm">Most Common Service</p>
+                <p className="text-muted-foreground text-xs">
+                  HVAC Maintenance
+                </p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-sm">94%</p>
+                <p className="font-bold text-sm">45%</p>
+                <p className="text-muted-foreground text-xs">of all jobs</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-accent p-3">
+              <div>
+                <p className="font-medium text-sm">Average Job Value</p>
                 <p className="text-muted-foreground text-xs">
-                  +2% from last week
+                  Per completed job
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-sm">$180</p>
+                <p className="text-muted-foreground text-xs">
+                  +$15 from last month
                 </p>
               </div>
             </div>
             <div className="flex items-center justify-between rounded-lg bg-accent p-3">
               <div>
-                <p className="font-medium text-sm">Average Duration</p>
-                <p className="text-muted-foreground text-xs">Per job</p>
+                <p className="font-medium text-sm">Top Technician</p>
+                <p className="text-muted-foreground text-xs">
+                  By completion rate
+                </p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-sm">2.3h</p>
+                <p className="font-bold text-sm">John Smith</p>
+                <p className="text-muted-foreground text-xs">98% completion</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-lg bg-accent p-3">
+              <div>
+                <p className="font-medium text-sm">Customer Retention</p>
                 <p className="text-muted-foreground text-xs">
-                  -0.2h from last month
+                  Repeat customers
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-sm">78%</p>
+                <p className="text-muted-foreground text-xs">
+                  +3% from last quarter
                 </p>
               </div>
             </div>
             <div className="flex items-center justify-between rounded-lg bg-accent p-3">
               <div>
-                <p className="font-medium text-sm">On-Time Rate</p>
-                <p className="text-muted-foreground text-xs">
-                  Scheduled vs actual
-                </p>
+                <p className="font-medium text-sm">Revenue Growth</p>
+                <p className="text-muted-foreground text-xs">This month</p>
               </div>
               <div className="text-right">
-                <p className="font-bold text-sm">89%</p>
-                <p className="text-muted-foreground text-xs">
-                  +3% from last month
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-              <div>
-                <p className="font-medium text-sm">Status Updates</p>
-                <p className="text-muted-foreground text-xs">Per job average</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-sm">3.2</p>
-                <p className="text-muted-foreground text-xs">
-                  +0.3 from last month
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg bg-accent p-3">
-              <div>
-                <p className="font-medium text-sm">Customer Satisfaction</p>
-                <p className="text-muted-foreground text-xs">Based on status</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-sm">4.8</p>
-                <p className="text-muted-foreground text-xs">out of 5.0</p>
+                <p className="font-bold text-sm">+12%</p>
+                <p className="text-muted-foreground text-xs">vs last month</p>
               </div>
             </div>
           </div>

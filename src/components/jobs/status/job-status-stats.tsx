@@ -5,15 +5,10 @@
  * Loads faster than main data, so users see metrics first.
  */
 
-import { createClient } from "@/lib/supabase/server";
+import { AlertCircle, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Clock, CheckCircle, AlertCircle, AlertTriangle } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
 export async function JobStatusStats() {
   const supabase = await createClient();
@@ -31,7 +26,7 @@ export async function JobStatusStats() {
     avgDuration: "2.3h",
     completed: 18,
     pending: 6,
-    overdue: 2
+    overdue: 2,
   };
 
   return (
@@ -77,7 +72,9 @@ export async function JobStatusStats() {
           <AlertTriangle className="size-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="font-bold text-2xl text-destructive">{stats.overdue}</div>
+          <div className="font-bold text-2xl text-destructive">
+            {stats.overdue}
+          </div>
           <p className="text-muted-foreground text-xs">Need attention</p>
         </CardContent>
       </Card>

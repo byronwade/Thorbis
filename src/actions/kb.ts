@@ -260,21 +260,21 @@ export async function getKBCategories(): Promise<{
     // Second pass: build hierarchy
     if (data) {
       for (const cat of data) {
-      const category = categoryMap.get(cat.id);
-      if (!category) {
-        return;
-      }
-
-      if (cat.parent_id) {
-        const parent = categoryMap.get(cat.parent_id);
-        if (parent) {
-          parent.children = parent.children || [];
-          parent.children.push(category);
+        const category = categoryMap.get(cat.id);
+        if (!category) {
+          return;
         }
-      } else {
-        rootCategories.push(category);
+
+        if (cat.parent_id) {
+          const parent = categoryMap.get(cat.parent_id);
+          if (parent) {
+            parent.children = parent.children || [];
+            parent.children.push(category);
+          }
+        } else {
+          rootCategories.push(category);
+        }
       }
-    }
     }
 
     return { success: true, categories: rootCategories };
