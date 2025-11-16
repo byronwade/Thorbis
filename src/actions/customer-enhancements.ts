@@ -179,7 +179,7 @@ function parseContactFormData(
 /**
  * Add contact to business customer
  */
-export async function addCustomerContact(
+export function addCustomerContact(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -311,7 +311,7 @@ function buildContactUpdatePayload(
 /**
  * Update customer contact
  */
-export async function updateCustomerContact(
+export function updateCustomerContact(
   contactId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -377,7 +377,7 @@ export async function updateCustomerContact(
 /**
  * Delete customer contact
  */
-export async function deleteCustomerContact(
+export function deleteCustomerContact(
   contactId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -467,7 +467,7 @@ function parseAddressFormData(
 /**
  * Add address to customer
  */
-export async function addCustomerAddress(
+export function addCustomerAddress(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -614,7 +614,7 @@ function buildAddressUpdatePayload(
 /**
  * Update customer address
  */
-export async function updateCustomerAddress(
+export function updateCustomerAddress(
   addressId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -681,7 +681,7 @@ export async function updateCustomerAddress(
 /**
  * Delete customer address
  */
-export async function deleteCustomerAddress(
+export function deleteCustomerAddress(
   addressId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -769,7 +769,7 @@ function buildBusinessInfoUpdatePayload(
 /**
  * Update customer business information
  */
-export async function updateCustomerBusinessInfo(
+export function updateCustomerBusinessInfo(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -826,7 +826,7 @@ type CustomerContact = Record<string, unknown>;
 /**
  * Get all contacts for a customer
  */
-export async function getCustomerContacts(
+export function getCustomerContacts(
   customerId: string
 ): Promise<ActionResult<CustomerContact[]>> {
   return withErrorHandling(async () => {
@@ -866,7 +866,7 @@ type CustomerAddress = Record<string, unknown>;
 /**
  * Get all addresses for a customer
  */
-export async function getCustomerAddresses(
+export function getCustomerAddresses(
   customerId: string
 ): Promise<ActionResult<CustomerAddress[]>> {
   return withErrorHandling(async () => {

@@ -57,7 +57,7 @@ async function generateVendorNumber(
 /**
  * Create a new vendor
  */
-export async function createVendor(
+export function createVendor(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -196,7 +196,7 @@ export async function createVendor(
 /**
  * Update an existing vendor
  */
-export async function updateVendor(
+export function updateVendor(
   vendorId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -373,9 +373,7 @@ export async function updateVendor(
 /**
  * Delete (soft delete) a vendor
  */
-export async function deleteVendor(
-  vendorId: string
-): Promise<ActionResult<void>> {
+export async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -500,7 +498,7 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 /**
  * List all vendors for the company
  */
-export async function listVendors(options?: {
+export function listVendors(options?: {
   status?: "active" | "inactive";
   category?: string;
   search?: string;
@@ -571,9 +569,7 @@ export async function listVendors(options?: {
 /**
  * Search vendors by query string
  */
-export async function searchVendors(
-  query: string
-): Promise<ActionResult<any[]>> {
+export async function searchVendors(query: string): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -628,7 +624,7 @@ export async function searchVendors(
 /**
  * Link a purchase order to a vendor
  */
-export async function linkPurchaseOrderToVendor(
+export function linkPurchaseOrderToVendor(
   purchaseOrderId: string,
   vendorId: string
 ): Promise<ActionResult<void>> {

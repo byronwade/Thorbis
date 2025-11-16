@@ -50,7 +50,7 @@ const ENTITY_TAG_FIELD_MAP: Record<
 /**
  * Update tags for any entity type
  */
-export async function updateEntityTags(
+export function updateEntityTags(
   entityType: EntityType,
   entityId: string,
   tags: EntityTag[]

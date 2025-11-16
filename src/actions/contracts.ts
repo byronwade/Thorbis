@@ -465,7 +465,7 @@ export async function restoreContract(
  * Delete a contract (legacy - deprecated)
  * @deprecated Use archiveContract() instead
  */
-export async function deleteContract(
+export function deleteContract(
   contractId: string
 ): Promise<{ success: boolean; error?: string }> {
   return archiveContract(contractId);

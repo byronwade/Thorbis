@@ -64,7 +64,7 @@ async function generatePaymentNumber(
 /**
  * Process invoice payment using appropriate processor
  */
-export async function processInvoicePayment({
+export function processInvoicePayment({
   invoiceId,
   paymentMethodId,
   channel = "online",
@@ -475,9 +475,7 @@ export async function checkPaymentApproval(
 /**
  * Get payment processor status for an invoice
  */
-export async function getInvoicePaymentProcessorStatus(
-  invoiceId: string
-): Promise<{
+export async function getInvoicePaymentProcessorStatus(invoiceId: string): Promise<{
   success: boolean;
   error?: string;
   processor?: string;

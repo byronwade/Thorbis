@@ -42,6 +42,12 @@ const CUSTOMER_ADDRESS_MAX_LENGTH = 200;
 const CUSTOMER_ADDRESS2_MAX_LENGTH = 100;
 const CUSTOMER_CITY_MAX_LENGTH = 100;
 const CUSTOMER_STATE_MAX_LENGTH = 50;
+
+// HTTP Status codes
+const HTTP_STATUS_FORBIDDEN = 403;
+
+// Search defaults
+const DEFAULT_SEARCH_LIMIT = 50;
 const CUSTOMER_ZIP_MAX_LENGTH = 20;
 const CUSTOMER_COUNTRY_MAX_LENGTH = 50;
 const CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH = 50;
@@ -105,7 +111,7 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export async function createCustomer(
+export function createCustomer(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -415,20 +421,6 @@ async function insertCustomerRecord(
   supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
   params: InsertCustomerParams
 ) {
-  const {
-    companyId,
-    customerType,
-    primaryContact,
-    companyNameValue,
-    displayName,
-    primaryProperty,
-    customerLat,
-    customerLon,
-    formData,
-    tags,
-    communicationPreferences,
-  } = params;
-
   const payload = buildCustomerInsertPayload(params);
 
   const { data: customer, error: createError } = await supabase
@@ -577,7 +569,7 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-export async function updateCustomer(
+export function updateCustomer(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -733,7 +725,7 @@ export async function updateCustomer(
 /**
  * Delete customer (soft delete/archive)
  */
-export async function deleteCustomer(
+export function deleteCustomer(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -809,7 +801,7 @@ export async function deleteCustomer(
 /**
  * Update customer status
  */
-export async function updateCustomerStatus(
+export function updateCustomerStatus(
   customerId: string,
   status: "active" | "inactive" | "archived" | "blocked"
 ): Promise<ActionResult<void>> {
@@ -871,7 +863,7 @@ export async function updateCustomerStatus(
 /**
  * Update communication preferences
  */
-export async function updateCommunicationPreferences(
+export function updateCommunicationPreferences(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -945,7 +937,7 @@ export async function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export async function inviteToPortal(
+export function inviteToPortal(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1042,7 +1034,7 @@ export async function inviteToPortal(
 /**
  * Revoke portal access
  */
-export async function revokePortalAccess(
+export function revokePortalAccess(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1108,7 +1100,7 @@ export async function revokePortalAccess(
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export async function getCustomerByPhone(
+export function getCustomerByPhone(
   phoneNumber: string,
   companyId: string
 ): Promise<ActionResult<unknown>> {
@@ -1152,7 +1144,7 @@ export async function getCustomerByPhone(
 /**
  * Search customers by name, email, phone, or company
  */
-export async function searchCustomers(
+export function searchCustomers(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<unknown[]>> {
@@ -1180,7 +1172,7 @@ export async function searchCustomers(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -1197,7 +1189,7 @@ export async function searchCustomers(
       teamMember.company_id,
       searchTerm,
       {
-        limit: options?.limit || 50,
+        limit: options?.limit || DEFAULT_SEARCH_LIMIT,
         offset: options?.offset || 0,
       }
     );
@@ -1209,9 +1201,7 @@ export async function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export async function getTopCustomers(
-  limit = 10
-): Promise<ActionResult<unknown[]>> {
+export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1236,7 +1226,7 @@ export async function getTopCustomers(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -1263,7 +1253,13 @@ export async function getTopCustomers(
 /**
  * Get customers with outstanding balance
  */
-export async function getCustomersWithBalance(): Promise<ActionResult<any[]>> {
+type CustomerWithBalance = {
+  id: string;
+  display_name: string;
+  balance: number;
+};
+
+export async function getCustomersWithBalance(): Promise<ActionResult<CustomerWithBalance[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1288,7 +1284,7 @@ export async function getCustomersWithBalance(): Promise<ActionResult<any[]>> {
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -1343,9 +1339,7 @@ type CustomerRecord = {
 /**
  * Get all customers for the current company
  */
-export async function getAllCustomers(): Promise<
-  ActionResult<CustomerRecord[]>
-> {
+export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1464,7 +1458,7 @@ export async function getAllCustomers(): Promise<
  * Saves the customer's editable page layout and content
  * Used by the Novel editor for auto-save functionality
  */
-export async function updateCustomerPageContent(
+export function updateCustomerPageContent(
   customerId: string,
   pageContent: any
 ): Promise<ActionResult<void>> {
@@ -1492,7 +1486,7 @@ export async function updateCustomerPageContent(
       throw new ActionError(
         "You must be part of a company",
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
@@ -1510,7 +1504,7 @@ export async function updateCustomerPageContent(
       throw new ActionError(
         ERROR_MESSAGES.forbidden("customer"),
         ERROR_CODES.AUTH_FORBIDDEN,
-        403
+        HTTP_STATUS_FORBIDDEN
       );
     }
 
