@@ -1460,7 +1460,7 @@ export function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
  * Saves the customer's editable page layout and content
  * Used by the Novel editor for auto-save functionality
  */
-export function updateCustomerPageContent(
+export async function updateCustomerPageContent(
   customerId: string,
   pageContent: any
 ): Promise<ActionResult<void>> {
