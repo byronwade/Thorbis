@@ -224,7 +224,7 @@ async function upsertTeamMember({ supabase, invitation, userId, phone, photoUrl 
 	// 		onConflict: "user_id,company_id",
 	// 	}
 	// );
-	const error = null;
+	const error: null | Error = null;
 
 	if (error) {
 		throw new ActionError(ERROR_MESSAGES.operationFailed("join team"), ERROR_CODES.DB_QUERY_ERROR);

@@ -163,7 +163,7 @@ export async function createCustomField(formData: FormData): Promise<ActionResul
 		});
 
 		// Parse field options if provided
-		let fieldOptionsJson = null;
+		let fieldOptionsJson: unknown = null;
 		if (data.fieldOptions) {
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
@@ -222,7 +222,7 @@ export async function updateCustomField(fieldId: string, formData: FormData): Pr
 			isActive: formData.get("isActive") !== "false",
 		});
 
-		let fieldOptionsJson = null;
+		let fieldOptionsJson: unknown = null;
 		if (data.fieldOptions) {
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
@@ -350,7 +350,7 @@ export async function updateLoyaltySettings(formData: FormData): Promise<ActionR
 			notifyOnPointsEarned: formData.get("notifyOnPointsEarned") !== "false",
 		});
 
-		let rewardTiersJson = [];
+		let rewardTiersJson: unknown[] = [];
 		if (data.rewardTiers) {
 			try {
 				rewardTiersJson = JSON.parse(data.rewardTiers);

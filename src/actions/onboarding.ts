@@ -130,6 +130,7 @@ async function uploadCompanyLogo(
 			.eq("id", companyId);
 
 		if (updateError) {
+			// Error already logged, continue
 		}
 
 		return publicUrl;
@@ -363,7 +364,9 @@ async function autoConfigureEmailInfrastructure(
 					last_synced_at: new Date().toISOString(),
 				});
 			}
-		} catch (_error) {}
+		} catch (_error) {
+			// Error setting up domain, continue with flow
+		}
 	}
 
 	const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
@@ -718,6 +721,7 @@ export async function saveOnboardingProgress(
 			});
 
 			if (!brandingResult.success) {
+				// Branding setup failed, continue
 			}
 		} catch (_brandingError) {
 			// Ignore branding errors during onboarding

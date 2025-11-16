@@ -220,7 +220,7 @@ async function createPaymentSchedule(
 		return;
 	}
 
-	const scheduleItems = [];
+	const scheduleItems: Array<{paymentNumber: number; dueDate: string; amount: number}> = [];
 	const currentDate = new Date(config.firstPaymentDate);
 
 	for (let i = 1; i <= config.numberOfPayments; i++) {

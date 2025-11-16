@@ -307,7 +307,7 @@ async function fetchCompanyAndSettings(
 	// 	.select("*")
 	// 	.eq("company_id", companyId)
 	// 	.single();
-	const settings = null;
+	const settings: null | {hours_of_operation?: Record<string, { open?: string | null; close?: string | null }>} = null;
 
 	const hoursOfOperation = normalizeHoursFromSettings(
 		(settings?.hours_of_operation as Record<string, { open?: string | null; close?: string | null }>) ?? null
