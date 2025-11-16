@@ -105,7 +105,7 @@ const communicationPreferencesSchema = z.object({
 /**
  * Create a new customer with multiple contacts and properties
  */
-export function createCustomer(
+export async function createCustomer(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -577,7 +577,7 @@ async function insertAdditionalPropertiesIfAny(
 /**
  * Update existing customer
  */
-export function updateCustomer(
+export async function updateCustomer(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -733,7 +733,7 @@ export function updateCustomer(
 /**
  * Delete customer (soft delete/archive)
  */
-export function deleteCustomer(
+export async function deleteCustomer(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -809,7 +809,7 @@ export function deleteCustomer(
 /**
  * Update customer status
  */
-export function updateCustomerStatus(
+export async function updateCustomerStatus(
   customerId: string,
   status: "active" | "inactive" | "archived" | "blocked"
 ): Promise<ActionResult<void>> {
@@ -871,7 +871,7 @@ export function updateCustomerStatus(
 /**
  * Update communication preferences
  */
-export function updateCommunicationPreferences(
+export async function updateCommunicationPreferences(
   customerId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -945,7 +945,7 @@ export function updateCommunicationPreferences(
  * Invite customer to portal
  * TODO: Implement email sending
  */
-export function inviteToPortal(
+export async function inviteToPortal(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1042,7 +1042,7 @@ export function inviteToPortal(
 /**
  * Revoke portal access
  */
-export function revokePortalAccess(
+export async function revokePortalAccess(
   customerId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1108,7 +1108,7 @@ export function revokePortalAccess(
  * Get customer by phone number
  * Used for incoming call lookups
  */
-export function getCustomerByPhone(
+export async function getCustomerByPhone(
   phoneNumber: string,
   companyId: string
 ): Promise<ActionResult<unknown>> {
@@ -1152,7 +1152,7 @@ export function getCustomerByPhone(
 /**
  * Search customers by name, email, phone, or company
  */
-export function searchCustomers(
+export async function searchCustomers(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<unknown[]>> {
@@ -1209,7 +1209,7 @@ export function searchCustomers(
 /**
  * Get top customers by revenue
  */
-export function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
+export async function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1261,7 +1261,7 @@ export function getTopCustomers(limit = 10): Promise<ActionResult<unknown[]>> {
 /**
  * Get customers with outstanding balance
  */
-export function getCustomersWithBalance(): Promise<ActionResult<any[]>> {
+export async function getCustomersWithBalance(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1341,8 +1341,8 @@ type CustomerRecord = {
 /**
  * Get all customers for the current company
  */
-export function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
-  return await withErrorHandling(async () => {
+export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
+  return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
       throw new ActionError(
@@ -1460,7 +1460,7 @@ export function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>> {
  * Saves the customer's editable page layout and content
  * Used by the Novel editor for auto-save functionality
  */
-export function updateCustomerPageContent(
+export async function updateCustomerPageContent(
   customerId: string,
   pageContent: any
 ): Promise<ActionResult<void>> {

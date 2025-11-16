@@ -1013,7 +1013,7 @@ export async function unlinkJobFromEstimate(
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */
-export function deleteEstimate(
+export async function deleteEstimate(
   estimateId: string
 ): Promise<ActionResult<void>> {
   return archiveEstimate(estimateId);
