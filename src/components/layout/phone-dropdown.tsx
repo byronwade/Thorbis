@@ -53,9 +53,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useDialerCustomers } from "@/hooks/use-dialer-customers";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
-import { useDialerCustomers } from "@/hooks/use-dialer-customers";
 import { useUIStore } from "@/lib/stores/ui-store";
 
 type Customer = {
@@ -79,11 +79,7 @@ type PhoneDropdownProps = {
 	incomingCallsCount?: number;
 };
 
-export function PhoneDropdown({
-	companyId,
-	companyPhones = [],
-	incomingCallsCount,
-}: PhoneDropdownProps) {
+export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCount }: PhoneDropdownProps) {
 	const { toast } = useToast();
 	const [mounted, setMounted] = useState(false);
 	const [open, setOpen] = useState(false);
