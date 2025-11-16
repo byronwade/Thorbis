@@ -6,7 +6,10 @@
       "suspicious": {
         "useAwait": "off",
         "noExplicitAny": "warn",
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noConsole": "off",
+        "noAlert": "warn",
+        "noEmptyBlockStatements": "warn"
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "off",
@@ -26,7 +29,9 @@
         "useSelfClosingElements": "warn",
         "noUnusedTemplateLiteral": "warn",
         "useNamingConvention": "off",
-        "noMagicNumbers": "off"
+        "noMagicNumbers": "off",
+        "noNestedTernary": "off",
+        "useDefaultSwitchClause": "warn"
       },
       "correctness": {
         "noUnusedVariables": "warn",
