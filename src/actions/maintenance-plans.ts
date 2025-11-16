@@ -82,8 +82,11 @@ const updateMaintenancePlanSchema = z.object({
 /**
  * Generate unique maintenance plan number using database function
  */
+// Maintenance plan number regex pattern (at top level for performance)
+const MAINTENANCE_PLAN_NUMBER_REGEX = /MP-(\d+)/;
+
 async function generateMaintenancePlanNumber(
-  supabase: any,
+  supabase: Awaited<ReturnType<typeof createClient>>,
   companyId: string
 ): Promise<string> {
   const { data, error } = await supabase.rpc(
@@ -107,7 +110,7 @@ async function generateMaintenancePlanNumber(
       return "MP-000001";
     }
 
-    const match = latestPlan.plan_number.match(/MP-(\d+)/);
+    const match = latestPlan.plan_number.match(MAINTENANCE_PLAN_NUMBER_REGEX);
     if (match) {
       const nextNumber = Number.parseInt(match[1], 10) + 1;
       return `MP-${nextNumber.toString().padStart(6, "0")}`;

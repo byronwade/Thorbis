@@ -1,70 +1,70 @@
 /**
- * Performance Reports Data - Async Server Component
+ * Technician Analytics Data - Async Server Component
  *
- * Displays performance reports content (Coming Soon variant).
+ * Displays technician analytics content (Coming Soon variant).
  */
 
-import { Award, Target, TrendingUp, Zap } from "lucide-react";
+import { BarChart3, Star, TrendingUp, Users } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function PerformanceReportsData() {
+export async function TechnicianAnalyticsData() {
   return (
     <ComingSoonShell
-      description="Track KPIs, monitor team performance, and measure progress toward business goals"
-      icon={TrendingUp}
-      title="Performance Reports"
+      description="Track performance metrics, revenue generation, customer satisfaction, and productivity trends"
+      icon={BarChart3}
+      title="Technician Analytics"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Target className="size-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-lg">KPI Tracking</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor key performance indicators and measure progress toward
-              strategic goals
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Award className="size-6 text-primary" />
-            </div>
-            <h3 className="font-semibold text-lg">Team Performance</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              Evaluate technician performance, identify top performers, and
-              areas for improvement
-            </p>
-          </div>
-
-          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
               <TrendingUp className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Growth Metrics</h3>
+            <h3 className="font-semibold text-lg">Revenue per Technician</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track revenue growth, customer acquisition, and market share
-              expansion
+              Track revenue generation, job value averages, and upsell
+              performance
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Zap className="size-6 text-primary" />
+              <Star className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Efficiency Metrics</h3>
+            <h3 className="font-semibold text-lg">Customer Satisfaction</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Measure operational efficiency, resource utilization, and
-              productivity trends
+              Monitor customer ratings, reviews, and feedback for each
+              technician
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <BarChart3 className="size-6 text-primary" />
+            </div>
+            <h3 className="font-semibold text-lg">Productivity Metrics</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Analyze jobs completed, time efficiency, and first-time-fix rates
+            </p>
+          </div>
+
+          <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
+            <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
+              <Users className="size-6 text-primary" />
+            </div>
+            <h3 className="font-semibold text-lg">Team Comparisons</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Compare performance across team members to identify top performers
             </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Measure What Matters</h3>
+          <h3 className="mb-3 font-semibold text-xl">
+            Optimize Team Performance
+          </h3>
           <p className="mb-6 text-muted-foreground">
-            Data-driven insights to achieve your business goals
+            Data-driven insights to improve technician productivity
           </p>
           <div className="flex justify-center gap-4">
             <button

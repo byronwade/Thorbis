@@ -82,7 +82,7 @@ function calculateTotals(lineItems: any[]): {
 /**
  * Get a single purchase order by ID with relations
  */
-export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
+export function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

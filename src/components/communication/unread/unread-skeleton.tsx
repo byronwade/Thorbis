@@ -1,8 +1,8 @@
 /**
- * Performance Reports Skeleton - Loading State
+ * Unread Messages Skeleton - Loading State
  */
 
-export function PerformanceReportsSkeleton() {
+export function UnreadMessagesSkeleton() {
   return (
     <div className="relative space-y-10 py-8 md:py-12">
       <div className="flex justify-center">
@@ -34,7 +34,7 @@ export function PerformanceReportsSkeleton() {
 
         <div className="rounded-lg border bg-card p-8 text-center">
           <div className="mx-auto mb-3 h-7 w-56 animate-pulse rounded bg-muted" />
-          <div className="mx-auto mb-6 h-5 w-72 animate-pulse rounded bg-muted" />
+          <div className="mx-auto mb-6 h-5 w-80 animate-pulse rounded bg-muted" />
           <div className="flex justify-center gap-4">
             <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />
             <div className="h-10 w-36 animate-pulse rounded-lg bg-muted" />

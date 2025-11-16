@@ -475,7 +475,7 @@ export async function checkPaymentApproval(
 /**
  * Get payment processor status for an invoice
  */
-export async function getInvoicePaymentProcessorStatus(invoiceId: string): Promise<{
+export function getInvoicePaymentProcessorStatus(invoiceId: string): Promise<{
   success: boolean;
   error?: string;
   processor?: string;

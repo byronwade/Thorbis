@@ -222,7 +222,7 @@ async function createRecurringJobs(
 /**
  * Create a new job
  */
-export async function createJob(formData: FormData): Promise<ActionResult<string>> {
+export function createJob(formData: FormData): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -387,7 +387,7 @@ export async function createJob(formData: FormData): Promise<ActionResult<string
 /**
  * Get a single job by ID
  */
-export async function getJob(jobId: string): Promise<ActionResult<any>> {
+export function getJob(jobId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -928,7 +928,7 @@ export function scheduleJob(
 /**
  * Start a job
  */
-export async function startJob(jobId: string): Promise<ActionResult<void>> {
+export function startJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1008,7 +1008,7 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
 /**
  * Complete a job
  */
-export async function completeJob(jobId: string): Promise<ActionResult<void>> {
+export function completeJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1244,7 +1244,7 @@ export function searchJobs(
  * const results = await searchAll("furnace");
  * // Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
  */
-export async function searchAll(searchTerm: string): Promise<ActionResult<any>> {
+export function searchAll(searchTerm: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1301,7 +1301,7 @@ export async function searchAll(searchTerm: string): Promise<ActionResult<any>> 
  * Archives a job instead of permanently deleting.
  * Archived jobs can be restored within 90 days.
  */
-export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
+export function archiveJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1388,7 +1388,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 /**
  * Restore archived job
  */
-export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
+export function restoreJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

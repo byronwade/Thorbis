@@ -1,8 +1,8 @@
 /**
- * Performance Reports Skeleton - Loading State
+ * Profiles Skeleton - Loading State
  */
 
-export function PerformanceReportsSkeleton() {
+export function ProfilesSkeleton() {
   return (
     <div className="relative space-y-10 py-8 md:py-12">
       <div className="flex justify-center">
@@ -23,7 +23,7 @@ export function PerformanceReportsSkeleton() {
           {[...Array(4)].map((_, i) => (
             <div className="space-y-3 rounded-lg border bg-card p-6" key={i}>
               <div className="size-12 animate-pulse rounded-lg bg-muted" />
-              <div className="h-6 w-40 animate-pulse rounded bg-muted" />
+              <div className="h-6 w-48 animate-pulse rounded bg-muted" />
               <div className="space-y-2">
                 <div className="h-4 w-full animate-pulse rounded bg-muted" />
                 <div className="h-4 w-4/5 animate-pulse rounded bg-muted" />
@@ -33,7 +33,7 @@ export function PerformanceReportsSkeleton() {
         </div>
 
         <div className="rounded-lg border bg-card p-8 text-center">
-          <div className="mx-auto mb-3 h-7 w-56 animate-pulse rounded bg-muted" />
+          <div className="mx-auto mb-3 h-7 w-48 animate-pulse rounded bg-muted" />
           <div className="mx-auto mb-6 h-5 w-72 animate-pulse rounded bg-muted" />
           <div className="flex justify-center gap-4">
             <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />

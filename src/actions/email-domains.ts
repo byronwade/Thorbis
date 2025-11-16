@@ -205,7 +205,7 @@ export function verifyEmailDomain(
   });
 }
 
-export async function ensureInboundRoute(): Promise<ActionResult<void>> {
+export function ensureInboundRoute(): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

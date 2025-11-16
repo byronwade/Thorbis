@@ -237,7 +237,7 @@ const businessHoursSchema = z.object({
  *
  * Returns company data from companies + company_settings tables
  */
-export async function getCompanyInfo(): Promise<ActionResult<unknown>> {
+export function getCompanyInfo(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -909,7 +909,7 @@ async function deleteOldCompanyLogoIfExists(
 /**
  * Delete company logo
  */
-export async function deleteCompanyLogo(): Promise<ActionResult<void>> {
+export function deleteCompanyLogo(): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1410,7 +1410,7 @@ export function updateCompanyFeedSettings(
   });
 }
 
-export async function getCompanyFeedSettings(): Promise<ActionResult<unknown>> {
+export function getCompanyFeedSettings(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

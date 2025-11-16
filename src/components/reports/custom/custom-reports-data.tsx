@@ -4,15 +4,15 @@
  * Displays custom reports content (Coming Soon variant).
  */
 
+import { Download, Filter, LayoutDashboard, Share2 } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
-import { LayoutDashboard, Filter, Download, Share2 } from "lucide-react";
 
 export async function CustomReportsData() {
   return (
     <ComingSoonShell
-      title="Custom Reports"
-      icon={LayoutDashboard}
       description="Build custom reports with drag-and-drop interface to analyze exactly what matters to your business"
+      icon={LayoutDashboard}
+      title="Custom Reports"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
@@ -22,7 +22,8 @@ export async function CustomReportsData() {
             </div>
             <h3 className="font-semibold text-lg">Drag & Drop Builder</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Create custom reports with an intuitive drag-and-drop interface - no technical skills required
+              Create custom reports with an intuitive drag-and-drop interface -
+              no technical skills required
             </p>
           </div>
 
@@ -32,7 +33,8 @@ export async function CustomReportsData() {
             </div>
             <h3 className="font-semibold text-lg">Advanced Filtering</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Filter data by date range, customer, technician, service type, and more
+              Filter data by date range, customer, technician, service type, and
+              more
             </p>
           </div>
 
@@ -42,7 +44,8 @@ export async function CustomReportsData() {
             </div>
             <h3 className="font-semibold text-lg">Multiple Formats</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Export to PDF, Excel, CSV, or share interactive dashboards with your team
+              Export to PDF, Excel, CSV, or share interactive dashboards with
+              your team
             </p>
           </div>
 
@@ -64,14 +67,14 @@ export async function CustomReportsData() {
           </p>
           <div className="flex justify-center gap-4">
             <button
-              type="button"
               className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
+              type="button"
             >
               Learn More
             </button>
             <button
-              type="button"
               className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              type="button"
             >
               Request Access
             </button>

@@ -337,7 +337,7 @@ export function updateCategory(
  * Move a category to a new parent or reorder within same level
  * This updates the materialized path for the category and all descendants
  */
-export async function moveCategory(formData: FormData): Promise<ActionResult<void>> {
+export function moveCategory(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -591,7 +591,7 @@ export function deleteCategory(
 /**
  * Get category tree for a company
  */
-export async function getCategoryTree(): Promise<ActionResult<any[]>> {
+export function getCategoryTree(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

@@ -976,7 +976,7 @@ export function canManageTeamMember(
  * Get team member permissions and settings
  * Only accessible by owners and managers
  */
-export async function getTeamMemberPermissions(memberId: string): Promise<
+export function getTeamMemberPermissions(memberId: string): Promise<
   ActionResult<{
     role: string;
     permissions: Record<string, boolean>;
@@ -1153,7 +1153,7 @@ export function updateTeamMemberPermissions(
 /**
  * Create role
  */
-export async function createRole(formData: FormData): Promise<ActionResult<string>> {
+export function createRole(formData: FormData): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1332,7 +1332,7 @@ export function updateRole(
 /**
  * Delete role
  */
-export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
+export function deleteRole(roleId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -2130,7 +2130,7 @@ export type TeamOverviewSnapshot = {
   };
 };
 
-export async function getTeamOverview(): Promise<ActionResult<TeamOverviewSnapshot>> {
+export function getTeamOverview(): Promise<ActionResult<TeamOverviewSnapshot>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

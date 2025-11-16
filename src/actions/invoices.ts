@@ -363,7 +363,7 @@ export function updateInvoice(
 /**
  * Send invoice to customer
  */
-export async function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export function sendInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -799,7 +799,7 @@ export function cancelInvoice(
  * Replaces deleteInvoice - now archives instead of permanently deleting.
  * Archived invoices can be restored within 90 days.
  */
-export async function archiveInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export function archiveInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -884,7 +884,7 @@ export async function archiveInvoice(invoiceId: string): Promise<ActionResult<vo
  *
  * Restores an archived invoice back to its previous status (draft/sent/viewed/etc.)
  */
-export async function restoreInvoice(invoiceId: string): Promise<ActionResult<void>> {
+export function restoreInvoice(invoiceId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

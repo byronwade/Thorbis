@@ -5,8 +5,8 @@
  * Loads faster than main data, so users see metrics first.
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
+import { createClient } from "@/lib/supabase/server";
 
 export async function TechniciansStats() {
   const supabase = await createClient();
@@ -24,31 +24,35 @@ export async function TechniciansStats() {
     totalTechnicians: 0,
     activeToday: 0,
     onBreak: 0,
-    available: 0
+    available: 0,
   };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <div className="rounded-lg border bg-card p-6">
-        <h3 className="font-medium text-sm text-muted-foreground">Total Technicians</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">
+          Total Technicians
+        </h3>
         <p className="mt-2 font-bold text-2xl">{stats.totalTechnicians}</p>
         <p className="mt-1 text-muted-foreground text-xs">Team members</p>
       </div>
 
       <div className="rounded-lg border bg-card p-6">
-        <h3 className="font-medium text-sm text-muted-foreground">Active Today</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">
+          Active Today
+        </h3>
         <p className="mt-2 font-bold text-2xl">{stats.activeToday}</p>
         <p className="mt-1 text-muted-foreground text-xs">Currently working</p>
       </div>
 
       <div className="rounded-lg border bg-card p-6">
-        <h3 className="font-medium text-sm text-muted-foreground">On Break</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">On Break</h3>
         <p className="mt-2 font-bold text-2xl">{stats.onBreak}</p>
         <p className="mt-1 text-muted-foreground text-xs">Break time</p>
       </div>
 
       <div className="rounded-lg border bg-card p-6">
-        <h3 className="font-medium text-sm text-muted-foreground">Available</h3>
+        <h3 className="font-medium text-muted-foreground text-sm">Available</h3>
         <p className="mt-2 font-bold text-2xl">{stats.available}</p>
         <p className="mt-1 text-muted-foreground text-xs">Ready for dispatch</p>
       </div>

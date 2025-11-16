@@ -1,70 +1,68 @@
 /**
- * Performance Reports Data - Async Server Component
+ * Unread Messages Data - Async Server Component
  *
- * Displays performance reports content (Coming Soon variant).
+ * Displays unread messages content (Coming Soon variant).
  */
 
-import { Award, Target, TrendingUp, Zap } from "lucide-react";
+import { Bell, CheckCheck, Filter, MessageSquare } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function PerformanceReportsData() {
+export async function UnreadMessagesData() {
   return (
     <ComingSoonShell
-      description="Track KPIs, monitor team performance, and measure progress toward business goals"
-      icon={TrendingUp}
-      title="Performance Reports"
+      description="View and manage all unread communications from email, SMS, phone calls, and support tickets"
+      icon={MessageSquare}
+      title="Unread Messages"
     >
       <div className="mx-auto max-w-5xl space-y-8">
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Target className="size-6 text-primary" />
+              <Filter className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">KPI Tracking</h3>
+            <h3 className="font-semibold text-lg">Smart Filtering</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor key performance indicators and measure progress toward
-              strategic goals
+              Filter unread messages by type, priority, customer, or date range
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Award className="size-6 text-primary" />
+              <Bell className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Team Performance</h3>
+            <h3 className="font-semibold text-lg">Priority Inbox</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Evaluate technician performance, identify top performers, and
-              areas for improvement
+              Automatically prioritize urgent and high-priority messages
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <TrendingUp className="size-6 text-primary" />
+              <CheckCheck className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Growth Metrics</h3>
+            <h3 className="font-semibold text-lg">Bulk Actions</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track revenue growth, customer acquisition, and market share
-              expansion
+              Mark multiple messages as read, archive, or delete in one click
             </p>
           </div>
 
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Zap className="size-6 text-primary" />
+              <MessageSquare className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Efficiency Metrics</h3>
+            <h3 className="font-semibold text-lg">Quick Reply</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Measure operational efficiency, resource utilization, and
-              productivity trends
+              Reply directly from the unread list without opening full message
             </p>
           </div>
         </div>
 
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">Measure What Matters</h3>
+          <h3 className="mb-3 font-semibold text-xl">
+            Stay on Top of Messages
+          </h3>
           <p className="mb-6 text-muted-foreground">
-            Data-driven insights to achieve your business goals
+            Never miss an important customer communication
           </p>
           <div className="flex justify-center gap-4">
             <button

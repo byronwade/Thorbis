@@ -373,7 +373,7 @@ export function updateVendor(
 /**
  * Delete (soft delete) a vendor
  */
-export async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
+export function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -444,7 +444,7 @@ export async function deleteVendor(vendorId: string): Promise<ActionResult<void>
 /**
  * Get a single vendor by ID
  */
-export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
+export function getVendor(vendorId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -569,7 +569,7 @@ export function listVendors(options?: {
 /**
  * Search vendors by query string
  */
-export async function searchVendors(query: string): Promise<ActionResult<any[]>> {
+export function searchVendors(query: string): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

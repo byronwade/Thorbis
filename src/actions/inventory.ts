@@ -256,7 +256,7 @@ export function deleteInventory(
 /**
  * Adjust stock levels (add or remove inventory)
  */
-export async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
+export function adjustStock(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -593,7 +593,7 @@ function buildStockAdjustmentUpdatePayload(
 /**
  * Reserve stock for a job
  */
-export async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
+export function reserveStock(formData: FormData): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -947,7 +947,7 @@ export function archiveInventoryItem(
 /**
  * Get low stock items that need reordering
  */
-export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
+export function getLowStockItems(): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

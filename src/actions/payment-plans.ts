@@ -397,7 +397,7 @@ export function recordScheduledPayment(
 /**
  * Get payment plan with schedules
  */
-export async function getPaymentPlan(planId: string): Promise<ActionResult<any>> {
+export function getPaymentPlan(planId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -522,7 +522,7 @@ export function getUpcomingPayments(
 /**
  * Apply late fee to overdue payment
  */
-export async function applyLateFee(scheduleId: string): Promise<ActionResult<void>> {
+export function applyLateFee(scheduleId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
