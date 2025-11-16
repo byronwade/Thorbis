@@ -129,11 +129,14 @@
       "Bash(pkill:*)",
       "Bash(kill:*)",
       "mcp__supabase__get_logs",
-      "Bash(killall:*)"
+      "Bash(killall:*)",
+      "Bash(npx biome:*)"
     ],
     "deny": [],
     "ask": []
   },
   "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["shadcn"]
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ]
 }
