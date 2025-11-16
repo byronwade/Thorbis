@@ -148,7 +148,7 @@ export function TeamMembersPage() {
 		}
 		loadTeamMembers();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [getDepartmentColor, getRelativeTime, getRoleColor, toast.error]); // Run once on mount - toast is stable from useToast hook
+	}, []); // FIXED: Removed function deps that change every render causing infinite loop
 
 	// Helper functions for colors
 	function getRoleColor(roleName: string | undefined): string {

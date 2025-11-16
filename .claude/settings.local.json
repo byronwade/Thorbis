@@ -148,7 +148,8 @@
       "Bash(src/types/supabase.tmp)",
       "Bash(mv:*)",
       "Bash(/tmp/remove-use-cache.sh)",
-      "Bash(timeout 180 pnpm build:*)"
+      "Bash(timeout 180 pnpm build:*)",
+      "Bash(ping -c 5 togejqdwggezkxahomeh.supabase.co)"
     ],
     "deny": [],
     "ask": []
