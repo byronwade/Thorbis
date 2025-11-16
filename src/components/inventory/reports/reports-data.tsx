@@ -1,6 +1,8 @@
 import { BarChart3 } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function ReportsData() {
 	return (
 		<ComingSoonShell description="Inventory analytics and reports" icon={BarChart3} title="Inventory Reports">

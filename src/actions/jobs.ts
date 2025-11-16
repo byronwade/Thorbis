@@ -117,6 +117,10 @@ function calculateNextRecurrence(currentDate: Date, recurrenceType: string): Dat
 		case "yearly":
 			nextDate.setFullYear(nextDate.getFullYear() + 1);
 			break;
+		default:
+			// Default to monthly if unknown type
+			nextDate.setMonth(nextDate.getMonth() + 1);
+			break;
 	}
 
 	return nextDate;

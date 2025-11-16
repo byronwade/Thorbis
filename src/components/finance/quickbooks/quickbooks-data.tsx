@@ -1,6 +1,8 @@
 import { DollarSign } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function QuickbooksData() {
 	return (
 		<ComingSoonShell description="QuickBooks integration and sync" icon={DollarSign} title="QuickBooks">

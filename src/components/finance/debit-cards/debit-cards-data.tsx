@@ -1,6 +1,8 @@
 import { CreditCard } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function DebitCardsData() {
 	return (
 		<ComingSoonShell description="Manage business debit cards" icon={CreditCard} title="Debit Cards">

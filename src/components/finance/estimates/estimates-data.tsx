@@ -1,6 +1,8 @@
 import { FileText } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function EstimatesData() {
 	return (
 		<ComingSoonShell description="Create and manage estimates" icon={FileText} title="Estimates">

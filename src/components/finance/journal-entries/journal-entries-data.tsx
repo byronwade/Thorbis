@@ -1,6 +1,8 @@
 import { FileText } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function JournalEntriesData() {
 	return (
 		<ComingSoonShell description="Record and manage journal entries" icon={FileText} title="Journal Entries">

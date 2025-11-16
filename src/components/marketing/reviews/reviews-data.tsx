@@ -1,6 +1,8 @@
 import { Star } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function ReviewsData() {
 	return (
 		<ComingSoonShell description="Customer review management" icon={Star} title="Reviews">

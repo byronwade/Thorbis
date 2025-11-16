@@ -1,6 +1,8 @@
 import { ShoppingCart } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function PurchaseOrdersData() {
 	return (
 		<ComingSoonShell description="Manage purchase orders" icon={ShoppingCart} title="Purchase Orders">

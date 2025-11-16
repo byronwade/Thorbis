@@ -25,6 +25,7 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { geocodeAddressSilent } from "@/lib/maps/geocoding";
 import { createClient } from "@/lib/supabase/server";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
 import PortalInvitationEmail from "../../emails/templates/customer/portal-invitation";
 
 // ============================================================================

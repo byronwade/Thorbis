@@ -1,6 +1,8 @@
 import { Target } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function LeadTrackingData() {
 	return (
 		<ComingSoonShell description="Track and manage leads" icon={Target} title="Lead Tracking">

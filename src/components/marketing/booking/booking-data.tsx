@@ -1,6 +1,8 @@
 import { Calendar } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function BookingData() {
 	return (
 		<ComingSoonShell description="Customer self-service booking" icon={Calendar} title="Online Booking">

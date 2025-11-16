@@ -1,6 +1,8 @@
 import { TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function BusinessFinancingData() {
 	return (
 		<ComingSoonShell description="Access business loans and financing" icon={TrendingUp} title="Business Financing">

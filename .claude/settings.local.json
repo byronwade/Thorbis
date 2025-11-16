@@ -121,7 +121,9 @@
       "Bash(tr:*)",
       "Bash(/Users/byronwade/Stratos/src/types/supabase.ts)",
       "Bash(pnpm supabase gen types:*)",
-      "Bash(time node:*)"
+      "Bash(time node:*)",
+      "Bash(/tmp/add-use-cache.sh)",
+      "Bash(timeout 30 pnpm dlx:*)"
     ],
     "deny": [],
     "ask": []

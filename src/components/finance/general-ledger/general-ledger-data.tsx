@@ -1,6 +1,8 @@
 import { Book } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function GeneralLedgerData() {
 	return (
 		<ComingSoonShell description="Complete general ledger management" icon={Book} title="General Ledger">

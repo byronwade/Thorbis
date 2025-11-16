@@ -1,6 +1,8 @@
 import { Mail } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function EmailData() {
 	return (
 		<ComingSoonShell description="Send targeted email campaigns" icon={Mail} title="Email Marketing">

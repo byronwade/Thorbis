@@ -1,6 +1,8 @@
 import { MessageSquare } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function SmsData() {
 	return (
 		<ComingSoonShell description="Send SMS messages to customers" icon={MessageSquare} title="SMS Marketing">

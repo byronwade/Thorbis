@@ -9,6 +9,8 @@
 import { Hammer, MapPin, QrCode, Shield, Wrench } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function EquipmentData() {
 	// Future: Fetch equipment inventory
 	// const equipment = await fetchEquipment();

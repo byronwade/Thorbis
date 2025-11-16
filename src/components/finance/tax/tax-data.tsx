@@ -1,6 +1,8 @@
 import { Receipt } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function TaxData() {
 	return (
 		<ComingSoonShell description="Tax reporting and compliance" icon={Receipt} title="Tax Management">

@@ -8,6 +8,8 @@
 import { BarChart3, DollarSign, PieChart, TrendingUp } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function PriceAnalyticsData() {
 	return (
 		<ComingSoonShell

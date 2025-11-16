@@ -1,6 +1,8 @@
 import { Users } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
+"use cache";
+
 export async function ReferralsData() {
 	return (
 		<ComingSoonShell description="Customer referral tracking" icon={Users} title="Referral Program">
