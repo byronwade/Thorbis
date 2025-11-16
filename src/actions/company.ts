@@ -422,7 +422,7 @@ function getCompanyDescription(
  * - Missing fields in schema: email, phone, website, legalName, taxId, licenseNumber
  * These fields would need to be added to companies or companySettings table
  */
-export async function updateCompanyInfo(
+export function updateCompanyInfo(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -604,7 +604,7 @@ async function upsertCompanySettingsRecord(
  *   - billing_email, billing_address, billing_city, billing_state, billing_zip_code
  *   - payment_method, stripe_customer_id, etc.
  */
-export async function updateBillingInfo(
+export function updateBillingInfo(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -669,7 +669,7 @@ export async function updateBillingInfo(
 /**
  * Update business hours
  */
-export async function updateBusinessHours(
+export function updateBusinessHours(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -777,7 +777,7 @@ async function upsertBusinessHours(
 /**
  * Upload company logo
  */
-export async function uploadCompanyLogo(
+export function uploadCompanyLogo(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -909,7 +909,7 @@ async function deleteOldCompanyLogoIfExists(
 /**
  * Delete company logo
  */
-export async function deleteCompanyLogo(): Promise<ActionResult<void>> {
+export function deleteCompanyLogo(): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1022,7 +1022,7 @@ const createOrganizationSchema = z.object({
  *
  * @returns The new company ID
  */
-export async function createOrganization(
+export function createOrganization(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -1357,7 +1357,7 @@ async function attachInitialPaymentMethodIfProvided(
 /**
  * Update Company Feed Settings
  */
-export async function updateCompanyFeedSettings(
+export function updateCompanyFeedSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1410,7 +1410,7 @@ export async function updateCompanyFeedSettings(
   });
 }
 
-export async function getCompanyFeedSettings(): Promise<ActionResult<unknown>> {
+export function getCompanyFeedSettings(): Promise<ActionResult<unknown>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

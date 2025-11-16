@@ -68,7 +68,7 @@ const emailSettingsSchema = z.object({
     .default("#3b82f6"),
 });
 
-export async function updateEmailSettings(
+export function updateEmailSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -142,7 +142,7 @@ export async function updateEmailSettings(
   });
 }
 
-export async function getEmailSettings(): Promise<ActionResult<any>> {
+export function getEmailSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -235,7 +235,7 @@ const smsSettingsSchema = z.object({
   consentRequired: z.boolean().default(true),
 });
 
-export async function updateSmsSettings(
+export function updateSmsSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -294,7 +294,7 @@ export async function updateSmsSettings(
   });
 }
 
-export async function getSmsSettings(): Promise<ActionResult<any>> {
+export function getSmsSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -351,7 +351,7 @@ const phoneSettingsSchema = z.object({
   ivrMenu: z.string().optional(),
 });
 
-export async function updatePhoneSettings(
+export function updatePhoneSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -429,7 +429,7 @@ export async function updatePhoneSettings(
   });
 }
 
-export async function getPhoneSettings(): Promise<ActionResult<any>> {
+export function getPhoneSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -498,7 +498,7 @@ const notificationSettingsSchema = z.object({
   inAppNotifications: z.boolean().default(true),
 });
 
-export async function updateNotificationSettings(
+export function updateNotificationSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -573,7 +573,7 @@ export async function updateNotificationSettings(
   });
 }
 
-export async function getNotificationSettings(): Promise<ActionResult<any>> {
+export function getNotificationSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

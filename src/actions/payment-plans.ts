@@ -62,7 +62,7 @@ const recordPaymentSchema = z.object({
 /**
  * Create payment plan
  */
-export async function createPaymentPlan(
+export function createPaymentPlan(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -298,7 +298,7 @@ async function createPaymentSchedule(
 /**
  * Record payment against schedule
  */
-export async function recordScheduledPayment(
+export function recordScheduledPayment(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -397,9 +397,7 @@ export async function recordScheduledPayment(
 /**
  * Get payment plan with schedules
  */
-export async function getPaymentPlan(
-  planId: string
-): Promise<ActionResult<any>> {
+export function getPaymentPlan(planId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -455,7 +453,7 @@ export async function getPaymentPlan(
 /**
  * Get upcoming payments (across all payment plans)
  */
-export async function getUpcomingPayments(
+export function getUpcomingPayments(
   daysAhead = 30
 ): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
@@ -524,9 +522,7 @@ export async function getUpcomingPayments(
 /**
  * Apply late fee to overdue payment
  */
-export async function applyLateFee(
-  scheduleId: string
-): Promise<ActionResult<void>> {
+export function applyLateFee(scheduleId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -603,7 +599,7 @@ export async function applyLateFee(
 /**
  * Cancel payment plan
  */
-export async function cancelPaymentPlan(
+export function cancelPaymentPlan(
   planId: string,
   reason: string
 ): Promise<ActionResult<void>> {

@@ -82,9 +82,7 @@ function calculateTotals(lineItems: any[]): {
 /**
  * Get a single purchase order by ID with relations
  */
-export async function getPurchaseOrder(
-  poId: string
-): Promise<ActionResult<any>> {
+export function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -134,7 +132,7 @@ export async function getPurchaseOrder(
 /**
  * Create a new purchase order
  */
-export async function createPurchaseOrder(
+export function createPurchaseOrder(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -304,7 +302,7 @@ export async function createPurchaseOrder(
 /**
  * Update purchase order status
  */
-export async function updatePurchaseOrderStatus(
+export function updatePurchaseOrderStatus(
   poId: string,
   status: string,
   _notes?: string
@@ -393,7 +391,7 @@ export async function updatePurchaseOrderStatus(
 /**
  * Update purchase order vendor
  */
-export async function updatePurchaseOrderVendor(
+export function updatePurchaseOrderVendor(
   poId: string,
   vendorId: string | null,
   vendorName: string,
@@ -487,7 +485,7 @@ export async function updatePurchaseOrderVendor(
 /**
  * Approve a purchase order
  */
-export async function approvePurchaseOrder(
+export function approvePurchaseOrder(
   poId: string
 ): Promise<ActionResult<void>> {
   return updatePurchaseOrderStatus(poId, "approved");
@@ -496,7 +494,7 @@ export async function approvePurchaseOrder(
 /**
  * Update purchase order line items
  */
-export async function updatePurchaseOrderLineItems(
+export function updatePurchaseOrderLineItems(
   poId: string,
   lineItems: any[]
 ): Promise<ActionResult<void>> {
@@ -613,7 +611,7 @@ export async function archivePurchaseOrder(
  * Removes the job association (sets job_id to NULL)
  * Bidirectional operation - updates both PO and job views
  */
-export async function unlinkPurchaseOrderFromJob(
+export function unlinkPurchaseOrderFromJob(
   poId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

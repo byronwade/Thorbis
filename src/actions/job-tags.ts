@@ -20,7 +20,7 @@ export type Tag = string | TagWithColor;
 /**
  * Update job tags
  */
-export async function updateJobTags(jobId: string, tags: Tag[]) {
+export function updateJobTags(jobId: string, tags: Tag[]) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -59,7 +59,7 @@ export async function updateJobTags(jobId: string, tags: Tag[]) {
 /**
  * Update customer tags
  */
-export async function updateCustomerTags(customerId: string, tags: Tag[]) {
+export function updateCustomerTags(customerId: string, tags: Tag[]) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -100,7 +100,7 @@ const COMMON_TAGS_LIMIT = 20;
 /**
  * Get commonly used tags for a company
  */
-export async function getCommonTags(companyId: string) {
+export function getCommonTags(companyId: string) {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

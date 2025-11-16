@@ -61,7 +61,7 @@ const customerPreferenceSchema = z.object({
   autoTagCustomers: z.boolean().default(false),
 });
 
-export async function updateCustomerPreferences(
+export function updateCustomerPreferences(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -119,7 +119,7 @@ export async function updateCustomerPreferences(
   });
 }
 
-export async function getCustomerPreferences(): Promise<ActionResult<any>> {
+export function getCustomerPreferences(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -176,7 +176,7 @@ const customFieldSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export async function createCustomField(
+export function createCustomField(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -247,7 +247,7 @@ export async function createCustomField(
   });
 }
 
-export async function updateCustomField(
+export function updateCustomField(
   fieldId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -316,7 +316,7 @@ export async function updateCustomField(
   });
 }
 
-export async function deleteCustomField(
+export function deleteCustomField(
   fieldId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -352,7 +352,7 @@ export async function deleteCustomField(
   });
 }
 
-export async function getCustomFields(): Promise<ActionResult<any[]>> {
+export function getCustomFields(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -401,7 +401,7 @@ const loyaltySettingsSchema = z.object({
   notifyOnPointsEarned: z.boolean().default(true),
 });
 
-export async function updateLoyaltySettings(
+export function updateLoyaltySettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -466,7 +466,7 @@ export async function updateLoyaltySettings(
   });
 }
 
-export async function getLoyaltySettings(): Promise<ActionResult<any>> {
+export function getLoyaltySettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -516,7 +516,7 @@ const privacySettingsSchema = z.object({
   enableDataExport: z.boolean().default(true),
 });
 
-export async function updatePrivacySettings(
+export function updatePrivacySettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -574,7 +574,7 @@ export async function updatePrivacySettings(
   });
 }
 
-export async function getPrivacySettings(): Promise<ActionResult<any>> {
+export function getPrivacySettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -633,7 +633,7 @@ const portalSettingsSchema = z.object({
   notifyOnAppointment: z.boolean().default(true),
 });
 
-export async function updatePortalSettings(
+export function updatePortalSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -700,7 +700,7 @@ export async function updatePortalSettings(
   });
 }
 
-export async function getPortalSettings(): Promise<ActionResult<any>> {
+export function getPortalSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -752,7 +752,7 @@ const intakeSettingsSchema = z.object({
   welcomeEmailTemplateId: z.string().optional(),
 });
 
-export async function updateIntakeSettings(
+export function updateIntakeSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -824,7 +824,7 @@ export async function updateIntakeSettings(
   });
 }
 
-export async function getIntakeSettings(): Promise<ActionResult<any>> {
+export function getIntakeSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

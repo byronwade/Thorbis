@@ -267,7 +267,6 @@ function buildCustomerStats(
       (sum, invoice) => sum + (invoice.total_amount || 0),
       0
     ),
-    lastContactDate: customer?.last_contact_date || null,
     customerSince: customer?.created_at || null,
   };
 }

@@ -196,7 +196,7 @@ function validateSLATimes(
 /**
  * Create a new service agreement
  */
-export async function createServiceAgreement(
+export function createServiceAgreement(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -356,7 +356,7 @@ export async function createServiceAgreement(
 /**
  * Update an existing service agreement
  */
-export async function updateServiceAgreement(
+export function updateServiceAgreement(
   agreementId: string,
   formData: FormData
 ): Promise<ActionResult<boolean>> {
@@ -495,7 +495,7 @@ export async function updateServiceAgreement(
 /**
  * Sign a service agreement
  */
-export async function signServiceAgreement(
+export function signServiceAgreement(
   agreementId: string,
   signedByCustomerName: string,
   signedByCompanyName: string,
@@ -550,7 +550,7 @@ export async function signServiceAgreement(
 /**
  * Terminate a service agreement
  */
-export async function terminateServiceAgreement(
+export function terminateServiceAgreement(
   agreementId: string,
   terminationReason: string
 ): Promise<ActionResult<boolean>> {
@@ -601,7 +601,7 @@ export async function terminateServiceAgreement(
 /**
  * Delete a service agreement
  */
-export async function deleteServiceAgreement(
+export function deleteServiceAgreement(
   agreementId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -646,7 +646,7 @@ export async function deleteServiceAgreement(
 /**
  * Search service agreements
  */
-export async function searchServiceAgreements(
+export function searchServiceAgreements(
   searchQuery: string,
   options?: {
     limit?: number;
