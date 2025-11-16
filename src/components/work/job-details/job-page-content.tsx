@@ -1019,7 +1019,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 		}
 	};
 
-	const headerBadges = job ? [
+	const headerBadges = (job ? [
 		<Badge className="font-mono text-xs" key="job-number" variant="secondary">
 			#{job.job_number}
 		</Badge>,
@@ -1037,7 +1037,7 @@ export function JobPageContent({ entityData, jobData: legacyJobData, metrics }: 
 				{localJob.priority}
 			</Badge>
 		) : null,
-	].filter(Boolean) : [];
+	] : []).filter(Boolean);
 
 	const handleArchiveJob = async () => {
 		setIsArchiving(true);
