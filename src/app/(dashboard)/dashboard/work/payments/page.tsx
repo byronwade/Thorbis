@@ -11,7 +11,7 @@
 
 import { Suspense } from "react";
 import { UpaymentsData } from "@/components/work/payments/payments-data";
-import { UpaymentsSkeleton } from "@/components/work/payments/payments-skeleton";
+import { PaymentsSkeleton } from "@/components/work/payments/payments-skeleton";
 import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 
 export default function UpaymentsPage() {
@@ -20,7 +20,7 @@ export default function UpaymentsPage() {
 			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
 				<UpaymentsStats />
 			</Suspense>
-			<Suspense fallback={<UpaymentsSkeleton />}>
+			<Suspense fallback={<PaymentsSkeleton />}>
 				<UpaymentsData />
 			</Suspense>
 		</>

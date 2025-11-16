@@ -27,3 +27,6 @@ export function CommunicationIdSkeleton() {
 		</div>
 	);
 }
+
+// Alias for backward compatibility
+export { CommunicationIdSkeleton as CommunicationDetailSkeleton };

@@ -28,3 +28,6 @@ export async function CommunicationIdData() {
 
 	return <div>Communication detail data loader placeholder</div>;
 }
+
+// Alias for backward compatibility
+export { CommunicationIdData as CommunicationDetailData };

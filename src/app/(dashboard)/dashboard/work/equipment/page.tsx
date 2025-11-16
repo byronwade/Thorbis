@@ -11,7 +11,7 @@
 
 import { Suspense } from "react";
 import { UequipmentData } from "@/components/work/equipment/equipment-data";
-import { UequipmentSkeleton } from "@/components/work/equipment/equipment-skeleton";
+import { EquipmentSkeleton } from "@/components/work/equipment/equipment-skeleton";
 import { UequipmentStats } from "@/components/work/equipment/equipment-stats";
 
 export default function UequipmentPage() {
@@ -20,7 +20,7 @@ export default function UequipmentPage() {
 			<Suspense fallback={<div className="h-24 animate-pulse rounded bg-muted" />}>
 				<UequipmentStats />
 			</Suspense>
-			<Suspense fallback={<UequipmentSkeleton />}>
+			<Suspense fallback={<EquipmentSkeleton />}>
 				<UequipmentData />
 			</Suspense>
 		</>
