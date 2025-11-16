@@ -20,6 +20,9 @@ import {
 } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
+// Invoice number pattern for parsing
+const INVOICE_NUMBER_PATTERN = /INV-\d{4}-(\d+)/;
+
 // Validation Schemas
 const lineItemSchema = z.object({
 	description: z.string().min(1, "Description is required"),
@@ -75,7 +78,7 @@ async function generateInvoiceNumber(supabase: any, companyId: string): Promise<
 		return `INV-${new Date().getFullYear()}-001`;
 	}
 
-	const match = latestInvoice.invoice_number.match(/INV-\d{4}-(\d+)/);
+	const match = latestInvoice.invoice_number.match(INVOICE_NUMBER_PATTERN);
 	if (match) {
 		const nextNumber = Number.parseInt(match[1], 10) + 1;
 		return `INV-${new Date().getFullYear()}-${nextNumber.toString().padStart(3, "0")}`;

@@ -16,8 +16,8 @@ import { ReportsSkeleton } from "@/components/reports/reports-skeleton";
 import { ReportsStats } from "@/components/reports/reports-stats";
 import { StatsCardsSkeleton } from "@/components/ui/stats-cards-skeleton";
 
-// Revalidate every 5 minutes
-export const revalidate = 300;
+// Note: revalidate is not compatible with Next.js 16+ cacheComponents
+// Use "use cache" directive with cacheLife instead
 
 export default function BusinessIntelligencePage() {
 	return (

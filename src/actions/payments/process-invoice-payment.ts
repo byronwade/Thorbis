@@ -43,7 +43,7 @@ type ProcessPaymentParams = {
 
 export async function processInvoicePayment(params: ProcessPaymentParams): Promise<PaymentResult> {
 	try {
-		const { invoiceId, token, paymentMethod, amount, paymentDetails } = params;
+		const { invoiceId, token, paymentMethod, amount, paymentDetails: _paymentDetails } = params;
 
 		// Validate token
 		const validation = await validatePaymentToken(token);
