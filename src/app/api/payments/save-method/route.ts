@@ -125,12 +125,14 @@ export async function POST(request: NextRequest) {
 					});
 				}
 			} catch (_stripeError) {
+    console.error("Error:", _stripeError);
 				// Don't fail - payment method is saved in our DB
 			}
 		}
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return NextResponse.json({ error: error.issues[0]?.message || "Validation error" }, { status: 400 });
 		}

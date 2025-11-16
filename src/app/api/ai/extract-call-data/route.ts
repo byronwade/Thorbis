@@ -65,6 +65,7 @@ export async function POST(req: Request) {
 		// Return streaming response
 		return result.toTextStreamResponse();
 	} catch (error) {
+    console.error("Error:", error);
 		return NextResponse.json(
 			{
 				error: "Failed to extract data",

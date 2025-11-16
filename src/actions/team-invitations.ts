@@ -139,6 +139,7 @@ export async function sendTeamMemberInvitations(
 					failedCount++;
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				failedCount++;
 			}
 		}

@@ -160,6 +160,7 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 				}
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("An error occurred while saving the contact");
 		} finally {
 			setIsLoading(false);
@@ -199,6 +200,7 @@ export function CustomerContactsManager({ customerId, initialContacts = [] }: Cu
 				toast.error(result.error || "Failed to delete contact");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("An error occurred while deleting the contact");
 		} finally {
 			setIsLoading(false);

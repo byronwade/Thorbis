@@ -119,6 +119,7 @@ export function ExportUsageButton({
 
 			toast.success(`Exported ${csvRows.length - 1} records to CSV.`);
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to export usage data. Please try again.");
 		} finally {
 			setIsExporting(false);

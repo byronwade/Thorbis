@@ -398,6 +398,7 @@ export function InvoicesTable({
 										toast.error("Failed to archive invoices");
 									}
 								} catch (error) {
+    console.error("Error:", error);
 									toast.dismiss(loadingToast);
 									toast.error(error instanceof Error ? error.message : "Failed to archive invoices");
 								}
@@ -472,6 +473,7 @@ export function InvoicesTable({
 										window.location.reload();
 									}
 								} catch (error) {
+    console.error("Error:", error);
 									completeOperation(
 										operationId,
 										false,

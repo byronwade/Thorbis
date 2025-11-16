@@ -83,6 +83,7 @@ class TrafficService {
 
 			return TrafficDataSchema.parse(trafficData);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -161,6 +162,7 @@ class TrafficService {
 
 			return incidents;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return [];
 		}
 	}

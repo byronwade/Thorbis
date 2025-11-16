@@ -407,6 +407,7 @@ export function MarketingHeader() {
 
 				setLoading(false);
 			} catch (_error) {
+    console.error("Error:", _error);
 				if (!cancelled) {
 					setUserProfile(null);
 					setLoading(false);

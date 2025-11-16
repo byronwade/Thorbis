@@ -132,6 +132,7 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 				toast.error(result.error || "Failed to link purchase order");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to link purchase order");
 		} finally {
 			setIsLinkingPO(false);
@@ -216,6 +217,7 @@ export function VendorPageContent({ entityData, metrics = {}, searchData = {} }:
 				toast.error(result.error || "Failed to save changes");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			setVendor(previousState);
 			setHasChanges(false);
 			toast.error("Failed to save changes");

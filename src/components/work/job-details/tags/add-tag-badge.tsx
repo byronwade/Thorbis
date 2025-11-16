@@ -140,6 +140,7 @@ export function AddTagBadge({ customerId, jobId, customerTags = [], jobTags = []
 				}
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to add tag");
 		} finally {
 			setIsSaving(false);

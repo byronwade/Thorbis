@@ -121,6 +121,7 @@ export class AdyenProcessor implements PaymentProcessor {
 				processorMetadata: data,
 			};
 		} catch (error) {
+    console.error("Error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -173,6 +174,7 @@ export class AdyenProcessor implements PaymentProcessor {
 				status: data.status === "received" ? "succeeded" : "processing",
 			};
 		} catch (error) {
+    console.error("Error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -215,6 +217,7 @@ export class AdyenProcessor implements PaymentProcessor {
 			// Adyen uses HMAC SHA256 with a webhook username/password
 			return true; // Placeholder
 		} catch (_error) {
+    console.error("Error:", _error);
 			return false;
 		}
 	}

@@ -113,6 +113,7 @@ export function TagManagerDialog({
 				toast.error(error || "Failed to update tags");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to update tags");
 		} finally {
 			setIsSaving(false);

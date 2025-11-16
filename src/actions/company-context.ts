@@ -45,6 +45,7 @@ export async function switchCompany(companyId: string): Promise<ActionResult<voi
 			message: "Company switched successfully",
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to switch company",
@@ -70,6 +71,7 @@ export async function clearCompany(): Promise<ActionResult<void>> {
 			message: "Company context cleared",
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to clear company context",
@@ -94,6 +96,7 @@ export async function getCompanies(): Promise<ActionResult<Array<{ id: string; n
 			data: companies,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get companies",
@@ -119,6 +122,7 @@ export async function getActiveCompanyDetails(): Promise<
 			data: company,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get active company",

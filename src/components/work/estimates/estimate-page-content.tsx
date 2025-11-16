@@ -127,6 +127,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 				toast.error(result.error || "Failed to unlink job");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to unlink job");
 		} finally {
 			setIsUnlinking(false);

@@ -83,6 +83,7 @@ export function CallRoutingManager() {
 				toast.error(result.error || "Failed to load routing rules");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to load routing rules");
 		} finally {
 			setIsLoading(false);

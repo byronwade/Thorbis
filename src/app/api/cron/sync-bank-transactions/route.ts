@@ -82,6 +82,7 @@ export async function GET(request: Request) {
 					});
 				}
 			} catch (error: any) {
+    console.error("Error:", error: any);
 				results.push({
 					companyId,
 					success: false,
@@ -97,6 +98,7 @@ export async function GET(request: Request) {
 			results,
 		});
 	} catch (error: any) {
+    console.error("Error:", error: any);
 		return NextResponse.json(
 			{
 				error: "Sync failed",

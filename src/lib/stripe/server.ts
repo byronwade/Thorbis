@@ -69,6 +69,7 @@ export async function getOrCreateStripeCustomer(userId: string, email: string, n
 
 		return customer.id;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -142,6 +143,7 @@ export async function createCheckoutSession({
 
 		return session.url;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -164,6 +166,7 @@ export async function createBillingPortalSession(customerId: string, returnUrl: 
 
 		return session.url;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -185,6 +188,7 @@ export async function cancelSubscription(subscriptionId: string): Promise<boolea
 
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -206,6 +210,7 @@ export async function reactivateSubscription(subscriptionId: string): Promise<bo
 
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -222,6 +227,7 @@ export async function getSubscription(subscriptionId: string): Promise<Stripe.Su
 		const subscription = await stripe.subscriptions.retrieve(subscriptionId);
 		return subscription;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -242,6 +248,7 @@ export async function listCustomerSubscriptions(customerId: string): Promise<Str
 
 		return subscriptions.data;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return [];
 	}
 }
@@ -272,6 +279,7 @@ export async function attachPaymentMethodToCustomer(paymentMethodId: string, cus
 
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }

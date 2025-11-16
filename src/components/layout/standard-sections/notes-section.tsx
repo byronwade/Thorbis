@@ -39,6 +39,7 @@ export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSe
 			setNewNote("");
 			setIsAdding(false);
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to add note");
 		} finally {
 			setIsSaving(false);

@@ -68,6 +68,7 @@ export function GeneralPhoneSettings() {
 				});
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to load phone settings");
 		} finally {
 			setIsLoading(false);

@@ -493,6 +493,7 @@ export function EstimatesTable({ estimates, itemsPerPage = 50 }: { estimates: Es
 										window.location.reload();
 									}
 								} catch (error) {
+    console.error("Error:", error);
 									completeOperation(
 										operationId,
 										false,

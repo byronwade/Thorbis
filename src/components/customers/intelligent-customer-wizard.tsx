@@ -302,6 +302,7 @@ export function IntelligentCustomerWizard() {
 				setErrors([result.error || "Failed to create customer"]);
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			setErrors(["An unexpected error occurred"]);
 		} finally {
 			setIsSubmitting(false);

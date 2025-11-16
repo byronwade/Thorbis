@@ -92,6 +92,7 @@ export async function createPlaidLinkToken(companyId: string): Promise<ActionRes
 
 			return { linkToken: response.data.link_token };
 		} catch (error: any) {
+    console.error("Error:", error: any);
 			const errorMessage = error.response?.data?.error_message || error.message || "Failed to create Plaid Link token";
 
 			throw new ActionError(errorMessage, ERROR_CODES.EXTERNAL_API_ERROR);
@@ -212,6 +213,7 @@ export async function exchangePlaidToken(
 
 			return { accountsLinked: accounts.length };
 		} catch (error: any) {
+    console.error("Error:", error: any);
 			throw new ActionError(error.message || "Failed to link bank account", ERROR_CODES.EXTERNAL_API_ERROR);
 		}
 	});
@@ -326,6 +328,7 @@ export async function syncTransactions(
 						.eq("id", account.id);
 				}
 			} catch (_error: any) {
+    console.error("Error:", _error: any);
 				// Continue with other accounts even if one fails
 			}
 		}

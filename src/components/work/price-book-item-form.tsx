@@ -257,6 +257,7 @@ export function PriceBookItemForm({ categories, suppliers, initialData }: PriceB
 			toast.success("Price book item created.");
 			router.push(`/dashboard/work/pricebook/${result.data}`);
 		} catch (err) {
+    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Something went wrong while saving the item.");
 			setIsSubmitting(false);
 		}

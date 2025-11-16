@@ -37,6 +37,7 @@ export async function getCustomerPaymentMethods(customerId: string) {
 
 		return { success: true, data: data || [] };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch payment methods",
@@ -79,6 +80,7 @@ export async function setDefaultCustomerPaymentMethod(paymentMethodId: string, c
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to set default",
@@ -137,6 +139,7 @@ export async function removeCustomerPaymentMethod(paymentMethodId: string, custo
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove payment method",

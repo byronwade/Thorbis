@@ -231,6 +231,7 @@ export function WelcomePageClient({ user, incompleteCompany, hasActiveCompany }:
 		try {
 			await saveOnboardingStepProgress(companyId, step, data);
 		} catch (_error) {
+    console.error("Error:", _error);
 			// Don't block user progress if saving fails
 		}
 	};
@@ -298,6 +299,7 @@ export function WelcomePageClient({ user, incompleteCompany, hasActiveCompany }:
 
 				setCurrentStep(2);
 			} catch (err) {
+    console.error("Error:", err);
 				toast.error(err instanceof Error ? err.message : "Failed to save company");
 			} finally {
 				setIsLoading(false);
@@ -366,6 +368,7 @@ export function WelcomePageClient({ user, incompleteCompany, hasActiveCompany }:
 				toast.error(result.error || "Failed to create payment session");
 			}
 		} catch (error) {
+    console.error("Error:", error);
 			toast.error(error instanceof Error ? error.message : "Payment setup failed");
 		} finally {
 			setIsLoading(false);

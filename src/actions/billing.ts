@@ -143,6 +143,7 @@ export async function createOrganizationCheckoutSession(
 			url: checkoutUrl,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return toBillingError(error, "Failed to create checkout session");
 	}
 }
@@ -195,6 +196,7 @@ export async function createBillingPortal(companyId?: string): Promise<BillingAc
 			url: portalUrl,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return toBillingError(error, "Failed to access billing portal");
 	}
 }
@@ -266,6 +268,7 @@ export async function getCompanySubscriptionStatus(companyId: string): Promise<B
 			},
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return toBillingError(error, "Failed to get subscription status");
 	}
 }
@@ -333,6 +336,7 @@ export async function cancelCompanySubscription(companyId: string): Promise<Bill
 			data: { message: "Subscription will be canceled at period end" },
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return toBillingError(error, "Failed to cancel subscription");
 	}
 }
@@ -400,6 +404,7 @@ export async function reactivateCompanySubscription(companyId: string): Promise<
 			data: { message: "Subscription reactivated successfully" },
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return toBillingError(error, "Failed to reactivate subscription");
 	}
 }

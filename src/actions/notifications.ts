@@ -158,6 +158,7 @@ export async function getNotifications(options?: Partial<GetNotificationsInput>)
 			count: count || 0,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -199,6 +200,7 @@ export async function getUnreadCount() {
 
 		return { success: true, count: data || 0 };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "An error occurred",
@@ -246,6 +248,7 @@ export async function createNotification(input: CreateNotificationInput) {
 
 		return { success: true, data };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -288,6 +291,7 @@ export async function markAsRead(notificationId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -328,6 +332,7 @@ export async function markAllAsRead() {
 
 		return { success: true, count: data || 0 };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "An error occurred",
@@ -365,6 +370,7 @@ export async function markAsUnread(notificationId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -403,6 +409,7 @@ export async function deleteNotification(notificationId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -445,6 +452,7 @@ export async function getNotificationPreferences() {
 
 		return { success: true, data: data || [] };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "An error occurred",
@@ -491,6 +499,7 @@ export async function updateNotificationPreferences(preferences: NotificationPre
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,

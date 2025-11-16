@@ -30,6 +30,7 @@ export function AttachmentsSection({ attachments, entityType, entityId, onUpload
 			}
 			toast.success(`${files.length} file(s) uploaded successfully`);
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to upload files");
 		} finally {
 			setIsUploading(false);

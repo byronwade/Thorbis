@@ -186,6 +186,7 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 				setIsLoading(false);
 			}
 		} catch (_err) {
+    console.error("Error:", _err);
 			setError("An unexpected error occurred. Please try again.");
 			setIsLoading(false);
 		}

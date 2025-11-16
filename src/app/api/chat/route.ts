@@ -73,6 +73,7 @@ export async function POST(request: Request) {
 
 		return result.toTextStreamResponse();
 	} catch (error) {
+    console.error("Error:", error);
 		return new Response(
 			JSON.stringify({
 				error: error instanceof Error ? error.message : "An error occurred",

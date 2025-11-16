@@ -75,6 +75,7 @@ export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
 			createdAt: new Date(profile?.createdAt || user.created_at),
 		};
 	} catch (_error) {
+    console.error("Error:", _error);
 		return {
 			id: "dev-user-1",
 			name: "Development User",
@@ -248,6 +249,7 @@ export const getUserCompanies = cache(
 
 			return Array.from(companyMap.values());
 		} catch (_error) {
+    console.error("Error:", _error);
 			return [];
 		}
 	}
@@ -287,6 +289,7 @@ export const getUserCompanyId = cache(async (): Promise<string | null> => {
 
 		return membership?.company_id || null;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 });
@@ -340,6 +343,7 @@ export async function updateUserProfile(
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Update failed",

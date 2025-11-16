@@ -67,6 +67,7 @@ export async function generatePaymentToken(
 			paymentLink,
 		};
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -110,6 +111,7 @@ export async function validatePaymentToken(token: string, _ipAddress?: string): 
 			message: validation.message,
 		};
 	} catch (_error) {
+    console.error("Error:", _error);
 		return {
 			isValid: false,
 			invoiceId: null,
@@ -161,6 +163,7 @@ export async function markTokenAsUsed(token: string, ipAddress?: string): Promis
 
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -199,6 +202,7 @@ export async function getInvoicePaymentTokens(invoiceId: string): Promise<Paymen
 			paymentLink: `${emailConfig.appUrl}/pay/${invoiceId}?token=${row.token}`,
 		}));
 	} catch (_error) {
+    console.error("Error:", _error);
 		return [];
 	}
 }

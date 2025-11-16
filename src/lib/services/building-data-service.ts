@@ -152,6 +152,7 @@ export class BuildingDataService {
 			});
 			return parsedData;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

@@ -303,6 +303,7 @@ export async function archiveEquipment(equipmentId: string): Promise<{ success: 
 		revalidatePath("/dashboard/work/equipment");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to archive equipment" };
 	}
 }
@@ -428,6 +429,7 @@ export async function removeEquipmentFromJob(jobEquipmentId: string): Promise<{ 
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove equipment from job",
@@ -474,6 +476,7 @@ export async function removeJobMaterial(jobMaterialId: string): Promise<{ succes
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove material from job",

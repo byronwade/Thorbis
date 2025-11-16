@@ -133,6 +133,7 @@ export function TeamMemberPageContent({ memberData, metrics }: TeamMemberPageCon
 				toast.error(result.error || "Failed to archive team member");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive team member");
 		} finally {
 			setIsArchiving(false);

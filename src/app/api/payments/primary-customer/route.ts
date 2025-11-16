@@ -32,6 +32,7 @@ export async function GET() {
 
 		return NextResponse.json({ customerId: userData.stripe_customer_id });
 	} catch (_error) {
+    console.error("Error:", _error);
 		return NextResponse.json({ error: "Failed to fetch customer information" }, { status: 500 });
 	}
 }

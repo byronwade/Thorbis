@@ -101,6 +101,7 @@ export async function getCustomerCallData(
 			data: result,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch customer data",
@@ -303,6 +304,7 @@ export async function getCustomerCallDataById(
 			data: result,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch customer data",

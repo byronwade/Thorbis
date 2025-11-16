@@ -88,6 +88,7 @@ export async function geocodeAddress(
 			error: data.error_message || `Geocoding failed: ${data.status}`,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown geocoding error",
@@ -113,6 +114,7 @@ export async function geocodeAddressSilent(
 		const result = await geocodeAddress(address, city, state, zipCode, country);
 		return result.success && result.coordinates ? result.coordinates : null;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }

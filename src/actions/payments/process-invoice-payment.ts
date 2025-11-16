@@ -219,6 +219,7 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
 					],
 				});
 			} catch (_emailError) {
+    console.error("Error:", _emailError);
 				// Don't fail the payment if email fails
 			}
 		}
@@ -232,6 +233,7 @@ export async function processInvoicePayment(params: ProcessPaymentParams): Promi
 			transactionId,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Payment processing failed",

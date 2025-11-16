@@ -129,6 +129,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
 			jobMaterials: jobMaterials || [],
 		});
 	} catch (_error) {
+    console.error("Error:", _error);
 		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

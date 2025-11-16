@@ -44,6 +44,7 @@ export function LoginForm() {
 			}
 			// If successful, the server action will redirect
 		} catch (caughtError) {
+    console.error("Error:", caughtError);
 			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return;
 			}
@@ -68,6 +69,7 @@ export function LoginForm() {
 			// If successful, the server action will redirect to OAuth provider
 			// Keep loading spinner active during redirect
 		} catch (caughtError) {
+    console.error("Error:", caughtError);
 			// Ignore NEXT_REDIRECT errors - these are expected during successful OAuth
 			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return; // Let the redirect happen, keep loading state

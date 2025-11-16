@@ -105,6 +105,7 @@ export function loadGoogleMapsScript(): Promise<void> {
 
 			document.head.appendChild(script);
 		} catch (error) {
+    console.error("Error:", error);
 			isLoading = false;
 			reject(error);
 		}

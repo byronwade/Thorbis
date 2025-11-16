@@ -42,6 +42,7 @@ export async function logActivity(
 
 		return { success: true, activityId: activity.id };
 	} catch (error) {
+    console.error("Error:", error);
 		return buildActivityErrorResponse("Failed to log activity", error);
 	}
 }
@@ -76,6 +77,7 @@ export async function getActivities(
 			activities: transformActivityRows(data ?? []),
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: true,
 			activities: buildMockActivities(filters),
@@ -102,6 +104,7 @@ export async function getActivityCount(
 
 		return { success: true, count: count ?? 0 };
 	} catch (error) {
+    console.error("Error:", error);
 		return buildActivityErrorResponse("Failed to fetch activity count", error);
 	}
 }
@@ -120,6 +123,7 @@ export async function deleteActivity(activityId: string): Promise<{ success: boo
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return buildActivityErrorResponse("Failed to delete activity", error);
 	}
 }

@@ -49,6 +49,7 @@ export function InlineEditableMetadata({ field, className }: InlineEditableMetad
 				setIsEditing(false);
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 		} finally {
 			setIsSaving(false);
 		}

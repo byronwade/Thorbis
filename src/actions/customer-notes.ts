@@ -72,6 +72,7 @@ export async function getCustomerNotes({ customerId, noteType = "all", limit = 5
 			count: count || 0,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch notes",
@@ -117,6 +118,7 @@ export async function createCustomerNote({
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true, data };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to create note",
@@ -157,6 +159,7 @@ export async function updateCustomerNote({
 
 		return { success: true, data };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update note",
@@ -189,6 +192,7 @@ export async function deleteCustomerNote(noteId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to delete note",

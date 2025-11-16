@@ -164,6 +164,7 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 				toast.error(result.error || "Failed to add tag");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to add tag");
 		} finally {
 			setIsSaving(false);
@@ -187,6 +188,7 @@ export function EntityTags({ entityId, entityType, tags, onUpdateTags, readOnly 
 				toast.error(result.error || "Failed to remove tag");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to remove tag");
 		} finally {
 			setTagToRemove(null);

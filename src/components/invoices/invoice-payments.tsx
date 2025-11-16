@@ -131,6 +131,7 @@ export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps
 				toast.error(result.error || "Failed to remove payment");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to remove payment");
 		} finally {
 			setIsRemoving(false);

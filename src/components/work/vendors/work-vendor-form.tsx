@@ -181,6 +181,7 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			const payload = (await response.json()) as CompanySuggestion[];
 			setLookupResults(payload.slice(0, 6));
 		} catch (err) {
+    console.error("Error:", err);
 			setLookupError(err instanceof Error ? err.message : "Unable to reach company directory.");
 		} finally {
 			setIsLookupLoading(false);
@@ -317,6 +318,7 @@ export function WorkVendorForm({ vendor, mode = "create" }: WorkVendorFormProps)
 			}
 			router.refresh();
 		} catch (err) {
+    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Unexpected error. Please try again.");
 			setIsSubmitting(false);
 		}

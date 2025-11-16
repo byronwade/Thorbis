@@ -76,6 +76,7 @@ export function TeamBulkUploadDialog({ open, onOpenChange, onImport }: TeamBulkU
 				setPreviewData(null);
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			setErrors(["Failed to parse file. Please check the format and try again."]);
 			setPreviewData(null);
 		} finally {

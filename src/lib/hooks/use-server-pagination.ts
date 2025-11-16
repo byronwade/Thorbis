@@ -169,6 +169,7 @@ export function useServerPagination<T>({
 			setData(response.data);
 			setTotalCount(response.totalCount);
 		} catch (err) {
+    console.error("Error:", err);
 			setError(err instanceof Error ? err : new Error("Failed to fetch data"));
 			setData([]);
 			setTotalCount(0);

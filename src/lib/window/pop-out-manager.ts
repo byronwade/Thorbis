@@ -140,6 +140,7 @@ export function createPopOutWindow(callId: string): Window | null {
 
 		return popOut;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -156,6 +157,7 @@ export function sendToPopOut(popOutWindow: Window | null, message: PopOutMessage
 		popOutWindow.postMessage(message, window.location.origin);
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -172,6 +174,7 @@ export function sendToMain(message: PopOutMessage): boolean {
 		window.opener.postMessage(message, window.location.origin);
 		return true;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -255,6 +258,7 @@ export function waitForPopOutReady(
 			clearInterval(checkInterval);
 			onReady();
 		} catch (_error) {
+    console.error("Error:", _error);
 			// Pop-out not ready yet, continue checking
 		}
 	}, 100);

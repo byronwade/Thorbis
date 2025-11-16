@@ -31,6 +31,7 @@ export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) 
 				});
 				toast.success(result.enabled ? "Purchase orders enabled" : "Purchase orders disabled");
 			} catch (error) {
+    console.error("Error:", error);
 				setIsEnabled(!nextValue);
 				const message = error instanceof Error ? error.message : "Unable to update purchase orders";
 				toast.error(message);

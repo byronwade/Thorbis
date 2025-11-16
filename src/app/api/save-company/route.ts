@@ -285,6 +285,7 @@ export async function POST(request: NextRequest) {
 			companyId,
 		});
 	} catch (error) {
+    console.error("Error:", error);
 		return NextResponse.json(
 			{
 				error: error instanceof Error ? error.message : "Internal server error",

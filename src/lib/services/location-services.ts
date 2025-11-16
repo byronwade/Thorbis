@@ -130,6 +130,7 @@ export class LocationServices {
 			};
 			return GeocodingResultSchema.parse(result);
 		} catch (error: any) {
+    console.error("Error:", error: any);
 			if (error.name === "TimeoutError" || error.name === "AbortError") {
 				// TODO: Handle error case
 			} else {
@@ -187,6 +188,7 @@ export class LocationServices {
 			};
 			return GeocodingResultSchema.parse(result);
 		} catch (error: any) {
+    console.error("Error:", error: any);
 			if (error.name === "TimeoutError" || error.name === "AbortError") {
 				// TODO: Handle error case
 			} else {
@@ -268,6 +270,7 @@ export class LocationServices {
 			this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
 			return GeocodingResultSchema.parse(result);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -306,6 +309,7 @@ export class LocationServices {
 			this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
 			return CountyDataSchema.parse(result);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}
@@ -402,6 +406,7 @@ export class LocationServices {
 			this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
 			return FloodZoneSchema.parse(result);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

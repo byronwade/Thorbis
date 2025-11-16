@@ -153,6 +153,7 @@ export async function getTeamExtensions() {
 
 		return { success: true, data: transformedData };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to fetch team extensions" };
 	}
 }
@@ -202,6 +203,7 @@ export async function updateTeamMemberExtension(teamMemberId: string, extensionD
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -261,6 +263,7 @@ export async function setVacationMode(teamMemberId: string, vacationData: z.infe
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -302,6 +305,7 @@ export async function getCallRoutingRules() {
 
 		return { success: true, data };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to fetch routing rules" };
 	}
 }
@@ -346,6 +350,7 @@ export async function createRoutingRule(ruleData: z.infer<typeof routingRuleSche
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -385,6 +390,7 @@ export async function updateRoutingRule(ruleId: string, ruleData: z.infer<typeof
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -423,6 +429,7 @@ export async function deleteRoutingRule(ruleId: string) {
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to delete routing rule" };
 	}
 }
@@ -475,6 +482,7 @@ export async function updateRulePriority(ruleId: string, direction: "up" | "down
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to update priority" };
 	}
 }
@@ -510,6 +518,7 @@ export async function getCompanyHolidays() {
 
 		return { success: true, data };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to fetch holidays" };
 	}
 }
@@ -542,6 +551,7 @@ export async function createHoliday(holidayData: z.infer<typeof holidaySchema>) 
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -581,6 +591,7 @@ export async function updateHoliday(holidayId: string, holidayData: z.infer<type
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -619,6 +630,7 @@ export async function deleteHoliday(holidayId: string) {
 		revalidatePath("/dashboard/settings/communications/phone");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to delete holiday" };
 	}
 }

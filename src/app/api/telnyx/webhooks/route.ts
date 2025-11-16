@@ -59,6 +59,7 @@ function verifyWebhookSignature(payload: string, signature: string, timestamp: s
 
 		return isValid;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -123,6 +124,7 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json({ received: true });
 	} catch (_error) {
+    console.error("Error:", _error);
 		return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
 	}
 }

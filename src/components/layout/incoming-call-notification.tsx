@@ -1529,6 +1529,7 @@ export function IncomingCallNotification() {
 				} else {
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 			} finally {
 				setIsLoadingCredentials(false);
 			}

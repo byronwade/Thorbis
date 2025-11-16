@@ -508,6 +508,7 @@ export async function archivePurchaseOrder(poId: string): Promise<{ success: boo
 		revalidatePath("/dashboard/work/purchase-orders");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error",

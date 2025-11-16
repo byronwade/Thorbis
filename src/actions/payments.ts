@@ -90,6 +90,7 @@ async function createPaymentWithData(
 		revalidatePath("/dashboard/finance/payments");
 		return { success: true, paymentId: payment.id };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -160,6 +161,7 @@ async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentR
 
 		return createPaymentWithData(paymentData, supabase);
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -192,6 +194,7 @@ export async function getPayment(paymentId: string): Promise<{ success: boolean;
 
 		return { success: true, payment };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -248,6 +251,7 @@ export async function getPayments(filters?: {
 
 		return { success: true, payments };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -281,6 +285,7 @@ export async function updatePayment(
 		revalidatePath(`/dashboard/finance/payments/${paymentId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -372,6 +377,7 @@ export async function refundPayment(
 		revalidatePath(`/dashboard/finance/payments/${paymentId}`);
 		return { success: true, refundId: refund.id };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -416,6 +422,7 @@ export async function reconcilePayment(paymentId: string): Promise<{ success: bo
 		revalidatePath(`/dashboard/finance/payments/${paymentId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -448,6 +455,7 @@ export async function unreconcilePayment(paymentId: string): Promise<{ success: 
 		revalidatePath(`/dashboard/finance/payments/${paymentId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -491,6 +499,7 @@ export async function deletePayment(paymentId: string): Promise<{ success: boole
 		revalidatePath("/dashboard/work/payments");
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}
@@ -548,6 +557,7 @@ export async function unlinkPaymentFromJob(paymentId: string): Promise<{ success
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof Error) {
 			return { success: false, error: error.message };
 		}

@@ -116,6 +116,7 @@ export function TeamExtensionsManager() {
 				toast.error(result.error || "Failed to load team extensions");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to load team extensions");
 		} finally {
 			setIsLoading(false);

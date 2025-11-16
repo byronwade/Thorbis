@@ -77,6 +77,7 @@ export async function processSyncQueue(): Promise<{
 			await deleteRecord("sync-queue", operation.id);
 			successCount++;
 		} catch (error) {
+    console.error("Error:", error);
 			const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
 			// Increment retry count
@@ -224,6 +225,7 @@ export async function retryOperation(operationId: string): Promise<boolean> {
 		await deleteRecord("sync-queue", operationId);
 		return true;
 	} catch (error) {
+    console.error("Error:", error);
 		const _errorMessage = error instanceof Error ? error.message : "Unknown error";
 		return false;
 	}

@@ -168,6 +168,7 @@ export async function createCustomField(formData: FormData): Promise<ActionResul
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
 			} catch (_e) {
+    console.error("Error:", _e);
 				throw new ActionError("Invalid field options JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}
@@ -227,6 +228,7 @@ export async function updateCustomField(fieldId: string, formData: FormData): Pr
 			try {
 				fieldOptionsJson = JSON.parse(data.fieldOptions);
 			} catch (_e) {
+    console.error("Error:", _e);
 				throw new ActionError("Invalid field options JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}
@@ -355,6 +357,7 @@ export async function updateLoyaltySettings(formData: FormData): Promise<ActionR
 			try {
 				rewardTiersJson = JSON.parse(data.rewardTiers);
 			} catch (_e) {
+    console.error("Error:", _e);
 				throw new ActionError("Invalid reward tiers JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}
@@ -661,6 +664,7 @@ export async function updateIntakeSettings(formData: FormData): Promise<ActionRe
 			try {
 				customQuestionsJson = JSON.parse(data.customQuestions);
 			} catch (_e) {
+    console.error("Error:", _e);
 				throw new ActionError("Invalid custom questions JSON", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}

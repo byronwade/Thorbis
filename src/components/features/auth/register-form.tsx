@@ -111,6 +111,7 @@ export function RegisterForm() {
 				setIsLoading(false);
 			}
 		} catch (caughtError) {
+    console.error("Error:", caughtError);
 			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return;
 			}
@@ -156,6 +157,7 @@ export function RegisterForm() {
 			setAvatarPreview(null);
 			setIsLoading(false);
 		} catch (caughtError) {
+    console.error("Error:", caughtError);
 			setError(caughtError instanceof Error ? caughtError.message : "Something went wrong. Please try again.");
 			setIsLoading(false);
 		}

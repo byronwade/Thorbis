@@ -94,6 +94,7 @@ export async function getCompanyWeather(): Promise<WeatherActionResult> {
 
 		return { success: true, data: weatherData };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to fetch weather" };
 	}
 }

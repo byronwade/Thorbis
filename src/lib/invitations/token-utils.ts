@@ -56,6 +56,7 @@ export function verifyInvitationToken(token: string): {
 
 		return { valid: true, payload };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { valid: false, error: "Token verification failed" };
 	}
 }

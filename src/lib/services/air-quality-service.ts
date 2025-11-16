@@ -70,6 +70,7 @@ export class AirQualityService {
 			try {
 				data = JSON.parse(text);
 			} catch (_e) {
+    console.error("Error:", _e);
 				return null;
 			}
 
@@ -96,6 +97,7 @@ export class AirQualityService {
 
 			return airQuality;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

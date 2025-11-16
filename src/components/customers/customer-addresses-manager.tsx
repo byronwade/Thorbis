@@ -178,6 +178,7 @@ export function CustomerAddressesManager({ customerId, initialAddresses = [] }: 
 				}
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			alert("An error occurred");
 		} finally {
 			setIsLoading(false);
@@ -218,6 +219,7 @@ export function CustomerAddressesManager({ customerId, initialAddresses = [] }: 
 				alert(result.error || "Failed to delete address");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			alert("An error occurred");
 		} finally {
 			setIsLoading(false);

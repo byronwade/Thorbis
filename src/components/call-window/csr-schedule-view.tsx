@@ -72,6 +72,7 @@ export function CSRScheduleView({ className, companyId }: CSRScheduleViewProps) 
 				const schedules = await getTechnicianSchedules(selectedDate, companyId);
 				setTechnicians(schedules);
 			} catch (_err) {
+    console.error("Error:", _err);
 				setError("Failed to load schedules");
 			} finally {
 				setIsLoading(false);

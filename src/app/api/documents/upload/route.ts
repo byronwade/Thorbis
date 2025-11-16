@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
 			warnings: result.warnings,
 		});
 	} catch (error) {
+    console.error("Error:", error);
 		return NextResponse.json(
 			{
 				error: "Upload failed",

@@ -282,6 +282,7 @@ export async function validateFile(file: File, options: ValidationOptions = {}):
 				}
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			warnings.push("Could not verify file signature");
 		}
 	}

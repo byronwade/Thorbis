@@ -126,6 +126,7 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 				sonnerToast.error(result.error || "Failed to archive purchase order");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			sonnerToast.error("Failed to archive purchase order");
 		} finally {
 			setIsArchiving(false);
@@ -854,6 +855,7 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 																throw new Error(result.error || "Failed to update vendor");
 															}
 														} catch (error) {
+    console.error("Error:", error);
 															toast.error(error instanceof Error ? error.message : "Failed to update vendor");
 														} finally {
 															setIsUpdatingVendor(false);

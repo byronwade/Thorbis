@@ -102,6 +102,7 @@ export function JobDetailToolbar({
 				toast.error(result.error || "Failed to archive job");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive job");
 		} finally {
 			setIsArchiving(false);

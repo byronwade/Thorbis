@@ -137,6 +137,7 @@ export async function GET(request: Request) {
 			...summary,
 		});
 	} catch (error: any) {
+    console.error("Error:", error: any);
 		return NextResponse.json({ error: "Verification failed", details: error.message }, { status: 500 });
 	}
 }

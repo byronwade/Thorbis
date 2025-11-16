@@ -120,6 +120,7 @@ export async function searchPhoneNumbers(params: {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to search phone numbers",
@@ -189,6 +190,7 @@ export async function purchasePhoneNumber(params: { phoneNumber: string; company
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to purchase phone number",
@@ -222,6 +224,7 @@ export async function getCompanyPhoneNumbers(companyId: string) {
 			data: data || [],
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get phone numbers",
@@ -266,6 +269,7 @@ export async function updatePhoneNumber(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update phone number",
@@ -312,6 +316,7 @@ export async function deletePhoneNumber(phoneNumberId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to delete phone number",
@@ -398,6 +403,7 @@ export async function makeCall(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to make call",
@@ -417,6 +423,7 @@ export async function acceptCall(callControlId: string) {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to answer call",
@@ -436,6 +443,7 @@ export async function declineCall(callControlId: string) {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to reject call",
@@ -452,6 +460,7 @@ export async function endCall(callControlId: string) {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to end call",
@@ -472,6 +481,7 @@ export async function startCallRecording(callControlId: string) {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to start recording",
@@ -488,6 +498,7 @@ export async function stopCallRecording(callControlId: string) {
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to stop recording",
@@ -509,6 +520,7 @@ export async function transferActiveCall(params: { callControlId: string; to: st
 
 		return result;
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to transfer call",
@@ -565,6 +577,7 @@ export async function transcribeCallRecording(params: { recordingUrl: string; co
 			status: result.data.status,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to transcribe recording",
@@ -652,6 +665,7 @@ export async function sendTextMessage(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send SMS",
@@ -739,6 +753,7 @@ export async function sendMMSMessage(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send MMS",
@@ -814,6 +829,7 @@ export async function getWebRTCCredentials() {
 			credential: result.credential,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get WebRTC credentials",
@@ -855,6 +871,7 @@ export async function getVoicemails(companyId: string) {
 			data: data || [],
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get voicemails",
@@ -894,6 +911,7 @@ export async function markVoicemailAsRead(voicemailId: string, userId: string) {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to mark voicemail as read",
@@ -927,6 +945,7 @@ export async function deleteVoicemail(voicemailId: string, userId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to delete voicemail",
@@ -968,6 +987,7 @@ export async function getCallRoutingRules(companyId: string) {
 			data: data || [],
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get call routing rules",
@@ -1047,6 +1067,7 @@ export async function createCallRoutingRule(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to create call routing rule",
@@ -1163,6 +1184,7 @@ export async function updateCallRoutingRule(params: {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update call routing rule",
@@ -1196,6 +1218,7 @@ export async function deleteCallRoutingRule(ruleId: string, userId: string) {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to delete call routing rule",
@@ -1231,6 +1254,7 @@ export async function toggleCallRoutingRule(ruleId: string, isActive: boolean) {
 			data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to toggle call routing rule",
@@ -1303,6 +1327,7 @@ export async function getPhoneNumberUsageStats(phoneNumberId: string, days = 30)
 			},
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get usage statistics",
@@ -1360,6 +1385,7 @@ export async function getCompanyUsageStats(companyId: string, days = 30) {
 			},
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get usage statistics",

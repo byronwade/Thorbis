@@ -338,6 +338,7 @@ export async function uploadDocument(file: File, options: UploadOptions): Promis
 			warnings: validation.warnings,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Upload failed",
@@ -434,6 +435,7 @@ export async function getDownloadUrl(
 
 		return { url: data.signedUrl };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			error: error instanceof Error ? error.message : "Failed to generate download URL",
 		};
@@ -516,6 +518,7 @@ export async function listDocuments(
 			total: count || 0,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			documents: [],
 			total: 0,
@@ -584,6 +587,7 @@ export async function deleteDocument(attachmentId: string): Promise<{ success: b
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Delete failed",
@@ -618,6 +622,7 @@ export async function moveDocument(
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Move failed",
@@ -655,6 +660,7 @@ export async function updateDocumentMetadata(
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Update failed",
@@ -728,6 +734,7 @@ export async function getDocumentStats(companyId: string): Promise<{
 
 		return { totalFiles, totalSize, byType };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			totalFiles: 0,
 			totalSize: 0,

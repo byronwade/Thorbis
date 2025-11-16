@@ -120,7 +120,8 @@
       "Bash(then echo '=== $file ===' grep ^export $path)",
       "Bash(tr:*)",
       "Bash(/Users/byronwade/Stratos/src/types/supabase.ts)",
-      "Bash(pnpm supabase gen types:*)"
+      "Bash(pnpm supabase gen types:*)",
+      "Bash(time node:*)"
     ],
     "deny": [],
     "ask": []

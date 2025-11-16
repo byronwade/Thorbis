@@ -233,6 +233,7 @@ export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRT
 
 			await client.connect();
 		} catch (error) {
+    console.error("Error:", error);
 			setConnectionError(error instanceof Error ? error.message : "Connection failed");
 			setIsConnecting(false);
 		}

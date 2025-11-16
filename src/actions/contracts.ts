@@ -258,6 +258,7 @@ export async function createContract(
 			contractId: contract.id,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -318,6 +319,7 @@ export async function updateContract(
 		revalidatePath(`/dashboard/work/contracts/${contractId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -378,6 +380,7 @@ export async function archiveContract(contractId: string): Promise<{ success: bo
 		revalidatePath("/dashboard/settings/archive");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to archive contract" };
 	}
 }
@@ -424,6 +427,7 @@ export async function restoreContract(contractId: string): Promise<{ success: bo
 		revalidatePath("/dashboard/settings/archive");
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to restore contract" };
 	}
 }
@@ -466,6 +470,7 @@ export async function sendContract(contractId: string): Promise<{ success: boole
 		revalidatePath(`/dashboard/work/contracts/${contractId}`);
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to send contract" };
 	}
 }
@@ -515,6 +520,7 @@ export async function signContract(formData: FormData): Promise<{ success: boole
 		revalidatePath(`/dashboard/work/contracts/${data.contractId}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -555,6 +561,7 @@ export async function rejectContract(
 		revalidatePath(`/dashboard/work/contracts/${contractId}`);
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to reject contract" };
 	}
 }
@@ -601,6 +608,7 @@ export async function trackContractView(contractId: string): Promise<{ success: 
 		revalidatePath(`/dashboard/work/contracts/${contractId}`);
 		return { success: true };
 	} catch (_error) {
+    console.error("Error:", _error);
 		return { success: false, error: "Failed to track contract view" };
 	}
 }

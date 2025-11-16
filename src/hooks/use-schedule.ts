@@ -155,6 +155,7 @@ export function useSchedule() {
 				setLastSync(new Date());
 				setLastFetchedRange(fetchedRange);
 			} catch (error) {
+    console.error("Error:", error);
 				if (!isMounted) {
 					return;
 				}

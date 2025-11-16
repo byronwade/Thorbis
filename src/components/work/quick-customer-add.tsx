@@ -78,6 +78,7 @@ export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerA
 				alert(result.error || "Failed to create customer");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			alert("Failed to create customer");
 		} finally {
 			setIsLoading(false);

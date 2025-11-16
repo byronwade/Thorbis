@@ -384,6 +384,7 @@ export class JobEnrichmentService {
 
 			return enrichment;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return {
 				jobId: job.id,
 				location: {
@@ -409,6 +410,7 @@ export class JobEnrichmentService {
 		try {
 			return await weatherService.getActiveAlerts(lat, lon);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return [];
 		}
 	}
@@ -420,6 +422,7 @@ export class JobEnrichmentService {
 		try {
 			return await routingService.getRoute(from, to);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

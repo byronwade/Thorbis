@@ -76,6 +76,7 @@ export class WorkflowEngine {
 					// Pass output to next step
 					currentInput = stepOutput;
 				} catch (error) {
+    console.error("Error:", error);
 					const stepEndTime = new Date();
 					const stepResult: WorkflowStepResult = {
 						stepId: step.id,
@@ -102,6 +103,7 @@ export class WorkflowEngine {
 			result.status = "completed";
 			result.output = finalOutput;
 		} catch (error) {
+    console.error("Error:", error);
 			result.status = "error";
 			result.error = error instanceof Error ? error.message : String(error);
 
@@ -162,6 +164,7 @@ export class WorkflowEngine {
 			try {
 				return await step.execute(input, context);
 			} catch (error) {
+    console.error("Error:", error);
 				lastError = error instanceof Error ? error : new Error(String(error));
 
 				if (attempt < maxRetries) {

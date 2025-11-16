@@ -313,6 +313,7 @@ export async function updatePhoneSettings(formData: FormData): Promise<ActionRes
 			try {
 				ivrMenuJson = JSON.parse(ivrMenuStr);
 			} catch (_e) {
+    console.error("Error:", _e);
 				// Invalid JSON, use empty object
 			}
 		}

@@ -85,6 +85,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 					toast.error(result.error || "Failed to dispatch appointment");
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Failed to dispatch appointment");
 			} finally {
 				setLoadingAppointmentId(null);
@@ -109,6 +110,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 					toast.error(result.error || "Failed to mark as arrived");
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Failed to mark as arrived");
 			} finally {
 				setLoadingAppointmentId(null);
@@ -147,6 +149,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 					toast.error(result.error || "Failed to close appointment");
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Failed to close appointment");
 			} finally {
 				setLoadingAppointmentId(null);

@@ -149,6 +149,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				toast.error(result.error || "Failed to archive invoice");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive invoice");
 		} finally {
 			setIsArchiving(false);
@@ -173,6 +174,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				toast.error(result.error || "Failed to unlink job");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to unlink job");
 		} finally {
 			setIsUnlinking(false);

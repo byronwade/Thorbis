@@ -162,6 +162,7 @@ export async function uploadDocument(formData: FormData): Promise<ActionResult<U
 			activeCompanyId,
 		});
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Upload failed",
@@ -501,6 +502,7 @@ export async function uploadDocuments(formData: FormData): Promise<ActionResult<
 			warnings: errors.length > 0 ? errors : undefined,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Upload failed",
@@ -571,6 +573,7 @@ export async function getDocumentDownloadUrl(attachmentId: string): Promise<Acti
 			data: result.url,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get download URL",
@@ -638,6 +641,7 @@ export async function deleteDocument(attachmentId: string): Promise<ActionResult
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Delete failed",
@@ -669,6 +673,7 @@ export async function bulkDeleteDocuments(
 			data: { deleted, failed },
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Bulk delete failed",
@@ -740,6 +745,7 @@ export async function updateDocument(
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Update failed",
@@ -799,6 +805,7 @@ export async function moveDocument(attachmentId: string, newFolderPath: string):
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Move failed",
@@ -839,6 +846,7 @@ export async function listDocuments(
 			data: result,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "List failed",
@@ -926,6 +934,7 @@ export async function createFolder(params: CreateFolderParams): Promise<ActionRe
 			data: { folderId: data.id },
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to create folder",
@@ -990,6 +999,7 @@ export async function deleteFolder(folderId: string): Promise<ActionResult> {
 
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Delete failed",
@@ -1030,6 +1040,7 @@ export async function getDocumentStatistics(
 			data: stats,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to get statistics",

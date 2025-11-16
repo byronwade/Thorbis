@@ -313,6 +313,7 @@ export function WelcomePageClientAdvanced({
 		try {
 			await saveOnboardingStepProgress(companyId, step, data);
 		} catch (_err) {
+    console.error("Error:", _err);
 			// Silent fail - don't block user progress
 		}
 	};
@@ -372,6 +373,7 @@ export function WelcomePageClientAdvanced({
 				toast.success("Company information saved successfully");
 				setCurrentStep(2);
 			} catch (err) {
+    console.error("Error:", err);
 				toast.error(err instanceof Error ? err.message : "Failed to save company");
 			} finally {
 				setIsLoading(false);
@@ -454,6 +456,7 @@ export function WelcomePageClientAdvanced({
 				toast.error(result.error || "Failed to create payment session");
 			}
 		} catch (err) {
+    console.error("Error:", err);
 			toast.error(err instanceof Error ? err.message : "Payment setup failed");
 		} finally {
 			setIsLoading(false);

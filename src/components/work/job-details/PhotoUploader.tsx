@@ -223,6 +223,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 						errorCount++;
 					}
 				} catch (_error) {
+    console.error("Error:", _error);
 					errorCount++;
 				}
 
@@ -259,6 +260,7 @@ export function PhotoUploader({ jobId, companyId, onUpload, onCancel, className 
 				onCancel?.();
 			}, 500);
 		} catch (error) {
+    console.error("Error:", error);
 			toast.error(error instanceof Error ? error.message : "Failed to upload files");
 			setIsUploading(false);
 			setUploadProgress(0);

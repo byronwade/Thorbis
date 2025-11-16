@@ -182,6 +182,7 @@ export function useAIExtraction() {
 				setLastExtractedLength(entries.length);
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			// Fall back to previous data on error
 		} finally {
 			setIsExtracting(false);

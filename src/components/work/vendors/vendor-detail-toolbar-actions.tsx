@@ -46,6 +46,7 @@ export function VendorDetailToolbarActions() {
 			//   toast.error(result.error || "Failed to archive vendor");
 			// }
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive vendor");
 		} finally {
 			setIsArchiving(false);

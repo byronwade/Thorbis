@@ -55,6 +55,7 @@ export class ElevationService {
 			try {
 				data = JSON.parse(text);
 			} catch (_e) {
+    console.error("Error:", _e);
 				return null;
 			}
 
@@ -81,6 +82,7 @@ export class ElevationService {
 
 			return elevation;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

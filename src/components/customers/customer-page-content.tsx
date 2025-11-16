@@ -208,6 +208,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 			setHasChanges(false);
 			router.refresh();
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to update customer");
 		} finally {
 			setIsSaving(false);

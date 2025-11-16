@@ -156,6 +156,7 @@ export async function sendEmail({
 				});
 			}
 		} catch (_logError) {
+    console.error("Error:", _logError);
 			// Don't throw - email was sent successfully even if logging failed
 		}
 
@@ -167,6 +168,7 @@ export async function sendEmail({
 			},
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,
@@ -256,6 +258,7 @@ export async function testEmailConfiguration(testEmailAddress: string): Promise<
 			tags: [{ name: "type", value: "test" }],
 		});
 	} catch (error) {
+    console.error("Error:", error);
 		if (error instanceof z.ZodError) {
 			return {
 				success: false,

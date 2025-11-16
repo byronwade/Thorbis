@@ -94,6 +94,7 @@ export function useSettings<T extends Record<string, any>>({
 				setHasUnsavedChanges(false);
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error(`Failed to load ${settingsName} settings`);
 		} finally {
 			setIsLoading(false);
@@ -137,6 +138,7 @@ export function useSettings<T extends Record<string, any>>({
 					toast.error(result.error || `Failed to save ${settingsName} settings`);
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error(`An unexpected error occurred while saving ${settingsName} settings`);
 			}
 		});

@@ -184,6 +184,7 @@ export function verifyWebhookSignature(params: {
 
 		return crypto.verify(null, signedPayload, publicKey, Buffer.from(params.signature, "base64"));
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }
@@ -202,6 +203,7 @@ export function parseWebhookPayload(rawPayload: string | Buffer): WebhookPayload
 
 		return payload as WebhookPayload;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
@@ -282,6 +284,7 @@ export function isWebhookTimestampValid(timestamp: string, maxAgeSeconds = 300):
 
 		return age <= maxAgeSeconds;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return false;
 	}
 }

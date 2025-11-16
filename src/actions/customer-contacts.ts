@@ -96,6 +96,7 @@ export async function getCustomerContacts(customerId: string) {
 
 		return { success: true, data: data || [] };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to fetch contacts",
@@ -183,6 +184,7 @@ export async function addCustomerContact({
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true, data };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to add contact",
@@ -214,6 +216,7 @@ export async function updateCustomerContact({
 
 		return { success: true, data };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to update contact",
@@ -250,6 +253,7 @@ export async function removeCustomerContact(contactId: string) {
 		revalidatePath(`/dashboard/customers/${contact.customer_id}`);
 		return { success: true };
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to remove contact",

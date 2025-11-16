@@ -68,6 +68,7 @@ export async function sendInvoiceEmail(invoiceId: string) {
 			message: `Invoice sent to ${invoice.customer.email}`,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send invoice",
@@ -128,6 +129,7 @@ export async function sendEstimateEmail(estimateId: string) {
 			message: `Estimate sent to ${estimate.customer.email}`,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send estimate",

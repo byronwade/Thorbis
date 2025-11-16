@@ -48,6 +48,7 @@ export async function lookupCallerInfo(phoneNumber: string) {
 			data: payload.data,
 		};
 	} catch (error) {
+    console.error("Error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Unknown error during lookup",

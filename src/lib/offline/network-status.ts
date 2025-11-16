@@ -80,6 +80,7 @@ export function useNetworkStatus(): NetworkStatus {
 				setLastSync(new Date());
 				await updatePendingCount();
 			} catch (_error) {
+    console.error("Error:", _error);
 			} finally {
 				setIsSyncing(false);
 				isSyncingRef.current = false;
@@ -103,6 +104,7 @@ export function useNetworkStatus(): NetworkStatus {
 					setLastSync(new Date());
 					await updatePendingCount();
 				} catch (_error) {
+    console.error("Error:", _error);
 				} finally {
 					setIsSyncing(false);
 					isSyncingRef.current = false;

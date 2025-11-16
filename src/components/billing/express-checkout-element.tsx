@@ -118,6 +118,7 @@ function ExpressCheckoutInner({
 							}
 						}
 					} catch (error) {
+    console.error("Error:", error);
 						(event as any).complete("fail");
 						onPaymentError?.(error instanceof Error ? error : new Error("Payment failed"));
 					}

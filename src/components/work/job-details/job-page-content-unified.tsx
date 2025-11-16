@@ -219,6 +219,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				toast.error(result.error || "Failed to archive job");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive job");
 		} finally {
 			setIsArchiving(false);
@@ -301,6 +302,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 					toast.error(result.error || "Failed to update customer");
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Failed to update customer");
 			} finally {
 				setIsUpdatingCustomer(false);
@@ -326,6 +328,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				toast.error(result.error || "Failed to remove customer");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to remove customer");
 		} finally {
 			setIsUpdatingCustomer(false);
@@ -359,6 +362,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 					toast.error(result.error || "Failed to update property");
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Failed to update property");
 			} finally {
 				setIsUpdatingProperty(false);
@@ -382,6 +386,7 @@ export function JobPageContentUnified({ entityData, metrics }: JobPageContentPro
 				toast.error(result.error || "Failed to remove property");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to remove property");
 		} finally {
 			setIsUpdatingProperty(false);

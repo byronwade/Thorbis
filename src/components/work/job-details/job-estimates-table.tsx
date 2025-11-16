@@ -76,6 +76,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				toast.error("Failed to archive estimates");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to archive estimates");
 		} finally {
 			setIsArchiving(false);
@@ -100,6 +101,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				toast.error(result.error || "Failed to unlink estimate");
 			}
 		} catch (_error) {
+    console.error("Error:", _error);
 			toast.error("Failed to unlink estimate");
 		} finally {
 			setIsUnlinking(false);

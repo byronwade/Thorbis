@@ -95,6 +95,7 @@ export function CompleteProfileForm({
 			// Redirect to onboarding/dashboard
 			router.push("/dashboard/welcome");
 		} catch (caughtError) {
+    console.error("Error:", caughtError);
 			setError(caughtError instanceof Error ? caughtError.message : "Something went wrong. Please try again.");
 			setIsLoading(false);
 		}

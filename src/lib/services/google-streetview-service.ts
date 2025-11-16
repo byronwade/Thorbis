@@ -105,6 +105,7 @@ export class GoogleStreetViewService {
 
 			return streetView;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

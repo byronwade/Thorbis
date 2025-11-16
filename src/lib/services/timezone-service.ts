@@ -97,6 +97,7 @@ export class TimeZoneService {
 
 			return timeZone;
 		} catch (_error) {
+    console.error("Error:", _error);
 			return null;
 		}
 	}

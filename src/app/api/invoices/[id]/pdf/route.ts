@@ -82,6 +82,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 			},
 		});
 	} catch (_error) {
+    console.error("Error:", _error);
 		return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
 	}
 }

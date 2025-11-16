@@ -99,6 +99,7 @@ export function InvoicePaymentForm({ invoice, token, company, customer }: Invoic
 					});
 				}
 			} catch (_error) {
+    console.error("Error:", _error);
 				toast.error("Payment error", {
 					description: "An unexpected error occurred. Please try again.",
 				});

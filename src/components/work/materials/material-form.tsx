@@ -125,6 +125,7 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			toast.success("Inventory created.");
 			router.push("/dashboard/work/materials");
 		} catch (err) {
+    console.error("Error:", err);
 			setError(err instanceof Error ? err.message : "Something went wrong while creating inventory.");
 			setIsSubmitting(false);
 		}

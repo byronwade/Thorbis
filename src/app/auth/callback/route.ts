@@ -74,6 +74,7 @@ export async function GET(request: Request) {
 
 			return NextResponse.redirect(`${requestUrl.origin}${redirectPath}`);
 		} catch (_error) {
+    console.error("Error:", _error);
 			return NextResponse.redirect(
 				`${requestUrl.origin}/login?error=${encodeURIComponent("An unexpected error occurred")}`
 			);

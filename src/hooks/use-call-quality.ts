@@ -97,6 +97,7 @@ async function getQualityMetrics(call: Call): Promise<QualityMetrics | null> {
 
 		return metrics;
 	} catch (_error) {
+    console.error("Error:", _error);
 		return null;
 	}
 }
