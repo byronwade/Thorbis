@@ -11,9 +11,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function TrainingError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-	useEffect(() => {
-		console.error("Training error:", error);
-	}, [error]);
+	useEffect(() => {}, []);
 
 	return (
 		<div className="flex min-h-[400px] flex-col items-center justify-center p-8">
