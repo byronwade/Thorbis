@@ -79,7 +79,7 @@ export class StripeProcessor implements PaymentProcessor {
 				processorMetadata: paymentIntent as unknown as Record<string, unknown>,
 			};
 		} catch (error: any) {
-    console.error("Error:", error: any);
+    console.error("Stripe payment error:", error);
 			return {
 				success: false,
 				status: "failed",
@@ -116,7 +116,7 @@ export class StripeProcessor implements PaymentProcessor {
 				status: refund.status === "succeeded" ? "succeeded" : "processing",
 			};
 		} catch (error: any) {
-    console.error("Error:", error: any);
+    console.error("Stripe payment error:", error);
 			return {
 				success: false,
 				status: "failed",

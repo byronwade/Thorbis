@@ -68,10 +68,10 @@ export async function DashboardAuthWrapper() {
 
 		const subscriptionStatus = company?.stripe_subscription_status;
 		const subscriptionActive = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-		const onboardingProgress = (companies?.onboarding_progress as Record<string, unknown>) || null;
+		const onboardingProgress = (company?.onboarding_progress as Record<string, unknown>) || null;
 		const onboardingFinished = isOnboardingComplete({
 			progress: onboardingProgress,
-			completedAt: companies?.onboarding_completed_at ?? null,
+			completedAt: company?.onboarding_completed_at ?? null,
 		});
 
 		isCompanyOnboardingComplete =
@@ -83,9 +83,8 @@ export async function DashboardAuthWrapper() {
 	// The welcome page itself should not trigger this redirect
 	// This will be handled by checking if user is accessing a protected route
 	if (!isCompanyOnboardingComplete) {
-		// Import headers to check the current path
-		const { headers } = await import("next/headers");
-		const headersList = await headers();
+		// Use already imported headers (parallelized earlier)
+		const headersList = await headersImport();
 		const pathname = headersList.get("x-pathname") || headersList.get("referer") || "";
 
 		// Only redirect if not already on welcome page
