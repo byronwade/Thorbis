@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Financial Reports Data - Async Server Component
  *

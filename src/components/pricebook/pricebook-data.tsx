@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Pricebook Data - Async Server Component
  *

@@ -8,7 +8,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  * Invoice Detail Layout - Server Component
  *
  * This layout applies to /dashboard/work/invoices/[id]
- * Shows detail page with back button and right sidebar
+ * Shows full-width detail page with back button, no sidebars
  *
  * Performance: Pure server component, no client JS needed
  */
@@ -33,10 +33,6 @@ export default function InvoiceDetailLayout({ children }: { children: ReactNode 
 		},
 		sidebar: {
 			show: false,
-		},
-		rightSidebar: {
-			show: true,
-			component: "invoice",
 		},
 	};
 

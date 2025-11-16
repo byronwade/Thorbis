@@ -1,5 +1,3 @@
-"use cache";
-
 import { MessageSquare } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 

@@ -134,22 +134,30 @@ export function PhoneDropdown({ companyId, companyPhones = [], incomingCallsCoun
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [toast.error]); // Only run once on mount - toast is stable but causes re-renders if included
 
-	// Initialize WebRTC for browser calling with microphone/speaker
+	// PERFORMANCE: Initialize WebRTC ONLY when dropdown is opened
+	// Prevents creating connections on every page load (was hitting Telnyx 5-connection limit)
+	// This was causing 2-8 second timeouts on EVERY page!
 	const webrtc = useTelnyxWebRTC({
-		username: webrtcCredentials?.username || "",
-		password: webrtcCredentials?.password || "",
-		autoConnect: false, // We'll manually connect when credentials are ready
-		debug: true, // Always enable debug for troubleshooting
+		username: open && webrtcCredentials?.username ? webrtcCredentials.username : "",
+		password: open && webrtcCredentials?.password ? webrtcCredentials.password : "",
+		autoConnect: false,
+		disabled: !open, // Don't initialize WebRTC unless dropdown is open
+		debug: true,
 		onIncomingCall: (_call) => {},
 		onCallEnded: (_call) => {},
 	});
 
-	// Manually connect when credentials become available
+	// Manually connect when credentials become available AND dropdown is open
 	useEffect(() => {
-		if (webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
-			webrtc.connect().catch((_error) => {});
+		if (open && webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
+			webrtc.connect().catch((error) => {
+				// Handle 403 account limit errors gracefully
+				if (error?.message?.includes("403") || error?.message?.includes("limit")) {
+					console.warn("[WebRTC] Account connection limit reached. Close other connections.");
+				}
+			});
 		}
-	}, [webrtcCredentials, webrtc]);
+	}, [open, webrtcCredentials, webrtc]);
 
 	// Log connection state changes for debugging
 	useEffect(() => {}, []);

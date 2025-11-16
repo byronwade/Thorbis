@@ -144,7 +144,11 @@
       "Bash(curl:*)",
       "Bash(git -C /Users/byronwade/Stratos log --oneline --all --graph)",
       "Bash([ -d /Users/byronwade/Stratos/scripts/archive/ppr-migration ])",
-      "Bash([ -f /Users/byronwade/Stratos/scripts/test-migration.js ])"
+      "Bash([ -f /Users/byronwade/Stratos/scripts/test-migration.js ])",
+      "Bash(src/types/supabase.tmp)",
+      "Bash(mv:*)",
+      "Bash(/tmp/remove-use-cache.sh)",
+      "Bash(timeout 180 pnpm build:*)"
     ],
     "deny": [],
     "ask": []

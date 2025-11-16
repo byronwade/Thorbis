@@ -1536,11 +1536,14 @@ export function IncomingCallNotification() {
 		loadCredentials();
 	}, []);
 
-	// Initialize WebRTC hook with credentials
+	// PERFORMANCE: Don't auto-connect WebRTC on every page load
+	// This was hitting Telnyx 5-connection limit causing 2-8s timeouts!
+	// WebRTC will connect ONLY when there's an actual incoming call or user initiates call
 	const webrtc = useTelnyxWebRTC({
 		username: webrtcCredentials?.username || "",
 		password: webrtcCredentials?.password || "",
-		autoConnect: Boolean(webrtcCredentials),
+		autoConnect: false, // CHANGED: Don't connect until actually needed
+		disabled: !webrtcCredentials, // Don't even initialize hook without credentials
 		debug: process.env.NODE_ENV === "development",
 		onIncomingCall: (_call) => {
 			// The incoming call UI will show based on currentCall state

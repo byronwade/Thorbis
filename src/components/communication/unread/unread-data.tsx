@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Unread Messages Data - Async Server Component
  *

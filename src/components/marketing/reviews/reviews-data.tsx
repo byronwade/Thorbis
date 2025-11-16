@@ -1,5 +1,3 @@
-"use cache";
-
 import { Star } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 

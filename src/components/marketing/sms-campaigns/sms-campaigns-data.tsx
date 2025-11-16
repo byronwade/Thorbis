@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * SMS Campaigns Data - Async Server Component
  *

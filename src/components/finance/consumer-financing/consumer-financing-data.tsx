@@ -1,5 +1,3 @@
-"use cache";
-
 import { CreditCard } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 

@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Parts Data - Async Server Component
  *

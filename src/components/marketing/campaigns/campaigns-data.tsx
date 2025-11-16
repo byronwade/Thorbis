@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Campaigns Data - Async Server Component
  *

@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Technician Analytics Data - Async Server Component
  *

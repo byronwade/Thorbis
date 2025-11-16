@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Technician Profiles Data - Async Server Component
  *

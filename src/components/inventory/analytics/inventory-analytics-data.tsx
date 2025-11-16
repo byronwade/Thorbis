@@ -1,5 +1,3 @@
-"use cache";
-
 /**
  * Inventory Analytics Data - Async Server Component
  *
