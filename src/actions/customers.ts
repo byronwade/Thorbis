@@ -1169,7 +1169,6 @@ export async function getAllCustomers(): Promise<ActionResult<CustomerRecord[]>>
 		assertAuthenticated(user?.id);
 
 		// Get active company ID (from cookie or first available)
-		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 		const activeCompanyId = await getActiveCompanyId();
 
 		const FORBIDDEN_STATUS_CODE = 403;

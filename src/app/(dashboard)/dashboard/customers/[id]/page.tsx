@@ -20,7 +20,7 @@ import { CustomerDetailSkeleton } from "@/components/customers/customer-detail-s
 
 // Custom metadata for this page
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
-	const { id } = await params;
+	const { id: _customerId } = await params;
 	return {
 		title: "Customer Details",
 	};

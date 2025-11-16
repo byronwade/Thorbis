@@ -67,8 +67,6 @@ const withPWA = isPwaEnabled
 		})
 	: (baseConfig: NextConfig) => baseConfig;
 
-type WorkflowContext = { defaultConfig: NextConfig };
-
 const nextConfig: NextConfig = {
 	// PERFORMANCE: Static generation RE-ENABLED! ✅
 	// Fixed Zustand SSR issues by adding skipHydration: true to all persisted stores
