@@ -9,8 +9,12 @@
  * - Falls back to first available company
  * - Validates access before switching
  * - Server-side only (no client-side state)
+ *
+ * PERFORMANCE: All functions wrapped with React.cache() to prevent
+ * redundant database queries across components in the same request.
  */
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/server";
@@ -33,9 +37,12 @@ export type CompanyInfo = {
  * Returns the currently active company for the user.
  * Falls back to first company if no active company is set.
  *
+ * PERFORMANCE: Wrapped with React.cache() - called by every component,
+ * but only executes once per request.
+ *
  * @returns Company ID string or null if user has no companies
  */
-export async function getActiveCompanyId(): Promise<string | null> {
+export const getActiveCompanyId = cache(async (): Promise<string | null> => {
 	const cookieStore = await cookies();
 	const activeCompanyId = cookieStore.get(ACTIVE_COMPANY_COOKIE)?.value;
 
@@ -50,7 +57,7 @@ export async function getActiveCompanyId(): Promise<string | null> {
 	// Fall back to first available company
 	const companies = await getUserCompanies();
 	return companies[0]?.id || null;
-}
+});
 
 /**
  * Get Active Company Info
@@ -124,7 +131,7 @@ export async function clearActiveCompany(): Promise<void> {
  *
  * @returns Array of CompanyInfo objects
  */
-export async function getUserCompanies(): Promise<CompanyInfo[]> {
+export const getUserCompanies = cache(async (): Promise<CompanyInfo[]> => {
 	const user = await getCurrentUser();
 	if (!user) {
 		return [];
@@ -161,7 +168,7 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
 		name: m.companies.name,
 		logo: m.companies.logo,
 	}));
-}
+});
 
 /**
  * Verify Company Access
@@ -171,7 +178,7 @@ export async function getUserCompanies(): Promise<CompanyInfo[]> {
  * @param companyId - Company ID to verify
  * @returns true if user has access, false otherwise
  */
-async function verifyCompanyAccess(companyId: string): Promise<boolean> {
+const verifyCompanyAccess = cache(async (companyId: string): Promise<boolean> => {
 	const user = await getCurrentUser();
 	if (!user) {
 		return false;
@@ -204,7 +211,7 @@ async function verifyCompanyAccess(companyId: string): Promise<boolean> {
 		.single();
 
 	return !!data;
-}
+});
 
 /**
  * Require Active Company
