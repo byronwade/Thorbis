@@ -58,7 +58,7 @@ const availabilitySettingsSchema = z.object({
   lunchBreakDurationMinutes: z.coerce.number().default(60),
 });
 
-export function updateAvailabilitySettings(
+export async function updateAvailabilitySettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -127,7 +127,7 @@ export function updateAvailabilitySettings(
   });
 }
 
-export function getAvailabilitySettings(): Promise<ActionResult<any>> {
+export async function getAvailabilitySettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -178,7 +178,7 @@ const calendarSettingsSchema = z.object({
   syncWithOutlook: z.boolean().default(false),
 });
 
-export function updateCalendarSettings(
+export async function updateCalendarSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -236,7 +236,7 @@ export function updateCalendarSettings(
   });
 }
 
-export function getCalendarSettings(): Promise<ActionResult<any>> {
+export async function getCalendarSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -287,7 +287,7 @@ const teamRulesSchema = z.object({
   breakDurationMinutes: z.coerce.number().default(15),
 });
 
-export function updateTeamSchedulingRules(
+export async function updateTeamSchedulingRules(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -345,7 +345,7 @@ export function updateTeamSchedulingRules(
   });
 }
 
-export function getTeamSchedulingRules(): Promise<ActionResult<any>> {
+export async function getTeamSchedulingRules(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -414,7 +414,7 @@ function parseJsonField(value?: string | null) {
   }
 }
 
-export function createDispatchRule(
+export async function createDispatchRule(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -469,7 +469,7 @@ export function createDispatchRule(
   });
 }
 
-export function updateDispatchRule(
+export async function updateDispatchRule(
   ruleId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -523,7 +523,7 @@ export function updateDispatchRule(
   });
 }
 
-export function deleteDispatchRule(
+export async function deleteDispatchRule(
   ruleId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -560,7 +560,7 @@ export function deleteDispatchRule(
   });
 }
 
-export function getDispatchRules(): Promise<ActionResult<any[]>> {
+export async function getDispatchRules(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -615,7 +615,7 @@ const serviceAreaSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export function createServiceArea(
+export async function createServiceArea(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -699,7 +699,7 @@ export function createServiceArea(
   });
 }
 
-export function updateServiceArea(
+export async function updateServiceArea(
   areaId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -780,7 +780,9 @@ export function updateServiceArea(
   });
 }
 
-export function deleteServiceArea(areaId: string): Promise<ActionResult<void>> {
+export async function deleteServiceArea(
+  areaId: string
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -815,7 +817,7 @@ export function deleteServiceArea(areaId: string): Promise<ActionResult<void>> {
   });
 }
 
-export function getServiceAreas(): Promise<ActionResult<any[]>> {
+export async function getServiceAreas(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -885,7 +887,7 @@ export type ScheduleOverviewSnapshot = {
   };
 };
 
-export function getScheduleOverview(): Promise<
+export async function getScheduleOverview(): Promise<
   ActionResult<ScheduleOverviewSnapshot>
 > {
   return withErrorHandling(async () => {

@@ -62,7 +62,7 @@ const jobSettingsSchema = z.object({
   requireCompletionNotes: z.boolean().default(true),
 });
 
-export function updateJobSettings(
+export async function updateJobSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -129,7 +129,7 @@ export function updateJobSettings(
   });
 }
 
-export function getJobSettings(): Promise<ActionResult<any>> {
+export async function getJobSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -186,7 +186,7 @@ const estimateSettingsSchema = z.object({
   reminderDaysBeforeExpiry: z.coerce.number().default(7),
 });
 
-export function updateEstimateSettings(
+export async function updateEstimateSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -258,7 +258,7 @@ export function updateEstimateSettings(
   });
 }
 
-export function getEstimateSettings(): Promise<ActionResult<any>> {
+export async function getEstimateSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -317,7 +317,7 @@ const invoiceSettingsSchema = z.object({
   reminderSchedule: z.string().optional(), // JSON array
 });
 
-export function updateInvoiceSettings(
+export async function updateInvoiceSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -412,7 +412,7 @@ export function updateInvoiceSettings(
   });
 }
 
-export function getInvoiceSettings(): Promise<ActionResult<any>> {
+export async function getInvoiceSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -462,7 +462,7 @@ const servicePlanSettingsSchema = z.object({
   reminderDays: z.coerce.number().default(3),
 });
 
-export function updateServicePlanSettings(
+export async function updateServicePlanSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -520,7 +520,7 @@ export function updateServicePlanSettings(
   });
 }
 
-export function getServicePlanSettings(): Promise<ActionResult<any>> {
+export async function getServicePlanSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -568,7 +568,7 @@ const pricebookSettingsSchema = z.object({
   showItemDescriptions: z.boolean().default(true),
 });
 
-export function updatePricebookSettings(
+export async function updatePricebookSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -621,7 +621,7 @@ export function updatePricebookSettings(
   });
 }
 
-export function getPricebookSettings(): Promise<ActionResult<any>> {
+export async function getPricebookSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -672,7 +672,7 @@ const bookingSettingsSchema = z.object({
   maxBookingsPerDay: z.coerce.number().optional(),
 });
 
-export function updateBookingSettings(
+export async function updateBookingSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -731,7 +731,7 @@ export function updateBookingSettings(
   });
 }
 
-export function getBookingSettings(): Promise<ActionResult<any>> {
+export async function getBookingSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

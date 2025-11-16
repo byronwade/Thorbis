@@ -69,7 +69,7 @@ const accountingSettingsSchema = z.object({
   syncCustomers: z.boolean().default(true),
 });
 
-export function updateAccountingSettings(
+export async function updateAccountingSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -144,7 +144,7 @@ export function updateAccountingSettings(
   });
 }
 
-export function getAccountingSettings(): Promise<ActionResult<any>> {
+export async function getAccountingSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -200,7 +200,7 @@ const bookkeepingSettingsSchema = z.object({
   allowManualJournalEntries: z.boolean().default(false),
 });
 
-export function updateBookkeepingSettings(
+export async function updateBookkeepingSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -274,7 +274,7 @@ export function updateBookkeepingSettings(
   });
 }
 
-export function getBookkeepingSettings(): Promise<ActionResult<any>> {
+export async function getBookkeepingSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -326,7 +326,7 @@ const bankAccountSchema = z.object({
   isPrimary: z.boolean().default(false),
 });
 
-export function createBankAccount(
+export async function createBankAccount(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -381,7 +381,7 @@ export function createBankAccount(
   });
 }
 
-export function updateBankAccount(
+export async function updateBankAccount(
   accountId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -440,7 +440,7 @@ export function updateBankAccount(
   });
 }
 
-export function deleteBankAccount(
+export async function deleteBankAccount(
   accountId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -479,7 +479,7 @@ export function deleteBankAccount(
 /**
  * Get the current user's company ID
  */
-export function getUserCompanyId(): Promise<ActionResult<string>> {
+export async function getUserCompanyId(): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -499,7 +499,7 @@ export function getUserCompanyId(): Promise<ActionResult<string>> {
   });
 }
 
-export function getBankAccounts(): Promise<ActionResult<any[]>> {
+export async function getBankAccounts(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -547,7 +547,7 @@ export function getBankAccounts(): Promise<ActionResult<any[]>> {
 /**
  * Get the primary bank account for a company
  */
-export function getPrimaryBankAccount(): Promise<ActionResult<any>> {
+export async function getPrimaryBankAccount(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -611,7 +611,7 @@ const businessFinancingSchema = z.object({
   maxAcceptableApr: z.coerce.number().optional(),
 });
 
-export function updateBusinessFinancingSettings(
+export async function updateBusinessFinancingSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -682,7 +682,9 @@ export function updateBusinessFinancingSettings(
   });
 }
 
-export function getBusinessFinancingSettings(): Promise<ActionResult<any>> {
+export async function getBusinessFinancingSettings(): Promise<
+  ActionResult<any>
+> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -742,7 +744,7 @@ const consumerFinancingSchema = z.object({
     .default("Finance your service with flexible payment plans"),
 });
 
-export function updateConsumerFinancingSettings(
+export async function updateConsumerFinancingSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -821,7 +823,9 @@ export function updateConsumerFinancingSettings(
   });
 }
 
-export function getConsumerFinancingSettings(): Promise<ActionResult<any>> {
+export async function getConsumerFinancingSettings(): Promise<
+  ActionResult<any>
+> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -859,7 +863,7 @@ export function getConsumerFinancingSettings(): Promise<ActionResult<any>> {
 // DEBIT CARD SETTINGS
 // ============================================================================
 
-export function getDebitCards(): Promise<ActionResult<any[]>> {
+export async function getDebitCards(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -897,7 +901,7 @@ export function getDebitCards(): Promise<ActionResult<any[]>> {
 // GAS CARD SETTINGS
 // ============================================================================
 
-export function getGasCards(): Promise<ActionResult<any[]>> {
+export async function getGasCards(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -957,7 +961,7 @@ const giftCardSettingsSchema = z.object({
   trackRedemptionAnalytics: z.boolean().default(true),
 });
 
-export function updateGiftCardSettings(
+export async function updateGiftCardSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1042,7 +1046,7 @@ export function updateGiftCardSettings(
   });
 }
 
-export function getGiftCardSettings(): Promise<ActionResult<any>> {
+export async function getGiftCardSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1097,7 +1101,7 @@ const virtualBucketSettingsSchema = z.object({
   notifyBucketGoalsMet: z.boolean().default(true),
 });
 
-export function updateVirtualBucketSettings(
+export async function updateVirtualBucketSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -1161,7 +1165,7 @@ export function updateVirtualBucketSettings(
   });
 }
 
-export function getVirtualBucketSettings(): Promise<ActionResult<any>> {
+export async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1195,7 +1199,7 @@ export function getVirtualBucketSettings(): Promise<ActionResult<any>> {
   });
 }
 
-export function getVirtualBuckets(): Promise<ActionResult<any[]>> {
+export async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

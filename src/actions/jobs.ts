@@ -222,7 +222,9 @@ async function createRecurringJobs(
 /**
  * Create a new job
  */
-export function createJob(formData: FormData): Promise<ActionResult<string>> {
+export async function createJob(
+  formData: FormData
+): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -387,7 +389,7 @@ export function createJob(formData: FormData): Promise<ActionResult<string>> {
 /**
  * Get a single job by ID
  */
-export function getJob(jobId: string): Promise<ActionResult<any>> {
+export async function getJob(jobId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -458,7 +460,7 @@ export function getJob(jobId: string): Promise<ActionResult<any>> {
 /**
  * Update job details
  */
-export function updateJob(
+export async function updateJob(
   jobId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -657,7 +659,7 @@ export function updateJob(
 /**
  * Update job status with validation
  */
-export function updateJobStatus(
+export async function updateJobStatus(
   jobId: string,
   newStatus: string
 ): Promise<ActionResult<void>> {
@@ -757,7 +759,7 @@ export function updateJobStatus(
 /**
  * Assign job to a technician
  */
-export function assignJob(
+export async function assignJob(
   jobId: string,
   technicianId: string
 ): Promise<ActionResult<void>> {
@@ -845,7 +847,7 @@ export function assignJob(
 /**
  * Schedule a job
  */
-export function scheduleJob(
+export async function scheduleJob(
   jobId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -928,7 +930,7 @@ export function scheduleJob(
 /**
  * Start a job
  */
-export function startJob(jobId: string): Promise<ActionResult<void>> {
+export async function startJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1008,7 +1010,7 @@ export function startJob(jobId: string): Promise<ActionResult<void>> {
 /**
  * Complete a job
  */
-export function completeJob(jobId: string): Promise<ActionResult<void>> {
+export async function completeJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1088,7 +1090,7 @@ export function completeJob(jobId: string): Promise<ActionResult<void>> {
 /**
  * Cancel a job
  */
-export function cancelJob(
+export async function cancelJob(
   jobId: string,
   reason?: string
 ): Promise<ActionResult<void>> {
@@ -1183,7 +1185,7 @@ export function cancelJob(
  * const results = await searchJobs("HVAC repair");
  * // Returns jobs matching "HVAC" AND "repair" ranked by relevance
  */
-export function searchJobs(
+export async function searchJobs(
   searchTerm: string,
   options?: { limit?: number; offset?: number }
 ): Promise<ActionResult<any[]>> {
@@ -1244,7 +1246,9 @@ export function searchJobs(
  * const results = await searchAll("furnace");
  * // Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
  */
-export function searchAll(searchTerm: string): Promise<ActionResult<any>> {
+export async function searchAll(
+  searchTerm: string
+): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1301,7 +1305,7 @@ export function searchAll(searchTerm: string): Promise<ActionResult<any>> {
  * Archives a job instead of permanently deleting.
  * Archived jobs can be restored within 90 days.
  */
-export function archiveJob(jobId: string): Promise<ActionResult<void>> {
+export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1388,7 +1392,7 @@ export function archiveJob(jobId: string): Promise<ActionResult<void>> {
 /**
  * Restore archived job
  */
-export function restoreJob(jobId: string): Promise<ActionResult<void>> {
+export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1474,7 +1478,7 @@ export function restoreJob(jobId: string): Promise<ActionResult<void>> {
  * Note: If your schema uses a simple assigned_to field instead of a junction table,
  * use updateJob() to set assigned_to to NULL instead.
  */
-export function removeTeamAssignment(
+export async function removeTeamAssignment(
   assignmentId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

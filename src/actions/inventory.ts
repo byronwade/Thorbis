@@ -82,7 +82,7 @@ const reserveStockSchema = z.object({
 /**
  * Create new inventory record for a price book item
  */
-export function createInventory(
+export async function createInventory(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -129,7 +129,7 @@ export function createInventory(
 /**
  * Update existing inventory settings
  */
-export function updateInventory(
+export async function updateInventory(
   inventoryId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -171,7 +171,7 @@ export function updateInventory(
 /**
  * Delete inventory record (soft delete)
  */
-export function deleteInventory(
+export async function deleteInventory(
   inventoryId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -256,7 +256,9 @@ export function deleteInventory(
 /**
  * Adjust stock levels (add or remove inventory)
  */
-export function adjustStock(formData: FormData): Promise<ActionResult<void>> {
+export async function adjustStock(
+  formData: FormData
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -593,7 +595,9 @@ function buildStockAdjustmentUpdatePayload(
 /**
  * Reserve stock for a job
  */
-export function reserveStock(formData: FormData): Promise<ActionResult<void>> {
+export async function reserveStock(
+  formData: FormData
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -691,7 +695,7 @@ export function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 /**
  * Release reserved stock
  */
-export function releaseReservedStock(
+export async function releaseReservedStock(
   inventoryId: string,
   quantity: number
 ): Promise<ActionResult<void>> {
@@ -776,7 +780,7 @@ export function releaseReservedStock(
 /**
  * Use reserved stock (deduct from both reserved and on-hand)
  */
-export function useReservedStock(
+export async function useReservedStock(
   inventoryId: string,
   quantity: number,
   jobId?: string
@@ -877,7 +881,7 @@ export function useReservedStock(
 /**
  * Archive an inventory item (soft delete)
  */
-export function archiveInventoryItem(
+export async function archiveInventoryItem(
   inventoryId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -947,7 +951,7 @@ export function archiveInventoryItem(
 /**
  * Get low stock items that need reordering
  */
-export function getLowStockItems(): Promise<ActionResult<unknown[]>> {
+export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -1005,7 +1009,7 @@ export function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 /**
  * Get inventory items that need stock check
  */
-export function getItemsNeedingStockCheck(
+export async function getItemsNeedingStockCheck(
   daysSinceLastCheck = 30
 ): Promise<ActionResult<unknown[]>> {
   return withErrorHandling(async () => {

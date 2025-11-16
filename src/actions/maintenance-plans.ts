@@ -202,7 +202,7 @@ function validateMaintenancePlanDates(
 /**
  * Create a new maintenance plan
  */
-export function createMaintenancePlan(
+export async function createMaintenancePlan(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -335,7 +335,7 @@ export function createMaintenancePlan(
 /**
  * Update an existing maintenance plan
  */
-export function updateMaintenancePlan(
+export async function updateMaintenancePlan(
   planId: string,
   formData: FormData
 ): Promise<ActionResult<boolean>> {
@@ -455,7 +455,7 @@ export function updateMaintenancePlan(
 /**
  * Activate a maintenance plan
  */
-export function activateMaintenancePlan(
+export async function activateMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -501,7 +501,7 @@ export function activateMaintenancePlan(
 /**
  * Pause a maintenance plan
  */
-export function pauseMaintenancePlan(
+export async function pauseMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -547,7 +547,7 @@ export function pauseMaintenancePlan(
 /**
  * Cancel a maintenance plan
  */
-export function cancelMaintenancePlan(
+export async function cancelMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -593,7 +593,7 @@ export function cancelMaintenancePlan(
 /**
  * Delete a maintenance plan
  */
-export function deleteMaintenancePlan(
+export async function deleteMaintenancePlan(
   planId: string
 ): Promise<ActionResult<boolean>> {
   return withErrorHandling(async () => {
@@ -638,7 +638,7 @@ export function deleteMaintenancePlan(
 /**
  * Search maintenance plans
  */
-export function searchMaintenancePlans(
+export async function searchMaintenancePlans(
   searchQuery: string,
   options?: {
     limit?: number;
@@ -689,7 +689,7 @@ export function searchMaintenancePlans(
 /**
  * Archive a maintenance plan (soft delete)
  */
-export function archiveMaintenancePlan(
+export async function archiveMaintenancePlan(
   planId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {

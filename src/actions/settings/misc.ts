@@ -55,7 +55,7 @@ const tagSettingsSchema = z.object({
   autoAssignColors: z.boolean().default(true),
 });
 
-export function updateTagSettings(
+export async function updateTagSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -102,7 +102,7 @@ export function updateTagSettings(
   });
 }
 
-export function getTagSettings(): Promise<ActionResult<any>> {
+export async function getTagSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -147,7 +147,7 @@ const checklistSettingsSchema = z.object({
   autoAssignByJobType: z.boolean().default(true),
 });
 
-export function updateChecklistSettings(
+export async function updateChecklistSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -194,7 +194,7 @@ export function updateChecklistSettings(
   });
 }
 
-export function getChecklistSettings(): Promise<ActionResult<any>> {
+export async function getChecklistSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -238,7 +238,7 @@ const leadSourceSchema = z.object({
   isActive: z.boolean().default(true),
 });
 
-export function createLeadSource(
+export async function createLeadSource(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -286,7 +286,7 @@ export function createLeadSource(
   });
 }
 
-export function updateLeadSource(
+export async function updateLeadSource(
   sourceId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -333,7 +333,7 @@ export function updateLeadSource(
   });
 }
 
-export function deleteLeadSource(
+export async function deleteLeadSource(
   sourceId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -369,7 +369,7 @@ export function deleteLeadSource(
   });
 }
 
-export function getLeadSources(): Promise<ActionResult<any[]>> {
+export async function getLeadSources(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -418,7 +418,7 @@ const importExportSettingsSchema = z.object({
   autoExportEmail: z.string().optional(),
 });
 
-export function updateImportExportSettings(
+export async function updateImportExportSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -473,7 +473,7 @@ export function updateImportExportSettings(
   });
 }
 
-export function getImportExportSettings(): Promise<ActionResult<any>> {
+export async function getImportExportSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

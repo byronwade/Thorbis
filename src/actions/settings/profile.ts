@@ -51,7 +51,7 @@ const notificationPreferencesSchema = z.object({
     .default("daily"),
 });
 
-export function updateNotificationPreferences(
+export async function updateNotificationPreferences(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -114,7 +114,7 @@ export function updateNotificationPreferences(
   });
 }
 
-export function getNotificationPreferences(): Promise<ActionResult<any>> {
+export async function getNotificationPreferences(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -170,7 +170,7 @@ const userPreferencesSchema = z.object({
   calendarStartDay: z.coerce.number().min(0).max(6).default(0),
 });
 
-export function updateUserPreferences(
+export async function updateUserPreferences(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -225,7 +225,7 @@ export function updateUserPreferences(
   });
 }
 
-export function getUserPreferences(): Promise<ActionResult<any>> {
+export async function getUserPreferences(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -268,7 +268,7 @@ const personalInfoSchema = z.object({
   avatar: z.string().optional(),
 });
 
-export function updatePersonalInfo(
+export async function updatePersonalInfo(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -328,7 +328,7 @@ export function updatePersonalInfo(
   });
 }
 
-export function getPersonalInfo(): Promise<ActionResult<any>> {
+export async function getPersonalInfo(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -377,7 +377,7 @@ const passwordUpdateSchema = z
     path: ["confirmPassword"],
   });
 
-export function updatePassword(
+export async function updatePassword(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

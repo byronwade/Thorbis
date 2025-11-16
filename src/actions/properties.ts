@@ -62,7 +62,7 @@ const propertySchema = z.object({
  * Find existing property or create new one for customer
  * Prevents duplicate properties for the same address
  */
-export function findOrCreateProperty(
+export async function findOrCreateProperty(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -230,7 +230,7 @@ export function findOrCreateProperty(
 /**
  * Create a new property for a customer
  */
-export function createProperty(
+export async function createProperty(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -358,7 +358,7 @@ export function createProperty(
 /**
  * Update existing property
  */
-export function updateProperty(
+export async function updateProperty(
   propertyId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -463,7 +463,7 @@ export function updateProperty(
  *
  * Archives instead of permanently deleting. Can be restored within 90 days.
  */
-export function archiveProperty(
+export async function archiveProperty(
   propertyId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -573,7 +573,7 @@ export function archiveProperty(
 /**
  * Restore archived property
  */
-export function restoreProperty(
+export async function restoreProperty(
   propertyId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -656,7 +656,7 @@ export function restoreProperty(
  * Delete property (legacy - deprecated)
  * @deprecated Use archiveProperty() instead
  */
-export function deleteProperty(
+export async function deleteProperty(
   propertyId: string
 ): Promise<ActionResult<void>> {
   return archiveProperty(propertyId);
@@ -669,7 +669,7 @@ export function deleteProperty(
 /**
  * Get all properties for a customer
  */
-export function getCustomerProperties(
+export async function getCustomerProperties(
   customerId: string
 ): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
@@ -739,7 +739,7 @@ export function getCustomerProperties(
 /**
  * Get property with equipment count
  */
-export function getPropertyWithDetails(
+export async function getPropertyWithDetails(
   propertyId: string
 ): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
@@ -824,7 +824,7 @@ export function getPropertyWithDetails(
  * Set property as primary for customer
  * This is useful when a customer has multiple properties
  */
-export function setPrimaryProperty(
+export async function setPrimaryProperty(
   customerId: string,
   propertyId: string
 ): Promise<ActionResult<void>> {

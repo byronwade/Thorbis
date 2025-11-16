@@ -345,7 +345,7 @@ async function updateScheduleStatus(
   }
 }
 
-export function dispatchAppointment(scheduleId: string) {
+export async function dispatchAppointment(scheduleId: string) {
   return updateScheduleStatus(scheduleId, "dispatched");
 }
 

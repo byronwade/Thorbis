@@ -173,7 +173,7 @@ export async function sendTeamMemberInvitations(
 /**
  * Send a single team invitation (for adding members after onboarding)
  */
-export function sendSingleTeamInvitation(
+export async function sendSingleTeamInvitation(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -295,7 +295,7 @@ export function sendSingleTeamInvitation(
 /**
  * Cancel/revoke an invitation
  */
-export function cancelTeamInvitation(
+export async function cancelTeamInvitation(
   invitationId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {

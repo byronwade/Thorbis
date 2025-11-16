@@ -72,7 +72,7 @@ const overtimeSettingsSchema = z.object({
   notifyManagersOnOvertime: z.boolean().default(true),
 });
 
-export function updateOvertimeSettings(
+export async function updateOvertimeSettings(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -158,7 +158,7 @@ export function updateOvertimeSettings(
   });
 }
 
-export function getOvertimeSettings(): Promise<ActionResult<any>> {
+export async function getOvertimeSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -308,7 +308,7 @@ export async function createCommissionRule(
   });
 }
 
-export function updateCommissionRule(
+export async function updateCommissionRule(
   ruleId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -389,7 +389,7 @@ export function updateCommissionRule(
   });
 }
 
-export function deleteCommissionRule(
+export async function deleteCommissionRule(
   ruleId: string
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -425,7 +425,7 @@ export function deleteCommissionRule(
   });
 }
 
-export function getCommissionRules(): Promise<ActionResult<any[]>> {
+export async function getCommissionRules(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -467,7 +467,7 @@ const commissionTierSchema = z.object({
   commissionPercentage: z.coerce.number().min(0).max(100),
 });
 
-export function createCommissionTier(
+export async function createCommissionTier(
   ruleId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -511,7 +511,7 @@ export function createCommissionTier(
   });
 }
 
-export function getCommissionTiers(
+export async function getCommissionTiers(
   ruleId: string
 ): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
@@ -549,7 +549,7 @@ export function getCommissionTiers(
 // BONUS SETTINGS (Similar structure to Commission)
 // ============================================================================
 
-export function getBonusRules(): Promise<ActionResult<any[]>> {
+export async function getBonusRules(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -587,7 +587,7 @@ export function getBonusRules(): Promise<ActionResult<any[]>> {
 // CALLBACK SETTINGS
 // ============================================================================
 
-export function getCallbackSettings(): Promise<ActionResult<any>> {
+export async function getCallbackSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -625,7 +625,7 @@ export function getCallbackSettings(): Promise<ActionResult<any>> {
 // DEDUCTION TYPES
 // ============================================================================
 
-export function getDeductionTypes(): Promise<ActionResult<any[]>> {
+export async function getDeductionTypes(): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -663,7 +663,7 @@ export function getDeductionTypes(): Promise<ActionResult<any[]>> {
 // MATERIAL SETTINGS
 // ============================================================================
 
-export function getMaterialSettings(): Promise<ActionResult<any>> {
+export async function getMaterialSettings(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -731,7 +731,7 @@ const payrollScheduleSchema = z.object({
   notifyOnPayrollProcessed: z.boolean().default(true),
 });
 
-export function updatePayrollSchedule(
+export async function updatePayrollSchedule(
   formData: FormData
 ): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
@@ -825,7 +825,7 @@ export function updatePayrollSchedule(
   });
 }
 
-export function getPayrollSchedule(): Promise<ActionResult<any>> {
+export async function getPayrollSchedule(): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {

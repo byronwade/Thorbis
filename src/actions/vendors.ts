@@ -57,7 +57,7 @@ async function generateVendorNumber(
 /**
  * Create a new vendor
  */
-export function createVendor(
+export async function createVendor(
   formData: FormData
 ): Promise<ActionResult<string>> {
   return withErrorHandling(async () => {
@@ -196,7 +196,7 @@ export function createVendor(
 /**
  * Update an existing vendor
  */
-export function updateVendor(
+export async function updateVendor(
   vendorId: string,
   formData: FormData
 ): Promise<ActionResult<void>> {
@@ -373,7 +373,9 @@ export function updateVendor(
 /**
  * Delete (soft delete) a vendor
  */
-export function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
+export async function deleteVendor(
+  vendorId: string
+): Promise<ActionResult<void>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -444,7 +446,7 @@ export function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
 /**
  * Get a single vendor by ID
  */
-export function getVendor(vendorId: string): Promise<ActionResult<any>> {
+export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -498,7 +500,7 @@ export function getVendor(vendorId: string): Promise<ActionResult<any>> {
 /**
  * List all vendors for the company
  */
-export function listVendors(options?: {
+export async function listVendors(options?: {
   status?: "active" | "inactive";
   category?: string;
   search?: string;
@@ -569,7 +571,9 @@ export function listVendors(options?: {
 /**
  * Search vendors by query string
  */
-export function searchVendors(query: string): Promise<ActionResult<any[]>> {
+export async function searchVendors(
+  query: string
+): Promise<ActionResult<any[]>> {
   return withErrorHandling(async () => {
     const supabase = await createClient();
     if (!supabase) {
@@ -624,7 +628,7 @@ export function searchVendors(query: string): Promise<ActionResult<any[]>> {
 /**
  * Link a purchase order to a vendor
  */
-export function linkPurchaseOrderToVendor(
+export async function linkPurchaseOrderToVendor(
   purchaseOrderId: string,
   vendorId: string
 ): Promise<ActionResult<void>> {
