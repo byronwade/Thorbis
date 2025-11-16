@@ -90,7 +90,7 @@ export function SmartAddressInput({
 
 			autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
 		}
-	}, [isAutocompleteLoaded, isManualMode, handlePlaceSelect]);
+	}, [isAutocompleteLoaded, isManualMode]);
 
 	const handlePlaceSelect = () => {
 		const place = autocompleteRef.current?.getPlace();

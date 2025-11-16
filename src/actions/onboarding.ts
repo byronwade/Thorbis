@@ -757,7 +757,8 @@ export async function saveOnboardingProgress(
 			// Ignore errors setting active company
 		}
 
-		revalidatePath("/dashboard/welcome");
+		// REMOVED: revalidatePath("/dashboard/welcome");
+		// Causes infinite POST loop when auto-saving progress
 		revalidatePath("/", "layout");
 
 		return {
@@ -868,7 +869,9 @@ export async function saveOnboardingStepProgress(
 			};
 		}
 
-		revalidatePath("/dashboard/welcome");
+		// REMOVED: revalidatePath("/dashboard/welcome");
+		// This was causing infinite POST request loop on welcome page
+		// Only revalidate when onboarding is complete, not on every step save
 
 		return {
 			success: true,
