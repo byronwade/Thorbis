@@ -203,16 +203,13 @@ mergedConfig = withBundleAnalyzer(mergedConfig);
 // Apply PWA (already optimized to skip in dev)
 mergedConfig = withPWA(mergedConfig);
 
-// Enable Vercel Workflow directives for long-running onboarding flows while
-// keeping type compatibility with NextConfig expectations.
-const workflowEnabledConfig = withWorkflow(mergedConfig);
+// DISABLED: Vercel Workflow was causing 123-second hangs and Turbopack crashes
+// "Discovering workflow directives" was taking 50-123 seconds per build
+// Re-enable only if needed for specific workflow features
+// const workflowEnabledConfig = withWorkflow(mergedConfig);
 
 // Wrap with BotID protection (outermost wrapper for security)
 export default withBotId(async (phase, config) =>
-	workflowEnabledConfig(
-		phase,
-		(config as unknown as WorkflowContext | undefined) ?? {
-			defaultConfig: mergedConfig,
-		}
-	)
+	// Use mergedConfig directly instead of workflowEnabledConfig
+	Promise.resolve(mergedConfig)
 );
