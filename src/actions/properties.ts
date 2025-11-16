@@ -303,7 +303,7 @@ export async function createProperty(formData: FormData): Promise<ActionResult<s
 /**
  * Update existing property
  */
-export async function updateProperty(propertyId: string, formData: FormData): Promise<ActionResult<void>> {
+export async function _updateProperty(propertyId: string, formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -476,7 +476,7 @@ export async function archiveProperty(propertyId: string): Promise<ActionResult<
 /**
  * Restore archived property
  */
-export async function restoreProperty(propertyId: string): Promise<ActionResult<void>> {
+export async function _restoreProperty(propertyId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -540,7 +540,7 @@ export async function restoreProperty(propertyId: string): Promise<ActionResult<
  * Delete property (legacy - deprecated)
  * @deprecated Use archiveProperty() instead
  */
-export async function deleteProperty(propertyId: string): Promise<ActionResult<void>> {
+export async function _deleteProperty(propertyId: string): Promise<ActionResult<void>> {
 	return archiveProperty(propertyId);
 }
 
@@ -551,7 +551,7 @@ export async function deleteProperty(propertyId: string): Promise<ActionResult<v
 /**
  * Get all properties for a customer
  */
-export async function getCustomerProperties(customerId: string): Promise<ActionResult<any[]>> {
+export async function _getCustomerProperties(customerId: string): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -605,7 +605,7 @@ export async function getCustomerProperties(customerId: string): Promise<ActionR
 /**
  * Get property with equipment count
  */
-export async function getPropertyWithDetails(propertyId: string): Promise<ActionResult<any>> {
+export async function _getPropertyWithDetails(propertyId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -674,7 +674,7 @@ export async function getPropertyWithDetails(propertyId: string): Promise<Action
  * Set property as primary for customer
  * This is useful when a customer has multiple properties
  */
-export async function setPrimaryProperty(customerId: string, propertyId: string): Promise<ActionResult<void>> {
+export async function _setPrimaryProperty(customerId: string, propertyId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {

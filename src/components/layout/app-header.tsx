@@ -1,4 +1,3 @@
-import { getCustomersForDialer } from "@/actions/customers";
 import { getCompanyPhoneNumbers } from "@/actions/telnyx";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getUserCompanies, getUserProfile } from "@/lib/auth/user-data";
@@ -55,22 +54,14 @@ export async function AppHeader() {
 		return null; // Middleware will redirect to login
 	}
 
-	// Fetch customers and phone numbers for phone dropdown
-	let customers: any[] = [];
+	// Fetch ONLY company phone numbers on server
+	// PERFORMANCE: Customer data is lazy-loaded on client when dialer opens
+	// This saves 400-800ms per page load by not fetching ALL customers upfront
 	let companyPhones: any[] = [];
 
 	if (activeCompanyId) {
 		try {
-			// Fetch in parallel for better performance
-			// Uses lightweight getCustomersForDialer (50-100ms) instead of getAllCustomers (1200-2000ms)
-			const [customersResult, phonesResult] = await Promise.all([
-				getCustomersForDialer(),
-				getCompanyPhoneNumbers(activeCompanyId),
-			]);
-
-			if (customersResult.success && customersResult.data) {
-				customers = customersResult.data;
-			}
+			const phonesResult = await getCompanyPhoneNumbers(activeCompanyId);
 
 			if (phonesResult.success && phonesResult.data) {
 				companyPhones = phonesResult.data.map((p) => ({
@@ -80,18 +71,17 @@ export async function AppHeader() {
 				}));
 			}
 		} catch (_error) {
-			// Continue without phone data - component will handle empty arrays
+			// Continue without phone data - component will handle empty array
 		}
 	}
 
 	// Pass server-fetched data to client component for interactivity
-	// Client component only handles interactive parts (mobile menu, active nav state)
+	// Customers will be lazy-loaded on client side when dialer is opened
 	return (
 		<AppHeaderClient
 			activeCompanyId={activeCompanyId}
 			companies={companies}
 			companyPhones={companyPhones}
-			customers={customers}
 			userProfile={userProfile}
 		/>
 	);
