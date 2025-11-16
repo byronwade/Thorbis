@@ -1,11 +1,11 @@
 /**
- * Inventory Skeleton - Loading State
+ * Alerts Skeleton - Loading State
  *
- * Matches the exact layout of inventory data to prevent layout shifts.
+ * Matches the exact layout of alerts data to prevent layout shifts.
  * Displays while content is loading.
  */
 
-export function InventorySkeleton() {
+export function AlertsSkeleton() {
   return (
     <div className="relative space-y-10 py-8 md:py-12">
       {/* Status badge skeleton */}

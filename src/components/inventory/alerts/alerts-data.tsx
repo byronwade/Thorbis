@@ -1,83 +1,90 @@
 /**
- * Inventory Data - Async Server Component
+ * Alerts Data - Async Server Component
  *
- * Displays inventory dashboard content.
- * This component is wrapped in Suspense for PPR pattern.
+ * Displays low stock alerts content (Coming Soon variant).
+ * This component is wrapped in Suspense for PPR pattern,
+ * allowing future expansion to data-driven alert management.
  */
 
-import { AlertTriangle, BarChart3, Package, TrendingUp } from "lucide-react";
+import {
+  AlertTriangle,
+  Bell,
+  Mail,
+  MessageSquare,
+  TrendingDown,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function InventoryData() {
-  // Future: Fetch inventory items
-  // const items = await fetchInventoryItems();
+export async function AlertsData() {
+  // Future: Fetch low stock alerts
+  // const alerts = await fetchLowStockAlerts();
 
   return (
     <ComingSoonShell
-      description="Track parts, equipment, and materials with real-time stock levels and automated reordering"
-      icon={Package}
-      title="Inventory Management"
+      description="Get notified when inventory levels drop below minimum thresholds and automate reordering processes"
+      icon={AlertTriangle}
+      title="Low Stock Alerts"
     >
       {/* Feature cards */}
       <div className="mx-auto max-w-5xl space-y-8">
         {/* Features grid */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Stock tracking */}
+          {/* Real-time alerts */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Package className="size-6 text-primary" />
+              <Bell className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Real-Time Stock Tracking</h3>
+            <h3 className="font-semibold text-lg">Real-Time Alerts</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor inventory levels in real-time with automatic updates from
-              job completions and purchases
+              Instantly know when parts fall below minimum stock levels before
+              you run out
             </p>
           </div>
 
-          {/* Low stock alerts */}
+          {/* Multi-channel notifications */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <AlertTriangle className="size-6 text-primary" />
+              <MessageSquare className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Low Stock Alerts</h3>
+            <h3 className="font-semibold text-lg">
+              Multi-Channel Notifications
+            </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Get notified when items fall below minimum stock levels and
-              automate reordering
+              Receive alerts via email, SMS, and in-app notifications so you
+              never miss a critical update
             </p>
           </div>
 
-          {/* Analytics */}
+          {/* Customizable thresholds */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <BarChart3 className="size-6 text-primary" />
+              <TrendingDown className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Usage Analytics</h3>
+            <h3 className="font-semibold text-lg">Customizable Thresholds</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Analyze inventory turnover, identify slow-moving items, and
-              optimize stock levels
+              Set different minimum stock levels for each item based on usage
+              patterns and lead times
             </p>
           </div>
 
-          {/* Cost tracking */}
+          {/* Automated ordering */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <TrendingUp className="size-6 text-primary" />
+              <Mail className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Cost Tracking</h3>
+            <h3 className="font-semibold text-lg">Automated Ordering</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track purchase costs, calculate profit margins, and manage
-              inventory valuation
+              Automatically generate purchase orders when stock levels trigger
+              reorder points
             </p>
           </div>
         </div>
 
         {/* CTA section */}
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-          <h3 className="mb-3 font-semibold text-xl">
-            Optimize Your Inventory
-          </h3>
+          <h3 className="mb-3 font-semibold text-xl">Never Run Out of Parts</h3>
           <p className="mb-6 text-muted-foreground">
-            Never run out of parts and reduce carrying costs
+            Stay ahead of stockouts with intelligent alerts
           </p>
           <div className="flex justify-center gap-4">
             <button

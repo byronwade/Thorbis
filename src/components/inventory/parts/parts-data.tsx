@@ -1,72 +1,73 @@
 /**
- * Inventory Data - Async Server Component
+ * Parts Data - Async Server Component
  *
- * Displays inventory dashboard content.
- * This component is wrapped in Suspense for PPR pattern.
+ * Displays parts and materials content (Coming Soon variant).
+ * This component is wrapped in Suspense for PPR pattern,
+ * allowing future expansion to data-driven parts management.
  */
 
-import { AlertTriangle, BarChart3, Package, TrendingUp } from "lucide-react";
+import { BarChart2, Box, Package2, Search, Settings } from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
-export async function InventoryData() {
-  // Future: Fetch inventory items
-  // const items = await fetchInventoryItems();
+export async function PartsData() {
+  // Future: Fetch parts inventory
+  // const parts = await fetchParts();
 
   return (
     <ComingSoonShell
-      description="Track parts, equipment, and materials with real-time stock levels and automated reordering"
-      icon={Package}
-      title="Inventory Management"
+      description="Manage your parts and materials inventory with barcode scanning, vendor management, and automated tracking"
+      icon={Package2}
+      title="Parts & Materials"
     >
       {/* Feature cards */}
       <div className="mx-auto max-w-5xl space-y-8">
         {/* Features grid */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Stock tracking */}
+          {/* Parts catalog */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <Package className="size-6 text-primary" />
+              <Box className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Real-Time Stock Tracking</h3>
+            <h3 className="font-semibold text-lg">Parts Catalog</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Monitor inventory levels in real-time with automatic updates from
-              job completions and purchases
+              Organize all your parts with SKUs, descriptions, manufacturers,
+              and cross-references
             </p>
           </div>
 
-          {/* Low stock alerts */}
+          {/* Barcode scanning */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <AlertTriangle className="size-6 text-primary" />
+              <Search className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Low Stock Alerts</h3>
+            <h3 className="font-semibold text-lg">Barcode Scanning</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Get notified when items fall below minimum stock levels and
-              automate reordering
+              Scan barcodes to quickly add, remove, or update parts in your
+              inventory
             </p>
           </div>
 
-          {/* Analytics */}
+          {/* Vendor management */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <BarChart3 className="size-6 text-primary" />
+              <Settings className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Usage Analytics</h3>
+            <h3 className="font-semibold text-lg">Vendor Management</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Analyze inventory turnover, identify slow-moving items, and
-              optimize stock levels
+              Track preferred vendors, pricing tiers, and lead times for each
+              part
             </p>
           </div>
 
-          {/* Cost tracking */}
+          {/* Usage tracking */}
           <div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
             <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-              <TrendingUp className="size-6 text-primary" />
+              <BarChart2 className="size-6 text-primary" />
             </div>
-            <h3 className="font-semibold text-lg">Cost Tracking</h3>
+            <h3 className="font-semibold text-lg">Usage Tracking</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Track purchase costs, calculate profit margins, and manage
-              inventory valuation
+              Monitor which parts are used most frequently and optimize your
+              stock levels
             </p>
           </div>
         </div>
@@ -74,10 +75,10 @@ export async function InventoryData() {
         {/* CTA section */}
         <div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
           <h3 className="mb-3 font-semibold text-xl">
-            Optimize Your Inventory
+            Streamline Parts Management
           </h3>
           <p className="mb-6 text-muted-foreground">
-            Never run out of parts and reduce carrying costs
+            Never waste time searching for parts again
           </p>
           <div className="flex justify-center gap-4">
             <button

@@ -1,11 +1,11 @@
 /**
- * Inventory Skeleton - Loading State
+ * Equipment Skeleton - Loading State
  *
- * Matches the exact layout of inventory data to prevent layout shifts.
+ * Matches the exact layout of equipment data to prevent layout shifts.
  * Displays while content is loading.
  */
 
-export function InventorySkeleton() {
+export function EquipmentSkeleton() {
   return (
     <div className="relative space-y-10 py-8 md:py-12">
       {/* Status badge skeleton */}
@@ -30,7 +30,7 @@ export function InventorySkeleton() {
           {[...Array(4)].map((_, i) => (
             <div className="space-y-3 rounded-lg border bg-card p-6" key={i}>
               <div className="size-12 animate-pulse rounded-lg bg-muted" />
-              <div className="h-6 w-48 animate-pulse rounded bg-muted" />
+              <div className="h-6 w-40 animate-pulse rounded bg-muted" />
               <div className="space-y-2">
                 <div className="h-4 w-full animate-pulse rounded bg-muted" />
                 <div className="h-4 w-4/5 animate-pulse rounded bg-muted" />
@@ -41,8 +41,8 @@ export function InventorySkeleton() {
 
         {/* CTA skeleton */}
         <div className="rounded-lg border bg-card p-8 text-center">
-          <div className="mx-auto mb-3 h-7 w-56 animate-pulse rounded bg-muted" />
-          <div className="mx-auto mb-6 h-5 w-64 animate-pulse rounded bg-muted" />
+          <div className="mx-auto mb-3 h-7 w-48 animate-pulse rounded bg-muted" />
+          <div className="mx-auto mb-6 h-5 w-72 animate-pulse rounded bg-muted" />
           <div className="flex justify-center gap-4">
             <div className="h-10 w-32 animate-pulse rounded-lg bg-muted" />
             <div className="h-10 w-36 animate-pulse rounded-lg bg-muted" />
