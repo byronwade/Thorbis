@@ -31,8 +31,10 @@ export function WorkDataView({
 		if (forceView && storedView !== forceView) {
 			setView(forceView);
 		}
+		// ESLint disable: setView is a Zustand action wrapper with unstable reference
+		// storedView intentionally excluded to prevent infinite loop
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [forceView, setView]); // storedView intentionally excluded to prevent infinite loop
+	}, [forceView]);
 
 	if (viewMode === "kanban") {
 		return <>{kanban ?? fallback}</>;

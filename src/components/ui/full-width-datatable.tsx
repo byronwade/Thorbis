@@ -54,6 +54,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 import {
 	getColumnWidthClass,
 	renderCustomColumn,
@@ -276,6 +277,7 @@ export function FullWidthDataTable<T>({
 	showArchived = true,
 	isArchived,
 }: FullWidthDataTableProps<T>) {
+	const router = useRouter();
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [searchQuery, setSearchQuery] = useState("");
 	// Use page from server (no hydration mismatch)
@@ -376,7 +378,9 @@ export function FullWidthDataTable<T>({
 				allColumns.map((col) => col.key),
 			);
 		}
-	}, [isClient, entity, allColumns, initializeEntity]);
+		// ESLint disable: initializeEntity is a Zustand action with stable reference
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isClient, entity, allColumns]);
 
 	// Get ordered columns based on stored order (only on client to prevent hydration issues)
 	const orderedColumns = useMemo(() => {
@@ -595,20 +599,16 @@ export function FullWidthDataTable<T>({
 
 	const handlePreviousPage = () => {
 		const newPage = Math.max(1, currentPage - 1);
-		// Update URL to trigger server refetch
-		const url = new URL(window.location.href);
-		url.searchParams.set("page", String(newPage));
-		window.history.pushState({}, "", url);
-		window.location.href = url.toString(); // Force reload with new page
+		setCurrentPage(newPage);
+		// Update URL and trigger server refetch
+		router.push(`?page=${newPage}`, { scroll: false });
 	};
 
 	const handleNextPage = () => {
 		const newPage = Math.min(totalPages, currentPage + 1);
-		// Update URL to trigger server refetch
-		const url = new URL(window.location.href);
-		url.searchParams.set("page", String(newPage));
-		window.history.pushState({}, "", url);
-		window.location.href = url.toString(); // Force reload with new page
+		setCurrentPage(newPage);
+		// Update URL and trigger server refetch
+		router.push(`?page=${newPage}`, { scroll: false });
 	};
 
 	const isAllSelected =
