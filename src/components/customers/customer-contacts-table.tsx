@@ -1,7 +1,13 @@
 "use client";
 
 /**
- * Customer Contacts Table
+ * Customer Contacts Table - React Query Refactored
+ *
+ * Performance optimizations:
+ * - Uses React Query for automatic caching and refetching
+ * - Optimistic updates for instant UI feedback
+ * - Automatic background refetching
+ * - Intelligent cache invalidation
  *
  * Manages multiple contacts for a customer with:
  * - Multiple emails and phone numbers
@@ -10,8 +16,10 @@
  * - Add/edit/remove functionality
  */
 
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Star, Trash2, User } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
 	addCustomerContact,
 	type CustomerContact,
@@ -39,6 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -57,13 +66,14 @@ export function CustomerContactsTable({
 	customerId,
 	triggerAdd,
 }: CustomerContactsTableProps) {
-	const [contacts, setContacts] = useState<CustomerContact[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
+	const queryClient = useQueryClient();
+
+	// Local UI state (not data state)
 	const [showAddDialog, setShowAddDialog] = useState(false);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
-	// Form state
+	// Form state (local to dialog)
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -76,46 +86,46 @@ export function CustomerContactsTable({
 		isEmergencyContact: false,
 	});
 
-	useEffect(() => {
-		loadContacts();
-	}, [loadContacts]);
+	// React Query: Fetch contacts
+	const {
+		data: contacts,
+		isLoading,
+		error,
+	} = useQuery({
+		queryKey: ["customer-contacts", customerId],
+		queryFn: async () => {
+			const result = await getCustomerContacts(customerId);
+			if (!result.success) {
+				throw new Error(result.error || "Failed to fetch contacts");
+			}
+			return result.data || [];
+		},
+		staleTime: 60 * 1000, // 1 minute
+		refetchOnWindowFocus: true,
+	});
 
-	// Respond to external trigger
-	useEffect(() => {
-		if (triggerAdd && triggerAdd > 0) {
-			setShowAddDialog(true);
-		}
-	}, [triggerAdd]);
-
-	const loadContacts = async () => {
-		setIsLoading(true);
-		const result = await getCustomerContacts(customerId);
-		if (result.success) {
-			setContacts(result.data || []);
-		}
-		setIsLoading(false);
-	};
-
-	const handleAddContact = async () => {
-		if (!(formData.firstName && formData.lastName)) {
-			alert("First name and last name are required");
-			return;
-		}
-
-		const result = await addCustomerContact({
-			customerId,
-			firstName: formData.firstName,
-			lastName: formData.lastName,
-			title: formData.title || undefined,
-			email: formData.email || undefined,
-			phone: formData.phone || undefined,
-			secondaryPhone: formData.secondaryPhone || undefined,
-			isPrimary: formData.isPrimary,
-			isBillingContact: formData.isBillingContact,
-			isEmergencyContact: formData.isEmergencyContact,
-		});
-
-		if (result.success) {
+	// React Query: Add contact mutation
+	const addContactMutation = useMutation({
+		mutationFn: async (data: typeof formData) => {
+			const result = await addCustomerContact({
+				customerId,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				title: data.title || undefined,
+				email: data.email || undefined,
+				phone: data.phone || undefined,
+				secondaryPhone: data.secondaryPhone || undefined,
+				isPrimary: data.isPrimary,
+				isBillingContact: data.isBillingContact,
+				isEmergencyContact: data.isEmergencyContact,
+			});
+			if (!result.success) {
+				throw new Error(result.error || "Failed to add contact");
+			}
+			return result;
+		},
+		onSuccess: () => {
+			// Reset form
 			setFormData({
 				firstName: "",
 				lastName: "",
@@ -128,25 +138,112 @@ export function CustomerContactsTable({
 				isEmergencyContact: false,
 			});
 			setShowAddDialog(false);
-			loadContacts();
-		} else {
-			alert(result.error || "Failed to add contact");
+			// Invalidate and refetch
+			queryClient.invalidateQueries({
+				queryKey: ["customer-contacts", customerId],
+			});
+			toast.success("Contact added successfully");
+		},
+		onError: (error: Error) => {
+			toast.error(error.message);
+		},
+	});
+
+	// React Query: Remove contact mutation with optimistic update
+	const removeContactMutation = useMutation({
+		mutationFn: async (contactId: string) => {
+			const result = await removeCustomerContact(contactId);
+			if (!result.success) {
+				throw new Error(result.error || "Failed to remove contact");
+			}
+			return result;
+		},
+		onMutate: async (contactId) => {
+			// Cancel outgoing refetches
+			await queryClient.cancelQueries({
+				queryKey: ["customer-contacts", customerId],
+			});
+
+			// Snapshot previous value
+			const previousContacts = queryClient.getQueryData([
+				"customer-contacts",
+				customerId,
+			]);
+
+			// Optimistically remove contact
+			queryClient.setQueryData(
+				["customer-contacts", customerId],
+				(old: CustomerContact[] | undefined) =>
+					old ? old.filter((contact) => contact.id !== contactId) : old,
+			);
+
+			return { previousContacts };
+		},
+		onError: (error: Error, _contactId, context) => {
+			// Rollback on error
+			if (context?.previousContacts) {
+				queryClient.setQueryData(
+					["customer-contacts", customerId],
+					context.previousContacts,
+				);
+			}
+			toast.error(error.message);
+		},
+		onSuccess: () => {
+			toast.success("Contact archived successfully");
+		},
+		onSettled: () => {
+			// Always refetch after mutation
+			queryClient.invalidateQueries({
+				queryKey: ["customer-contacts", customerId],
+			});
+		},
+	});
+
+	// Respond to external trigger
+	useEffect(() => {
+		if (triggerAdd && triggerAdd > 0) {
+			setShowAddDialog(true);
 		}
+	}, [triggerAdd]);
+
+	// Handlers
+	const handleAddContact = () => {
+		if (!(formData.firstName && formData.lastName)) {
+			toast.error("First name and last name are required");
+			return;
+		}
+		addContactMutation.mutate(formData);
 	};
 
-	const handleRemoveContact = async (contactId: string) => {
-		const result = await removeCustomerContact(contactId);
-		if (result.success) {
-			loadContacts();
-		} else {
-			alert(result.error || "Failed to remove contact");
-		}
+	const handleRemoveContact = (contactId: string) => {
+		removeContactMutation.mutate(contactId);
 	};
 
+	// Loading skeleton
 	if (isLoading) {
 		return (
-			<div className="p-8 text-center text-muted-foreground text-sm">
-				Loading contacts...
+			<div className="space-y-4">
+				<div className="rounded-lg border p-4">
+					<Skeleton className="mb-4 h-8 w-full" />
+					<Skeleton className="mb-2 h-12 w-full" />
+					<Skeleton className="mb-2 h-12 w-full" />
+					<Skeleton className="h-12 w-full" />
+				</div>
+			</div>
+		);
+	}
+
+	// Error state
+	if (error) {
+		return (
+			<div className="flex min-h-[400px] items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 p-8">
+				<div className="text-center">
+					<p className="mb-2 font-semibold text-destructive">
+						Failed to load contacts
+					</p>
+					<p className="text-muted-foreground text-sm">{error.message}</p>
+				</div>
 			</div>
 		);
 	}
@@ -167,7 +264,7 @@ export function CustomerContactsTable({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{contacts.length === 0 ? (
+						{contacts?.length === 0 ? (
 							<TableRow>
 								<TableCell className="h-24 text-center" colSpan={6}>
 									<div className="flex flex-col items-center gap-2">
@@ -179,7 +276,7 @@ export function CustomerContactsTable({
 								</TableCell>
 							</TableRow>
 						) : (
-							contacts.map((contact) => (
+							contacts?.map((contact) => (
 								<TableRow key={contact.id}>
 									<TableCell className="font-medium">
 										{contact.first_name} {contact.last_name}
@@ -234,6 +331,7 @@ export function CustomerContactsTable({
 									<TableCell>
 										<Button
 											className="size-8 p-0"
+											disabled={removeContactMutation.isPending}
 											onClick={() => {
 												setItemToArchive(contact.id);
 												setIsArchiveDialogOpen(true);
@@ -380,9 +478,13 @@ export function CustomerContactsTable({
 							>
 								Cancel
 							</Button>
-							<Button className="flex-1" onClick={handleAddContact}>
+							<Button
+								className="flex-1"
+								disabled={addContactMutation.isPending}
+								onClick={handleAddContact}
+							>
 								<Plus className="mr-2 size-4" />
-								Add Contact
+								{addContactMutation.isPending ? "Adding..." : "Add Contact"}
 							</Button>
 						</div>
 					</div>
@@ -406,9 +508,9 @@ export function CustomerContactsTable({
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-							onClick={async () => {
+							onClick={() => {
 								if (itemToArchive) {
-									await handleRemoveContact(itemToArchive);
+									handleRemoveContact(itemToArchive);
 								}
 							}}
 						>

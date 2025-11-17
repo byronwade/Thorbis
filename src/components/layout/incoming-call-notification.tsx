@@ -95,6 +95,7 @@ import { CallIndicatorBadge } from "@/components/call/call-indicator-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useCustomerLookup } from "@/lib/hooks/use-customer-lookup";
 
 /**
  * PERFORMANCE FIX: Heavy components loaded dynamically (only when call is active)
@@ -264,10 +265,13 @@ const _getVideoButtonClass = (
 	return "bg-background hover:bg-accent text-muted-foreground";
 };
 
-// Mock customer data
 /**
- * Fetch real customer data from database
- * This replaces the previous mock data function
+ * useCustomerData Hook - MIGRATED TO REACT QUERY
+ *
+ * Now using useCustomerLookup from /lib/hooks/use-customer-lookup.ts
+ * This provides automatic caching, refetching, and better performance.
+ *
+ * @deprecated Use useCustomerLookup instead
  */
 const useCustomerData = (callerNumber?: string, companyId?: string) => {
 	const [customerData, setCustomerData] = useState<CustomerData | null>(null);
@@ -1858,9 +1862,11 @@ export function IncomingCallNotification() {
 		fetchCompanyId();
 	}, []);
 
-	// Fetch real customer data from database
-	const { customerData: fetchedCustomerData, isLoading: isLoadingCustomer } =
-		useCustomerData(call.caller?.number, companyId || undefined);
+	// Fetch real customer data from database (React Query)
+	const { data: fetchedCustomerData, isLoading: isLoadingCustomer } = useCustomerLookup(
+		call.caller?.number,
+		companyId || undefined
+	);
 
 	// Use fetched data or fallback to default
 	const customerData: CustomerData = fetchedCustomerData || {

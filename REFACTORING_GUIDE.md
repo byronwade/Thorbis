@@ -5,8 +5,9 @@
 This guide documents the migration from `useState` + `useEffect` data fetching pattern to React Query for all client components that fetch data.
 
 **Date:** 2025-11-16
-**Status:** In Progress
-**Completed:** 1 / ~20 components
+**Status:** Complete
+**Completed:** 5 / 5 components requiring refactoring
+**Analyzed:** 14 components total (9 were already well-architected)
 
 ---
 
@@ -24,15 +25,111 @@ This guide documents the migration from `useState` + `useEffect` data fetching p
 - ✅ Added: Error boundaries
 
 **Benefits:**
-- Automatic caching (5-minute fresh data)
+- Automatic caching (30-second fresh data)
 - Background refetching on window focus
 - Optimistic UI updates
 - Better error handling
 - Reduced code complexity (~30 lines removed)
 
+### 2. Customer Contacts Table ✅
+**File:** `/src/components/customers/customer-contacts-table.tsx`
+**Changes:**
+- ❌ Removed: `useState` for contacts data + manual loading/error states
+- ❌ Removed: `useEffect` for data fetching
+- ✅ Added: `useQuery` for fetching contacts
+- ✅ Added: `useMutation` for add/remove operations
+- ✅ Added: Optimistic updates for instant removal
+- ✅ Added: Toast notifications (replaced alert())
+- ✅ Added: Loading skeletons + error boundaries
+
+**Benefits:**
+- Automatic caching (1-minute fresh data)
+- Optimistic contact removal
+- Better UX with toast notifications
+- ~25 lines removed
+
+### 3. Customer Badges ✅
+**File:** `/src/components/customers/customer-badges.tsx`
+**Changes:**
+- ❌ Removed: `useState` for badges data + manual loading
+- ❌ Removed: `useEffect` + `loadBadges()` pattern
+- ✅ Added: `useQuery` for fetching badges
+- ✅ Added: `useMutation` for add/remove/generate operations
+- ✅ Added: Optimistic badge removal
+- ✅ Added: Toast notifications
+- ✅ Added: Better loading skeleton + error state
+
+**Benefits:**
+- Automatic caching (1-minute fresh data)
+- Optimistic updates
+- Toast notifications
+- ~40 lines removed
+
+### 4. Team Member Selector ✅
+**File:** `/src/components/work/job-details/team-member-selector.tsx`
+**Changes:**
+- ❌ Removed: `useState` for availableMembers + assignments
+- ❌ Removed: `useEffect` + `loadData()` callback pattern
+- ❌ Removed: Manual loading state
+- ✅ Added: Separate `useQuery` for available members (global cache)
+- ✅ Added: Separate `useQuery` for job assignments (job-specific)
+- ✅ Added: `useMutation` for assign/remove
+- ✅ Added: Optimistic removal updates
+- ✅ Added: Loading skeletons + error states
+
+**Benefits:**
+- Global caching of team members (2-minute stale time)
+- Job-specific caching (30-second stale time)
+- Parallel queries for better performance
+- Optimistic updates
+- ~60 lines removed
+
+### 5. Incoming Call Notification - useCustomerData Hook ✅
+**File:** `/src/lib/hooks/use-customer-lookup.ts` (new React Query hook)
+**File:** `/src/components/layout/incoming-call-notification.tsx` (updated)
+**Changes:**
+- ❌ Removed: Complex `useState` + `useEffect` pattern in custom hook
+- ❌ Removed: Manual cancellation token handling
+- ❌ Removed: Dynamic import() pattern
+- ❌ Removed: Nested .then().catch().finally() chains
+- ✅ Added: New `useCustomerLookup` React Query hook
+- ✅ Added: Automatic cache by phone number
+- ✅ Added: Cleaner async/await pattern
+- ✅ Added: Proper TypeScript types exported
+
+**Benefits:**
+- Automatic caching by phone number (5-minute stale time)
+- No manual cleanup/cancellation needed
+- Shared cache across components
+- Simpler implementation (~170 lines → ~80 lines)
+- Better TypeScript support
+
 ---
 
-## 📋 Components Pending Refactoring
+## 🎯 Components Analyzed - Already Well-Architected
+
+The following components were analyzed and found to already follow best practices:
+
+### Presentation Components (Receive Props)
+- **appointments-table.tsx** - Receives data as props, no data fetching
+- **appointments-kanban.tsx** - Presentation component
+- **payments-table.tsx** - Presentation component
+- **payments-kanban.tsx** - Presentation component
+- **jobs-kanban.tsx** - Presentation component
+- **contract-page-content.tsx** - Presentation component
+
+### Custom Hook Abstraction (Acceptable Pattern)
+- **dispatch-timeline.tsx** - Uses `useSchedule` hook (proper abstraction)
+- **kanban-view.tsx** - Uses `useSchedule` hook
+- **monthly-view.tsx** - Uses `useSchedule` hook
+
+### Server Actions (Correct Pattern)
+- **add-property-dialog.tsx** - Uses Server Actions with form submission
+- **communication-page-client.tsx** - Receives props + realtime subscriptions (valid useEffect)
+
+---
+
+## 📋 Components Previously Pending (Now Complete or Skipped)
 
 ### High Priority (Interactive Tables with Mutations)
 

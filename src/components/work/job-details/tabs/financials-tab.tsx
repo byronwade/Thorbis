@@ -94,7 +94,9 @@ export function FinancialsTab({
 							<div>
 								<p className="text-muted-foreground text-xs">Job Value</p>
 								<p className="font-bold text-2xl">
-									{formatCurrency(job.total_amount || 0, { decimals: 2 })}
+									{formatCurrency(job.financial?.total_amount || 0, {
+										decimals: 2,
+									})}
 								</p>
 							</div>
 							<DollarSign className="h-8 w-8 text-muted-foreground" />
