@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { getCurrentUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { getJobWithDomains } from "@/lib/validations/job-domain-schemas";
 
 /**
  * Get job data for toolbar statistics
@@ -32,10 +33,10 @@ export async function GET(
 			return NextResponse.json({ error: "No active company" }, { status: 403 });
 		}
 
-		// Fetch job
+		// Fetch job with financial and time tracking domains
 		const { data: job, error: jobError } = await supabase
 			.from("jobs")
-			.select("*")
+			.select(getJobWithDomains(["financial", "timeTracking"]))
 			.eq("id", jobId)
 			.eq("company_id", activeCompanyId)
 			.is("deleted_at", null)
@@ -119,9 +120,14 @@ export async function GET(
 			return total + invoiceTotal;
 		}, 0);
 
-		const estimatedProfit = (job.total_amount || 0) - materialsCost;
+		// Use domain table fields with optional chaining
+		const totalAmount = job.financial?.total_amount || 0;
+		const paidAmount = job.financial?.paid_amount || 0;
+		const estimatedLaborHours = job.timeTracking?.estimated_labor_hours || 0;
+
+		const estimatedProfit = totalAmount - materialsCost;
 		const profitMargin =
-			job.total_amount > 0 ? (estimatedProfit / job.total_amount) * 100 : 0;
+			totalAmount > 0 ? (estimatedProfit / totalAmount) * 100 : 0;
 
 		const statusCompletionMap: Record<string, number> = {
 			quoted: 10,
@@ -134,10 +140,10 @@ export async function GET(
 		const completionPercentage = statusCompletionMap[job.status as string] || 0;
 
 		const metrics = {
-			totalAmount: job.total_amount || 0,
-			paidAmount: job.paid_amount || 0,
+			totalAmount,
+			paidAmount,
 			totalLaborHours,
-			estimatedLaborHours: job.estimated_labor_hours || 0,
+			estimatedLaborHours,
 			materialsCost,
 			profitMargin,
 			completionPercentage,

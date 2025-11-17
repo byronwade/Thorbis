@@ -39,6 +39,7 @@ async function JobData({ jobId }: { jobId: string }) {
 	const result = await getJob(jobId);
 
 	if (!result.success || !result.data) {
+		console.error(`[JobData] Failed to load job ${jobId}:`, result.error);
 		return notFound();
 	}
 

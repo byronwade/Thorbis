@@ -1481,10 +1481,10 @@ export async function getAllCustomers(): Promise<
 		// Enrich customers with real job data
 		const enrichedCustomers = await Promise.all(
 			(customers || []).map(async (customer) => {
-				// Get last completed job date
+				// Get last completed job date (with time tracking for actual_end)
 				const { data: lastJob } = await supabase
 					.from("jobs")
-					.select("created_at, scheduled_end, actual_end")
+					.select("created_at, scheduled_end, timeTracking:job_time_tracking(actual_end)")
 					.eq("customer_id", customer.id)
 					.eq("company_id", teamMember.company_id)
 					.eq("status", "completed")
@@ -1504,21 +1504,21 @@ export async function getAllCustomers(): Promise<
 					.limit(1)
 					.maybeSingle();
 
-				// Get total revenue and job count
+				// Get total revenue and job count (with financial data)
 				const { data: jobStats } = await supabase
 					.from("jobs")
-					.select("total_amount")
+					.select("financial:job_financial(total_amount)")
 					.eq("customer_id", customer.id)
 					.eq("company_id", teamMember.company_id);
 
 				const total_jobs = jobStats?.length || 0;
 				const total_revenue =
-					jobStats?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
+					jobStats?.reduce((sum, job) => sum + (job.financial?.total_amount || 0), 0) || 0;
 
 				return {
 					...customer,
 					last_job_date:
-						lastJob?.actual_end ||
+						lastJob?.timeTracking?.actual_end ||
 						lastJob?.scheduled_end ||
 						lastJob?.created_at,
 					next_scheduled_job: nextJob?.scheduled_start,
