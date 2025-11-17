@@ -101,6 +101,7 @@ export function TeamMemberSelector({
 			return result.data || [];
 		},
 		staleTime: 2 * 60 * 1000, // 2 minutes
+		refetchOnWindowFocus: false, // Disabled - Server Actions handle revalidation via revalidatePath()
 	});
 
 	// React Query: Fetch job assignments
@@ -118,7 +119,7 @@ export function TeamMemberSelector({
 			return result.data || [];
 		},
 		staleTime: 30 * 1000, // 30 seconds
-		refetchOnWindowFocus: true,
+		refetchOnWindowFocus: false, // Disabled - Server Actions handle revalidation via revalidatePath()
 	});
 
 	// React Query: Assign team member mutation

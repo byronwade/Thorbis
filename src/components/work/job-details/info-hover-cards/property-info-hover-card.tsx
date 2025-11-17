@@ -17,7 +17,7 @@ import {
 	Route,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +64,9 @@ export function PropertyInfoHoverCard({
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
 
+	// Track if we've already fetched to prevent re-fetching on re-renders
+	const hasFetchedRef = useRef(false);
+
 	const copyToClipboard = (text: string, field: string) => {
 		navigator.clipboard.writeText(text);
 		setCopiedField(field);
@@ -72,12 +75,18 @@ export function PropertyInfoHoverCard({
 
 	// Fetch travel time data
 	useEffect(() => {
+		// Only fetch once - use ref to prevent re-fetching on re-renders
+		if (hasFetchedRef.current) {
+			return;
+		}
+
 		const fetchTravelTime = async () => {
 			// Only fetch if we have required address data
 			if (!(property.address && property.city && property.state)) {
 				return;
 			}
 
+			hasFetchedRef.current = true;
 			setIsLoadingTravel(true);
 			try {
 				const params = new URLSearchParams();

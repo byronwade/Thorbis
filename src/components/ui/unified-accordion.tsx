@@ -245,35 +245,12 @@ export function UnifiedAccordion({
 
 	const [isDragging, setIsDragging] = useState(false);
 
-	// Update sections when initialSections change
-	useEffect(() => {
-		if (!(storageKey && enableReordering)) {
-			setSections(initialSections);
-			return;
-		}
-
-		const savedOrder = loadSectionOrder(storageKey);
-		if (!savedOrder) {
-			setSections(initialSections);
-			return;
-		}
-
-		// Reorder new sections based on saved order
-		const orderedSections = [...initialSections];
-		orderedSections.sort((a, b) => {
-			const indexA = savedOrder.indexOf(a.id);
-			const indexB = savedOrder.indexOf(b.id);
-			if (indexA === -1) {
-				return 1;
-			}
-			if (indexB === -1) {
-				return -1;
-			}
-			return indexA - indexB;
-		});
-
-		setSections(orderedSections);
-	}, [initialSections, storageKey, enableReordering]);
+	// NOTE: Removed redundant useEffect that was causing infinite re-render loops
+	// The state is already correctly initialized in the useState callback above (lines 214-240)
+	// That initialization handles both regular sections and reordered sections from localStorage
+	// Adding a useEffect that watches initialSections causes loops because initialSections
+	// is a new array reference on every parent render, triggering setSections(), which causes
+	// re-renders, which creates new initialSections, creating an infinite cycle.
 
 	// Sensors for drag and drop
 	const sensors = useSensors(

@@ -25,8 +25,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
 					queries: {
 						// Stale time: How long data is considered fresh (5 minutes)
 						staleTime: 5 * 60 * 1000,
-						// Refetch on window focus to keep data fresh
-						refetchOnWindowFocus: true,
+						// Disable refetch on window focus - Server Actions handle revalidation via revalidatePath()
+						// Enable per-query if needed for real-time data requirements
+						refetchOnWindowFocus: false,
 						// Retry failed requests
 						retry: 1,
 						// Keep unused data in cache for 10 minutes

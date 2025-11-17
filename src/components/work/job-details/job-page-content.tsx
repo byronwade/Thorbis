@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { type ReactNode, useMemo, useState } from "react";
+import React, { type ReactNode, useEffect, useMemo, useState } from "react";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
@@ -94,6 +94,9 @@ import { useUIStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
 import { InlinePhotoUploader } from "./InlinePhotoUploader";
 import { JobAppointmentsTable } from "./job-appointments-table";
+import { TagBadge } from "./tags/tag-badge";
+import { AddTagBadge } from "./tags/add-tag-badge";
+import { TagManagerDialog } from "./tags/tag-manager-dialog";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
 import { JobEstimatesTable } from "./job-estimates-table";
 import { JobInvoicesTable } from "./job-invoices-table";
@@ -101,7 +104,7 @@ import { JobPurchaseOrdersTable } from "./job-purchase-orders-table";
 import { JobQuickActions } from "./job-quick-actions";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TeamMemberSelector } from "./team-member-selector";
-import { TravelTime } from "./travel-time";
+// import { TravelTime } from "./travel-time"; // TEMPORARILY DISABLED FOR DEBUGGING
 import { PropertyLocationVisual } from "./widgets/property-location-visual";
 
 type JobPageContentProps = {
@@ -136,6 +139,22 @@ export function JobPageContent({
 
 	const router = useRouter();
 	const { toast } = useToast();
+
+	// DIAGNOSTIC: Intercept router.refresh to trace ALL calls
+	useEffect(() => {
+		const originalRefresh = router.refresh;
+		router.refresh = function() {
+			console.log("[DIAGNOSTIC] 🔥🔥🔥 router.refresh() CALLED!");
+			console.trace("Stack trace:");
+			const err = new Error();
+			console.log("Call stack:", err.stack);
+			return originalRefresh.call(this);
+		};
+
+		return () => {
+			router.refresh = originalRefresh;
+		};
+	}, [router]);
 	const [localJob, setLocalJob] = useState(() => {
 		if (!jobData?.job) {
 			return { priority: "medium" };
@@ -148,10 +167,36 @@ export function JobPageContent({
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [showUploader, setShowUploader] = useState(false);
+
+	// DIAGNOSTIC: Track component mount/unmount to detect re-mounting loops
+	useEffect(() => {
+		const mountTime = Date.now();
+		console.log("[JobPageContent] 🟢 MOUNTED at:", new Date().toISOString(), "jobId:", job?.id);
+		console.log("[JobPageContent] Props:", { hasJobData: !!jobData, hasJob: !!job });
+
+		return () => {
+			const duration = Date.now() - mountTime;
+			console.log("[JobPageContent] 🔴 UNMOUNTED after:", duration + "ms", "jobId:", job?.id);
+		};
+	}, [job?.id, jobData, job]);
+
+	// DIAGNOSTIC: Track ALL state updates
+	useEffect(() => {
+		console.log("[JobPageContent] 📝 localJob updated:", localJob?.title || "no title");
+	}, [localJob]);
+
+	useEffect(() => {
+		console.log("[JobPageContent] ⚡ hasChanges:", hasChanges);
+	}, [hasChanges]);
+
+	useEffect(() => {
+		console.log("[JobPageContent] 💾 isSaving:", isSaving);
+	}, [isSaving]);
 	const [isDraggingOver, setIsDraggingOver] = useState(false);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
 	const [isStatisticsOpen, setIsStatisticsOpen] = useState(false);
+	const [isTagManagerOpen, setIsTagManagerOpen] = useState(false);
 
 	const {
 		customer: initialCustomer,
@@ -281,6 +326,7 @@ export function JobPageContent({
 					id: "customer-update",
 				});
 				// Refresh in background to get latest data
+				console.trace("[DIAGNOSTIC] router.refresh() called from: Customer update handler");
 				router.refresh();
 			} else {
 				// Rollback on error
@@ -1237,7 +1283,8 @@ export function JobPageContent({
 							{property.zip_code || property.zipCode || ""}
 						</span>
 					</Link>
-					<TravelTime property={property} />
+					{/* TEMPORARILY DISABLED FOR DEBUGGING */}
+					{/* <TravelTime property={property} /> */}
 				</>
 			)}
 		</div>
@@ -1318,26 +1365,38 @@ export function JobPageContent({
 		// metadata: metadataItems, // Removed - stats already in toolbar
 	};
 
+	// Memoize property object to prevent unnecessary re-renders in child components
+	const enrichmentProperty = useMemo(
+		() =>
+			property
+				? {
+						address: property.address,
+						city: property.city,
+						state: property.state,
+						zip_code: property.zip_code,
+						lat: property.lat,
+						lon: property.lon,
+					}
+				: undefined,
+		[
+			property?.address,
+			property?.city,
+			property?.state,
+			property?.zip_code,
+			property?.lat,
+			property?.lon,
+		],
+	);
+
 	// Content to show before sections (editable fields, enrichment, travel time)
 	const beforeContent = (
 		<div className="space-y-3">
-			{/* Alerts & Warnings */}
-			<JobEnrichmentInline
+			{/* Alerts & Warnings - TEMPORARILY DISABLED FOR DEBUGGING */}
+			{/* <JobEnrichmentInline
 				enrichmentData={jobData.enrichmentData}
 				jobId={jobData.job.id}
-				property={
-					property
-						? {
-								address: property.address,
-								city: property.city,
-								state: property.state,
-								zip_code: property.zip_code,
-								lat: property.lat,
-								lon: property.lon,
-							}
-						: undefined
-				}
-			/>
+				property={enrichmentProperty}
+			/> */}
 
 			{/* Consolidated Job Info Card */}
 			<DetailPageSurface padding="lg" variant="default">

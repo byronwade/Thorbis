@@ -109,6 +109,9 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+	// Track if we've already fetched to prevent re-fetching on re-renders
+	const hasFetchedRef = useRef(false);
+
 	const fetchTravelTime = useCallback(async () => {
 		const hasRequiredFields =
 			property?.address && property?.city && property?.state;
@@ -155,7 +158,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 		property?.zip_code,
 		property?.lat,
 		property?.lon,
-		property,
+		// property removed - redundant and causes infinite loops
 	]);
 
 	// Use ref to always get latest fetchTravelTime without triggering effect
@@ -172,18 +175,25 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			return;
 		}
 
-		// Fetch immediately on mount
-		fetchTravelTimeRef.current();
+		// Only fetch and setup interval once per component mount
+		if (!hasFetchedRef.current) {
+			hasFetchedRef.current = true;
 
-		// Set up periodic refresh interval (every 5 minutes)
-		const interval = setInterval(() => {
+			// Fetch immediately on mount
 			fetchTravelTimeRef.current();
-		}, REFRESH_INTERVAL_MS);
 
-		// Always return cleanup function
-		return () => clearInterval(interval);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [property?.address]);
+			// Set up periodic refresh interval (every 5 minutes)
+			const interval = setInterval(() => {
+				fetchTravelTimeRef.current();
+			}, REFRESH_INTERVAL_MS);
+
+			// CRITICAL: Store interval ID for cleanup
+			return () => {
+				clearInterval(interval);
+				hasFetchedRef.current = false; // Reset for next mount
+			};
+		}
+	}, []); // Empty deps - only run once on mount, prevents multiple intervals
 
 	if (!property?.address) {
 		// Empty deps - only run once on mount, never re-run

@@ -16,7 +16,7 @@ import {
 	Sun,
 	Wind,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
 	HoverCard,
 	HoverCardContent,
@@ -114,6 +114,10 @@ export function JobEnrichmentInline({
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
 
+	// Refs to track if we've already fetched data (prevents re-fetching on re-renders)
+	const enrichmentFetchedRef = useRef(false);
+	const travelTimeFetchedRef = useRef(false);
+
 	const fetchEnrichment = useCallback(async () => {
 		if (!(jobId && property?.address && property?.city && property?.state)) {
 			setIsLoading(false);
@@ -163,22 +167,34 @@ export function JobEnrichmentInline({
 		hasFetched,
 	]);
 
+	// Ref for fetchEnrichment to avoid it being a dependency
+	const fetchEnrichmentRef = useRef(fetchEnrichment);
+	useEffect(() => {
+		fetchEnrichmentRef.current = fetchEnrichment;
+	}, [fetchEnrichment]);
+
 	useEffect(() => {
 		// Only fetch once on mount if no initial data
-		if (!(initialData || hasFetched) && jobId && property) {
-			fetchEnrichment();
+		if (!enrichmentFetchedRef.current && !(initialData || hasFetched) && jobId && property) {
+			enrichmentFetchedRef.current = true;
+			fetchEnrichmentRef.current();
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [fetchEnrichment, hasFetched, initialData, jobId, property]); // Run once on mount only
+	}, [initialData, hasFetched, jobId, property]);
 
 	// Fetch travel time data
 	useEffect(() => {
+		// Only fetch once - use ref to prevent re-fetching on re-renders
+		if (travelTimeFetchedRef.current) {
+			return;
+		}
+
 		const fetchTravelTime = async () => {
 			// Only fetch if we have required address data
 			if (!(property?.address && property?.city && property?.state)) {
 				return;
 			}
 
+			travelTimeFetchedRef.current = true;
 			setIsLoadingTravel(true);
 			try {
 				const params = new URLSearchParams();

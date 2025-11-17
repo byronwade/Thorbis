@@ -36,6 +36,9 @@ export async function generateMetadata({
 }
 
 async function JobData({ jobId }: { jobId: string }) {
+	// DIAGNOSTIC: Log server-side renders to detect refresh loops
+	console.log("[Server JobData] 🔵 RENDERING at:", new Date().toISOString(), "jobId:", jobId);
+
 	const result = await getJob(jobId);
 
 	if (!result.success || !result.data) {
@@ -45,6 +48,8 @@ async function JobData({ jobId }: { jobId: string }) {
 
 	const jobData = { job: result.data };
 	const metrics = {}; // TODO: Calculate metrics
+
+	console.log("[Server JobData] ✅ Data fetched, rendering client component");
 
 	return (
 		<JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />
