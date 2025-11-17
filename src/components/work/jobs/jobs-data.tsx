@@ -20,12 +20,6 @@ const JOB_SELECT = `
   status,
   priority,
   job_type,
-  ai_categories,
-  ai_equipment,
-  ai_service_type,
-  ai_priority_score,
-  ai_tags,
-  ai_processed_at,
   scheduled_start,
   scheduled_end,
   actual_start,
@@ -76,7 +70,6 @@ type ExtendedJob = Job & {
 	metadata?: Record<string, unknown> | null;
 	customers?: RelatedCustomer | null;
 	properties?: RelatedProperty | null;
-	aiProcessedAt?: Date | string | null;
 	scheduledStart?: Date | string | null;
 	scheduledEnd?: Date | string | null;
 	actualStart?: Date | string | null;
@@ -170,12 +163,6 @@ export async function JobsData() {
 			status: job.status,
 			priority: job.priority,
 			jobType: job.job_type,
-			aiCategories: job.ai_categories,
-			aiEquipment: job.ai_equipment,
-			aiServiceType: job.ai_service_type,
-			aiPriorityScore: job.ai_priority_score,
-			aiTags: job.ai_tags,
-			aiProcessedAt: toDate(job.ai_processed_at),
 			scheduledStart: toDate(job.scheduled_start),
 			scheduledEnd: toDate(job.scheduled_end),
 			actualStart: toDate(job.actual_start),

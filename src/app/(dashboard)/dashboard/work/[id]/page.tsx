@@ -45,7 +45,9 @@ async function JobData({ jobId }: { jobId: string }) {
 	const jobData = { job: result.data };
 	const metrics = {}; // TODO: Calculate metrics
 
-	return <JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />;
+	return (
+		<JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />
+	);
 }
 
 export default async function JobDetailsPage({
