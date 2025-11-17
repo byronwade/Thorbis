@@ -553,7 +553,8 @@ export function FullWidthDataTable<T>({
 		return paginatedData.map((item) => ({ item, virtualItem: null }));
 	}, [useVirtualization, virtualItems, sortedData, paginatedData]);
 
-	const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+	// Use totalCount from server if provided, otherwise calculate from client data
+	const totalPages = Math.ceil((totalCount || sortedData.length) / itemsPerPage);
 
 	// Selection handlers
 	const handleSelectAll = (checked: boolean) => {
