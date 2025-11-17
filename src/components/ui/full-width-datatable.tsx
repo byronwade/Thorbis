@@ -501,14 +501,9 @@ export function FullWidthDataTable<T>({
 		return [...sortedActive, ...archived];
 	}, [filteredData, sortBy, sortDirection, allColumns, isArchived]);
 
-	// Determine if virtualization should be used
-	const useVirtualization = useMemo(() => {
-		if (enableVirtualization === "auto") {
-			// Auto-enable virtualization for datasets > 1000 rows
-			return sortedData.length > 1000;
-		}
-		return enableVirtualization === true;
-	}, [enableVirtualization, sortedData.length]);
+	// DISABLED: Virtualization removed - pagination only
+	// Always use pagination, never virtualization
+	const useVirtualization = false;
 
 	// Virtual scrolling setup (only when virtualization is enabled)
 	const rowVirtualizer = useVirtualizer({
