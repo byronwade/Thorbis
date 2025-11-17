@@ -93,7 +93,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 		if (result.success) {
 			setActiveTeam(team);
 			// Stay on current page and refresh data
-			router.refresh();
+			// Server Action handles revalidation automatically
 		}
 	};
 
@@ -107,7 +107,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 			const result = await updateUserStatus(status);
 			if (result.success) {
 				setUserStatus(status);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			}
 		} catch (_error) {
 		} finally {

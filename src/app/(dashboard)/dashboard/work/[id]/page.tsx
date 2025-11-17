@@ -10,7 +10,7 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getJob } from "@/actions/jobs";
+import { getJob } from "@/queries/jobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 
@@ -36,20 +36,14 @@ export async function generateMetadata({
 }
 
 async function JobData({ jobId }: { jobId: string }) {
-	// DIAGNOSTIC: Log server-side renders to detect refresh loops
-	console.log("[Server JobData] 🔵 RENDERING at:", new Date().toISOString(), "jobId:", jobId);
-
 	const result = await getJob(jobId);
 
 	if (!result.success || !result.data) {
-		console.error(`[JobData] Failed to load job ${jobId}:`, result.error);
 		return notFound();
 	}
 
 	const jobData = { job: result.data };
 	const metrics = {}; // TODO: Calculate metrics
-
-	console.log("[Server JobData] ✅ Data fetched, rendering client component");
 
 	return (
 		<JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />

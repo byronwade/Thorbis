@@ -978,7 +978,7 @@ export function PurchaseOrderPageContent({
 																	`Vendor changed to ${vendorName}`,
 																);
 																setIsEditingVendor(false);
-																router.refresh();
+																// Server Action handles revalidation automatically
 															} else {
 																throw new Error(
 																	result.error || "Failed to update vendor",

@@ -147,7 +147,7 @@ export function TeamMemberPageContent({
 						? "Team member unarchived successfully"
 						: "Team member archived successfully",
 				);
-				router.refresh();
+				// Server Action handles revalidation automatically
 				setIsArchiveDialogOpen(false);
 			} else {
 				toast.error(result.error || "Failed to archive team member");
@@ -209,7 +209,7 @@ export function TeamMemberPageContent({
 		const result = await updateTeamMember(member.id, formData);
 		if (result.success) {
 			toast.success("Phone updated successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 			return true;
 		}
 		toast.error(result.error || "Failed to update phone");
@@ -222,7 +222,7 @@ export function TeamMemberPageContent({
 		const result = await updateTeamMember(member.id, formData);
 		if (result.success) {
 			toast.success("Job title updated successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 			return true;
 		}
 		toast.error(result.error || "Failed to update job title");

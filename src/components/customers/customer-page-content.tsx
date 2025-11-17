@@ -32,7 +32,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
@@ -244,7 +250,7 @@ export function CustomerPageContent({
 			// TODO: Implement save customer action
 			toast.success("Customer updated successfully");
 			setHasChanges(false);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} catch (_error) {
 			toast.error("Failed to update customer");
 		} finally {
@@ -328,7 +334,7 @@ export function CustomerPageContent({
 			);
 		});
 
-	const getToolbarActions = () => {
+	const getToolbarActions = useCallback(() => {
 		if (hasChanges) {
 			return (
 				<div className="flex items-center gap-1.5">
@@ -403,7 +409,7 @@ export function CustomerPageContent({
 				</DropdownMenu>
 			</div>
 		);
-	};
+	}, [hasChanges, isSaving, handleSave, handleCancel, renderQuickActions, router, customer.id]);
 
 	// Update toolbar actions when hasChanges or isSaving changes
 	useEffect(() => {
@@ -903,7 +909,9 @@ export function CustomerPageContent({
 						</div>
 						<CustomerInvoicesTable
 							invoices={invoices || []}
-							onUpdate={() => router.refresh()}
+							onUpdate={() => {
+								// Server Action handles revalidation automatically
+							}}
 						/>
 					</UnifiedAccordionContent>
 				),

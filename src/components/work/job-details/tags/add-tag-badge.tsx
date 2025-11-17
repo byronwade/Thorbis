@@ -145,7 +145,7 @@ export function AddTagBadge({
 				const result = await updateCustomerTags(customerId, updatedTags);
 				if (result.success) {
 					toast.success("Customer tag added");
-					router.refresh();
+					// Server Action handles revalidation automatically
 					setIsOpen(false);
 					setTagLabel("");
 					setTagColor("blue");
@@ -157,7 +157,7 @@ export function AddTagBadge({
 				const result = await updateJobTags(jobId, updatedTags);
 				if (result.success) {
 					toast.success("Job tag added");
-					router.refresh();
+					// Server Action handles revalidation automatically
 					setIsOpen(false);
 					setTagLabel("");
 					setTagColor("blue");

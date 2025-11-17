@@ -68,7 +68,7 @@ export function EstimateDetailToolbarActions() {
 				toast.success("Estimate archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/estimates");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive estimate");
 			}

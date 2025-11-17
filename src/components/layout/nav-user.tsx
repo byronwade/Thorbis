@@ -57,7 +57,7 @@ export function NavUser({
 			const result = await updateUserStatus(status);
 			if (result.success) {
 				setUserStatus(status);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			}
 		} catch (_error) {
 		} finally {

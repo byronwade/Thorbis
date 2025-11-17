@@ -57,7 +57,7 @@ export function AppointmentDetailToolbarActions() {
 				toast.success("Appointment archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/appointments");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive appointment");
 			}

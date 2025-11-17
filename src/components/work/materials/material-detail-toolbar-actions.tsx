@@ -53,7 +53,7 @@ export function MaterialDetailToolbarActions() {
 				toast.success("Material archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/materials");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result?.error ?? "Failed to archive material");
 			}

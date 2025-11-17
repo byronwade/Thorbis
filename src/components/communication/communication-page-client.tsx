@@ -91,9 +91,10 @@ export function CommunicationPageClient({
 	const setActiveFilter = useCommunicationStore(
 		(state) => state.setActiveFilter,
 	);
-	useEffect(() => {
-		setRecords(communications);
-	}, [communications]);
+
+	// Initialize records from communications prop only on mount
+	// Subsequent updates come from realtime subscriptions
+	// DO NOT sync prop changes - it causes infinite re-render loop!
 
 	useEffect(() => {
 		const supabase = createBrowserSupabaseClient();

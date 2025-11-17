@@ -82,15 +82,24 @@ async function generateContractNumber(
 	const year = new Date().getFullYear();
 	const prefix = `CON-${year}-`;
 
+	// PERFORMANCE OPTIMIZED: Fetch only latest contract instead of ALL contracts
+	// BEFORE: Fetched all contracts (could be 1000+)
+	// AFTER: Fetch only latest contract with matching prefix
 	const { data: contracts } = await supabase
 		.from("contracts")
 		.select("contract_number")
-		.eq("company_id", companyId);
+		.eq("company_id", companyId)
+		.like("contract_number", `${prefix}%`) // Filter by year prefix in database
+		.order("created_at", { ascending: false })
+		.limit(1);
 
-	const yearContracts =
-		contracts?.filter((c) => c.contract_number?.startsWith(prefix)) || [];
+	// Extract number from last contract or start at 1
+	let nextNumber = 1;
+	if (contracts && contracts.length > 0) {
+		const lastNumber = contracts[0].contract_number?.replace(prefix, "");
+		nextNumber = (parseInt(lastNumber || "0", 10) || 0) + 1;
+	}
 
-	const nextNumber = yearContracts.length + 1;
 	return `${prefix}${String(nextNumber).padStart(CONTRACT_NUMBER_PAD_LENGTH, "0")}`;
 }
 

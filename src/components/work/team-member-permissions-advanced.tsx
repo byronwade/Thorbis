@@ -184,7 +184,7 @@ export function TeamMemberPermissionsAdvanced() {
 			setCurrentRole(selectedRole);
 			setCurrentPermissions(customPermissions);
 			setIsCustomMode(false);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to update permissions");
 		}

@@ -56,7 +56,7 @@ export function ContractDetailToolbarActions() {
 				toast.success("Contract archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/contracts");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive contract");
 			}

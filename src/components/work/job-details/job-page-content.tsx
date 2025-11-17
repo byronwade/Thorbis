@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { type ReactNode, useEffect, useMemo, useState } from "react";
+import React, { type ReactNode, useMemo, useState } from "react";
 import { archiveJob, updateJob } from "@/actions/jobs";
 import { findOrCreateProperty } from "@/actions/properties";
 import { EmailDialog } from "@/components/communication/email-dialog";
@@ -139,22 +139,6 @@ export function JobPageContent({
 
 	const router = useRouter();
 	const { toast } = useToast();
-
-	// DIAGNOSTIC: Intercept router.refresh to trace ALL calls
-	useEffect(() => {
-		const originalRefresh = router.refresh;
-		router.refresh = function() {
-			console.log("[DIAGNOSTIC] 🔥🔥🔥 router.refresh() CALLED!");
-			console.trace("Stack trace:");
-			const err = new Error();
-			console.log("Call stack:", err.stack);
-			return originalRefresh.call(this);
-		};
-
-		return () => {
-			router.refresh = originalRefresh;
-		};
-	}, [router]);
 	const [localJob, setLocalJob] = useState(() => {
 		if (!jobData?.job) {
 			return { priority: "medium" };
@@ -167,31 +151,6 @@ export function JobPageContent({
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [showUploader, setShowUploader] = useState(false);
-
-	// DIAGNOSTIC: Track component mount/unmount to detect re-mounting loops
-	useEffect(() => {
-		const mountTime = Date.now();
-		console.log("[JobPageContent] 🟢 MOUNTED at:", new Date().toISOString(), "jobId:", job?.id);
-		console.log("[JobPageContent] Props:", { hasJobData: !!jobData, hasJob: !!job });
-
-		return () => {
-			const duration = Date.now() - mountTime;
-			console.log("[JobPageContent] 🔴 UNMOUNTED after:", duration + "ms", "jobId:", job?.id);
-		};
-	}, [job?.id, jobData, job]);
-
-	// DIAGNOSTIC: Track ALL state updates
-	useEffect(() => {
-		console.log("[JobPageContent] 📝 localJob updated:", localJob?.title || "no title");
-	}, [localJob]);
-
-	useEffect(() => {
-		console.log("[JobPageContent] ⚡ hasChanges:", hasChanges);
-	}, [hasChanges]);
-
-	useEffect(() => {
-		console.log("[JobPageContent] 💾 isSaving:", isSaving);
-	}, [isSaving]);
 	const [isDraggingOver, setIsDraggingOver] = useState(false);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -325,9 +284,7 @@ export function JobPageContent({
 				toast.success("Customer updated successfully", {
 					id: "customer-update",
 				});
-				// Refresh in background to get latest data
-				console.trace("[DIAGNOSTIC] router.refresh() called from: Customer update handler");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				// Rollback on error
 				setCustomer(originalCustomer);
@@ -371,7 +328,7 @@ export function JobPageContent({
 				toast.success("Property updated successfully", {
 					id: "property-update",
 				});
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				// Rollback on error
 				setProperty(originalProperty);
@@ -409,7 +366,7 @@ export function JobPageContent({
 				toast.success("Customer and property removed successfully", {
 					id: "customer-remove",
 				});
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				// Rollback on error
 				setCustomer(originalCustomer);
@@ -493,8 +450,7 @@ export function JobPageContent({
 
 				const updateResult = await updateJob(job.id, jobFormData);
 				if (updateResult.success) {
-					// Silently refresh to get real data from server
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					// Rollback on error
 					setProperty(originalProperty);
@@ -548,7 +504,7 @@ export function JobPageContent({
 						state: "",
 						zipCode: "",
 					});
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(updateResult.error || "Failed to assign property to job");
 				}
@@ -647,7 +603,7 @@ export function JobPageContent({
 				}
 				setLocalJob(updatedJob);
 				// Force router refresh to get latest data from server
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				// ROLLBACK: Restore previous state on save failure
 				setLocalJob(previousState);
@@ -1241,7 +1197,7 @@ export function JobPageContent({
 				toast.success("Job archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive job");
 			}
@@ -2381,7 +2337,7 @@ export function JobPageContent({
 								onCancel={() => setShowUploader(false)}
 								onUploadComplete={() => {
 									setShowUploader(false);
-									router.refresh();
+									// Server Action handles revalidation automatically
 								}}
 							/>
 						)}
@@ -3034,7 +2990,7 @@ export function JobPageContent({
 									const result = await updateJob(job.id, formData);
 									if (result.success) {
 										toast.success("Customer and property removed");
-										router.refresh();
+										// Server Action handles revalidation automatically
 									} else {
 										toast.error(
 											result.error || "Failed to remove customer and property",

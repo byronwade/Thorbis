@@ -21,7 +21,7 @@
  * - https://docs.pmnd.rs/zustand/integrations/persisting-store-data#hydration-and-asynchronous-storages
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRoleStore } from "@/lib/stores/role-store";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { useSidebarStateStore } from "@/lib/stores/sidebar-state-store";
@@ -30,8 +30,21 @@ import { useUserStore } from "@/lib/stores/user-store";
 import { useViewStore } from "@/lib/stores/view-store";
 import { useWorkViewStore } from "@/lib/stores/work-view-store";
 
+// Global flag to ensure hydration only happens ONCE per session
+let hasHydrated = false;
+
 export function ZustandHydration() {
+	const hasRun = useRef(false);
+
 	useEffect(() => {
+		// CRITICAL: Only hydrate ONCE globally, never on re-mounts or navigations
+		if (hasRun.current || hasHydrated) {
+			return;
+		}
+
+		hasRun.current = true;
+		hasHydrated = true;
+
 		// Manually rehydrate all persisted stores AFTER Next.js hydration completes
 		// This happens once on client mount, preventing hydration mismatches
 

@@ -100,9 +100,8 @@ export function EntityKanban<TEntity, TStatus extends string>({
 		() => data.map(mapToKanbanItem),
 	);
 
-	useEffect(() => {
-		setItems(data.map(mapToKanbanItem));
-	}, [data, mapToKanbanItem]);
+	// DO NOT sync prop changes - causes infinite re-render loop with array/function props
+	// Initial state is set from props, updates come from drag-and-drop handlers
 
 	const handleDataChange = (next: (KanbanItemBase & { entity: TEntity })[]) => {
 		if (updateEntityStatus) {

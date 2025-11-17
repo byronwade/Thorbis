@@ -103,7 +103,7 @@ export function JobDetailToolbar({
 				toast.success("Job archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive job");
 			}
@@ -308,7 +308,7 @@ export function JobDetailToolbar({
 				jobTags={jobTags}
 				onOpenChange={setIsTagDialogOpen}
 				onUpdate={() => {
-					router.refresh();
+					// Server Action handles revalidation automatically
 				}}
 				open={isTagDialogOpen}
 			/>

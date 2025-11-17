@@ -375,7 +375,7 @@ export function WorkVendorForm({
 			} else {
 				router.push("/dashboard/work/vendors");
 			}
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} catch (err) {
 			setError(
 				err instanceof Error

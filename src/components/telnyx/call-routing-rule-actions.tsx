@@ -64,7 +64,7 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
 			toast.success(
 				`Rule ${rule.is_active ? "deactivated" : "activated"} successfully`,
 			);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to update rule status");
 		}
@@ -83,7 +83,7 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
 		if (result.success) {
 			toast.success("Routing rule deleted successfully");
 			setShowDeleteDialog(false);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to delete routing rule");
 		}
@@ -99,7 +99,7 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
 
 		if (result.success) {
 			toast.success("Priority increased");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to update priority");
 		}
@@ -113,7 +113,7 @@ export function CallRoutingRuleActions({ rule }: CallRoutingRuleActionsProps) {
 
 		if (result.success) {
 			toast.success("Priority decreased");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to update priority");
 		}

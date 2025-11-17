@@ -106,7 +106,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 			if (result.success) {
 				toast.success("Custom field deleted successfully");
 				setCustomFields((prev) => prev.filter((field) => field.id !== id));
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to delete custom field");
 			}
@@ -178,7 +178,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 			if (!hasErrors) {
 				toast.success("Custom fields saved successfully");
 				setHasUnsavedChanges(false);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			}
 		});
 	};

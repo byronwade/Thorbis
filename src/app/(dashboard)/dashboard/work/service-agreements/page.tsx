@@ -12,6 +12,9 @@ import { Suspense } from "react";
 import { ServiceAgreementsData } from "@/components/work/service-agreements/service-agreements-data";
 import { ServiceAgreementsSkeleton } from "@/components/work/service-agreements/service-agreements-skeleton";
 
+// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
+export const revalidate = 60;
+
 export default function ServiceAgreementsPage() {
 	return (
 		<Suspense fallback={<ServiceAgreementsSkeleton />}>

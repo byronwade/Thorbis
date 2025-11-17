@@ -56,7 +56,7 @@ export function EquipmentDetailToolbarActions() {
 				toast.success("Equipment archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/equipment");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive equipment");
 			}

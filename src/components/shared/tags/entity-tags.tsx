@@ -182,7 +182,7 @@ export function EntityTags({
 
 			if (result.success) {
 				toast.success("Tag added");
-				router.refresh();
+				// Server Action handles revalidation automatically
 				setIsAddOpen(false);
 				setTagLabel("");
 				setTagColor("blue");
@@ -208,7 +208,7 @@ export function EntityTags({
 
 			if (result.success) {
 				toast.success("Tag removed");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to remove tag");
 			}

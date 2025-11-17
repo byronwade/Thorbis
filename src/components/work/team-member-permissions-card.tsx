@@ -95,7 +95,7 @@ export function TeamMemberPermissionsCard() {
 		if (result.success) {
 			toast.success("Role updated successfully");
 			setCurrentRole(selectedRole);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to update role");
 			setSelectedRole(currentRole); // Reset to current role

@@ -64,7 +64,7 @@ export function TeamMemberDetailToolbar() {
 
 		if (result.success) {
 			toast.success("Team member suspended successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to suspend team member");
 		}
@@ -77,7 +77,7 @@ export function TeamMemberDetailToolbar() {
 
 		if (result.success) {
 			toast.success("Team member activated successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to activate team member");
 		}

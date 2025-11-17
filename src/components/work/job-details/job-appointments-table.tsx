@@ -94,7 +94,7 @@ export function JobAppointmentsTable({
 				});
 				if (result.success) {
 					toast.success("Appointment dispatched");
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(result.error || "Failed to dispatch appointment");
 				}
@@ -118,7 +118,7 @@ export function JobAppointmentsTable({
 				});
 				if (result.success) {
 					toast.success("Technician arrived");
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(result.error || "Failed to mark as arrived");
 				}
@@ -158,7 +158,7 @@ export function JobAppointmentsTable({
 				});
 				if (result.success) {
 					toast.success("Appointment closed");
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(result.error || "Failed to close appointment");
 				}

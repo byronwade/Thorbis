@@ -53,7 +53,7 @@ export function VendorDetailToolbarActions() {
 			toast.success("Vendor archived successfully");
 			setIsArchiveDialogOpen(false);
 			router.push("/dashboard/work/vendors");
-			router.refresh();
+			// Server Action handles revalidation automatically
 			// } else {
 			//   toast.error(result.error || "Failed to archive vendor");
 			// }

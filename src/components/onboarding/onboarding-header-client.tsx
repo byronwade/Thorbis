@@ -63,7 +63,7 @@ export function OnboardingHeaderClient({
 				router.push("/dashboard/welcome");
 			} else {
 				// Stay on current page and refresh data
-				router.refresh();
+				// Server Action handles revalidation automatically
 			}
 		}
 	};
@@ -78,7 +78,7 @@ export function OnboardingHeaderClient({
 			const result = await updateUserStatus(status);
 			if (result.success) {
 				setUserStatus(status);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			}
 		} catch (_error) {
 		} finally {

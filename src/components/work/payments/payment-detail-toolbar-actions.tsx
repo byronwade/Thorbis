@@ -56,7 +56,7 @@ export function PaymentDetailToolbarActions() {
 				toast.success("Payment archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/payments");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive payment");
 			}

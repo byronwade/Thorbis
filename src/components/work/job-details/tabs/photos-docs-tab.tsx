@@ -45,7 +45,7 @@ export function PhotosDocsTab({
 					onCancel={() => setShowUploader(false)}
 					onUploadComplete={() => {
 						setShowUploader(false);
-						router.refresh();
+						// Server Action handles revalidation automatically
 					}}
 				/>
 			)}

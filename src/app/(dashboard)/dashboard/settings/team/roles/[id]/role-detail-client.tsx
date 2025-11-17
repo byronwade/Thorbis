@@ -320,11 +320,11 @@ export default function RoleDetailClient({
 
 			if (mode === "create" && result.data) {
 				router.replace(`/dashboard/settings/team/roles/${result.data}`);
-				router.refresh();
+				// Server Action handles revalidation automatically
 				return;
 			}
 
-			router.refresh();
+			// Server Action handles revalidation automatically
 		});
 	};
 

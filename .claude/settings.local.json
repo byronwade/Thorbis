@@ -153,7 +153,11 @@
       "Bash(src/types/supabase-new.ts)",
       "Bash(pnpm type-check:*)",
       "Bash(do echo \"=== $file ===\" grep -n \"job\\.\\(total_amount\\|paid_amount\\|workflow_stage\\|actual_start\\|actual_end\\|estimated_labor_hours\\|technician_clock\\|customer_approval\\|primary_equipment\\|dispatch_zone\\|quality_score\\|requires_permit\\|ai_categories\\)\" \"$file\")",
-      "Bash(do if grep -A20 \"useEffect\" \"$file\")"
+      "Bash(do if grep -A20 \"useEffect\" \"$file\")",
+      "Bash(echo:*)",
+      "Bash(psql:*)",
+      "Bash(timeout 60 npx tsc:*)",
+      "Bash(timeout 30 npx tsc:*)"
     ],
     "deny": [],
     "ask": []

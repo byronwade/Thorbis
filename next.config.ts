@@ -164,8 +164,25 @@ const nextConfig: NextConfig = {
 		optimizeCss: true,
 	},
 
-	// Empty turbopack config to silence webpack warning
-	turbopack: {},
+	// Turbopack configuration for faster dev builds
+	turbopack: {
+		// Enable module resolution caching for faster rebuilds
+		resolveAlias: {
+			// Map commonly used paths to reduce resolution time
+			"@": "./src",
+		},
+	},
+
+	// DISABLED: React Strict Mode causes 2x renders + Suspense = continuous POST loops
+	// Re-enable for bug checking, but keep disabled for normal development
+	// Note: Strict Mode doubles renders intentionally to catch side effects
+	reactStrictMode: false,
+
+	// Optimize development server performance
+	devIndicators: {
+		buildActivity: true, // Show build indicator
+		buildActivityPosition: "bottom-right",
+	},
 
 	images: {
 		remotePatterns: [

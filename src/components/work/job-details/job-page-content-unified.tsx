@@ -340,7 +340,7 @@ export function JobPageContentUnified({
 					toast.success("Customer updated");
 					setIsCustomerManagerOpen(false);
 					setIsRemoveCustomerDialogOpen(false);
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(result.error || "Failed to update customer");
 				}
@@ -365,7 +365,7 @@ export function JobPageContentUnified({
 				toast.success("Customer removed from job");
 				setIsRemoveCustomerDialogOpen(false);
 				setIsCustomerManagerOpen(false);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to remove customer");
 			}
@@ -398,7 +398,7 @@ export function JobPageContentUnified({
 					toast.success("Property updated");
 					setIsPropertyManagerOpen(false);
 					setIsRemovePropertyDialogOpen(false);
-					router.refresh();
+					// Server Action handles revalidation automatically
 				} else {
 					toast.error(result.error || "Failed to update property");
 				}
@@ -421,7 +421,7 @@ export function JobPageContentUnified({
 			if (result.success) {
 				toast.success("Property removed from job");
 				setIsRemovePropertyDialogOpen(false);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to remove property");
 			}

@@ -29,7 +29,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
@@ -159,7 +165,7 @@ export function TeamMemberPageContent({
 			// TODO: Implement save team member action
 			toast.success("Team member updated successfully");
 			setHasChanges(false);
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} catch (_error) {
 			toast.error("Failed to update team member");
 		} finally {
@@ -276,7 +282,7 @@ export function TeamMemberPageContent({
 			);
 		});
 
-	const getToolbarActions = () => {
+	const getToolbarActions = useCallback(() => {
 		if (hasChanges) {
 			return (
 				<div className="flex items-center gap-1.5">
@@ -344,7 +350,7 @@ export function TeamMemberPageContent({
 				</DropdownMenu>
 			</div>
 		);
-	};
+	}, [hasChanges, isSaving, handleSave, handleCancel, renderQuickActions, router, teamMember.id]);
 
 	// Update toolbar actions when hasChanges or isSaving changes
 	useEffect(() => {

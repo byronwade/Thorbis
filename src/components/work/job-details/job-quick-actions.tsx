@@ -32,7 +32,7 @@ export function JobQuickActions({
 			const result = await startJob(jobId);
 			if (result.success) {
 				toast.success("Job started - technician arrived");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to mark job as arrived");
 			}
@@ -50,7 +50,7 @@ export function JobQuickActions({
 			const result = await completeJob(jobId);
 			if (result.success) {
 				toast.success("Job closed successfully");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to close job");
 			}

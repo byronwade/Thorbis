@@ -14,6 +14,9 @@ import { UpaymentsData } from "@/components/work/payments/payments-data";
 import PaymentsSkeleton from "@/components/work/payments/payments-skeleton";
 import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 
+// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
+export const revalidate = 60;
+
 export default function UpaymentsPage() {
 	return (
 		<>

@@ -14,6 +14,9 @@ import { CustomersData } from "@/components/customers/customers-data";
 import { CustomersSkeleton } from "@/components/customers/customers-skeleton";
 import { CustomersStats } from "@/components/customers/customers-stats";
 
+// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
+export const revalidate = 60;
+
 // Enable Partial Prerendering for this page (Next.js 16+)
 // PPR is now enabled globally via cacheComponents in next.config.ts
 // This export is no longer needed but kept for documentation

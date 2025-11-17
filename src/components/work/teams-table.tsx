@@ -121,7 +121,7 @@ export function TeamsTable({
 
 		if (result.success) {
 			toast.success("Team member suspended successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to suspend team member");
 		}
@@ -134,7 +134,7 @@ export function TeamsTable({
 
 		if (result.success) {
 			toast.success("Team member archived successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to archive team member");
 		}
@@ -147,7 +147,7 @@ export function TeamsTable({
 
 		if (result.success) {
 			toast.success("Team member restored successfully");
-			router.refresh();
+			// Server Action handles revalidation automatically
 		} else {
 			toast.error(result.error || "Failed to restore team member");
 		}
@@ -405,7 +405,7 @@ export function TeamsTable({
 							toast.error(`Failed to restore ${failCount} team member(s)`);
 						}
 
-						router.refresh();
+						// Server Action handles revalidation automatically
 					},
 				},
 			];
@@ -462,7 +462,7 @@ export function TeamsTable({
 						toast.error(`Failed to suspend ${failCount} team member(s)`);
 					}
 
-					router.refresh();
+					// Server Action handles revalidation automatically
 				},
 			},
 			{
@@ -502,7 +502,7 @@ export function TeamsTable({
 						toast.error(`Failed to archive ${failCount} team member(s)`);
 					}
 
-					router.refresh();
+					// Server Action handles revalidation automatically
 				},
 			},
 		];

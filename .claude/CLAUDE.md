@@ -903,6 +903,288 @@ await mcp__next-devtools__browser_eval({
 
 ---
 
+## ⚡ DATABASE PERFORMANCE OPTIMIZATION PATTERNS
+
+**CRITICAL: This project has achieved massive performance gains through systematic database optimization. ALL new database queries must follow these proven patterns.**
+
+### Performance Achievements
+- **Contracts**: 70-85% faster (3-8s → 200-500ms)
+- **Customers**: 16-36x faster (6.4-7.3s → 200-400ms via RPC)
+- **Appointments**: 5-9x faster (1.35-2.4s → 270-540ms)
+- **Target**: ALL pages render in under 2 seconds
+
+### Pattern #1: Composite Database Indexes (MANDATORY)
+
+**Problem**: Full table scans on filtered and sorted queries cause 3-5 second delays.
+
+**Solution**: Create composite indexes matching your WHERE + ORDER BY pattern.
+
+❌ **WRONG - Single-Column Indexes:**
+```sql
+CREATE INDEX idx_contracts_company ON contracts(company_id);
+CREATE INDEX idx_contracts_created ON contracts(created_at DESC);
+-- PostgreSQL must: 1) Use company_id index (finds 1000 rows), 2) Sort all 1000 rows, 3) Return
+```
+
+✅ **RIGHT - Composite Index:**
+```sql
+CREATE INDEX idx_contracts_company_created
+  ON contracts(company_id, created_at DESC)
+  WHERE deleted_at IS NULL;
+-- PostgreSQL: 1) Use composite index (finds rows ALREADY SORTED), 2) Return immediately
+```
+
+**Pattern for List Pages:**
+```sql
+-- Generic pattern for list pages
+CREATE INDEX IF NOT EXISTS idx_{table}_{company}_created
+  ON {table}(company_id, created_at DESC)
+  WHERE deleted_at IS NULL;
+
+-- With status filter
+CREATE INDEX IF NOT EXISTS idx_{table}_company_status_created
+  ON {table}(company_id, status, created_at DESC)
+  WHERE deleted_at IS NULL;
+```
+
+**When to Create**:
+- Every table with `company_id` filter + `ORDER BY created_at`
+- Every table with `customer_id` filter (for N+1 prevention)
+- Every foreign key column used in JOINs
+
+**Performance Impact**: 3-5 seconds saved per query on tables with 1000+ records.
+
+---
+
+### Pattern #2: Eliminate N+1 Query Patterns (CRITICAL)
+
+**Problem**: Fetching parent records, then making separate queries for each child.
+
+**Example N+1 Anti-Pattern** (`getAllCustomers` - **FIXED**):
+```typescript
+// ❌ WRONG - N+1 Pattern (151 queries for 50 customers)
+const { data: customers } = await supabase.from("customers").select("*");
+
+const enriched = await Promise.all(
+  customers.map(async (customer) => {
+    const { data: lastJob } = await supabase.from("jobs")...  // Query 1 per customer
+    const { data: nextJob } = await supabase.from("jobs")...  // Query 2 per customer
+    const { data: stats } = await supabase.from("jobs")...    // Query 3 per customer
+    return { ...customer, lastJob, nextJob, stats };
+  })
+);
+// Total: 1 + (50 × 3) = 151 queries = 5-10 seconds
+```
+
+✅ **RIGHT - Single RPC with LATERAL Joins:**
+```sql
+-- Create PostgreSQL function
+CREATE OR REPLACE FUNCTION get_enriched_customers_rpc(p_company_id UUID)
+RETURNS JSONB
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  result JSONB;
+BEGIN
+  SELECT jsonb_agg(customer_data)
+  INTO result
+  FROM (
+    SELECT
+      to_jsonb(c.*) || jsonb_build_object(
+        'last_job_date', last_job.job_date,
+        'next_scheduled_job', next_job.scheduled_start,
+        'total_jobs', COALESCE(job_stats.total_jobs, 0),
+        'total_revenue', COALESCE(job_stats.total_revenue, 0)
+      ) as customer_data
+    FROM customers c
+    -- LATERAL joins run efficiently once per customer
+    LEFT JOIN LATERAL (
+      SELECT COALESCE(jtt.actual_end, j.scheduled_end, j.created_at) as job_date
+      FROM jobs j
+      LEFT JOIN job_time_tracking jtt ON jtt.job_id = j.id
+      WHERE j.customer_id = c.id AND j.status = 'completed'
+      ORDER BY j.created_at DESC LIMIT 1
+    ) last_job ON true
+    LEFT JOIN LATERAL (
+      SELECT scheduled_start
+      FROM jobs
+      WHERE customer_id = c.id AND status IN ('quoted', 'scheduled')
+      ORDER BY scheduled_start ASC LIMIT 1
+    ) next_job ON true
+    LEFT JOIN LATERAL (
+      SELECT COUNT(j.id)::BIGINT as total_jobs, SUM(jf.total_amount) as total_revenue
+      FROM jobs j
+      LEFT JOIN job_financial jf ON jf.job_id = j.id
+      WHERE j.customer_id = c.id
+    ) job_stats ON true
+    WHERE c.company_id = p_company_id AND c.deleted_at IS NULL
+    LIMIT 100
+  ) enriched_customers;
+
+  RETURN COALESCE(result, '[]'::jsonb);
+END;
+$$;
+```
+
+```typescript
+// Use from TypeScript
+const { data, error } = await supabase.rpc("get_enriched_customers_rpc", {
+  p_company_id: activeCompanyId
+});
+// 1 query = 0.5-2 seconds (5-10 seconds saved!)
+```
+
+**When to Use**:
+- Any time you have `.map(async (item) => { await supabase... })`
+- Fetching related data for list items
+- Customer/property/job enrichment
+
+**Performance Impact**: 5-10 seconds saved for 50+ parent records.
+
+---
+
+### Pattern #3: Add LIMIT Clauses (Always)
+
+**Problem**: Fetching ALL records when only a subset is needed.
+
+❌ **WRONG - No Limit:**
+```typescript
+const { data } = await supabase
+  .from("contracts")
+  .select("contract_number")
+  .eq("company_id", companyId);  // Could fetch 10,000+ records
+```
+
+✅ **RIGHT - With Limit and Smart Filtering:**
+```typescript
+const { data } = await supabase
+  .from("contracts")
+  .select("contract_number")
+  .eq("company_id", companyId)
+  .like("contract_number", `CON-${year}-%`)  // Filter by prefix in DB
+  .order("created_at", { ascending: false })
+  .limit(1);  // Only need the latest one
+```
+
+**When to Add**:
+- ALL list queries (use 50-100 items)
+- Number generation (use `.limit(1)`)
+- Dropdown/autocomplete (use `.limit(20)`)
+
+**Performance Impact**: 1-2 seconds saved on tables with 100+ records.
+
+---
+
+### Pattern #4: React.cache() for Deduplication
+
+**Problem**: Stats and Data components making duplicate queries.
+
+✅ **RIGHT - Shared Cached Query:**
+```typescript
+// lib/queries/contracts.ts
+import { cache } from "react";
+
+export const getContracts = cache(async (companyId: string) => {
+  const supabase = await createClient();
+  return await supabase
+    .from("contracts")
+    .select(`*, customer:customers(...)`)
+    .eq("company_id", companyId);
+});
+
+// Both components share the same cached result
+// - contracts-stats.tsx calls getContracts()
+// - contracts-data.tsx calls getContracts()
+// Only 1 actual database query executes!
+```
+
+**When to Use**:
+- Stats + Data component pairs
+- Any query used multiple times in same request
+- RPC functions shared across components
+
+**Performance Impact**: Prevents duplicate queries (2x faster rendering).
+
+---
+
+### Pattern #5: Supabase JOIN Syntax (Preferred)
+
+**Simple Relationships:**
+```typescript
+// ✅ Single JOIN for 1:1 relationships
+const { data } = await supabase
+  .from("contracts")
+  .select(`
+    *,
+    customer:customers(id, display_name, first_name, last_name, email)
+  `)
+  .eq("company_id", companyId);
+```
+
+**Complex Relationships:**
+```typescript
+// ✅ Multiple JOINs for complex entities
+const { data } = await supabase
+  .from("jobs")
+  .select(`
+    *,
+    customer:customers(display_name),
+    property:properties(address, city, state),
+    financial:job_financial(total_amount, paid_amount),
+    time:job_time_tracking(actual_start, actual_end)
+  `)
+  .eq("company_id", companyId);
+```
+
+**When to Use**: Simple 1:1 or 1:many relationships (customers, properties, etc.).
+
+---
+
+### Pattern #6: Parallel Queries + Hash Maps (Alternative)
+
+**When JOINs Are Slower:**
+- Very large result sets
+- Complex aggregations
+- Multiple levels of nesting
+
+```typescript
+// Parallel queries (run simultaneously)
+const [customers, jobs, properties] = await Promise.all([
+  supabase.from("customers").select("*").eq("company_id", id),
+  supabase.from("jobs").select("*").eq("company_id", id),
+  supabase.from("properties").select("*").eq("company_id", id)
+]);
+
+// Build hash maps for O(1) lookups
+const jobsMap = new Map(jobs.data?.map(j => [j.customer_id, j]));
+const propsMap = new Map(properties.data?.map(p => [p.id, p]));
+
+// Join in JavaScript
+const enriched = customers.data?.map(c => ({
+  ...c,
+  lastJob: jobsMap.get(c.id),
+  property: propsMap.get(c.property_id)
+}));
+```
+
+**Performance**: 4 parallel queries (100-200ms) can be faster than 1 complex JOIN (900ms).
+
+---
+
+### Performance Checklist for New Queries
+
+Before deploying any new database query:
+
+- [ ] **Composite indexes** created for WHERE + ORDER BY columns
+- [ ] **No N+1 patterns** - use JOINs, LATERAL joins, or RPC functions
+- [ ] **LIMIT clause** added (50-100 for lists, 1 for latest item)
+- [ ] **React.cache()** wrapper if query used multiple times
+- [ ] **Foreign key indexes** exist for JOIN columns
+- [ ] **Test with 100+ records** - verify sub-2-second render time
+- [ ] **Check EXPLAIN ANALYZE** - verify indexes are being used
+
+---
+
 ## 🔍 SEARCH IMPLEMENTATION STANDARDS
 
 **This project uses enterprise-grade PostgreSQL full-text search. ALL search features must follow these patterns.**

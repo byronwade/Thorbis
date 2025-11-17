@@ -55,7 +55,7 @@ export function MaintenancePlanDetailToolbarActions() {
 				toast.success("Maintenance plan archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/maintenance-plans");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive maintenance plan");
 			}

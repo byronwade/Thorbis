@@ -191,7 +191,7 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 			if (result.success) {
 				const vendorId = "data" in result ? result.data : vendor?.id;
 				router.push(`/dashboard/inventory/vendors/${vendorId}`);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				setError(result.error || "Failed to save vendor");
 				setIsLoading(false);

@@ -142,7 +142,7 @@ export function VendorPageContent({
 				toast.success("Purchase order linked successfully");
 				setIsPOSearchOpen(false);
 				setPOSearchQuery("");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to link purchase order");
 			}
@@ -227,7 +227,7 @@ export function VendorPageContent({
 			if (result.success) {
 				toast.success("Vendor updated successfully");
 				setHasChanges(false);
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				setVendor(previousState);
 				setHasChanges(false);

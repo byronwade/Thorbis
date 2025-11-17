@@ -14,6 +14,9 @@ import { ContractsData } from "@/components/work/contracts/contracts-data";
 import { ContractsSkeleton } from "@/components/work/contracts/contracts-skeleton";
 import { ContractsStats } from "@/components/work/contracts/contracts-stats";
 
+// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
+export const revalidate = 60;
+
 export default function ContractsPage() {
 	return (
 		<>

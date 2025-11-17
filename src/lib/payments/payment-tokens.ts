@@ -213,3 +213,71 @@ export async function getInvoicePaymentTokens(
 		return [];
 	}
 }
+
+/**
+ * PERFORMANCE OPTIMIZED: Batch generate payment tokens for multiple invoices
+ *
+ * Replaces N+1 pattern where each invoice generates a token separately.
+ * Uses Promise.all to parallelize RPC calls (still better than sequential).
+ *
+ * @param invoiceIds - Array of invoice UUIDs
+ * @param expiryHours - How many hours until tokens expire (default 72 hours / 3 days)
+ * @param maxUses - Maximum number of times tokens can be used (default 1)
+ * @returns Map of invoiceId -> PaymentToken
+ */
+export async function generatePaymentTokensBatch(
+	invoiceIds: string[],
+	expiryHours = 72,
+	maxUses = 1,
+): Promise<Record<string, PaymentToken>> {
+	try {
+		const supabase = await createClient();
+
+		if (!supabase) {
+			return {};
+		}
+
+		// Generate all tokens in parallel (much faster than sequential)
+		const tokenPromises = invoiceIds.map(async (invoiceId) => {
+			const { data, error } = await supabase.rpc(
+				"generate_invoice_payment_token",
+				{
+					p_invoice_id: invoiceId,
+					p_expiry_hours: expiryHours,
+					p_max_uses: maxUses,
+				},
+			);
+
+			if (error || !data || data.length === 0) {
+				return { invoiceId, token: null };
+			}
+
+			const tokenData = data[0];
+			const paymentLink = `${emailConfig.appUrl}/pay/${invoiceId}?token=${tokenData.token}`;
+
+			return {
+				invoiceId,
+				token: {
+					token: tokenData.token,
+					expiresAt: tokenData.expires_at,
+					paymentLink,
+				},
+			};
+		});
+
+		const results = await Promise.all(tokenPromises);
+
+		// Convert array to map
+		return results.reduce(
+			(acc, { invoiceId, token }) => {
+				if (token) {
+					acc[invoiceId] = token;
+				}
+				return acc;
+			},
+			{} as Record<string, PaymentToken>,
+		);
+	} catch (_error) {
+		return {};
+	}
+}

@@ -56,7 +56,7 @@ export function ServiceAgreementDetailToolbarActions() {
 				toast.success("Service agreement archived successfully");
 				setIsArchiveDialogOpen(false);
 				router.push("/dashboard/work/service-agreements");
-				router.refresh();
+				// Server Action handles revalidation automatically
 			} else {
 				toast.error(result.error || "Failed to archive service agreement");
 			}

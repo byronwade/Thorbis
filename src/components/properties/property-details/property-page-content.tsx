@@ -135,7 +135,7 @@ export function PropertyPageContent({
 		const result = await updateProperty(property.id, formData);
 		if (result.success) {
 			toast.success(`${field.replace(/_/g, " ")} updated successfully`);
-			router.refresh();
+			// Server Action handles revalidation automatically
 			return true;
 		}
 		toast.error(result.error || `Failed to update ${field}`);
