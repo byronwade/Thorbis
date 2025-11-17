@@ -153,7 +153,7 @@ export function DetailPageContentLayout({
 	}
 
 	// Combine custom and standard sections
-	const allSections = [...customSections, ...standardSections];
+	const allSections = [...(customSections || []), ...standardSections];
 
 	return (
 		<DetailPageShell
