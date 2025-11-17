@@ -275,7 +275,12 @@ export function FullWidthDataTable<T>({
 }: FullWidthDataTableProps<T>) {
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [searchQuery, setSearchQuery] = useState("");
-	const [currentPage, setCurrentPage] = useState(1);
+	// Read current page from URL for server-side pagination
+	const urlPage =
+		typeof window !== "undefined"
+			? Number(new URL(window.location.href).searchParams.get("page")) || 1
+			: 1;
+	const [currentPage, setCurrentPage] = useState(urlPage);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const toolbarRef = useRef<HTMLDivElement>(null);
 	const [toolbarHeight, setToolbarHeight] = useState(50); // Default fallback
@@ -590,11 +595,21 @@ export function FullWidthDataTable<T>({
 	};
 
 	const handlePreviousPage = () => {
-		setCurrentPage((prev) => Math.max(1, prev - 1));
+		const newPage = Math.max(1, currentPage - 1);
+		// Update URL to trigger server refetch
+		const url = new URL(window.location.href);
+		url.searchParams.set("page", String(newPage));
+		window.history.pushState({}, "", url);
+		window.location.href = url.toString(); // Force reload with new page
 	};
 
 	const handleNextPage = () => {
-		setCurrentPage((prev) => Math.min(totalPages, prev + 1));
+		const newPage = Math.min(totalPages, currentPage + 1);
+		// Update URL to trigger server refetch
+		const url = new URL(window.location.href);
+		url.searchParams.set("page", String(newPage));
+		window.history.pushState({}, "", url);
+		window.location.href = url.toString(); // Force reload with new page
 	};
 
 	const isAllSelected =

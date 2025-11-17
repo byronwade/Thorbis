@@ -92,13 +92,20 @@ type ExtendedJob = Job & {
  *
  * Fetches jobs data and renders table/kanban views.
  * Streams in after shell renders.
+ *
+ * Server-side pagination: Only fetches current page of data based on URL params.
  */
-export async function JobsData() {
+export async function JobsData({ searchParams }: { searchParams?: { page?: string } }) {
 	const supabase = await createClient();
 
 	if (!supabase) {
 		return notFound();
 	}
+
+	// Get current page from URL (default to 1)
+	const currentPage = Number(searchParams?.page) || 1;
+	const start = (currentPage - 1) * JOBS_PAGE_SIZE;
+	const end = start + JOBS_PAGE_SIZE - 1;
 
 	// Fetch total count (just the number, very fast)
 	const { count: totalCount } = await supabase
@@ -112,7 +119,7 @@ export async function JobsData() {
 		.select(JOB_SELECT)
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false })
-		.range(0, JOBS_PAGE_SIZE - 1); // Fetch only first page
+		.range(start, end); // Fetch current page based on URL param
 
 	if (error) {
 		const errorMessage =

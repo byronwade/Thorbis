@@ -19,7 +19,13 @@ import { JobsStats } from "@/components/work/jobs/jobs-stats";
 // This export is no longer needed but kept for documentation
 // export const experimental_ppr = true;
 
-export default function JobsPage() {
+export default async function JobsPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
+
 	return (
 		<div className="flex h-full flex-col">
 			{/* Job Flow Pipeline - Static for now */}
@@ -28,7 +34,7 @@ export default function JobsPage() {
 			{/* Jobs Table - Streams in after shell */}
 			<div className="flex-1 overflow-hidden">
 				<Suspense fallback={<JobsSkeleton />}>
-					<JobsData />
+					<JobsData searchParams={params} />
 				</Suspense>
 			</div>
 		</div>
