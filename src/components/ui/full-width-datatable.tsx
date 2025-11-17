@@ -225,6 +225,8 @@ export type FullWidthDataTableProps<T> = {
 	itemsPerPage?: number;
 	/** Total count from server (for accurate pagination display with server-side pagination) */
 	totalCount?: number;
+	/** Current page (for server-side pagination, passed from URL params) */
+	currentPageFromServer?: number;
 	/** Custom toolbar actions (rendered on right side) */
 	toolbarActions?: React.ReactNode;
 	/** Enable row selection */
@@ -263,6 +265,7 @@ export function FullWidthDataTable<T>({
 	showPagination = true,
 	itemsPerPage = 50,
 	totalCount,
+	currentPageFromServer = 1,
 	toolbarActions,
 	enableSelection = true,
 	getRowClassName,
@@ -275,12 +278,8 @@ export function FullWidthDataTable<T>({
 }: FullWidthDataTableProps<T>) {
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [searchQuery, setSearchQuery] = useState("");
-	// Read current page from URL for server-side pagination
-	const urlPage =
-		typeof window !== "undefined"
-			? Number(new URL(window.location.href).searchParams.get("page")) || 1
-			: 1;
-	const [currentPage, setCurrentPage] = useState(urlPage);
+	// Use page from server (no hydration mismatch)
+	const [currentPage, setCurrentPage] = useState(currentPageFromServer);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const toolbarRef = useRef<HTMLDivElement>(null);
 	const [toolbarHeight, setToolbarHeight] = useState(50); // Default fallback

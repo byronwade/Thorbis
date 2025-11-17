@@ -1,0 +1,54 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Logs
+*.log
+
+# Environment
+.env*
+!.env.example
+
+# Testing
+coverage
+.turbo
+
+# Generated files
+*.d.ts
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Public assets
+public/**
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.woff
+*.woff2
+*.ttf
+*.eot
+*.otf
+
+# Documentation with specific formatting
+CHANGELOG.md
+LICENSE
+*.md
+.claude/**
+.windsurf/**
+
+# Config files that shouldn't be formatted
+tsconfig.json
+.vscode/**
+.cursor/**

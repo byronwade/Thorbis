@@ -157,7 +157,8 @@
       "Bash(echo:*)",
       "Bash(psql:*)",
       "Bash(timeout 60 npx tsc:*)",
-      "Bash(timeout 30 npx tsc:*)"
+      "Bash(timeout 30 npx tsc:*)",
+      "Bash(pnpm format:check:*)"
     ],
     "deny": [],
     "ask": []

@@ -47,6 +47,7 @@ type JobsTableProps = {
 	jobs: Job[];
 	itemsPerPage?: number;
 	totalCount?: number; // Total count from server (for accurate pagination display)
+	currentPage?: number; // Current page from server (for hydration)
 	onJobClick?: (job: Job) => void;
 	showRefresh?: boolean;
 };
@@ -55,6 +56,7 @@ export function JobsTable({
 	jobs,
 	itemsPerPage = 50,
 	totalCount,
+	currentPage = 1,
 	onJobClick,
 	showRefresh = false,
 }: JobsTableProps) {
@@ -273,6 +275,7 @@ export function JobsTable({
 				columns={columns}
 				data={filteredJobs}
 				totalCount={totalCount}
+				currentPageFromServer={currentPage}
 				emptyAction={
 					<Button onClick={handleAddJob} size="sm">
 						<Plus className="mr-2 size-4" />

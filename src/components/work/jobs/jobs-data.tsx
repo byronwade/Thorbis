@@ -207,7 +207,14 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 		<WorkDataView
 			kanban={<JobsKanban jobs={jobs} />}
 			section="jobs"
-			table={<JobsTable itemsPerPage={50} jobs={jobs} totalCount={totalCount || 0} />}
+			table={
+				<JobsTable
+					itemsPerPage={50}
+					jobs={jobs}
+					totalCount={totalCount || 0}
+					currentPage={currentPage}
+				/>
+			}
 		/>
 	);
 }
