@@ -223,6 +223,8 @@ export type FullWidthDataTableProps<T> = {
 	showPagination?: boolean;
 	/** Items per page (default 50) */
 	itemsPerPage?: number;
+	/** Total count from server (for accurate pagination display with server-side pagination) */
+	totalCount?: number;
 	/** Custom toolbar actions (rendered on right side) */
 	toolbarActions?: React.ReactNode;
 	/** Enable row selection */
@@ -260,6 +262,7 @@ export function FullWidthDataTable<T>({
 	onRefresh,
 	showPagination = true,
 	itemsPerPage = 50,
+	totalCount,
 	toolbarActions,
 	enableSelection = true,
 	getRowClassName,
@@ -1076,7 +1079,7 @@ export function FullWidthDataTable<T>({
 									</span>
 								</div>
 								<p className="text-muted-foreground text-sm">
-									Showing all {filteredData.length.toLocaleString()} rows
+									Showing {(totalCount || filteredData.length).toLocaleString()} total rows
 								</p>
 							</div>
 						)}
@@ -1166,7 +1169,7 @@ export function FullWidthDataTable<T>({
 										</div>
 										<p className="text-muted-foreground text-sm">
 											Page {currentPage} of {totalPages} •{" "}
-											{filteredData.length.toLocaleString()} total rows
+											{(totalCount || filteredData.length).toLocaleString()} total rows
 										</p>
 									</>
 								) : (

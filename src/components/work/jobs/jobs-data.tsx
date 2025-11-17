@@ -100,13 +100,19 @@ export async function JobsData() {
 		return notFound();
 	}
 
-	// Fetch jobs from Supabase with customer and property details
+	// Fetch total count (just the number, very fast)
+	const { count: totalCount } = await supabase
+		.from("jobs")
+		.select("*", { count: "exact", head: true })
+		.is("deleted_at", null);
+
+	// Fetch only current page of jobs (server-side pagination)
 	const { data: jobsRaw, error } = await supabase
 		.from("jobs")
 		.select(JOB_SELECT)
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false })
-		.limit(JOBS_PAGE_SIZE);
+		.range(0, JOBS_PAGE_SIZE - 1); // Fetch only first page
 
 	if (error) {
 		const errorMessage =
@@ -194,7 +200,7 @@ export async function JobsData() {
 		<WorkDataView
 			kanban={<JobsKanban jobs={jobs} />}
 			section="jobs"
-			table={<JobsTable itemsPerPage={50} jobs={jobs} />}
+			table={<JobsTable itemsPerPage={50} jobs={jobs} totalCount={totalCount || 0} />}
 		/>
 	);
 }

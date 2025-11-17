@@ -46,6 +46,7 @@ import { useArchiveStore } from "@/lib/stores/archive-store";
 type JobsTableProps = {
 	jobs: Job[];
 	itemsPerPage?: number;
+	totalCount?: number; // Total count from server (for accurate pagination display)
 	onJobClick?: (job: Job) => void;
 	showRefresh?: boolean;
 };
@@ -53,6 +54,7 @@ type JobsTableProps = {
 export function JobsTable({
 	jobs,
 	itemsPerPage = 50,
+	totalCount,
 	onJobClick,
 	showRefresh = false,
 }: JobsTableProps) {
@@ -270,6 +272,7 @@ export function JobsTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredJobs}
+				totalCount={totalCount}
 				emptyAction={
 					<Button onClick={handleAddJob} size="sm">
 						<Plus className="mr-2 size-4" />
