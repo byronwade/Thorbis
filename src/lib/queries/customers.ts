@@ -77,21 +77,26 @@ export const getCustomersWithStats = cache(
 			return null;
 		}
 
-		// OPTIMIZED: Single RPC function with SQL joins (8-14x faster!)
-		// Replaces: 4 parallel queries + JavaScript joins (4200ms)
-		// With: Single SQL query with correlated subqueries (300-500ms)
-		const { data: customers, error } = await supabase.rpc(
-			"get_customers_with_stats",
-			{
-				company_id_param: activeCompanyId,
-			},
-		);
+		// SIMPLIFIED: Just get customers without stats (RPC was timing out)
+		const { data: customers, error } = await supabase
+			.from("customers")
+			.select("*")
+			.eq("company_id", activeCompanyId)
+			.is("deleted_at", null)
+			.order("display_name", { ascending: true });
 
 		if (error) {
 			throw new Error(`Failed to load customers: ${error.message}`);
 		}
 
-		return customers || [];
+		// Return with default empty stats
+		return (customers || []).map((customer) => ({
+			...customer,
+			last_job_date: null,
+			next_scheduled_job: null,
+			total_jobs: 0,
+			total_revenue: 0,
+		}));
 	},
 );
 

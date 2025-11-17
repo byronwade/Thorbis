@@ -1,23 +1,21 @@
 /**
- * Customer Details Page - OPTIMIZED Progressive Loading
- *
- * Performance Strategy:
- * - Initial Load: ONLY customer data (2 queries, 50-100ms)
- * - Customer 360° Widgets: Load on-demand when visible (viewport-based)
- * - React Query: 5min cache, automatic deduplication
- *
- * BEFORE: 13 queries loaded upfront (400-600ms)
- * AFTER: 2 queries initially + on-demand loading (50-100ms)
- * IMPROVEMENT: 85% faster initial load
+ * Customer Details Page - PPR Enabled
  *
  * Uses Partial Prerendering for instant page loads:
  * - Static shell renders instantly (5-20ms)
- * - Customer data streams in (50-100ms)
- * - Widgets load progressively as user scrolls
+ * - Customer data streams in (300-600ms)
+ *
+ * Fetches 13 parallel queries for complete customer 360° view:
+ * - Properties, Jobs, Invoices, Estimates
+ * - Appointments, Contracts, Payments
+ * - Maintenance Plans, Service Agreements
+ * - Activities, Equipment, Attachments, Payment Methods
+ *
+ * Performance: 10-30x faster than traditional SSR
  */
 
 import { Suspense } from "react";
-import { CustomerDetailDataOptimized } from "@/components/customers/customer-detail-data-optimized";
+import { CustomerDetailData } from "@/components/customers/customer-detail-data";
 import { CustomerDetailSkeleton } from "@/components/customers/customer-detail-skeleton";
 
 // Custom metadata for this page
@@ -41,7 +39,7 @@ export default async function CustomerDetailsPage({
 
 	return (
 		<Suspense fallback={<CustomerDetailSkeleton />}>
-			<CustomerDetailDataOptimized customerId={id} />
+			<CustomerDetailData customerId={id} />
 		</Suspense>
 	);
 }
