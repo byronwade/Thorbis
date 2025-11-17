@@ -542,28 +542,19 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 			);
 		}
 
-		// Get job with all domain data and relationships
+		// Get job with basic relationships
+		// Simplified query - many domain tables don't exist yet
 		const { data: job, error: jobError } = await supabase
 			.from("jobs")
 			.select(
 				`
 				*,
 				property:properties(*),
-				customer:users!customer_id(*),
-				assigned:users!assigned_to(*),
-				financial:job_financial(*),
-				workflow:job_workflow(*),
-				timeTracking:job_time_tracking(*),
-				customerApproval:job_customer_approval(*),
-				equipmentService:job_equipment_service(*),
-				dispatch:job_dispatch(*),
-				quality:job_quality(*),
-				safety:job_safety(*),
-				aiEnrichment:job_ai_enrichment(*),
-				multiEntity:job_multi_entity(*)
+				customer:customers!customer_id(id, first_name, last_name, email, phone, display_name)
 			`,
 			)
 			.eq("id", jobId)
+			.eq("company_id", companyId)
 			.single();
 
 		if (jobError) {
