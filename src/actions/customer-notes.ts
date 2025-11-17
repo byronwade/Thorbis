@@ -16,10 +16,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
 type NoteType = "customer" | "internal";
 
@@ -55,7 +52,7 @@ export async function getCustomerNotes({
         *,
         user:users!user_id(name, email, avatar)
       `,
-				{ count: "exact" },
+				{ count: "exact" }
 			)
 			.eq("customer_id", customerId)
 			.eq("company_id", companyId)
@@ -218,7 +215,7 @@ const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
 };
 
 const getUserAndCompany = async (
-	supabase: SupabaseServerClient,
+	supabase: SupabaseServerClient
 ): Promise<{ userId: string; companyId: string }> => {
 	const {
 		data: { user },

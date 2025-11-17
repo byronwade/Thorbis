@@ -40,12 +40,7 @@ import {
 } from "@/actions/customer-badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -152,16 +147,13 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 			});
 
 			// Snapshot previous value
-			const previousBadges = queryClient.getQueryData([
-				"customer-badges",
-				customerId,
-			]);
+			const previousBadges = queryClient.getQueryData(["customer-badges", customerId]);
 
 			// Optimistically remove badge
 			queryClient.setQueryData(
 				["customer-badges", customerId],
 				(old: CustomerBadge[] | undefined) =>
-					old ? old.filter((badge) => badge.id !== badgeId) : old,
+					old ? old.filter((badge) => badge.id !== badgeId) : old
 			);
 
 			return { previousBadges };
@@ -169,10 +161,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 		onError: (error: Error, _badgeId, context) => {
 			// Rollback on error
 			if (context?.previousBadges) {
-				queryClient.setQueryData(
-					["customer-badges", customerId],
-					context.previousBadges,
-				);
+				queryClient.setQueryData(["customer-badges", customerId], context.previousBadges);
 			}
 			toast.error(error.message);
 		},
@@ -251,10 +240,8 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 	if (error) {
 		return (
 			<div className="flex items-center gap-2 px-8 py-6">
-				<AlertTriangle className="size-4 text-destructive" />
-				<p className="text-destructive text-sm">
-					Failed to load badges: {error.message}
-				</p>
+				<AlertTriangle className="text-destructive size-4" />
+				<p className="text-destructive text-sm">Failed to load badges: {error.message}</p>
 			</div>
 		);
 	}
@@ -273,15 +260,15 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					<div className="group relative" key={badge.id}>
 						<Badge
 							className={cn(
-								"gap-1.5 pr-7 font-medium text-xs",
-								badge.badge_type === "auto_generated" && "opacity-90",
+								"gap-1.5 pr-7 text-xs font-medium",
+								badge.badge_type === "auto_generated" && "opacity-90"
 							)}
 							variant={badge.variant as any}
 						>
 							{Icon && <Icon className="size-3.5" />}
 							{badge.label}
 							<button
-								className="-translate-y-1/2 absolute top-1/2 right-1.5 rounded-sm p-0.5 opacity-0 transition-opacity hover:bg-background/20 group-hover:opacity-100"
+								className="hover:bg-background/20 absolute top-1/2 right-1.5 -translate-y-1/2 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
 								disabled={removeBadgeMutation.isPending}
 								onClick={() => handleRemoveBadge(badge.id)}
 								title="Remove badge"
@@ -303,9 +290,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="start" className="w-64">
-					<DropdownMenuLabel className="text-xs">
-						Premade Badges
-					</DropdownMenuLabel>
+					<DropdownMenuLabel className="text-xs">Premade Badges</DropdownMenuLabel>
 					{PREMADE_BADGES.map((premade) => {
 						const Icon = ICON_MAP[premade.icon];
 						return (
@@ -321,10 +306,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 						);
 					})}
 					<DropdownMenuSeparator />
-					<DropdownMenuItem
-						className="cursor-pointer"
-						onClick={() => setShowCustomDialog(true)}
-					>
+					<DropdownMenuItem className="cursor-pointer" onClick={() => setShowCustomDialog(true)}>
 						<Plus className="mr-2 size-4" />
 						<span className="text-sm">Custom Badge</span>
 					</DropdownMenuItem>
@@ -336,9 +318,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					>
 						<LayoutGrid className="mr-2 size-4" />
 						<span className="text-sm">
-							{generateAutoBadgesMutation.isPending
-								? "Generating..."
-								: "Generate Auto Badges"}
+							{generateAutoBadgesMutation.isPending ? "Generating..." : "Generate Auto Badges"}
 						</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
@@ -352,7 +332,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					</DialogHeader>
 					<div className="space-y-4 pt-4">
 						<div className="space-y-2">
-							<Label className="font-medium text-sm">Badge Label</Label>
+							<Label className="text-sm font-medium">Badge Label</Label>
 							<Input
 								className="text-sm"
 								onChange={(e) => setCustomLabel(e.target.value)}
@@ -361,7 +341,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 							/>
 						</div>
 						<div className="space-y-2">
-							<Label className="font-medium text-sm">Badge Style</Label>
+							<Label className="text-sm font-medium">Badge Style</Label>
 							<Select onValueChange={setCustomVariant} value={customVariant}>
 								<SelectTrigger className="text-sm">
 									<SelectValue />

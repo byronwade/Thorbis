@@ -38,20 +38,8 @@ type SortableWidgetProps = {
 	onRemove: () => void;
 };
 
-function SortableWidget({
-	widget,
-	data,
-	isEditMode,
-	onRemove,
-}: SortableWidgetProps) {
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({
+function SortableWidget({ widget, data, isEditMode, onRemove }: SortableWidgetProps) {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: widget.id,
 		disabled: !isEditMode,
 	});
@@ -89,17 +77,12 @@ function SortableWidget({
 	);
 }
 
-export function DraggableGrid({
-	widgets,
-	onWidgetsChange,
-	data,
-	isEditMode,
-}: DraggableGridProps) {
+export function DraggableGrid({ widgets, onWidgetsChange, data, isEditMode }: DraggableGridProps) {
 	const sensors = useSensors(
 		useSensor(PointerSensor),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		}),
+		})
 	);
 
 	function handleDragEnd(event: DragEndEvent) {
@@ -117,15 +100,8 @@ export function DraggableGrid({
 	}
 
 	return (
-		<DndContext
-			collisionDetection={closestCenter}
-			onDragEnd={handleDragEnd}
-			sensors={sensors}
-		>
-			<SortableContext
-				items={widgets.map((w) => w.id)}
-				strategy={rectSortingStrategy}
-			>
+		<DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd} sensors={sensors}>
+			<SortableContext items={widgets.map((w) => w.id)} strategy={rectSortingStrategy}>
 				<div className="grid h-full w-full auto-rows-[minmax(80px,1fr)] grid-cols-4 gap-6 p-6">
 					{widgets.map((widget) => (
 						<SortableWidget

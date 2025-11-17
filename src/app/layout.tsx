@@ -4,7 +4,6 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { RoutePrefetch } from "@/components/providers/route-prefetch";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ZustandHydration } from "@/components/providers/zustand-hydration";
@@ -108,7 +107,6 @@ export default function RootLayout({
 				<ThemeProvider>
 					<QueryProvider>
 						<ZustandHydration />
-						<RoutePrefetch />
 						<BotIdProvider />
 						<Suspense fallback={null}>
 							<AnalyticsProvider>{children}</AnalyticsProvider>

@@ -64,21 +64,15 @@ export function ColumnVisibilityMenu({
 	}, []);
 
 	// Zustand stores
-	const isColumnVisible = useDataTableColumnsStore(
-		(state) => state.isColumnVisible,
-	);
+	const isColumnVisible = useDataTableColumnsStore((state) => state.isColumnVisible);
 	const toggleColumn = useDataTableColumnsStore((state) => state.toggleColumn);
-	const showAllColumns = useDataTableColumnsStore(
-		(state) => state.showAllColumns,
-	);
-	const hideAllColumns = useDataTableColumnsStore(
-		(state) => state.hideAllColumns,
-	);
+	const showAllColumns = useDataTableColumnsStore((state) => state.showAllColumns);
+	const hideAllColumns = useDataTableColumnsStore((state) => state.hideAllColumns);
 	const resetEntity = useDataTableColumnsStore((state) => state.resetEntity);
 
 	// Subscribe to column visibility state to trigger re-renders when columns are toggled
 	const columnVisibilityState = useDataTableColumnsStore((state) =>
-		entity ? state.entities[entity] : null,
+		entity ? state.entities[entity] : null
 	);
 
 	// Custom columns store - get all columns and memoize
@@ -86,15 +80,12 @@ export function ColumnVisibilityMenu({
 	const removeColumn = useCustomColumnsStore((state) => state.removeColumn);
 
 	// Memoize custom columns for this entity to prevent re-renders
-	const customColumns = useMemo(
-		() => allCustomColumns[entity] || [],
-		[allCustomColumns, entity],
-	);
+	const customColumns = useMemo(() => allCustomColumns[entity] || [], [allCustomColumns, entity]);
 
 	// Count visible columns (recompute when visibility state changes)
 	const visibleCount = useMemo(
 		() => columns.filter((col) => isColumnVisible(entity, col.key)).length,
-		[columns, entity, isColumnVisible],
+		[columns, entity, isColumnVisible]
 	);
 	const allVisible = visibleCount === columns.length;
 	const noneVisible = visibleCount === 0;
@@ -108,7 +99,7 @@ export function ColumnVisibilityMenu({
 							<Columns className="mr-2 h-4 w-4" />
 							Columns
 							{mounted && visibleCount < columns.length && (
-								<span className="ml-1.5 text-muted-foreground text-xs">
+								<span className="text-muted-foreground ml-1.5 text-xs">
 									({visibleCount}/{columns.length})
 								</span>
 							)}
@@ -120,12 +111,12 @@ export function ColumnVisibilityMenu({
 						<div className="flex items-center justify-between">
 							<span>Optional Columns</span>
 							{mounted && columns.length > 0 && (
-								<span className="font-normal text-muted-foreground text-xs">
+								<span className="text-muted-foreground text-xs font-normal">
 									{visibleCount}/{columns.length}
 								</span>
 							)}
 						</div>
-						<p className="mt-1 font-normal text-muted-foreground text-xs leading-tight">
+						<p className="text-muted-foreground mt-1 text-xs leading-tight font-normal">
 							Critical columns are always visible
 						</p>
 					</DropdownMenuLabel>
@@ -156,7 +147,7 @@ export function ColumnVisibilityMenu({
 									onClick={() =>
 										showAllColumns(
 											entity,
-											columns.map((c) => c.key),
+											columns.map((c) => c.key)
 										)
 									}
 									size="sm"
@@ -171,7 +162,7 @@ export function ColumnVisibilityMenu({
 									onClick={() =>
 										hideAllColumns(
 											entity,
-											columns.map((c) => c.key),
+											columns.map((c) => c.key)
 										)
 									}
 									size="sm"
@@ -189,7 +180,7 @@ export function ColumnVisibilityMenu({
 										// Re-initialize with all columns visible (default state)
 										showAllColumns(
 											entity,
-											columns.map((c) => c.key),
+											columns.map((c) => c.key)
 										);
 									}}
 									size="sm"
@@ -206,7 +197,7 @@ export function ColumnVisibilityMenu({
 					{criticalColumns.length > 0 && (
 						<>
 							<div className="px-2 py-2">
-								<div className="mb-2 font-medium text-muted-foreground text-xs">
+								<div className="text-muted-foreground mb-2 text-xs font-medium">
 									Always Visible (Critical)
 								</div>
 								{criticalColumns.map((column) => (
@@ -214,25 +205,19 @@ export function ColumnVisibilityMenu({
 										className="flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm"
 										key={column.key}
 									>
-										<div className="flex h-4 w-4 items-center justify-center rounded-sm border border-primary bg-primary">
+										<div className="border-primary bg-primary flex h-4 w-4 items-center justify-center rounded-sm border">
 											<svg
-												className="h-3 w-3 text-primary-foreground"
+												className="text-primary-foreground h-3 w-3"
 												fill="none"
 												stroke="currentColor"
 												strokeWidth={3}
 												viewBox="0 0 24 24"
 											>
-												<path
-													d="M5 13l4 4L19 7"
-													strokeLinecap="round"
-													strokeLinejoin="round"
-												/>
+												<path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
 											</svg>
 										</div>
-										<span className="font-medium text-sm">{column.label}</span>
-										<span className="ml-auto text-muted-foreground text-xs">
-											Always
-										</span>
+										<span className="text-sm font-medium">{column.label}</span>
+										<span className="text-muted-foreground ml-auto text-xs">Always</span>
 									</div>
 								))}
 							</div>
@@ -242,7 +227,7 @@ export function ColumnVisibilityMenu({
 
 					{columns.length === 0 && criticalColumns.length === 0 && (
 						<>
-							<div className="px-2 py-3 text-center text-muted-foreground text-xs">
+							<div className="text-muted-foreground px-2 py-3 text-center text-xs">
 								No columns available to customize.
 							</div>
 							<DropdownMenuSeparator />
@@ -253,7 +238,7 @@ export function ColumnVisibilityMenu({
 					{columns.length > 0 && (
 						<>
 							{criticalColumns.length > 0 && (
-								<div className="px-2 pt-1 pb-2 font-medium text-muted-foreground text-xs">
+								<div className="text-muted-foreground px-2 pt-1 pb-2 text-xs font-medium">
 									Optional Columns
 								</div>
 							)}
@@ -269,11 +254,7 @@ export function ColumnVisibilityMenu({
 												key={`${column.key}-${visible}`}
 												onCheckedChange={() => toggleColumn(entity, column.key)}
 											>
-												<span
-													className={
-														visible ? "font-medium" : "text-muted-foreground"
-													}
-												>
+												<span className={visible ? "font-medium" : "text-muted-foreground"}>
 													{column.label}
 												</span>
 											</DropdownMenuCheckboxItem>
@@ -290,32 +271,20 @@ export function ColumnVisibilityMenu({
 										{mounted &&
 											customColumns.map((column) => {
 												// Get fresh visibility state for each render
-												const visible =
-													columnVisibilityState?.[column.id] ?? true;
+												const visible = columnVisibilityState?.[column.id] ?? true;
 												return (
-													<div
-														className="group relative"
-														key={`${column.id}-${visible}`}
-													>
+													<div className="group relative" key={`${column.id}-${visible}`}>
 														<DropdownMenuCheckboxItem
 															checked={visible}
 															className="cursor-pointer pr-8"
-															onCheckedChange={() =>
-																toggleColumn(entity, column.id)
-															}
+															onCheckedChange={() => toggleColumn(entity, column.id)}
 														>
-															<span
-																className={
-																	visible
-																		? "font-medium"
-																		: "text-muted-foreground"
-																}
-															>
+															<span className={visible ? "font-medium" : "text-muted-foreground"}>
 																{column.label}
 															</span>
 														</DropdownMenuCheckboxItem>
 														<Button
-															className="-translate-y-1/2 absolute top-1/2 right-2 h-5 w-5 opacity-0 transition-opacity group-hover:opacity-100"
+															className="absolute top-1/2 right-2 h-5 w-5 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100"
 															onClick={(e) => {
 																e.stopPropagation();
 																removeColumn(entity, column.id);
@@ -323,7 +292,7 @@ export function ColumnVisibilityMenu({
 															size="icon"
 															variant="ghost"
 														>
-															<Trash2 className="h-3 w-3 text-destructive" />
+															<Trash2 className="text-destructive h-3 w-3" />
 														</Button>
 													</div>
 												);
@@ -337,11 +306,7 @@ export function ColumnVisibilityMenu({
 			</DropdownMenu>
 
 			{/* Column Builder Dialog */}
-			<ColumnBuilderDialog
-				entity={entity}
-				onOpenChange={setDialogOpen}
-				open={dialogOpen}
-			/>
+			<ColumnBuilderDialog entity={entity} onOpenChange={setDialogOpen} open={dialogOpen} />
 		</>
 	);
 }

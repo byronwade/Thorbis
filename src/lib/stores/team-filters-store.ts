@@ -47,6 +47,6 @@ export const useTeamFiltersStore = create<TeamFiltersStore>()(
 		{
 			name: "team-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		},
-	),
+		}
+	)
 );

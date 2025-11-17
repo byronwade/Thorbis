@@ -50,7 +50,7 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettingsState = {
 };
 
 export function mapNotificationSettings(
-	row: NotificationSettingsRow,
+	row: NotificationSettingsRow
 ): Partial<NotificationSettingsState> {
 	if (!row) {
 		return {};

@@ -83,14 +83,10 @@ const qualitySchema = z.object({
  * Code Review Workflow
  * Steps: Security Analysis → Performance Analysis → Quality Analysis → Summary
  */
-export const codeReviewWorkflow: WorkflowDefinition<
-	CodeReviewInput,
-	CodeReviewOutput
-> = {
+export const codeReviewWorkflow: WorkflowDefinition<CodeReviewInput, CodeReviewOutput> = {
 	id: "code-review",
 	name: "Code Review Workflow",
-	description:
-		"Multi-pass code review analyzing security, performance, and quality",
+	description: "Multi-pass code review analyzing security, performance, and quality",
 	version: "1.0.0",
 
 	steps: [
@@ -206,39 +202,21 @@ Provide:
 		const quality = context.history[2]?.output as QualityAnalysis;
 
 		// Calculate overall score
-		const overallScore = Math.round(
-			(security.score + performance.score + quality.score) / 3,
-		);
+		const overallScore = Math.round((security.score + performance.score + quality.score) / 3);
 
 		// Generate summary and recommendations
-		const allIssues = [
-			...security.issues,
-			...performance.issues,
-			...quality.issues,
-		];
-		const highSeverityCount = allIssues.filter(
-			(i) => i.severity === "high",
-		).length;
-		const mediumSeverityCount = allIssues.filter(
-			(i) => i.severity === "medium",
-		).length;
+		const allIssues = [...security.issues, ...performance.issues, ...quality.issues];
+		const highSeverityCount = allIssues.filter((i) => i.severity === "high").length;
+		const mediumSeverityCount = allIssues.filter((i) => i.severity === "medium").length;
 
 		const summary = `Code Review Complete: Found ${allIssues.length} issues (${highSeverityCount} high, ${mediumSeverityCount} medium priority). Overall score: ${overallScore}/100.`;
 
 		const recommendations = [
-			...(highSeverityCount > 0
-				? ["Address all high-severity issues before deployment"]
-				: []),
-			...(security.score < 70
-				? ["Implement additional security measures"]
-				: []),
+			...(highSeverityCount > 0 ? ["Address all high-severity issues before deployment"] : []),
+			...(security.score < 70 ? ["Implement additional security measures"] : []),
 			...(performance.score < 70 ? ["Optimize performance bottlenecks"] : []),
-			...(quality.readabilityScore < 70
-				? ["Improve code readability and documentation"]
-				: []),
-			...(quality.maintainabilityScore < 70
-				? ["Refactor for better maintainability"]
-				: []),
+			...(quality.readabilityScore < 70 ? ["Improve code readability and documentation"] : []),
+			...(quality.maintainabilityScore < 70 ? ["Refactor for better maintainability"] : []),
 		];
 
 		return {

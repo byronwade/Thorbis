@@ -95,8 +95,8 @@ export function CreditCardVisual({
 		return (
 			<div
 				className={cn(
-					"group relative aspect-[1.586/1] w-full overflow-hidden rounded-xl border-2 border-border bg-gradient-to-br from-background via-muted/30 to-muted/50 p-6 shadow-md transition-all hover:shadow-lg",
-					className,
+					"group border-border from-background via-muted/30 to-muted/50 relative aspect-[1.586/1] w-full overflow-hidden rounded-xl border-2 bg-gradient-to-br p-6 shadow-md transition-all hover:shadow-lg",
+					className
 				)}
 			>
 				{/* Background Pattern */}
@@ -109,16 +109,14 @@ export function CreditCardVisual({
 					{/* Header */}
 					<div className="flex items-start justify-between">
 						<div className="flex items-center gap-2">
-							<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10 ring-2 ring-primary/20">
-								<Building2 className="size-6 text-primary" />
+							<div className="bg-primary/10 ring-primary/20 flex size-12 items-center justify-center rounded-lg ring-2">
+								<Building2 className="text-primary size-6" />
 							</div>
 							<div>
-								<p className="font-semibold text-foreground text-sm">
+								<p className="text-foreground text-sm font-semibold">
 									{accountType === "checking" ? "Checking" : "Savings"}
 								</p>
-								<p className="text-muted-foreground text-xs">
-									{bankName || "Bank Account"}
-								</p>
+								<p className="text-muted-foreground text-xs">{bankName || "Bank Account"}</p>
 							</div>
 						</div>
 						{isDefault && (
@@ -131,28 +129,26 @@ export function CreditCardVisual({
 
 					{/* Middle */}
 					<div className="flex items-center gap-1.5">
-						<div className="flex items-center gap-1 font-mono text-foreground text-lg tracking-wider">
+						<div className="text-foreground flex items-center gap-1 font-mono text-lg tracking-wider">
 							<span>••••</span>
 							<span>••••</span>
 							<span>••••</span>
 							<span className="font-semibold">{last4}</span>
 						</div>
-						{isVerified && <BadgeCheck className="size-4 text-primary" />}
+						{isVerified && <BadgeCheck className="text-primary size-4" />}
 					</div>
 
 					{/* Footer */}
 					<div className="flex items-end justify-between">
 						{nickname && (
 							<div>
-								<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+								<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 									Nickname
 								</p>
-								<p className="font-medium text-foreground text-sm">
-									{nickname}
-								</p>
+								<p className="text-foreground text-sm font-medium">{nickname}</p>
 							</div>
 						)}
-						<ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+						<ChevronRight className="text-muted-foreground size-4 opacity-0 transition-opacity group-hover:opacity-100" />
 					</div>
 				</div>
 			</div>
@@ -165,7 +161,7 @@ export function CreditCardVisual({
 			className={cn(
 				"group relative aspect-[1.586/1] w-full overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl",
 				`bg-gradient-to-br ${config.gradient}`,
-				className,
+				className
 			)}
 		>
 			{/* Background Pattern */}
@@ -175,22 +171,12 @@ export function CreditCardVisual({
 			</div>
 
 			{/* Content */}
-			<div
-				className={cn(
-					"relative flex h-full flex-col justify-between p-6",
-					config.textColor,
-				)}
-			>
+			<div className={cn("relative flex h-full flex-col justify-between p-6", config.textColor)}>
 				{/* Header */}
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-3">
 						{/* EMV Chip */}
-						<div
-							className={cn(
-								"size-10 rounded-md shadow-inner",
-								config.chipColor,
-							)}
-						>
+						<div className={cn("size-10 rounded-md shadow-inner", config.chipColor)}>
 							<div className="grid size-full grid-cols-3 grid-rows-3 gap-px p-1">
 								{Array.from({ length: 9 }).map((_, i) => (
 									<div className="rounded-[1px] bg-amber-500/40" key={i} />
@@ -198,7 +184,7 @@ export function CreditCardVisual({
 							</div>
 						</div>
 						{/* Contactless Icon */}
-						<Wifi className="-rotate-90 size-6 opacity-70" />
+						<Wifi className="size-6 -rotate-90 opacity-70" />
 					</div>
 
 					{/* Brand Logo & Badges */}
@@ -210,9 +196,7 @@ export function CreditCardVisual({
 							</Badge>
 						)}
 						{brandKey === "visa" && (
-							<div className="font-bold text-2xl italic tracking-wider">
-								VISA
-							</div>
+							<div className="text-2xl font-bold tracking-wider italic">VISA</div>
 						)}
 						{brandKey === "mastercard" && (
 							<div className="flex items-center gap-[-4px]">
@@ -221,12 +205,12 @@ export function CreditCardVisual({
 							</div>
 						)}
 						{brandKey === "amex" && (
-							<div className="rounded bg-white/20 px-2 py-1 font-bold text-xs tracking-wider backdrop-blur-sm">
+							<div className="rounded bg-white/20 px-2 py-1 text-xs font-bold tracking-wider backdrop-blur-sm">
 								AMERICAN EXPRESS
 							</div>
 						)}
 						{brandKey === "discover" && (
-							<div className="rounded bg-white/20 px-2 py-1 font-bold text-xs tracking-wider backdrop-blur-sm">
+							<div className="rounded bg-white/20 px-2 py-1 text-xs font-bold tracking-wider backdrop-blur-sm">
 								DISCOVER
 							</div>
 						)}
@@ -248,21 +232,16 @@ export function CreditCardVisual({
 				<div className="flex items-end justify-between">
 					<div className="flex gap-6">
 						<div>
-							<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">
-								Cardholder
-							</p>
-							<p className="font-medium text-sm uppercase tracking-wide">
+							<p className="mb-1 text-[10px] tracking-wide uppercase opacity-70">Cardholder</p>
+							<p className="text-sm font-medium tracking-wide uppercase">
 								{cardholderName || "CARD HOLDER"}
 							</p>
 						</div>
 						{expMonth && expYear && (
 							<div>
-								<p className="mb-1 text-[10px] uppercase tracking-wide opacity-70">
-									Expires
-								</p>
-								<p className="font-medium font-mono text-sm tracking-wide">
-									{String(expMonth).padStart(2, "0")}/
-									{String(expYear).slice(-2)}
+								<p className="mb-1 text-[10px] tracking-wide uppercase opacity-70">Expires</p>
+								<p className="font-mono text-sm font-medium tracking-wide">
+									{String(expMonth).padStart(2, "0")}/{String(expYear).slice(-2)}
 								</p>
 							</div>
 						)}

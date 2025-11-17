@@ -60,11 +60,7 @@ type PortingData = {
 	billDocument: File | null;
 };
 
-export function NumberPortingWizard({
-	open,
-	onOpenChange,
-	onSuccess,
-}: NumberPortingWizardProps) {
+export function NumberPortingWizard({ open, onOpenChange, onSuccess }: NumberPortingWizardProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [portingData, setPortingData] = useState<PortingData>({
 		phoneNumber: "",
@@ -148,9 +144,7 @@ export function NumberPortingWizard({
 				formData.append("billDocument", portingData.billDocument);
 			}
 
-			const { portOnboardingPhoneNumber } = await import(
-				"@/actions/onboarding"
-			);
+			const { portOnboardingPhoneNumber } = await import("@/actions/onboarding");
 			const result = await portOnboardingPhoneNumber(formData);
 
 			if (result.success) {
@@ -168,9 +162,7 @@ export function NumberPortingWizard({
 			}
 		} catch (_error) {
 			setSubmitting(false);
-			alert(
-				"An error occurred while submitting your porting request. Please try again.",
-			);
+			alert("An error occurred while submitting your porting request. Please try again.");
 		}
 	};
 
@@ -179,21 +171,16 @@ export function NumberPortingWizard({
 			<DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Port Your Phone Number</DialogTitle>
-					<DialogDescription>
-						Transfer your existing phone number to Ultrathink
-					</DialogDescription>
+					<DialogDescription>Transfer your existing phone number to Ultrathink</DialogDescription>
 				</DialogHeader>
 
 				{/* Progress Bar */}
 				<div className="space-y-2">
 					<div className="flex items-center justify-between text-sm">
 						<span className="font-medium">
-							Step {currentStep} of {steps.length}:{" "}
-							{steps[currentStep - 1].title}
+							Step {currentStep} of {steps.length}: {steps[currentStep - 1].title}
 						</span>
-						<span className="text-muted-foreground">
-							{Math.round(progress)}% complete
-						</span>
+						<span className="text-muted-foreground">{Math.round(progress)}% complete</span>
 					</div>
 					<Progress className="h-2" value={progress} />
 				</div>
@@ -269,24 +256,22 @@ function Step1Introduction({ onNext }: { onNext: () => void }) {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">About Number Porting</h3>
+				<h3 className="mb-2 text-lg font-semibold">About Number Porting</h3>
 				<p className="text-muted-foreground text-sm">
-					Number porting (also called Local Number Portability or LNP) allows
-					you to transfer your existing phone number from your current carrier
-					to Ultrathink. Keep your number and enjoy better features and pricing.
+					Number porting (also called Local Number Portability or LNP) allows you to transfer your
+					existing phone number from your current carrier to Ultrathink. Keep your number and enjoy
+					better features and pricing.
 				</p>
 			</div>
 
 			{/* Pros & Cons */}
 			<div className="grid gap-4 sm:grid-cols-2">
-				<div className="rounded-lg border border-success bg-success p-4 dark:border-success dark:bg-success/20">
+				<div className="border-success bg-success dark:border-success dark:bg-success/20 rounded-lg border p-4">
 					<div className="mb-3 flex items-center gap-2">
-						<CheckCircle2 className="size-5 text-success dark:text-success" />
-						<h4 className="font-semibold text-success dark:text-success">
-							Advantages
-						</h4>
+						<CheckCircle2 className="text-success dark:text-success size-5" />
+						<h4 className="text-success dark:text-success font-semibold">Advantages</h4>
 					</div>
-					<ul className="space-y-2 text-sm text-success dark:text-success">
+					<ul className="text-success dark:text-success space-y-2 text-sm">
 						<li className="flex gap-2">
 							<span>•</span>
 							<span>Keep your existing business number</span>
@@ -310,14 +295,12 @@ function Step1Introduction({ onNext }: { onNext: () => void }) {
 					</ul>
 				</div>
 
-				<div className="rounded-lg border border-warning bg-warning p-4 dark:border-warning dark:bg-warning/20">
+				<div className="border-warning bg-warning dark:border-warning dark:bg-warning/20 rounded-lg border p-4">
 					<div className="mb-3 flex items-center gap-2">
-						<AlertCircle className="size-5 text-warning dark:text-warning" />
-						<h4 className="font-semibold text-warning dark:text-warning">
-							Considerations
-						</h4>
+						<AlertCircle className="text-warning dark:text-warning size-5" />
+						<h4 className="text-warning dark:text-warning font-semibold">Considerations</h4>
 					</div>
-					<ul className="space-y-2 text-sm text-warning dark:text-warning">
+					<ul className="text-warning dark:text-warning space-y-2 text-sm">
 						<li className="flex gap-2">
 							<span>•</span>
 							<span>Takes 7-10 business days typically</span>
@@ -375,17 +358,9 @@ function Step1Introduction({ onNext }: { onNext: () => void }) {
 				<AlertTitle>Important</AlertTitle>
 				<AlertDescription className="text-sm">
 					<ul className="mt-2 space-y-1">
-						<li>
-							• Do NOT cancel your current service until porting is 100%
-							complete
-						</li>
-						<li>
-							• Keep your current service active and paid during the porting
-							process
-						</li>
-						<li>
-							• Early termination fees from your current carrier may apply
-						</li>
+						<li>• Do NOT cancel your current service until porting is 100% complete</li>
+						<li>• Keep your current service active and paid during the porting process</li>
+						<li>• Early termination fees from your current carrier may apply</li>
 						<li>• We'll notify you via email and SMS at each stage</li>
 					</ul>
 				</AlertDescription>
@@ -411,10 +386,10 @@ function TimelineItem({
 	return (
 		<div className="flex gap-3">
 			<div className="flex flex-col items-center">
-				<div className="flex size-8 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+				<div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-full text-xs font-bold">
 					{day.split(" ")[1]}
 				</div>
-				<div className="w-px flex-1 bg-border" />
+				<div className="bg-border w-px flex-1" />
 			</div>
 			<div className="pb-4">
 				<div className="font-medium">{title}</div>
@@ -443,10 +418,9 @@ function Step2Eligibility({
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">Check Number Portability</h3>
+				<h3 className="mb-2 text-lg font-semibold">Check Number Portability</h3>
 				<p className="text-muted-foreground text-sm">
-					Enter the phone number you want to port to verify it can be
-					transferred to Ultrathink.
+					Enter the phone number you want to port to verify it can be transferred to Ultrathink.
 				</p>
 			</div>
 
@@ -460,10 +434,7 @@ function Step2Eligibility({
 						placeholder="(831) 430-6011"
 						value={phoneNumber}
 					/>
-					<Button
-						disabled={!phoneNumber || checking || isEligible === true}
-						onClick={onCheck}
-					>
+					<Button disabled={!phoneNumber || checking || isEligible === true} onClick={onCheck}>
 						{checking ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />
@@ -479,11 +450,9 @@ function Step2Eligibility({
 			{/* Eligibility Result */}
 			{isEligible === true && (
 				<Alert className="border-success bg-success dark:border-success dark:bg-success/20">
-					<CheckCircle2 className="size-4 text-success" />
-					<AlertTitle className="text-success dark:text-success">
-						Number is Portable!
-					</AlertTitle>
-					<AlertDescription className="text-sm text-success dark:text-success">
+					<CheckCircle2 className="text-success size-4" />
+					<AlertTitle className="text-success dark:text-success">Number is Portable!</AlertTitle>
+					<AlertDescription className="text-success dark:text-success text-sm">
 						<div className="mt-2 space-y-1">
 							<div>✓ This number can be ported to Ultrathink</div>
 							<div>✓ Estimated timeline: 7-10 business days</div>
@@ -532,19 +501,15 @@ function Step3ProviderInfo({
 	onNext: () => void;
 	onBack: () => void;
 }) {
-	const canContinue =
-		data.currentCarrier && data.accountNumber && data.accountPin;
+	const canContinue = data.currentCarrier && data.accountNumber && data.accountPin;
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">
-					Current Provider Information
-				</h3>
+				<h3 className="mb-2 text-lg font-semibold">Current Provider Information</h3>
 				<p className="text-muted-foreground text-sm">
-					We need details about your current phone service to complete the
-					porting process. This information must match your current carrier's
-					records exactly.
+					We need details about your current phone service to complete the porting process. This
+					information must match your current carrier's records exactly.
 				</p>
 			</div>
 
@@ -629,16 +594,15 @@ function Step4ServiceAddress({
 	onNext: () => void;
 	onBack: () => void;
 }) {
-	const canContinue =
-		data.addressLine1 && data.city && data.state && data.zipCode;
+	const canContinue = data.addressLine1 && data.city && data.state && data.zipCode;
 
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">Service Address</h3>
+				<h3 className="mb-2 text-lg font-semibold">Service Address</h3>
 				<p className="text-muted-foreground text-sm">
-					Enter the billing address on file with your current carrier. This MUST
-					match your carrier's records exactly or the port will be rejected.
+					Enter the billing address on file with your current carrier. This MUST match your
+					carrier's records exactly or the port will be rejected.
 				</p>
 			</div>
 
@@ -646,14 +610,14 @@ function Step4ServiceAddress({
 				className="border-warning bg-warning dark:border-warning dark:bg-warning/20"
 				variant="default"
 			>
-				<AlertCircle className="size-4 text-warning" />
+				<AlertCircle className="text-warning size-4" />
 				<AlertTitle className="text-warning dark:text-warning">
 					Critical: Address Must Match Exactly
 				</AlertTitle>
-				<AlertDescription className="text-sm text-warning dark:text-warning">
-					The #1 reason ports are rejected is address mismatch. Verify this
-					address on your most recent bill. Even small differences (like "St" vs
-					"Street" or "Apt 2" vs "#2") will cause rejection.
+				<AlertDescription className="text-warning dark:text-warning text-sm">
+					The #1 reason ports are rejected is address mismatch. Verify this address on your most
+					recent bill. Even small differences (like "St" vs "Street" or "Apt 2" vs "#2") will cause
+					rejection.
 				</AlertDescription>
 			</Alert>
 
@@ -737,10 +701,10 @@ function Step5AuthorizedPerson({
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">Authorized Person</h3>
+				<h3 className="mb-2 text-lg font-semibold">Authorized Person</h3>
 				<p className="text-muted-foreground text-sm">
-					Identify the person authorized to make changes to this account. This
-					is typically the account holder whose name appears on the bill.
+					Identify the person authorized to make changes to this account. This is typically the
+					account holder whose name appears on the bill.
 				</p>
 			</div>
 
@@ -748,17 +712,14 @@ function Step5AuthorizedPerson({
 				<Info className="size-4" />
 				<AlertTitle>Letter of Authorization (LOA)</AlertTitle>
 				<AlertDescription className="text-sm">
-					This person's name will appear on the Letter of Authorization (LOA)
-					document. This authorizes the port request on behalf of the account
-					holder.
+					This person's name will appear on the Letter of Authorization (LOA) document. This
+					authorizes the port request on behalf of the account holder.
 				</AlertDescription>
 			</Alert>
 
 			<div className="space-y-4">
 				<div className="space-y-2">
-					<Label htmlFor="authorizedPerson">
-						Full Name of Account Holder *
-					</Label>
+					<Label htmlFor="authorizedPerson">Full Name of Account Holder *</Label>
 					<Input
 						id="authorizedPerson"
 						onChange={(e) => updateData("authorizedPerson", e.target.value)}
@@ -819,20 +780,17 @@ function Step6DocumentUpload({
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">
-					Upload Supporting Documents
-				</h3>
+				<h3 className="mb-2 text-lg font-semibold">Upload Supporting Documents</h3>
 				<p className="text-muted-foreground text-sm">
-					Upload a recent bill or Letter of Authorization (LOA) to verify
-					account ownership. This speeds up the porting process and reduces
-					rejections.
+					Upload a recent bill or Letter of Authorization (LOA) to verify account ownership. This
+					speeds up the porting process and reduces rejections.
 				</p>
 			</div>
 
 			<div className="grid gap-4 sm:grid-cols-2">
 				<div className="rounded-lg border p-4">
 					<h4 className="mb-2 font-semibold">Option 1: Recent Bill</h4>
-					<ul className="space-y-1 text-muted-foreground text-sm">
+					<ul className="text-muted-foreground space-y-1 text-sm">
 						<li>• From last 30 days</li>
 						<li>• Shows account number</li>
 						<li>• Shows billing address</li>
@@ -842,10 +800,8 @@ function Step6DocumentUpload({
 				</div>
 
 				<div className="rounded-lg border p-4">
-					<h4 className="mb-2 font-semibold">
-						Option 2: Letter of Authorization
-					</h4>
-					<ul className="space-y-1 text-muted-foreground text-sm">
+					<h4 className="mb-2 font-semibold">Option 2: Letter of Authorization</h4>
+					<ul className="text-muted-foreground space-y-1 text-sm">
 						<li>• Signed by account holder</li>
 						<li>• Authorizes the port</li>
 						<li>• Includes account details</li>
@@ -866,19 +822,15 @@ function Step6DocumentUpload({
 						type="file"
 					/>
 					{document && (
-						<div className="flex items-center gap-2 rounded-lg border bg-muted p-3">
-							<FileText className="size-5 text-muted-foreground" />
+						<div className="bg-muted flex items-center gap-2 rounded-lg border p-3">
+							<FileText className="text-muted-foreground size-5" />
 							<div className="flex-1">
-								<div className="font-medium text-sm">{document.name}</div>
+								<div className="text-sm font-medium">{document.name}</div>
 								<div className="text-muted-foreground text-xs">
 									{(document.size / 1024 / 1024).toFixed(2)} MB
 								</div>
 							</div>
-							<Button
-								onClick={() => setDocument(null)}
-								size="sm"
-								variant="ghost"
-							>
+							<Button onClick={() => setDocument(null)} size="sm" variant="ghost">
 								Remove
 							</Button>
 						</div>
@@ -893,9 +845,8 @@ function Step6DocumentUpload({
 				<Info className="size-4" />
 				<AlertTitle>Optional but Recommended</AlertTitle>
 				<AlertDescription className="text-sm">
-					While uploading a document is optional, it significantly reduces
-					processing time and the chance of rejection. Ports with documentation
-					are approved 3x faster on average.
+					While uploading a document is optional, it significantly reduces processing time and the
+					chance of rejection. Ports with documentation are approved 3x faster on average.
 				</AlertDescription>
 			</Alert>
 
@@ -930,10 +881,10 @@ function Step7Review({
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="mb-2 font-semibold text-lg">Review & Submit</h3>
+				<h3 className="mb-2 text-lg font-semibold">Review & Submit</h3>
 				<p className="text-muted-foreground text-sm">
-					Please review all information carefully before submitting. Incorrect
-					information will delay or reject your port request.
+					Please review all information carefully before submitting. Incorrect information will
+					delay or reject your port request.
 				</p>
 			</div>
 
@@ -978,9 +929,7 @@ function Step7Review({
 					items={[
 						{
 							label: "Uploaded",
-							value: data.billDocument
-								? data.billDocument.name
-								: "No document uploaded",
+							value: data.billDocument ? data.billDocument.name : "No document uploaded",
 						},
 					]}
 					onEdit={() => onEdit(6)}
@@ -992,28 +941,18 @@ function Step7Review({
 				<CheckCheck className="size-4" />
 				<AlertTitle>Ready to Submit</AlertTitle>
 				<AlertDescription className="text-sm">
-					By submitting, you authorize Ultrathink to port your number. Keep your
-					current service active until you receive confirmation that the port is
-					complete (typically 7-10 business days).
+					By submitting, you authorize Ultrathink to port your number. Keep your current service
+					active until you receive confirmation that the port is complete (typically 7-10 business
+					days).
 				</AlertDescription>
 			</Alert>
 
 			<div className="flex gap-3">
-				<Button
-					className="flex-1"
-					disabled={submitting}
-					onClick={onBack}
-					variant="outline"
-				>
+				<Button className="flex-1" disabled={submitting} onClick={onBack} variant="outline">
 					<ArrowLeft className="mr-2 size-4" />
 					Back
 				</Button>
-				<Button
-					className="flex-1"
-					disabled={submitting}
-					onClick={onSubmit}
-					size="lg"
-				>
+				<Button className="flex-1" disabled={submitting} onClick={onSubmit} size="lg">
 					{submitting ? (
 						<>
 							<Loader2 className="mr-2 size-4 animate-spin" />
@@ -1061,36 +1000,29 @@ function ReviewSection({
 }
 
 // Step 8: Confirmation
-function Step8Confirmation({
-	phoneNumber,
-	onClose,
-}: {
-	phoneNumber: string;
-	onClose: () => void;
-}) {
+function Step8Confirmation({ phoneNumber, onClose }: { phoneNumber: string; onClose: () => void }) {
 	const estimatedDate = new Date();
 	estimatedDate.setDate(estimatedDate.getDate() + 10);
 
 	return (
 		<div className="space-y-6 text-center">
-			<div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success dark:bg-success/20">
-				<CheckCircle2 className="size-8 text-success dark:text-success" />
+			<div className="bg-success dark:bg-success/20 mx-auto flex size-16 items-center justify-center rounded-full">
+				<CheckCircle2 className="text-success dark:text-success size-8" />
 			</div>
 
 			<div>
-				<h3 className="mb-2 font-semibold text-xl">Port Request Submitted!</h3>
+				<h3 className="mb-2 text-xl font-semibold">Port Request Submitted!</h3>
 				<p className="text-muted-foreground text-sm">
-					Your request to port {phoneNumber} has been successfully submitted to
-					our porting team.
+					Your request to port {phoneNumber} has been successfully submitted to our porting team.
 				</p>
 			</div>
 
-			<div className="rounded-lg border bg-muted p-6">
+			<div className="bg-muted rounded-lg border p-6">
 				<div className="mb-4 flex items-center justify-center gap-2">
-					<Clock className="size-5 text-muted-foreground" />
+					<Clock className="text-muted-foreground size-5" />
 					<span className="font-semibold">Estimated Completion</span>
 				</div>
-				<div className="font-bold text-2xl">
+				<div className="text-2xl font-bold">
 					{estimatedDate.toLocaleDateString("en-US", {
 						weekday: "long",
 						year: "numeric",
@@ -1098,9 +1030,7 @@ function Step8Confirmation({
 						day: "numeric",
 					})}
 				</div>
-				<div className="mt-1 text-muted-foreground text-sm">
-					7-10 business days from today
-				</div>
+				<div className="text-muted-foreground mt-1 text-sm">7-10 business days from today</div>
 			</div>
 
 			<div className="space-y-3 text-left">
@@ -1108,45 +1038,42 @@ function Step8Confirmation({
 				<div className="space-y-2">
 					<div className="flex gap-3">
 						<div className="mt-0.5">
-							<div className="flex size-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+							<div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-full text-xs font-bold">
 								1
 							</div>
 						</div>
 						<div className="flex-1">
 							<div className="font-medium">FOC Request</div>
 							<div className="text-muted-foreground text-sm">
-								We'll request a Firm Order Commitment from your current carrier
-								(1-2 days)
+								We'll request a Firm Order Commitment from your current carrier (1-2 days)
 							</div>
 						</div>
 					</div>
 
 					<div className="flex gap-3">
 						<div className="mt-0.5">
-							<div className="flex size-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+							<div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-full text-xs font-bold">
 								2
 							</div>
 						</div>
 						<div className="flex-1">
 							<div className="font-medium">Email Confirmation</div>
 							<div className="text-muted-foreground text-sm">
-								You'll receive an email with your FOC date and estimated port
-								completion
+								You'll receive an email with your FOC date and estimated port completion
 							</div>
 						</div>
 					</div>
 
 					<div className="flex gap-3">
 						<div className="mt-0.5">
-							<div className="flex size-6 items-center justify-center rounded-full bg-primary font-bold text-primary-foreground text-xs">
+							<div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-full text-xs font-bold">
 								3
 							</div>
 						</div>
 						<div className="flex-1">
 							<div className="font-medium">Port Complete</div>
 							<div className="text-muted-foreground text-sm">
-								Your number will be active on Ultrathink and you can cancel your
-								old service
+								Your number will be active on Ultrathink and you can cancel your old service
 							</div>
 						</div>
 					</div>
@@ -1158,9 +1085,7 @@ function Step8Confirmation({
 				<AlertTitle>Important Reminders</AlertTitle>
 				<AlertDescription className="text-left text-sm">
 					<ul className="mt-2 space-y-1">
-						<li>
-							✓ Keep your current service active until port is 100% complete
-						</li>
+						<li>✓ Keep your current service active until port is 100% complete</li>
 						<li>✓ Check your email for status updates</li>
 						<li>✓ View porting status anytime in Settings → Phone Numbers</li>
 						<li>✓ Contact support if you have questions</li>

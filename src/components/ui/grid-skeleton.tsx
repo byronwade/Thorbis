@@ -50,21 +50,21 @@ export function GridSkeleton({
 	return (
 		<div className={`grid gap-4 ${gridClasses} ${className || ""}`}>
 			{[...new Array(count)].map((_, i) => (
-				<div className="animate-pulse rounded-lg border bg-card p-6" key={i}>
+				<div className="bg-card animate-pulse rounded-lg border p-6" key={i}>
 					{/* Item image/icon */}
-					<div className="mb-4 h-32 w-full rounded bg-muted" />
+					<div className="bg-muted mb-4 h-32 w-full rounded" />
 
 					{/* Item title */}
-					<div className="mb-2 h-5 w-3/4 rounded bg-muted" />
+					<div className="bg-muted mb-2 h-5 w-3/4 rounded" />
 
 					{/* Item description */}
-					<div className="mb-2 h-4 w-full rounded bg-muted" />
-					<div className="mb-4 h-4 w-2/3 rounded bg-muted" />
+					<div className="bg-muted mb-2 h-4 w-full rounded" />
+					<div className="bg-muted mb-4 h-4 w-2/3 rounded" />
 
 					{/* Item metadata */}
 					<div className="flex items-center justify-between">
-						<div className="h-4 w-16 rounded bg-muted" />
-						<div className="h-6 w-20 rounded-full bg-muted" />
+						<div className="bg-muted h-4 w-16 rounded" />
+						<div className="bg-muted h-6 w-20 rounded-full" />
 					</div>
 				</div>
 			))}
@@ -100,15 +100,15 @@ export function CompactGridSkeleton({
 	return (
 		<div className={`grid gap-3 ${gridClasses} ${className || ""}`}>
 			{[...new Array(count)].map((_, i) => (
-				<div className="animate-pulse rounded-lg border bg-card p-4" key={i}>
+				<div className="bg-card animate-pulse rounded-lg border p-4" key={i}>
 					{/* Item icon */}
-					<div className="mb-3 h-12 w-12 rounded bg-muted" />
+					<div className="bg-muted mb-3 h-12 w-12 rounded" />
 
 					{/* Item title */}
-					<div className="mb-2 h-4 w-full rounded bg-muted" />
+					<div className="bg-muted mb-2 h-4 w-full rounded" />
 
 					{/* Item value */}
-					<div className="h-6 w-3/4 rounded bg-muted" />
+					<div className="bg-muted h-6 w-3/4 rounded" />
 				</div>
 			))}
 		</div>
@@ -134,23 +134,20 @@ export function KanbanGridSkeleton({
 			{[...new Array(columns)].map((_, columnIndex) => (
 				<div className="space-y-4" key={columnIndex}>
 					{/* Column header */}
-					<div className="flex items-center justify-between rounded-lg border bg-card p-4">
-						<div className="h-5 w-24 animate-pulse rounded bg-muted" />
-						<div className="h-6 w-8 animate-pulse rounded-full bg-muted" />
+					<div className="bg-card flex items-center justify-between rounded-lg border p-4">
+						<div className="bg-muted h-5 w-24 animate-pulse rounded" />
+						<div className="bg-muted h-6 w-8 animate-pulse rounded-full" />
 					</div>
 
 					{/* Column cards */}
 					<div className="space-y-3">
 						{[...new Array(cardsPerColumn)].map((_, cardIndex) => (
-							<div
-								className="animate-pulse rounded-lg border bg-card p-4"
-								key={cardIndex}
-							>
-								<div className="mb-2 h-4 w-3/4 rounded bg-muted" />
-								<div className="mb-3 h-3 w-full rounded bg-muted" />
+							<div className="bg-card animate-pulse rounded-lg border p-4" key={cardIndex}>
+								<div className="bg-muted mb-2 h-4 w-3/4 rounded" />
+								<div className="bg-muted mb-3 h-3 w-full rounded" />
 								<div className="flex items-center gap-2">
-									<div className="h-6 w-6 rounded-full bg-muted" />
-									<div className="h-4 w-16 rounded bg-muted" />
+									<div className="bg-muted h-6 w-6 rounded-full" />
+									<div className="bg-muted h-4 w-16 rounded" />
 								</div>
 							</div>
 						))}

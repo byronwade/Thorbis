@@ -48,10 +48,7 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<
-			string,
-			"default" | "secondary" | "outline" | "destructive"
-		> = {
+		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
 			draft: "outline",
 			sent: "secondary",
 			accepted: "default",
@@ -64,15 +61,13 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 	if (estimates.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<FileText className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Estimates</h3>
-				<p className="mb-4 text-muted-foreground text-sm">
+				<FileText className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Estimates</h3>
+				<p className="text-muted-foreground mb-4 text-sm">
 					Create an estimate for this job to get started.
 				</p>
 				<Button asChild size="sm">
-					<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
-						Create Estimate
-					</Link>
+					<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>Create Estimate</Link>
 				</Button>
 			</div>
 		);
@@ -103,17 +98,13 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 										{estimate.status || "draft"}
 									</Badge>
 								</TableCell>
-								<TableCell>
-									{formatCurrency(estimate.total_amount || estimate.total)}
-								</TableCell>
+								<TableCell>{formatCurrency(estimate.total_amount || estimate.total)}</TableCell>
 								<TableCell>{formatDate(estimate.created_at)}</TableCell>
 								<TableCell className="max-w-[280px] align-top">
 									<EntityTags
 										entityId={estimate.id}
 										entityType="estimate"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("estimate", id, tags)
-										}
+										onUpdateTags={(id, tags) => updateEntityTags("estimate", id, tags)}
 										tags={
 											Array.isArray(estimate?.metadata?.tags)
 												? (estimate.metadata.tags as any[])
@@ -136,21 +127,18 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="flex items-center justify-between rounded-md bg-muted/50 p-4">
+			<div className="bg-muted/50 flex items-center justify-between rounded-md p-4">
 				<div>
-					<p className="font-medium text-sm">Total Estimates</p>
+					<p className="text-sm font-medium">Total Estimates</p>
 					<p className="text-muted-foreground text-xs">
 						{estimates.length} estimate{estimates.length !== 1 ? "s" : ""}
 					</p>
 				</div>
 				<div className="text-right">
-					<p className="font-medium text-sm">Total Value</p>
+					<p className="text-sm font-medium">Total Value</p>
 					<p className="text-muted-foreground text-xs">
 						{formatCurrency(
-							estimates.reduce(
-								(sum, est) => sum + (est.total_amount || est.total || 0),
-								0,
-							),
+							estimates.reduce((sum, est) => sum + (est.total_amount || est.total || 0), 0)
 						)}
 					</p>
 				</div>
@@ -158,9 +146,7 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 
 			{/* Create New Button */}
 			<Button asChild className="w-full" size="sm" variant="outline">
-				<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
-					Create New Estimate
-				</Link>
+				<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>Create New Estimate</Link>
 			</Button>
 		</div>
 	);

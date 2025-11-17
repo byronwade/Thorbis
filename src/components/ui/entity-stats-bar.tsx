@@ -17,9 +17,6 @@ type EntityStatsBarProps = {
 	compact?: boolean;
 };
 
-export function EntityStatsBar({
-	stats,
-	compact = false,
-}: EntityStatsBarProps) {
+export function EntityStatsBar({ stats, compact = false }: EntityStatsBarProps) {
 	return <StatsCards compact={compact} stats={stats} variant="ticker" />;
 }

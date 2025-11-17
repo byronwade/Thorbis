@@ -1,14 +1,6 @@
 "use client";
 
-import {
-	Calendar,
-	CheckCircle,
-	Clock,
-	Eye,
-	MapPin,
-	MoreHorizontal,
-	User,
-} from "lucide-react";
+import { Calendar, CheckCircle, Clock, Eye, MapPin, MoreHorizontal, User } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 
 type Schedule = {
 	id: string;
@@ -69,10 +58,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return (
-			statusColors[status.toLowerCase()] ||
-			"bg-secondary0/10 text-muted-foreground"
-		);
+		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
 	};
 
 	const formatDuration = (minutes?: number) => {
@@ -100,7 +86,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 					return (
 						<div className="flex flex-col gap-1">
 							<div className="flex items-center gap-2">
-								<Calendar className="size-4 text-muted-foreground" />
+								<Calendar className="text-muted-foreground size-4" />
 								<span className="font-medium">
 									{startTime.toLocaleDateString(undefined, {
 										month: "short",
@@ -109,7 +95,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 									})}
 								</span>
 							</div>
-							<div className="flex items-center gap-2 text-muted-foreground text-sm">
+							<div className="text-muted-foreground flex items-center gap-2 text-sm">
 								<Clock className="size-3" />
 								<span>
 									{startTime.toLocaleTimeString(undefined, {
@@ -137,9 +123,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 							className="flex flex-col gap-1 hover:underline"
 							href={`/dashboard/work/${job.id}`}
 						>
-							<span className="font-medium font-mono text-sm">
-								#{job.job_number}
-							</span>
+							<span className="font-mono text-sm font-medium">#{job.job_number}</span>
 							<span className="text-sm">{job.title}</span>
 						</Link>
 					) : schedule.title ? (
@@ -161,7 +145,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 							className="flex items-center gap-2 hover:underline"
 							href={`/dashboard/sales/customers/${customer.id}`}
 						>
-							<User className="size-4 text-muted-foreground" />
+							<User className="text-muted-foreground size-4" />
 							<span>
 								{customer.first_name} {customer.last_name}
 							</span>
@@ -180,7 +164,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 					const property = schedule.property;
 					return property ? (
 						<div className="flex items-center gap-2 text-sm">
-							<MapPin className="size-4 text-muted-foreground" />
+							<MapPin className="text-muted-foreground size-4" />
 							<div className="flex flex-col">
 								<span>{property.name || property.address}</span>
 								{property.city && property.state && (
@@ -200,9 +184,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 				header: "Duration",
 				width: "w-24",
 				shrink: true,
-				render: (schedule) => (
-					<span className="text-sm">{formatDuration(schedule.duration)}</span>
-				),
+				render: (schedule) => <span className="text-sm">{formatDuration(schedule.duration)}</span>,
 			},
 			{
 				key: "status",
@@ -246,7 +228,7 @@ export function TeamScheduleTable({ schedules }: TeamScheduleTableProps) {
 				),
 			},
 		],
-		[formatDuration, getStatusColor],
+		[formatDuration, getStatusColor]
 	);
 
 	return (

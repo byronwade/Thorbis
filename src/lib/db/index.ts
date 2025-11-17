@@ -8,7 +8,7 @@ export async function getSupabaseClient() {
 	const supabase = await createClient();
 	if (!supabase) {
 		throw new Error(
-			"Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.",
+			"Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
 		);
 	}
 	return supabase;
@@ -19,9 +19,4 @@ export async function getSupabaseClient() {
  * Note: Schema types are kept for TypeScript compatibility
  * but database operations should use Supabase client directly
  */
-export type {
-	NewPost,
-	NewUser,
-	Post,
-	User,
-} from "./schema";
+export type { NewPost, NewUser, Post, User } from "./schema";

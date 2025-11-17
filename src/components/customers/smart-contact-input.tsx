@@ -41,7 +41,7 @@ export function SmartContactInput({
 			lastName: "",
 			email: "",
 			phone: "",
-		},
+		}
 	);
 	const [pasteText, setPasteText] = useState("");
 	const [showPasteHelper, setShowPasteHelper] = useState(false);
@@ -77,14 +77,9 @@ export function SmartContactInput({
 	};
 
 	// Extract name from text
-	const extractName = (
-		text: string,
-	): { first: string; last: string } | null => {
+	const extractName = (text: string): { first: string; last: string } | null => {
 		// Remove email and phone
-		let cleaned = text.replace(
-			/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
-			"",
-		);
+		let cleaned = text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "");
 		cleaned = cleaned.replace(/[\d()\-\s.]+/g, " ");
 		cleaned = cleaned.trim();
 
@@ -156,10 +151,10 @@ export function SmartContactInput({
 		<div className="space-y-6">
 			{/* AI Paste Helper */}
 			{showAiHelper && (
-				<div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+				<div className="border-primary/20 bg-primary/5 rounded-lg border p-4">
 					<div className="mb-3 flex items-center gap-2">
-						<Sparkles className="size-4 text-primary" />
-						<h3 className="font-medium text-sm">Smart Fill</h3>
+						<Sparkles className="text-primary size-4" />
+						<h3 className="text-sm font-medium">Smart Fill</h3>
 					</div>
 
 					{showPasteHelper ? (
@@ -174,7 +169,7 @@ export function SmartContactInput({
 							/>
 							<div className="flex gap-2">
 								<button
-									className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/90"
+									className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium"
 									onClick={() => handleSmartPaste(pasteText)}
 									type="button"
 								>
@@ -195,9 +190,9 @@ export function SmartContactInput({
 						</div>
 					) : (
 						<div>
-							<p className="mb-3 text-muted-foreground text-sm">
-								Paste contact info from anywhere (email signature, business
-								card, text message) and we'll auto-fill the fields.
+							<p className="text-muted-foreground mb-3 text-sm">
+								Paste contact info from anywhere (email signature, business card, text message) and
+								we'll auto-fill the fields.
 							</p>
 							<button
 								className="text-primary text-sm underline"
@@ -218,7 +213,7 @@ export function SmartContactInput({
 						First Name <span className="text-destructive">*</span>
 					</Label>
 					<div className="relative">
-						<User className="absolute top-3 left-3 size-4 text-muted-foreground" />
+						<User className="text-muted-foreground absolute top-3 left-3 size-4" />
 						<Input
 							className="pl-10"
 							id="firstName"
@@ -235,7 +230,7 @@ export function SmartContactInput({
 						Last Name <span className="text-destructive">*</span>
 					</Label>
 					<div className="relative">
-						<User className="absolute top-3 left-3 size-4 text-muted-foreground" />
+						<User className="text-muted-foreground absolute top-3 left-3 size-4" />
 						<Input
 							className="pl-10"
 							id="lastName"
@@ -254,7 +249,7 @@ export function SmartContactInput({
 					Email <span className="text-destructive">*</span>
 				</Label>
 				<div className="relative">
-					<Mail className="absolute top-3 left-3 size-4 text-muted-foreground" />
+					<Mail className="text-muted-foreground absolute top-3 left-3 size-4" />
 					<Input
 						className="pr-10 pl-10"
 						id="email"
@@ -265,7 +260,7 @@ export function SmartContactInput({
 						value={contact.email}
 					/>
 					{contact.email && validationState.email && (
-						<Check className="absolute top-3 right-3 size-4 text-success" />
+						<Check className="text-success absolute top-3 right-3 size-4" />
 					)}
 				</div>
 			</div>
@@ -276,7 +271,7 @@ export function SmartContactInput({
 					Phone <span className="text-destructive">*</span>
 				</Label>
 				<div className="relative">
-					<Phone className="absolute top-3 left-3 size-4 text-muted-foreground" />
+					<Phone className="text-muted-foreground absolute top-3 left-3 size-4" />
 					<Input
 						className="pr-10 pl-10"
 						id="phone"
@@ -287,7 +282,7 @@ export function SmartContactInput({
 						value={contact.phone}
 					/>
 					{contact.phone && validationState.phone && (
-						<Check className="absolute top-3 right-3 size-4 text-success" />
+						<Check className="text-success absolute top-3 right-3 size-4" />
 					)}
 				</div>
 			</div>

@@ -73,10 +73,7 @@ export function InvoicePaymentManagement({
 	const [showPaymentDialog, setShowPaymentDialog] = useState(false);
 
 	// Get overdue status for styling
-	const overdueStatus = getOverdueStatus(
-		invoice.due_date,
-		invoice.balance_amount,
-	);
+	const overdueStatus = getOverdueStatus(invoice.due_date, invoice.balance_amount);
 	const isOverdue = overdueStatus.showBanner;
 
 	// Auto-open payment dialog when quick pay is triggered
@@ -133,7 +130,7 @@ export function InvoicePaymentManagement({
 						className={`h-5 w-5 ${isOverdue ? overdueStatus.colors.text : "text-muted-foreground"}`}
 					/>
 					<Label
-						className={`font-semibold text-base ${isOverdue ? overdueStatus.colors.text : ""}`}
+						className={`text-base font-semibold ${isOverdue ? overdueStatus.colors.text : ""}`}
 					>
 						{isOverdue ? "URGENT: Payment Required" : "Payment Management"}
 					</Label>
@@ -142,32 +139,20 @@ export function InvoicePaymentManagement({
 					<Dialog onOpenChange={setShowPaymentDialog} open={showPaymentDialog}>
 						<DialogTrigger asChild>
 							<Button
-								className={`
-                  ${isOverdue ? overdueStatus.colors.badge : ""}
-                  ${overdueStatus.urgency === "severe" ? "animate-pulse" : ""}
-                  ${overdueStatus.urgency === "critical" ? "animate-pulse" : ""}
-                `}
+								className={` ${isOverdue ? overdueStatus.colors.badge : ""} ${overdueStatus.urgency === "severe" ? "animate-pulse" : ""} ${overdueStatus.urgency === "critical" ? "animate-pulse" : ""} `}
 								size={isOverdue ? "lg" : "default"}
 							>
 								<DollarSign className="mr-2 h-4 w-4" />
 								{isOverdue ? "Pay Now" : "Make Payment"}
 							</Button>
 						</DialogTrigger>
-						<DialogContent
-							className={`sm:max-w-md ${isOverdue ? overdueStatus.colors.bg : ""}`}
-						>
+						<DialogContent className={`sm:max-w-md ${isOverdue ? overdueStatus.colors.bg : ""}`}>
 							<DialogHeader>
-								<DialogTitle
-									className={isOverdue ? overdueStatus.colors.text : ""}
-								>
+								<DialogTitle className={isOverdue ? overdueStatus.colors.text : ""}>
 									{isOverdue ? "PAST DUE - Process Payment" : "Process Payment"}
 								</DialogTitle>
 								<DialogDescription
-									className={
-										isOverdue
-											? `${overdueStatus.colors.text}font-semibold text-lg`
-											: ""
-									}
+									className={isOverdue ? `${overdueStatus.colors.text}font-semibold text-lg` : ""}
 								>
 									{isOverdue && (
 										<div className="mb-2 flex items-center gap-2">
@@ -196,11 +181,7 @@ export function InvoicePaymentManagement({
 										/>
 									</div>
 									<Button
-										onClick={() =>
-											setPaymentAmount(
-												(invoice.balance_amount / 100).toFixed(2),
-											)
-										}
+										onClick={() => setPaymentAmount((invoice.balance_amount / 100).toFixed(2))}
 										size="sm"
 										variant="ghost"
 									>
@@ -214,10 +195,7 @@ export function InvoicePaymentManagement({
 								<div className="space-y-2">
 									<Label>Payment Method</Label>
 									{paymentMethods.length > 0 ? (
-										<Select
-											onValueChange={setSelectedCard}
-											value={selectedCard}
-										>
+										<Select onValueChange={setSelectedCard} value={selectedCard}>
 											<SelectTrigger>
 												<SelectValue placeholder="Select a card" />
 											</SelectTrigger>
@@ -226,9 +204,7 @@ export function InvoicePaymentManagement({
 													<SelectItem key={method.id} value={method.id}>
 														<div className="flex items-center gap-2">
 															{getCardIcon(method.card_brand)}
-															<span className="capitalize">
-																{method.card_brand}
-															</span>
+															<span className="capitalize">{method.card_brand}</span>
 															<span>****{method.last_four}</span>
 															{method.is_default && (
 																<Badge className="ml-2" variant="outline">
@@ -241,9 +217,7 @@ export function InvoicePaymentManagement({
 											</SelectContent>
 										</Select>
 									) : (
-										<p className="text-muted-foreground text-sm">
-											No payment methods on file
-										</p>
+										<p className="text-muted-foreground text-sm">No payment methods on file</p>
 									)}
 									<Button
 										className="w-full"
@@ -259,7 +233,7 @@ export function InvoicePaymentManagement({
 
 							<DialogFooter>
 								<Button
-									className={`w-full ${isOverdue ? "bg-destructive text-white hover:bg-destructive" : ""}`}
+									className={`w-full ${isOverdue ? "bg-destructive hover:bg-destructive text-white" : ""}`}
 									disabled={!(paymentAmount && selectedCard) || isProcessing}
 									onClick={handlePayment}
 									size="lg"
@@ -279,26 +253,17 @@ export function InvoicePaymentManagement({
 			{/* Saved Payment Methods */}
 			{paymentMethods.length > 0 && (
 				<div className="mb-6">
-					<Label className="mb-3 block font-medium text-sm">
-						Saved Payment Methods
-					</Label>
+					<Label className="mb-3 block text-sm font-medium">Saved Payment Methods</Label>
 					<div className="grid gap-3 md:grid-cols-2">
 						{paymentMethods.map((method) => (
-							<Card
-								className={`p-4 ${method.is_default ? "border-primary" : ""}`}
-								key={method.id}
-							>
+							<Card className={`p-4 ${method.is_default ? "border-primary" : ""}`} key={method.id}>
 								<div className="flex items-start justify-between">
 									<div className="flex items-center gap-3">
 										{getCardIcon(method.card_brand)}
 										<div>
 											<div className="flex items-center gap-2">
-												<span className="font-medium capitalize">
-													{method.card_brand}
-												</span>
-												<span className="text-muted-foreground">
-													****{method.last_four}
-												</span>
+												<span className="font-medium capitalize">{method.card_brand}</span>
+												<span className="text-muted-foreground">****{method.last_four}</span>
 											</div>
 											<p className="text-muted-foreground text-sm">
 												Expires {method.exp_month}/{method.exp_year}
@@ -306,9 +271,7 @@ export function InvoicePaymentManagement({
 											<p className="text-sm">{method.cardholder_name}</p>
 										</div>
 									</div>
-									{method.is_default && (
-										<Badge variant="default">Default</Badge>
-									)}
+									{method.is_default && <Badge variant="default">Default</Badge>}
 								</div>
 							</Card>
 						))}

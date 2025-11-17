@@ -20,19 +20,13 @@ export async function GET(request: NextRequest) {
 		const lon = searchParams.get("lon");
 
 		if (!(jobId && address && city && state)) {
-			return NextResponse.json(
-				{ error: "Missing required parameters" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
 		}
 
 		// Authenticate user
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		const {
@@ -57,19 +51,13 @@ export async function GET(request: NextRequest) {
 
 		// Race with timeout (10 seconds max)
 		const timeoutPromise = new Promise((_, reject) =>
-			setTimeout(() => reject(new Error("Timeout")), 10_000),
+			setTimeout(() => reject(new Error("Timeout")), 10_000)
 		);
 
-		const enrichment = await Promise.race([
-			enrichmentPromise,
-			timeoutPromise,
-		]).catch(() => null);
+		const enrichment = await Promise.race([enrichmentPromise, timeoutPromise]).catch(() => null);
 
 		if (!enrichment) {
-			return NextResponse.json(
-				{ error: "Enrichment timeout or failed" },
-				{ status: 504 },
-			);
+			return NextResponse.json({ error: "Enrichment timeout or failed" }, { status: 504 });
 		}
 
 		return NextResponse.json(enrichment, {
@@ -78,9 +66,6 @@ export async function GET(request: NextRequest) {
 			},
 		});
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

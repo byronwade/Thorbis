@@ -13,13 +13,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -45,8 +39,7 @@ export const metadata = generateSEOMetadata({
 export default function AIAssistantPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "AI Service Assistant",
-		description:
-			"24/7 intelligent call handling and booking automation for service businesses",
+		description: "24/7 intelligent call handling and booking automation for service businesses",
 		offers: [
 			{
 				price: "100",
@@ -68,7 +61,7 @@ export default function AIAssistantPage() {
 								name: "AI Assistant",
 								url: `${siteUrl}/features/ai-assistant`,
 							},
-						]),
+						])
 					),
 				}}
 				id="ai-assistant-breadcrumb-ld"
@@ -83,24 +76,23 @@ export default function AIAssistantPage() {
 			/>
 
 			{/* Hero Section - Conversational Design */}
-			<section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background py-20 sm:py-32">
-				<div className="-z-10 absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.1),_transparent_50%)]" />
+			<section className="from-primary/5 via-background to-background relative overflow-hidden bg-gradient-to-br py-20 sm:py-32">
+				<div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,_rgba(59,130,246,0.1),_transparent_50%)]" />
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
 						<Badge className="mb-6 gap-1.5 px-3 py-1.5" variant="secondary">
 							<Sparkles className="size-3.5" />
 							AI-Powered
 						</Badge>
-						<h1 className="mb-6 bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text font-bold text-5xl text-transparent tracking-tight sm:text-6xl lg:text-7xl">
+						<h1 className="from-foreground via-foreground to-foreground/70 mb-6 bg-gradient-to-br bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl lg:text-7xl">
 							Your AI dispatcher that never sleeps
 						</h1>
-						<p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-							Answer every call, qualify every lead, and book every
-							job—automatically. Thorbis AI handles customer conversations 24/7
-							so you never miss an opportunity.
+						<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
+							Answer every call, qualify every lead, and book every job—automatically. Thorbis AI
+							handles customer conversations 24/7 so you never miss an opportunity.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
-							<Button asChild className="shadow-lg shadow-primary/20" size="lg">
+							<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
 								<Link href="/register">
 									Start 14-day Free Trial
 									<Zap className="ml-2 size-4" />
@@ -116,81 +108,77 @@ export default function AIAssistantPage() {
 
 						{/* Live Demo Visualization */}
 						<div className="relative mx-auto mt-16 max-w-3xl">
-							<div className="overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl">
-								<div className="flex items-center gap-2 border-border/50 border-b bg-muted/30 px-4 py-3">
+							<div className="border-border/50 bg-background overflow-hidden rounded-2xl border shadow-2xl">
+								<div className="border-border/50 bg-muted/30 flex items-center gap-2 border-b px-4 py-3">
 									<div className="size-3 rounded-full bg-red-500" />
 									<div className="size-3 rounded-full bg-yellow-500" />
 									<div className="size-3 rounded-full bg-green-500" />
-									<span className="ml-2 font-medium text-muted-foreground text-xs">
+									<span className="text-muted-foreground ml-2 text-xs font-medium">
 										Live AI Conversation
 									</span>
 								</div>
 								<div className="space-y-4 p-6">
 									{/* Customer Message */}
 									<div className="flex items-start gap-3">
-										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-											<Phone className="size-4 text-muted-foreground" />
+										<div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full">
+											<Phone className="text-muted-foreground size-4" />
 										</div>
-										<div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
+										<div className="bg-muted max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-3">
 											<p className="text-sm">
-												Hi, my AC stopped working and it's 95 degrees. Can
-												someone come today?
+												Hi, my AC stopped working and it's 95 degrees. Can someone come today?
 											</p>
 										</div>
 									</div>
 
 									{/* AI Response */}
 									<div className="flex items-start justify-end gap-3">
-										<div className="max-w-[80%] rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground">
+										<div className="bg-primary text-primary-foreground max-w-[80%] rounded-2xl rounded-tr-sm px-4 py-3">
 											<p className="text-sm">
-												I understand that's urgent! I can get a technician to
-												you today. What's your address so I can check
-												availability in your area?
+												I understand that's urgent! I can get a technician to you today. What's your
+												address so I can check availability in your area?
 											</p>
 										</div>
-										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
-											<Bot className="size-4 text-primary-foreground" />
+										<div className="bg-primary flex size-8 shrink-0 items-center justify-center rounded-full">
+											<Bot className="text-primary-foreground size-4" />
 										</div>
 									</div>
 
 									{/* Customer Message */}
 									<div className="flex items-start gap-3">
-										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted">
-											<Phone className="size-4 text-muted-foreground" />
+										<div className="bg-muted flex size-8 shrink-0 items-center justify-center rounded-full">
+											<Phone className="text-muted-foreground size-4" />
 										</div>
-										<div className="max-w-[80%] rounded-2xl rounded-tl-sm bg-muted px-4 py-3">
+										<div className="bg-muted max-w-[80%] rounded-2xl rounded-tl-sm px-4 py-3">
 											<p className="text-sm">123 Oak Street, Austin TX 78701</p>
 										</div>
 									</div>
 
 									{/* AI Response with Booking */}
 									<div className="flex items-start justify-end gap-3">
-										<div className="max-w-[80%] space-y-3 rounded-2xl rounded-tr-sm bg-primary px-4 py-3 text-primary-foreground">
+										<div className="bg-primary text-primary-foreground max-w-[80%] space-y-3 rounded-2xl rounded-tr-sm px-4 py-3">
 											<p className="text-sm">
-												Perfect! I have a technician available at 2:30 PM today.
-												The diagnostic fee is $89. Would that work for you?
+												Perfect! I have a technician available at 2:30 PM today. The diagnostic fee
+												is $89. Would that work for you?
 											</p>
-											<div className="rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 p-3">
+											<div className="border-primary-foreground/20 bg-primary-foreground/10 rounded-lg border p-3">
 												<div className="flex items-center gap-2 text-xs">
 													<Calendar className="size-3.5" />
-													<span className="font-semibold">
-														Today at 2:30 PM
-													</span>
+													<span className="font-semibold">Today at 2:30 PM</span>
 												</div>
 												<div className="mt-1 text-xs opacity-90">
 													Tech: Mike Johnson • Est. arrival: 2:30-3:00 PM
 												</div>
 											</div>
 										</div>
-										<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
-											<Bot className="size-4 text-primary-foreground" />
+										<div className="bg-primary flex size-8 shrink-0 items-center justify-center rounded-full">
+											<Bot className="text-primary-foreground size-4" />
 										</div>
 									</div>
 								</div>
 							</div>
-							<div className="-right-4 -top-4 absolute flex items-center gap-2 rounded-full border border-green-500/50 bg-green-500/10 px-4 py-2 backdrop-blur-sm">
+							<div className="absolute -top-4 -right-4 flex items-center gap-2 rounded-full border border-green-500/50 bg-green-500/10 px-4 py-2 backdrop-blur-sm">
 								<div className="size-2 animate-pulse rounded-full bg-green-500" />
-								<span className="font-semibold text-green-700 text-xs dark:text-green-400">
+								<span className="text-xs font-semibold text-green-700 dark:text-green-400">
 									Live & Booking
 								</span>
 							</div>
@@ -200,32 +188,24 @@ export default function AIAssistantPage() {
 			</section>
 
 			{/* Stats Section */}
-			<section className="border-y bg-muted/30 py-16">
+			<section className="bg-muted/30 border-y py-16">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">98%</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Call Answer Rate
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">98%</div>
+							<div className="text-muted-foreground text-sm font-medium">Call Answer Rate</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">3 min</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Avg. Booking Time
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">3 min</div>
+							<div className="text-muted-foreground text-sm font-medium">Avg. Booking Time</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">24/7</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Always Available
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">24/7</div>
+							<div className="text-muted-foreground text-sm font-medium">Always Available</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">40%</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Less Admin Work
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">40%</div>
+							<div className="text-muted-foreground text-sm font-medium">Less Admin Work</div>
 						</div>
 					</div>
 				</div>
@@ -235,39 +215,38 @@ export default function AIAssistantPage() {
 			<section className="py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Everything your AI assistant can do
 						</h2>
-						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							From first contact to booked appointment, Thorbis AI handles the
-							entire customer journey
+						<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+							From first contact to booked appointment, Thorbis AI handles the entire customer
+							journey
 						</p>
 					</div>
 
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Phone className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Phone className="text-primary size-6" />
 								</div>
 								<CardTitle>Intelligent Call Routing</CardTitle>
 								<CardDescription>
-									Automatically identifies caller intent and routes to the right
-									workflow
+									Automatically identifies caller intent and routes to the right workflow
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Emergency vs. routine service detection</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Service area validation</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Existing customer recognition</span>
 									</li>
 								</ul>
@@ -276,27 +255,26 @@ export default function AIAssistantPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Calendar className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Calendar className="text-primary size-6" />
 								</div>
 								<CardTitle>Smart Scheduling</CardTitle>
 								<CardDescription>
-									Books appointments based on tech availability, location, and
-									job type
+									Books appointments based on tech availability, location, and job type
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Real-time availability checks</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Travel time optimization</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Automated confirmations & reminders</span>
 									</li>
 								</ul>
@@ -305,27 +283,26 @@ export default function AIAssistantPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<MessageSquare className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<MessageSquare className="text-primary size-6" />
 								</div>
 								<CardTitle>Natural Conversations</CardTitle>
 								<CardDescription>
-									Sounds human, understands context, and adapts to your brand
-									voice
+									Sounds human, understands context, and adapts to your brand voice
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Custom greetings and scripts</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Multi-turn conversation handling</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Sentiment analysis & escalation</span>
 									</li>
 								</ul>
@@ -334,8 +311,8 @@ export default function AIAssistantPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<TrendingUp className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<TrendingUp className="text-primary size-6" />
 								</div>
 								<CardTitle>Lead Qualification</CardTitle>
 								<CardDescription>
@@ -345,15 +322,15 @@ export default function AIAssistantPage() {
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Budget and timeline questions</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Property type and service history</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Automatic lead scoring</span>
 									</li>
 								</ul>
@@ -362,8 +339,8 @@ export default function AIAssistantPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Bot className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Bot className="text-primary size-6" />
 								</div>
 								<CardTitle>CRM Integration</CardTitle>
 								<CardDescription>
@@ -373,15 +350,15 @@ export default function AIAssistantPage() {
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Automatic contact creation</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Call transcripts and summaries</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Activity timeline updates</span>
 									</li>
 								</ul>
@@ -390,26 +367,24 @@ export default function AIAssistantPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Sparkles className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Sparkles className="text-primary size-6" />
 								</div>
 								<CardTitle>Multi-Channel Support</CardTitle>
-								<CardDescription>
-									Works across phone, SMS, web chat, and email
-								</CardDescription>
+								<CardDescription>Works across phone, SMS, web chat, and email</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Unified conversation history</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Channel-specific optimizations</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Seamless handoffs between channels</span>
 									</li>
 								</ul>
@@ -420,19 +395,18 @@ export default function AIAssistantPage() {
 			</section>
 
 			{/* CTA Section */}
-			<section className="bg-gradient-to-br from-primary via-primary to-primary/90 py-20 text-primary-foreground">
+			<section className="from-primary via-primary to-primary/90 text-primary-foreground bg-gradient-to-br py-20">
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 						Stop missing calls. Start booking more jobs.
 					</h2>
-					<p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-						Join hundreds of service businesses using Thorbis AI to capture
-						every opportunity.
+					<p className="text-primary-foreground/90 mx-auto mb-8 max-w-2xl text-lg">
+						Join hundreds of service businesses using Thorbis AI to capture every opportunity.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Button
 							asChild
-							className="bg-background text-foreground shadow-lg hover:bg-background/90"
+							className="bg-background text-foreground hover:bg-background/90 shadow-lg"
 							size="lg"
 						>
 							<Link href="/register">

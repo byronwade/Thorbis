@@ -38,11 +38,7 @@ export { uiSelectors, useUIStore } from "./ui-store";
 export type { UserStore } from "./user-store";
 export { userSelectors, useUserStore } from "./user-store";
 export { useViewStore, type ViewFilters, type ZoomLevel } from "./view-store";
-export {
-	useSetWorkView,
-	useWorkView,
-	useWorkViewStore,
-} from "./work-view-store";
+export { useSetWorkView, useWorkView, useWorkViewStore } from "./work-view-store";
 
 /**
  * Reset all stores to initial state

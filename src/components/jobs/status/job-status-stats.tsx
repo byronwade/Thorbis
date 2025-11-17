@@ -33,48 +33,44 @@ export async function JobStatusStats() {
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">In Progress</CardTitle>
-					<Clock className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">In Progress</CardTitle>
+					<Clock className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.inProgress}</div>
-					<p className="text-muted-foreground text-xs">
-						Average: {stats.avgDuration} duration
-					</p>
+					<div className="text-2xl font-bold">{stats.inProgress}</div>
+					<p className="text-muted-foreground text-xs">Average: {stats.avgDuration} duration</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Completed</CardTitle>
-					<CheckCircle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Completed</CardTitle>
+					<CheckCircle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.completed}</div>
+					<div className="text-2xl font-bold">{stats.completed}</div>
 					<p className="text-muted-foreground text-xs">Today</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Pending</CardTitle>
-					<AlertCircle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Pending</CardTitle>
+					<AlertCircle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.pending}</div>
+					<div className="text-2xl font-bold">{stats.pending}</div>
 					<p className="text-muted-foreground text-xs">Awaiting assignment</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Overdue</CardTitle>
-					<AlertTriangle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Overdue</CardTitle>
+					<AlertTriangle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl text-destructive">
-						{stats.overdue}
-					</div>
+					<div className="text-destructive text-2xl font-bold">{stats.overdue}</div>
 					<p className="text-muted-foreground text-xs">Need attention</p>
 				</CardContent>
 			</Card>

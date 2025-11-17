@@ -9,11 +9,7 @@ import { Check, Copy, Mail, Phone, User, Users } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TechnicianInfoHoverCardProps = {
@@ -54,13 +50,10 @@ export function TechnicianInfoHoverCard({
 
 	// If we have a primary technician, show them
 	const primaryTech = technician;
-	const additionalTeam = teamMembers.filter(
-		(member) => member.user_id !== technician?.id,
-	);
+	const additionalTeam = teamMembers.filter((member) => member.user_id !== technician?.id);
 
 	const displayName = primaryTech
-		? `${primaryTech.first_name || ""} ${primaryTech.last_name || ""}`.trim() ||
-			"Technician"
+		? `${primaryTech.first_name || ""} ${primaryTech.last_name || ""}`.trim() || "Technician"
 		: "Team";
 
 	const getInitials = (firstName?: string | null, lastName?: string | null) =>
@@ -74,11 +67,7 @@ export function TechnicianInfoHoverCard({
 	return (
 		<HoverCard openDelay={200}>
 			<HoverCardTrigger asChild>
-				<Button
-					className="inline-flex items-center gap-2 rounded-full"
-					size="sm"
-					variant="outline"
-				>
+				<Button className="inline-flex items-center gap-2 rounded-full" size="sm" variant="outline">
 					{primaryTech ? (
 						<>
 							<User className="size-4" />
@@ -87,8 +76,7 @@ export function TechnicianInfoHoverCard({
 					) : (
 						<>
 							<Users className="size-4" />
-							{teamMembers.length} Team{" "}
-							{teamMembers.length === 1 ? "Member" : "Members"}
+							{teamMembers.length} Team {teamMembers.length === 1 ? "Member" : "Members"}
 						</>
 					)}
 				</Button>
@@ -100,20 +88,15 @@ export function TechnicianInfoHoverCard({
 						<>
 							<div className="flex items-start gap-3">
 								<Avatar className="size-10">
-									<AvatarImage
-										alt={displayName}
-										src={primaryTech.avatar_url ?? undefined}
-									/>
+									<AvatarImage alt={displayName} src={primaryTech.avatar_url ?? undefined} />
 									<AvatarFallback>
 										{getInitials(primaryTech.first_name, primaryTech.last_name)}
 									</AvatarFallback>
 								</Avatar>
 								<div className="flex-1">
-									<h4 className="font-semibold text-sm">{displayName}</h4>
+									<h4 className="text-sm font-semibold">{displayName}</h4>
 									{primaryTech.role && (
-										<p className="text-muted-foreground text-xs capitalize">
-											{primaryTech.role}
-										</p>
+										<p className="text-muted-foreground text-xs capitalize">{primaryTech.role}</p>
 									)}
 								</div>
 							</div>
@@ -125,9 +108,9 @@ export function TechnicianInfoHoverCard({
 								{primaryTech.email && (
 									<div className="group flex items-center justify-between gap-2">
 										<div className="flex min-w-0 flex-1 items-center gap-2">
-											<Mail className="size-3.5 shrink-0 text-muted-foreground" />
+											<Mail className="text-muted-foreground size-3.5 shrink-0" />
 											<a
-												className="truncate text-sm hover:text-primary hover:underline"
+												className="hover:text-primary truncate text-sm hover:underline"
 												href={`mailto:${primaryTech.email}`}
 											>
 												{primaryTech.email}
@@ -154,9 +137,9 @@ export function TechnicianInfoHoverCard({
 								{primaryTech.phone && (
 									<div className="group flex items-center justify-between gap-2">
 										<div className="flex min-w-0 flex-1 items-center gap-2">
-											<Phone className="size-3.5 shrink-0 text-muted-foreground" />
+											<Phone className="text-muted-foreground size-3.5 shrink-0" />
 											<a
-												className="text-sm hover:text-primary hover:underline"
+												className="hover:text-primary text-sm hover:underline"
 												href={`tel:${primaryTech.phone}`}
 											>
 												{primaryTech.phone}
@@ -188,7 +171,7 @@ export function TechnicianInfoHoverCard({
 						<>
 							<Separator />
 							<div className="space-y-2">
-								<div className="flex items-center gap-2 text-muted-foreground text-sm">
+								<div className="text-muted-foreground flex items-center gap-2 text-sm">
 									<Users className="size-3.5" />
 									<span>Additional Team Members</span>
 								</div>
@@ -200,7 +183,7 @@ export function TechnicianInfoHoverCard({
 
 										return (
 											<div
-												className="flex items-center gap-2 rounded-md p-2 hover:bg-muted/50"
+												className="hover:bg-muted/50 flex items-center gap-2 rounded-md p-2"
 												key={member.id}
 											>
 												<Avatar className="size-6">
@@ -209,10 +192,7 @@ export function TechnicianInfoHoverCard({
 														src={member.users?.avatar_url ?? undefined}
 													/>
 													<AvatarFallback className="text-xs">
-														{getInitials(
-															member.users?.first_name,
-															member.users?.last_name,
-														)}
+														{getInitials(member.users?.first_name, member.users?.last_name)}
 													</AvatarFallback>
 												</Avatar>
 												<div className="flex-1">
@@ -242,29 +222,18 @@ export function TechnicianInfoHoverCard({
 								const memberPhone = member.users?.phone;
 
 								return (
-									<div
-										className="space-y-2 rounded-md border p-3"
-										key={member.id}
-									>
+									<div className="space-y-2 rounded-md border p-3" key={member.id}>
 										<div className="flex items-center gap-2">
 											<Avatar className="size-8">
-												<AvatarImage
-													alt={memberName}
-													src={member.users?.avatar_url ?? undefined}
-												/>
+												<AvatarImage alt={memberName} src={member.users?.avatar_url ?? undefined} />
 												<AvatarFallback className="text-xs">
-													{getInitials(
-														member.users?.first_name,
-														member.users?.last_name,
-													)}
+													{getInitials(member.users?.first_name, member.users?.last_name)}
 												</AvatarFallback>
 											</Avatar>
 											<div className="flex-1">
-												<p className="font-medium text-sm">{memberName}</p>
+												<p className="text-sm font-medium">{memberName}</p>
 												{member.role && (
-													<p className="text-muted-foreground text-xs capitalize">
-														{member.role}
-													</p>
+													<p className="text-muted-foreground text-xs capitalize">{member.role}</p>
 												)}
 											</div>
 										</div>
@@ -272,19 +241,19 @@ export function TechnicianInfoHoverCard({
 											<div className="space-y-1">
 												{memberEmail && (
 													<a
-														className="flex items-center gap-2 text-sm hover:text-primary hover:underline"
+														className="hover:text-primary flex items-center gap-2 text-sm hover:underline"
 														href={`mailto:${memberEmail}`}
 													>
-														<Mail className="size-3 text-muted-foreground" />
+														<Mail className="text-muted-foreground size-3" />
 														<span className="truncate">{memberEmail}</span>
 													</a>
 												)}
 												{memberPhone && (
 													<a
-														className="flex items-center gap-2 text-sm hover:text-primary hover:underline"
+														className="hover:text-primary flex items-center gap-2 text-sm hover:underline"
 														href={`tel:${memberPhone}`}
 													>
-														<Phone className="size-3 text-muted-foreground" />
+														<Phone className="text-muted-foreground size-3" />
 														{memberPhone}
 													</a>
 												)}

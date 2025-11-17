@@ -19,13 +19,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -53,24 +47,18 @@ type DispatchRulesClientProps = {
 	initialRules: DispatchRuleRows | null;
 };
 
-export function DispatchRulesClient({
-	initialRules,
-}: DispatchRulesClientProps) {
+export function DispatchRulesClient({ initialRules }: DispatchRulesClientProps) {
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
-	const [rules, setRules] = useState<DispatchRuleForm[]>(
-		mapDispatchRuleRows(initialRules ?? []),
-	);
+	const [rules, setRules] = useState<DispatchRuleForm[]>(mapDispatchRuleRows(initialRules ?? []));
 
 	const handleFieldChange = (
 		id: string,
 		field: keyof DispatchRuleForm,
-		value: string | number | boolean,
+		value: string | number | boolean
 	) => {
 		setRules((prev) =>
-			prev.map((rule) =>
-				rule.id === id ? { ...rule, [field]: value as never } : rule,
-			),
+			prev.map((rule) => (rule.id === id ? { ...rule, [field]: value as never } : rule))
 		);
 	};
 
@@ -90,9 +78,7 @@ export function DispatchRulesClient({
 			const newId = result.data;
 			if (typeof newId === "string") {
 				setRules((prev) =>
-					prev.map((record) =>
-						record.id === rule.id ? { ...record, id: newId } : record,
-					),
+					prev.map((record) => (record.id === rule.id ? { ...record, id: newId } : record))
 				);
 			}
 		});
@@ -185,9 +171,7 @@ export function DispatchRulesClient({
 								<Label>Rule name</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) =>
-										handleFieldChange(rule.id, "ruleName", event.target.value)
-									}
+									onChange={(event) => handleFieldChange(rule.id, "ruleName", event.target.value)}
 									placeholder="Emergency Calls"
 									value={rule.ruleName}
 								/>
@@ -198,11 +182,7 @@ export function DispatchRulesClient({
 									className="mt-2"
 									min={0}
 									onChange={(event) =>
-										handleFieldChange(
-											rule.id,
-											"priority",
-											Number(event.target.value),
-										)
+										handleFieldChange(rule.id, "priority", Number(event.target.value))
 									}
 									type="number"
 									value={rule.priority}
@@ -218,7 +198,7 @@ export function DispatchRulesClient({
 										handleFieldChange(
 											rule.id,
 											"assignmentMethod",
-											value as DispatchRuleForm["assignmentMethod"],
+											value as DispatchRuleForm["assignmentMethod"]
 										)
 									}
 									value={rule.assignmentMethod}
@@ -237,16 +217,12 @@ export function DispatchRulesClient({
 							</div>
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
-									<p className="font-medium text-sm">Rule active</p>
-									<p className="text-muted-foreground text-xs">
-										Disable to keep for reference.
-									</p>
+									<p className="text-sm font-medium">Rule active</p>
+									<p className="text-muted-foreground text-xs">Disable to keep for reference.</p>
 								</div>
 								<Switch
 									checked={rule.isActive}
-									onCheckedChange={(checked) =>
-										handleFieldChange(rule.id, "isActive", checked)
-									}
+									onCheckedChange={(checked) => handleFieldChange(rule.id, "isActive", checked)}
 								/>
 							</div>
 						</div>
@@ -255,9 +231,7 @@ export function DispatchRulesClient({
 							<Label>Conditions JSON</Label>
 							<Textarea
 								className="mt-2 font-mono text-sm"
-								onChange={(event) =>
-									handleFieldChange(rule.id, "conditions", event.target.value)
-								}
+								onChange={(event) => handleFieldChange(rule.id, "conditions", event.target.value)}
 								rows={5}
 								value={rule.conditions}
 							/>
@@ -267,27 +241,17 @@ export function DispatchRulesClient({
 							<Label>Actions JSON</Label>
 							<Textarea
 								className="mt-2 font-mono text-sm"
-								onChange={(event) =>
-									handleFieldChange(rule.id, "actions", event.target.value)
-								}
+								onChange={(event) => handleFieldChange(rule.id, "actions", event.target.value)}
 								rows={5}
 								value={rule.actions}
 							/>
 						</div>
 
 						<div className="flex items-center justify-between">
-							<Button
-								onClick={() => handleSaveRule(rule)}
-								size="sm"
-								variant="default"
-							>
+							<Button onClick={() => handleSaveRule(rule)} size="sm" variant="default">
 								Save rule
 							</Button>
-							<Button
-								onClick={() => handleDeleteRule(rule.id)}
-								size="sm"
-								variant="ghost"
-							>
+							<Button onClick={() => handleDeleteRule(rule.id)} size="sm" variant="ghost">
 								<Trash2 className="mr-2 size-4" />
 								Delete
 							</Button>

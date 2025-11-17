@@ -58,8 +58,7 @@ type ActionResult<T = void> =
 
 type BaseButtonProps = React.ComponentProps<typeof Button>;
 
-export interface ActionButtonProps
-	extends Omit<BaseButtonProps, "onClick" | "onError"> {
+export interface ActionButtonProps extends Omit<BaseButtonProps, "onClick" | "onError"> {
 	/**
 	 * Async action to execute when button is clicked
 	 * Should return an ActionResult
@@ -163,9 +162,7 @@ export function ActionButton({
 			if (result.success) {
 				setShowSuccess(true);
 				if (showToast) {
-					toast.success(
-						result.message || successText || "Action completed successfully",
-					);
+					toast.success(result.message || successText || "Action completed successfully");
 				}
 				onSuccess?.(result.data);
 			} else {
@@ -177,8 +174,7 @@ export function ActionButton({
 			}
 		} catch (error) {
 			setShowError(true);
-			const errorMessage =
-				error instanceof Error ? error.message : "An unexpected error occurred";
+			const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
 			if (showToast) {
 				toast.error(errorMessage);
 			}
@@ -194,10 +190,9 @@ export function ActionButton({
 		<Button
 			className={cn(
 				"transition-all duration-200",
-				showSuccess &&
-					"bg-success hover:bg-success dark:bg-success dark:hover:bg-success",
+				showSuccess && "bg-success hover:bg-success dark:bg-success dark:hover:bg-success",
 				showError && "animate-shake bg-destructive",
-				className,
+				className
 			)}
 			disabled={isDisabled}
 			onClick={handleClick}
@@ -295,10 +290,10 @@ export function ConfirmActionButton({
 
 			{/* TODO: Implement confirmation dialog component */}
 			{showConfirm && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/60 dark:bg-background/80">
-					<div className="max-w-md rounded-lg border bg-background p-6 shadow-lg">
-						<h2 className="mb-2 font-semibold text-lg">{confirmTitle}</h2>
-						<p className="mb-4 text-muted-foreground">{confirmDescription}</p>
+				<div className="bg-foreground/60 dark:bg-background/80 fixed inset-0 z-50 flex items-center justify-center">
+					<div className="bg-background max-w-md rounded-lg border p-6 shadow-lg">
+						<h2 className="mb-2 text-lg font-semibold">{confirmTitle}</h2>
+						<p className="text-muted-foreground mb-4">{confirmDescription}</p>
 						<div className="flex justify-end gap-2">
 							<Button onClick={() => setShowConfirm(false)} variant="outline">
 								{cancelText}

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Archive,
-	Download,
-	MoreVertical,
-	Plus,
-	Printer,
-	Share2,
-} from "lucide-react";
+import { Archive, Download, MoreVertical, Plus, Printer, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -30,12 +23,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function VendorDetailToolbarActions() {
 	const params = useParams();
@@ -84,9 +72,7 @@ export function VendorDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<Link
-									href={`/dashboard/work/purchase-orders/new?vendorId=${vendorId}`}
-								>
+								<Link href={`/dashboard/work/purchase-orders/new?vendorId=${vendorId}`}>
 									<Plus className="size-4" />
 									<span className="hidden md:inline">Create PO</span>
 								</Link>
@@ -106,7 +92,7 @@ export function VendorDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -161,8 +147,8 @@ export function VendorDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Vendor?</DialogTitle>
 						<DialogDescription>
-							This vendor will be moved to the archive. You can restore it later
-							from the archive page. All purchase orders will remain accessible.
+							This vendor will be moved to the archive. You can restore it later from the archive
+							page. All purchase orders will remain accessible.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -173,11 +159,7 @@ export function VendorDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Vendor"}
 						</Button>
 					</DialogFooter>

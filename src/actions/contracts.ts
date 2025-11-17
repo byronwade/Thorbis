@@ -11,15 +11,9 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
+	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
 /**
  * Server Actions for Contract Management
@@ -77,7 +71,7 @@ async function getAuthContext() {
  */
 async function generateContractNumber(
 	companyId: string,
-	supabase: SupabaseServerClient,
+	supabase: SupabaseServerClient
 ): Promise<string> {
 	const year = new Date().getFullYear();
 	const prefix = `CON-${year}-`;
@@ -126,10 +120,7 @@ const contractSchema = z
 		notes: z.string().optional(),
 		// Signer info - email is required to send the contract
 		signerName: z.string().optional(),
-		signerEmail: z
-			.string()
-			.email("Valid email required")
-			.min(1, "Signer email is required"),
+		signerEmail: z.string().email("Valid email required").min(1, "Signer email is required"),
 		signerTitle: z.string().optional(),
 		signerCompany: z.string().optional(),
 	})
@@ -202,7 +193,7 @@ const buildContractInsertPayload = ({
 });
 
 const buildContractUpdatePayload = (
-	data: Partial<z.infer<typeof contractSchema>>,
+	data: Partial<z.infer<typeof contractSchema>>
 ): Record<string, unknown> => {
 	const update: Record<string, unknown> = {};
 
@@ -239,7 +230,7 @@ const reportContractIssue = (_message: string, _error?: unknown) => {
  * Create a new contract
  */
 export async function createContract(
-	formData: FormData,
+	formData: FormData
 ): Promise<{ success: boolean; error?: string; contractId?: string }> {
 	try {
 		const data = contractSchema.parse({
@@ -305,7 +296,7 @@ export async function createContract(
  */
 export async function updateContract(
 	contractId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const data = contractSchema.partial().parse({
@@ -366,7 +357,7 @@ export async function updateContract(
  * Archives instead of permanently deleting. Can be restored within 90 days.
  */
 export async function archiveContract(
-	contractId: string,
+	contractId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
@@ -391,7 +382,7 @@ export async function archiveContract(
 		// Archive contract (soft delete)
 		const now = new Date().toISOString();
 		const scheduledDeletion = new Date(
-			Date.now() + ARCHIVE_RETENTION_DAYS * MILLISECONDS_PER_DAY,
+			Date.now() + ARCHIVE_RETENTION_DAYS * MILLISECONDS_PER_DAY
 		).toISOString();
 
 		const { error } = await supabase
@@ -423,7 +414,7 @@ export async function archiveContract(
  * Restore archived contract
  */
 export async function restoreContract(
-	contractId: string,
+	contractId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
@@ -472,7 +463,7 @@ export async function restoreContract(
  * @deprecated Use archiveContract() instead
  */
 export async function deleteContract(
-	contractId: string,
+	contractId: string
 ): Promise<{ success: boolean; error?: string }> {
 	return archiveContract(contractId);
 }
@@ -481,7 +472,7 @@ export async function deleteContract(
  * Send contract for signature
  */
 export async function sendContract(
-	contractId: string,
+	contractId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
@@ -517,7 +508,7 @@ export async function sendContract(
  * Sign a contract (customer-facing action)
  */
 export async function signContract(
-	formData: FormData,
+	formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const data = signContractSchema.parse({
@@ -575,7 +566,7 @@ export async function signContract(
  */
 export async function rejectContract(
 	contractId: string,
-	reason?: string,
+	reason?: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get auth context for security
@@ -608,7 +599,7 @@ export async function rejectContract(
  * Track contract view (when customer opens the contract)
  */
 export async function trackContractView(
-	contractId: string,
+	contractId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Get contract to check current status (public action, no auth needed)

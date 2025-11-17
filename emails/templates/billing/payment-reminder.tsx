@@ -32,9 +32,9 @@ export default function PaymentReminderEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				We wanted to remind you that payment for the following invoice is now
-				overdue. We understand that sometimes invoices can slip through the
-				cracks, so we're sending this friendly reminder.
+				We wanted to remind you that payment for the following invoice is now overdue. We understand
+				that sometimes invoices can slip through the cracks, so we're sending this friendly
+				reminder.
 			</Text>
 
 			<Card style={reminderCard}>
@@ -66,9 +66,8 @@ export default function PaymentReminderEmail({
 			<Card style={helpCard}>
 				<Heading level={3}>Need help?</Heading>
 				<Text style={helpText}>
-					If you're experiencing financial difficulties or have questions about
-					this invoice, please don't hesitate to reach out. We're here to work
-					with you.
+					If you're experiencing financial difficulties or have questions about this invoice, please
+					don't hesitate to reach out. We're here to work with you.
 				</Text>
 				<ul style={contactList}>
 					<li style={contactItem}>
@@ -87,8 +86,7 @@ export default function PaymentReminderEmail({
 			</Card>
 
 			<Text style={footerNote}>
-				If you've already sent payment, please disregard this reminder and
-				accept our thanks!
+				If you've already sent payment, please disregard this reminder and accept our thanks!
 			</Text>
 		</BaseLayout>
 	);

@@ -93,11 +93,7 @@ import {
 	TechnicianInfoHoverCard,
 } from "./info-hover-cards";
 import { JobEnrichmentInline } from "./job-enrichment-inline";
-import {
-	CSRJobInfo,
-	ManagerJobMetrics,
-	TechJobInfo,
-} from "./role-based-headers";
+import { CSRJobInfo, ManagerJobMetrics, TechJobInfo } from "./role-based-headers";
 import { JobCustomer } from "./sections/job-customer";
 import { JobDocuments } from "./sections/job-documents";
 import { JobEquipment } from "./sections/job-equipment";
@@ -140,14 +136,7 @@ export type JobData = {
 	allProperties?: any[];
 	companyPhones?: any[];
 	enrichmentData?: any;
-	userRole?:
-		| "owner"
-		| "admin"
-		| "manager"
-		| "dispatcher"
-		| "technician"
-		| "csr"
-		| null;
+	userRole?: "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr" | null;
 };
 
 export type JobPageContentProps = {
@@ -165,30 +154,21 @@ function _formatCurrency(amount: number | null | undefined): string {
 	}).format(amount);
 }
 
-export function JobPageContentUnified({
-	entityData,
-	metrics,
-}: JobPageContentProps) {
+export function JobPageContentUnified({ entityData, metrics }: JobPageContentProps) {
 	const router = useRouter();
 	const [job, setJob] = useState(entityData.job);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [isArchiving, setIsArchiving] = useState(false);
 	const [isCustomerManagerOpen, setIsCustomerManagerOpen] = useState(false);
-	const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<
-		any | null
-	>(null);
+	const [selectedCustomerForDialog, setSelectedCustomerForDialog] = useState<any | null>(null);
 	const [showCustomerCreateForm, setShowCustomerCreateForm] = useState(false);
 	const [isUpdatingCustomer, setIsUpdatingCustomer] = useState(false);
-	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] =
-		useState(false);
+	const [isRemoveCustomerDialogOpen, setIsRemoveCustomerDialogOpen] = useState(false);
 	const [isPropertyManagerOpen, setIsPropertyManagerOpen] = useState(false);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(
-		null,
-	);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
 	const [showPropertyCreateForm, setShowPropertyCreateForm] = useState(false);
 	const [isUpdatingProperty, setIsUpdatingProperty] = useState(false);
-	const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] =
-		useState(false);
+	const [isRemovePropertyDialogOpen, setIsRemovePropertyDialogOpen] = useState(false);
 
 	const {
 		customer,
@@ -283,9 +263,7 @@ export function JobPageContentUnified({
 		),
 	].filter(Boolean);
 
-	const jobTags = Array.isArray(job?.metadata?.tags)
-		? (job.metadata.tags as any[])
-		: [];
+	const jobTags = Array.isArray(job?.metadata?.tags) ? (job.metadata.tags as any[]) : [];
 
 	const filteredProperties = useMemo(() => {
 		if (!(customer?.id && Array.isArray(allProperties))) {
@@ -293,8 +271,7 @@ export function JobPageContentUnified({
 		}
 
 		const matches = allProperties.filter(
-			(prop: any) =>
-				prop.customer_id === customer.id || prop.customerId === customer.id,
+			(prop: any) => prop.customer_id === customer.id || prop.customerId === customer.id
 		);
 
 		if (
@@ -302,9 +279,7 @@ export function JobPageContentUnified({
 			!matches.some((prop: any) => prop.id === property.id) &&
 			Array.isArray(allProperties)
 		) {
-			const currentProp = allProperties.find(
-				(prop: any) => prop.id === property.id,
-			);
+			const currentProp = allProperties.find((prop: any) => prop.id === property.id);
 			if (currentProp) {
 				return [currentProp, ...matches];
 			}
@@ -350,7 +325,7 @@ export function JobPageContentUnified({
 				setIsUpdatingCustomer(false);
 			}
 		},
-		[customer?.id, job.id, property?.customerId, property?.customer_id, router],
+		[customer?.id, job.id, property?.customerId, property?.customer_id, router]
 	);
 
 	const handleRemoveCustomer = useCallback(async () => {
@@ -408,7 +383,7 @@ export function JobPageContentUnified({
 				setIsUpdatingProperty(false);
 			}
 		},
-		[customer?.id, job.id, property?.id, router],
+		[customer?.id, job.id, property?.id, router]
 	);
 
 	const handleRemoveProperty = useCallback(async () => {
@@ -440,13 +415,12 @@ export function JobPageContentUnified({
 
 		const registerTechnician = (
 			idCandidate: string | null | undefined,
-			nameCandidate: string | null | undefined,
+			nameCandidate: string | null | undefined
 		) => {
 			if (!(idCandidate || nameCandidate)) {
 				return;
 			}
-			const identifier =
-				idCandidate ?? nameCandidate ?? `tech-${technicians.length}`;
+			const identifier = idCandidate ?? nameCandidate ?? `tech-${technicians.length}`;
 			if (seen.has(identifier)) {
 				return;
 			}
@@ -460,7 +434,7 @@ export function JobPageContentUnified({
 		if (assignedUser) {
 			registerTechnician(
 				assignedUser.id || assignedUser.user_id || assignedUser.email,
-				assignedUser.name || assignedUser.email || assignedUser.phone,
+				assignedUser.name || assignedUser.email || assignedUser.phone
 			);
 		}
 
@@ -471,14 +445,8 @@ export function JobPageContentUnified({
 				: teamMember?.users || teamMember?.user || assignment?.user;
 
 			registerTechnician(
-				nestedUser?.id ||
-					teamMember?.user_id ||
-					assignment?.team_member_id ||
-					assignment?.id,
-				nestedUser?.name ||
-					teamMember?.display_name ||
-					nestedUser?.email ||
-					assignment?.role,
+				nestedUser?.id || teamMember?.user_id || assignment?.team_member_id || assignment?.id,
+				nestedUser?.name || teamMember?.display_name || nestedUser?.email || assignment?.role
 			);
 		});
 
@@ -496,51 +464,40 @@ export function JobPageContentUnified({
 			.map((tech) => tech.name || "Technician");
 		const remaining = assignedTechnicians.length - visibleNames.length;
 		const label =
-			remaining > 0
-				? `${visibleNames.join(", ")} +${remaining} more`
-				: visibleNames.join(", ");
+			remaining > 0 ? `${visibleNames.join(", ")} +${remaining} more` : visibleNames.join(", ");
 
 		return {
 			label,
-			tooltip: assignedTechnicians
-				.map((tech) => tech.name || "Technician")
-				.join(", "),
+			tooltip: assignedTechnicians.map((tech) => tech.name || "Technician").join(", "),
 		};
 	}, [assignedTechnicians]);
 
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
-			<div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
+			<div className="bg-muted/50 mx-auto max-w-7xl rounded-md shadow-sm">
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">
-								{headerBadges}
-							</div>
+							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="font-semibold text-2xl sm:text-3xl">
+								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{job.title || `Job ${job.job_number || ""}`}
 								</h1>
 								<div className="flex flex-wrap items-center gap-2">
 									<EntityTags
 										entityId={job.id}
 										entityType="job"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("job", id, tags)
-										}
+										onUpdateTags={(id, tags) => updateEntityTags("job", id, tags)}
 										tags={jobTags}
 									/>
 								</div>
 								{showCreatedDate && (
 									<p className="text-muted-foreground text-sm sm:text-base">
-										{new Date(job.created_at as string).toLocaleDateString(
-											"en-US",
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											},
-										)}
+										{new Date(job.created_at as string).toLocaleDateString("en-US", {
+											year: "numeric",
+											month: "long",
+											day: "numeric",
+										})}
 									</p>
 								)}
 							</div>
@@ -554,10 +511,7 @@ export function JobPageContentUnified({
 						{property && <PropertyInfoHoverCard property={property} />}
 
 						{(assignedUser || teamAssignments.length > 0) && (
-							<TechnicianInfoHoverCard
-								teamMembers={teamAssignments}
-								technician={assignedUser}
-							/>
+							<TechnicianInfoHoverCard teamMembers={teamAssignments} technician={assignedUser} />
 						)}
 					</div>
 
@@ -565,7 +519,7 @@ export function JobPageContentUnified({
 					<div className="flex flex-wrap items-center gap-2">
 						{/* Property Address Badge */}
 						{property && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<MapPin className="size-4" />
 								{property.city && property.state
 									? `${property.city}, ${property.state}`
@@ -576,7 +530,7 @@ export function JobPageContentUnified({
 						{/* Assigned Technicians */}
 						{technicianBadge && (
 							<div
-								className="inline-flex max-w-full items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+								className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex max-w-full items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 								title={technicianBadge.tooltip}
 							>
 								<Users className="size-4 shrink-0" />
@@ -586,7 +540,7 @@ export function JobPageContentUnified({
 
 						{/* Service Type */}
 						{(job.service_type || job.ai?.service_type) && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Wrench className="size-4" />
 								{job.service_type || job.ai?.service_type}
 							</div>
@@ -594,7 +548,7 @@ export function JobPageContentUnified({
 
 						{/* Scheduled Date */}
 						{job.scheduled_start && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Calendar className="size-4" />
 								{new Date(job.scheduled_start).toLocaleDateString("en-US", {
 									month: "short",
@@ -603,19 +557,16 @@ export function JobPageContentUnified({
 								{job.scheduled_end &&
 									new Date(job.scheduled_start).toDateString() !==
 										new Date(job.scheduled_end).toDateString() &&
-									` - ${new Date(job.scheduled_end).toLocaleDateString(
-										"en-US",
-										{
-											month: "short",
-											day: "numeric",
-										},
-									)}`}
+									` - ${new Date(job.scheduled_end).toLocaleDateString("en-US", {
+										month: "short",
+										day: "numeric",
+									})}`}
 							</div>
 						)}
 
 						{/* Job Value */}
 						{(job.financial?.total_amount ?? 0) > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<DollarSign className="size-4" />
 								{new Intl.NumberFormat("en-US", {
 									style: "currency",
@@ -628,7 +579,7 @@ export function JobPageContentUnified({
 						{/* Deposit Status */}
 						{(job.financial?.deposit_amount ?? 0) > 0 && (
 							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
+								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
 									job.financial?.deposit_paid_at
 										? "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
 										: "border-amber-200 bg-amber-50 text-amber-700 hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:border-amber-900/40 dark:hover:bg-amber-900/30"
@@ -648,7 +599,7 @@ export function JobPageContentUnified({
 
 						{/* Team Size */}
 						{teamAssignments && teamAssignments.length > 1 && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Users className="size-4" />
 								{teamAssignments.length} Team Members
 							</div>
@@ -656,7 +607,7 @@ export function JobPageContentUnified({
 
 						{/* Equipment Count */}
 						{jobEquipment && jobEquipment.length > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Wrench className="size-4" />
 								{jobEquipment.length} Equipment
 							</div>
@@ -665,27 +616,23 @@ export function JobPageContentUnified({
 						{/* Task Completion */}
 						{tasks && tasks.length > 0 && (
 							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
+								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
 									tasks.every((t: any) => t.status === "completed")
 										? "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
 										: "border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5"
 								}`}
 							>
 								<CheckCircle2 className="size-4" />
-								{tasks.filter((t: any) => t.status === "completed").length}/
-								{tasks.length} Tasks
+								{tasks.filter((t: any) => t.status === "completed").length}/{tasks.length} Tasks
 							</div>
 						)}
 
 						{/* Time Tracked */}
 						{timeEntries && timeEntries.length > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Clock className="size-4" />
 								{timeEntries
-									.reduce(
-										(sum: number, t: any) => sum + (t.total_hours || 0),
-										0,
-									)
+									.reduce((sum: number, t: any) => sum + (t.total_hours || 0), 0)
 									.toFixed(1)}
 								h
 								{job.timeTracking?.estimated_labor_hours &&
@@ -696,7 +643,7 @@ export function JobPageContentUnified({
 						{/* Invoice Status */}
 						{invoices && invoices.length > 0 && (
 							<div
-								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
+								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
 									invoices.some((inv: any) => inv.balance_amount > 0)
 										? "border-red-200 bg-red-50 text-red-700 hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400 dark:hover:border-red-900/40 dark:hover:bg-red-900/30"
 										: "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
@@ -705,14 +652,13 @@ export function JobPageContentUnified({
 								<FileText className="size-4" />
 								{invoices.length} Invoice
 								{invoices.length !== 1 ? "s" : ""}
-								{invoices.some((inv: any) => inv.balance_amount > 0) &&
-									" (Due)"}
+								{invoices.some((inv: any) => inv.balance_amount > 0) && " (Due)"}
 							</div>
 						)}
 
 						{/* Photos Count */}
 						{photos && photos.length > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+							<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 								<Camera className="size-4" />
 								{photos.length} Photo{photos.length !== 1 ? "s" : ""}
 							</div>
@@ -748,9 +694,7 @@ export function JobPageContentUnified({
 							)}
 
 							{/* Managers see financial metrics */}
-							{userRole === "manager" && (
-								<ManagerJobMetrics metrics={metrics || {}} />
-							)}
+							{userRole === "manager" && <ManagerJobMetrics metrics={metrics || {}} />}
 
 							{/* CSRs and Dispatchers see customer and scheduling info */}
 							{(userRole === "csr" || userRole === "dispatcher") && (
@@ -783,15 +727,11 @@ export function JobPageContentUnified({
 							{/* Customer Tags */}
 							{customer?.id && (
 								<div className="flex flex-wrap items-center gap-2">
-									<span className="font-medium text-muted-foreground text-xs">
-										Customer:
-									</span>
+									<span className="text-muted-foreground text-xs font-medium">Customer:</span>
 									<EntityTags
 										entityId={customer.id}
 										entityType="customer"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("customer", id, tags)
-										}
+										onUpdateTags={(id, tags) => updateEntityTags("customer", id, tags)}
 										tags={customer.tags || []}
 									/>
 								</div>
@@ -898,9 +838,8 @@ export function JobPageContentUnified({
 					{customer ? (
 						<JobCustomer customer={customer} />
 					) : (
-						<div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
-							No customer assigned. Use the actions above to link or create a
-							customer for this job.
+						<div className="border-primary/40 bg-primary/5 text-muted-foreground rounded-md border border-dashed p-6 text-sm">
+							No customer assigned. Use the actions above to link or create a customer for this job.
 						</div>
 					)}
 				</UnifiedAccordionContent>
@@ -919,11 +858,7 @@ export function JobPageContentUnified({
 						disabled={!customer?.id || isUpdatingProperty}
 						onClick={() => setIsPropertyManagerOpen(true)}
 						size="sm"
-						title={
-							customer?.id
-								? undefined
-								: "Assign a customer before selecting a property"
-						}
+						title={customer?.id ? undefined : "Assign a customer before selecting a property"}
 						variant="outline"
 					>
 						<Link2 className="size-3.5" />
@@ -947,7 +882,7 @@ export function JobPageContentUnified({
 					{property ? (
 						<JobProperty property={property} />
 					) : (
-						<div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
+						<div className="border-primary/40 bg-primary/5 text-muted-foreground rounded-md border border-dashed p-6 text-sm">
 							{customer?.id
 								? "No service location assigned. Use the actions above to link or create one."
 								: "Assign a customer before adding a service location."}
@@ -966,9 +901,7 @@ export function JobPageContentUnified({
 				count: estimates.length,
 				actions: (
 					<Button
-						onClick={() =>
-							router.push(`/dashboard/work/estimates/new?jobId=${job.id}`)
-						}
+						onClick={() => router.push(`/dashboard/work/estimates/new?jobId=${job.id}`)}
 						size="sm"
 						variant="outline"
 					>
@@ -993,9 +926,7 @@ export function JobPageContentUnified({
 				count: invoices.length,
 				actions: (
 					<Button
-						onClick={() =>
-							router.push(`/dashboard/work/invoices/new?jobId=${job.id}`)
-						}
+						onClick={() => router.push(`/dashboard/work/invoices/new?jobId=${job.id}`)}
 						size="sm"
 						variant="outline"
 					>
@@ -1035,9 +966,7 @@ export function JobPageContentUnified({
 				count: jobEquipment.length || equipment.length,
 				content: (
 					<UnifiedAccordionContent>
-						<JobEquipment
-							equipment={jobEquipment.length > 0 ? jobEquipment : equipment}
-						/>
+						<JobEquipment equipment={jobEquipment.length > 0 ? jobEquipment : equipment} />
 					</UnifiedAccordionContent>
 				),
 			});
@@ -1067,11 +996,7 @@ export function JobPageContentUnified({
 				count: teamAssignments.length,
 				content: (
 					<UnifiedAccordionContent>
-						<JobTeam
-							assignedUser={assignedUser}
-							jobId={job.id}
-							teamAssignments={teamAssignments}
-						/>
+						<JobTeam assignedUser={assignedUser} jobId={job.id} teamAssignments={teamAssignments} />
 					</UnifiedAccordionContent>
 				),
 			});
@@ -1209,15 +1134,10 @@ export function JobPageContentUnified({
 			/>
 
 			{/* Customer Manager */}
-			<Dialog
-				onOpenChange={setIsCustomerManagerOpen}
-				open={isCustomerManagerOpen}
-			>
+			<Dialog onOpenChange={setIsCustomerManagerOpen} open={isCustomerManagerOpen}>
 				<DialogContent className="max-w-2xl space-y-4">
 					<DialogHeader>
-						<DialogTitle>
-							{customer ? "Change Customer" : "Add Customer"}
-						</DialogTitle>
+						<DialogTitle>{customer ? "Change Customer" : "Add Customer"}</DialogTitle>
 						<DialogDescription>
 							Link an existing customer or create a new one for this job.
 						</DialogDescription>
@@ -1236,27 +1156,19 @@ export function JobPageContentUnified({
 							<CustomerSearchCombobox
 								customers={allCustomers || []}
 								onCreateNew={() => setShowCustomerCreateForm(true)}
-								onSelectCustomer={(selected) =>
-									setSelectedCustomerForDialog(selected)
-								}
+								onSelectCustomer={(selected) => setSelectedCustomerForDialog(selected)}
 								recentCustomerIds={[]}
 								selectedCustomer={selectedCustomerForDialog}
 							/>
 							{property &&
 								selectedCustomerForDialog?.id &&
-								(property.customer_id ?? property.customerId) !==
-									selectedCustomerForDialog.id && (
-									<div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-amber-700 text-xs dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
-										Changing the customer will clear the currently assigned
-										property.
+								(property.customer_id ?? property.customerId) !== selectedCustomerForDialog.id && (
+									<div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
+										Changing the customer will clear the currently assigned property.
 									</div>
 								)}
 							<div className="flex items-center justify-end gap-2">
-								<Button
-									onClick={() => setShowCustomerCreateForm(true)}
-									size="sm"
-									variant="outline"
-								>
+								<Button onClick={() => setShowCustomerCreateForm(true)} size="sm" variant="outline">
 									<Plus className="mr-1.5 size-3.5" />
 									Create Customer
 								</Button>
@@ -1288,15 +1200,10 @@ export function JobPageContentUnified({
 			</Dialog>
 
 			{/* Property Manager */}
-			<Dialog
-				onOpenChange={setIsPropertyManagerOpen}
-				open={isPropertyManagerOpen}
-			>
+			<Dialog onOpenChange={setIsPropertyManagerOpen} open={isPropertyManagerOpen}>
 				<DialogContent className="max-w-xl space-y-4">
 					<DialogHeader>
-						<DialogTitle>
-							{property ? "Change Property" : "Add Property"}
-						</DialogTitle>
+						<DialogTitle>{property ? "Change Property" : "Add Property"}</DialogTitle>
 						<DialogDescription>
 							{customer?.id
 								? "Select or create a service location for this job."
@@ -1324,9 +1231,7 @@ export function JobPageContentUnified({
 								<div className="space-y-2">
 									<Label htmlFor="property-select">Select Property</Label>
 									<Select
-										onValueChange={(value) =>
-											setSelectedPropertyId(value || null)
-										}
+										onValueChange={(value) => setSelectedPropertyId(value || null)}
 										value={selectedPropertyId ?? undefined}
 									>
 										<SelectTrigger id="property-select">
@@ -1363,8 +1268,7 @@ export function JobPageContentUnified({
 											selectedPropertyId === property?.id
 										}
 										onClick={() =>
-											selectedPropertyId &&
-											handlePropertyAssignment(selectedPropertyId)
+											selectedPropertyId && handlePropertyAssignment(selectedPropertyId)
 										}
 										size="sm"
 									>
@@ -1381,7 +1285,7 @@ export function JobPageContentUnified({
 							</div>
 						)
 					) : (
-						<div className="rounded-md border border-primary/40 border-dashed bg-primary/5 p-6 text-muted-foreground text-sm">
+						<div className="border-primary/40 bg-primary/5 text-muted-foreground rounded-md border border-dashed p-6 text-sm">
 							Assign a customer before selecting a service location.
 						</div>
 					)}
@@ -1389,22 +1293,17 @@ export function JobPageContentUnified({
 			</Dialog>
 
 			{/* Remove Customer */}
-			<AlertDialog
-				onOpenChange={setIsRemoveCustomerDialogOpen}
-				open={isRemoveCustomerDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsRemoveCustomerDialogOpen} open={isRemoveCustomerDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove customer from job?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will clear the customer and any linked property from this
-							job. You can reassign them later.
+							This will clear the customer and any linked property from this job. You can reassign
+							them later.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isUpdatingCustomer}>
-							Cancel
-						</AlertDialogCancel>
+						<AlertDialogCancel disabled={isUpdatingCustomer}>Cancel</AlertDialogCancel>
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							disabled={isUpdatingCustomer}
@@ -1424,22 +1323,16 @@ export function JobPageContentUnified({
 			</AlertDialog>
 
 			{/* Remove Property */}
-			<AlertDialog
-				onOpenChange={setIsRemovePropertyDialogOpen}
-				open={isRemovePropertyDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsRemovePropertyDialogOpen} open={isRemovePropertyDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove service location?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will detach the property from the job. You can link it again
-							later.
+							This will detach the property from the job. You can link it again later.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel disabled={isUpdatingProperty}>
-							Cancel
-						</AlertDialogCancel>
+						<AlertDialogCancel disabled={isUpdatingProperty}>Cancel</AlertDialogCancel>
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							disabled={isUpdatingProperty}
@@ -1464,8 +1357,8 @@ export function JobPageContentUnified({
 					<DialogHeader>
 						<DialogTitle>Archive Job?</DialogTitle>
 						<DialogDescription>
-							This will archive job #{job.job_number}. You can restore it from
-							the archive within 90 days.
+							This will archive job #{job.job_number}. You can restore it from the archive within 90
+							days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -1476,11 +1369,7 @@ export function JobPageContentUnified({
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchiveJob}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchiveJob} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>

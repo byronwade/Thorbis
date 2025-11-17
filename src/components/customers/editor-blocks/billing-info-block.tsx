@@ -36,11 +36,7 @@ import { AddPaymentMethodDialog } from "../add-payment-method-dialog";
 import { PaymentMethodCard } from "../payment-method-card";
 
 // React component that renders the block
-export function BillingInfoBlockComponent({
-	node,
-	updateAttributes,
-	editor,
-}: any) {
+export function BillingInfoBlockComponent({ node, updateAttributes, editor }: any) {
 	const {
 		billingEmail,
 		paymentTerms,
@@ -55,10 +51,7 @@ export function BillingInfoBlockComponent({
 
 	const handleSetDefault = async (paymentMethodId: string) => {
 		setIsUpdating(true);
-		const result = await setDefaultCustomerPaymentMethod(
-			paymentMethodId,
-			customerId,
-		);
+		const result = await setDefaultCustomerPaymentMethod(paymentMethodId, customerId);
 		setIsUpdating(false);
 
 		if (result.success) {
@@ -79,17 +72,12 @@ export function BillingInfoBlockComponent({
 		}
 
 		setIsUpdating(true);
-		const result = await removeCustomerPaymentMethod(
-			paymentMethodId,
-			customerId,
-		);
+		const result = await removeCustomerPaymentMethod(paymentMethodId, customerId);
 		setIsUpdating(false);
 
 		if (result.success) {
 			// Update local state - remove the payment method
-			const updatedMethods = paymentMethods.filter(
-				(pm: any) => pm.id !== paymentMethodId,
-			);
+			const updatedMethods = paymentMethods.filter((pm: any) => pm.id !== paymentMethodId);
 			updateAttributes({ paymentMethods: updatedMethods });
 		} else {
 			alert(result.error || "Failed to remove payment method");
@@ -159,18 +147,13 @@ export function BillingInfoBlockComponent({
 				<div className="grid gap-6 md:grid-cols-2">
 					{/* Billing Email */}
 					<div className="space-y-2">
-						<Label
-							className="flex items-center gap-1"
-							htmlFor={`billingEmail-${node.attrs.id}`}
-						>
+						<Label className="flex items-center gap-1" htmlFor={`billingEmail-${node.attrs.id}`}>
 							<Mail className="size-3" />
 							Billing Email
 						</Label>
 						<Input
 							id={`billingEmail-${node.attrs.id}`}
-							onChange={(e) =>
-								updateAttributes({ billingEmail: e.target.value })
-							}
+							onChange={(e) => updateAttributes({ billingEmail: e.target.value })}
 							placeholder="billing@example.com"
 							type="email"
 							value={billingEmail || ""}
@@ -179,13 +162,9 @@ export function BillingInfoBlockComponent({
 
 					{/* Payment Terms */}
 					<div className="space-y-2">
-						<Label htmlFor={`paymentTerms-${node.attrs.id}`}>
-							Payment Terms
-						</Label>
+						<Label htmlFor={`paymentTerms-${node.attrs.id}`}>Payment Terms</Label>
 						<Select
-							onValueChange={(value) =>
-								updateAttributes({ paymentTerms: value })
-							}
+							onValueChange={(value) => updateAttributes({ paymentTerms: value })}
 							value={paymentTerms || "due_on_receipt"}
 						>
 							<SelectTrigger id={`paymentTerms-${node.attrs.id}`}>
@@ -220,10 +199,7 @@ export function BillingInfoBlockComponent({
 
 					{/* Tax Exempt */}
 					<div className="space-y-2">
-						<Label
-							className="flex items-center gap-1"
-							htmlFor={`taxExempt-${node.attrs.id}`}
-						>
+						<Label className="flex items-center gap-1" htmlFor={`taxExempt-${node.attrs.id}`}>
 							<Shield className="size-3" />
 							Tax Status
 						</Label>
@@ -231,12 +207,10 @@ export function BillingInfoBlockComponent({
 							<Checkbox
 								checked={taxExempt}
 								id={`taxExempt-${node.attrs.id}`}
-								onCheckedChange={(checked) =>
-									updateAttributes({ taxExempt: checked })
-								}
+								onCheckedChange={(checked) => updateAttributes({ taxExempt: checked })}
 							/>
 							<label
-								className="cursor-pointer font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+								className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 								htmlFor={`taxExempt-${node.attrs.id}`}
 							>
 								Tax Exempt
@@ -247,14 +221,10 @@ export function BillingInfoBlockComponent({
 					{/* Tax Exempt Number (only if tax exempt) */}
 					{taxExempt && (
 						<div className="space-y-2 md:col-span-2">
-							<Label htmlFor={`taxExemptNumber-${node.attrs.id}`}>
-								Tax Exempt Number
-							</Label>
+							<Label htmlFor={`taxExemptNumber-${node.attrs.id}`}>Tax Exempt Number</Label>
 							<Input
 								id={`taxExemptNumber-${node.attrs.id}`}
-								onChange={(e) =>
-									updateAttributes({ taxExemptNumber: e.target.value })
-								}
+								onChange={(e) => updateAttributes({ taxExemptNumber: e.target.value })}
 								placeholder="Enter tax exempt number"
 								value={taxExemptNumber || ""}
 							/>
@@ -263,15 +233,14 @@ export function BillingInfoBlockComponent({
 
 					{/* Saved Payment Methods */}
 					<div className="mt-6 space-y-3 border-t pt-6 md:col-span-2">
-						<h4 className="font-semibold text-sm">
+						<h4 className="text-sm font-semibold">
 							Saved Payment Methods ({paymentMethods?.length || 0})
 						</h4>
 						{paymentMethods && paymentMethods.length > 0 ? (
 							<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 								{paymentMethods.map((pm: any) => {
 									// Determine payment method type
-									const type =
-										pm.type === "ach" || pm.type === "bank" ? pm.type : "card";
+									const type = pm.type === "ach" || pm.type === "bank" ? pm.type : "card";
 
 									return (
 										<PaymentMethodCard
@@ -296,12 +265,10 @@ export function BillingInfoBlockComponent({
 								})}
 							</div>
 						) : (
-							<div className="rounded-lg border border-dashed bg-muted/30 p-8 text-center">
-								<CreditCard className="mx-auto mb-2 size-8 text-muted-foreground/50" />
-								<p className="text-muted-foreground text-sm">
-									No payment methods on file
-								</p>
-								<p className="mt-1 text-muted-foreground text-xs">
+							<div className="bg-muted/30 rounded-lg border border-dashed p-8 text-center">
+								<CreditCard className="text-muted-foreground/50 mx-auto mb-2 size-8" />
+								<p className="text-muted-foreground text-sm">No payment methods on file</p>
+								<p className="text-muted-foreground mt-1 text-xs">
 									Add a card or bank account to streamline payments
 								</p>
 							</div>
@@ -361,11 +328,7 @@ export const BillingInfoBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return [
-			"div",
-			mergeAttributes(HTMLAttributes, { "data-type": "billing-info-block" }),
-			0,
-		];
+		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "billing-info-block" }), 0];
 	},
 
 	addNodeView() {

@@ -9,11 +9,7 @@
  * - Apple Pay / Google Pay support via Express Checkout
  */
 
-import {
-	Elements,
-	ExpressCheckoutElement,
-	useStripe,
-} from "@stripe/react-stripe-js";
+import { Elements, ExpressCheckoutElement, useStripe } from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { Apple, CheckCircle2, CreditCard, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -66,9 +62,7 @@ function PaymentMethodSelectorInner({
 			setIsLoading(true);
 			try {
 				// Call API to fetch payment methods
-				const response = await fetch(
-					`/api/payments/methods?customerId=${customerId}`,
-				);
+				const response = await fetch(`/api/payments/methods?customerId=${customerId}`);
 				if (response.ok) {
 					const data = await response.json();
 					setPaymentMethods(data.paymentMethods || []);
@@ -128,27 +122,22 @@ function PaymentMethodSelectorInner({
 		<div className="space-y-4">
 			{/* Always show dropdown with all payment options */}
 			<div className="space-y-2">
-				<Label
-					className="font-semibold text-foreground"
-					htmlFor="payment-method"
-				>
+				<Label className="text-foreground font-semibold" htmlFor="payment-method">
 					Select Payment Method
 				</Label>
 				<Select onValueChange={handleMethodSelect} value={selectedMethod}>
 					<SelectTrigger
-						className="border-2 border-input bg-background text-foreground focus:border-ring dark:bg-background/95"
+						className="border-input bg-background text-foreground focus:border-ring dark:bg-background/95 border-2"
 						disabled={isLoading}
 						id="payment-method"
 					>
-						<SelectValue
-							placeholder={isLoading ? "Loading..." : "Choose payment method"}
-						/>
+						<SelectValue placeholder={isLoading ? "Loading..." : "Choose payment method"} />
 					</SelectTrigger>
 					<SelectContent>
 						{/* Existing payment methods from primary org */}
 						{paymentMethods.length > 0 && (
 							<>
-								<div className="px-2 py-1.5 font-semibold text-muted-foreground text-xs">
+								<div className="text-muted-foreground px-2 py-1.5 text-xs font-semibold">
 									Primary Organization Cards
 								</div>
 								{paymentMethods.map((method) => (
@@ -164,7 +153,7 @@ function PaymentMethodSelectorInner({
 										</div>
 									</SelectItem>
 								))}
-								<div className="my-1 h-px bg-border" />
+								<div className="bg-border my-1 h-px" />
 							</>
 						)}
 
@@ -199,7 +188,7 @@ function PaymentMethodSelectorInner({
 					selectedMethod !== "new-card" &&
 					selectedMethod !== "apple-pay" &&
 					selectedMethod !== "google-pay" && (
-						<div className="flex items-center gap-2 rounded-lg border border-success bg-success p-3 text-sm text-success dark:border-success dark:bg-success dark:text-success">
+						<div className="border-success bg-success text-success dark:border-success dark:bg-success dark:text-success flex items-center gap-2 rounded-lg border p-3 text-sm">
 							<CheckCircle2 className="size-4" />
 							<span>Payment method selected from primary organization</span>
 						</div>
@@ -208,9 +197,9 @@ function PaymentMethodSelectorInner({
 
 			{/* Show card entry form when "Add new card" is selected */}
 			{selectedMethod === "new-card" && (
-				<div className="space-y-4 rounded-lg border-2 border-input bg-background/80 p-4 dark:bg-background/90">
+				<div className="border-input bg-background/80 dark:bg-background/90 space-y-4 rounded-lg border-2 p-4">
 					<div className="flex items-center justify-between">
-						<h4 className="font-medium text-sm">Enter Card Details</h4>
+						<h4 className="text-sm font-medium">Enter Card Details</h4>
 						<Button
 							onClick={() => {
 								setSelectedMethod("");
@@ -233,15 +222,10 @@ function PaymentMethodSelectorInner({
 
 			{/* Show Express Checkout for Apple Pay */}
 			{selectedMethod === "apple-pay" && (
-				<div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+				<div className="bg-muted/30 space-y-4 rounded-lg border p-4">
 					<div className="flex items-center justify-between">
-						<h4 className="font-medium text-sm">Apple Pay</h4>
-						<Button
-							onClick={() => setSelectedMethod("")}
-							size="sm"
-							type="button"
-							variant="ghost"
-						>
+						<h4 className="text-sm font-medium">Apple Pay</h4>
+						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
 							Cancel
 						</Button>
 					</div>
@@ -269,15 +253,10 @@ function PaymentMethodSelectorInner({
 
 			{/* Show Express Checkout for Google Pay */}
 			{selectedMethod === "google-pay" && (
-				<div className="space-y-4 rounded-lg border bg-muted/30 p-4">
+				<div className="bg-muted/30 space-y-4 rounded-lg border p-4">
 					<div className="flex items-center justify-between">
-						<h4 className="font-medium text-sm">Google Pay</h4>
-						<Button
-							onClick={() => setSelectedMethod("")}
-							size="sm"
-							type="button"
-							variant="ghost"
-						>
+						<h4 className="text-sm font-medium">Google Pay</h4>
+						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
 							Cancel
 						</Button>
 					</div>
@@ -308,14 +287,12 @@ function PaymentMethodSelectorInner({
 
 // Wrapper component with Stripe Elements provider
 export function PaymentMethodSelector(
-	props: PaymentMethodSelectorProps & { stripe: Stripe | null },
+	props: PaymentMethodSelectorProps & { stripe: Stripe | null }
 ) {
 	if (!props.stripe) {
 		return (
-			<div className="rounded-lg border border-warning bg-warning p-4 text-warning dark:border-warning dark:bg-warning dark:text-warning">
-				<p className="text-sm">
-					Payment system is not configured. Please contact support.
-				</p>
+			<div className="border-warning bg-warning text-warning dark:border-warning dark:bg-warning dark:text-warning rounded-lg border p-4">
+				<p className="text-sm">Payment system is not configured. Please contact support.</p>
 			</div>
 		);
 	}

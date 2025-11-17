@@ -56,7 +56,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 				{invoice.discount_amount > 0 && (
 					<div className="flex justify-between text-sm">
 						<span className="text-muted-foreground">Discount</span>
-						<span className="font-medium text-success">
+						<span className="text-success font-medium">
 							-{formatCurrency(invoice.discount_amount || 0, { decimals: 2 })}
 						</span>
 					</div>
@@ -67,7 +67,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 				{/* Total */}
 				<div className="flex justify-between">
 					<span className="font-semibold">Total</span>
-					<span className="font-bold text-lg">
+					<span className="text-lg font-bold">
 						{formatCurrency(invoice.total_amount || 0, { decimals: 2 })}
 					</span>
 				</div>
@@ -78,7 +78,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 						<Separator />
 						<div className="flex justify-between text-sm">
 							<span className="text-muted-foreground">Paid</span>
-							<span className="font-medium text-success">
+							<span className="text-success font-medium">
 								{formatCurrency(invoice.paid_amount || 0, { decimals: 2 })}
 							</span>
 						</div>
@@ -90,7 +90,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 					<div className="flex justify-between">
 						<span className="font-semibold">Balance Due</span>
 						<span
-							className={`font-bold text-lg ${invoice.status === "overdue" ? "text-destructive" : "text-primary"}`}
+							className={`text-lg font-bold ${invoice.status === "overdue" ? "text-destructive" : "text-primary"}`}
 						>
 							{formatCurrency(invoice.balance_amount || 0, { decimals: 2 })}
 						</span>
@@ -99,7 +99,7 @@ export function InvoiceTotals({ invoice }: InvoiceTotalsProps) {
 
 				{/* Paid in Full */}
 				{invoice.balance_amount === 0 && invoice.paid_amount > 0 && (
-					<div className="rounded-md bg-success p-3 text-center font-medium text-sm text-success dark:bg-success dark:text-success">
+					<div className="bg-success text-success dark:bg-success dark:text-success rounded-md p-3 text-center text-sm font-medium">
 						Paid in Full
 					</div>
 				)}

@@ -5,10 +5,7 @@ type UseSlideNavigationProps = {
 	onInteraction?: () => void;
 };
 
-export function useSlideNavigation({
-	slideCount,
-	onInteraction,
-}: UseSlideNavigationProps) {
+export function useSlideNavigation({ slideCount, onInteraction }: UseSlideNavigationProps) {
 	const [currentSlide, setCurrentSlide] = useState(0);
 
 	const goToSlide = useCallback(
@@ -18,7 +15,7 @@ export function useSlideNavigation({
 				onInteraction?.();
 			}
 		},
-		[slideCount, onInteraction],
+		[slideCount, onInteraction]
 	);
 
 	const nextSlide = useCallback(() => {

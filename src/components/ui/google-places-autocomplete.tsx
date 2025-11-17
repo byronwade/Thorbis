@@ -46,7 +46,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 
 		// Check if script element already exists
 		const existingScript = document.querySelector(
-			'script[src^="https://maps.googleapis.com/maps/api/js"]',
+			'script[src^="https://maps.googleapis.com/maps/api/js"]'
 		);
 
 		if (existingScript) {
@@ -132,14 +132,11 @@ export function GooglePlacesAutocomplete({
 			google.maps.event.clearInstanceListeners(autocompleteRef.current);
 		}
 
-		const autocomplete = new window.google.maps.places.Autocomplete(
-			inputRef.current,
-			{
-				types: ["address"],
-				componentRestrictions: { country: "us" }, // Restrict to US addresses
-				fields: ["address_components", "formatted_address", "geometry"],
-			},
-		);
+		const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+			types: ["address"],
+			componentRestrictions: { country: "us" }, // Restrict to US addresses
+			fields: ["address_components", "formatted_address", "geometry"],
+		});
 
 		// Store reference
 		autocompleteRef.current = autocomplete;
@@ -203,7 +200,7 @@ export function GooglePlacesAutocomplete({
 
 	if (error) {
 		return (
-			<div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-3 text-destructive text-sm">
+			<div className="border-destructive/50 bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg border p-3 text-sm">
 				<MapPin className="h-4 w-4" />
 				<span>{error}</span>
 			</div>
@@ -219,9 +216,9 @@ export function GooglePlacesAutocomplete({
 				ref={inputRef}
 				type="text"
 			/>
-			<MapPin className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+			<MapPin className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 			{isLoading && (
-				<Loader2 className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 animate-spin text-muted-foreground" />
+				<Loader2 className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin" />
 			)}
 		</div>
 	);

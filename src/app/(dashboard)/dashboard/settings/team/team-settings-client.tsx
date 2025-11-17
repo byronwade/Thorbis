@@ -3,10 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import Link from "next/link";
-import type {
-	TeamMemberWithDetails,
-	TeamOverviewSnapshot,
-} from "@/actions/team";
+import type { TeamMemberWithDetails, TeamOverviewSnapshot } from "@/actions/team";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -19,13 +16,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
 	Table,
@@ -117,9 +108,7 @@ export default function TeamSettingsClient({
 	const telemetryMetrics = [
 		{
 			label: "Role coverage",
-			value: overview.roles.total
-				? `${overview.roles.custom}/${overview.roles.total}`
-				: "0",
+			value: overview.roles.total ? `${overview.roles.custom}/${overview.roles.total}` : "0",
 			helper: "Custom / total roles",
 		},
 		{
@@ -171,9 +160,7 @@ export default function TeamSettingsClient({
 							<Link href="/dashboard/settings/team/roles">Manage roles</Link>
 						</Button>
 						<Button asChild variant="outline">
-							<Link href="/dashboard/settings/team/departments">
-								Departments
-							</Link>
+							<Link href="/dashboard/settings/team/departments">Departments</Link>
 						</Button>
 					</div>
 				</div>
@@ -190,18 +177,13 @@ export default function TeamSettingsClient({
 					</CardHeader>
 					<CardContent className="flex flex-col gap-4 md:flex-row md:items-center">
 						<div>
-							<p className="font-medium text-muted-foreground text-sm">
-								Completion
-							</p>
-							<p className="font-semibold text-4xl">
-								{overview.readinessScore}%
-							</p>
+							<p className="text-muted-foreground text-sm font-medium">Completion</p>
+							<p className="text-4xl font-semibold">{overview.readinessScore}%</p>
 						</div>
 						<div className="flex-1 space-y-2">
 							<Progress value={overview.readinessScore} />
 							<p className="text-muted-foreground text-xs">
-								{overview.stepsCompleted} of {overview.totalSteps} guardrails
-								configured
+								{overview.stepsCompleted} of {overview.totalSteps} guardrails configured
 							</p>
 						</div>
 					</CardContent>
@@ -210,20 +192,15 @@ export default function TeamSettingsClient({
 				<Card>
 					<CardHeader>
 						<CardTitle className="text-base">Key metrics</CardTitle>
-						<CardDescription>
-							Live counts from team members, roles, and departments
-						</CardDescription>
+						<CardDescription>Live counts from team members, roles, and departments</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-3">
 						{telemetryMetrics.map((metric) => (
-							<div
-								className="rounded-xl border border-border/60 p-4"
-								key={metric.label}
-							>
-								<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+							<div className="border-border/60 rounded-xl border p-4" key={metric.label}>
+								<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 									{metric.label}
 								</p>
-								<p className="mt-1 font-semibold text-2xl">{metric.value}</p>
+								<p className="mt-1 text-2xl font-semibold">{metric.value}</p>
 								<p className="text-muted-foreground text-sm">{metric.helper}</p>
 							</div>
 						))}
@@ -246,9 +223,7 @@ export default function TeamSettingsClient({
 					<Card>
 						<CardHeader>
 							<CardDescription>Suspended / Disabled</CardDescription>
-							<CardTitle className="text-3xl">
-								{suspendedMembersCount}
-							</CardTitle>
+							<CardTitle className="text-3xl">{suspendedMembersCount}</CardTitle>
 						</CardHeader>
 					</Card>
 				</div>
@@ -256,17 +231,15 @@ export default function TeamSettingsClient({
 				{members.length === 0 ? (
 					<Card className="border-dashed">
 						<CardContent className="flex flex-col items-center gap-2 py-12 text-center">
-							<UserPlus className="size-10 text-muted-foreground" />
+							<UserPlus className="text-muted-foreground size-10" />
 							<div className="space-y-1">
-								<p className="font-semibold text-lg">No team members yet</p>
+								<p className="text-lg font-semibold">No team members yet</p>
 								<p className="text-muted-foreground text-sm">
 									Invite your first teammate to collaborate inside Thorbis.
 								</p>
 							</div>
 							<Button asChild>
-								<Link href="/dashboard/settings/team/invite">
-									Invite teammates
-								</Link>
+								<Link href="/dashboard/settings/team/invite">Invite teammates</Link>
 							</Button>
 						</CardContent>
 					</Card>
@@ -275,9 +248,7 @@ export default function TeamSettingsClient({
 						<CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 							<div>
 								<CardTitle>Team members</CardTitle>
-								<CardDescription>
-									Everyone with access to this workspace
-								</CardDescription>
+								<CardDescription>Everyone with access to this workspace</CardDescription>
 							</div>
 							<Button asChild variant="ghost">
 								<Link href="/dashboard/work/team">
@@ -300,8 +271,7 @@ export default function TeamSettingsClient({
 								<TableBody>
 									{members.slice(0, 12).map((member) => {
 										const statusClass =
-											statusStyles[member.status] ??
-											"bg-muted text-muted-foreground";
+											statusStyles[member.status] ?? "bg-muted text-muted-foreground";
 										return (
 											<TableRow key={member.id}>
 												<TableCell>
@@ -311,14 +281,10 @@ export default function TeamSettingsClient({
 																alt={member.user?.name ?? "Unknown member"}
 																src={member.user?.avatar ?? undefined}
 															/>
-															<AvatarFallback>
-																{getInitials(member.user?.name)}
-															</AvatarFallback>
+															<AvatarFallback>{getInitials(member.user?.name)}</AvatarFallback>
 														</Avatar>
 														<div>
-															<p className="font-medium">
-																{member.user?.name ?? "Unknown member"}
-															</p>
+															<p className="font-medium">{member.user?.name ?? "Unknown member"}</p>
 															<p className="text-muted-foreground text-sm">
 																{member.user?.email ?? "No email on file"}
 															</p>
@@ -337,27 +303,17 @@ export default function TeamSettingsClient({
 												</TableCell>
 												<TableCell>
 													<Badge
-														className={cn(
-															"border px-2 py-0.5 font-medium text-xs",
-															statusClass,
-														)}
+														className={cn("border px-2 py-0.5 text-xs font-medium", statusClass)}
 													>
-														{member.status.charAt(0).toUpperCase() +
-															member.status.slice(1)}
+														{member.status.charAt(0).toUpperCase() + member.status.slice(1)}
 													</Badge>
 												</TableCell>
 												<TableCell>
-													{formatDate(
-														member.last_active_at ?? member.joined_at,
-													)}
+													{formatDate(member.last_active_at ?? member.joined_at)}
 												</TableCell>
 												<TableCell className="text-right">
 													<Button asChild size="sm" variant="ghost">
-														<Link
-															href={`/dashboard/settings/team/${member.id}`}
-														>
-															Manage
-														</Link>
+														<Link href={`/dashboard/settings/team/${member.id}`}>Manage</Link>
 													</Button>
 												</TableCell>
 											</TableRow>
@@ -374,9 +330,7 @@ export default function TeamSettingsClient({
 						<CardHeader className="flex items-center justify-between">
 							<div>
 								<CardTitle>Roles overview</CardTitle>
-								<CardDescription>
-									System + custom roles across your workspace
-								</CardDescription>
+								<CardDescription>System + custom roles across your workspace</CardDescription>
 							</div>
 							<Button asChild size="sm" variant="outline">
 								<Link href="/dashboard/settings/team/roles">View roles</Link>
@@ -384,9 +338,7 @@ export default function TeamSettingsClient({
 						</CardHeader>
 						<CardContent className="space-y-3">
 							{primaryRoles.length === 0 ? (
-								<p className="text-muted-foreground text-sm">
-									No roles configured yet.
-								</p>
+								<p className="text-muted-foreground text-sm">No roles configured yet.</p>
 							) : (
 								primaryRoles.map((role) => (
 									<div
@@ -396,9 +348,7 @@ export default function TeamSettingsClient({
 										<div className="flex flex-col">
 											<p className="font-medium">{role.name}</p>
 											{role.description && (
-												<p className="text-muted-foreground text-xs">
-													{role.description}
-												</p>
+												<p className="text-muted-foreground text-xs">{role.description}</p>
 											)}
 										</div>
 										<p className="text-muted-foreground text-sm">
@@ -415,21 +365,15 @@ export default function TeamSettingsClient({
 						<CardHeader className="flex items-center justify-between">
 							<div>
 								<CardTitle>Departments</CardTitle>
-								<CardDescription>
-									Groups used for routing, approvals, and reporting
-								</CardDescription>
+								<CardDescription>Groups used for routing, approvals, and reporting</CardDescription>
 							</div>
 							<Button asChild size="sm" variant="outline">
-								<Link href="/dashboard/settings/team/departments">
-									Manage departments
-								</Link>
+								<Link href="/dashboard/settings/team/departments">Manage departments</Link>
 							</Button>
 						</CardHeader>
 						<CardContent className="space-y-3">
 							{highlightedDepartments.length === 0 ? (
-								<p className="text-muted-foreground text-sm">
-									No departments created yet.
-								</p>
+								<p className="text-muted-foreground text-sm">No departments created yet.</p>
 							) : (
 								highlightedDepartments.map((dept) => (
 									<div
@@ -439,9 +383,7 @@ export default function TeamSettingsClient({
 										<div className="flex flex-col">
 											<p className="font-medium">{dept.name}</p>
 											{dept.description && (
-												<p className="text-muted-foreground text-xs">
-													{dept.description}
-												</p>
+												<p className="text-muted-foreground text-xs">{dept.description}</p>
 											)}
 										</div>
 										<p className="text-muted-foreground text-sm">

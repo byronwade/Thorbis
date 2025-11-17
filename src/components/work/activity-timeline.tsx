@@ -51,10 +51,7 @@ import {
 	useActivityTimelineStore,
 } from "@/lib/stores/activity-timeline-store";
 import { cn } from "@/lib/utils";
-import {
-	formatActivityTimestamp,
-	groupActivitiesByDate,
-} from "@/lib/utils/activity-tracker";
+import { formatActivityTimestamp, groupActivitiesByDate } from "@/lib/utils/activity-tracker";
 import type { Activity, ActivityCategory } from "@/types/activity";
 
 type ActivityTimelineProps = {
@@ -62,13 +59,8 @@ type ActivityTimelineProps = {
 	isLoading?: boolean;
 };
 
-export function ActivityTimeline({
-	activities,
-	isLoading = false,
-}: ActivityTimelineProps) {
-	const [filterCategory, setFilterCategory] = useState<
-		ActivityCategory | "all"
-	>("all");
+export function ActivityTimeline({ activities, isLoading = false }: ActivityTimelineProps) {
+	const [filterCategory, setFilterCategory] = useState<ActivityCategory | "all">("all");
 
 	// Get density settings from store
 	const density = useActivityTimelineStore((state) => state.density);
@@ -76,9 +68,7 @@ export function ActivityTimeline({
 	const _itemSpacing = useActivityTimelineStore((state) => state.itemSpacing);
 	const _showIcons = useActivityTimelineStore((state) => state.showIcons);
 	const _showAvatars = useActivityTimelineStore((state) => state.showAvatars);
-	const showAttachmentPreviews = useActivityTimelineStore(
-		(state) => state.showAttachmentPreviews,
-	);
+	const showAttachmentPreviews = useActivityTimelineStore((state) => state.showAttachmentPreviews);
 	const showMetadata = useActivityTimelineStore((state) => state.showMetadata);
 	const _iconSize = useActivityTimelineStore((state) => state.iconSize);
 	const textSize = useActivityTimelineStore((state) => state.textSize);
@@ -107,7 +97,7 @@ export function ActivityTimeline({
 		return (
 			<div className="flex h-96 items-center justify-center">
 				<div className="flex flex-col items-center gap-2">
-					<div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+					<div className="border-primary size-8 animate-spin rounded-full border-4 border-t-transparent" />
 					<p className="text-muted-foreground text-sm">Loading activities...</p>
 				</div>
 			</div>
@@ -118,9 +108,9 @@ export function ActivityTimeline({
 		return (
 			<div className="flex h-96 items-center justify-center">
 				<div className="text-center">
-					<MessageSquare className="mx-auto size-12 text-muted-foreground" />
-					<h3 className="mt-4 font-semibold text-lg">No activities yet</h3>
-					<p className="mt-2 text-muted-foreground text-sm">
+					<MessageSquare className="text-muted-foreground mx-auto size-12" />
+					<h3 className="mt-4 text-lg font-semibold">No activities yet</h3>
+					<p className="text-muted-foreground mt-2 text-sm">
 						Activities will appear here as changes are made
 					</p>
 				</div>
@@ -134,9 +124,7 @@ export function ActivityTimeline({
 			<div className="flex shrink-0 items-center justify-between gap-2 border-b p-4">
 				<div className="flex flex-1 items-center gap-2">
 					<Select
-						onValueChange={(value) =>
-							setFilterCategory(value as ActivityCategory | "all")
-						}
+						onValueChange={(value) => setFilterCategory(value as ActivityCategory | "all")}
 						value={filterCategory}
 					>
 						<SelectTrigger className="h-8 w-[140px]">
@@ -161,41 +149,23 @@ export function ActivityTimeline({
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>View Density</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem
-								onClick={() => handleDensityChange("text-only")}
-							>
-								<span
-									className={cn(
-										density === "text-only" && "font-semibold text-primary",
-									)}
-								>
+							<DropdownMenuItem onClick={() => handleDensityChange("text-only")}>
+								<span className={cn(density === "text-only" && "text-primary font-semibold")}>
 									Text Only
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("small")}>
-								<span
-									className={cn(
-										density === "small" && "font-semibold text-primary",
-									)}
-								>
+								<span className={cn(density === "small" && "text-primary font-semibold")}>
 									Small
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("medium")}>
-								<span
-									className={cn(
-										density === "medium" && "font-semibold text-primary",
-									)}
-								>
+								<span className={cn(density === "medium" && "text-primary font-semibold")}>
 									Medium
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("large")}>
-								<span
-									className={cn(
-										density === "large" && "font-semibold text-primary",
-									)}
-								>
+								<span className={cn(density === "large" && "text-primary font-semibold")}>
 									Large
 								</span>
 							</DropdownMenuItem>
@@ -214,7 +184,7 @@ export function ActivityTimeline({
 						<div className="relative">
 							{/* Vertical line - only extends through date groups */}
 							<Separator
-								className="absolute top-4 bottom-0 left-2 w-px bg-muted"
+								className="bg-muted absolute top-4 bottom-0 left-2 w-px"
 								orientation="vertical"
 							/>
 
@@ -225,15 +195,12 @@ export function ActivityTimeline({
 								return (
 									<div className="relative mb-10 pl-8" key={dateKey}>
 										{/* Circle indicator */}
-										<div className="absolute top-2 left-0 flex size-5 items-center justify-center rounded-full bg-foreground">
-											<div className="size-3 rounded-full bg-background" />
+										<div className="bg-foreground absolute top-2 left-0 flex size-5 items-center justify-center rounded-full">
+											<div className="bg-background size-3 rounded-full" />
 										</div>
 
 										{/* Date badge */}
-										<Badge
-											className="mb-3 rounded-xl px-3 py-2 text-sm"
-											variant="secondary"
-										>
+										<Badge className="mb-3 rounded-xl px-3 py-2 text-sm" variant="secondary">
 											{dateKey}
 										</Badge>
 
@@ -257,17 +224,15 @@ export function ActivityTimeline({
 
 					{/* End of timeline indicator */}
 					{sortedDates.length > 0 && (
-						<div className="relative mt-12 rounded-xl bg-gradient-to-b from-background via-muted/50 to-muted py-16 text-center">
+						<div className="from-background via-muted/50 to-muted relative mt-12 rounded-xl bg-gradient-to-b py-16 text-center">
 							{/* End message */}
 							<div className="flex flex-col items-center gap-4">
-								<div className="flex size-14 items-center justify-center rounded-full bg-muted/40">
-									<Sparkles className="size-7 text-muted-foreground/70" />
+								<div className="bg-muted/40 flex size-14 items-center justify-center rounded-full">
+									<Sparkles className="text-muted-foreground/70 size-7" />
 								</div>
 								<div>
-									<p className="font-semibold text-foreground text-lg">
-										Start of Timeline
-									</p>
-									<p className="mt-2 text-muted-foreground text-sm">
+									<p className="text-foreground text-lg font-semibold">Start of Timeline</p>
+									<p className="text-muted-foreground mt-2 text-sm">
 										You've reached the beginning of this activity history
 									</p>
 								</div>
@@ -297,21 +262,19 @@ function ActivityTimelineItem({
 	return (
 		<li className="flex gap-3">
 			{/* Small bullet dot */}
-			<span className="mt-1.5 h-2 w-2 flex-none rounded-full bg-foreground" />
+			<span className="bg-foreground mt-1.5 h-2 w-2 flex-none rounded-full" />
 
 			{/* Content */}
 			<div className="flex-1 space-y-2">
 				<div className="flex flex-wrap items-center gap-2">
-					<span className={cn("text-foreground leading-relaxed", textSize)}>
-						{activity.action}
-					</span>
+					<span className={cn("text-foreground leading-relaxed", textSize)}>{activity.action}</span>
 
 					{/* Actor metadata inline */}
 					{showMetadata && activity.actorName && (
 						<span
 							className={cn(
 								"text-muted-foreground",
-								textSize === "text-lg" ? "text-base" : "text-sm",
+								textSize === "text-lg" ? "text-base" : "text-sm"
 							)}
 						>
 							by {activity.actorName}
@@ -322,16 +285,14 @@ function ActivityTimelineItem({
 					<span
 						className={cn(
 							"text-muted-foreground",
-							textSize === "text-lg" ? "text-base" : "text-sm",
+							textSize === "text-lg" ? "text-base" : "text-sm"
 						)}
 					>
 						{formatActivityTimestamp(activity.occurredAt)}
 					</span>
 
 					{/* AI Model badge inline */}
-					{showMetadata && activity.aiModel && (
-						<Badge variant="outline">{activity.aiModel}</Badge>
-					)}
+					{showMetadata && activity.aiModel && <Badge variant="outline">{activity.aiModel}</Badge>}
 
 					{/* Important badge inline */}
 					{showMetadata && activity.isImportant && (
@@ -346,8 +307,8 @@ function ActivityTimelineItem({
 				{showMetadata && activity.description && (
 					<p
 						className={cn(
-							"mt-1 text-muted-foreground",
-							textSize === "text-lg" ? "text-base" : "text-sm",
+							"text-muted-foreground mt-1",
+							textSize === "text-lg" ? "text-base" : "text-sm"
 						)}
 					>
 						{activity.description}
@@ -355,35 +316,29 @@ function ActivityTimelineItem({
 				)}
 
 				{/* Field change details */}
-				{showMetadata &&
-					activity.fieldName &&
-					(activity.oldValue || activity.newValue) && (
-						<div
-							className={cn(
-								"mt-2 rounded-lg border bg-muted/50 p-2",
-								textSize === "text-lg" ? "text-base" : "text-sm",
+				{showMetadata && activity.fieldName && (activity.oldValue || activity.newValue) && (
+					<div
+						className={cn(
+							"bg-muted/50 mt-2 rounded-lg border p-2",
+							textSize === "text-lg" ? "text-base" : "text-sm"
+						)}
+					>
+						<div className="flex items-center gap-2">
+							{activity.oldValue && (
+								<div className="flex-1">
+									<span className="text-muted-foreground">From: </span>
+									<span className="font-medium line-through">{activity.oldValue}</span>
+								</div>
 							)}
-						>
-							<div className="flex items-center gap-2">
-								{activity.oldValue && (
-									<div className="flex-1">
-										<span className="text-muted-foreground">From: </span>
-										<span className="font-medium line-through">
-											{activity.oldValue}
-										</span>
-									</div>
-								)}
-								{activity.newValue && (
-									<div className="flex-1">
-										<span className="text-muted-foreground">To: </span>
-										<span className="font-medium text-primary">
-											{activity.newValue}
-										</span>
-									</div>
-								)}
-							</div>
+							{activity.newValue && (
+								<div className="flex-1">
+									<span className="text-muted-foreground">To: </span>
+									<span className="text-primary font-medium">{activity.newValue}</span>
+								</div>
+							)}
 						</div>
-					)}
+					</div>
+				)}
 
 				{/* Attachments */}
 				{showAttachmentPreviews &&
@@ -405,8 +360,8 @@ function ActivityTimelineItem({
 							{activity.attachmentName && (
 								<p
 									className={cn(
-										"mt-1 text-muted-foreground",
-										textSize === "text-lg" ? "text-base" : "text-sm",
+										"text-muted-foreground mt-1",
+										textSize === "text-lg" ? "text-base" : "text-sm"
 									)}
 								>
 									{activity.attachmentName}
@@ -421,14 +376,14 @@ function ActivityTimelineItem({
 						<div className="mt-2">
 							<a
 								className={cn(
-									"flex items-center gap-2 rounded-lg border p-3 transition-colors hover:bg-muted",
-									textSize === "text-lg" ? "text-base" : "text-sm",
+									"hover:bg-muted flex items-center gap-2 rounded-lg border p-3 transition-colors",
+									textSize === "text-lg" ? "text-base" : "text-sm"
 								)}
 								href={activity.attachmentUrl}
 								rel="noopener noreferrer"
 								target="_blank"
 							>
-								<FileText className="size-4 text-muted-foreground" />
+								<FileText className="text-muted-foreground size-4" />
 								<span>{activity.attachmentName || "Document"}</span>
 							</a>
 						</div>

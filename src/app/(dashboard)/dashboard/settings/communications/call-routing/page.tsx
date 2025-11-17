@@ -50,9 +50,9 @@ export default function CallRoutingPage() {
 						className="mt-0 flex-1 data-[state=active]:flex data-[state=active]:flex-col"
 						value="routing-rules"
 					>
-						<div className="flex items-center justify-between border-b bg-muted/30 px-6 py-4">
+						<div className="bg-muted/30 flex items-center justify-between border-b px-6 py-4">
 							<div>
-								<h3 className="font-medium text-sm">Routing Rules</h3>
+								<h3 className="text-sm font-medium">Routing Rules</h3>
 								<p className="text-muted-foreground text-sm">
 									Define how incoming calls are distributed to your team
 								</p>
@@ -78,10 +78,8 @@ export default function CallRoutingPage() {
 					<TabsContent className="mt-0 flex-1 p-6" value="after-hours">
 						{/* After-hours routing will be added here */}
 						<div className="rounded-lg border border-dashed p-12 text-center">
-							<h3 className="mb-2 font-semibold text-lg">
-								After Hours Routing
-							</h3>
-							<p className="mb-4 text-muted-foreground">
+							<h3 className="mb-2 text-lg font-semibold">After Hours Routing</h3>
+							<p className="text-muted-foreground mb-4">
 								Configure what happens when calls come in outside business hours
 							</p>
 							<Button variant="outline">Configure After Hours</Button>
@@ -91,8 +89,8 @@ export default function CallRoutingPage() {
 					<TabsContent className="mt-0 flex-1 p-6" value="holidays">
 						{/* Holiday exceptions will be added here */}
 						<div className="rounded-lg border border-dashed p-12 text-center">
-							<h3 className="mb-2 font-semibold text-lg">Holiday Exceptions</h3>
-							<p className="mb-4 text-muted-foreground">
+							<h3 className="mb-2 text-lg font-semibold">Holiday Exceptions</h3>
+							<p className="text-muted-foreground mb-4">
 								Set special routing for holidays and company closures
 							</p>
 							<Button variant="outline">Add Holiday</Button>

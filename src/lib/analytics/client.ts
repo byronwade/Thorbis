@@ -14,7 +14,7 @@ import type { AnalyticsEvent } from "./types";
  * Serialize properties to ensure they're compatible with Vercel Analytics
  */
 function serializeProperties(
-	properties?: Record<string, unknown>,
+	properties?: Record<string, unknown>
 ): Record<string, string | number | boolean> | undefined {
 	if (!properties) {
 		return;
@@ -27,11 +27,7 @@ function serializeProperties(
 			continue;
 		}
 
-		if (
-			typeof value === "string" ||
-			typeof value === "number" ||
-			typeof value === "boolean"
-		) {
+		if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
 			serialized[key] = value;
 		} else if (typeof value === "object") {
 			// Serialize nested objects to JSON strings
@@ -101,10 +97,7 @@ export function trackPageView(path: string, title?: string): void {
 /**
  * Track a custom event with type safety
  */
-export function trackCustomEvent(
-	name: string,
-	properties?: Record<string, unknown>,
-): void {
+export function trackCustomEvent(name: string, properties?: Record<string, unknown>): void {
 	trackEvent({
 		name: name as AnalyticsEvent["name"],
 		properties,

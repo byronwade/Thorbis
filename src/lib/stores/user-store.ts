@@ -67,7 +67,7 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = false;
 						},
 						false,
-						"setUser",
+						"setUser"
 					),
 
 				updateUser: (updates) =>
@@ -78,7 +78,7 @@ export const useUserStore = create<UserStore>()(
 							}
 						},
 						false,
-						"updateUser",
+						"updateUser"
 					),
 
 				logout: () =>
@@ -89,7 +89,7 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = false;
 						},
 						false,
-						"logout",
+						"logout"
 					),
 
 				setLoading: (loading) =>
@@ -98,7 +98,7 @@ export const useUserStore = create<UserStore>()(
 							state.isLoading = loading;
 						},
 						false,
-						"setLoading",
+						"setLoading"
 					),
 
 				reset: () => set(initialState, false, "reset"),
@@ -110,10 +110,10 @@ export const useUserStore = create<UserStore>()(
 					user: state.user,
 					isAuthenticated: state.isAuthenticated,
 				}),
-			},
+			}
 		),
-		{ name: "UserStore" },
-	),
+		{ name: "UserStore" }
+	)
 );
 
 /**

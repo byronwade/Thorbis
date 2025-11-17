@@ -31,10 +31,12 @@ export async function MaintenancePlansData() {
 
 	const { data: plansRaw, error } = await supabase
 		.from("maintenance_plans")
-		.select(`
+		.select(
+			`
       *,
       customer:customers!customer_id(display_name, first_name, last_name)
-    `)
+    `
+		)
 		.eq("company_id", activeCompanyId)
 		.order("created_at", { ascending: false });
 
@@ -46,9 +48,7 @@ export async function MaintenancePlansData() {
 	const plans: MaintenancePlan[] =
 		// biome-ignore lint/suspicious/noExplicitAny: Supabase query result type
 		(plansRaw || []).map((plan: any): MaintenancePlan => {
-			const customer = Array.isArray(plan.customer)
-				? plan.customer[0]
-				: plan.customer;
+			const customer = Array.isArray(plan.customer) ? plan.customer[0] : plan.customer;
 
 			const customerName =
 				customer?.display_name ||
@@ -68,8 +68,7 @@ export async function MaintenancePlansData() {
 				planName: plan.name || plan.plan_number || plan.id,
 				customer: customerName,
 				serviceType: plan.service_type || plan.name || "Service plan",
-				frequency: (plan.frequency ||
-					"Monthly") as MaintenancePlan["frequency"],
+				frequency: (plan.frequency || "Monthly") as MaintenancePlan["frequency"],
 				nextVisit: nextVisit || "",
 				monthlyFee:
 					typeof plan.monthly_fee === "number"

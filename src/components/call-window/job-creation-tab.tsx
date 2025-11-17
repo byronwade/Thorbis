@@ -34,8 +34,7 @@ export function JobCreationTab() {
 	} = useAutoFill("job");
 
 	const aiFilledCount =
-		getFieldsByState("ai-filled").length +
-		getFieldsByState("ai-suggested").length;
+		getFieldsByState("ai-filled").length + getFieldsByState("ai-suggested").length;
 
 	return (
 		<div className="h-full overflow-y-auto">
@@ -44,7 +43,7 @@ export function JobCreationTab() {
 				{isExtracting && (
 					<div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
 						<Sparkles className="h-4 w-4 animate-pulse text-blue-600 dark:text-blue-400" />
-						<span className="text-blue-900 text-sm dark:text-blue-100">
+						<span className="text-sm text-blue-900 dark:text-blue-100">
 							AI is analyzing the conversation...
 						</span>
 					</div>
@@ -52,30 +51,19 @@ export function JobCreationTab() {
 
 				{/* Bulk Actions */}
 				{aiFilledCount > 0 && (
-					<div className="flex items-center justify-between rounded-lg border bg-card p-3">
+					<div className="bg-card flex items-center justify-between rounded-lg border p-3">
 						<div className="flex items-center gap-2">
-							<Sparkles className="h-4 w-4 text-primary" />
+							<Sparkles className="text-primary h-4 w-4" />
 							<span className="text-sm">
-								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled
-								by AI
+								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled by AI
 							</span>
 						</div>
 						<div className="flex gap-2">
-							<Button
-								className="gap-1"
-								onClick={approveAll}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="gap-1" onClick={approveAll} size="sm" variant="outline">
 								<Check className="h-3 w-3" />
 								Accept All
 							</Button>
-							<Button
-								className="gap-1"
-								onClick={rejectAll}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="gap-1" onClick={rejectAll} size="sm" variant="outline">
 								<X className="h-3 w-3" />
 								Reject All
 							</Button>
@@ -85,7 +73,7 @@ export function JobCreationTab() {
 
 				{/* Job Details */}
 				<div className="space-y-4">
-					<h3 className="font-semibold text-lg">Job Details</h3>
+					<h3 className="text-lg font-semibold">Job Details</h3>
 
 					<AIField
 						approveField={approveField}
@@ -117,7 +105,7 @@ export function JobCreationTab() {
 								<SelectTrigger
 									className={cn(
 										getField("priority").state === "ai-filled" &&
-											"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+											"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30"
 									)}
 								>
 									<SelectValue placeholder="Select priority" />
@@ -185,15 +173,14 @@ function AIField({
 	rejectField: (name: string) => void;
 }) {
 	const field = getField(name);
-	const isAIFilled =
-		field.state === "ai-filled" || field.state === "ai-suggested";
+	const isAIFilled = field.state === "ai-filled" || field.state === "ai-suggested";
 
 	return (
 		<div className="space-y-2">
 			<Label className="flex items-center gap-2" htmlFor={name}>
 				{label}
 				{isAIFilled && (
-					<span className="flex items-center gap-1 text-primary text-xs">
+					<span className="text-primary flex items-center gap-1 text-xs">
 						<Sparkles className="h-3 w-3" />
 						AI ({field.confidence}%)
 					</span>
@@ -203,11 +190,10 @@ function AIField({
 				<Input
 					className={cn(
 						"transition-colors",
-						field.state === "ai-filled" &&
-							"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+						field.state === "ai-filled" && "border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
 						field.state === "ai-suggested" &&
 							"border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
-						field.state === "user-entered" && "border-green-500",
+						field.state === "user-entered" && "border-green-500"
 					)}
 					id={name}
 					onChange={(e) => updateField(name, e.target.value)}
@@ -259,15 +245,14 @@ function AITextarea({
 	rejectField: (name: string) => void;
 }) {
 	const field = getField(name);
-	const isAIFilled =
-		field.state === "ai-filled" || field.state === "ai-suggested";
+	const isAIFilled = field.state === "ai-filled" || field.state === "ai-suggested";
 
 	return (
 		<div className="space-y-2">
 			<Label className="flex items-center gap-2" htmlFor={name}>
 				{label}
 				{isAIFilled && (
-					<span className="flex items-center gap-1 text-primary text-xs">
+					<span className="text-primary flex items-center gap-1 text-xs">
 						<Sparkles className="h-3 w-3" />
 						AI ({field.confidence}%)
 					</span>
@@ -277,11 +262,10 @@ function AITextarea({
 				<Textarea
 					className={cn(
 						"min-h-[120px] transition-colors",
-						field.state === "ai-filled" &&
-							"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+						field.state === "ai-filled" && "border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
 						field.state === "ai-suggested" &&
 							"border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
-						field.state === "user-entered" && "border-green-500",
+						field.state === "user-entered" && "border-green-500"
 					)}
 					id={name}
 					onChange={(e) => updateField(name, e.target.value)}

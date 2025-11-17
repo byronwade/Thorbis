@@ -3,12 +3,7 @@
  */
 
 export type { AIConfig, AIProvider } from "./config";
-export {
-	AVAILABLE_MODELS,
-	createAIProvider,
-	createProviderClient,
-	getAIConfig,
-} from "./config";
+export { AVAILABLE_MODELS, createAIProvider, createProviderClient, getAIConfig } from "./config";
 export type {
 	AgentContext,
 	AgentMessage,
@@ -22,8 +17,4 @@ export type {
 	WorkflowStep,
 	WorkflowStepResult,
 } from "./workflows";
-export {
-	codeReviewWorkflow,
-	contentGenerationWorkflow,
-	WorkflowEngine,
-} from "./workflows";
+export { codeReviewWorkflow, contentGenerationWorkflow, WorkflowEngine } from "./workflows";

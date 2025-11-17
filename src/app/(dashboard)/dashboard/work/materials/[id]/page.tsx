@@ -15,11 +15,7 @@ import { Suspense } from "react";
 import { MaterialDetailData } from "@/components/work/materials/material-detail-data";
 import { MaterialDetailSkeleton } from "@/components/work/materials/material-detail-skeleton";
 
-export default async function MaterialDetailsPage({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export default async function MaterialDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: materialId } = await params;
 
 	return (

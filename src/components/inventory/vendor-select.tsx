@@ -12,11 +12,7 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type Vendor = {
@@ -31,10 +27,7 @@ type Vendor = {
 
 type VendorSelectProps = {
 	value?: string;
-	onValueChange: (
-		vendorId: string | undefined,
-		vendor: Vendor | undefined,
-	) => void;
+	onValueChange: (vendorId: string | undefined, vendor: Vendor | undefined) => void;
 	placeholder?: string;
 	disabled?: boolean;
 	className?: string;
@@ -80,7 +73,7 @@ export function VendorSelect({
 					className={cn(
 						"w-full justify-between",
 						!selectedVendor && "text-muted-foreground",
-						className,
+						className
 					)}
 					disabled={disabled}
 					role="combobox"
@@ -102,14 +95,9 @@ export function VendorSelect({
 			</PopoverTrigger>
 			<PopoverContent align="start" className="w-full p-0">
 				<Command>
-					<CommandInput
-						onValueChange={setSearchQuery}
-						placeholder="Search vendors..."
-					/>
+					<CommandInput onValueChange={setSearchQuery} placeholder="Search vendors..." />
 					<CommandList>
-						<CommandEmpty>
-							{isLoading ? "Loading..." : "No vendors found."}
-						</CommandEmpty>
+						<CommandEmpty>{isLoading ? "Loading..." : "No vendors found."}</CommandEmpty>
 						<CommandGroup>
 							{vendors.map((vendor) => (
 								<CommandItem
@@ -117,7 +105,7 @@ export function VendorSelect({
 									onSelect={() => {
 										onValueChange(
 											vendor.id === value ? undefined : vendor.id,
-											vendor.id === value ? undefined : vendor,
+											vendor.id === value ? undefined : vendor
 										);
 										setOpen(false);
 									}}
@@ -126,13 +114,11 @@ export function VendorSelect({
 									<Check
 										className={cn(
 											"mr-2 h-4 w-4",
-											value === vendor.id ? "opacity-100" : "opacity-0",
+											value === vendor.id ? "opacity-100" : "opacity-0"
 										)}
 									/>
 									<div className="flex flex-col">
-										<span className="font-medium">
-											{vendor.display_name || vendor.name}
-										</span>
+										<span className="font-medium">{vendor.display_name || vendor.name}</span>
 										<span className="text-muted-foreground text-xs">
 											{vendor.vendor_number}
 											{vendor.email && ` • ${vendor.email}`}

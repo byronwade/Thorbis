@@ -43,13 +43,9 @@ const ACCEPTED_FILE_TYPES = {
 	"image/tiff": [".tiff", ".tif"],
 	"application/pdf": [".pdf"],
 	"application/msword": [".doc"],
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-		".docx",
-	],
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
 	"application/vnd.ms-excel": [".xls"],
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-		".xlsx",
-	],
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
 	"text/plain": [".txt"],
 	"text/csv": [".csv"],
 };
@@ -68,8 +64,7 @@ export function InlinePhotoUploader({
 	const [uploadProgress, setUploadProgress] = useState(0);
 
 	const generateId = () => Math.random().toString(36).substring(2, 15);
-	const isImageFile = (mimeType: string): boolean =>
-		mimeType.startsWith("image/");
+	const isImageFile = (mimeType: string): boolean => mimeType.startsWith("image/");
 
 	const validateFile = (file: File): string | null => {
 		const fileType = file.type;
@@ -118,7 +113,7 @@ export function InlinePhotoUploader({
 
 			setFiles((prev) => [...prev, ...newFiles]);
 		},
-		[toast, generateId, isImageFile, validateFile],
+		[toast, generateId, isImageFile, validateFile]
 	);
 
 	const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,32 +189,27 @@ export function InlinePhotoUploader({
 						// Show specific error messages
 						if (errorMessage.includes("Access denied")) {
 							toast.error(
-								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`,
+								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`
 							);
 						} else if (errorMessage.includes("Storage upload failed")) {
 							toast.error(
-								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`,
+								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`
 							);
 						} else {
-							toast.error(
-								`Failed to upload ${photoFile.file.name}: ${errorMessage}`,
-							);
+							toast.error(`Failed to upload ${photoFile.file.name}: ${errorMessage}`);
 						}
 					}
 				} catch (error) {
 					errorCount++;
-					const errorMessage =
-						error instanceof Error ? error.message : String(error);
+					const errorMessage = error instanceof Error ? error.message : String(error);
 
 					// Handle different error types
 					if (errorMessage.includes("unexpected response")) {
 						toast.error(
-							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`,
+							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`
 						);
 					} else {
-						toast.error(
-							`Error uploading ${photoFile.file.name}: ${errorMessage}`,
-						);
+						toast.error(`Error uploading ${photoFile.file.name}: ${errorMessage}`);
 					}
 				}
 
@@ -228,14 +218,12 @@ export function InlinePhotoUploader({
 
 			if (successCount > 0) {
 				toast.success(
-					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`,
+					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
 				);
 			}
 
 			if (errorCount > 0 && successCount === 0) {
-				toast.error(
-					"All uploads failed. Please check your permissions and try again.",
-				);
+				toast.error("All uploads failed. Please check your permissions and try again.");
 			}
 
 			// Clean up object URLs
@@ -254,8 +242,7 @@ export function InlinePhotoUploader({
 				setTimeout(() => onCancel(), 100);
 			}
 		} catch (error) {
-			const errorMessage =
-				error instanceof Error ? error.message : "Failed to upload files";
+			const errorMessage = error instanceof Error ? error.message : "Failed to upload files";
 			toast.error(errorMessage);
 		} finally {
 			setIsUploading(false);
@@ -274,7 +261,7 @@ export function InlinePhotoUploader({
 	};
 
 	return (
-		<div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+		<div className="bg-muted/30 space-y-3 rounded-lg border p-4">
 			{/* Quick Upload Zone */}
 			<div className="relative">
 				<input
@@ -285,22 +272,20 @@ export function InlinePhotoUploader({
 					onChange={handleFileInput}
 					type="file"
 				/>
-				<div className="flex items-center gap-3 rounded-md border-2 border-muted-foreground/25 border-dashed bg-background p-3 hover:border-muted-foreground/50">
+				<div className="border-muted-foreground/25 bg-background hover:border-muted-foreground/50 flex items-center gap-3 rounded-md border-2 border-dashed p-3">
 					<div className="flex gap-1">
-						<div className="flex size-8 items-center justify-center rounded bg-primary/10">
-							<Camera className="size-4 text-primary" />
+						<div className="bg-primary/10 flex size-8 items-center justify-center rounded">
+							<Camera className="text-primary size-4" />
 						</div>
-						<div className="flex size-8 items-center justify-center rounded bg-primary/10">
-							<FileText className="size-4 text-primary" />
+						<div className="bg-primary/10 flex size-8 items-center justify-center rounded">
+							<FileText className="text-primary size-4" />
 						</div>
 					</div>
 					<div className="flex-1">
-						<p className="font-medium text-sm">Click or drag files here</p>
-						<p className="text-muted-foreground text-xs">
-							Images & documents up to 100MB
-						</p>
+						<p className="text-sm font-medium">Click or drag files here</p>
+						<p className="text-muted-foreground text-xs">Images & documents up to 100MB</p>
 					</div>
-					<Upload className="size-5 text-muted-foreground" />
+					<Upload className="text-muted-foreground size-5" />
 				</div>
 			</div>
 
@@ -308,7 +293,7 @@ export function InlinePhotoUploader({
 			{files.length > 0 && (
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
-						<span className="font-medium text-sm">
+						<span className="text-sm font-medium">
 							{files.length} file{files.length !== 1 ? "s" : ""} selected
 						</span>
 						<Button
@@ -323,14 +308,14 @@ export function InlinePhotoUploader({
 					<div className="grid gap-2">
 						{files.map((photoFile) => (
 							<div
-								className="flex items-center gap-3 rounded-md border bg-background p-2"
+								className="bg-background flex items-center gap-3 rounded-md border p-2"
 								key={photoFile.id}
 							>
 								{/* Thumbnail */}
-								<div className="relative size-12 shrink-0 overflow-hidden rounded bg-muted">
+								<div className="bg-muted relative size-12 shrink-0 overflow-hidden rounded">
 									{photoFile.isDocument ? (
 										<div className="flex size-full items-center justify-center">
-											<FileText className="size-6 text-muted-foreground" />
+											<FileText className="text-muted-foreground size-6" />
 										</div>
 									) : (
 										<Image
@@ -345,9 +330,7 @@ export function InlinePhotoUploader({
 								{/* Details */}
 								<div className="flex min-w-0 flex-1 items-center gap-2">
 									<div className="min-w-0 flex-1">
-										<p className="truncate font-medium text-sm">
-											{photoFile.file.name}
-										</p>
+										<p className="truncate text-sm font-medium">{photoFile.file.name}</p>
 										<p className="text-muted-foreground text-xs">
 											{formatFileSize(photoFile.file.size)}
 										</p>
@@ -374,9 +357,7 @@ export function InlinePhotoUploader({
 									{/* Caption */}
 									<Input
 										className="h-7 w-32 text-xs"
-										onChange={(e) =>
-											updateFileCaption(photoFile.id, e.target.value)
-										}
+										onChange={(e) => updateFileCaption(photoFile.id, e.target.value)}
 										placeholder="Caption"
 										value={photoFile.caption}
 									/>
@@ -402,9 +383,9 @@ export function InlinePhotoUploader({
 								<span className="text-muted-foreground">Uploading...</span>
 								<span className="font-medium">{uploadProgress}%</span>
 							</div>
-							<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-1.5 overflow-hidden rounded-full">
 								<div
-									className="h-full bg-primary transition-all duration-300"
+									className="bg-primary h-full transition-all duration-300"
 									style={{ width: `${uploadProgress}%` }}
 								/>
 							</div>
@@ -413,19 +394,10 @@ export function InlinePhotoUploader({
 
 					{/* Actions */}
 					<div className="flex justify-end gap-2">
-						<Button
-							disabled={isUploading}
-							onClick={onCancel}
-							size="sm"
-							variant="outline"
-						>
+						<Button disabled={isUploading} onClick={onCancel} size="sm" variant="outline">
 							Cancel
 						</Button>
-						<Button
-							disabled={files.length === 0 || isUploading}
-							onClick={handleUpload}
-							size="sm"
-						>
+						<Button disabled={files.length === 0 || isUploading} onClick={handleUpload} size="sm">
 							{isUploading ? (
 								<>Uploading...</>
 							) : (

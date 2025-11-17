@@ -54,19 +54,17 @@ export type EntityKanbanProps<TEntity, TStatus extends string> = {
 	renderCard: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
 
 	/** Render drag overlay */
-	renderDragOverlay?: (
-		item: KanbanItemBase & { entity: TEntity },
-	) => React.ReactNode;
+	renderDragOverlay?: (item: KanbanItemBase & { entity: TEntity }) => React.ReactNode;
 
 	/** Calculate column metadata (count, totals) */
 	calculateColumnMeta?: (
 		columnId: TStatus,
-		items: (KanbanItemBase & { entity: TEntity })[],
+		items: (KanbanItemBase & { entity: TEntity })[]
 	) => ColumnMeta;
 
 	/** Handle item move event */
 	onItemMove?: (
-		event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>,
+		event: KanbanMoveEvent<KanbanItemBase & { entity: TEntity }>
 	) => void | Promise<void>;
 
 	/** Entity name for empty states (e.g., "jobs", "invoices") */
@@ -96,8 +94,8 @@ export function EntityKanban<TEntity, TStatus extends string>({
 	showTotals = false,
 	formatTotal,
 }: EntityKanbanProps<TEntity, TStatus>) {
-	const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(
-		() => data.map(mapToKanbanItem),
+	const [items, setItems] = useState<(KanbanItemBase & { entity: TEntity })[]>(() =>
+		data.map(mapToKanbanItem)
 	);
 
 	// DO NOT sync prop changes - causes infinite re-render loop with array/function props
@@ -109,7 +107,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 				next.map((item) => ({
 					...item,
 					entity: updateEntityStatus(item.entity, item.columnId as TStatus),
-				})),
+				}))
 			);
 		} else {
 			setItems(next);
@@ -118,7 +116,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 
 	const defaultCalculateColumnMeta = (
 		columnId: TStatus,
-		items: (KanbanItemBase & { entity: TEntity })[],
+		items: (KanbanItemBase & { entity: TEntity })[]
 	): ColumnMeta => {
 		const columnItems = items.filter((item) => item.columnId === columnId);
 		return { count: columnItems.length };
@@ -141,11 +139,10 @@ export function EntityKanban<TEntity, TStatus extends string>({
 				name: col.name,
 				accentColor: col.accentColor,
 			})),
-		[columns],
+		[columns]
 	);
 
-	const defaultEmptyState = (columnName: string) =>
-		`No ${entityName} in ${columnName}`;
+	const defaultEmptyState = (columnName: string) => `No ${entityName} in ${columnName}`;
 
 	const getEmptyStateMessage = emptyStateMessage || defaultEmptyState;
 
@@ -159,7 +156,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 			renderDragOverlay={
 				renderDragOverlay ||
 				((item) => (
-					<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+					<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
 						{renderCard(item)}
 					</div>
 				))
@@ -180,24 +177,18 @@ export function EntityKanban<TEntity, TStatus extends string>({
 									className="h-2.5 w-2.5 rounded-full"
 									style={{ backgroundColor: column.accentColor }}
 								/>
-								<span className="font-semibold text-foreground text-sm">
-									{column.name}
-								</span>
+								<span className="text-foreground text-sm font-semibold">{column.name}</span>
 								<Badge
-									className="rounded-full bg-muted px-2 py-0 font-medium text-muted-foreground text-xs"
+									className="bg-muted text-muted-foreground rounded-full px-2 py-0 text-xs font-medium"
 									variant="secondary"
 								>
 									{meta.count} {entityName}
 								</Badge>
 								{showTotals && meta.total !== undefined && formatTotal && (
-									<span className="text-muted-foreground text-xs">
-										{formatTotal(meta.total)}
-									</span>
+									<span className="text-muted-foreground text-xs">{formatTotal(meta.total)}</span>
 								)}
 								{showTotals && meta.value !== undefined && formatTotal && (
-									<span className="text-muted-foreground text-xs">
-										{formatTotal(meta.value)}
-									</span>
+									<span className="text-muted-foreground text-xs">{formatTotal(meta.value)}</span>
 								)}
 							</div>
 						</KanbanHeader>
@@ -205,7 +196,7 @@ export function EntityKanban<TEntity, TStatus extends string>({
 							className="min-h-[200px]"
 							columnId={column.id}
 							emptyState={
-								<div className="rounded-xl border border-border/60 border-dashed bg-background/60 p-4 text-center text-muted-foreground text-xs">
+								<div className="border-border/60 bg-background/60 text-muted-foreground rounded-xl border border-dashed p-4 text-center text-xs">
 									{getEmptyStateMessage(column.name)}
 								</div>
 							}

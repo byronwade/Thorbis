@@ -41,7 +41,7 @@ export async function GET() {
       ${article.tags
 				?.map(
 					(tag) =>
-						`<category><![CDATA[${String((tag as { name?: string }).name || "")}]]></category>`,
+						`<category><![CDATA[${String((tag as { name?: string }).name || "")}]]></category>`
 				)
 				.join("\n      ")}
     </item>`;

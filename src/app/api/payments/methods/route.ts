@@ -12,17 +12,11 @@ export async function GET(request: NextRequest) {
 		const customerId = searchParams.get("customerId");
 
 		if (!customerId) {
-			return NextResponse.json(
-				{ error: "Customer ID is required" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Customer ID is required" }, { status: 400 });
 		}
 
 		if (!stripe) {
-			return NextResponse.json(
-				{ error: "Payment system not configured" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Payment system not configured" }, { status: 500 });
 		}
 
 		// Fetch payment methods from Stripe
@@ -42,9 +36,6 @@ export async function GET(request: NextRequest) {
 
 		return NextResponse.json({ paymentMethods: formattedMethods });
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Failed to fetch payment methods" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Failed to fetch payment methods" }, { status: 500 });
 	}
 }

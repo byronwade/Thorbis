@@ -26,12 +26,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function MaintenancePlanDetailToolbarActions() {
@@ -73,12 +68,7 @@ export function MaintenancePlanDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
 								<a href={`/dashboard/schedule?planId=${planId}`}>
 									<Calendar className="size-3.5" />
 									<span className="hidden md:inline">Schedule</span>
@@ -94,15 +84,8 @@ export function MaintenancePlanDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
-								<a
-									href={`/dashboard/work/maintenance-plans/new?cloneFrom=${planId}`}
-								>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
+								<a href={`/dashboard/work/maintenance-plans/new?cloneFrom=${planId}`}>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -122,7 +105,7 @@ export function MaintenancePlanDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -143,8 +126,8 @@ export function MaintenancePlanDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Maintenance Plan</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this maintenance plan? Archived
-							plans can be restored within 90 days.
+							Are you sure you want to archive this maintenance plan? Archived plans can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -155,11 +138,7 @@ export function MaintenancePlanDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Plan"}
 						</Button>
 					</DialogFooter>

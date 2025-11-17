@@ -15,9 +15,6 @@ export {
 	TabsContent,
 } from "./progressive-tab";
 
-export {
-	ProgressiveAccordion,
-	ProgressiveAccordionItem,
-} from "./progressive-accordion";
+export { ProgressiveAccordion, ProgressiveAccordionItem } from "./progressive-accordion";
 
 export { ProgressiveWidget, WidgetSkeleton } from "./progressive-widget";

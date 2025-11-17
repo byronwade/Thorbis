@@ -126,7 +126,7 @@ export function QuickAddDropdown() {
 		// Render placeholder button during SSR that matches client button dimensions
 		return (
 			<button
-				className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+				className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 				disabled
 				title="Quick Add"
 				type="button"
@@ -141,7 +141,7 @@ export function QuickAddDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<button
-					className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+					className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 					title="Quick Add"
 					type="button"
 				>
@@ -150,9 +150,7 @@ export function QuickAddDropdown() {
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-64 rounded-lg">
-				<DropdownMenuLabel className="font-semibold">
-					Quick Add
-				</DropdownMenuLabel>
+				<DropdownMenuLabel className="font-semibold">Quick Add</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 
 				{Object.entries(quickAddActions).map(([category, actions], index) => (
@@ -166,10 +164,7 @@ export function QuickAddDropdown() {
 								const Icon = action.icon;
 								return (
 									<DropdownMenuItem asChild key={action.href}>
-										<Link
-											className="flex items-center gap-2"
-											href={action.href}
-										>
+										<Link className="flex items-center gap-2" href={action.href}>
 											<Icon className="size-4" />
 											<div className="flex flex-1 flex-col">
 												<span className="text-sm">{action.label}</span>
@@ -180,9 +175,7 @@ export function QuickAddDropdown() {
 												)}
 											</div>
 											{action.shortcut && (
-												<DropdownMenuShortcut>
-													{action.shortcut}
-												</DropdownMenuShortcut>
+												<DropdownMenuShortcut>{action.shortcut}</DropdownMenuShortcut>
 											)}
 										</Link>
 									</DropdownMenuItem>

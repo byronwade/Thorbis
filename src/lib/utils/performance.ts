@@ -16,10 +16,7 @@ export function perfEnd(label: string, start: number): number {
 	return duration;
 }
 
-export async function perfWrap<T>(
-	label: string,
-	fn: () => Promise<T>,
-): Promise<T> {
+export async function perfWrap<T>(label: string, fn: () => Promise<T>): Promise<T> {
 	const start = perfStart(label);
 	try {
 		const result = await fn();

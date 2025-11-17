@@ -95,41 +95,36 @@ export const getAppointmentsWithRelations = cache(
 
 		// Parallel queries instead of JOINs (saves 400-700ms)
 		// 4 simple indexed queries in parallel vs 1 complex query with 3 JOINs
-		const [schedulesResult, customersResult, propertiesResult, usersResult] =
-			await Promise.all([
-				// Main schedules query - uses idx_schedules_type_company composite index
-				supabase
-					.from("schedules")
-					.select("*")
-					.eq("company_id", activeCompanyId)
-					.eq("type", "appointment")
-					.order("start_time", { ascending: true })
-					.limit(MAX_APPOINTMENTS),
+		const [schedulesResult, customersResult, propertiesResult, usersResult] = await Promise.all([
+			// Main schedules query - uses idx_schedules_type_company composite index
+			supabase
+				.from("schedules")
+				.select("*")
+				.eq("company_id", activeCompanyId)
+				.eq("type", "appointment")
+				.order("start_time", { ascending: true })
+				.limit(MAX_APPOINTMENTS),
 
-				// Customers lookup - simple indexed query
-				supabase
-					.from("customers")
-					.select("id, first_name, last_name, display_name, company_name")
-					.eq("company_id", activeCompanyId)
-					.is("deleted_at", null),
+			// Customers lookup - simple indexed query
+			supabase
+				.from("customers")
+				.select("id, first_name, last_name, display_name, company_name")
+				.eq("company_id", activeCompanyId)
+				.is("deleted_at", null),
 
-				// Properties lookup - simple indexed query
-				supabase
-					.from("properties")
-					.select("id, address, city, state, zip_code")
-					.eq("company_id", activeCompanyId)
-					.is("deleted_at", null),
+			// Properties lookup - simple indexed query
+			supabase
+				.from("properties")
+				.select("id, address, city, state, zip_code")
+				.eq("company_id", activeCompanyId)
+				.is("deleted_at", null),
 
-				// Users lookup - no company filter needed (global)
-				supabase
-					.from("users")
-					.select("id, name, email"),
-			]);
+			// Users lookup - no company filter needed (global)
+			supabase.from("users").select("id, name, email"),
+		]);
 
 		if (schedulesResult.error) {
-			throw new Error(
-				`Failed to load appointments: ${schedulesResult.error.message}`,
-			);
+			throw new Error(`Failed to load appointments: ${schedulesResult.error.message}`);
 		}
 
 		const schedules = schedulesResult.data || [];
@@ -159,20 +154,14 @@ export const getAppointmentsWithRelations = cache(
 
 			acc.push({
 				...apt,
-				customer: apt.customer_id
-					? customerMap.get(apt.customer_id) || null
-					: null,
-				property: apt.property_id
-					? propertyMap.get(apt.property_id) || null
-					: null,
-				assigned_user: apt.assigned_to
-					? userMap.get(apt.assigned_to) || null
-					: null,
+				customer: apt.customer_id ? customerMap.get(apt.customer_id) || null : null,
+				property: apt.property_id ? propertyMap.get(apt.property_id) || null : null,
+				assigned_user: apt.assigned_to ? userMap.get(apt.assigned_to) || null : null,
 			});
 
 			return acc;
 		}, []);
-	},
+	}
 );
 
 /**

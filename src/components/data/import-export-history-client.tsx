@@ -88,10 +88,8 @@ export function ImportExportHistoryClient() {
 	return (
 		<div className="container mx-auto max-w-6xl space-y-6 py-8">
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">
-					Import/Export History
-				</h1>
-				<p className="mt-2 text-muted-foreground">
+				<h1 className="text-3xl font-bold tracking-tight">Import/Export History</h1>
+				<p className="text-muted-foreground mt-2">
 					View and manage your data import and export operations
 				</p>
 			</div>
@@ -124,11 +122,11 @@ export function ImportExportHistoryClient() {
 											}`}
 										>
 											{item.status === "completed" ? (
-												<CheckCircle className="size-6 text-success" />
+												<CheckCircle className="text-success size-6" />
 											) : item.status === "failed" ? (
-												<XCircle className="size-6 text-destructive" />
+												<XCircle className="text-destructive size-6" />
 											) : (
-												<Clock className="size-6 text-primary" />
+												<Clock className="text-primary size-6" />
 											)}
 										</div>
 										<div className="flex-1">
@@ -146,7 +144,7 @@ export function ImportExportHistoryClient() {
 													{item.status}
 												</Badge>
 											</div>
-											<p className="mt-1 text-muted-foreground text-sm">
+											<p className="text-muted-foreground mt-1 text-sm">
 												{item.fileName} • {item.date}
 											</p>
 											<div className="mt-2 flex gap-4 text-sm">
@@ -187,15 +185,15 @@ export function ImportExportHistoryClient() {
 							<CardContent className="pt-6">
 								<div className="flex items-start justify-between">
 									<div className="flex items-start gap-4">
-										<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-											<FileSpreadsheet className="size-6 text-primary" />
+										<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+											<FileSpreadsheet className="text-primary size-6" />
 										</div>
 										<div className="flex-1">
 											<div className="flex items-center gap-2">
 												<h3 className="font-semibold">{item.type} Export</h3>
 												<Badge>{item.format.toUpperCase()}</Badge>
 											</div>
-											<p className="mt-1 text-muted-foreground text-sm">
+											<p className="text-muted-foreground mt-1 text-sm">
 												{item.fileName} • {item.date}
 											</p>
 											<p className="mt-2 text-sm">

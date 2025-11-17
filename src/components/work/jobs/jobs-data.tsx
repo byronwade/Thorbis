@@ -102,6 +102,14 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 		return notFound();
 	}
 
+	// Get user's active company
+	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+	const companyId = await getActiveCompanyId();
+
+	if (!companyId) {
+		return notFound();
+	}
+
 	// Get current page from URL (default to 1)
 	const currentPage = Number(searchParams?.page) || 1;
 	const start = (currentPage - 1) * JOBS_PAGE_SIZE;
@@ -111,31 +119,28 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 	const { count: totalCount } = await supabase
 		.from("jobs")
 		.select("*", { count: "exact", head: true })
+		.eq("company_id", companyId)
 		.is("deleted_at", null);
 
 	// Fetch only current page of jobs (server-side pagination)
 	const { data: jobsRaw, error } = await supabase
 		.from("jobs")
 		.select(JOB_SELECT)
+		.eq("company_id", companyId)
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false })
 		.range(start, end); // Fetch current page based on URL param
 
 	if (error) {
 		const errorMessage =
-			error.message ||
-			error.hint ||
-			JSON.stringify(error) ||
-			"Unknown database error";
+			error.message || error.hint || JSON.stringify(error) || "Unknown database error";
 		throw new Error(`Failed to load jobs: ${errorMessage}`);
 	}
 
 	// Transform snake_case to camelCase for the component
 	const toDate = (value: string | null) => (value ? new Date(value) : null);
 
-	const resolveRelation = <T,>(
-		relation: T | T[] | null | undefined,
-	): T | null => {
+	const resolveRelation = <T,>(relation: T | T[] | null | undefined): T | null => {
 		if (!relation) {
 			return null;
 		}
@@ -144,10 +149,10 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 
 	const jobs: ExtendedJob[] = (jobsRaw ?? []).map((job) => {
 		const customer = resolveRelation<RelatedCustomer>(
-			job.customers as RelatedCustomer | RelatedCustomer[] | null,
+			job.customers as RelatedCustomer | RelatedCustomer[] | null
 		);
 		const property = resolveRelation<RelatedProperty>(
-			job.properties as RelatedProperty | RelatedProperty[] | null,
+			job.properties as RelatedProperty | RelatedProperty[] | null
 		);
 
 		const customerData: RelatedCustomer | null = customer

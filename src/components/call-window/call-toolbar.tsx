@@ -95,13 +95,13 @@ export function CallToolbar({
 	const getConnectionIcon = () => {
 		switch (connectionQuality) {
 			case "excellent":
-				return <Signal className="h-3 w-3 text-success" />;
+				return <Signal className="text-success h-3 w-3" />;
 			case "good":
-				return <Wifi className="h-3 w-3 text-warning" />;
+				return <Wifi className="text-warning h-3 w-3" />;
 			case "poor":
-				return <WifiOff className="h-3 w-3 text-destructive" />;
+				return <WifiOff className="text-destructive h-3 w-3" />;
 			default:
-				return <Signal className="h-3 w-3 text-muted-foreground" />;
+				return <Signal className="text-muted-foreground h-3 w-3" />;
 		}
 	};
 
@@ -123,12 +123,11 @@ export function CallToolbar({
 		customerData?.customer &&
 		typeof customerData.customer === "object" &&
 		"avatar_url" in customerData.customer
-			? ((customerData.customer as { avatar_url?: string }).avatar_url ??
-				undefined)
+			? ((customerData.customer as { avatar_url?: string }).avatar_url ?? undefined)
 			: undefined;
 
 	return (
-		<div className="flex items-center justify-between bg-card/50 px-6 py-3 backdrop-blur-sm">
+		<div className="bg-card/50 flex items-center justify-between px-6 py-3 backdrop-blur-sm">
 			{/* Left: Customer Info */}
 			<div className="flex items-center gap-3">
 				<div className="relative">
@@ -136,28 +135,26 @@ export function CallToolbar({
 						<AvatarImage src={customerAvatar} />
 						<AvatarFallback
 							className={cn(
-								"font-semibold text-base transition-all",
+								"text-base font-semibold transition-all",
 								isActive
 									? "bg-emerald-500/20 text-emerald-600 ring-2 ring-emerald-500/30"
-									: "bg-muted text-muted-foreground",
+									: "bg-muted text-muted-foreground"
 							)}
 						>
 							{getInitials(callerName)}
 						</AvatarFallback>
 					</Avatar>
 					{isActive && (
-						<div className="-right-0.5 -top-0.5 absolute h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-background" />
+						<div className="ring-background absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2" />
 					)}
 				</div>
 
 				<div className="space-y-0.5">
 					<div className="flex items-center gap-2">
-						<span className="font-semibold text-foreground text-sm">
-							{callerName}
-						</span>
+						<span className="text-foreground text-sm font-semibold">{callerName}</span>
 						{isActive && (
 							<div className="flex items-center gap-1.5">
-								<span className="font-mono text-muted-foreground text-xs tabular-nums">
+								<span className="text-muted-foreground font-mono text-xs tabular-nums">
 									{callDuration}
 								</span>
 								{isRecording && (
@@ -167,9 +164,7 @@ export function CallToolbar({
 						)}
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="font-mono text-muted-foreground text-xs">
-							{callerNumber}
-						</span>
+						<span className="text-muted-foreground font-mono text-xs">{callerNumber}</span>
 						{customerData?.isKnownCustomer && (
 							<Badge className="h-4 px-1.5 text-[10px]" variant="outline">
 								Customer
@@ -185,7 +180,7 @@ export function CallToolbar({
 				<Button
 					className={cn(
 						"h-10 w-10 rounded-full transition-all hover:scale-105",
-						!isMuted && "hover:bg-muted",
+						!isMuted && "hover:bg-muted"
 					)}
 					onClick={onMuteToggle}
 					size="icon"
@@ -197,44 +192,36 @@ export function CallToolbar({
 
 				{/* Hold */}
 				<Button
-					className="h-10 w-10 rounded-full transition-all hover:scale-105 hover:bg-muted"
+					className="hover:bg-muted h-10 w-10 rounded-full transition-all hover:scale-105"
 					onClick={onHoldToggle}
 					size="icon"
 					title={isOnHold ? "Resume" : "Hold"}
 					variant={isOnHold ? "secondary" : "ghost"}
 				>
-					{isOnHold ? (
-						<Play className="size-4" />
-					) : (
-						<Pause className="size-4" />
-					)}
+					{isOnHold ? <Play className="size-4" /> : <Pause className="size-4" />}
 				</Button>
 
 				{/* Record */}
 				<Button
 					className={cn(
 						"h-10 w-10 rounded-full transition-all hover:scale-105",
-						!isRecording && "hover:bg-muted",
+						!isRecording && "hover:bg-muted"
 					)}
 					onClick={onRecordToggle}
 					size="icon"
 					title={isRecording ? "Stop Recording" : "Record"}
 					variant={isRecording ? "destructive" : "ghost"}
 				>
-					{isRecording ? (
-						<Circle className="size-4 fill-current" />
-					) : (
-						<Square className="size-4" />
-					)}
+					{isRecording ? <Circle className="size-4 fill-current" /> : <Square className="size-4" />}
 				</Button>
 
-				<div className="mx-2 h-6 w-px bg-border" />
+				<div className="bg-border mx-2 h-6 w-px" />
 
 				{/* Video */}
 				<Button
 					className={cn(
 						"h-10 w-10 rounded-full transition-all hover:scale-105",
-						videoStatus === "off" && "hover:bg-muted",
+						videoStatus === "off" && "hover:bg-muted"
 					)}
 					onClick={onVideoToggle}
 					size="icon"
@@ -250,7 +237,7 @@ export function CallToolbar({
 
 				{/* Transfer */}
 				<Button
-					className="h-10 w-10 rounded-full transition-all hover:scale-105 hover:bg-muted"
+					className="hover:bg-muted h-10 w-10 rounded-full transition-all hover:scale-105"
 					onClick={onTransfer}
 					size="icon"
 					title="Transfer"
@@ -259,11 +246,11 @@ export function CallToolbar({
 					<ArrowRightLeft className="size-4" />
 				</Button>
 
-				<div className="mx-2 h-6 w-px bg-border" />
+				<div className="bg-border mx-2 h-6 w-px" />
 
 				{/* End Call */}
 				<Button
-					className="h-12 w-12 rounded-full text-destructive-foreground transition-all hover:scale-105"
+					className="text-destructive-foreground h-12 w-12 rounded-full transition-all hover:scale-105"
 					onClick={onEndCall}
 					size="icon"
 					title="End Call"
@@ -277,23 +264,14 @@ export function CallToolbar({
 			<div className="flex items-center gap-1.5">
 				<Badge
 					className="font-mono text-[10px]"
-					title={
-						connectionQuality === "unknown"
-							? "Monitoring connection quality..."
-							: undefined
-					}
+					title={connectionQuality === "unknown" ? "Monitoring connection quality..." : undefined}
 					variant={getQualityVariant() as any}
 				>
 					{getConnectionIcon()}
 					<span className="ml-1 capitalize">{connectionQuality}</span>
 				</Badge>
 
-				<Button
-					className="h-8 w-8"
-					onClick={onClose}
-					size="icon"
-					variant="ghost"
-				>
+				<Button className="h-8 w-8" onClick={onClose} size="icon" variant="ghost">
 					<X className="h-4 w-4" />
 				</Button>
 			</div>

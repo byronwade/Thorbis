@@ -229,5 +229,5 @@ mergedConfig = withPWA(mergedConfig);
 // Wrap with BotID protection (outermost wrapper for security)
 export default withBotId(async (phase, config) =>
 	// Use mergedConfig directly instead of workflowEnabledConfig
-	Promise.resolve(mergedConfig),
+	Promise.resolve(mergedConfig)
 );

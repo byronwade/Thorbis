@@ -36,27 +36,23 @@ export default function CSRDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="font-bold text-4xl tracking-tight">
-						Customer Service Hub
-					</h1>
+					<h1 className="text-4xl font-bold tracking-tight">Customer Service Hub</h1>
 					<Badge className="text-accent-foreground" variant="outline">
 						CSR View
 					</Badge>
-					<div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
-						<div className="size-2 animate-pulse rounded-full bg-success" />
-						<span className="font-medium text-muted-foreground text-xs">
-							Available
-						</span>
+					<div className="border-border bg-muted/30 flex items-center gap-2 rounded-full border px-3 py-1">
+						<div className="bg-success size-2 animate-pulse rounded-full" />
+						<span className="text-muted-foreground text-xs font-medium">Available</span>
 					</div>
 				</div>
-				<p className="text-lg text-muted-foreground">{currentDate}</p>
+				<p className="text-muted-foreground text-lg">{currentDate}</p>
 			</div>
 
 			{/* Quick Customer Search */}
 			<Card className="border-primary bg-primary dark:border-primary dark:bg-primary/30">
 				<CardContent className="pt-6">
 					<div className="flex items-center gap-3">
-						<Search className="size-6 text-primary" />
+						<Search className="text-primary size-6" />
 						<div className="flex-1">
 							<Input
 								className="h-12"
@@ -121,17 +117,17 @@ export default function CSRDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Urgent Callback */}
-							<div className="flex items-start gap-3 rounded-lg border-2 border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-destructive">
+							<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30 flex items-start gap-3 rounded-lg border-2 p-3">
+								<div className="bg-destructive flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<Phone className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<Badge variant="destructive">URGENT</Badge>
-									<p className="mt-1 font-bold text-sm">Sarah Johnson</p>
+									<p className="mt-1 text-sm font-bold">Sarah Johnson</p>
 									<p className="text-muted-foreground text-xs">
 										+1 (555) 123-4567 • Requested callback 2 hours ago
 									</p>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										Reason: Emergency - No hot water
 									</p>
 								</div>
@@ -161,20 +157,15 @@ export default function CSRDashboard() {
 									time: "2 hours ago",
 								},
 							].map((callback, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-										<Phone className="size-5 text-primary" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<Phone className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<Badge variant="outline">Pending</Badge>
-										<p className="mt-1 font-bold text-sm">{callback.name}</p>
-										<p className="text-muted-foreground text-xs">
-											{callback.phone}
-										</p>
-										<p className="mt-1 text-muted-foreground text-xs">
+										<p className="mt-1 text-sm font-bold">{callback.name}</p>
+										<p className="text-muted-foreground text-xs">{callback.phone}</p>
+										<p className="text-muted-foreground mt-1 text-xs">
 											{callback.reason} • {callback.time}
 										</p>
 									</div>
@@ -197,24 +188,17 @@ export default function CSRDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* High Value Estimate */}
-							<div className="flex items-start gap-3 rounded-lg border border-success bg-success p-3 dark:border-success dark:bg-success/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-success">
+							<div className="border-success bg-success dark:border-success dark:bg-success/30 flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-success flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<DollarSign className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
-									<Badge
-										className="border-success text-success"
-										variant="outline"
-									>
+									<Badge className="border-success text-success" variant="outline">
 										High Value
 									</Badge>
-									<p className="mt-1 font-bold text-sm">
-										HVAC System Replacement
-									</p>
-									<p className="text-muted-foreground text-xs">
-										Bob Anderson • Sent 2 days ago
-									</p>
-									<p className="mt-1 font-bold text-sm text-success">$8,500</p>
+									<p className="mt-1 text-sm font-bold">HVAC System Replacement</p>
+									<p className="text-muted-foreground text-xs">Bob Anderson • Sent 2 days ago</p>
+									<p className="text-success mt-1 text-sm font-bold">$8,500</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Follow Up
@@ -242,20 +226,17 @@ export default function CSRDashboard() {
 									age: "1 week",
 								},
 							].map((estimate, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-										<FileText className="size-5 text-primary" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<FileText className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<Badge variant="outline">Pending</Badge>
-										<p className="mt-1 font-bold text-sm">{estimate.service}</p>
+										<p className="mt-1 text-sm font-bold">{estimate.service}</p>
 										<p className="text-muted-foreground text-xs">
 											{estimate.customer} • Sent {estimate.age} ago
 										</p>
-										<p className="mt-1 font-bold text-sm">{estimate.amount}</p>
+										<p className="mt-1 text-sm font-bold">{estimate.amount}</p>
 									</div>
 									<Button size="sm" variant="outline">
 										Follow Up
@@ -308,27 +289,18 @@ export default function CSRDashboard() {
 									status: "Confirmed",
 								},
 							].map((booking, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-										<Calendar className="size-5 text-primary" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<Calendar className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
-											<Badge
-												variant={
-													booking.status === "Confirmed" ? "default" : "outline"
-												}
-											>
+											<Badge variant={booking.status === "Confirmed" ? "default" : "outline"}>
 												{booking.status}
 											</Badge>
-											<span className="text-muted-foreground text-xs">
-												{booking.time}
-											</span>
+											<span className="text-muted-foreground text-xs">{booking.time}</span>
 										</div>
-										<p className="mt-1 font-bold text-sm">{booking.customer}</p>
+										<p className="mt-1 text-sm font-bold">{booking.customer}</p>
 										<p className="text-muted-foreground text-xs">
 											{booking.service} • Tech: {booking.tech}
 										</p>
@@ -352,102 +324,79 @@ export default function CSRDashboard() {
 					<Card>
 						<CardContent className="space-y-4 pt-6">
 							{/* Call Stats */}
-							<div className="rounded-lg border bg-muted/50 p-4">
+							<div className="bg-muted/50 rounded-lg border p-4">
 								<div className="flex items-center gap-2">
-									<Phone className="size-5 text-primary" />
-									<p className="font-bold text-sm">Call Statistics</p>
+									<Phone className="text-primary size-5" />
+									<p className="text-sm font-bold">Call Statistics</p>
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Calls Answered
-										</span>
+										<span className="text-muted-foreground text-sm">Calls Answered</span>
 										<span className="font-bold">43</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Avg. Call Time
-										</span>
+										<span className="text-muted-foreground text-sm">Avg. Call Time</span>
 										<span className="font-bold">4:32</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Missed Calls
-										</span>
+										<span className="text-muted-foreground text-sm">Missed Calls</span>
 										<span className="font-bold">2</span>
 									</div>
 								</div>
 							</div>
 
 							{/* Booking Stats */}
-							<div className="rounded-lg border bg-muted/50 p-4">
+							<div className="bg-muted/50 rounded-lg border p-4">
 								<div className="flex items-center gap-2">
-									<Calendar className="size-5 text-success" />
-									<p className="font-bold text-sm">Booking Statistics</p>
+									<Calendar className="text-success size-5" />
+									<p className="text-sm font-bold">Booking Statistics</p>
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Appointments Booked
-										</span>
+										<span className="text-muted-foreground text-sm">Appointments Booked</span>
 										<span className="font-bold">12</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Conversion Rate
-										</span>
-										<span className="font-bold text-success">73.9%</span>
+										<span className="text-muted-foreground text-sm">Conversion Rate</span>
+										<span className="text-success font-bold">73.9%</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Avg. Booking Value
-										</span>
+										<span className="text-muted-foreground text-sm">Avg. Booking Value</span>
 										<span className="font-bold">$485</span>
 									</div>
 								</div>
 							</div>
 
 							{/* Estimates Sent */}
-							<div className="rounded-lg border bg-muted/50 p-4">
+							<div className="bg-muted/50 rounded-lg border p-4">
 								<div className="flex items-center gap-2">
-									<FileText className="size-5 text-accent-foreground" />
-									<p className="font-bold text-sm">Estimates</p>
+									<FileText className="text-accent-foreground size-5" />
+									<p className="text-sm font-bold">Estimates</p>
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Sent Today
-										</span>
+										<span className="text-muted-foreground text-sm">Sent Today</span>
 										<span className="font-bold">8</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Total Value
-										</span>
+										<span className="text-muted-foreground text-sm">Total Value</span>
 										<span className="font-bold">$12,400</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Pending Review
-										</span>
-										<span className="font-bold text-warning">12</span>
+										<span className="text-muted-foreground text-sm">Pending Review</span>
+										<span className="text-warning font-bold">12</span>
 									</div>
 								</div>
 							</div>
 
 							{/* Performance Badge */}
-							<div className="rounded-lg border bg-success p-4 dark:bg-success/30">
+							<div className="bg-success dark:bg-success/30 rounded-lg border p-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="font-bold text-sm">Today's Achievement</p>
-										<p className="text-muted-foreground text-xs">
-											You're exceeding targets!
-										</p>
+										<p className="text-sm font-bold">Today's Achievement</p>
+										<p className="text-muted-foreground text-xs">You're exceeding targets!</p>
 									</div>
-									<Badge
-										className="border-success text-success"
-										variant="outline"
-									>
+									<Badge className="border-success text-success" variant="outline">
 										⭐ Top Performer
 									</Badge>
 								</div>
@@ -514,29 +463,22 @@ export default function CSRDashboard() {
 								},
 								{
 									title: "Emergency Response",
-									preview:
-										"I understand this is urgent. Let me get you scheduled...",
+									preview: "I understand this is urgent. Let me get you scheduled...",
 								},
 								{
 									title: "Pricing Questions",
-									preview:
-										"Our standard service call is $89, which includes...",
+									preview: "Our standard service call is $89, which includes...",
 								},
 								{
 									title: "Booking Confirmation",
 									preview: "I have you scheduled for [time] on [date]...",
 								},
 							].map((script, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<MessageSquare className="mt-0.5 size-5 text-primary" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<MessageSquare className="text-primary mt-0.5 size-5" />
 									<div className="flex-1">
-										<p className="font-bold text-sm">{script.title}</p>
-										<p className="text-muted-foreground text-xs">
-											{script.preview}
-										</p>
+										<p className="text-sm font-bold">{script.title}</p>
+										<p className="text-muted-foreground text-xs">{script.preview}</p>
 									</div>
 									<Button size="sm" variant="ghost">
 										View

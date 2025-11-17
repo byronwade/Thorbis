@@ -95,9 +95,7 @@ export function ActivityLogWidget({
 				: activity.user
 			: null;
 
-		const userName = user
-			? `${user.first_name || ""} ${user.last_name || ""}`.trim()
-			: "System";
+		const userName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "System";
 
 		// Map activity_type from database to our widget types
 		let type: ActivityType = "work";
@@ -156,7 +154,7 @@ export function ActivityLogWidget({
 		<div className="space-y-4">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<h4 className="font-semibold text-sm">Recent Activity</h4>
+				<h4 className="text-sm font-semibold">Recent Activity</h4>
 				<Badge className="text-xs" variant="secondary">
 					{activities.length} events
 				</Badge>
@@ -165,7 +163,7 @@ export function ActivityLogWidget({
 			{/* Activity Timeline */}
 			<div className="relative space-y-4">
 				{/* Timeline line */}
-				<div className="absolute top-0 bottom-0 left-4 w-px bg-border" />
+				<div className="bg-border absolute top-0 bottom-0 left-4 w-px" />
 
 				{activities.map((activity, index) => {
 					const config = activityConfig[activity.type];
@@ -185,10 +183,8 @@ export function ActivityLogWidget({
 							<div className={`flex-1 pb-4 ${isLast ? "" : "border-b"}`}>
 								<div className="space-y-1">
 									<div className="flex items-start justify-between gap-2">
-										<h5 className="font-medium text-sm leading-tight">
-											{activity.title}
-										</h5>
-										<span className="shrink-0 text-muted-foreground text-xs">
+										<h5 className="text-sm leading-tight font-medium">{activity.title}</h5>
+										<span className="text-muted-foreground shrink-0 text-xs">
 											{formatTimestamp(activity.timestamp)}
 										</span>
 									</div>
@@ -199,7 +195,7 @@ export function ActivityLogWidget({
 										</p>
 									)}
 
-									<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+									<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 										<User className="size-3" />
 										<span>{activity.user}</span>
 									</div>

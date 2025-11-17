@@ -22,7 +22,7 @@ export class WorkflowEngine {
 			userId?: string;
 			metadata?: Record<string, unknown>;
 			signal?: AbortSignal;
-		},
+		}
 	): Promise<WorkflowResult<TOutput>> {
 		const workflowId = nanoid();
 		const startTime = new Date();
@@ -112,10 +112,7 @@ export class WorkflowEngine {
 
 			// Run error handler
 			if (workflow.onError) {
-				await workflow.onError(
-					error instanceof Error ? error : new Error(String(error)),
-					context,
-				);
+				await workflow.onError(error instanceof Error ? error : new Error(String(error)), context);
 			}
 
 			throw error;
@@ -138,11 +135,9 @@ export class WorkflowEngine {
 			execute: (input: TInput, context: WorkflowContext) => Promise<TOutput>;
 		}>,
 		input: TInput,
-		context: WorkflowContext,
+		context: WorkflowContext
 	): Promise<TOutput[]> {
-		const results = await Promise.all(
-			steps.map((step) => step.execute(input, context)),
-		);
+		const results = await Promise.all(steps.map((step) => step.execute(input, context)));
 		return results;
 	}
 
@@ -161,13 +156,9 @@ export class WorkflowEngine {
 			maxRetries?: number;
 			retryDelay?: number;
 			backoffMultiplier?: number;
-		} = {},
+		} = {}
 	): Promise<TOutput> {
-		const {
-			maxRetries = 3,
-			retryDelay = 1000,
-			backoffMultiplier = 2,
-		} = options;
+		const { maxRetries = 3, retryDelay = 1000, backoffMultiplier = 2 } = options;
 
 		let lastError: Error | undefined;
 		let currentDelay = retryDelay;

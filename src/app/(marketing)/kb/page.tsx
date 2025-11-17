@@ -10,19 +10,10 @@ import Script from "next/script";
 import { getKBArticles, getKBCategories } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSearch } from "@/components/kb/kb-search";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { generateKBHomeMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
-import {
-	createBreadcrumbSchema,
-	createWebsiteSchema,
-} from "@/lib/seo/structured-data";
+import { createBreadcrumbSchema, createWebsiteSchema } from "@/lib/seo/structured-data";
 
 export const metadata = generateKBHomeMetadata();
 
@@ -32,43 +23,29 @@ export default async function KBHomePage() {
 		getKBArticles({ featured: true, limit: 6 }),
 	]);
 
-	const categories = categoriesResult.success
-		? categoriesResult.categories
-		: [];
+	const categories = categoriesResult.success ? categoriesResult.categories : [];
 	const featuredArticles =
-		featuredResult.success && featuredResult.articles
-			? featuredResult.articles
-			: [];
+		featuredResult.success && featuredResult.articles ? featuredResult.articles : [];
 
 	return (
 		<>
 			{/* Breadcrumb and WebSite Structured Data */}
-			<Script
-				id="kb-home-breadcrumb"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="kb-home-breadcrumb" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(
 					createBreadcrumbSchema([
 						{ name: "Home", url: SEO_URLS.site },
 						{ name: "Knowledge Base", url: `${SEO_URLS.site}/kb` },
-					]),
+					])
 				)}
 			</Script>
-			<Script
-				id="kb-home-website"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="kb-home-website" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(createWebsiteSchema())}
 			</Script>
 			<div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
 				{/* Hero Section */}
 				<div className="mb-12 text-center">
-					<h1 className="mb-4 font-bold text-4xl tracking-tight sm:text-5xl">
-						Knowledge Base
-					</h1>
-					<p className="mx-auto mb-8 max-w-2xl text-lg text-muted-foreground">
+					<h1 className="mb-4 text-4xl font-bold tracking-tight sm:text-5xl">Knowledge Base</h1>
+					<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg">
 						Find answers, guides, and documentation for all features of Thorbis.
 					</p>
 					<div className="mx-auto max-w-2xl">
@@ -79,14 +56,10 @@ export default async function KBHomePage() {
 				{/* Featured Articles */}
 				{featuredArticles.length > 0 && (
 					<section className="mb-12">
-						<h2 className="mb-6 font-semibold text-2xl">Featured Articles</h2>
+						<h2 className="mb-6 text-2xl font-semibold">Featured Articles</h2>
 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 							{featuredArticles.map((article) => (
-								<KBArticleCard
-									article={article}
-									featured={true}
-									key={article.id}
-								/>
+								<KBArticleCard article={article} featured={true} key={article.id} />
 							))}
 						</div>
 					</section>
@@ -94,32 +67,24 @@ export default async function KBHomePage() {
 
 				{/* Categories */}
 				<section>
-					<h2 className="mb-6 font-semibold text-2xl">Browse by Category</h2>
+					<h2 className="mb-6 text-2xl font-semibold">Browse by Category</h2>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{(categories || []).map((category) => (
-							<Link
-								className="block"
-								href={`/kb/${category.slug}`}
-								key={category.id}
-							>
+							<Link className="block" href={`/kb/${category.slug}`} key={category.id}>
 								<Card className="h-full transition-all hover:shadow-md">
 									<CardHeader>
 										<div className="mb-2 flex items-center gap-2">
 											{category.icon ? (
-												<span className="text-2xl">
-													{String(category.icon)}
-												</span>
+												<span className="text-2xl">{String(category.icon)}</span>
 											) : null}
 											<CardTitle>{String(category.title)}</CardTitle>
 										</div>
 										{category.description ? (
-											<CardDescription>
-												{String(category.description)}
-											</CardDescription>
+											<CardDescription>{String(category.description)}</CardDescription>
 										) : null}
 									</CardHeader>
 									<CardContent>
-										<div className="flex items-center gap-2 font-medium text-primary text-sm">
+										<div className="text-primary flex items-center gap-2 text-sm font-medium">
 											Browse articles
 											<BookOpen className="size-4" />
 										</div>
@@ -142,14 +107,14 @@ export default async function KBHomePage() {
 						<CardContent>
 							<div className="flex flex-wrap gap-4">
 								<Link
-									className="flex items-center gap-2 text-primary hover:underline"
+									className="text-primary flex items-center gap-2 hover:underline"
 									href="/support"
 								>
 									<HelpCircle className="size-4" />
 									Contact Support
 								</Link>
 								<Link
-									className="flex items-center gap-2 text-primary hover:underline"
+									className="text-primary flex items-center gap-2 hover:underline"
 									href="/kb/search"
 								>
 									<Search className="size-4" />

@@ -22,16 +22,7 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 	const templates: Record<string, ExcelTemplate> = {
 		customers: {
 			dataType: "customers",
-			headers: [
-				"Name",
-				"Email",
-				"Phone",
-				"Address",
-				"City",
-				"State",
-				"ZIP",
-				"Notes",
-			],
+			headers: ["Name", "Email", "Phone", "Address", "City", "State", "ZIP", "Notes"],
 			validations: {
 				Name: ["Required", "Max 200 characters"],
 				Email: ["Optional", "Valid email format"],
@@ -59,8 +50,7 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 					Notes: "",
 				},
 			],
-			instructions:
-				"Fill in customer information. Name is required, other fields are optional.",
+			instructions: "Fill in customer information. Name is required, other fields are optional.",
 		},
 		jobs: {
 			dataType: "jobs",
@@ -92,8 +82,7 @@ export function generateTemplate(dataType: string): ExcelTemplate {
 					Notes: "Customer prefers morning appointments",
 				},
 			],
-			instructions:
-				"Create jobs with customer information and scheduling details.",
+			instructions: "Create jobs with customer information and scheduling details.",
 		},
 		invoices: {
 			dataType: "invoices",
@@ -219,7 +208,7 @@ export function createCSVFile(data: unknown[]): Blob {
 						? `"${stringValue.replace(/"/g, '""')}"`
 						: stringValue;
 				})
-				.join(","),
+				.join(",")
 		),
 	].join("\n");
 

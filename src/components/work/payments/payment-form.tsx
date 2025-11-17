@@ -67,12 +67,12 @@ export function PaymentForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<
-		string | undefined
-	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
-	const [selectedInvoiceId, setSelectedInvoiceId] = useState<
-		string | undefined
-	>(preselectedInvoiceId || searchParams?.get("invoiceId") || undefined);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
+		preselectedCustomerId || searchParams?.get("customerId") || undefined
+	);
+	const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | undefined>(
+		preselectedInvoiceId || searchParams?.get("invoiceId") || undefined
+	);
 	const [paymentMethod, setPaymentMethod] = useState("stripe");
 	const [paymentAmount, setPaymentAmount] = useState(0);
 
@@ -143,8 +143,8 @@ export function PaymentForm({
 		<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
 			{/* Error Display */}
 			{error && (
-				<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-					<p className="font-medium text-destructive text-sm">{error}</p>
+				<div className="border-destructive/50 bg-destructive/10 rounded-lg border p-4">
+					<p className="text-destructive text-sm font-medium">{error}</p>
 				</div>
 			)}
 
@@ -158,11 +158,7 @@ export function PaymentForm({
 						<Label htmlFor="customer-select">
 							Customer <span className="text-destructive">*</span>
 						</Label>
-						<Select
-							onValueChange={setSelectedCustomerId}
-							required
-							value={selectedCustomerId}
-						>
+						<Select onValueChange={setSelectedCustomerId} required value={selectedCustomerId}>
 							<SelectTrigger id="customer-select">
 								<SelectValue placeholder="Select customer (⌘K)" />
 							</SelectTrigger>
@@ -198,11 +194,7 @@ export function PaymentForm({
 										.map((invoice) => (
 											<SelectItem key={invoice.id} value={invoice.id}>
 												{invoice.invoice_number} - $
-												{(
-													(invoice.total_amount - invoice.paid_amount) /
-													100
-												).toFixed(2)}{" "}
-												due
+												{((invoice.total_amount - invoice.paid_amount) / 100).toFixed(2)} due
 											</SelectItem>
 										))}
 								</SelectContent>
@@ -250,9 +242,7 @@ export function PaymentForm({
 							id="amount"
 							min="0.01"
 							name="amount"
-							onChange={(e) =>
-								setPaymentAmount(Number.parseFloat(e.target.value) || 0)
-							}
+							onChange={(e) => setPaymentAmount(Number.parseFloat(e.target.value) || 0)}
 							placeholder="0.00"
 							required
 							step="0.01"
@@ -260,9 +250,8 @@ export function PaymentForm({
 							value={paymentAmount}
 						/>
 						{selectedInvoice && paymentAmount > amountDue && (
-							<p className="text-amber-600 text-sm">
-								⚠️ Amount exceeds balance due by $
-								{(paymentAmount - amountDue).toFixed(2)}
+							<p className="text-sm text-amber-600">
+								⚠️ Amount exceeds balance due by ${(paymentAmount - amountDue).toFixed(2)}
 							</p>
 						)}
 					</div>
@@ -302,9 +291,7 @@ export function PaymentForm({
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="stripe">
-									Credit/Debit Card (Stripe)
-								</SelectItem>
+								<SelectItem value="stripe">Credit/Debit Card (Stripe)</SelectItem>
 								<SelectItem value="cash">Cash</SelectItem>
 								<SelectItem value="check">Check</SelectItem>
 								<SelectItem value="bank_transfer">Bank Transfer</SelectItem>
@@ -316,11 +303,7 @@ export function PaymentForm({
 					{paymentMethod === "check" && (
 						<div className="space-y-2">
 							<Label htmlFor="checkNumber">Check Number</Label>
-							<Input
-								id="checkNumber"
-								name="checkNumber"
-								placeholder="e.g., 1234"
-							/>
+							<Input id="checkNumber" name="checkNumber" placeholder="e.g., 1234" />
 						</div>
 					)}
 
@@ -338,12 +321,7 @@ export function PaymentForm({
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button
-					disabled={isLoading}
-					onClick={() => router.back()}
-					type="button"
-					variant="outline"
-				>
+				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading || !selectedInvoiceId} type="submit">

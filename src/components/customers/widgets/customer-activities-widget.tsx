@@ -28,44 +28,32 @@ export function CustomerActivitiesWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: activities, isLoading, error } = useCustomerActivities(
-					customerId,
-					isVisible,
-				);
+				const { data: activities, isLoading, error } = useCustomerActivities(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={4} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load activities
 						</div>
 					);
 				if (!activities || activities.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No recent activity
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No recent activity</div>
 					);
 
 				return (
 					<div className="space-y-3">
 						{activities.slice(0, 10).map((activity) => (
-							<div
-								key={activity.id}
-								className="rounded-lg border p-3"
-							>
+							<div key={activity.id} className="rounded-lg border p-3">
 								<div className="space-y-1">
-									<p className="font-medium text-sm">
-										{activity.activity_type || "Activity"}
-									</p>
+									<p className="text-sm font-medium">{activity.activity_type || "Activity"}</p>
 									{activity.description && (
-										<p className="text-muted-foreground text-sm line-clamp-2">
+										<p className="text-muted-foreground line-clamp-2 text-sm">
 											{activity.description}
 										</p>
 									)}
-									<p className="text-muted-foreground text-xs">
-										{formatDate(activity.created_at)}
-									</p>
+									<p className="text-muted-foreground text-xs">{formatDate(activity.created_at)}</p>
 								</div>
 							</div>
 						))}

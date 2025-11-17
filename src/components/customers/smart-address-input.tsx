@@ -14,10 +14,7 @@ import { Check, Loader2, MapPin, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	isGoogleMapsLoaded,
-	loadGoogleMapsScript,
-} from "@/lib/utils/load-google-maps";
+import { isGoogleMapsLoaded, loadGoogleMapsScript } from "@/lib/utils/load-google-maps";
 
 type AddressData = {
 	address: string;
@@ -86,13 +83,10 @@ export function SmartAddressInput({
 	// Initialize autocomplete when loaded
 	useEffect(() => {
 		if (isAutocompleteLoaded && autocompleteInputRef.current && !isManualMode) {
-			autocompleteRef.current = new google.maps.places.Autocomplete(
-				autocompleteInputRef.current,
-				{
-					types: ["address"],
-					componentRestrictions: { country: "us" },
-				},
-			);
+			autocompleteRef.current = new google.maps.places.Autocomplete(autocompleteInputRef.current, {
+				types: ["address"],
+				componentRestrictions: { country: "us" },
+			});
 
 			autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
 		}
@@ -121,8 +115,7 @@ export function SmartAddressInput({
 				newAddress.address = component.long_name;
 			}
 			if (types.includes("route")) {
-				newAddress.address =
-					`${newAddress.address} ${component.long_name}`.trim();
+				newAddress.address = `${newAddress.address} ${component.long_name}`.trim();
 			}
 			if (types.includes("locality")) {
 				newAddress.city = component.long_name;
@@ -217,13 +210,13 @@ export function SmartAddressInput({
 						{label} {required && <span className="text-destructive">*</span>}
 					</Label>
 					{isAutocompleteLoaded && (
-						<div className="flex items-center gap-1 text-success text-xs">
+						<div className="text-success flex items-center gap-1 text-xs">
 							<Check className="size-3" />
 							<span>Smart autocomplete enabled</span>
 						</div>
 					)}
 					{!isAutocompleteLoaded && (
-						<div className="flex items-center gap-1 text-muted-foreground text-xs">
+						<div className="text-muted-foreground flex items-center gap-1 text-xs">
 							<Loader2 className="size-3 animate-spin" />
 							<span>Loading autocomplete...</span>
 						</div>
@@ -231,7 +224,7 @@ export function SmartAddressInput({
 				</div>
 
 				<div className="relative">
-					<Search className="absolute top-3 left-3 size-4 text-muted-foreground" />
+					<Search className="text-muted-foreground absolute top-3 left-3 size-4" />
 					<Input
 						className="pl-10"
 						id="autocomplete-address"
@@ -254,8 +247,8 @@ export function SmartAddressInput({
 
 			{/* Show filled fields after autocomplete or manual toggle */}
 			{(showAdvanced || address.address) && (
-				<div className="space-y-4 rounded-lg border bg-muted/20 p-4">
-					<div className="flex items-center gap-2 text-muted-foreground text-sm">
+				<div className="bg-muted/20 space-y-4 rounded-lg border p-4">
+					<div className="text-muted-foreground flex items-center gap-2 text-sm">
 						<MapPin className="size-4" />
 						<span className="font-medium">Address Details</span>
 					</div>

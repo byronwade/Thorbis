@@ -27,21 +27,22 @@ export function CustomerAppointmentsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: appointments, isLoading, error } = useCustomerAppointments(
-					customerId,
-					isVisible,
-				);
+				const {
+					data: appointments,
+					isLoading,
+					error,
+				} = useCustomerAppointments(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load appointments
 						</div>
 					);
 				if (!appointments || appointments.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No appointments scheduled
 						</div>
 					);
@@ -52,21 +53,17 @@ export function CustomerAppointmentsWidget({
 							<Link
 								key={appointment.id}
 								href={`/dashboard/work/appointments/${appointment.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
-									<p className="font-medium text-sm">
-										{formatDate(appointment.scheduled_start)}
-									</p>
+									<p className="text-sm font-medium">{formatDate(appointment.scheduled_start)}</p>
 									{appointment.job && (
 										<p className="text-muted-foreground text-xs">
 											Job: {appointment.job.job_number} - {appointment.job.title}
 										</p>
 									)}
 									{appointment.property && (
-										<p className="text-muted-foreground text-xs">
-											{appointment.property.address}
-										</p>
+										<p className="text-muted-foreground text-xs">{appointment.property.address}</p>
 									)}
 								</div>
 							</Link>

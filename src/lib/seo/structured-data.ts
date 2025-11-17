@@ -5,13 +5,7 @@
  * `JSON.stringify` before being embedded via a `<script type="application/ld+json">`.
  */
 
-import {
-	buildShareImageUrl,
-	SEO_BRAND,
-	SEO_COPY,
-	SEO_SOCIAL,
-	SEO_URLS,
-} from "./config";
+import { buildShareImageUrl, SEO_BRAND, SEO_COPY, SEO_SOCIAL, SEO_URLS } from "./config";
 
 export type OrganizationSchemaOptions = {
 	name?: string;
@@ -23,9 +17,7 @@ export type OrganizationSchemaOptions = {
 	contactPhone?: string;
 };
 
-export function createOrganizationSchema(
-	options: OrganizationSchemaOptions = {},
-) {
+export function createOrganizationSchema(options: OrganizationSchemaOptions = {}) {
 	const {
 		name = SEO_BRAND.company,
 		legalName = SEO_BRAND.company,
@@ -146,9 +138,7 @@ export type SoftwareApplicationSchemaOptions = {
 	applicationSuite?: string;
 };
 
-export function createSoftwareApplicationSchema(
-	options: SoftwareApplicationSchemaOptions = {},
-) {
+export function createSoftwareApplicationSchema(options: SoftwareApplicationSchemaOptions = {}) {
 	const {
 		name = SEO_BRAND.product,
 		description = SEO_COPY.defaultDescription,
@@ -321,15 +311,7 @@ export type HowToSchemaOptions = {
 };
 
 export function createHowToSchema(options: HowToSchemaOptions) {
-	const {
-		name,
-		description,
-		steps,
-		supplies,
-		tools,
-		estimatedCost,
-		totalTime,
-	} = options;
+	const { name, description, steps, supplies, tools, estimatedCost, totalTime } = options;
 
 	return {
 		"@context": "https://schema.org",
@@ -374,16 +356,8 @@ export type ReviewAggregateSchemaOptions = {
 	worstRating?: number;
 };
 
-export function createReviewAggregateSchema(
-	options: ReviewAggregateSchemaOptions,
-) {
-	const {
-		item,
-		ratingValue,
-		reviewCount,
-		bestRating = 5,
-		worstRating = 1,
-	} = options;
+export function createReviewAggregateSchema(options: ReviewAggregateSchemaOptions) {
+	const { item, ratingValue, reviewCount, bestRating = 5, worstRating = 1 } = options;
 
 	return {
 		"@context": "https://schema.org",
@@ -396,9 +370,7 @@ export function createReviewAggregateSchema(
 			"@type": item.type ?? "SoftwareApplication",
 			name: item.name,
 			url: item.url ?? SEO_URLS.site,
-			image: item.image
-				? buildShareImageUrl({ path: item.image })
-				: buildShareImageUrl(),
+			image: item.image ? buildShareImageUrl({ path: item.image }) : buildShareImageUrl(),
 		},
 	};
 }

@@ -73,7 +73,7 @@ export function ProgressiveWidget({
 			{
 				rootMargin,
 				threshold: 0.1,
-			},
+			}
 		);
 
 		if (widgetRef.current) {
@@ -92,19 +92,13 @@ export function ProgressiveWidget({
 						<CardTitle className="text-lg">{title}</CardTitle>
 					</div>
 					{badge && (
-						<span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium">
-							{badge}
-						</span>
+						<span className="bg-muted rounded-full px-2 py-0.5 text-xs font-medium">{badge}</span>
 					)}
 				</div>
-				{description && (
-					<p className="text-sm text-muted-foreground">{description}</p>
-				)}
+				{description && <p className="text-muted-foreground text-sm">{description}</p>}
 			</CardHeader>
 			<CardContent>
-				{typeof children === "function"
-					? children({ isVisible })
-					: children}
+				{typeof children === "function" ? children({ isVisible }) : children}
 			</CardContent>
 		</Card>
 	);

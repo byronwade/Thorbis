@@ -28,13 +28,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	DropdownMenu,
@@ -57,13 +51,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 
 type UserStatus = "active" | "invited" | "suspended";
-type SortField =
-	| "name"
-	| "email"
-	| "role"
-	| "department"
-	| "lastActive"
-	| "joinedDate";
+type SortField = "name" | "email" | "role" | "department" | "lastActive" | "joinedDate";
 type SortOrder = "asc" | "desc";
 
 type TeamMember = {
@@ -104,9 +92,7 @@ export function TeamMembersPage() {
 	const [selectedStatus, setSelectedStatus] = useState<string>("all");
 	const [sortField, setSortField] = useState<SortField>("name");
 	const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(
-		new Set(),
-	);
+	const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(25);
 
@@ -140,10 +126,7 @@ export function TeamMembersPage() {
 					// Transform database format to component format
 					const members = result.data.map((member: any) => ({
 						id: member.id,
-						name:
-							member.user?.name ||
-							member.user?.email?.split("@")[0] ||
-							"Unknown",
+						name: member.user?.name || member.user?.email?.split("@")[0] || "Unknown",
 						email: member.user?.email || "",
 						roleId: member.role_id || "4",
 						roleName: member.role?.name || "Team Member",
@@ -151,8 +134,7 @@ export function TeamMembersPage() {
 						departmentId: member.department_id || "1",
 						departmentName: member.department?.name || "General",
 						departmentColor:
-							member.department?.color ||
-							getDepartmentColor(member.department?.name),
+							member.department?.color || getDepartmentColor(member.department?.name),
 						status: member.status || "active",
 						jobTitle: member.job_title || "Team Member",
 						joinedDate: member.joined_at
@@ -223,12 +205,9 @@ export function TeamMembersPage() {
 			member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			member.email.toLowerCase().includes(searchQuery.toLowerCase());
 		const matchesDepartment =
-			selectedDepartment === "all" ||
-			member.departmentId === selectedDepartment;
-		const matchesRole =
-			selectedRole === "all" || member.roleId === selectedRole;
-		const matchesStatus =
-			selectedStatus === "all" || member.status === selectedStatus;
+			selectedDepartment === "all" || member.departmentId === selectedDepartment;
+		const matchesRole = selectedRole === "all" || member.roleId === selectedRole;
+		const matchesStatus = selectedStatus === "all" || member.status === selectedStatus;
 		return matchesSearch && matchesDepartment && matchesRole && matchesStatus;
 	});
 
@@ -282,7 +261,7 @@ export function TeamMembersPage() {
 	const totalPages = Math.ceil(sortedMembers.length / itemsPerPage);
 	const paginatedMembers = sortedMembers.slice(
 		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage,
+		currentPage * itemsPerPage
 	);
 
 	const getInitials = (name: string) =>
@@ -292,9 +271,7 @@ export function TeamMembersPage() {
 			.join("")
 			.toUpperCase();
 
-	const getStatusBadgeVariant = (
-		status: UserStatus,
-	): "default" | "secondary" | "outline" => {
+	const getStatusBadgeVariant = (status: UserStatus): "default" | "secondary" | "outline" => {
 		switch (status) {
 			case "active":
 				return "default";
@@ -332,12 +309,9 @@ export function TeamMembersPage() {
 			{/* Header */}
 			<div className="flex items-start justify-between">
 				<div>
-					<h1 className="font-bold text-4xl tracking-tight">
-						Team & Permissions
-					</h1>
-					<p className="mt-2 text-muted-foreground">
-						Manage your team of {teamMembers.length} members across{" "}
-						{departments.length} departments
+					<h1 className="text-4xl font-bold tracking-tight">Team & Permissions</h1>
+					<p className="text-muted-foreground mt-2">
+						Manage your team of {teamMembers.length} members across {departments.length} departments
 					</p>
 				</div>
 				<Link href="/dashboard/work/team/invite">
@@ -352,16 +326,14 @@ export function TeamMembersPage() {
 			{/* Quick Links */}
 			<div className="grid gap-4 md:grid-cols-3">
 				<Link href="/dashboard/work/team/roles">
-					<Card className="transition-all hover:border-primary/50 hover:shadow-md">
+					<Card className="hover:border-primary/50 transition-all hover:shadow-md">
 						<CardHeader className="pb-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-									<Shield className="h-5 w-5 text-primary" />
+								<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+									<Shield className="text-primary h-5 w-5" />
 								</div>
 								<div>
-									<CardTitle className="text-base">
-										Roles & Permissions
-									</CardTitle>
+									<CardTitle className="text-base">Roles & Permissions</CardTitle>
 									<CardDescription className="text-xs">
 										{customRoles.length} custom roles
 									</CardDescription>
@@ -372,11 +344,11 @@ export function TeamMembersPage() {
 				</Link>
 
 				<Link href="/dashboard/work/team/departments">
-					<Card className="transition-all hover:border-primary/50 hover:shadow-md">
+					<Card className="hover:border-primary/50 transition-all hover:shadow-md">
 						<CardHeader className="pb-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-									<Building2 className="h-5 w-5 text-primary" />
+								<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+									<Building2 className="text-primary h-5 w-5" />
 								</div>
 								<div>
 									<CardTitle className="text-base">Departments</CardTitle>
@@ -390,17 +362,15 @@ export function TeamMembersPage() {
 				</Link>
 
 				<Link href="/dashboard/work/team/invite">
-					<Card className="transition-all hover:border-primary/50 hover:shadow-md">
+					<Card className="hover:border-primary/50 transition-all hover:shadow-md">
 						<CardHeader className="pb-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-									<UserPlus className="h-5 w-5 text-primary" />
+								<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+									<UserPlus className="text-primary h-5 w-5" />
 								</div>
 								<div>
 									<CardTitle className="text-base">Invite Members</CardTitle>
-									<CardDescription className="text-xs">
-										Add new team members
-									</CardDescription>
+									<CardDescription className="text-xs">Add new team members</CardDescription>
 								</div>
 							</div>
 						</CardHeader>
@@ -421,15 +391,14 @@ export function TeamMembersPage() {
 							</CardTitle>
 							<CardDescription>
 								{filteredMembers.length} members
-								{selectedMembers.size > 0 &&
-									` • ${selectedMembers.size} selected`}
+								{selectedMembers.size > 0 && ` • ${selectedMembers.size} selected`}
 							</CardDescription>
 						</div>
 
 						<div className="flex flex-wrap gap-2">
 							{/* Search */}
 							<div className="relative w-64">
-								<Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+								<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 								<Input
 									className="pl-9"
 									onChange={(e) => setSearchQuery(e.target.value)}
@@ -521,40 +490,24 @@ export function TeamMembersPage() {
 								<DropdownMenuContent align="end">
 									<DropdownMenuLabel>Sort by</DropdownMenuLabel>
 									<DropdownMenuItem onClick={() => setSortField("name")}>
-										Name{" "}
-										{sortField === "name" && (
-											<Check className="ml-auto h-4 w-4" />
-										)}
+										Name {sortField === "name" && <Check className="ml-auto h-4 w-4" />}
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setSortField("email")}>
-										Email{" "}
-										{sortField === "email" && (
-											<Check className="ml-auto h-4 w-4" />
-										)}
+										Email {sortField === "email" && <Check className="ml-auto h-4 w-4" />}
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setSortField("role")}>
-										Role{" "}
-										{sortField === "role" && (
-											<Check className="ml-auto h-4 w-4" />
-										)}
+										Role {sortField === "role" && <Check className="ml-auto h-4 w-4" />}
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setSortField("department")}>
-										Department{" "}
-										{sortField === "department" && (
-											<Check className="ml-auto h-4 w-4" />
-										)}
+										Department {sortField === "department" && <Check className="ml-auto h-4 w-4" />}
 									</DropdownMenuItem>
 									<DropdownMenuItem onClick={() => setSortField("lastActive")}>
 										Last Active{" "}
-										{sortField === "lastActive" && (
-											<Check className="ml-auto h-4 w-4" />
-										)}
+										{sortField === "lastActive" && <Check className="ml-auto h-4 w-4" />}
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
 									<DropdownMenuItem
-										onClick={() =>
-											setSortOrder(sortOrder === "asc" ? "desc" : "asc")
-										}
+										onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
 									>
 										{sortOrder === "asc" ? "Ascending" : "Descending"}
 									</DropdownMenuItem>
@@ -571,25 +524,17 @@ export function TeamMembersPage() {
 										</Button>
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
-										<DropdownMenuItem
-											onClick={() => handleBulkAction("change_role")}
-										>
+										<DropdownMenuItem onClick={() => handleBulkAction("change_role")}>
 											Change Role
 										</DropdownMenuItem>
-										<DropdownMenuItem
-											onClick={() => handleBulkAction("change_department")}
-										>
+										<DropdownMenuItem onClick={() => handleBulkAction("change_department")}>
 											Change Department
 										</DropdownMenuItem>
-										<DropdownMenuItem
-											onClick={() => handleBulkAction("suspend")}
-										>
+										<DropdownMenuItem onClick={() => handleBulkAction("suspend")}>
 											Suspend Members
 										</DropdownMenuItem>
 										<DropdownMenuSeparator />
-										<DropdownMenuItem
-											onClick={() => handleBulkAction("export")}
-										>
+										<DropdownMenuItem onClick={() => handleBulkAction("export")}>
 											<Download className="mr-2 size-4" />
 											Export Selected
 										</DropdownMenuItem>
@@ -614,11 +559,7 @@ export function TeamMembersPage() {
 							>
 								<Download className="size-4" />
 							</Button>
-							<Button
-								className="hidden md:inline-flex"
-								type="button"
-								variant="outline"
-							>
+							<Button className="hidden md:inline-flex" type="button" variant="outline">
 								<Download className="mr-2 size-4" />
 								Export
 							</Button>
@@ -628,11 +569,10 @@ export function TeamMembersPage() {
 				<CardContent>
 					<div className="space-y-2">
 						{/* Table Header */}
-						<div className="flex items-center gap-4 rounded-md border bg-muted/50 p-3 font-medium text-sm">
+						<div className="bg-muted/50 flex items-center gap-4 rounded-md border p-3 text-sm font-medium">
 							<Checkbox
 								checked={
-									selectedMembers.size > 0 &&
-									selectedMembers.size === paginatedMembers.length
+									selectedMembers.size > 0 && selectedMembers.size === paginatedMembers.length
 								}
 								onCheckedChange={handleSelectAll}
 							/>
@@ -646,14 +586,12 @@ export function TeamMembersPage() {
 						{/* Table Rows */}
 						{paginatedMembers.map((member) => (
 							<div
-								className="flex items-center gap-4 rounded-md border p-3 text-sm transition-colors hover:bg-muted/50"
+								className="hover:bg-muted/50 flex items-center gap-4 rounded-md border p-3 text-sm transition-colors"
 								key={member.id}
 							>
 								<Checkbox
 									checked={selectedMembers.has(member.id)}
-									onCheckedChange={(checked) =>
-										handleSelectMember(member.id, checked as boolean)
-									}
+									onCheckedChange={(checked) => handleSelectMember(member.id, checked as boolean)}
 									onClick={(e) => e.stopPropagation()}
 								/>
 								<Link
@@ -662,15 +600,11 @@ export function TeamMembersPage() {
 								>
 									<Avatar className="h-8 w-8">
 										<AvatarImage src={member.avatar} />
-										<AvatarFallback className="text-xs">
-											{getInitials(member.name)}
-										</AvatarFallback>
+										<AvatarFallback className="text-xs">{getInitials(member.name)}</AvatarFallback>
 									</Avatar>
 									<div className="min-w-0">
 										<p className="truncate font-medium">{member.name}</p>
-										<p className="truncate text-muted-foreground text-xs">
-											{member.email}
-										</p>
+										<p className="text-muted-foreground truncate text-xs">{member.email}</p>
 									</div>
 								</Link>
 								<div className="w-32">
@@ -698,9 +632,7 @@ export function TeamMembersPage() {
 									)}
 								</div>
 								<div className="w-24">
-									<Badge variant={getStatusBadgeVariant(member.status)}>
-										{member.status}
-									</Badge>
+									<Badge variant={getStatusBadgeVariant(member.status)}>{member.status}</Badge>
 								</div>
 								<DropdownMenu>
 									<DropdownMenuTrigger asChild>
@@ -716,9 +648,7 @@ export function TeamMembersPage() {
 									</DropdownMenuTrigger>
 									<DropdownMenuContent align="end">
 										<DropdownMenuItem asChild>
-											<Link href={`/dashboard/work/team/${member.id}`}>
-												View Profile
-											</Link>
+											<Link href={`/dashboard/work/team/${member.id}`}>View Profile</Link>
 										</DropdownMenuItem>
 										<DropdownMenuItem>Change Role</DropdownMenuItem>
 										<DropdownMenuItem>Change Department</DropdownMenuItem>
@@ -756,9 +686,7 @@ export function TeamMembersPage() {
 									<SelectItem value="100">100</SelectItem>
 								</SelectContent>
 							</Select>
-							<span className="text-muted-foreground">
-								of {filteredMembers.length} members
-							</span>
+							<span className="text-muted-foreground">of {filteredMembers.length} members</span>
 						</div>
 						<div className="flex items-center gap-2">
 							<Button

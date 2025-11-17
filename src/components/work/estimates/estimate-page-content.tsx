@@ -7,15 +7,7 @@
 
 "use client";
 
-import {
-	Calendar,
-	FileCheck,
-	FileText,
-	Link2Off,
-	Receipt,
-	TrendingUp,
-	User,
-} from "lucide-react";
+import { Calendar, FileCheck, FileText, Link2Off, Receipt, TrendingUp, User } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -75,8 +67,7 @@ function formatCurrency(cents: number | null | undefined): string {
 function getStatusBadge(status: string, key?: string) {
 	const variants: Record<string, { className: string; label: string }> = {
 		draft: {
-			className:
-				"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+			className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 			label: "Draft",
 		},
 		sent: {
@@ -84,8 +75,7 @@ function getStatusBadge(status: string, key?: string) {
 			label: "Sent",
 		},
 		viewed: {
-			className:
-				"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+			className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 			label: "Viewed",
 		},
 		accepted: {
@@ -164,15 +154,13 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
-			<div className="rounded-md bg-muted/50 shadow-sm">
+			<div className="bg-muted/50 rounded-md shadow-sm">
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">
-								{headerBadges}
-							</div>
+							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="font-semibold text-2xl sm:text-3xl">
+								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{estimate.title ||
 										`Estimate ${estimate.estimate_number || estimate.id.slice(0, 8)}`}
 								</h1>
@@ -186,7 +174,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 					{customer && (
 						<div className="flex flex-wrap items-center gap-3">
 							<Link
-								className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+								className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 								href={`/dashboard/customers/${customer.id}`}
 							>
 								<User className="size-4" />
@@ -199,20 +187,19 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 
 					<div className="flex flex-wrap items-center gap-3">
 						{estimate.valid_until && (
-							<div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
-								<Calendar className="size-4 text-muted-foreground" />
+							<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+								<Calendar className="text-muted-foreground size-4" />
 								<span className="font-medium">
-									Valid until{" "}
-									{new Date(estimate.valid_until).toLocaleDateString()}
+									Valid until {new Date(estimate.valid_until).toLocaleDateString()}
 								</span>
 							</div>
 						)}
 						{job && (
 							<Link
-								className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm transition-colors hover:bg-muted/80"
+								className="bg-muted hover:bg-muted/80 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors"
 								href={`/dashboard/work/${job.id}`}
 							>
-								<FileText className="size-4 text-muted-foreground" />
+								<FileText className="text-muted-foreground size-4" />
 								<span className="font-medium">Job #{job.job_number}</span>
 							</Link>
 						)}
@@ -235,23 +222,16 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 					status: "completed" as const,
 					date: estimate.created_at,
 					href: `/dashboard/work/estimates/${estimate.id}`,
-					description:
-						estimate.status === "accepted" ? "Accepted by customer" : undefined,
+					description: estimate.status === "accepted" ? "Accepted by customer" : undefined,
 				},
 				{
 					id: "contract",
 					label: "Contract Generated",
 					status: contract ? ("completed" as const) : ("pending" as const),
 					date: contract?.created_at,
-					href: contract
-						? `/dashboard/work/contracts/${contract.id}`
-						: undefined,
+					href: contract ? `/dashboard/work/contracts/${contract.id}` : undefined,
 					description:
-						contract?.status === "signed"
-							? "Signed"
-							: contract
-								? "Pending signature"
-								: undefined,
+						contract?.status === "signed" ? "Signed" : contract ? "Pending signature" : undefined,
 				},
 				{
 					id: "invoice",
@@ -323,26 +303,19 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 											<TableCell className="font-medium">
 												{item.description || item.name || "Item"}
 											</TableCell>
+											<TableCell className="text-right">{item.quantity || 1}</TableCell>
 											<TableCell className="text-right">
-												{item.quantity || 1}
-											</TableCell>
-											<TableCell className="text-right">
-												{formatCurrency(
-													item.unit_price || item.unitPrice || item.price || 0,
-												)}
+												{formatCurrency(item.unit_price || item.unitPrice || item.price || 0)}
 											</TableCell>
 											<TableCell className="text-right font-semibold">
 												{formatCurrency(
 													(item.quantity || 1) *
-														(item.unit_price ||
-															item.unitPrice ||
-															item.price ||
-															0),
+														(item.unit_price || item.unitPrice || item.price || 0)
 												)}
 											</TableCell>
 										</TableRow>
 									))}
-									<TableRow className="border-t-2 bg-muted/50">
+									<TableRow className="bg-muted/50 border-t-2">
 										<TableCell className="text-right font-semibold" colSpan={3}>
 											Subtotal
 										</TableCell>
@@ -370,14 +343,11 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 											</TableCell>
 										</TableRow>
 									)}
-									<TableRow className="border-t-2 bg-muted/50">
-										<TableCell
-											className="text-right font-bold text-lg"
-											colSpan={3}
-										>
+									<TableRow className="bg-muted/50 border-t-2">
+										<TableCell className="text-right text-lg font-bold" colSpan={3}>
 											Total
 										</TableCell>
-										<TableCell className="text-right font-bold text-lg">
+										<TableCell className="text-right text-lg font-bold">
 											{formatCurrency(estimate.total_amount || 0)}
 										</TableCell>
 									</TableRow>
@@ -387,10 +357,8 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 					) : (
 						<div className="flex h-64 items-center justify-center">
 							<div className="text-center">
-								<FileText className="mx-auto size-12 text-muted-foreground/50" />
-								<p className="mt-4 text-muted-foreground text-sm">
-									No line items yet
-								</p>
+								<FileText className="text-muted-foreground/50 mx-auto size-12" />
+								<p className="text-muted-foreground mt-4 text-sm">No line items yet</p>
 							</div>
 						</div>
 					)}
@@ -406,7 +374,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 				content: (
 					<UnifiedAccordionContent>
 						<div className="space-y-3">
-							<p className="whitespace-pre-wrap text-sm">{estimate.terms}</p>
+							<p className="text-sm whitespace-pre-wrap">{estimate.terms}</p>
 						</div>
 					</UnifiedAccordionContent>
 				),
@@ -423,24 +391,18 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 						<div className="space-y-3">
 							<div>
 								<Label>Valid Until</Label>
-								<p className="text-sm">
-									{new Date(estimate.valid_until).toLocaleDateString()}
-								</p>
+								<p className="text-sm">{new Date(estimate.valid_until).toLocaleDateString()}</p>
 							</div>
 							{estimate.status === "accepted" && estimate.accepted_at && (
 								<div>
 									<Label>Accepted At</Label>
-									<p className="text-sm">
-										{new Date(estimate.accepted_at).toLocaleString()}
-									</p>
+									<p className="text-sm">{new Date(estimate.accepted_at).toLocaleString()}</p>
 								</div>
 							)}
 							{estimate.status === "declined" && estimate.declined_at && (
 								<div>
 									<Label>Declined At</Label>
-									<p className="text-sm">
-										{new Date(estimate.declined_at).toLocaleString()}
-									</p>
+									<p className="text-sm">{new Date(estimate.declined_at).toLocaleString()}</p>
 									{estimate.decline_reason && (
 										<div className="mt-2">
 											<Label>Decline Reason</Label>
@@ -482,9 +444,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>
-									View Full Profile
-								</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -503,9 +463,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 							<div className="grid flex-1 gap-4 md:grid-cols-2">
 								<div>
 									<Label>Job Number</Label>
-									<p className="text-sm">
-										#{job.job_number || job.id.slice(0, 8)}
-									</p>
+									<p className="text-sm">#{job.job_number || job.id.slice(0, 8)}</p>
 								</div>
 								<div>
 									<Label>Title</Label>
@@ -516,11 +474,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 								<Button asChild size="sm" variant="ghost">
 									<Link href={`/dashboard/work/${job.id}`}>View Job</Link>
 								</Button>
-								<Button
-									onClick={() => setUnlinkJobId(job.id)}
-									size="sm"
-									variant="outline"
-								>
+								<Button onClick={() => setUnlinkJobId(job.id)} size="sm" variant="outline">
 									<Link2Off className="mr-2 size-4" />
 									Unlink
 								</Button>
@@ -542,21 +496,15 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 							<div className="grid flex-1 gap-4 md:grid-cols-2">
 								<div>
 									<Label>Invoice Number</Label>
-									<p className="text-sm">
-										#{invoice.invoice_number || invoice.id.slice(0, 8)}
-									</p>
+									<p className="text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</p>
 								</div>
 								<div>
 									<Label>Invoice Amount</Label>
-									<p className="text-sm">
-										{formatCurrency(invoice.total_amount)}
-									</p>
+									<p className="text-sm">{formatCurrency(invoice.total_amount)}</p>
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/work/invoices/${invoice.id}`}>
-									View Invoice
-								</Link>
+								<Link href={`/dashboard/work/invoices/${invoice.id}`}>View Invoice</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -590,9 +538,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 				title: job.title || `Job #${job.job_number || job.id.slice(0, 8)}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status
-					? { label: job.status, variant: "outline" as const }
-					: undefined,
+				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
 			});
 		}
 
@@ -603,9 +549,7 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 				title: `Invoice #${invoice.invoice_number || invoice.id.slice(0, 8)}`,
 				subtitle: formatCurrency(invoice.total_amount),
 				href: `/dashboard/work/invoices/${invoice.id}`,
-				badge: invoice.status
-					? { label: invoice.status, variant: "outline" as const }
-					: undefined,
+				badge: invoice.status ? { label: invoice.status, variant: "outline" as const } : undefined,
 			});
 		}
 
@@ -632,32 +576,20 @@ export function EstimatePageContent({ entityData }: EstimatePageContentProps) {
 
 			{/* Archive Dialog */}
 			{/* Unlink Job Confirmation Dialog */}
-			<Dialog
-				onOpenChange={(open) => !open && setUnlinkJobId(null)}
-				open={unlinkJobId !== null}
-			>
+			<Dialog onOpenChange={(open) => !open && setUnlinkJobId(null)} open={unlinkJobId !== null}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Unlink Job from Estimate?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this estimate. The
-							estimate will remain in the system but will no longer appear on
-							the job's page.
+							This will remove the job association from this estimate. The estimate will remain in
+							the system but will no longer appear on the job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button
-							disabled={isUnlinking}
-							onClick={() => setUnlinkJobId(null)}
-							variant="outline"
-						>
+						<Button disabled={isUnlinking} onClick={() => setUnlinkJobId(null)} variant="outline">
 							Cancel
 						</Button>
-						<Button
-							disabled={isUnlinking}
-							onClick={handleUnlinkJob}
-							variant="destructive"
-						>
+						<Button disabled={isUnlinking} onClick={handleUnlinkJob} variant="destructive">
 							{isUnlinking ? "Unlinking..." : "Unlink Job"}
 						</Button>
 					</DialogFooter>

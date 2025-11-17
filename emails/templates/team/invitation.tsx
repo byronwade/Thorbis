@@ -58,15 +58,13 @@ const TeamInvitationEmail = ({
 						<Text style={greeting}>Hi {inviteeName},</Text>
 
 						<Text style={paragraph}>
-							<strong>{inviterName}</strong> has invited you to join{" "}
-							<strong>{companyName}</strong> on Thorbis as a{" "}
-							<strong>{roleDisplay}</strong>.
+							<strong>{inviterName}</strong> has invited you to join <strong>{companyName}</strong>{" "}
+							on Thorbis as a <strong>{roleDisplay}</strong>.
 						</Text>
 
 						<Text style={paragraph}>
-							Thorbis is a complete business management platform that helps your
-							team manage jobs, track time, communicate with customers, and grow
-							your business.
+							Thorbis is a complete business management platform that helps your team manage jobs,
+							track time, communicate with customers, and grow your business.
 						</Text>
 
 						<Section style={roleSection}>
@@ -92,25 +90,21 @@ const TeamInvitationEmail = ({
 							</Button>
 						</Section>
 
-						<Text style={paragraph}>
-							Or copy and paste this link into your browser:
-						</Text>
+						<Text style={paragraph}>Or copy and paste this link into your browser:</Text>
 						<Text style={linkText}>
 							<Link href={magicLink} style={link}>
 								{magicLink}
 							</Link>
 						</Text>
 
-						<Text style={expiryText}>
-							This invitation expires in {expiresInDays} days.
-						</Text>
+						<Text style={expiryText}>This invitation expires in {expiresInDays} days.</Text>
 					</Section>
 
 					{/* Footer */}
 					<Section style={footer}>
 						<Text style={footerText}>
-							If you didn't expect this invitation or have questions, please
-							contact {inviterName} or reply to this email.
+							If you didn't expect this invitation or have questions, please contact {inviterName}{" "}
+							or reply to this email.
 						</Text>
 						<Text style={footerText}>
 							© {new Date().getFullYear()} Thorbis. All rights reserved.

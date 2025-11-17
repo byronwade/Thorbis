@@ -27,23 +27,18 @@ export function CustomerEquipmentWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: equipment, isLoading, error } = useCustomerEquipment(
-					customerId,
-					isVisible,
-				);
+				const { data: equipment, isLoading, error } = useCustomerEquipment(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load equipment
 						</div>
 					);
 				if (!equipment || equipment.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No equipment found
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No equipment found</div>
 					);
 
 				return (
@@ -52,26 +47,20 @@ export function CustomerEquipmentWidget({
 							<Link
 								key={item.id}
 								href={`/dashboard/work/equipment/${item.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
-									<p className="font-medium text-sm">
+									<p className="text-sm font-medium">
 										{item.name || item.equipment_number || "Unnamed Equipment"}
 									</p>
-									{item.type && (
-										<p className="text-muted-foreground text-xs">
-											Type: {item.type}
-										</p>
-									)}
+									{item.type && <p className="text-muted-foreground text-xs">Type: {item.type}</p>}
 									{item.manufacturer && item.model && (
 										<p className="text-muted-foreground text-xs">
 											{item.manufacturer} {item.model}
 										</p>
 									)}
 									{item.serial_number && (
-										<p className="text-muted-foreground text-xs">
-											S/N: {item.serial_number}
-										</p>
+										<p className="text-muted-foreground text-xs">S/N: {item.serial_number}</p>
 									)}
 									<p className="text-muted-foreground text-xs">
 										Added: {formatDate(item.created_at)}

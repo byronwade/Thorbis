@@ -37,9 +37,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 	});
 
 	const popOutWindowRef = useRef<Window | null>(null);
-	const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(
-		null,
-	);
+	const messageHandlerRef = useRef<((event: MessageEvent) => void) | null>(null);
 
 	// Handle when user drags into/out of pop-out zone
 	const handleBeyondBounds = useCallback((isBeyond: boolean) => {
@@ -69,11 +67,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 		}
 
 		// Open in new tab (much simpler and more reliable)
-		const popOut = window.open(
-			`/call-window?callId=${callId}`,
-			"_blank",
-			"noopener,noreferrer",
-		);
+		const popOut = window.open(`/call-window?callId=${callId}`, "_blank", "noopener,noreferrer");
 
 		if (!popOut) {
 			return;
@@ -104,7 +98,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 						callId,
 						timestamp: Date.now(),
 					},
-					window.location.origin,
+					window.location.origin
 				);
 
 				// Successfully sent, stop checking
@@ -173,7 +167,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 								callId,
 								timestamp: Date.now(),
 							},
-							window.location.origin,
+							window.location.origin
 						);
 					}
 					break;
@@ -208,7 +202,7 @@ export function usePopOutDrag(options: UsePopOutDragOptions) {
 				popOutWindowRef.current.close();
 			}
 		},
-		[],
+		[]
 	);
 
 	return {

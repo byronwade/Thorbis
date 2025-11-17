@@ -24,11 +24,7 @@ const HOURS_PER_DAY = 24;
 const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const MS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
+const MS_PER_DAY = HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const PERMANENT_DELETE_DELAY_MS = DAYS_TO_PERMANENT_DELETE * MS_PER_DAY;
 
 type CompanyMembership = {
@@ -69,7 +65,7 @@ async function archiveAllIncomplete() {
 			const completedCompany = companyMap.get(completedCompanyId);
 			if (completedCompany) {
 				console.log(
-					`✅ Keeping completed company: ${completedCompany.companies.name} (${completedCompanyId})\n`,
+					`✅ Keeping completed company: ${completedCompany.companies.name} (${completedCompanyId})\n`
 				);
 				companyMap.delete(completedCompanyId);
 			}
@@ -98,9 +94,7 @@ async function fetchUserByEmail(email: string) {
 	return data.users.find((u) => u.email === email) ?? null;
 }
 
-async function fetchActiveMemberships(
-	userId: string,
-): Promise<CompanyMembership[]> {
+async function fetchActiveMemberships(userId: string): Promise<CompanyMembership[]> {
 	const { data, error } = await supabase
 		.from("team_members")
 		.select(
@@ -113,7 +107,7 @@ async function fetchActiveMemberships(
           stripe_subscription_status,
           deleted_at
         )
-      `,
+      `
 		)
 		.eq("user_id", userId)
 		.eq("status", "active")
@@ -150,10 +144,7 @@ function findCompletedCompanyId(companyMap: Map<string, CompanyMembership>) {
 	return;
 }
 
-async function archiveCompanyRecords(
-	companyMap: Map<string, CompanyMembership>,
-	userId: string,
-) {
+async function archiveCompanyRecords(companyMap: Map<string, CompanyMembership>, userId: string) {
 	const companiesToArchive = companyMap.size;
 	console.log(`🗑️  Archiving ${companiesToArchive} incomplete companies:\n`);
 
@@ -193,9 +184,7 @@ async function archiveCompanyRecords(
 		}
 	}
 
-	console.log(
-		`\n✅ Done! Archived ${companiesToArchive} incomplete companies.`,
-	);
+	console.log(`\n✅ Done! Archived ${companiesToArchive} incomplete companies.`);
 }
 
 function getDeletionScheduleDate() {

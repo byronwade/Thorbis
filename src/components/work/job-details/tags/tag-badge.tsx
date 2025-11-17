@@ -38,12 +38,7 @@ const COLOR_CLASSES: Record<string, string> = {
 	gray: "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-900/30",
 };
 
-export function TagBadge({
-	tag,
-	type,
-	onRemove,
-	showRemove = false,
-}: TagBadgeProps) {
+export function TagBadge({ tag, type, onRemove, showRemove = false }: TagBadgeProps) {
 	// Handle both string tags (legacy) and object tags (with color)
 	const tagLabel = typeof tag === "string" ? tag : tag.label;
 	const tagColor = typeof tag === "string" ? undefined : tag.color;
@@ -58,7 +53,7 @@ export function TagBadge({
 
 	return (
 		<div
-			className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium text-sm transition-colors ${colorClass}`}
+			className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${colorClass}`}
 		>
 			<Tag className="size-3" />
 			<span>{tagLabel}</span>

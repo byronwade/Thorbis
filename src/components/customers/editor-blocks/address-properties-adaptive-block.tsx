@@ -30,15 +30,11 @@ const PropertiesTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[200px] w-full" />,
-	},
+	}
 );
 
 // React component that renders the block
-export function AddressPropertiesAdaptiveBlockComponent({
-	node,
-	updateAttributes,
-	editor,
-}: any) {
+export function AddressPropertiesAdaptiveBlockComponent({ node, updateAttributes, editor }: any) {
 	const {
 		// Primary address from customer record
 		address,
@@ -97,9 +93,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
 
 						{/* Address Line 2 */}
 						<div className="space-y-2">
-							<Label htmlFor={`address2-${node.attrs.id}`}>
-								Apartment, suite, etc. (optional)
-							</Label>
+							<Label htmlFor={`address2-${node.attrs.id}`}>Apartment, suite, etc. (optional)</Label>
 							<Input
 								id={`address2-${node.attrs.id}`}
 								onChange={(e) => updateAttributes({ address2: e.target.value })}
@@ -135,9 +129,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
 								<Label htmlFor={`zipCode-${node.attrs.id}`}>ZIP Code</Label>
 								<Input
 									id={`zipCode-${node.attrs.id}`}
-									onChange={(e) =>
-										updateAttributes({ zipCode: e.target.value })
-									}
+									onChange={(e) => updateAttributes({ zipCode: e.target.value })}
 									placeholder="94102"
 									value={zipCode || ""}
 								/>
@@ -177,17 +169,14 @@ export function AddressPropertiesAdaptiveBlockComponent({
 	// Calculate total property value
 	const totalValue = properties.reduce(
 		(sum: number, p: any) => sum + (p.enrichment?.ownership?.marketValue || 0),
-		0,
+		0
 	);
 
 	return (
 		<NodeViewWrapper className="address-properties-block">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton
-						icon={<Plus className="size-4" />}
-						onClick={handleAddProperty}
-					>
+					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddProperty}>
 						Add Property
 					</CollapsibleActionButton>
 				}
@@ -206,11 +195,7 @@ export function AddressPropertiesAdaptiveBlockComponent({
 				value="customer-properties"
 			>
 				{/* Full-width datatable with search/sort/pagination and hover maps */}
-				<PropertiesTable
-					customerId={customerId}
-					itemsPerPage={10}
-					properties={properties}
-				/>
+				<PropertiesTable customerId={customerId} itemsPerPage={10} properties={properties} />
 			</CollapsibleDataSection>
 		</NodeViewWrapper>
 	);

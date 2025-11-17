@@ -65,8 +65,7 @@ const SHORTCUTS = [
 ];
 
 export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
-	const isMac =
-		typeof navigator !== "undefined" && navigator.platform.includes("Mac");
+	const isMac = typeof navigator !== "undefined" && navigator.platform.includes("Mac");
 
 	const formatKey = (key: string) => {
 		if (key === "⌘" && !isMac) {
@@ -91,26 +90,19 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 				<div className="grid gap-6 md:grid-cols-2">
 					{SHORTCUTS.map((category) => (
 						<div className="space-y-3" key={category.category}>
-							<h4 className="font-semibold text-sm">{category.category}</h4>
+							<h4 className="text-sm font-semibold">{category.category}</h4>
 							<div className="space-y-2">
 								{category.shortcuts.map((shortcut, index) => (
-									<div
-										className="flex items-center justify-between text-sm"
-										key={index}
-									>
-										<span className="text-muted-foreground">
-											{shortcut.description}
-										</span>
+									<div className="flex items-center justify-between text-sm" key={index}>
+										<span className="text-muted-foreground">{shortcut.description}</span>
 										<div className="flex items-center gap-1">
 											{shortcut.keys.map((key, keyIndex) => (
 												<span className="flex items-center" key={keyIndex}>
-													<kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 rounded border bg-muted px-2 font-medium font-mono text-xs">
+													<kbd className="bg-muted pointer-events-none inline-flex h-6 items-center gap-1 rounded border px-2 font-mono text-xs font-medium select-none">
 														{formatKey(key)}
 													</kbd>
 													{keyIndex < shortcut.keys.length - 1 && (
-														<span className="mx-1 text-muted-foreground">
-															+
-														</span>
+														<span className="text-muted-foreground mx-1">+</span>
 													)}
 												</span>
 											))}
@@ -122,11 +114,11 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 					))}
 				</div>
 
-				<div className="mt-4 rounded-lg bg-muted p-4">
+				<div className="bg-muted mt-4 rounded-lg p-4">
 					<p className="text-muted-foreground text-sm">
-						<strong>Pro tip:</strong> Use Tab to quickly move between fields.
-						Press {isMac ? "⌘" : "Ctrl"} + K to instantly jump to customer
-						search from anywhere in the form.
+						<strong>Pro tip:</strong> Use Tab to quickly move between fields. Press{" "}
+						{isMac ? "⌘" : "Ctrl"} + K to instantly jump to customer search from anywhere in the
+						form.
 					</p>
 				</div>
 			</DialogContent>

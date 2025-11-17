@@ -75,10 +75,7 @@ export class SocialEnrichmentService {
 	/**
 	 * Enrich social media profiles
 	 */
-	async enrichSocial(
-		email: string,
-		fullName?: string,
-	): Promise<SocialEnrichment | null> {
+	async enrichSocial(email: string, fullName?: string): Promise<SocialEnrichment | null> {
 		const profiles: SocialEnrichment["profiles"] = {};
 
 		// Try to find profiles on each platform
@@ -120,7 +117,7 @@ export class SocialEnrichmentService {
 	 */
 	private async findLinkedInProfile(
 		email: string,
-		fullName?: string,
+		fullName?: string
 	): Promise<SocialEnrichment["profiles"]["linkedin"] | null> {
 		if (!this.rapidApiKey) {
 			return null;
@@ -164,7 +161,7 @@ export class SocialEnrichmentService {
 	 * Find Twitter profile using Twitter API v2
 	 */
 	private async findTwitterProfile(
-		fullName?: string,
+		fullName?: string
 	): Promise<SocialEnrichment["profiles"]["twitter"] | null> {
 		if (!this.twitterBearerToken) {
 			return null;
@@ -210,7 +207,7 @@ export class SocialEnrichmentService {
 	 * Find Facebook profile using Facebook Graph API
 	 */
 	private async findFacebookProfile(
-		_email: string,
+		_email: string
 	): Promise<SocialEnrichment["profiles"]["facebook"] | null> {
 		if (!(this.facebookAppId && this.facebookAppSecret)) {
 			return null;
@@ -239,10 +236,7 @@ export class SocialEnrichmentService {
 	/**
 	 * Extract username from social media URLs
 	 */
-	extractUsername(
-		url: string,
-		platform: "linkedin" | "twitter" | "facebook",
-	): string | null {
+	extractUsername(url: string, platform: "linkedin" | "twitter" | "facebook"): string | null {
 		try {
 			const urlObj = new URL(url);
 			const pathname = urlObj.pathname;

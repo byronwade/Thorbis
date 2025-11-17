@@ -17,10 +17,7 @@ import type { ReactElement } from "react";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
-import type {
-	EmailSendResult,
-	EmailTemplate as EmailTemplateEnum,
-} from "./email-types";
+import type { EmailSendResult, EmailTemplate as EmailTemplateEnum } from "./email-types";
 import { emailSendSchema } from "./email-types";
 import { emailConfig, isResendConfigured, resend } from "./resend-client";
 
@@ -81,8 +78,7 @@ export async function sendEmail({
 		if (!(isResendConfigured() && resend)) {
 			return {
 				success: false,
-				error:
-					"Email service not configured. Please add RESEND_API_KEY to environment variables.",
+				error: "Email service not configured. Please add RESEND_API_KEY to environment variables.",
 			};
 		}
 
@@ -125,9 +121,7 @@ export async function sendEmail({
 			try {
 				if (supabase) {
 					await supabase.from("email_logs").insert({
-						to: Array.isArray(validatedData.to)
-							? validatedData.to.join(", ")
-							: validatedData.to,
+						to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
 						from: fromAddress,
 						subject: validatedData.subject,
 						html_body: html,
@@ -151,9 +145,7 @@ export async function sendEmail({
 		try {
 			if (supabase) {
 				await supabase.from("email_logs").insert({
-					to: Array.isArray(validatedData.to)
-						? validatedData.to.join(", ")
-						: validatedData.to,
+					to: Array.isArray(validatedData.to) ? validatedData.to.join(", ") : validatedData.to,
 					from: fromAddress,
 					subject: validatedData.subject,
 					html_body: html,
@@ -197,9 +189,7 @@ export async function sendEmail({
  * - Sends multiple emails
  * - Returns results for each email
  */
-export async function sendBatchEmails(
-	emails: SendEmailOptions[],
-): Promise<EmailSendResult[]> {
+export async function sendBatchEmails(emails: SendEmailOptions[]): Promise<EmailSendResult[]> {
 	if (emails.length > 100) {
 		return [
 			{
@@ -222,9 +212,7 @@ export async function sendBatchEmails(
  * - Sends test email to specified address
  * - Returns detailed error information
  */
-export async function testEmailConfiguration(
-	testEmailAddress: string,
-): Promise<EmailSendResult> {
+export async function testEmailConfiguration(testEmailAddress: string): Promise<EmailSendResult> {
 	try {
 		const validatedEmail = emailSendSchema.shape.to.parse(testEmailAddress);
 
@@ -253,8 +241,7 @@ export async function testEmailConfiguration(
 					{
 						type: "p",
 						props: {
-							children:
-								"If you received this, your email configuration is working correctly!",
+							children: "If you received this, your email configuration is working correctly!",
 						},
 					},
 				],
@@ -278,16 +265,12 @@ export async function testEmailConfiguration(
 
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Configuration test failed",
+			error: error instanceof Error ? error.message : "Configuration test failed",
 		};
 	}
 }
 
-async function getCompanyEmailIdentity(
-	supabase: SupabaseClient<Database>,
-	companyId: string,
-) {
+async function getCompanyEmailIdentity(supabase: SupabaseClient<Database>, companyId: string) {
 	const { data: settings } = await supabase
 		.from("communication_email_settings")
 		.select("smtp_from_email, smtp_from_name")

@@ -75,7 +75,8 @@ export class WebRTCErrorBoundary extends React.Component<
 					<div className="flex-1 text-sm">
 						<p className="font-medium">Telephony Service Unavailable</p>
 						<p className="text-xs opacity-80">
-							The calling service is temporarily unavailable. Other features continue to work normally.
+							The calling service is temporarily unavailable. Other features continue to work
+							normally.
 						</p>
 					</div>
 				</div>
@@ -92,7 +93,7 @@ export class WebRTCErrorBoundary extends React.Component<
  */
 export function withWebRTCErrorBoundary<P extends object>(
 	Component: React.ComponentType<P>,
-	fallback?: React.ReactNode,
+	fallback?: React.ReactNode
 ): React.ComponentType<P> {
 	return function WebRTCBoundaryWrapper(props: P) {
 		return (

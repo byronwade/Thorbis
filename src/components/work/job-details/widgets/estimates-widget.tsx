@@ -2,13 +2,7 @@ import { FileText } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function EstimatesWidget({
-	estimates,
-	jobId,
-}: {
-	estimates: unknown[];
-	jobId: string;
-}) {
+export function EstimatesWidget({ estimates, jobId }: { estimates: unknown[]; jobId: string }) {
 	return (
 		<div className="space-y-3">
 			<p className="text-sm">

@@ -25,11 +25,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-	Collapsible,
-	CollapsibleContent,
-	CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -146,17 +142,13 @@ export function InvoiceOptionsSidebar() {
 
 	const toggleOption = (optionId: string) => {
 		setEnabledOptions((prev) =>
-			prev.includes(optionId)
-				? prev.filter((id) => id !== optionId)
-				: [...prev, optionId],
+			prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
 		);
 	};
 
 	const togglePaymentOption = (optionId: string) => {
 		setEnabledPaymentOptions((prev) =>
-			prev.includes(optionId)
-				? prev.filter((id) => id !== optionId)
-				: [...prev, optionId],
+			prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
 		);
 	};
 
@@ -173,10 +165,8 @@ export function InvoiceOptionsSidebar() {
 			<SidebarHeader className="border-b">
 				<div className="flex items-center justify-between p-4">
 					<div>
-						<h2 className="font-semibold text-sm">Customer View</h2>
-						<p className="mt-0.5 text-muted-foreground text-xs">
-							Customize what customers see
-						</p>
+						<h2 className="text-sm font-semibold">Customer View</h2>
+						<p className="text-muted-foreground mt-0.5 text-xs">Customize what customers see</p>
 					</div>
 					<Button onClick={handlePreview} size="icon" variant="ghost">
 						<Eye className="size-4" />
@@ -189,7 +179,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible defaultOpen>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								PDF Template
 								<ChevronRight className="h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
 							</CollapsibleTrigger>
@@ -199,28 +189,21 @@ export function InvoiceOptionsSidebar() {
 								{PDF_LAYOUTS.map((layout) => (
 									<Card
 										className={cn(
-											"group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
-											selectedLayout === layout.id &&
-												"border-primary bg-primary/5",
+											"group hover:border-primary/50 hover:bg-accent/5 cursor-pointer rounded-lg border p-3 transition-all",
+											selectedLayout === layout.id && "border-primary bg-primary/5"
 										)}
 										key={layout.id}
 										onClick={() => handleLayoutChange(layout.id)}
 									>
 										<div className="flex items-start gap-3">
 											<div className="mt-0.5">
-												<layout.icon className="size-4 text-muted-foreground" />
+												<layout.icon className="text-muted-foreground size-4" />
 											</div>
 											<div className="flex-1 space-y-1">
-												<p className="font-medium text-sm leading-none">
-													{layout.name}
-												</p>
-												<p className="text-muted-foreground text-xs">
-													{layout.description}
-												</p>
+												<p className="text-sm leading-none font-medium">{layout.name}</p>
+												<p className="text-muted-foreground text-xs">{layout.description}</p>
 											</div>
-											{selectedLayout === layout.id && (
-												<Check className="size-4 text-primary" />
-											)}
+											{selectedLayout === layout.id && <Check className="text-primary size-4" />}
 										</div>
 									</Card>
 								))}
@@ -235,7 +218,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								<div className="flex items-center gap-2">
 									<Palette className="size-3.5" />
 									Design & Branding
@@ -255,7 +238,7 @@ export function InvoiceOptionsSidebar() {
 											value={primaryColor}
 										/>
 										<input
-											className="h-8 flex-1 rounded border bg-background px-2 text-xs"
+											className="bg-background h-8 flex-1 rounded border px-2 text-xs"
 											onChange={(e) => setPrimaryColor(e.target.value)}
 											type="text"
 											value={primaryColor}
@@ -273,9 +256,7 @@ export function InvoiceOptionsSidebar() {
 										step={10}
 										value={logoOpacity}
 									/>
-									<p className="text-muted-foreground text-xs">
-										{logoOpacity[0]}%
-									</p>
+									<p className="text-muted-foreground text-xs">{logoOpacity[0]}%</p>
 								</div>
 
 								<div className="space-y-2">
@@ -302,7 +283,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								<div className="flex items-center gap-2">
 									<Eye className="size-3.5" />
 									What Customers See
@@ -316,26 +297,18 @@ export function InvoiceOptionsSidebar() {
 									const isEnabled = enabledOptions.includes(option.id);
 									return (
 										<button
-											className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+											className="hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors"
 											key={option.id}
 											onClick={() => toggleOption(option.id)}
 											type="button"
 										>
 											<span className="flex items-center gap-2">
-												{isEnabled && <Check className="size-3 text-primary" />}
-												<span
-													className={cn(
-														"text-xs",
-														isEnabled ? "font-medium" : "",
-													)}
-												>
+												{isEnabled && <Check className="text-primary size-3" />}
+												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>
 													{option.label}
 												</span>
 											</span>
-											<Switch
-												checked={isEnabled}
-												onCheckedChange={() => toggleOption(option.id)}
-											/>
+											<Switch checked={isEnabled} onCheckedChange={() => toggleOption(option.id)} />
 										</button>
 									);
 								})}
@@ -350,7 +323,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								<div className="flex items-center gap-2">
 									<CreditCard className="size-3.5" />
 									Payment Options
@@ -364,19 +337,14 @@ export function InvoiceOptionsSidebar() {
 									const isEnabled = enabledPaymentOptions.includes(option.id);
 									return (
 										<button
-											className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+											className="hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors"
 											key={option.id}
 											onClick={() => togglePaymentOption(option.id)}
 											type="button"
 										>
 											<span className="flex items-center gap-2">
-												{isEnabled && <Check className="size-3 text-primary" />}
-												<span
-													className={cn(
-														"text-xs",
-														isEnabled ? "font-medium" : "",
-													)}
-												>
+												{isEnabled && <Check className="text-primary size-3" />}
+												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>
 													{option.label}
 												</span>
 											</span>
@@ -398,7 +366,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								<div className="flex items-center gap-2">
 									<Mail className="size-3.5" />
 									Email Settings
@@ -411,15 +379,12 @@ export function InvoiceOptionsSidebar() {
 								<Card className="rounded-lg border p-3">
 									<div className="flex items-center justify-between">
 										<div className="space-y-0.5">
-											<p className="font-medium text-xs">Auto-send on Create</p>
-											<p className="text-[10px] text-muted-foreground">
+											<p className="text-xs font-medium">Auto-send on Create</p>
+											<p className="text-muted-foreground text-[10px]">
 												Automatically email invoice to customer
 											</p>
 										</div>
-										<Switch
-											checked={sendEmailOnCreate}
-											onCheckedChange={setSendEmailOnCreate}
-										/>
+										<Switch checked={sendEmailOnCreate} onCheckedChange={setSendEmailOnCreate} />
 									</div>
 								</Card>
 
@@ -445,7 +410,7 @@ export function InvoiceOptionsSidebar() {
 				<Collapsible>
 					<SidebarGroup>
 						<SidebarGroupLabel asChild>
-							<CollapsibleTrigger className="group/collapsible flex w-full items-center justify-between rounded-md px-2 py-1.5 font-medium text-xs transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
+							<CollapsibleTrigger className="group/collapsible hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs font-medium transition-colors">
 								<div className="flex items-center gap-2">
 									<Globe className="size-3.5" />
 									Customer Portal
@@ -457,24 +422,19 @@ export function InvoiceOptionsSidebar() {
 							<div className="space-y-2 px-2 pt-2">
 								<Card
 									className={cn(
-										"group cursor-pointer rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5",
-										enablePortal && "border-primary bg-primary/5",
+										"group hover:border-primary/50 hover:bg-accent/5 cursor-pointer rounded-lg border p-3 transition-all",
+										enablePortal && "border-primary bg-primary/5"
 									)}
 									onClick={() => setEnablePortal(!enablePortal)}
 								>
 									<div className="flex items-start justify-between gap-2">
 										<div className="flex-1 space-y-1">
-											<p className="font-medium text-sm leading-none">
-												Portal Access
-											</p>
+											<p className="text-sm leading-none font-medium">Portal Access</p>
 											<p className="text-muted-foreground text-xs">
 												{enablePortal ? "Enabled" : "Disabled"}
 											</p>
 										</div>
-										<Switch
-											checked={enablePortal}
-											onCheckedChange={setEnablePortal}
-										/>
+										<Switch checked={enablePortal} onCheckedChange={setEnablePortal} />
 									</div>
 								</Card>
 
@@ -502,9 +462,7 @@ export function InvoiceOptionsSidebar() {
 					<div className="space-y-2 px-2">
 						<Button
 							className="w-full justify-start gap-2 text-xs"
-							onClick={() =>
-								window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")
-							}
+							onClick={() => window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")}
 							size="sm"
 							variant="outline"
 						>
@@ -527,12 +485,7 @@ export function InvoiceOptionsSidebar() {
 			</SidebarContent>
 
 			<SidebarFooter className="border-t p-3">
-				<Button
-					className="w-full gap-2"
-					onClick={handleSave}
-					size="sm"
-					variant="default"
-				>
+				<Button className="w-full gap-2" onClick={handleSave} size="sm" variant="default">
 					<Settings className="size-4" />
 					Save Settings
 				</Button>

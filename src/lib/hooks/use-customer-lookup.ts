@@ -63,11 +63,7 @@ const getDefaultCustomerData = (callerNumber?: string): CustomerData => ({
 		callHistory: [],
 		similarCallers: 0,
 		riskLevel: "medium",
-		aiNotes: [
-			"First-time caller",
-			"No prior history",
-			"Standard verification recommended",
-		],
+		aiNotes: ["First-time caller", "No prior history", "Standard verification recommended"],
 	},
 });
 
@@ -98,10 +94,7 @@ export function useCustomerLookup(callerNumber?: string, companyId?: string) {
 							: "Unknown",
 						totalCalls: customer.total_interactions || 0,
 						openTickets: 0, // Would need to query jobs/tickets table
-						priority: (customer.priority_level || "medium") as
-							| "low"
-							| "medium"
-							| "high",
+						priority: (customer.priority_level || "medium") as "low" | "medium" | "high",
 						tags: customer.tags || [],
 						recentIssues: [], // Would need to query jobs table
 						aiData: {

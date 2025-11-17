@@ -9,10 +9,7 @@ type ScheduleViewToggleProps = {
 	onViewChange: (view: ScheduleView) => void;
 };
 
-export function ScheduleViewToggle({
-	view,
-	onViewChange,
-}: ScheduleViewToggleProps) {
+export function ScheduleViewToggle({ view, onViewChange }: ScheduleViewToggleProps) {
 	const views = [
 		{ value: "gantt" as const, icon: GanttChart, label: "Gantt" },
 		{ value: "timeline" as const, icon: LayoutGrid, label: "Timeline" },
@@ -24,7 +21,7 @@ export function ScheduleViewToggle({
 	];
 
 	return (
-		<div className="inline-flex items-stretch rounded-lg border bg-background p-1">
+		<div className="bg-background inline-flex items-stretch rounded-lg border p-1">
 			{views.map((item) => {
 				const Icon = item.icon;
 				const isActive = view === item.value;
@@ -32,10 +29,10 @@ export function ScheduleViewToggle({
 				return (
 					<button
 						className={cn(
-							"relative flex min-w-[80px] items-center justify-center gap-1.5 rounded-md px-3 py-1 font-medium text-sm transition-all",
+							"relative flex min-w-[80px] items-center justify-center gap-1.5 rounded-md px-3 py-1 text-sm font-medium transition-all",
 							isActive
 								? "bg-accent text-accent-foreground shadow-sm"
-								: "text-muted-foreground hover:text-foreground",
+								: "text-muted-foreground hover:text-foreground"
 						)}
 						key={item.value}
 						onClick={() => onViewChange(item.value)}

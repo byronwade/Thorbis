@@ -53,9 +53,8 @@ export default function InvoiceNotificationEmail({
 					<Text style={paragraph}>Hi {customerName},</Text>
 
 					<Text style={paragraph}>
-						We've prepared invoice <strong>#{invoiceNumber}</strong> for you.
-						Please review the details below and click the button to view or pay
-						online.
+						We've prepared invoice <strong>#{invoiceNumber}</strong> for you. Please review the
+						details below and click the button to view or pay online.
 					</Text>
 				</>
 			)}
@@ -71,16 +70,12 @@ export default function InvoiceNotificationEmail({
 				</div>
 				<div style={summaryRow}>
 					<Text style={summaryLabel}>Invoice Date</Text>
-					<Text style={summaryValue}>
-						{new Date(invoiceDate).toLocaleDateString()}
-					</Text>
+					<Text style={summaryValue}>{new Date(invoiceDate).toLocaleDateString()}</Text>
 				</div>
 				{dueDate ? (
 					<div style={summaryRow}>
 						<Text style={summaryLabel}>Due Date</Text>
-						<Text style={summaryValue}>
-							{new Date(dueDate).toLocaleDateString()}
-						</Text>
+						<Text style={summaryValue}>{new Date(dueDate).toLocaleDateString()}</Text>
 					</div>
 				) : null}
 			</Card>
@@ -96,9 +91,7 @@ export default function InvoiceNotificationEmail({
 									<Text style={itemDescription}>{item.description}</Text>
 									<Text style={itemQuantity}>Qty: {item.quantity}</Text>
 								</div>
-								<Text style={itemAmount}>
-									{formatCurrency(item.amount, currency)}
-								</Text>
+								<Text style={itemAmount}>{formatCurrency(item.amount, currency)}</Text>
 							</div>
 						);
 					})}
@@ -128,8 +121,8 @@ export default function InvoiceNotificationEmail({
 				<Card style={footerCard}>
 					<Heading level={3}>Need Assistance?</Heading>
 					<Text style={footerText}>
-						If you have any questions about this invoice, reply to this email or
-						contact our support team. We're happy to help!
+						If you have any questions about this invoice, reply to this email or contact our support
+						team. We're happy to help!
 					</Text>
 				</Card>
 			)}

@@ -1,18 +1,7 @@
 import type { SidebarConfig } from "@/lib/sidebar/types";
 
 export type LayoutConfig = {
-	maxWidth?:
-		| "full"
-		| "7xl"
-		| "6xl"
-		| "5xl"
-		| "4xl"
-		| "3xl"
-		| "2xl"
-		| "xl"
-		| "lg"
-		| "md"
-		| "sm";
+	maxWidth?: "full" | "7xl" | "6xl" | "5xl" | "4xl" | "3xl" | "2xl" | "xl" | "lg" | "md" | "sm";
 	padding?: "none" | "sm" | "md" | "lg";
 	paddingX?: "none" | "sm" | "md" | "lg";
 	paddingY?: "none" | "sm" | "md" | "lg";
@@ -340,16 +329,12 @@ const LAYOUT_RULES: LayoutRule[] = [
  */
 export function getLayoutConfig(pathname: string): LayoutConfig {
 	// Sort by priority (highest first)
-	const sortedRules = [...LAYOUT_RULES].sort(
-		(a, b) => (b.priority ?? 0) - (a.priority ?? 0),
-	);
+	const sortedRules = [...LAYOUT_RULES].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
 
 	// Find first matching rule
 	for (const rule of sortedRules) {
 		const matches =
-			typeof rule.pattern === "string"
-				? pathname === rule.pattern
-				: rule.pattern.test(pathname);
+			typeof rule.pattern === "string" ? pathname === rule.pattern : rule.pattern.test(pathname);
 
 		if (matches) {
 			return rule.config;
@@ -400,7 +385,7 @@ export function getMaxWidthClass(maxWidth: LayoutConfig["maxWidth"]): string {
 export function getPaddingClass(
 	padding: LayoutConfig["padding"],
 	paddingX?: LayoutConfig["paddingX"],
-	paddingY?: LayoutConfig["paddingY"],
+	paddingY?: LayoutConfig["paddingY"]
 ): string {
 	if (paddingX !== undefined || paddingY !== undefined) {
 		const px = getPaddingXClass(paddingX ?? padding);
@@ -422,9 +407,7 @@ export function getPaddingClass(
 	}
 }
 
-function getPaddingXClass(
-	padding: LayoutConfig["paddingX"] | LayoutConfig["padding"],
-): string {
+function getPaddingXClass(padding: LayoutConfig["paddingX"] | LayoutConfig["padding"]): string {
 	switch (padding) {
 		case "none":
 			return "px-0";
@@ -439,9 +422,7 @@ function getPaddingXClass(
 	}
 }
 
-function getPaddingYClass(
-	padding: LayoutConfig["paddingY"] | LayoutConfig["padding"],
-): string {
+function getPaddingYClass(padding: LayoutConfig["paddingY"] | LayoutConfig["padding"]): string {
 	switch (padding) {
 		case "none":
 			return "py-0";

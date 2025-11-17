@@ -55,19 +55,15 @@ import {
 function SupplierStatusIcon({ status }: { status: SyncStatus }) {
 	switch (status) {
 		case "connected":
-			return <CheckCircle2 className="size-4 text-success dark:text-success" />;
+			return <CheckCircle2 className="text-success dark:text-success size-4" />;
 		case "syncing":
-			return (
-				<Loader2 className="size-4 animate-spin text-primary dark:text-primary" />
-			);
+			return <Loader2 className="text-primary dark:text-primary size-4 animate-spin" />;
 		case "error":
-			return (
-				<AlertCircle className="size-4 text-destructive dark:text-destructive" />
-			);
+			return <AlertCircle className="text-destructive dark:text-destructive size-4" />;
 		case "warning":
-			return <AlertCircle className="size-4 text-warning dark:text-warning" />;
+			return <AlertCircle className="text-warning dark:text-warning size-4" />;
 		default:
-			return <div className="size-2 rounded-full bg-muted-foreground/30" />;
+			return <div className="bg-muted-foreground/30 size-2 rounded-full" />;
 	}
 }
 
@@ -108,9 +104,7 @@ function SupplierStatusCard({
 		}
 		if (status === "connected" && lastSyncAt) {
 			const now = new Date();
-			const diffHours = Math.floor(
-				(now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60),
-			);
+			const diffHours = Math.floor((now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60));
 			if (diffHours < 1) {
 				return "Just now";
 			}
@@ -123,17 +117,17 @@ function SupplierStatusCard({
 	};
 
 	return (
-		<div className="group rounded-lg border p-3 transition-all hover:border-primary/50 hover:bg-accent/5">
+		<div className="group hover:border-primary/50 hover:bg-accent/5 rounded-lg border p-3 transition-all">
 			<div className="flex items-start justify-between gap-2">
 				<div className="flex items-start gap-3">
 					<div className="mt-0.5">
 						<SupplierStatusIcon status={status} />
 					</div>
 					<div className="flex-1 space-y-1">
-						<p className="font-medium text-sm leading-none">{displayName}</p>
+						<p className="text-sm leading-none font-medium">{displayName}</p>
 						<p className="text-muted-foreground text-xs">{getStatusText()}</p>
 						{status === "connected" && itemsImported > 0 && (
-							<p className="text-success text-xs dark:text-success">
+							<p className="text-success dark:text-success text-xs">
 								{itemsImported.toLocaleString()} items
 							</p>
 						)}
@@ -152,10 +146,8 @@ function SupplierStatusCard({
 				</Button>
 			</div>
 			{status === "error" && errorMessage && (
-				<div className="mt-2 rounded-md bg-destructive p-2 dark:bg-destructive/20">
-					<p className="text-destructive text-xs dark:text-destructive">
-						{errorMessage}
-					</p>
+				<div className="bg-destructive dark:bg-destructive/20 mt-2 rounded-md p-2">
+					<p className="text-destructive dark:text-destructive text-xs">{errorMessage}</p>
 				</div>
 			)}
 		</div>
@@ -171,45 +163,25 @@ function QuickActionsSection() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
 			<div className="space-y-2 px-2">
-				<Button
-					asChild
-					className="w-full justify-start gap-2 text-xs"
-					size="sm"
-					variant="outline"
-				>
+				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
 					<Link href="/dashboard/work/pricebook/labor-calculator">
 						<Calculator className="size-3" />
 						Labor Calculator
 					</Link>
 				</Button>
-				<Button
-					asChild
-					className="w-full justify-start gap-2 text-xs"
-					size="sm"
-					variant="outline"
-				>
+				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
 					<Link href="/dashboard/work/pricebook/mass-update">
 						<TrendingUp className="size-3" />
 						Mass Price Increase
 					</Link>
 				</Button>
-				<Button
-					asChild
-					className="w-full justify-start gap-2 text-xs"
-					size="sm"
-					variant="outline"
-				>
+				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
 					<Link href="/dashboard/work/pricebook/import">
 						<Upload className="size-3" />
 						Bulk Import
 					</Link>
 				</Button>
-				<Button
-					asChild
-					className="w-full justify-start gap-2 text-xs"
-					size="sm"
-					variant="outline"
-				>
+				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
 					<Link href="/dashboard/work/pricebook/export">
 						<Download className="size-3" />
 						Bulk Export
@@ -253,30 +225,20 @@ function CategoriesSection() {
 				type="button"
 			>
 				<SidebarGroupLabel>Categories</SidebarGroupLabel>
-				{collapsed ? (
-					<ChevronRight className="size-4" />
-				) : (
-					<ChevronDown className="size-4" />
-				)}
+				{collapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
 			</button>
 			{!collapsed && (
 				<div className="space-y-1 px-2 pt-2">
 					{availableCategories.map((category) => (
 						<button
-							className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
+							className="hover:bg-accent flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm transition-colors"
 							key={category.name}
 							onClick={() => toggleCategory(category.name)}
 							type="button"
 						>
 							<span className="flex items-center gap-2">
-								{categories.includes(category.name) && (
-									<Check className="size-3 text-primary" />
-								)}
-								<span
-									className={
-										categories.includes(category.name) ? "font-medium" : ""
-									}
-								>
+								{categories.includes(category.name) && <Check className="text-primary size-3" />}
+								<span className={categories.includes(category.name) ? "font-medium" : ""}>
 									{category.name}
 								</span>
 							</span>
@@ -323,12 +285,7 @@ function ActiveFiltersSection() {
 		<SidebarGroup>
 			<div className="flex items-center justify-between px-2">
 				<SidebarGroupLabel>Active Filters</SidebarGroupLabel>
-				<Button
-					className="h-auto p-0 text-xs"
-					onClick={resetFilters}
-					size="sm"
-					variant="link"
-				>
+				<Button className="h-auto p-0 text-xs" onClick={resetFilters} size="sm" variant="link">
 					Clear all
 				</Button>
 			</div>
@@ -337,7 +294,7 @@ function ActiveFiltersSection() {
 					<Badge className="gap-1" key={category} variant="secondary">
 						{category}
 						<button
-							className="ml-1 rounded-sm hover:bg-accent"
+							className="hover:bg-accent ml-1 rounded-sm"
 							onClick={() => removeCategory(category)}
 							type="button"
 						>
@@ -349,7 +306,7 @@ function ActiveFiltersSection() {
 					<Badge className="gap-1" key={type} variant="outline">
 						{type}
 						<button
-							className="ml-1 rounded-sm hover:bg-accent"
+							className="hover:bg-accent ml-1 rounded-sm"
 							onClick={() => removeItemType(type)}
 							type="button"
 						>
@@ -374,7 +331,7 @@ export function PriceBookSidebar() {
 		<Sidebar collapsible="offcanvas" side="right" variant="inset">
 			<SidebarHeader className="border-b p-4">
 				<div className="flex items-center justify-between">
-					<h2 className="font-semibold text-sm">Price Book Tools</h2>
+					<h2 className="text-sm font-semibold">Price Book Tools</h2>
 					<Button asChild size="icon" variant="ghost">
 						<Link href="/dashboard/settings/pricebook/integrations">
 							<Settings className="size-4" />

@@ -40,7 +40,5 @@ export function isOnboardingComplete(options: {
 		return true;
 	}
 
-	return COMPLETION_STEPS.some((stepKey) =>
-		isStepCompleted(progressRecord[stepKey]),
-	);
+	return COMPLETION_STEPS.some((stepKey) => isStepCompleted(progressRecord[stepKey]));
 }

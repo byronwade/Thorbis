@@ -441,7 +441,7 @@ export function getAvailableFields(entity: string): FieldDefinition[] {
  * Get recommended format for a field type
  */
 export function getRecommendedFormat(
-	type: FieldDefinition["type"],
+	type: FieldDefinition["type"]
 ): "text" | "date" | "currency" | "number" | "badge" {
 	switch (type) {
 		case "date":

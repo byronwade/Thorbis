@@ -56,25 +56,13 @@ export function ProgressiveTabs({
 	};
 
 	return (
-		<Tabs
-			value={activeTab}
-			onValueChange={handleValueChange}
-			className={className}
-		>
-			{typeof children === "function"
-				? children({ activeTab })
-				: children}
+		<Tabs value={activeTab} onValueChange={handleValueChange} className={className}>
+			{typeof children === "function" ? children({ activeTab }) : children}
 		</Tabs>
 	);
 }
 
-export function ProgressiveTab({
-	value,
-	label,
-	children,
-	icon,
-	badge,
-}: ProgressiveTabProps) {
+export function ProgressiveTab({ value, label, children, icon, badge }: ProgressiveTabProps) {
 	// This component is meant to be used with ProgressiveTabs
 	// The activeTab state is managed by the parent
 	return null;

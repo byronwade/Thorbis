@@ -3,10 +3,7 @@
 import { Bell, HelpCircle, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
-import {
-	getNotificationSettings,
-	updateNotificationSettings,
-} from "@/actions/settings";
+import { getNotificationSettings, updateNotificationSettings } from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
@@ -17,13 +14,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -35,12 +26,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
 import { cn } from "@/lib/utils";
 import {
@@ -54,9 +40,7 @@ type NotificationsClientProps = {
 };
 
 type BooleanSettingKey = {
-	[K in keyof NotificationSettingsState]: NotificationSettingsState[K] extends boolean
-		? K
-		: never;
+	[K in keyof NotificationSettingsState]: NotificationSettingsState[K] extends boolean ? K : never;
 }[keyof NotificationSettingsState];
 
 const CUSTOMER_TOGGLES: Array<{
@@ -152,57 +136,30 @@ const ON_THE_WAY_MINUTES = [
 	SIXTY_MINUTES,
 ] as const;
 
-export function NotificationsClient({
-	initialSettings,
-}: NotificationsClientProps) {
-	const {
-		settings,
-		isLoading,
-		isPending,
-		hasUnsavedChanges,
-		updateSetting,
-		saveSettings,
-		reload,
-	} = useSettings<NotificationSettingsState>({
-		getter: getNotificationSettings,
-		setter: updateNotificationSettings,
-		initialState: DEFAULT_NOTIFICATION_SETTINGS,
-		settingsName: "notifications",
-		prefetchedData: initialSettings ?? undefined,
-		transformLoad: (data) => mapNotificationSettings(data),
-		transformSave: (state) => {
-			const formData = new FormData();
-			formData.append("notifyNewJobs", state.notifyJobScheduled.toString());
-			formData.append(
-				"notifyJobUpdates",
-				state.notifyTechnicianJobUpdate.toString(),
-			);
-			formData.append(
-				"notifyJobCompletions",
-				state.notifyJobCompleted.toString(),
-			);
-			formData.append("notifyNewCustomers", state.notifyNewLeads.toString());
-			formData.append(
-				"notifyInvoicePaid",
-				state.notifyPaymentReceived.toString(),
-			);
-			formData.append(
-				"notifyTechnicianAssigned",
-				state.notifyTechnicianAssignment.toString(),
-			);
-			formData.append(
-				"emailNotifications",
-				state.emailNotifications.toString(),
-			);
-			formData.append("smsNotifications", state.smsNotifications.toString());
-			formData.append("pushNotifications", state.pushNotifications.toString());
-			formData.append(
-				"inAppNotifications",
-				state.inAppNotifications.toString(),
-			);
-			return formData;
-		},
-	});
+export function NotificationsClient({ initialSettings }: NotificationsClientProps) {
+	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
+		useSettings<NotificationSettingsState>({
+			getter: getNotificationSettings,
+			setter: updateNotificationSettings,
+			initialState: DEFAULT_NOTIFICATION_SETTINGS,
+			settingsName: "notifications",
+			prefetchedData: initialSettings ?? undefined,
+			transformLoad: (data) => mapNotificationSettings(data),
+			transformSave: (state) => {
+				const formData = new FormData();
+				formData.append("notifyNewJobs", state.notifyJobScheduled.toString());
+				formData.append("notifyJobUpdates", state.notifyTechnicianJobUpdate.toString());
+				formData.append("notifyJobCompletions", state.notifyJobCompleted.toString());
+				formData.append("notifyNewCustomers", state.notifyNewLeads.toString());
+				formData.append("notifyInvoicePaid", state.notifyPaymentReceived.toString());
+				formData.append("notifyTechnicianAssigned", state.notifyTechnicianAssignment.toString());
+				formData.append("emailNotifications", state.emailNotifications.toString());
+				formData.append("smsNotifications", state.smsNotifications.toString());
+				formData.append("pushNotifications", state.pushNotifications.toString());
+				formData.append("inAppNotifications", state.inAppNotifications.toString());
+				return formData;
+			},
+		});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {
@@ -240,9 +197,7 @@ export function NotificationsClient({
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/communications">
-										Communications
-									</Link>
+									<Link href="/dashboard/settings/communications">Communications</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -252,9 +207,7 @@ export function NotificationsClient({
 						</BreadcrumbList>
 					</Breadcrumb>
 					<Button asChild variant="ghost">
-						<Link href="/dashboard/settings/communications">
-							Back to communications
-						</Link>
+						<Link href="/dashboard/settings/communications">Back to communications</Link>
 					</Button>
 				</div>
 
@@ -264,25 +217,19 @@ export function NotificationsClient({
 							<Smartphone className="size-4" />
 							Customer notifications
 						</CardTitle>
-						<CardDescription>
-							Automatic touchpoints sent to customers
-						</CardDescription>
+						<CardDescription>Automatic touchpoints sent to customers</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{CUSTOMER_TOGGLES.map((item) => (
 							<div className="space-y-1" key={item.key}>
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
-										<Label className="font-medium text-sm">{item.label}</Label>
-										<p className="text-muted-foreground text-xs">
-											{item.description}
-										</p>
+										<Label className="text-sm font-medium">{item.label}</Label>
+										<p className="text-muted-foreground text-xs">{item.description}</p>
 									</div>
 									<Switch
 										checked={settings[item.key]}
-										onCheckedChange={(checked) =>
-											updateSetting(item.key, checked)
-										}
+										onCheckedChange={(checked) => updateSetting(item.key, checked)}
 									/>
 								</div>
 								<Separator />
@@ -291,26 +238,20 @@ export function NotificationsClient({
 
 						<div className="flex items-center justify-between">
 							<div className="flex-1">
-								<Label className="flex items-center gap-2 font-medium text-sm">
+								<Label className="flex items-center gap-2 text-sm font-medium">
 									“On the way” alert
 									<Tooltip>
 										<TooltipTrigger asChild>
-											<HelpCircle className="size-3 text-muted-foreground" />
+											<HelpCircle className="text-muted-foreground size-3" />
 										</TooltipTrigger>
-										<TooltipContent>
-											Notify customers when the technician departs.
-										</TooltipContent>
+										<TooltipContent>Notify customers when the technician departs.</TooltipContent>
 									</Tooltip>
 								</Label>
-								<p className="text-muted-foreground text-xs">
-									Includes ETA and technician name.
-								</p>
+								<p className="text-muted-foreground text-xs">Includes ETA and technician name.</p>
 							</div>
 							<Switch
 								checked={settings.sendOnTheWayAlert}
-								onCheckedChange={(checked) =>
-									updateSetting("sendOnTheWayAlert", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("sendOnTheWayAlert", checked)}
 							/>
 						</div>
 						{settings.sendOnTheWayAlert && (
@@ -344,23 +285,19 @@ export function NotificationsClient({
 							<Bell className="size-4" />
 							Internal alerts
 						</CardTitle>
-						<CardDescription>
-							Keep the team informed of key events
-						</CardDescription>
+						<CardDescription>Keep the team informed of key events</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div className="flex-1">
-								<Label className="font-medium text-sm">New leads</Label>
+								<Label className="text-sm font-medium">New leads</Label>
 								<p className="text-muted-foreground text-xs">
 									Notify sales when a new inquiry arrives.
 								</p>
 							</div>
 							<Switch
 								checked={settings.notifyNewLeads}
-								onCheckedChange={(checked) =>
-									updateSetting("notifyNewLeads", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("notifyNewLeads", checked)}
 							/>
 						</div>
 						{settings.notifyNewLeads && (
@@ -369,32 +306,22 @@ export function NotificationsClient({
 									<Label className="text-sm">Email recipients</Label>
 									<Input
 										className="mt-2"
-										onChange={(event) =>
-											updateSetting("notifyNewLeadsEmail", event.target.value)
-										}
+										onChange={(event) => updateSetting("notifyNewLeadsEmail", event.target.value)}
 										placeholder="sales@yourco.com"
 										type="email"
 										value={settings.notifyNewLeadsEmail}
 									/>
 								</div>
 								<div
-									className={cn(
-										"flex items-center justify-between",
-										"rounded-lg border",
-										"p-3",
-									)}
+									className={cn("flex items-center justify-between", "rounded-lg border", "p-3")}
 								>
 									<div>
-										<p className="font-medium text-sm">Send SMS too</p>
-										<p className="text-muted-foreground text-xs">
-											Uses the workspace SMS number.
-										</p>
+										<p className="text-sm font-medium">Send SMS too</p>
+										<p className="text-muted-foreground text-xs">Uses the workspace SMS number.</p>
 									</div>
 									<Switch
 										checked={settings.notifyNewLeadsSMS}
-										onCheckedChange={(checked) =>
-											updateSetting("notifyNewLeadsSMS", checked)
-										}
+										onCheckedChange={(checked) => updateSetting("notifyNewLeadsSMS", checked)}
 									/>
 								</div>
 							</div>
@@ -404,16 +331,12 @@ export function NotificationsClient({
 							<div key={item.key}>
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
-										<Label className="font-medium text-sm">{item.label}</Label>
-										<p className="text-muted-foreground text-xs">
-											{item.description}
-										</p>
+										<Label className="text-sm font-medium">{item.label}</Label>
+										<p className="text-muted-foreground text-xs">{item.description}</p>
 									</div>
 									<Switch
 										checked={settings[item.key]}
-										onCheckedChange={(checked) =>
-											updateSetting(item.key, checked)
-										}
+										onCheckedChange={(checked) => updateSetting(item.key, checked)}
 									/>
 								</div>
 								{index < array.length - 1 && <Separator className="my-3" />}
@@ -425,25 +348,19 @@ export function NotificationsClient({
 				<Card>
 					<CardHeader>
 						<CardTitle>Notification channels</CardTitle>
-						<CardDescription>
-							Choose which delivery methods are active by default
-						</CardDescription>
+						<CardDescription>Choose which delivery methods are active by default</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						{CHANNEL_TOGGLES.map((channel, index, array) => (
 							<div key={channel.key}>
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="font-medium text-sm">{channel.label}</p>
-										<p className="text-muted-foreground text-xs">
-											{channel.description}
-										</p>
+										<p className="text-sm font-medium">{channel.label}</p>
+										<p className="text-muted-foreground text-xs">{channel.description}</p>
 									</div>
 									<Switch
 										checked={settings[channel.key]}
-										onCheckedChange={(checked) =>
-											updateSetting(channel.key, checked)
-										}
+										onCheckedChange={(checked) => updateSetting(channel.key, checked)}
 									/>
 								</div>
 								{index < array.length - 1 && <Separator className="my-3" />}

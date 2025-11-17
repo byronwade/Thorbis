@@ -27,10 +27,8 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 		return (
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
-					<MapPin className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-					<p className="text-muted-foreground text-sm">
-						No location information available
-					</p>
+					<MapPin className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
+					<p className="text-muted-foreground text-sm">No location information available</p>
 				</div>
 			</div>
 		);
@@ -77,7 +75,7 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 		<div className="space-y-4">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<h4 className="font-semibold text-sm">Job Location</h4>
+				<h4 className="text-sm font-semibold">Job Location</h4>
 				<Button asChild size="sm" variant="outline">
 					<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 						<Navigation className="mr-2 size-4" />
@@ -87,15 +85,13 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 			</div>
 
 			{/* Map Image Placeholder */}
-			<div className="relative aspect-video overflow-hidden rounded-lg border bg-muted">
+			<div className="bg-muted relative aspect-video overflow-hidden rounded-lg border">
 				{/* Placeholder map with address marker */}
-				<div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+				<div className="from-primary/10 to-primary/5 absolute inset-0 flex items-center justify-center bg-gradient-to-br">
 					<div className="text-center">
-						<MapPin className="mx-auto mb-2 size-12 text-primary" />
-						<p className="font-medium text-sm">Map Preview</p>
-						<p className="text-muted-foreground text-xs">
-							Click "Get Directions" to view in maps
-						</p>
+						<MapPin className="text-primary mx-auto mb-2 size-12" />
+						<p className="text-sm font-medium">Map Preview</p>
+						<p className="text-muted-foreground text-xs">Click "Get Directions" to view in maps</p>
 					</div>
 				</div>
 
@@ -113,10 +109,10 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 			{/* Address Details */}
 			<div className="space-y-2">
 				<div className="flex items-start gap-2">
-					<MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+					<MapPin className="text-muted-foreground mt-0.5 size-4 shrink-0" />
 					<div className="flex-1 space-y-1">
-						<h5 className="font-medium text-sm">Address</h5>
-						<div className="whitespace-pre-line text-muted-foreground text-xs leading-relaxed">
+						<h5 className="text-sm font-medium">Address</h5>
+						<div className="text-muted-foreground text-xs leading-relaxed whitespace-pre-line">
 							{fullAddress}
 						</div>
 					</div>
@@ -139,38 +135,23 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 
 			{/* Navigation Options */}
 			<div className="space-y-2">
-				<h5 className="font-medium text-sm">Open in:</h5>
+				<h5 className="text-sm font-medium">Open in:</h5>
 				<div className="grid grid-cols-1 gap-2">
-					<Button
-						asChild
-						className="w-full justify-start"
-						size="sm"
-						variant="outline"
-					>
+					<Button asChild className="w-full justify-start" size="sm" variant="outline">
 						<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Google Maps
 						</a>
 					</Button>
 
-					<Button
-						asChild
-						className="w-full justify-start"
-						size="sm"
-						variant="outline"
-					>
+					<Button asChild className="w-full justify-start" size="sm" variant="outline">
 						<a href={appleMapsUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Apple Maps
 						</a>
 					</Button>
 
-					<Button
-						asChild
-						className="w-full justify-start"
-						size="sm"
-						variant="outline"
-					>
+					<Button asChild className="w-full justify-start" size="sm" variant="outline">
 						<a href={wazeUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Waze
@@ -183,15 +164,13 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 			{property.name && (
 				<>
 					<Separator />
-					<div className="rounded-lg bg-muted p-3">
+					<div className="bg-muted rounded-lg p-3">
 						<div className="mb-1 flex items-center gap-2">
-							<MapPin className="size-4 text-muted-foreground" />
-							<span className="font-medium text-sm">{property.name}</span>
+							<MapPin className="text-muted-foreground size-4" />
+							<span className="text-sm font-medium">{property.name}</span>
 						</div>
 						<Button asChild className="mt-2 w-full" size="sm" variant="outline">
-							<Link href={`/dashboard/work/properties/${property.id}`}>
-								View Property Details
-							</Link>
+							<Link href={`/dashboard/work/properties/${property.id}`}>View Property Details</Link>
 						</Button>
 					</div>
 				</>
@@ -213,7 +192,7 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
       </div> */}
 
 			{/* Distance Info (if available) */}
-			<div className="rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 p-3 text-xs">
+			<div className="from-primary/5 to-primary/10 rounded-lg bg-gradient-to-br p-3 text-xs">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground">Estimated Travel Time:</span>
 					<span className="font-medium">Click directions for route</span>

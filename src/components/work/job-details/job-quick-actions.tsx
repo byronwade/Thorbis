@@ -17,10 +17,7 @@ type JobQuickActionsProps = {
 	currentStatus: string;
 };
 
-export function JobQuickActions({
-	jobId,
-	currentStatus,
-}: JobQuickActionsProps) {
+export function JobQuickActions({ jobId, currentStatus }: JobQuickActionsProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [isLoading, setIsLoading] = useState<string | null>(null);

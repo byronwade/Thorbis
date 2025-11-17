@@ -1,10 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { addDays, subDays } from "date-fns";
-import type {
-	Job,
-	JobAssignment,
-	Technician,
-} from "@/components/schedule/schedule-types";
+import type { Job, JobAssignment, Technician } from "@/components/schedule/schedule-types";
 import type { ScheduleHydrationPayload } from "@/lib/schedule-bootstrap";
 import type { Database } from "@/types/supabase";
 
@@ -18,10 +14,7 @@ type TeamMemberRow = Tables["team_members"]["Row"];
 type JobTeamAssignmentRow = Tables["job_team_assignments"]["Row"];
 
 export type ScheduleRecord = ScheduleRow & {
-	customer: Pick<
-		CustomerRow,
-		"id" | "first_name" | "last_name" | "email" | "phone"
-	> | null;
+	customer: Pick<CustomerRow, "id" | "first_name" | "last_name" | "email" | "phone"> | null;
 	job:
 		| (JobRow & {
 				job_team_assignments: Array<
@@ -35,16 +28,7 @@ export type ScheduleRecord = ScheduleRow & {
 
 type ScheduleProperty = Pick<
 	PropertyRow,
-	| "id"
-	| "name"
-	| "address"
-	| "address2"
-	| "city"
-	| "state"
-	| "zip_code"
-	| "country"
-	| "lat"
-	| "lon"
+	"id" | "name" | "address" | "address2" | "city" | "state" | "zip_code" | "country" | "lat" | "lon"
 >;
 
 type Range = {
@@ -166,21 +150,17 @@ export async function fetchScheduleData({
 		throw scheduleError;
 	}
 
-	const propertyMap = await fetchPropertiesForSchedules(
-		supabase,
-		scheduleRows ?? [],
-	);
+	const propertyMap = await fetchPropertiesForSchedules(supabase, scheduleRows ?? []);
 	const technicianLookups = mapTeamMembersToTechnicians(teamMembers);
 
-	const normalizedSchedules = (scheduleRows ??
-		[]) as unknown as ScheduleRecord[];
+	const normalizedSchedules = (scheduleRows ?? []) as unknown as ScheduleRecord[];
 
 	const jobs = normalizedSchedules.map((schedule) =>
 		mapScheduleToJob(
 			schedule,
 			technicianLookups,
-			propertyMap.get(schedule.property_id ?? "") ?? null,
-		),
+			propertyMap.get(schedule.property_id ?? "") ?? null
+		)
 	);
 
 	return {
@@ -189,10 +169,7 @@ export async function fetchScheduleData({
 	};
 }
 
-export function resolveScheduleRange(
-	range?: Range,
-	anchor: Date = new Date(),
-): Range {
+export function resolveScheduleRange(range?: Range, anchor: Date = new Date()): Range {
 	if (range) {
 		return range;
 	}
@@ -203,7 +180,7 @@ export function resolveScheduleRange(
 }
 
 export async function loadScheduleSnapshot(
-	params: LoadParams & { range?: Range },
+	params: LoadParams & { range?: Range }
 ): Promise<ScheduleHydrationPayload> {
 	const resolvedRange = resolveScheduleRange(params.range);
 	const { jobs, technicians } = await fetchScheduleData({
@@ -233,7 +210,7 @@ export function createTechnicianJobMap(jobs: Job[]): Record<string, Job[]> {
 
 async function fetchTeamMembersWithUsers(
 	supabase: SupabaseClient<Database>,
-	companyId: string,
+	companyId: string
 ): Promise<TeamMemberRecord[]> {
 	const { data: bareMembers, error: bareError } = await supabase
 		.from("team_members")
@@ -248,10 +225,8 @@ async function fetchTeamMembersWithUsers(
 
 	const userIds = Array.from(
 		new Set(
-			(bareMembers ?? [])
-				.map((member) => member.user_id)
-				.filter((id): id is string => Boolean(id)),
-		),
+			(bareMembers ?? []).map((member) => member.user_id).filter((id): id is string => Boolean(id))
+		)
 	);
 
 	const usersById = new Map<string, TeamMemberRecord["users"]>();
@@ -276,14 +251,10 @@ async function fetchTeamMembersWithUsers(
 
 async function fetchPropertiesForSchedules(
 	supabase: SupabaseClient<Database>,
-	schedules: ScheduleRow[],
+	schedules: ScheduleRow[]
 ): Promise<Map<string, ScheduleProperty>> {
 	const propertyIds = Array.from(
-		new Set(
-			schedules
-				.map((row) => row.property_id)
-				.filter((id): id is string => Boolean(id)),
-		),
+		new Set(schedules.map((row) => row.property_id).filter((id): id is string => Boolean(id)))
 	);
 
 	const map = new Map<string, ScheduleProperty>();
@@ -293,9 +264,7 @@ async function fetchPropertiesForSchedules(
 
 	const { data, error } = await supabase
 		.from("properties")
-		.select(
-			"id, name, address, address2, city, state, zip_code, country, lat, lon",
-		)
+		.select("id, name, address, address2, city, state, zip_code, country, lat, lon")
 		.in("id", propertyIds);
 
 	if (error) {
@@ -306,9 +275,7 @@ async function fetchPropertiesForSchedules(
 	return map;
 }
 
-export function mapTeamMembersToTechnicians(
-	teamMembers: TeamMemberRecord[],
-): TechniciansLookup {
+export function mapTeamMembersToTechnicians(teamMembers: TeamMemberRecord[]): TechniciansLookup {
 	const technicians: Technician[] = [];
 	const byId = new Map<string, Technician>();
 	const byUserId = new Map<string, Technician>();
@@ -325,8 +292,7 @@ export function mapTeamMembersToTechnicians(
 			id: technicianId,
 			userId: member.user_id ?? undefined,
 			teamMemberId: member.id,
-			name:
-				user?.name || member.invited_name || member.job_title || "Team Member",
+			name: user?.name || member.invited_name || member.job_title || "Team Member",
 			email: user?.email || member.email || undefined,
 			phone: user?.phone || member.phone || undefined,
 			avatar: user?.avatar || undefined,
@@ -356,15 +322,13 @@ export function mapTeamMembersToTechnicians(
 export function mapScheduleToJob(
 	schedule: ScheduleRecord,
 	lookups: TechniciansLookup,
-	property: ScheduleProperty | null,
+	property: ScheduleProperty | null
 ): Job {
 	const location = buildLocation(property);
 	const customer = buildCustomer(schedule, location.address.street);
 	const assignments = buildAssignments(schedule, lookups);
 
-	const primaryAssignment = assignments.find(
-		(assignment) => assignment.role === "primary",
-	);
+	const primaryAssignment = assignments.find((assignment) => assignment.role === "primary");
 	const technicianId = primaryAssignment?.technicianId ?? "";
 
 	return {
@@ -403,16 +367,12 @@ export function mapScheduleToJob(
 	};
 }
 
-function buildAssignments(
-	schedule: ScheduleRecord,
-	lookups: TechniciansLookup,
-): JobAssignment[] {
+function buildAssignments(schedule: ScheduleRecord, lookups: TechniciansLookup): JobAssignment[] {
 	const assignments: JobAssignment[] = [];
 
 	if (schedule.assigned_to) {
 		const technician =
-			lookups.byUserId.get(schedule.assigned_to) ||
-			lookups.byId.get(schedule.assigned_to);
+			lookups.byUserId.get(schedule.assigned_to) || lookups.byId.get(schedule.assigned_to);
 		assignments.push({
 			technicianId: technician?.id ?? schedule.assigned_to,
 			teamMemberId: technician?.teamMemberId,
@@ -425,9 +385,7 @@ function buildAssignments(
 	}
 
 	const crewAssignments =
-		schedule.job?.job_team_assignments?.filter(
-			(assignment) => !assignment.removed_at,
-		) ?? [];
+		schedule.job?.job_team_assignments?.filter((assignment) => !assignment.removed_at) ?? [];
 
 	crewAssignments.forEach((assignment) => {
 		const teamMember = assignment.team_member;
@@ -440,10 +398,7 @@ function buildAssignments(
 			lookups.byTeamMemberId.get(teamMember.id);
 
 		const displayName =
-			technician?.name ||
-			teamMember.invited_name ||
-			teamMember.job_title ||
-			"Crew Member";
+			technician?.name || teamMember.invited_name || teamMember.job_title || "Crew Member";
 
 		assignments.push({
 			technicianId: technician?.id ?? teamMember.user_id ?? teamMember.id,
@@ -472,14 +427,10 @@ function dedupeAssignments(assignments: JobAssignment[]): JobAssignment[] {
 	});
 }
 
-function buildCustomer(
-	schedule: ScheduleRecord,
-	fallbackStreet: string,
-): Job["customer"] {
+function buildCustomer(schedule: ScheduleRecord, fallbackStreet: string): Job["customer"] {
 	const customerRecord = schedule.customer;
 	const name =
-		customerRecord &&
-		`${customerRecord.first_name ?? ""} ${customerRecord.last_name ?? ""}`.trim();
+		customerRecord && `${customerRecord.first_name ?? ""} ${customerRecord.last_name ?? ""}`.trim();
 
 	return {
 		id: customerRecord?.id || schedule.customer_id || `customer-${schedule.id}`,

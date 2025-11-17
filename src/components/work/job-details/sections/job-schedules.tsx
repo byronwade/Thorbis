@@ -44,10 +44,7 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<
-			string,
-			"default" | "secondary" | "outline" | "destructive"
-		> = {
+		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
 			scheduled: "outline",
 			confirmed: "secondary",
 			in_progress: "default",
@@ -61,8 +58,8 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 	if (schedules.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<Calendar className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Appointments</h3>
+				<Calendar className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Appointments</h3>
 				<p className="text-muted-foreground text-sm">
 					No appointments have been scheduled for this job yet.
 				</p>
@@ -92,13 +89,11 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 								</TableCell>
 								<TableCell>
 									<div className="flex items-center gap-2">
-										<Clock className="size-4 text-muted-foreground" />
+										<Clock className="text-muted-foreground size-4" />
 										{formatTime(schedule.start_time)}
 									</div>
 								</TableCell>
-								<TableCell>
-									{schedule.duration ? `${schedule.duration} min` : "—"}
-								</TableCell>
+								<TableCell>{schedule.duration ? `${schedule.duration} min` : "—"}</TableCell>
 								<TableCell className="capitalize">
 									{schedule.appointment_type || schedule.type || "—"}
 								</TableCell>
@@ -117,8 +112,8 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
-				<p className="font-medium text-sm">Total Appointments</p>
+			<div className="bg-muted/50 rounded-md p-4">
+				<p className="text-sm font-medium">Total Appointments</p>
 				<p className="text-muted-foreground text-xs">
 					{schedules.length} appointment{schedules.length !== 1 ? "s" : ""}
 				</p>

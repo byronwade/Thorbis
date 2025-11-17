@@ -60,7 +60,7 @@ interface ProgressiveDataOptions {
 export function useProgressiveData<T>(
 	queryKey: QueryKey,
 	fetcher: FetcherFn<T>,
-	options: ProgressiveDataOptions = {},
+	options: ProgressiveDataOptions = {}
 ) {
 	const {
 		enabled = true,

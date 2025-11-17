@@ -120,8 +120,8 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 					title="Activity History (0)"
 					value="customer-activity"
 				>
-					<div className="rounded-lg border bg-muted/30 p-8 text-center">
-						<Activity className="mx-auto mb-3 size-12 text-muted-foreground/50" />
+					<div className="bg-muted/30 rounded-lg border p-8 text-center">
+						<Activity className="text-muted-foreground/50 mx-auto mb-3 size-12" />
 						<p className="text-muted-foreground">No activity yet</p>
 					</div>
 				</CollapsibleDataSection>
@@ -149,14 +149,12 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 			>
 				<div className="relative space-y-4">
 					{/* Timeline Line */}
-					<div className="absolute top-0 bottom-0 left-8 w-px bg-border" />
+					<div className="bg-border absolute top-0 bottom-0 left-8 w-px" />
 
 					{activities.map((activity: any, index: number) => {
 						const Icon = getActivityIcon(activity.action);
 						const colorClass = getActivityColor(activity.action);
-						const user = Array.isArray(activity.user)
-							? activity.user[0]
-							: activity.user;
+						const user = Array.isArray(activity.user) ? activity.user[0] : activity.user;
 						const userName = user?.name || "System";
 						const userInitials = userName
 							.split(" ")
@@ -193,7 +191,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 								<div
 									className={cn(
 										"relative z-10 flex size-16 shrink-0 items-center justify-center rounded-full",
-										colorClass,
+										colorClass
 									)}
 								>
 									<Icon className="size-6" />
@@ -201,29 +199,25 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 
 								{/* Activity Content */}
 								<div className="flex-1 pb-4">
-									<div className="rounded-lg border bg-card p-4">
+									<div className="bg-card rounded-lg border p-4">
 										{/* Header */}
 										<div className="mb-2 flex items-start justify-between gap-4">
 											<div className="flex-1">
-												<p className="font-semibold text-sm">
-													{activity.action}
-												</p>
+												<p className="text-sm font-semibold">{activity.action}</p>
 
 												{/* Show all changed fields */}
 												{changes.length > 0 && (
 													<div className="mt-2 space-y-1">
 														{changes.map((change, i) => (
 															<div className="text-xs" key={i}>
-																<span className="font-medium text-muted-foreground">
+																<span className="text-muted-foreground font-medium">
 																	{change.field}:
 																</span>{" "}
 																<span className="text-destructive line-through">
 																	{String(change.old)}
 																</span>
 																{" → "}
-																<span className="text-success">
-																	{String(change.new)}
-																</span>
+																<span className="text-success">{String(change.new)}</span>
 															</div>
 														))}
 													</div>
@@ -231,7 +225,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 											</div>
 
 											{/* Timestamp - ALWAYS SHOW */}
-											<time className="flex shrink-0 items-center gap-1 whitespace-nowrap text-muted-foreground text-xs">
+											<time className="text-muted-foreground flex shrink-0 items-center gap-1 text-xs whitespace-nowrap">
 												<Clock className="size-3" />
 												{formatDate(activity.created_at)}
 											</time>
@@ -240,9 +234,7 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 										{/* User - ALWAYS SHOW WHO DID IT */}
 										<div className="mt-3 flex items-center gap-2 border-t pt-2">
 											<Avatar className="size-6">
-												<AvatarFallback className="text-xs">
-													{userInitials}
-												</AvatarFallback>
+												<AvatarFallback className="text-xs">{userInitials}</AvatarFallback>
 											</Avatar>
 											<div className="text-xs">
 												<span className="font-medium">{userName}</span>
@@ -255,10 +247,8 @@ export function ActivityTimelineBlockComponent({ node }: any) {
 
 										{/* IP Address and User Agent (for audit trail) */}
 										{(activity.ip_address || activity.user_agent) && (
-											<div className="mt-2 text-muted-foreground text-xs">
-												{activity.ip_address && (
-													<span>IP: {activity.ip_address}</span>
-												)}
+											<div className="text-muted-foreground mt-2 text-xs">
+												{activity.ip_address && <span>IP: {activity.ip_address}</span>}
 												{activity.ip_address && activity.user_agent && (
 													<span className="mx-2">•</span>
 												)}

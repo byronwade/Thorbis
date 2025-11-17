@@ -18,13 +18,7 @@ import { Clock, Menu, Phone, Settings, Users } from "lucide-react";
 import { getCallRoutingRules } from "@/actions/telnyx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserCompanyId } from "@/lib/auth/user-data";
 import { CallRoutingRuleActions } from "./call-routing-rule-actions";
 
@@ -44,9 +38,7 @@ export async function CallRoutingRulesList() {
 	if (!(result.success && result.data)) {
 		return (
 			<div className="flex items-center justify-center p-12">
-				<p className="text-destructive">
-					{result.error || "Failed to load routing rules"}
-				</p>
+				<p className="text-destructive">{result.error || "Failed to load routing rules"}</p>
 			</div>
 		);
 	}
@@ -56,9 +48,9 @@ export async function CallRoutingRulesList() {
 	if (rules.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center p-12">
-				<Phone className="mb-4 h-12 w-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Routing Rules</h3>
-				<p className="mb-4 text-muted-foreground">
+				<Phone className="text-muted-foreground mb-4 h-12 w-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Routing Rules</h3>
+				<p className="text-muted-foreground mb-4">
 					Create your first call routing rule to get started
 				</p>
 				<Button>Create Routing Rule</Button>
@@ -80,9 +72,7 @@ export async function CallRoutingRulesList() {
 									</Badge>
 									<RoutingTypeBadge type={rule.routing_type} />
 								</div>
-								{rule.description && (
-									<CardDescription>{rule.description}</CardDescription>
-								)}
+								{rule.description && <CardDescription>{rule.description}</CardDescription>}
 							</div>
 							<div className="flex items-center gap-2">
 								<Badge className="font-mono" variant="outline">
@@ -99,9 +89,7 @@ export async function CallRoutingRulesList() {
 							<RoutingDetails rule={rule} />
 
 							{/* Business Hours */}
-							{rule.routing_type === "business_hours" && (
-								<BusinessHoursInfo rule={rule} />
-							)}
+							{rule.routing_type === "business_hours" && <BusinessHoursInfo rule={rule} />}
 
 							{/* Team Members */}
 							{rule.routing_type === "round_robin" && rule.team_members && (
@@ -146,14 +134,12 @@ function RoutingTypeBadge({ type }: { type: string }) {
 function RoutingDetails({ rule }: { rule: any }) {
 	return (
 		<div className="space-y-2">
-			<h4 className="font-medium text-sm">Routing Configuration</h4>
-			<div className="space-y-1 text-muted-foreground text-sm">
+			<h4 className="text-sm font-medium">Routing Configuration</h4>
+			<div className="text-muted-foreground space-y-1 text-sm">
 				{rule.routing_type === "direct" && rule.forward_to_number && (
 					<p>Forward to: {rule.forward_to_number}</p>
 				)}
-				{rule.routing_type === "round_robin" && (
-					<p>Ring timeout: {rule.ring_timeout}s</p>
-				)}
+				{rule.routing_type === "round_robin" && <p>Ring timeout: {rule.ring_timeout}s</p>}
 				{rule.routing_type === "ivr" && <p>IVR Menu configured</p>}
 				{rule.routing_type === "business_hours" && (
 					<>
@@ -172,7 +158,7 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 	if (!businessHours) {
 		return (
 			<div className="space-y-2">
-				<h4 className="font-medium text-sm">Business Hours</h4>
+				<h4 className="text-sm font-medium">Business Hours</h4>
 				<p className="text-muted-foreground text-sm">Not configured</p>
 			</div>
 		);
@@ -183,14 +169,13 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 
 	return (
 		<div className="space-y-2">
-			<h4 className="font-medium text-sm">Business Hours</h4>
+			<h4 className="text-sm font-medium">Business Hours</h4>
 			<div className="text-muted-foreground text-sm">
 				<p>{configuredDays.length} days configured</p>
 				{configuredDays.length > 0 && (
 					<p className="mt-1 text-xs">
 						{configuredDays.slice(0, 3).join(", ")}
-						{configuredDays.length > 3 &&
-							`, +${configuredDays.length - 3} more`}
+						{configuredDays.length > 3 && `, +${configuredDays.length - 3} more`}
 					</p>
 				)}
 			</div>
@@ -201,7 +186,7 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 function TeamMembersInfo({ teamMembers }: { teamMembers: string[] }) {
 	return (
 		<div className="space-y-2">
-			<h4 className="font-medium text-sm">Team Members</h4>
+			<h4 className="text-sm font-medium">Team Members</h4>
 			<div className="text-muted-foreground text-sm">
 				<p>{teamMembers.length} members in rotation</p>
 			</div>
@@ -231,7 +216,7 @@ function FeaturesInfo({ rule }: { rule: any }) {
 
 	return (
 		<div className="space-y-2">
-			<h4 className="font-medium text-sm">Features</h4>
+			<h4 className="text-sm font-medium">Features</h4>
 			<div className="flex flex-wrap gap-1">
 				{features.map((feature) => (
 					<Badge className="text-xs" key={feature} variant="secondary">

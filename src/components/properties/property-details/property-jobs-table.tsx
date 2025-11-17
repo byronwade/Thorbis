@@ -12,10 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 
 type PropertyJob = {
 	id: string;
@@ -53,10 +50,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return (
-			statusColors[status.toLowerCase()] ||
-			"bg-secondary0/10 text-muted-foreground"
-		);
+		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
 	};
 
 	const getPriorityColor = (priority?: string) => {
@@ -69,10 +63,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 			high: "bg-warning/10 text-warning",
 			urgent: "bg-destructive/10 text-destructive",
 		};
-		return (
-			priorityColors[priority.toLowerCase()] ||
-			"bg-secondary0/10 text-muted-foreground"
-		);
+		return priorityColors[priority.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
 	};
 
 	const formatCurrency = (cents?: number) => {
@@ -96,7 +87,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				shrink: true,
 				render: (job) => (
 					<Link
-						className="font-medium font-mono text-sm hover:underline"
+						className="font-mono text-sm font-medium hover:underline"
 						href={`/dashboard/work/${job.id}`}
 					>
 						{job.job_number}
@@ -112,9 +103,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 						href={`/dashboard/work/${job.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
-						<span className="font-medium text-sm leading-tight hover:underline">
-							{job.title}
-						</span>
+						<span className="text-sm leading-tight font-medium hover:underline">{job.title}</span>
 					</Link>
 				),
 			},
@@ -130,7 +119,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 							className="flex items-center gap-2 hover:underline"
 							href={`/dashboard/sales/customers/${customer.id}`}
 						>
-							<User className="size-4 text-muted-foreground" />
+							<User className="text-muted-foreground size-4" />
 							<span>
 								{customer.first_name} {customer.last_name}
 							</span>
@@ -145,9 +134,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				header: "Status",
 				width: "w-32",
 				shrink: true,
-				render: (job) => (
-					<Badge className={getStatusColor(job.status)}>{job.status}</Badge>
-				),
+				render: (job) => <Badge className={getStatusColor(job.status)}>{job.status}</Badge>,
 			},
 			{
 				key: "priority",
@@ -172,7 +159,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				align: "right",
 				render: (job) => (
 					<div className="flex flex-col items-end gap-1">
-						<span className="font-medium text-sm">
+						<span className="text-sm font-medium">
 							{formatCurrency(job.financial?.total_amount ?? 0)}
 						</span>
 						{job.financial?.paid_amount && job.financial?.total_amount && (
@@ -192,7 +179,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 					const scheduledStart = job.scheduled_start;
 					return scheduledStart ? (
 						<div className="flex items-center gap-2 text-sm">
-							<Calendar className="size-4 text-muted-foreground" />
+							<Calendar className="text-muted-foreground size-4" />
 							<span>
 								{new Date(scheduledStart).toLocaleDateString(undefined, {
 									month: "short",
@@ -236,7 +223,7 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				),
 			},
 		],
-		[formatCurrency, getPriorityColor, getStatusColor],
+		[formatCurrency, getPriorityColor, getStatusColor]
 	);
 
 	return (

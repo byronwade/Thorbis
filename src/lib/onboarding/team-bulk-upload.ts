@@ -84,11 +84,7 @@ export async function parseExcel(file: File): Promise<ParseResult> {
 			} catch (error) {
 				resolve({
 					success: false,
-					errors: [
-						error instanceof Error
-							? error.message
-							: "Failed to parse Excel file",
-					],
+					errors: [error instanceof Error ? error.message : "Failed to parse Excel file"],
 				});
 			}
 		};
@@ -117,21 +113,15 @@ function validateAndTransform(data: any[]): {
 		const rowNumber = index + 2; // +2 because index starts at 0 and header is row 1
 
 		// Check required fields
-		const firstName = String(
-			row.firstName || row.FirstName || row.first_name || "",
-		).trim();
-		const lastName = String(
-			row.lastName || row.LastName || row.last_name || "",
-		).trim();
+		const firstName = String(row.firstName || row.FirstName || row.first_name || "").trim();
+		const lastName = String(row.lastName || row.LastName || row.last_name || "").trim();
 		const email = String(row.email || row.Email || "")
 			.trim()
 			.toLowerCase();
 		const role = String(row.role || row.Role || "")
 			.trim()
 			.toLowerCase();
-		const phone = String(
-			row.phone || row.Phone || row.phone_number || "",
-		).trim();
+		const phone = String(row.phone || row.Phone || row.phone_number || "").trim();
 
 		if (!firstName) {
 			errors.push(`Row ${rowNumber}: First name is required`);
@@ -162,7 +152,7 @@ function validateAndTransform(data: any[]): {
 
 		if (!validRoles.includes(role)) {
 			errors.push(
-				`Row ${rowNumber}: Invalid role "${role}". Must be one of: ${validRoles.join(", ")}`,
+				`Row ${rowNumber}: Invalid role "${role}". Must be one of: ${validRoles.join(", ")}`
 			);
 			return;
 		}

@@ -163,9 +163,7 @@ export function ArchiveDataTable({
 				<div>
 					<div className="font-medium">{item.displayName}</div>
 					{item.entityNumber && (
-						<div className="text-muted-foreground text-xs">
-							{item.entityNumber}
-						</div>
+						<div className="text-muted-foreground text-xs">{item.entityNumber}</div>
 					)}
 				</div>
 			),
@@ -192,7 +190,7 @@ export function ArchiveDataTable({
 				<div className="flex items-center gap-2">
 					{item.daysUntilPermanentDelete > 0 ? (
 						<>
-							<Clock className="h-4 w-4 text-muted-foreground" />
+							<Clock className="text-muted-foreground h-4 w-4" />
 							<span className="text-sm">
 								{item.daysUntilPermanentDelete} day
 								{item.daysUntilPermanentDelete === 1 ? "" : "s"}
@@ -225,7 +223,7 @@ export function ArchiveDataTable({
 			icon: <Trash2 className="h-4 w-4" />,
 			onClick: (_selectedIds: Set<string>) => {
 				toast.error(
-					"Permanent deletion not yet implemented. Items will auto-delete after 90 days.",
+					"Permanent deletion not yet implemented. Items will auto-delete after 90 days."
 				);
 			},
 			variant: "destructive",
@@ -288,7 +286,7 @@ export function ArchiveDataTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={data}
-				emptyIcon={<Archive className="h-12 w-12 text-muted-foreground" />}
+				emptyIcon={<Archive className="text-muted-foreground h-12 w-12" />}
 				emptyMessage="No archived items found"
 				enableSelection={true}
 				getItemId={(item) => item.id}
@@ -311,12 +309,10 @@ export function ArchiveDataTable({
 			<AlertDialog onOpenChange={setShowRestoreDialog} open={showRestoreDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Restore {selectedItems.size} Item(s)?
-						</AlertDialogTitle>
+						<AlertDialogTitle>Restore {selectedItems.size} Item(s)?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will restore the selected items to their active state. They
-							will reappear in their original locations.
+							This will restore the selected items to their active state. They will reappear in
+							their original locations.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

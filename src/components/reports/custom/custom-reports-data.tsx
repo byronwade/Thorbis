@@ -16,64 +16,62 @@ export async function CustomReportsData() {
 		>
 			<div className="mx-auto max-w-5xl space-y-8">
 				<div className="grid gap-6 md:grid-cols-2">
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<LayoutDashboard className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<LayoutDashboard className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Drag & Drop Builder</h3>
+						<h3 className="text-lg font-semibold">Drag & Drop Builder</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Create custom reports with an intuitive drag-and-drop interface -
-							no technical skills required
+							Create custom reports with an intuitive drag-and-drop interface - no technical skills
+							required
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Filter className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Filter className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Advanced Filtering</h3>
+						<h3 className="text-lg font-semibold">Advanced Filtering</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Filter data by date range, customer, technician, service type, and
-							more
+							Filter data by date range, customer, technician, service type, and more
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Download className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Download className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Multiple Formats</h3>
+						<h3 className="text-lg font-semibold">Multiple Formats</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Export to PDF, Excel, CSV, or share interactive dashboards with
-							your team
+							Export to PDF, Excel, CSV, or share interactive dashboards with your team
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Share2 className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Share2 className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Report Sharing</h3>
+						<h3 className="text-lg font-semibold">Report Sharing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
 							Share reports with team members, clients, or external stakeholders
 						</p>
 					</div>
 				</div>
 
-				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Your Data, Your Way</h3>
-					<p className="mb-6 text-muted-foreground">
+				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
+					<h3 className="mb-3 text-xl font-semibold">Your Data, Your Way</h3>
+					<p className="text-muted-foreground mb-6">
 						Build reports tailored to your specific needs
 					</p>
 					<div className="flex justify-center gap-4">
 						<button
-							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
+							className="border-primary/20 bg-background hover:bg-primary/5 rounded-lg border px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Learn More
 						</button>
 						<button
-							className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Request Access

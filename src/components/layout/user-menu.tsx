@@ -70,13 +70,10 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 	const router = useRouter();
 	const _pathname = usePathname();
 	const [mounted, setMounted] = useState(false);
-	const [userStatus, setUserStatus] = useState<UserStatus>(
-		user.status || "online",
-	);
+	const [userStatus, setUserStatus] = useState<UserStatus>(user.status || "online");
 	const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 	// Find the active team based on activeCompanyId, fallback to first team
-	const initialActiveTeam =
-		teams.find((t) => t.id === activeCompanyId) || teams[0];
+	const initialActiveTeam = teams.find((t) => t.id === activeCompanyId) || teams[0];
 	const [activeTeam, setActiveTeam] = useState(initialActiveTeam);
 
 	useEffect(() => {
@@ -118,8 +115,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 	const isDark =
 		mounted &&
 		(theme === "dark" ||
-			(theme === "system" &&
-				window.matchMedia("(prefers-color-scheme: dark)").matches));
+			(theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
 
 	const toggleTheme = () => {
 		setTheme(isDark ? "light" : "dark");
@@ -129,7 +125,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<button
-					className="flex h-8 items-center gap-2 rounded-md px-2 outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+					className="hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex h-8 items-center gap-2 rounded-md px-2 transition-colors outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 					suppressHydrationWarning
 					type="button"
 				>
@@ -143,11 +139,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 									.join("")}
 							</AvatarFallback>
 						</Avatar>
-						<div className="-bottom-0.5 -right-0.5 absolute">
+						<div className="absolute -right-0.5 -bottom-0.5">
 							<StatusIndicator size="sm" status={userStatus} />
 						</div>
 					</div>
-					<span className="hidden font-medium text-sm md:inline-block">
+					<span className="hidden text-sm font-medium md:inline-block">
 						{user.name.split(" ")[0]}
 					</span>
 					<span className="sr-only">User menu</span>
@@ -166,7 +162,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 										.join("")}
 								</AvatarFallback>
 							</Avatar>
-							<div className="-bottom-0.5 -right-0.5 absolute">
+							<div className="absolute -right-0.5 -bottom-0.5">
 								<StatusIndicator size="md" status={userStatus} />
 							</div>
 						</div>
@@ -179,13 +175,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				<DropdownMenuSeparator />
 
 				{/* Status Selector */}
-				<DropdownMenuLabel className="text-muted-foreground text-xs">
-					Status
-				</DropdownMenuLabel>
+				<DropdownMenuLabel className="text-muted-foreground text-xs">Status</DropdownMenuLabel>
 				<div className="px-2 pb-2">
 					<div className="space-y-1">
 						<button
-							className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 								userStatus === "online" ? "bg-accent" : ""
 							}`}
 							disabled={isUpdatingStatus}
@@ -195,11 +189,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							<StatusIndicator size="md" status="online" />
 							<span>Online</span>
 							{userStatus === "online" && (
-								<div className="ml-auto size-2 rounded-full bg-primary" />
+								<div className="bg-primary ml-auto size-2 rounded-full" />
 							)}
 						</button>
 						<button
-							className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 								userStatus === "available" ? "bg-accent" : ""
 							}`}
 							disabled={isUpdatingStatus}
@@ -209,11 +203,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							<StatusIndicator size="md" status="available" />
 							<span>Available</span>
 							{userStatus === "available" && (
-								<div className="ml-auto size-2 rounded-full bg-primary" />
+								<div className="bg-primary ml-auto size-2 rounded-full" />
 							)}
 						</button>
 						<button
-							className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+							className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 								userStatus === "busy" ? "bg-accent" : ""
 							}`}
 							disabled={isUpdatingStatus}
@@ -222,9 +216,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						>
 							<StatusIndicator size="md" status="busy" />
 							<span>Busy</span>
-							{userStatus === "busy" && (
-								<div className="ml-auto size-2 rounded-full bg-primary" />
-							)}
+							{userStatus === "busy" && <div className="bg-primary ml-auto size-2 rounded-full" />}
 						</button>
 					</div>
 				</div>
@@ -246,22 +238,16 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 								<team.logo className="size-4 shrink-0" />
 							</div>
 							<div className="flex flex-1 flex-col">
-								<span className="font-medium text-sm">{team.name}</span>
+								<span className="text-sm font-medium">{team.name}</span>
 								<div className="flex items-center gap-2">
 									{team.onboardingComplete !== undefined ? (
 										team.onboardingComplete ? (
-											<Badge
-												className="h-4 px-1.5 text-[10px]"
-												variant="default"
-											>
+											<Badge className="h-4 px-1.5 text-[10px]" variant="default">
 												<CheckCircle2 className="mr-1 size-3" />
 												Complete
 											</Badge>
 										) : (
-											<Badge
-												className="h-4 px-1.5 text-[10px]"
-												variant="secondary"
-											>
+											<Badge className="h-4 px-1.5 text-[10px]" variant="secondary">
 												<XCircle className="mr-1 size-3" />
 												{team.plan === "Incomplete Onboarding"
 													? "Incomplete Onboarding"
@@ -269,15 +255,11 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 											</Badge>
 										)
 									) : (
-										<span className="text-muted-foreground text-xs">
-											{team.plan}
-										</span>
+										<span className="text-muted-foreground text-xs">{team.plan}</span>
 									)}
 								</div>
 							</div>
-							{isActive && (
-								<div className="ml-auto size-2 rounded-full bg-primary" />
-							)}
+							{isActive && <div className="bg-primary ml-auto size-2 rounded-full" />}
 							<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
 						</DropdownMenuItem>
 					);
@@ -287,9 +269,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 						<div className="flex size-6 items-center justify-center rounded-md border">
 							<Plus className="size-4" />
 						</div>
-						<span className="font-medium text-muted-foreground">
-							Add new business
-						</span>
+						<span className="text-muted-foreground font-medium">Add new business</span>
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
@@ -330,7 +310,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 				<DropdownMenuSeparator />
 				<div className="flex items-center justify-between px-2 py-2">
 					<div className="flex items-center gap-2">
-						<Sun className="size-4 text-muted-foreground" />
+						<Sun className="text-muted-foreground size-4" />
 						<span className="text-sm">Theme</span>
 					</div>
 					<div className="flex items-center gap-2">
@@ -343,7 +323,7 @@ export function UserMenu({ user, teams, activeCompanyId }: UserMenuProps) {
 							disabled={!mounted}
 							onCheckedChange={toggleTheme}
 						/>
-						<Moon className="size-4 text-muted-foreground" />
+						<Moon className="text-muted-foreground size-4" />
 					</div>
 				</div>
 				<DropdownMenuSeparator />

@@ -14,11 +14,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -62,16 +58,11 @@ const propertySchema = z.object({
  * Find existing property or create new one for customer
  * Prevents duplicate properties for the same address
  */
-export async function findOrCreateProperty(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function findOrCreateProperty(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -82,11 +73,7 @@ export async function findOrCreateProperty(
 		// Get active company ID
 		const activeCompanyId = await getActiveCompanyId();
 		if (!activeCompanyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Validate input
@@ -103,9 +90,7 @@ export async function findOrCreateProperty(
 			squareFootage: formData.get("squareFootage")
 				? Number(formData.get("squareFootage"))
 				: undefined,
-			yearBuilt: formData.get("yearBuilt")
-				? Number(formData.get("yearBuilt"))
-				: undefined,
+			yearBuilt: formData.get("yearBuilt") ? Number(formData.get("yearBuilt")) : undefined,
 			notes: formData.get("notes") || undefined,
 			lat: formData.get("lat") ? Number(formData.get("lat")) : undefined,
 			lon: formData.get("lon") ? Number(formData.get("lon")) : undefined,
@@ -122,11 +107,7 @@ export async function findOrCreateProperty(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== activeCompanyId) {
-			throw new ActionError(
-				"Customer not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if property already exists for this customer with the same address
@@ -188,13 +169,7 @@ export async function findOrCreateProperty(
 		// Only geocode in background if coordinates weren't provided
 		if (property?.id && !data.lat && !data.lon) {
 			// Fire and forget - don't wait for this
-			geocodeAddressSilent(
-				data.address,
-				data.city,
-				data.state,
-				data.zipCode,
-				data.country,
-			)
+			geocodeAddressSilent(data.address, data.city, data.state, data.zipCode, data.country)
 				.then((geocoded) => {
 					if (geocoded) {
 						// Update property with coordinates
@@ -216,7 +191,7 @@ export async function findOrCreateProperty(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -232,16 +207,11 @@ export async function findOrCreateProperty(
 /**
  * Create a new property for a customer
  */
-export async function createProperty(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createProperty(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -256,11 +226,7 @@ export async function createProperty(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Validate input
@@ -277,9 +243,7 @@ export async function createProperty(
 			squareFootage: formData.get("squareFootage")
 				? Number(formData.get("squareFootage"))
 				: undefined,
-			yearBuilt: formData.get("yearBuilt")
-				? Number(formData.get("yearBuilt"))
-				: undefined,
+			yearBuilt: formData.get("yearBuilt") ? Number(formData.get("yearBuilt")) : undefined,
 			notes: formData.get("notes") || undefined,
 		});
 
@@ -294,11 +258,7 @@ export async function createProperty(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Customer not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Geocode property address
@@ -310,7 +270,7 @@ export async function createProperty(
 			data.city,
 			data.state,
 			data.zipCode,
-			data.country,
+			data.country
 		);
 
 		if (geocodeResult) {
@@ -349,7 +309,7 @@ export async function createProperty(
 				{
 					dbError: createError.message,
 					code: createError.code,
-				},
+				}
 			);
 		}
 
@@ -364,15 +324,12 @@ export async function createProperty(
  */
 export async function _updateProperty(
 	propertyId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -387,11 +344,7 @@ export async function _updateProperty(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify property exists and belongs to company
@@ -404,11 +357,7 @@ export async function _updateProperty(
 		assertExists(property, "Property");
 
 		if (property.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Property not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Property not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Validate input
@@ -425,9 +374,7 @@ export async function _updateProperty(
 			squareFootage: formData.get("squareFootage")
 				? Number(formData.get("squareFootage"))
 				: undefined,
-			yearBuilt: formData.get("yearBuilt")
-				? Number(formData.get("yearBuilt"))
-				: undefined,
+			yearBuilt: formData.get("yearBuilt") ? Number(formData.get("yearBuilt")) : undefined,
 			notes: formData.get("notes") || undefined,
 		});
 
@@ -452,7 +399,7 @@ export async function _updateProperty(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -467,16 +414,11 @@ export async function _updateProperty(
  *
  * Archives instead of permanently deleting. Can be restored within 90 days.
  */
-export async function archiveProperty(
-	propertyId: string,
-): Promise<ActionResult<void>> {
+export async function archiveProperty(propertyId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -491,11 +433,7 @@ export async function archiveProperty(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify property exists and belongs to company
@@ -508,11 +446,7 @@ export async function archiveProperty(
 		assertExists(property, "Property");
 
 		if (property.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Property not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Property not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if property has equipment
@@ -526,7 +460,7 @@ export async function archiveProperty(
 		if (equipment && equipment.length > 0) {
 			throw new ActionError(
 				"Cannot archive property with equipment. Remove or reassign equipment first.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -541,15 +475,13 @@ export async function archiveProperty(
 		if (jobs && jobs.length > 0) {
 			throw new ActionError(
 				"Cannot archive property with job history.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
 		// Archive property (soft delete)
 		const now = new Date().toISOString();
-		const scheduledDeletion = new Date(
-			Date.now() + 90 * 24 * 60 * 60 * 1000,
-		).toISOString();
+		const scheduledDeletion = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
 
 		const { error: archiveError } = await supabase
 			.from("properties")
@@ -564,7 +496,7 @@ export async function archiveProperty(
 		if (archiveError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("archive property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -577,16 +509,11 @@ export async function archiveProperty(
 /**
  * Restore archived property
  */
-export async function _restoreProperty(
-	propertyId: string,
-): Promise<ActionResult<void>> {
+export async function _restoreProperty(propertyId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -601,11 +528,7 @@ export async function _restoreProperty(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify property belongs to company and is archived
@@ -618,18 +541,11 @@ export async function _restoreProperty(
 		assertExists(property, "Property");
 
 		if (property.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Property not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Property not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		if (!property.deleted_at) {
-			throw new ActionError(
-				"Property is not archived",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+			throw new ActionError("Property is not archived", ERROR_CODES.OPERATION_NOT_ALLOWED);
 		}
 
 		// Restore property
@@ -646,7 +562,7 @@ export async function _restoreProperty(
 		if (restoreError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("restore property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -660,9 +576,7 @@ export async function _restoreProperty(
  * Delete property (legacy - deprecated)
  * @deprecated Use archiveProperty() instead
  */
-export async function _deleteProperty(
-	propertyId: string,
-): Promise<ActionResult<void>> {
+export async function _deleteProperty(propertyId: string): Promise<ActionResult<void>> {
 	return archiveProperty(propertyId);
 }
 
@@ -673,16 +587,11 @@ export async function _deleteProperty(
 /**
  * Get all properties for a customer
  */
-export async function _getCustomerProperties(
-	customerId: string,
-): Promise<ActionResult<any[]>> {
+export async function _getCustomerProperties(customerId: string): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -697,11 +606,7 @@ export async function _getCustomerProperties(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify customer exists and belongs to company
@@ -715,11 +620,7 @@ export async function _getCustomerProperties(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Customer not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Get all properties for customer
@@ -732,7 +633,7 @@ export async function _getCustomerProperties(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch properties"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -743,16 +644,11 @@ export async function _getCustomerProperties(
 /**
  * Get property with equipment count
  */
-export async function _getPropertyWithDetails(
-	propertyId: string,
-): Promise<ActionResult<any>> {
+export async function _getPropertyWithDetails(propertyId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -767,11 +663,7 @@ export async function _getPropertyWithDetails(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Get property
@@ -781,7 +673,7 @@ export async function _getPropertyWithDetails(
 				`
         *,
         customer:customers(id, display_name, email, phone)
-      `,
+      `
 			)
 			.eq("id", propertyId)
 			.single();
@@ -789,18 +681,14 @@ export async function _getPropertyWithDetails(
 		if (propertyError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
 		assertExists(property, "Property");
 
 		if (property.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Property not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Property not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Get equipment count
@@ -830,15 +718,12 @@ export async function _getPropertyWithDetails(
  */
 export async function _setPrimaryProperty(
 	customerId: string,
-	propertyId: string,
+	propertyId: string
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -853,11 +738,7 @@ export async function _setPrimaryProperty(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify customer exists and belongs to company
@@ -871,11 +752,7 @@ export async function _setPrimaryProperty(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				"Customer not found",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("Customer not found", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify property exists and belongs to customer
@@ -890,7 +767,7 @@ export async function _setPrimaryProperty(
 		if (property.customer_id !== customerId) {
 			throw new ActionError(
 				"Property does not belong to this customer",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -908,7 +785,7 @@ export async function _setPrimaryProperty(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("set primary property"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

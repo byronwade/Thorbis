@@ -67,7 +67,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
-		[],
+		[]
 	);
 
 	const handleArchive = useCallback(async () => {
@@ -81,7 +81,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 
 			if (result.success && result.data) {
 				toast.success(
-					`Successfully archived ${result.data.archived} estimate${result.data.archived === 1 ? "" : "s"}`,
+					`Successfully archived ${result.data.archived} estimate${result.data.archived === 1 ? "" : "s"}`
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
@@ -130,7 +130,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				shrink: true,
 				render: (estimate) => (
 					<Link
-						className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+						className="text-foreground hover:text-primary truncate text-sm font-medium transition-colors hover:underline"
 						href={`/dashboard/work/estimates/${estimate.id}`}
 						title={estimate.estimate_number}
 					>
@@ -149,7 +149,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 						onClick={(e) => e.stopPropagation()}
 						title={estimate.title || undefined}
 					>
-						<span className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+						<span className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
 							{estimate.title || "—"}
 						</span>
 					</Link>
@@ -169,7 +169,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				shrink: true,
 				align: "right",
 				render: (estimate) => (
-					<span className="font-semibold text-sm tabular-nums">
+					<span className="text-sm font-semibold tabular-nums">
 						{formatCurrencyCents(estimate.total_amount)}
 					</span>
 				),
@@ -182,9 +182,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				hideOnMobile: true,
 				render: (estimate) => (
 					<span className="text-muted-foreground text-sm tabular-nums">
-						{estimate.valid_until
-							? formatDate(estimate.valid_until, "short")
-							: "—"}
+						{estimate.valid_until ? formatDate(estimate.valid_until, "short") : "—"}
 					</span>
 				),
 			},
@@ -223,7 +221,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem
-								className="cursor-pointer text-destructive focus:text-destructive"
+								className="text-destructive focus:text-destructive cursor-pointer"
 								onClick={() => setUnlinkEstimateId(estimate.id)}
 							>
 								<Link2Off className="mr-2 size-4" />
@@ -234,7 +232,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				),
 			},
 		],
-		[formatCurrencyCents],
+		[formatCurrencyCents]
 	);
 
 	const bulkActions: BulkAction[] = useMemo(
@@ -249,7 +247,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				},
 			},
 		],
-		[],
+		[]
 	);
 
 	return (
@@ -258,7 +256,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				bulkActions={bulkActions}
 				columns={columns}
 				data={estimates}
-				emptyIcon={<Receipt className="size-12 text-muted-foreground/50" />}
+				emptyIcon={<Receipt className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No estimates found for this job"
 				enableSelection={true}
 				getItemId={(estimate) => estimate.id}
@@ -292,9 +290,8 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 					<DialogHeader>
 						<DialogTitle>Unlink Estimate from Job?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this estimate. The
-							estimate will remain in the system but will no longer appear on
-							this job's page.
+							This will remove the job association from this estimate. The estimate will remain in
+							the system but will no longer appear on this job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -305,11 +302,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isUnlinking}
-							onClick={handleUnlinkEstimate}
-							variant="destructive"
-						>
+						<Button disabled={isUnlinking} onClick={handleUnlinkEstimate} variant="destructive">
 							{isUnlinking ? "Unlinking..." : "Unlink Estimate"}
 						</Button>
 					</DialogFooter>

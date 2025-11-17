@@ -36,12 +36,12 @@ export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
 
 	return (
 		<>
-			<div className="border-b bg-background px-6 py-4">
+			<div className="bg-background border-b px-6 py-4">
 				<div className="flex items-center justify-between gap-4">
 					{/* Left: Search and Filters */}
 					<div className="flex flex-1 items-center gap-3">
 						<div className="relative w-full max-w-sm">
-							<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+							<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 							<Input className="pl-9" placeholder="Search phone numbers..." />
 						</div>
 
@@ -82,24 +82,21 @@ export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
 				</div>
 
 				{/* Info Bar */}
-				<div className="mt-3 flex items-center gap-6 text-muted-foreground text-sm">
+				<div className="text-muted-foreground mt-3 flex items-center gap-6 text-sm">
 					<div>
-						<span className="font-medium text-foreground">3</span> active
-						numbers
+						<span className="text-foreground font-medium">3</span> active numbers
 					</div>
-					<div className="h-4 w-px bg-border" />
+					<div className="bg-border h-4 w-px" />
 					<div>
-						<span className="font-medium text-foreground">$3.00</span>/month
-						total cost
+						<span className="text-foreground font-medium">$3.00</span>/month total cost
 					</div>
-					<div className="h-4 w-px bg-border" />
+					<div className="bg-border h-4 w-px" />
 					<div>
-						<span className="font-medium text-foreground">1,247</span> minutes
-						this month
+						<span className="text-foreground font-medium">1,247</span> minutes this month
 					</div>
-					<div className="h-4 w-px bg-border" />
+					<div className="bg-border h-4 w-px" />
 					<div>
-						<span className="font-medium text-foreground">423</span> SMS sent
+						<span className="text-foreground font-medium">423</span> SMS sent
 					</div>
 				</div>
 			</div>

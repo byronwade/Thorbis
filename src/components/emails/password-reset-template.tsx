@@ -44,13 +44,10 @@ export function PasswordResetTemplate({
 					<Text style={text}>Hi {teamMemberName},</Text>
 
 					<Text style={text}>
-						{resetByName} from {companyName} has initiated a password reset for
-						your account.
+						{resetByName} from {companyName} has initiated a password reset for your account.
 					</Text>
 
-					<Text style={text}>
-						Click the button below to set a new password for your account:
-					</Text>
+					<Text style={text}>Click the button below to set a new password for your account:</Text>
 
 					<Section style={buttonContainer}>
 						<Button href={resetLink} style={button}>
@@ -58,9 +55,7 @@ export function PasswordResetTemplate({
 						</Button>
 					</Section>
 
-					<Text style={text}>
-						Or copy and paste this URL into your browser:
-					</Text>
+					<Text style={text}>Or copy and paste this URL into your browser:</Text>
 
 					<Link href={resetLink} style={link}>
 						{resetLink}
@@ -69,9 +64,8 @@ export function PasswordResetTemplate({
 					<Hr style={hr} />
 
 					<Text style={footer}>
-						This link will expire in {expiresInHours} hours. If you didn't
-						request this password reset, please contact your administrator
-						immediately.
+						This link will expire in {expiresInHours} hours. If you didn't request this password
+						reset, please contact your administrator immediately.
 					</Text>
 
 					<Text style={footer}>

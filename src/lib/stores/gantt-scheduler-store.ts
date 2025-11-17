@@ -80,6 +80,6 @@ export const useGanttSchedulerStore = create<GanttSchedulerStore>()(
 
 			handleToday: () => set({ currentDate: new Date() }),
 		}),
-		{ name: "GanttSchedulerStore" },
-	),
+		{ name: "GanttSchedulerStore" }
+	)
 );

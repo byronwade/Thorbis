@@ -20,19 +20,10 @@ import {
 	Save,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useTransition } from "react";
-import {
-	getAccountingSettings,
-	updateAccountingSettings,
-} from "@/actions/settings";
+import { getAccountingSettings, updateAccountingSettings } from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -44,11 +35,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 type AccountingSettings = {
@@ -74,9 +61,9 @@ export function AccountingSettingsClient() {
 	const [isPending, startTransition] = useTransition();
 	const [isLoading, setIsLoading] = useState(true);
 	const [isTestingConnection, setIsTestingConnection] = useState(false);
-	const [connectionStatus, setConnectionStatus] = useState<
-		"connected" | "disconnected" | null
-	>(null);
+	const [connectionStatus, setConnectionStatus] = useState<"connected" | "disconnected" | null>(
+		null
+	);
 
 	const [settings, setSettings] = useState<AccountingSettings>({
 		provider: "none",
@@ -125,7 +112,7 @@ export function AccountingSettingsClient() {
 
 	const hasChanges = useMemo(
 		() => JSON.stringify(formData) !== JSON.stringify(originalFormData),
-		[formData, originalFormData],
+		[formData, originalFormData]
 	);
 
 	useEffect(() => {
@@ -172,20 +159,14 @@ export function AccountingSettingsClient() {
 		startTransition(async () => {
 			const formDataObj = new FormData();
 			formDataObj.append("provider", formData.provider);
-			formDataObj.append(
-				"providerEnabled",
-				formData.providerEnabled.toString(),
-			);
+			formDataObj.append("providerEnabled", formData.providerEnabled.toString());
 			if (formData.apiKey) {
 				formDataObj.append("apiKey", formData.apiKey);
 			}
 			if (formData.apiSecret) {
 				formDataObj.append("apiSecret", formData.apiSecret);
 			}
-			formDataObj.append(
-				"autoSyncEnabled",
-				formData.autoSyncEnabled.toString(),
-			);
+			formDataObj.append("autoSyncEnabled", formData.autoSyncEnabled.toString());
 			formDataObj.append("syncFrequency", formData.syncFrequency);
 			if (formData.incomeAccount) {
 				formDataObj.append("incomeAccount", formData.incomeAccount);
@@ -236,7 +217,7 @@ export function AccountingSettingsClient() {
 	if (isLoading) {
 		return (
 			<div className="flex h-[50vh] items-center justify-center">
-				<Loader2 className="size-8 animate-spin text-muted-foreground" />
+				<Loader2 className="text-muted-foreground size-8 animate-spin" />
 			</div>
 		);
 	}
@@ -246,30 +227,24 @@ export function AccountingSettingsClient() {
 			<div className="space-y-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
-						<h1 className="font-bold text-4xl tracking-tight">
-							Accounting Integration
-						</h1>
+						<h1 className="text-4xl font-bold tracking-tight">Accounting Integration</h1>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<button type="button">
-									<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+									<HelpCircle className="text-muted-foreground h-3.5 w-3.5" />
 								</button>
 							</TooltipTrigger>
 							<TooltipContent className="max-w-xs">
 								<p className="text-sm">
-									Connect your accounting software for seamless financial data
-									sync. Supports QuickBooks, Xero, Sage, and FreshBooks.
+									Connect your accounting software for seamless financial data sync. Supports
+									QuickBooks, Xero, Sage, and FreshBooks.
 								</p>
 							</TooltipContent>
 						</Tooltip>
 					</div>
-					{hasChanges && (
-						<Badge className="bg-warning hover:bg-warning">
-							Unsaved Changes
-						</Badge>
-					)}
+					{hasChanges && <Badge className="bg-warning hover:bg-warning">Unsaved Changes</Badge>}
 				</div>
-				<p className="text-lg text-muted-foreground">
+				<p className="text-muted-foreground text-lg">
 					Connect your accounting software for seamless financial data sync
 				</p>
 			</div>
@@ -278,21 +253,17 @@ export function AccountingSettingsClient() {
 				<Card>
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<RefreshCw className="size-5 text-primary" />
+							<RefreshCw className="text-primary size-5" />
 							Provider Configuration
 						</CardTitle>
-						<CardDescription>
-							Select and configure your accounting provider
-						</CardDescription>
+						<CardDescription>Select and configure your accounting provider</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-6 sm:grid-cols-2">
 							<div>
 								<Label htmlFor="provider">Accounting Provider</Label>
 								<Select
-									onValueChange={(value) =>
-										setFormData({ ...formData, provider: value })
-									}
+									onValueChange={(value) => setFormData({ ...formData, provider: value })}
 									value={formData.provider}
 								>
 									<SelectTrigger className="mt-2">
@@ -300,9 +271,7 @@ export function AccountingSettingsClient() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectItem value="none">None</SelectItem>
-										<SelectItem value="quickbooks">
-											QuickBooks Online
-										</SelectItem>
+										<SelectItem value="quickbooks">QuickBooks Online</SelectItem>
 										<SelectItem value="xero">Xero</SelectItem>
 										<SelectItem value="sage">Sage Intacct</SelectItem>
 										<SelectItem value="freshbooks">FreshBooks</SelectItem>
@@ -314,13 +283,13 @@ export function AccountingSettingsClient() {
 							<div className="flex items-end">
 								<div className="flex items-center gap-2">
 									{connectionStatus === "connected" && (
-										<div className="flex items-center gap-2 text-sm text-success">
+										<div className="text-success flex items-center gap-2 text-sm">
 											<CheckCircle className="size-4" />
 											<span>Connected</span>
 										</div>
 									)}
 									{connectionStatus === "disconnected" && (
-										<div className="flex items-center gap-2 text-destructive text-sm">
+										<div className="text-destructive flex items-center gap-2 text-sm">
 											<AlertCircle className="size-4" />
 											<span>Not Connected</span>
 										</div>
@@ -334,25 +303,21 @@ export function AccountingSettingsClient() {
 								<Separator />
 
 								<div className="space-y-4">
-									<h3 className="font-medium text-sm">API Credentials</h3>
+									<h3 className="text-sm font-medium">API Credentials</h3>
 									<div className="grid gap-4">
 										<div>
 											<Label htmlFor="apiKey">API Key / Client ID</Label>
 											<Input
 												className="mt-2"
 												id="apiKey"
-												onChange={(e) =>
-													setFormData({ ...formData, apiKey: e.target.value })
-												}
+												onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
 												placeholder="Enter your API key"
 												type="password"
 												value={formData.apiKey}
 											/>
 										</div>
 										<div>
-											<Label htmlFor="apiSecret">
-												API Secret / Client Secret
-											</Label>
+											<Label htmlFor="apiSecret">API Secret / Client Secret</Label>
 											<Input
 												className="mt-2"
 												id="apiSecret"
@@ -370,11 +335,7 @@ export function AccountingSettingsClient() {
 									</div>
 
 									<Button
-										disabled={
-											isTestingConnection ||
-											!formData.apiKey ||
-											!formData.apiSecret
-										}
+										disabled={isTestingConnection || !formData.apiKey || !formData.apiSecret}
 										onClick={handleTestConnection}
 										variant="outline"
 									>
@@ -418,12 +379,10 @@ export function AccountingSettingsClient() {
 						<Card>
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
-									<RefreshCw className="size-5 text-primary" />
+									<RefreshCw className="text-primary size-5" />
 									Sync Settings
 								</CardTitle>
-								<CardDescription>
-									Configure automatic data synchronization
-								</CardDescription>
+								<CardDescription>Configure automatic data synchronization</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="flex items-center justify-between">
@@ -445,9 +404,7 @@ export function AccountingSettingsClient() {
 									<div>
 										<Label htmlFor="syncFrequency">Sync Frequency</Label>
 										<Select
-											onValueChange={(value) =>
-												setFormData({ ...formData, syncFrequency: value })
-											}
+											onValueChange={(value) => setFormData({ ...formData, syncFrequency: value })}
 											value={formData.syncFrequency}
 										>
 											<SelectTrigger className="mt-2">
@@ -467,7 +424,7 @@ export function AccountingSettingsClient() {
 								<Separator />
 
 								<div className="space-y-4">
-									<h3 className="font-medium text-sm">Data Sync Options</h3>
+									<h3 className="text-sm font-medium">Data Sync Options</h3>
 
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
@@ -487,9 +444,7 @@ export function AccountingSettingsClient() {
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Payments</Label>
-											<p className="text-muted-foreground text-xs">
-												Sync payment transactions
-											</p>
+											<p className="text-muted-foreground text-xs">Sync payment transactions</p>
 										</div>
 										<Switch
 											checked={formData.syncPayments}
@@ -502,9 +457,7 @@ export function AccountingSettingsClient() {
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Expenses</Label>
-											<p className="text-muted-foreground text-xs">
-												Sync expense records
-											</p>
+											<p className="text-muted-foreground text-xs">Sync expense records</p>
 										</div>
 										<Switch
 											checked={formData.syncExpenses}
@@ -517,9 +470,7 @@ export function AccountingSettingsClient() {
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
 											<Label>Sync Customers</Label>
-											<p className="text-muted-foreground text-xs">
-												Sync customer information
-											</p>
+											<p className="text-muted-foreground text-xs">Sync customer information</p>
 										</div>
 										<Switch
 											checked={formData.syncCustomers}
@@ -535,7 +486,7 @@ export function AccountingSettingsClient() {
 						<Card>
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
-									<RefreshCw className="size-5 text-primary" />
+									<RefreshCw className="text-primary size-5" />
 									Account Mapping
 								</CardTitle>
 								<CardDescription>
@@ -580,9 +531,7 @@ export function AccountingSettingsClient() {
 									<Input
 										className="mt-2"
 										id="assetAccount"
-										onChange={(e) =>
-											setFormData({ ...formData, assetAccount: e.target.value })
-										}
+										onChange={(e) => setFormData({ ...formData, assetAccount: e.target.value })}
 										placeholder="e.g., 1200 - Accounts Receivable"
 										value={formData.assetAccount}
 									/>
@@ -610,16 +559,15 @@ export function AccountingSettingsClient() {
 
 				<Card className="border-primary/50 bg-primary/5">
 					<CardContent className="flex items-start gap-3 pt-6">
-						<RefreshCw className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+						<RefreshCw className="text-primary mt-0.5 h-5 w-5 shrink-0" />
 						<div className="space-y-1">
-							<p className="font-medium text-primary text-sm dark:text-primary">
+							<p className="text-primary dark:text-primary text-sm font-medium">
 								Accounting Integration Benefits
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Connecting your accounting software enables automatic financial
-								data sync, reduces manual data entry, ensures accuracy across
-								systems, and provides real-time financial reporting. Your
-								credentials are encrypted and securely stored.
+								Connecting your accounting software enables automatic financial data sync, reduces
+								manual data entry, ensures accuracy across systems, and provides real-time financial
+								reporting. Your credentials are encrypted and securely stored.
 							</p>
 						</div>
 					</CardContent>
@@ -627,28 +575,26 @@ export function AccountingSettingsClient() {
 			</div>
 
 			{/* Sticky Bottom Action Bar */}
-			<div className="sticky bottom-0 z-10 rounded-xl border bg-card p-6 shadow-lg">
+			<div className="bg-card sticky bottom-0 z-10 rounded-xl border p-6 shadow-lg">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
 						{hasChanges ? (
 							<>
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
-									<div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
+								<div className="bg-warning dark:bg-warning/30 flex h-8 w-8 items-center justify-center rounded-full">
+									<div className="bg-warning h-2 w-2 animate-pulse rounded-full" />
 								</div>
 								<div>
-									<p className="font-medium text-sm">Unsaved Changes</p>
-									<p className="text-muted-foreground text-xs">
-										Save your changes or discard them
-									</p>
+									<p className="text-sm font-medium">Unsaved Changes</p>
+									<p className="text-muted-foreground text-xs">Save your changes or discard them</p>
 								</div>
 							</>
 						) : (
 							<>
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
-									<Check className="h-4 w-4 text-success dark:text-success" />
+								<div className="bg-success dark:bg-success/30 flex h-8 w-8 items-center justify-center rounded-full">
+									<Check className="text-success dark:text-success h-4 w-4" />
 								</div>
 								<div>
-									<p className="font-medium text-sm">All Changes Saved</p>
+									<p className="text-sm font-medium">All Changes Saved</p>
 									<p className="text-muted-foreground text-xs">
 										{settings.last_sync_at
 											? `Last synced: ${new Date(settings.last_sync_at).toLocaleString()}`
@@ -659,11 +605,7 @@ export function AccountingSettingsClient() {
 						)}
 					</div>
 					<div className="flex gap-3">
-						<Button
-							disabled={isPending}
-							onClick={handleCancel}
-							variant="outline"
-						>
+						<Button disabled={isPending} onClick={handleCancel} variant="outline">
 							Cancel
 						</Button>
 						<Button disabled={isPending || !hasChanges} onClick={handleSave}>

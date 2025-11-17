@@ -35,52 +35,44 @@ export async function JobHistoryStats() {
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Total Jobs</CardTitle>
-					<Archive className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Total Jobs</CardTitle>
+					<Archive className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">
-						{stats.totalJobs.toLocaleString()}
-					</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.monthlyIncrease} this month
-					</p>
+					<div className="text-2xl font-bold">{stats.totalJobs.toLocaleString()}</div>
+					<p className="text-muted-foreground text-xs">{stats.monthlyIncrease} this month</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Completed</CardTitle>
-					<CheckCircle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Completed</CardTitle>
+					<CheckCircle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">
-						{stats.completed.toLocaleString()}
-					</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.completionRate} completion rate
-					</p>
+					<div className="text-2xl font-bold">{stats.completed.toLocaleString()}</div>
+					<p className="text-muted-foreground text-xs">{stats.completionRate} completion rate</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Average Rating</CardTitle>
-					<Star className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+					<Star className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.avgRating}</div>
+					<div className="text-2xl font-bold">{stats.avgRating}</div>
 					<p className="text-muted-foreground text-xs">out of 5.0 stars</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Revenue</CardTitle>
-					<DollarSign className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Revenue</CardTitle>
+					<DollarSign className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.totalRevenue}</div>
+					<div className="text-2xl font-bold">{stats.totalRevenue}</div>
 					<p className="text-muted-foreground text-xs">Total revenue</p>
 				</CardContent>
 			</Card>

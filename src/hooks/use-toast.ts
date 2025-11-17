@@ -42,8 +42,7 @@ export function useToast() {
 					...options,
 				}),
 
-			loading: (message: string, options?: any) =>
-				sonnerToast.loading(message, options),
+			loading: (message: string, options?: any) => sonnerToast.loading(message, options),
 
 			info: (message: string, options?: any) =>
 				sonnerToast.info(message, {
@@ -63,7 +62,7 @@ export function useToast() {
 					loading: string;
 					success: string | ((data: T) => string);
 					error: string | ((error: any) => string);
-				},
+				}
 			) => sonnerToast.promise(promise, messages),
 
 			dismiss: (id?: string | number) => {
@@ -71,15 +70,9 @@ export function useToast() {
 			},
 
 			// Shorthand for Server Action responses
-			fromActionResult: (result: {
-				success: boolean;
-				error?: string;
-				message?: string;
-			}) => {
+			fromActionResult: (result: { success: boolean; error?: string; message?: string }) => {
 				if (result.success) {
-					sonnerToast.success(
-						result.message || "Operation completed successfully",
-					);
+					sonnerToast.success(result.message || "Operation completed successfully");
 				} else {
 					sonnerToast.error(result.error || "Operation failed");
 				}

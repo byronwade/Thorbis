@@ -51,10 +51,7 @@ const _EARTH_RADIUS_METERS = 6_371_000;
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class GooglePlacesService {
 	private readonly apiKey: string | undefined;
-	private readonly cache: Map<
-		string,
-		{ data: GooglePlaces; timestamp: number }
-	> = new Map();
+	private readonly cache: Map<string, { data: GooglePlaces; timestamp: number }> = new Map();
 	private readonly cacheTTL = CACHE_TTL_MS;
 
 	constructor() {
@@ -64,11 +61,7 @@ export class GooglePlacesService {
 	/**
 	 * Find nearby home improvement stores with reviews and ratings
 	 */
-	async findNearbySuppliers(
-		lat: number,
-		lon: number,
-		radius = 8000,
-	): Promise<GooglePlaces | null> {
+	async findNearbySuppliers(lat: number, lon: number, radius = 8000): Promise<GooglePlaces | null> {
 		if (!this.apiKey) {
 			return null;
 		}
@@ -115,7 +108,7 @@ export class GooglePlacesService {
 							lat,
 							lon,
 							result.geometry.location.lat,
-							result.geometry.location.lng,
+							result.geometry.location.lng
 						);
 
 						// Get photo URL if available
@@ -155,7 +148,7 @@ export class GooglePlacesService {
 			// Get additional details for top 5 places (phone, website, etc.)
 			const topPlaces = allPlaces.slice(0, 5);
 			const enrichedPlaces = await Promise.all(
-				topPlaces.map((place) => this.enrichPlaceDetails(place)),
+				topPlaces.map((place) => this.enrichPlaceDetails(place))
 			);
 
 			const googlePlaces: GooglePlaces = {
@@ -207,12 +200,7 @@ export class GooglePlacesService {
 	/**
 	 * Calculate distance between two points using Haversine formula
 	 */
-	private calculateDistance(
-		lat1: number,
-		lon1: number,
-		lat2: number,
-		lon2: number,
-	): number {
+	private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
 		const R = 6_371_000; // Earth's radius in meters
 		const φ1 = (lat1 * Math.PI) / 180;
 		const φ2 = (lat2 * Math.PI) / 180;

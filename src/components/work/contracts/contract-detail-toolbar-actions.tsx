@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function ContractDetailToolbarActions() {
@@ -99,9 +94,7 @@ export function ContractDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a
-									href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}
-								>
+								<a href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -121,7 +114,7 @@ export function ContractDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -142,8 +135,8 @@ export function ContractDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Contract</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this contract? Archived contracts
-							can be restored within 90 days.
+							Are you sure you want to archive this contract? Archived contracts can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -154,11 +147,7 @@ export function ContractDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Contract"}
 						</Button>
 					</DialogFooter>

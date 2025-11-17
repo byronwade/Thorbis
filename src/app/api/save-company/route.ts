@@ -48,10 +48,7 @@ export async function POST(request: NextRequest) {
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database not configured" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
 		}
 
 		// Parse and validate request body
@@ -59,17 +56,11 @@ export async function POST(request: NextRequest) {
 
 		// Validate required fields
 		if (!(data.name && data.industry && data.size && data.phone)) {
-			return NextResponse.json(
-				{ error: "Missing required fields" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
 		}
 
 		if (!(data.address && data.city && data.state && data.zipCode)) {
-			return NextResponse.json(
-				{ error: "Missing address information" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Missing address information" }, { status: 400 });
 		}
 
 		// Format full address
@@ -109,7 +100,7 @@ export async function POST(request: NextRequest) {
 			if (updateError) {
 				return NextResponse.json(
 					{ error: `Failed to update company: ${updateError.message}` },
-					{ status: 500 },
+					{ status: 500 }
 				);
 			}
 
@@ -120,8 +111,7 @@ export async function POST(request: NextRequest) {
 				.eq("id", companyId)
 				.single();
 
-			const currentProgress =
-				(existingCompany?.onboarding_progress as Record<string, any>) || {};
+			const currentProgress = (existingCompany?.onboarding_progress as Record<string, any>) || {};
 
 			await supabase
 				.from("companies")
@@ -241,7 +231,7 @@ export async function POST(request: NextRequest) {
 					{
 						error: `Failed to create company: ${companyError?.message || "Unknown error"}`,
 					},
-					{ status: 500 },
+					{ status: 500 }
 				);
 			}
 
@@ -281,18 +271,16 @@ export async function POST(request: NextRequest) {
 				sunday: { open: null, close: null },
 			};
 
-			const { error: settingsError } = await supabase
-				.from("company_settings")
-				.insert({
-					company_id: companyId,
-					hours_of_operation: defaultHours,
-					address: data.address,
-					address2: null,
-					city: data.city,
-					state: data.state,
-					zip_code: data.zipCode,
-					country: "USA",
-				});
+			const { error: settingsError } = await supabase.from("company_settings").insert({
+				company_id: companyId,
+				hours_of_operation: defaultHours,
+				address: data.address,
+				address2: null,
+				city: data.city,
+				state: data.state,
+				zip_code: data.zipCode,
+				country: "USA",
+			});
 
 			if (settingsError) {
 				// Don't fail company creation if settings creation fails
@@ -317,7 +305,7 @@ export async function POST(request: NextRequest) {
 			{
 				error: error instanceof Error ? error.message : "Internal server error",
 			},
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

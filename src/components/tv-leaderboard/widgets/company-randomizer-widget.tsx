@@ -67,7 +67,7 @@ export function CompanyRandomizerWidget({
 	selected = DEFAULT_SELECTED,
 }: CompanyRandomizerWidgetProps) {
 	return (
-		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-indigo-500/20 via-purple-500/10 to-background/80">
+		<ResponsiveWidgetWrapper className="to-background/80 bg-gradient-to-br from-indigo-500/20 via-purple-500/10">
 			<ResponsiveContent className="flex flex-col gap-3">
 				{/* Header - adapts across stages */}
 				<div className="flex items-center gap-2">
@@ -88,16 +88,13 @@ export function CompanyRandomizerWidget({
 				<ShowAt stage="full">
 					<div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
 						{/* Icon */}
-						<div className="flex size-16 items-center justify-center rounded-full bg-primary/20">
+						<div className="bg-primary/20 flex size-16 items-center justify-center rounded-full">
 							{getCategoryIcon(selected.category)}
 						</div>
 
 						{/* Selected item */}
 						<div>
-							<ResponsiveText
-								className="text-muted-foreground"
-								variant="caption"
-							>
+							<ResponsiveText className="text-muted-foreground" variant="caption">
 								Selected
 							</ResponsiveText>
 							<ResponsiveText className="font-bold" variant="title">
@@ -107,11 +104,8 @@ export function CompanyRandomizerWidget({
 
 						{/* Description */}
 						{selected.description && (
-							<div className="rounded-lg bg-background/50 px-4 py-2">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+							<div className="bg-background/50 rounded-lg px-4 py-2">
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									{selected.description}
 								</ResponsiveText>
 							</div>
@@ -124,19 +118,16 @@ export function CompanyRandomizerWidget({
 					<div className="flex flex-1 flex-col justify-center gap-3">
 						{/* Category */}
 						<div className="flex items-center gap-2">
-							<div className="flex size-8 items-center justify-center rounded-full bg-primary/20">
+							<div className="bg-primary/20 flex size-8 items-center justify-center rounded-full">
 								{getCategoryIcon(selected.category)}
 							</div>
-							<ResponsiveText
-								className="text-muted-foreground"
-								variant="caption"
-							>
+							<ResponsiveText className="text-muted-foreground" variant="caption">
 								{getCategoryLabel(selected.category)}
 							</ResponsiveText>
 						</div>
 
 						{/* Selected */}
-						<div className="rounded-lg bg-primary/10 p-3 text-center">
+						<div className="bg-primary/10 rounded-lg p-3 text-center">
 							<ResponsiveText className="font-bold" variant="body">
 								{selected.label}
 							</ResponsiveText>
@@ -147,7 +138,7 @@ export function CompanyRandomizerWidget({
 				{/* COMPACT Stage: Selected item only */}
 				<ShowAt stage="compact">
 					<div className="flex flex-1 flex-col items-center justify-center gap-2 text-center">
-						<div className="flex size-6 items-center justify-center rounded-full bg-primary/20">
+						<div className="bg-primary/20 flex size-6 items-center justify-center rounded-full">
 							{getCategoryIcon(selected.category)}
 						</div>
 						<ResponsiveText className="truncate font-bold" variant="body">
@@ -159,7 +150,7 @@ export function CompanyRandomizerWidget({
 				{/* TINY Stage: Icon only */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<div className="flex size-10 items-center justify-center rounded-full bg-primary/20">
+						<div className="bg-primary/20 flex size-10 items-center justify-center rounded-full">
 							{getCategoryIcon(selected.category)}
 						</div>
 					</div>

@@ -22,12 +22,12 @@ import { Suspense } from "react";
 const IncomingCallNotification = dynamic(
 	() =>
 		import("@/components/layout/incoming-call-notification").then(
-			(mod) => mod.IncomingCallNotification,
+			(mod) => mod.IncomingCallNotification
 		),
 	{
 		loading: () => null, // No loading UI needed, it's invisible until there's a call
 		ssr: false, // Prevent server rendering to avoid hydration mismatches
-	},
+	}
 );
 
 /**

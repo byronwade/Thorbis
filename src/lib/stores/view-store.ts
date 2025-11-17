@@ -156,8 +156,7 @@ export const useViewStore = create<ViewState>()(
 					set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed }));
 				},
 
-				setSidebarCollapsed: (collapsed) =>
-					set({ sidebarCollapsed: collapsed }),
+				setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
 				toggleCompletedJobs: () => {
 					set((state) => ({ showCompletedJobs: !state.showCompletedJobs }));
@@ -232,7 +231,7 @@ export const useViewStore = create<ViewState>()(
 					workingHoursStart: state.workingHoursStart,
 					workingHoursEnd: state.workingHoursEnd,
 				}),
-			},
-		),
-	),
+			}
+		)
+	)
 );

@@ -21,10 +21,7 @@ type RoleBasedDashboardProps = {
 	renderedAt?: number;
 };
 
-export function RoleBasedDashboard({
-	dashboardData,
-	renderedAt,
-}: RoleBasedDashboardProps) {
+export function RoleBasedDashboard({ dashboardData, renderedAt }: RoleBasedDashboardProps) {
 	const role = useRoleStore((state) => state.role);
 	const isLoading = useRoleStore((state) => state.isLoading);
 
@@ -33,10 +30,8 @@ export function RoleBasedDashboard({
 		return (
 			<div className="flex min-h-[400px] items-center justify-center">
 				<div className="text-center">
-					<div className="mx-auto size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-					<p className="mt-4 text-muted-foreground text-sm">
-						Loading dashboard...
-					</p>
+					<div className="border-primary mx-auto size-8 animate-spin rounded-full border-4 border-t-transparent" />
+					<p className="text-muted-foreground mt-4 text-sm">Loading dashboard...</p>
 				</div>
 			</div>
 		);

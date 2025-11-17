@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function EquipmentDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function EquipmentDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -31,9 +27,7 @@ export default function EquipmentDetailLayout({
 		},
 		toolbar: {
 			show: true,
-			back: (
-				<DetailBackButton href="/dashboard/work/equipment" label="Equipment" />
-			),
+			back: <DetailBackButton href="/dashboard/work/equipment" label="Equipment" />,
 			// TODO: Create EquipmentDetailToolbar component
 			// actions: <EquipmentDetailToolbar />,
 		},

@@ -8,15 +8,10 @@ import {
 
 export const metadata = generateSEOMetadata({
 	title: "Thorbis HTML Sitemap",
-	description:
-		"Browse Thorbis marketing, product, and support pages from a single sitemap.",
+	description: "Browse Thorbis marketing, product, and support pages from a single sitemap.",
 	path: "/sitemap",
 	section: "Company",
-	keywords: [
-		"thorbis sitemap",
-		"thorbis site map",
-		"field service software pages",
-	],
+	keywords: ["thorbis sitemap", "thorbis site map", "field service software pages"],
 });
 
 const LINK_SECTIONS = [
@@ -96,7 +91,7 @@ export default function SitemapPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Sitemap", url: `${siteUrl}/sitemap` },
-						]),
+						])
 					),
 				}}
 				id="sitemap-breadcrumb-ld"
@@ -104,19 +99,17 @@ export default function SitemapPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
-						Thorbis Sitemap
-					</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Thorbis Sitemap</h1>
 					<p className="text-muted-foreground">
-						Quickly browse major Thorbis pages. For XML sitemaps used by search
-						engines, visit /kb/sitemap.xml and /seo/thorbis-sitemap.xml.
+						Quickly browse major Thorbis pages. For XML sitemaps used by search engines, visit
+						/kb/sitemap.xml and /seo/thorbis-sitemap.xml.
 					</p>
 				</header>
 				<div className="grid gap-8 md:grid-cols-3">
 					{LINK_SECTIONS.map((section) => (
 						<section className="space-y-3" key={section.heading}>
-							<h2 className="font-semibold text-lg">{section.heading}</h2>
-							<ul className="space-y-2 text-muted-foreground text-sm">
+							<h2 className="text-lg font-semibold">{section.heading}</h2>
+							<ul className="text-muted-foreground space-y-2 text-sm">
 								{section.links.map((link) => (
 									<li key={link.href}>
 										<Link

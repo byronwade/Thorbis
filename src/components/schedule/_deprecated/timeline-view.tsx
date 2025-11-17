@@ -45,11 +45,7 @@ const technicianStatusColors = {
 };
 
 // Convert time string (HH:MM) to Date based on view mode
-function timeStringToDate(
-	timeStr: string,
-	viewMode: ViewMode,
-	dayOffset = 0,
-): Date {
+function timeStringToDate(timeStr: string, viewMode: ViewMode, dayOffset = 0): Date {
 	const [hours, minutes] = timeStr.split(":").map(Number);
 	const date = new Date();
 
@@ -74,7 +70,7 @@ function jobToGanttFeature(
 	job: Job,
 	_technicianId: string,
 	viewMode: ViewMode,
-	dayOffset = 0,
+	dayOffset = 0
 ): GanttFeature {
 	const status: GanttStatus = {
 		id: job.status,
@@ -141,12 +137,9 @@ function TimelineContent({
 			<GanttSidebar>
 				<GanttSidebarGroup name="Technicians">
 					{ganttData.map(({ technician }) => (
-						<div
-							className="border-border/50 border-b last:border-b-0"
-							key={technician.id}
-						>
+						<div className="border-border/50 border-b last:border-b-0" key={technician.id}>
 							<div className="flex items-start gap-3 p-2.5">
-								<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
+								<div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold">
 									{technician.name
 										.split(" ")
 										.map((n: string) => n[0])
@@ -154,22 +147,17 @@ function TimelineContent({
 								</div>
 								<div className="min-w-0 flex-1">
 									<div className="flex items-center gap-2">
-										<h4 className="truncate font-semibold text-xs">
-											{technician.name}
-										</h4>
+										<h4 className="truncate text-xs font-semibold">{technician.name}</h4>
 										<div
 											className={cn(
 												"size-2 shrink-0 rounded-full",
-												technicianStatusColors[technician.status],
+												technicianStatusColors[technician.status]
 											)}
 										/>
 									</div>
-									<p className="truncate text-[10px] text-muted-foreground">
-										{technician.role}
-									</p>
+									<p className="text-muted-foreground truncate text-[10px]">{technician.role}</p>
 									<Badge className="mt-1 text-[10px]" variant="outline">
-										{technician.jobs.length}{" "}
-										{technician.jobs.length === 1 ? "job" : "jobs"}
+										{technician.jobs.length} {technician.jobs.length === 1 ? "job" : "jobs"}
 									</Badge>
 								</div>
 							</div>
@@ -180,20 +168,16 @@ function TimelineContent({
 
 			<GanttTimeline>
 				{viewMode === "hourly" ? (
-					<div className="flex h-[60px] w-max divide-x divide-border/50 border-b bg-background">
+					<div className="divide-border/50 bg-background flex h-[60px] w-max divide-x border-b">
 						{Array.from({ length: 13 }, (_, i) => i + 7).map((hour) => {
 							const hourWidth = 2000 / 24; // Zoom level divided by 24 hours
 							return (
 								<div
-									className="flex items-center justify-center px-4 font-semibold text-foreground text-xs"
+									className="text-foreground flex items-center justify-center px-4 text-xs font-semibold"
 									key={hour}
 									style={{ minWidth: `${hourWidth}px` }}
 								>
-									{hour === 12
-										? "12 PM"
-										: hour > 12
-											? `${hour - 12} PM`
-											: `${hour} AM`}
+									{hour === 12 ? "12 PM" : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
 								</div>
 							);
 						})}
@@ -205,9 +189,7 @@ function TimelineContent({
 					{ganttData.map(({ technician, features }) => (
 						<GanttFeatureRow features={features} key={technician.id}>
 							{(feature) => {
-								const job = technician.jobs.find(
-									(j: Job) => j.id === feature.id,
-								);
+								const job = technician.jobs.find((j: Job) => j.id === feature.id);
 								if (!job) {
 									return null;
 								}
@@ -215,22 +197,17 @@ function TimelineContent({
 								return (
 									<div className="flex h-full w-full flex-col gap-0.5 px-1">
 										<div className="flex items-start justify-between gap-1">
-											<p className="line-clamp-1 flex-1 font-semibold text-[10px] leading-tight">
+											<p className="line-clamp-1 flex-1 text-[10px] leading-tight font-semibold">
 												{job.title}
 											</p>
 											<div
 												className={cn(
 													"size-1.5 shrink-0 rounded-full",
-													priorityBorderColors[job.priority].replace(
-														"border-",
-														"bg-",
-													),
+													priorityBorderColors[job.priority].replace("border-", "bg-")
 												)}
 											/>
 										</div>
-										<p className="line-clamp-1 text-[9px] text-muted-foreground">
-											{job.customer}
-										</p>
+										<p className="text-muted-foreground line-clamp-1 text-[9px]">{job.customer}</p>
 										<div className="mt-auto flex items-center gap-1 text-[9px]">
 											<Clock className="size-2.5" />
 											<span className="font-medium">
@@ -330,7 +307,7 @@ export function TimelineView() {
 					const daysInMonth = new Date(
 						viewDate.getFullYear(),
 						viewDate.getMonth() + 1,
-						0,
+						0
 					).getDate();
 					const day = Math.floor(monthFraction * daysInMonth) + 1;
 					viewDate.setDate(day);
@@ -368,8 +345,7 @@ export function TimelineView() {
 
 			// Calculate days from timeline start to target date
 			const daysToDate = Math.floor(
-				(startOfDate.getTime() - timelineStart.getTime()) /
-					(1000 * 60 * 60 * 24),
+				(startOfDate.getTime() - timelineStart.getTime()) / (1000 * 60 * 60 * 24)
 			);
 
 			// Calculate time within day as fraction
@@ -379,8 +355,7 @@ export function TimelineView() {
 			const dayFraction = minutesSinceMidnight / (24 * 60);
 
 			// Total scroll = (days to date * column width) + (fraction of day * column width)
-			const scrollPosition =
-				daysToDate * parsedColumnWidth + dayFraction * parsedColumnWidth;
+			const scrollPosition = daysToDate * parsedColumnWidth + dayFraction * parsedColumnWidth;
 			ganttElement.scrollLeft = scrollPosition;
 		} else if (viewMode === "daily" || viewMode === "weekly") {
 			// For daily/weekly: scroll to start of date
@@ -389,8 +364,7 @@ export function TimelineView() {
 
 			// Calculate difference in days from timeline start
 			const daysDifference = Math.floor(
-				(startOfDate.getTime() - timelineStart.getTime()) /
-					(1000 * 60 * 60 * 24),
+				(startOfDate.getTime() - timelineStart.getTime()) / (1000 * 60 * 60 * 24)
 			);
 
 			// Scroll position = days * column width
@@ -409,13 +383,12 @@ export function TimelineView() {
 			const daysInMonth = new Date(
 				targetDate.getFullYear(),
 				targetDate.getMonth() + 1,
-				0,
+				0
 			).getDate();
 			const monthFraction = dayOfMonth / daysInMonth;
 
 			const scrollPosition =
-				monthsDifference * parsedColumnWidth +
-				monthFraction * parsedColumnWidth;
+				monthsDifference * parsedColumnWidth + monthFraction * parsedColumnWidth;
 			ganttElement.scrollLeft = scrollPosition;
 		}
 	};
@@ -460,11 +433,9 @@ export function TimelineView() {
 		// Return a loading skeleton that matches the structure
 		return (
 			<div className="flex h-full w-full flex-col">
-				<div className="flex items-center justify-between border-b bg-background p-3">
+				<div className="bg-background flex items-center justify-between border-b p-3">
 					<div className="flex items-center gap-2">
-						<span className="font-medium text-muted-foreground text-sm">
-							View:
-						</span>
+						<span className="text-muted-foreground text-sm font-medium">View:</span>
 						<div className="flex gap-1">
 							<Button size="sm" variant="default">
 								Hourly
@@ -494,11 +465,9 @@ export function TimelineView() {
 	return (
 		<div className="flex h-full w-full flex-col">
 			{/* View Mode Selector */}
-			<div className="flex items-center justify-between border-b bg-background p-3">
+			<div className="bg-background flex items-center justify-between border-b p-3">
 				<div className="flex items-center gap-2">
-					<span className="font-medium text-muted-foreground text-sm">
-						View:
-					</span>
+					<span className="text-muted-foreground text-sm font-medium">View:</span>
 					<div className="flex gap-1">
 						<Button
 							onClick={() => setViewMode("hourly")}
@@ -535,10 +504,7 @@ export function TimelineView() {
 				</Button>
 			</div>
 
-			<GanttProvider
-				range={getGanttRange(viewMode)}
-				zoom={getZoomLevel(viewMode)}
-			>
+			<GanttProvider range={getGanttRange(viewMode)} zoom={getZoomLevel(viewMode)}>
 				<TimelineContent
 					ganttData={ganttData}
 					onScrollToToday={scrollToToday}

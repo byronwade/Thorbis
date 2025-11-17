@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { createRole, updateRole } from "@/actions/team";
-import {
-	SettingsInfoBanner,
-	SettingsPageLayout,
-} from "@/components/settings/settings-page-layout";
+import { SettingsInfoBanner, SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -18,13 +15,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -207,7 +198,7 @@ type PermissionMap = Record<string, boolean>;
 
 const buildPermissionMap = (selected: string[]): PermissionMap => {
 	const allPermissions = PERMISSION_CATEGORIES.flatMap((category) =>
-		category.permissions.map((permission) => permission.id),
+		category.permissions.map((permission) => permission.id)
 	);
 
 	return allPermissions.reduce<PermissionMap>((acc, permissionId) => {
@@ -228,10 +219,7 @@ type RoleDetailClientProps = {
 	mode: "create" | "edit";
 };
 
-export default function RoleDetailClient({
-	initialRole,
-	mode,
-}: RoleDetailClientProps) {
+export default function RoleDetailClient({ initialRole, mode }: RoleDetailClientProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
@@ -260,7 +248,7 @@ export default function RoleDetailClient({
 			Object.entries(formState.permissions)
 				.filter(([, enabled]) => enabled)
 				.map(([permissionId]) => permissionId),
-		[formState.permissions],
+		[formState.permissions]
 	);
 
 	const updateForm = (updates: Partial<typeof formState>) => {
@@ -311,11 +299,7 @@ export default function RoleDetailClient({
 				return;
 			}
 
-			toast.success(
-				mode === "create"
-					? "Role created successfully"
-					: "Role updated successfully",
-			);
+			toast.success(mode === "create" ? "Role created successfully" : "Role updated successfully");
 			setHasChanges(false);
 
 			if (mode === "create" && result.data) {
@@ -342,11 +326,7 @@ export default function RoleDetailClient({
 		<SettingsPageLayout
 			description="Create custom roles to align permissions with your team structure."
 			hasChanges={isEditable && hasChanges}
-			helpText={
-				mode === "create"
-					? "Roles control access to every area of Thorbis."
-					: undefined
-			}
+			helpText={mode === "create" ? "Roles control access to every area of Thorbis." : undefined}
 			isPending={isPending}
 			onCancel={handleCancel}
 			onSave={isEditable ? handleSave : undefined}
@@ -365,9 +345,7 @@ export default function RoleDetailClient({
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/team">
-										Team & Permissions
-									</Link>
+									<Link href="/dashboard/settings/team">Team & Permissions</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -404,9 +382,7 @@ export default function RoleDetailClient({
 				<Card>
 					<CardHeader>
 						<CardTitle>Role details</CardTitle>
-						<CardDescription>
-							Basic information that appears in team settings
-						</CardDescription>
+						<CardDescription>Basic information that appears in team settings</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -427,9 +403,7 @@ export default function RoleDetailClient({
 										className="w-20"
 										disabled={!isEditable}
 										id="roleColor"
-										onChange={(event) =>
-											updateForm({ color: event.target.value })
-										}
+										onChange={(event) => updateForm({ color: event.target.value })}
 										type="color"
 										value={formState.color}
 									/>
@@ -450,9 +424,7 @@ export default function RoleDetailClient({
 							<Textarea
 								disabled={!isEditable}
 								id="roleDescription"
-								onChange={(event) =>
-									updateForm({ description: event.target.value })
-								}
+								onChange={(event) => updateForm({ description: event.target.value })}
 								placeholder="What can this role do?"
 								rows={3}
 								value={formState.description}
@@ -464,18 +436,14 @@ export default function RoleDetailClient({
 				<Card>
 					<CardHeader>
 						<CardTitle>Permissions</CardTitle>
-						<CardDescription>
-							Toggle the capabilities this role should have
-						</CardDescription>
+						<CardDescription>Toggle the capabilities this role should have</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
 						{PERMISSION_CATEGORIES.map((category, categoryIndex) => (
 							<div key={category.id}>
 								<div className="mb-4">
-									<h3 className="font-medium text-sm">{category.label}</h3>
-									<p className="text-muted-foreground text-xs">
-										{category.description}
-									</p>
+									<h3 className="text-sm font-medium">{category.label}</h3>
+									<p className="text-muted-foreground text-xs">{category.description}</p>
 								</div>
 								<div className="space-y-3 pl-4">
 									{category.permissions.map((permission) => (
@@ -491,23 +459,19 @@ export default function RoleDetailClient({
 											<div className="flex-1">
 												<Label
 													className={cn(
-														"cursor-pointer font-medium text-sm",
-														!isEditable && "cursor-not-allowed opacity-70",
+														"cursor-pointer text-sm font-medium",
+														!isEditable && "cursor-not-allowed opacity-70"
 													)}
 													htmlFor={permission.id}
 												>
 													{permission.label}
 												</Label>
-												<p className="text-muted-foreground text-xs">
-													{permission.description}
-												</p>
+												<p className="text-muted-foreground text-xs">{permission.description}</p>
 											</div>
 										</div>
 									))}
 								</div>
-								{categoryIndex < PERMISSION_CATEGORIES.length - 1 && (
-									<Separator className="mt-6" />
-								)}
+								{categoryIndex < PERMISSION_CATEGORIES.length - 1 && <Separator className="mt-6" />}
 							</div>
 						))}
 					</CardContent>

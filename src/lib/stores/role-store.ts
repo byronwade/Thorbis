@@ -97,14 +97,12 @@ export const useRoleStore = create<RoleStore>()(
 				partialize: (state) => ({
 					// Only persist in development mode
 					role: isDevelopment ? state.role : undefined,
-					isDevelopmentOverride: isDevelopment
-						? state.isDevelopmentOverride
-						: false,
+					isDevelopmentOverride: isDevelopment ? state.isDevelopmentOverride : false,
 				}),
-			},
+			}
 		),
-		{ name: "RoleStore" }, // DevTools name
-	),
+		{ name: "RoleStore" } // DevTools name
+	)
 );
 
 /**

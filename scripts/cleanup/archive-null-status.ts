@@ -25,12 +25,8 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
-const PERMANENT_DELETE_DELAY_MS =
-	DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
+	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const PERMANENT_DELETE_DELAY_MS = DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
 
 type CompanyRecord = {
 	id: string;
@@ -45,9 +41,7 @@ type MembershipRecord = {
 	companies: CompanyRecord | CompanyRecord[] | null;
 };
 
-function getCompanyFromMembership(
-	membership: MembershipRecord,
-): CompanyRecord | null {
+function getCompanyFromMembership(membership: MembershipRecord): CompanyRecord | null {
 	if (!membership.companies) {
 		return null;
 	}
@@ -61,10 +55,7 @@ function getPermanentDeleteDateISO() {
 	return new Date(Date.now() + PERMANENT_DELETE_DELAY_MS).toISOString();
 }
 
-async function archiveCompanyMembership(
-	membership: MembershipRecord,
-	userId: string,
-) {
+async function archiveCompanyMembership(membership: MembershipRecord, userId: string) {
 	const company = getCompanyFromMembership(membership);
 	if (!company) {
 		return;
@@ -108,8 +99,7 @@ async function archiveNullStatus() {
 		const userEmail = "bcw1995@gmail.com";
 
 		// Find user by email
-		const { data: authUsers, error: userError } =
-			await supabase.auth.admin.listUsers();
+		const { data: authUsers, error: userError } = await supabase.auth.admin.listUsers();
 
 		if (userError) {
 			console.error("Error fetching users:", userError);
@@ -126,7 +116,8 @@ async function archiveNullStatus() {
 		// Get companies with null status that are not archived
 		const { data: memberships, error: membershipError } = await supabase
 			.from("team_members")
-			.select(`
+			.select(
+				`
 				id,
 				company_id,
 				companies!inner (
@@ -135,7 +126,8 @@ async function archiveNullStatus() {
 					stripe_subscription_status,
 					deleted_at
 				)
-			`)
+			`
+			)
 			.eq("user_id", user.id)
 			.eq("status", "active")
 			.is("companies.deleted_at", null)

@@ -208,10 +208,7 @@ export class WebRTCService extends EventEmitter {
 		}
 
 		try {
-			const result = await this.sendCommandAndWait(
-				{ type: "health_check" },
-				5000,
-			);
+			const result = await this.sendCommandAndWait({ type: "health_check" }, 5000);
 			return result?.healthy ?? false;
 		} catch {
 			return false;
@@ -233,10 +230,7 @@ export class WebRTCService extends EventEmitter {
 	/**
 	 * Private: Send command and wait for response
 	 */
-	private async sendCommandAndWait(
-		command: WebRTCServiceCommand,
-		timeout = 10000,
-	): Promise<any> {
+	private async sendCommandAndWait(command: WebRTCServiceCommand, timeout = 10000): Promise<any> {
 		return new Promise((resolve, reject) => {
 			if (!this.worker) {
 				reject(new Error("WebRTC service not running"));
@@ -357,7 +351,7 @@ export class WebRTCService extends EventEmitter {
 
 		this.restartAttempts++;
 		console.log(
-			`[WebRTC Service] Attempting restart (${this.restartAttempts}/${this.maxRestartAttempts})`,
+			`[WebRTC Service] Attempting restart (${this.restartAttempts}/${this.maxRestartAttempts})`
 		);
 
 		// Wait before restarting

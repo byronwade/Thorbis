@@ -142,15 +142,11 @@ export function PriceBookTable({
 			shrink: true,
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border bg-muted">
+				<div className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border">
 					{item.imageUrl ? (
-						<img
-							alt={item.name}
-							className="h-full w-full object-cover"
-							src={item.imageUrl}
-						/>
+						<img alt={item.name} className="h-full w-full object-cover" src={item.imageUrl} />
 					) : (
-						<Image className="h-4 w-4 text-muted-foreground" />
+						<Image className="text-muted-foreground h-4 w-4" />
 					)}
 				</div>
 			),
@@ -164,7 +160,7 @@ export function PriceBookTable({
 				<div className="min-w-0">
 					<div className="flex items-center gap-2">
 						<Link
-							className="truncate font-medium text-foreground text-sm leading-tight hover:underline"
+							className="text-foreground truncate text-sm leading-tight font-medium hover:underline"
 							href={`/dashboard/work/pricebook/${item.id}`}
 							onClick={(e) => e.stopPropagation()}
 						>
@@ -180,7 +176,7 @@ export function PriceBookTable({
 						)}
 					</div>
 					{/* SKU, Type, and Flat Rate all on one line */}
-					<div className="flex items-center gap-2 text-muted-foreground text-xs">
+					<div className="text-muted-foreground flex items-center gap-2 text-xs">
 						<span className="truncate font-mono">SKU: {item.sku}</span>
 						<span>•</span>
 						<span>
@@ -211,11 +207,7 @@ export function PriceBookTable({
 				const displayText = item.subcategory
 					? `${item.category} › ${item.subcategory}`
 					: item.category;
-				return (
-					<div className="truncate text-muted-foreground text-sm">
-						{displayText}
-					</div>
-				);
+				return <div className="text-muted-foreground truncate text-sm">{displayText}</div>;
 			},
 		},
 		// Labor hours (for services only)
@@ -228,7 +220,7 @@ export function PriceBookTable({
 			hideOnMobile: true,
 			render: (item) =>
 				item.itemType === "service" && item.laborHours ? (
-					<div className="flex items-center gap-1 text-muted-foreground text-sm">
+					<div className="text-muted-foreground flex items-center gap-1 text-sm">
 						<span className="font-medium">{item.laborHours}</span>
 						<span className="text-xs">hrs</span>
 					</div>
@@ -245,9 +237,7 @@ export function PriceBookTable({
 			align: "right",
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="font-medium text-muted-foreground text-sm">
-					{formatCurrency(item.cost)}
-				</div>
+				<div className="text-muted-foreground text-sm font-medium">{formatCurrency(item.cost)}</div>
 			),
 		},
 		// Price (base selling price)
@@ -259,9 +249,7 @@ export function PriceBookTable({
 			align: "right",
 			render: (item) => (
 				<div>
-					<div className="font-semibold text-foreground text-sm">
-						{formatCurrency(item.price)}
-					</div>
+					<div className="text-foreground text-sm font-semibold">{formatCurrency(item.price)}</div>
 					{/* Show unit below price */}
 					<div className="text-muted-foreground text-xs">{item.unit}</div>
 				</div>
@@ -276,7 +264,7 @@ export function PriceBookTable({
 			align: "right",
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="font-medium text-sm text-success dark:text-success">
+				<div className="text-success dark:text-success text-sm font-medium">
 					{item.markupPercent}%
 				</div>
 			),
@@ -292,8 +280,8 @@ export function PriceBookTable({
 				item.isActive ? null : (
 					<Badge
 						className={cn(
-							"font-medium text-xs",
-							"border-border/50 bg-background text-muted-foreground",
+							"text-xs font-medium",
+							"border-border/50 bg-background text-muted-foreground"
 						)}
 						variant="outline"
 					>
@@ -395,8 +383,7 @@ export function PriceBookTable({
 			(item.subcategory?.toLowerCase() || "").includes(searchLower) ||
 			(item.description?.toLowerCase() || "").includes(searchLower) ||
 			(item.supplierName?.toLowerCase() || "").includes(searchLower) ||
-			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ??
-				false)
+			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ?? false)
 		);
 	};
 
@@ -411,15 +398,14 @@ export function PriceBookTable({
 		<div className="flex h-full flex-col">
 			{/* Filter Summary Banner */}
 			{filterSummary !== "All Items" && (
-				<div className="shrink-0 border-b bg-muted/30 px-6 py-3">
+				<div className="bg-muted/30 shrink-0 border-b px-6 py-3">
 					<div className="flex items-center gap-2">
 						<span className="text-muted-foreground text-sm">Showing:</span>
 						<Badge className="font-medium" variant="secondary">
 							{filterSummary}
 						</Badge>
 						<span className="text-muted-foreground text-sm">
-							({filteredItems.length}{" "}
-							{filteredItems.length === 1 ? "item" : "items"})
+							({filteredItems.length} {filteredItems.length === 1 ? "item" : "items"})
 						</span>
 					</div>
 				</div>
@@ -430,7 +416,7 @@ export function PriceBookTable({
 					bulkActions={bulkActions}
 					columns={columns}
 					data={filteredItems}
-					emptyIcon={<Box className="h-8 w-8 text-muted-foreground" />}
+					emptyIcon={<Box className="text-muted-foreground h-8 w-8" />}
 					emptyMessage={emptyMessage}
 					getItemId={(item) => item.id}
 					itemsPerPage={itemsPerPage}

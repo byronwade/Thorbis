@@ -50,29 +50,17 @@ type CommunicationNotificationsState = {
 	// Actions
 	showCommunicationToast: (
 		notification: Notification,
-		options?: CommunicationToastOptions,
+		options?: CommunicationToastOptions
 	) => string | number;
 	showCallToast: (
 		customerName: string,
 		phoneNumber: string,
 		status: "incoming" | "missed" | "completed",
-		metadata?: Record<string, any>,
+		metadata?: Record<string, any>
 	) => void;
-	showVoicemailToast: (
-		customerName: string,
-		phoneNumber: string,
-		duration?: number,
-	) => void;
-	showSMSToast: (
-		customerName: string,
-		phoneNumber: string,
-		message: string,
-	) => void;
-	showEmailToast: (
-		customerName: string,
-		fromAddress: string,
-		subject: string,
-	) => void;
+	showVoicemailToast: (customerName: string, phoneNumber: string, duration?: number) => void;
+	showSMSToast: (customerName: string, phoneNumber: string, message: string) => void;
+	showEmailToast: (customerName: string, fromAddress: string, subject: string) => void;
 	dismissToast: (id: string | number) => void;
 	dismissAllToasts: () => void;
 
@@ -84,11 +72,7 @@ type CommunicationNotificationsState = {
 	// Utility
 	playNotificationSound: () => void;
 	requestDesktopNotificationPermission: () => Promise<boolean>;
-	showDesktopNotification: (
-		title: string,
-		body: string,
-		data?: Record<string, any>,
-	) => void;
+	showDesktopNotification: (title: string, body: string, data?: Record<string, any>) => void;
 };
 
 // Initial state (load from localStorage if available)
@@ -102,13 +86,11 @@ const loadSettings = () => {
 	}
 
 	return {
-		soundEnabled:
-			localStorage.getItem("communication_sound_enabled") !== "false",
-		desktopNotificationsEnabled:
-			localStorage.getItem("communication_desktop_enabled") !== "false",
+		soundEnabled: localStorage.getItem("communication_sound_enabled") !== "false",
+		desktopNotificationsEnabled: localStorage.getItem("communication_desktop_enabled") !== "false",
 		toastDuration: Number.parseInt(
 			localStorage.getItem("communication_toast_duration") || "5000",
-			10,
+			10
 		),
 	};
 };
@@ -117,380 +99,356 @@ const loadSettings = () => {
 // Zustand Store
 // =====================================================================================
 
-export const useCommunicationNotificationsStore =
-	create<CommunicationNotificationsState>()(
-		devtools(
-			(set, get) => ({
-				...loadSettings(),
-				toastQueue: [],
+export const useCommunicationNotificationsStore = create<CommunicationNotificationsState>()(
+	devtools(
+		(set, get) => ({
+			...loadSettings(),
+			toastQueue: [],
 
-				// ===============================================================================
-				// Toast Display
-				// ===============================================================================
+			// ===============================================================================
+			// Toast Display
+			// ===============================================================================
 
-				showCommunicationToast: (notification, options = {}) => {
-					const { metadata } = notification;
-					const communicationType = metadata?.communication_type as
-						| CommunicationType
-						| undefined;
+			showCommunicationToast: (notification, options = {}) => {
+				const { metadata } = notification;
+				const communicationType = metadata?.communication_type as CommunicationType | undefined;
 
-					// Determine toast appearance based on communication type
-					let icon = "📩"; // Default
-					let _toastType: "info" | "success" | "error" = "info";
+				// Determine toast appearance based on communication type
+				let icon = "📩"; // Default
+				let _toastType: "info" | "success" | "error" = "info";
 
-					switch (communicationType) {
-						case "call":
-							icon = "📞";
-							if (notification.priority === "high") {
-								icon = "📵"; // Missed call
-								_toastType = "error";
+				switch (communicationType) {
+					case "call":
+						icon = "📞";
+						if (notification.priority === "high") {
+							icon = "📵"; // Missed call
+							_toastType = "error";
+						}
+						break;
+					case "sms":
+						icon = "💬";
+						break;
+					case "email":
+						icon = "📧";
+						break;
+					case "voicemail":
+						icon = "🎙️";
+						if (notification.priority === "urgent") {
+							_toastType = "error";
+						}
+						break;
+				}
+
+				// Play sound if enabled
+				const { soundEnabled } = get();
+				if (soundEnabled) {
+					get().playNotificationSound();
+				}
+
+				// Show desktop notification if enabled
+				const { desktopNotificationsEnabled } = get();
+				if (desktopNotificationsEnabled) {
+					get().showDesktopNotification(
+						notification.title,
+						notification.message,
+						metadata ?? undefined
+					);
+				}
+
+				// Create toast with custom styling
+				const toastId = toast(notification.title, {
+					description: notification.message,
+					duration: options.duration || get().toastDuration,
+					icon,
+					closeButton: options.closeButton ?? true,
+					dismissible: options.dismissible ?? true,
+					action: notification.action_url
+						? {
+								label: notification.action_label || "View",
+								onClick: () => {
+									if (typeof window !== "undefined") {
+										const detail: CommunicationMarkAsReadDetail = {
+											notificationId: notification.id,
+										};
+										window.dispatchEvent(
+											new CustomEvent(COMMUNICATION_MARK_AS_READ_EVENT, {
+												detail,
+											})
+										);
+									}
+
+									if (notification.action_url) {
+										window.location.href = notification.action_url;
+									}
+								},
 							}
-							break;
-						case "sms":
-							icon = "💬";
-							break;
-						case "email":
-							icon = "📧";
-							break;
-						case "voicemail":
-							icon = "🎙️";
-							if (notification.priority === "urgent") {
-								_toastType = "error";
-							}
-							break;
-					}
+						: options.action,
+					className:
+						notification.priority === "urgent" ? "border-destructive bg-destructive/10" : "",
+				});
 
-					// Play sound if enabled
-					const { soundEnabled } = get();
-					if (soundEnabled) {
-						get().playNotificationSound();
-					}
+				// Track toast ID
+				set((state) => ({
+					toastQueue: [...state.toastQueue, String(toastId)],
+				}));
 
-					// Show desktop notification if enabled
-					const { desktopNotificationsEnabled } = get();
-					if (desktopNotificationsEnabled) {
-						get().showDesktopNotification(
-							notification.title,
-							notification.message,
-							metadata ?? undefined,
-						);
-					}
+				return toastId;
+			},
 
-					// Create toast with custom styling
-					const toastId = toast(notification.title, {
-						description: notification.message,
-						duration: options.duration || get().toastDuration,
-						icon,
-						closeButton: options.closeButton ?? true,
-						dismissible: options.dismissible ?? true,
-						action: notification.action_url
-							? {
-									label: notification.action_label || "View",
-									onClick: () => {
-										if (typeof window !== "undefined") {
-											const detail: CommunicationMarkAsReadDetail = {
-												notificationId: notification.id,
-											};
-											window.dispatchEvent(
-												new CustomEvent(COMMUNICATION_MARK_AS_READ_EVENT, {
-													detail,
-												}),
-											);
-										}
+			showCallToast: (customerName, phoneNumber, status, metadata = {}) => {
+				let title = "";
+				let message = "";
+				let _priority: "low" | "medium" | "high" = "medium";
+				let icon = "📞";
 
-										if (notification.action_url) {
-											window.location.href = notification.action_url;
-										}
-									},
-								}
-							: options.action,
-						className:
-							notification.priority === "urgent"
-								? "border-destructive bg-destructive/10"
-								: "",
-					});
+				switch (status) {
+					case "incoming":
+						title = `Incoming call from ${customerName}`;
+						message = phoneNumber;
+						_priority = "high";
+						icon = "📞";
+						break;
+					case "missed":
+						title = `Missed call from ${customerName}`;
+						message = phoneNumber;
+						_priority = "high";
+						icon = "📵";
+						break;
+					case "completed":
+						title = `Call with ${customerName}`;
+						message = `Duration: ${metadata.duration || "Unknown"}`;
+						_priority = "low";
+						icon = "✅";
+						break;
+				}
 
-					// Track toast ID
-					set((state) => ({
-						toastQueue: [...state.toastQueue, String(toastId)],
-					}));
-
-					return toastId;
-				},
-
-				showCallToast: (customerName, phoneNumber, status, metadata = {}) => {
-					let title = "";
-					let message = "";
-					let _priority: "low" | "medium" | "high" = "medium";
-					let icon = "📞";
-
-					switch (status) {
-						case "incoming":
-							title = `Incoming call from ${customerName}`;
-							message = phoneNumber;
-							_priority = "high";
-							icon = "📞";
-							break;
-						case "missed":
-							title = `Missed call from ${customerName}`;
-							message = phoneNumber;
-							_priority = "high";
-							icon = "📵";
-							break;
-						case "completed":
-							title = `Call with ${customerName}`;
-							message = `Duration: ${metadata.duration || "Unknown"}`;
-							_priority = "low";
-							icon = "✅";
-							break;
-					}
-
-					const toastId = toast(title, {
-						description: message,
-						icon,
-						duration: get().toastDuration,
-						closeButton: true,
-						action: {
-							label: "View",
-							onClick: () => {
-								window.location.href =
-									"/dashboard/customers/communication?filter=calls";
-							},
+				const toastId = toast(title, {
+					description: message,
+					icon,
+					duration: get().toastDuration,
+					closeButton: true,
+					action: {
+						label: "View",
+						onClick: () => {
+							window.location.href = "/dashboard/customers/communication?filter=calls";
 						},
-						className: status === "missed" ? "border-destructive" : "",
+					},
+					className: status === "missed" ? "border-destructive" : "",
+				});
+
+				if (get().soundEnabled) {
+					get().playNotificationSound();
+				}
+
+				if (get().desktopNotificationsEnabled) {
+					get().showDesktopNotification(title, message, {
+						status,
+						...metadata,
 					});
+				}
 
-					if (get().soundEnabled) {
-						get().playNotificationSound();
-					}
+				return toastId;
+			},
 
-					if (get().desktopNotificationsEnabled) {
-						get().showDesktopNotification(title, message, {
-							status,
-							...metadata,
-						});
-					}
+			showVoicemailToast: (customerName, phoneNumber, duration) => {
+				const title = `New voicemail from ${customerName}`;
+				const message = duration ? `${phoneNumber} • ${duration}s` : phoneNumber;
 
-					return toastId;
-				},
-
-				showVoicemailToast: (customerName, phoneNumber, duration) => {
-					const title = `New voicemail from ${customerName}`;
-					const message = duration
-						? `${phoneNumber} • ${duration}s`
-						: phoneNumber;
-
-					const toastId = toast(title, {
-						description: message,
-						icon: "🎙️",
-						duration: get().toastDuration,
-						closeButton: true,
-						action: {
-							label: "Listen",
-							onClick: () => {
-								window.location.href =
-									"/dashboard/customers/communication?filter=voicemails";
-							},
+				const toastId = toast(title, {
+					description: message,
+					icon: "🎙️",
+					duration: get().toastDuration,
+					closeButton: true,
+					action: {
+						label: "Listen",
+						onClick: () => {
+							window.location.href = "/dashboard/customers/communication?filter=voicemails";
 						},
+					},
+				});
+
+				if (get().soundEnabled) {
+					get().playNotificationSound();
+				}
+
+				if (get().desktopNotificationsEnabled) {
+					get().showDesktopNotification(title, message, {
+						type: "voicemail",
+						duration,
 					});
+				}
 
-					if (get().soundEnabled) {
-						get().playNotificationSound();
-					}
+				return toastId;
+			},
 
-					if (get().desktopNotificationsEnabled) {
-						get().showDesktopNotification(title, message, {
-							type: "voicemail",
-							duration,
-						});
-					}
+			showSMSToast: (customerName, phoneNumber, message) => {
+				const title = `Text from ${customerName}`;
+				const preview = message.length > 100 ? `${message.substring(0, 100)}...` : message;
 
-					return toastId;
-				},
-
-				showSMSToast: (customerName, phoneNumber, message) => {
-					const title = `Text from ${customerName}`;
-					const preview =
-						message.length > 100 ? `${message.substring(0, 100)}...` : message;
-
-					const toastId = toast(title, {
-						description: preview,
-						icon: "💬",
-						duration: get().toastDuration,
-						closeButton: true,
-						action: {
-							label: "Reply",
-							onClick: () => {
-								window.location.href =
-									"/dashboard/customers/communication?filter=sms";
-							},
+				const toastId = toast(title, {
+					description: preview,
+					icon: "💬",
+					duration: get().toastDuration,
+					closeButton: true,
+					action: {
+						label: "Reply",
+						onClick: () => {
+							window.location.href = "/dashboard/customers/communication?filter=sms";
 						},
+					},
+				});
+
+				if (get().soundEnabled) {
+					get().playNotificationSound();
+				}
+
+				if (get().desktopNotificationsEnabled) {
+					get().showDesktopNotification(title, preview, {
+						type: "sms",
+						from: phoneNumber,
 					});
+				}
 
-					if (get().soundEnabled) {
-						get().playNotificationSound();
-					}
+				return toastId;
+			},
 
-					if (get().desktopNotificationsEnabled) {
-						get().showDesktopNotification(title, preview, {
-							type: "sms",
-							from: phoneNumber,
-						});
-					}
+			showEmailToast: (customerName, fromAddress, subject) => {
+				const title = `Email from ${customerName}`;
+				const message = subject || "No subject";
 
-					return toastId;
-				},
-
-				showEmailToast: (customerName, fromAddress, subject) => {
-					const title = `Email from ${customerName}`;
-					const message = subject || "No subject";
-
-					const toastId = toast(title, {
-						description: message,
-						icon: "📧",
-						duration: get().toastDuration,
-						closeButton: true,
-						action: {
-							label: "View",
-							onClick: () => {
-								window.location.href =
-									"/dashboard/customers/communication?filter=emails";
-							},
+				const toastId = toast(title, {
+					description: message,
+					icon: "📧",
+					duration: get().toastDuration,
+					closeButton: true,
+					action: {
+						label: "View",
+						onClick: () => {
+							window.location.href = "/dashboard/customers/communication?filter=emails";
 						},
+					},
+				});
+
+				if (get().soundEnabled) {
+					get().playNotificationSound();
+				}
+
+				if (get().desktopNotificationsEnabled) {
+					get().showDesktopNotification(title, message, {
+						type: "email",
+						from: fromAddress,
 					});
+				}
 
-					if (get().soundEnabled) {
-						get().playNotificationSound();
-					}
+				return toastId;
+			},
 
-					if (get().desktopNotificationsEnabled) {
-						get().showDesktopNotification(title, message, {
-							type: "email",
-							from: fromAddress,
-						});
-					}
+			dismissToast: (id) => {
+				toast.dismiss(id);
+				set((state) => ({
+					toastQueue: state.toastQueue.filter((toastId) => toastId !== String(id)),
+				}));
+			},
 
-					return toastId;
-				},
+			dismissAllToasts: () => {
+				toast.dismiss();
+				set({ toastQueue: [] });
+			},
 
-				dismissToast: (id) => {
-					toast.dismiss(id);
-					set((state) => ({
-						toastQueue: state.toastQueue.filter(
-							(toastId) => toastId !== String(id),
-						),
-					}));
-				},
+			// ===============================================================================
+			// Settings
+			// ===============================================================================
 
-				dismissAllToasts: () => {
-					toast.dismiss();
-					set({ toastQueue: [] });
-				},
+			setSoundEnabled: (enabled) => {
+				set({ soundEnabled: enabled });
+				if (typeof window !== "undefined") {
+					localStorage.setItem("communication_sound_enabled", enabled.toString());
+				}
+			},
 
-				// ===============================================================================
-				// Settings
-				// ===============================================================================
+			setDesktopNotificationsEnabled: (enabled) => {
+				set({ desktopNotificationsEnabled: enabled });
+				if (typeof window !== "undefined") {
+					localStorage.setItem("communication_desktop_enabled", enabled.toString());
+				}
 
-				setSoundEnabled: (enabled) => {
-					set({ soundEnabled: enabled });
-					if (typeof window !== "undefined") {
-						localStorage.setItem(
-							"communication_sound_enabled",
-							enabled.toString(),
-						);
-					}
-				},
+				// Request permission if enabling
+				if (enabled) {
+					get().requestDesktopNotificationPermission();
+				}
+			},
 
-				setDesktopNotificationsEnabled: (enabled) => {
-					set({ desktopNotificationsEnabled: enabled });
-					if (typeof window !== "undefined") {
-						localStorage.setItem(
-							"communication_desktop_enabled",
-							enabled.toString(),
-						);
-					}
+			setToastDuration: (duration) => {
+				set({ toastDuration: duration });
+				if (typeof window !== "undefined") {
+					localStorage.setItem("communication_toast_duration", duration.toString());
+				}
+			},
 
-					// Request permission if enabling
-					if (enabled) {
-						get().requestDesktopNotificationPermission();
-					}
-				},
+			// ===============================================================================
+			// Utility
+			// ===============================================================================
 
-				setToastDuration: (duration) => {
-					set({ toastDuration: duration });
-					if (typeof window !== "undefined") {
-						localStorage.setItem(
-							"communication_toast_duration",
-							duration.toString(),
-						);
-					}
-				},
+			playNotificationSound: () => {
+				if (typeof window === "undefined") {
+					return;
+				}
 
-				// ===============================================================================
-				// Utility
-				// ===============================================================================
+				try {
+					// Create audio element for notification sound
+					const audio = new Audio("/sounds/notification.mp3");
+					audio.volume = 0.4;
+					audio.play().catch((_error) => {});
+				} catch (_error) {}
+			},
 
-				playNotificationSound: () => {
-					if (typeof window === "undefined") {
-						return;
-					}
-
-					try {
-						// Create audio element for notification sound
-						const audio = new Audio("/sounds/notification.mp3");
-						audio.volume = 0.4;
-						audio.play().catch((_error) => {});
-					} catch (_error) {}
-				},
-
-				requestDesktopNotificationPermission: async () => {
-					if (typeof window === "undefined" || !("Notification" in window)) {
-						return false;
-					}
-
-					if (Notification.permission === "granted") {
-						return true;
-					}
-
-					if (Notification.permission !== "denied") {
-						const permission = await Notification.requestPermission();
-						return permission === "granted";
-					}
-
+			requestDesktopNotificationPermission: async () => {
+				if (typeof window === "undefined" || !("Notification" in window)) {
 					return false;
-				},
+				}
 
-				showDesktopNotification: (title, body, data = {}) => {
-					if (typeof window === "undefined" || !("Notification" in window)) {
-						return;
-					}
+				if (Notification.permission === "granted") {
+					return true;
+				}
 
-					if (Notification.permission !== "granted") {
-						return;
-					}
+				if (Notification.permission !== "denied") {
+					const permission = await Notification.requestPermission();
+					return permission === "granted";
+				}
 
-					try {
-						const notification = new Notification(title, {
-							body,
-							icon: "/icon-192x192.svg",
-							badge: "/icon-192x192.svg",
-							tag: `communication-${data.type || "general"}`,
-							data,
-							requireInteraction:
-								data.type === "call" && data.status === "incoming",
-						});
+				return false;
+			},
 
-						// Handle notification click
-						notification.onclick = () => {
-							window.focus();
-							if (data.action_url) {
-								window.location.href = data.action_url;
-							}
-							notification.close();
-						};
-					} catch (_error) {}
-				},
-			}),
-			{ name: "CommunicationNotificationsStore" },
-		),
-	);
+			showDesktopNotification: (title, body, data = {}) => {
+				if (typeof window === "undefined" || !("Notification" in window)) {
+					return;
+				}
+
+				if (Notification.permission !== "granted") {
+					return;
+				}
+
+				try {
+					const notification = new Notification(title, {
+						body,
+						icon: "/icon-192x192.svg",
+						badge: "/icon-192x192.svg",
+						tag: `communication-${data.type || "general"}`,
+						data,
+						requireInteraction: data.type === "call" && data.status === "incoming",
+					});
+
+					// Handle notification click
+					notification.onclick = () => {
+						window.focus();
+						if (data.action_url) {
+							window.location.href = data.action_url;
+						}
+						notification.close();
+					};
+				} catch (_error) {}
+			},
+		}),
+		{ name: "CommunicationNotificationsStore" }
+	)
+);

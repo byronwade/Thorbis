@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Calendar,
-	CheckCircle,
-	Eye,
-	MapPin,
-	MoreHorizontal,
-	X,
-} from "lucide-react";
+import { Calendar, CheckCircle, Eye, MapPin, MoreHorizontal, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { updateSchedule } from "@/actions/schedules";
@@ -21,10 +14,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 
 type Appointment = {
@@ -60,14 +50,10 @@ type JobAppointmentsTableProps = {
 	appointments: Appointment[];
 };
 
-export function JobAppointmentsTable({
-	appointments,
-}: JobAppointmentsTableProps) {
+export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const [loadingAppointmentId, setLoadingAppointmentId] = useState<
-		string | null
-	>(null);
+	const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
 
 	// Check if appointment is scheduled for today
 	const isToday = useCallback((dateString: string) => {
@@ -104,7 +90,7 @@ export function JobAppointmentsTable({
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast],
+		[router, toast]
 	);
 
 	// Handle arrive
@@ -128,7 +114,7 @@ export function JobAppointmentsTable({
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast],
+		[router, toast]
 	);
 
 	// Handle close
@@ -146,9 +132,7 @@ export function JobAppointmentsTable({
 				// Calculate duration in minutes
 				let duration: number | null = null;
 				if (startTime) {
-					duration = Math.round(
-						(now.getTime() - startTime.getTime()) / (1000 * 60),
-					);
+					duration = Math.round((now.getTime() - startTime.getTime()) / (1000 * 60));
 				}
 
 				const result = await updateSchedule(appointment.id, {
@@ -168,7 +152,7 @@ export function JobAppointmentsTable({
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast],
+		[router, toast]
 	);
 
 	const formatDate = useCallback((date: string | null) => {
@@ -221,10 +205,7 @@ export function JobAppointmentsTable({
 	}, []);
 
 	const getStatusBadge = useCallback((status: string) => {
-		const variants: Record<
-			string,
-			"default" | "secondary" | "destructive" | "outline"
-		> = {
+		const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
 			completed: "default",
 			confirmed: "secondary",
 			scheduled: "secondary",
@@ -250,12 +231,9 @@ export function JobAppointmentsTable({
 				shrink: true,
 				render: (appointment) => (
 					<div className="space-y-1">
-						<div className="font-medium text-sm">
-							{formatDate(appointment.start_time)}
-						</div>
+						<div className="text-sm font-medium">{formatDate(appointment.start_time)}</div>
 						<div className="text-muted-foreground text-xs">
-							{formatTime(appointment.start_time)} -{" "}
-							{formatTime(appointment.end_time)}
+							{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
 						</div>
 					</div>
 				),
@@ -276,9 +254,7 @@ export function JobAppointmentsTable({
 								</div>
 							</div>
 						) : (
-							<span className="text-muted-foreground text-xs">
-								Not dispatched
-							</span>
+							<span className="text-muted-foreground text-xs">Not dispatched</span>
 						)}
 					</div>
 				),
@@ -351,10 +327,7 @@ export function JobAppointmentsTable({
 					return assignedUser ? (
 						<div className="flex items-center gap-2">
 							<Avatar className="h-6 w-6">
-								<AvatarImage
-									alt={assignedUser.name || ""}
-									src={assignedUser.avatar || undefined}
-								/>
+								<AvatarImage alt={assignedUser.name || ""} src={assignedUser.avatar || undefined} />
 								<AvatarFallback>
 									{(assignedUser.name || "U")
 										.split(" ")
@@ -364,9 +337,7 @@ export function JobAppointmentsTable({
 										.slice(0, 2)}
 								</AvatarFallback>
 							</Avatar>
-							<span className="text-sm">
-								{assignedUser.name || "Unassigned"}
-							</span>
+							<span className="text-sm">{assignedUser.name || "Unassigned"}</span>
 						</div>
 					) : (
 						<span className="text-muted-foreground text-sm">Unassigned</span>
@@ -378,8 +349,7 @@ export function JobAppointmentsTable({
 				header: "Status",
 				width: "w-28",
 				shrink: true,
-				render: (appointment) =>
-					getStatusBadge(appointment.status || "scheduled"),
+				render: (appointment) => getStatusBadge(appointment.status || "scheduled"),
 			},
 			{
 				key: "type",
@@ -404,13 +374,9 @@ export function JobAppointmentsTable({
 					const isLoading = loadingAppointmentId === appointment.id;
 					const canDispatch = appointmentIsToday && !appointment.dispatch_time;
 					const canArrive =
-						appointmentIsToday &&
-						appointment.dispatch_time &&
-						!appointment.actual_start_time;
+						appointmentIsToday && appointment.dispatch_time && !appointment.actual_start_time;
 					const canClose =
-						appointmentIsToday &&
-						appointment.actual_start_time &&
-						!appointment.actual_end_time;
+						appointmentIsToday && appointment.actual_start_time && !appointment.actual_end_time;
 
 					if (!appointmentIsToday) {
 						return (
@@ -439,7 +405,7 @@ export function JobAppointmentsTable({
 						<div className="flex items-center justify-end gap-1">
 							{canDispatch && (
 								<Button
-									className="h-8 bg-primary px-3 text-xs hover:bg-primary"
+									className="bg-primary hover:bg-primary h-8 px-3 text-xs"
 									disabled={isLoading}
 									onClick={() => handleDispatch(appointment.id)}
 									size="sm"
@@ -450,7 +416,7 @@ export function JobAppointmentsTable({
 							)}
 							{canArrive && (
 								<Button
-									className="h-8 bg-success px-3 text-xs hover:bg-success"
+									className="bg-success hover:bg-success h-8 px-3 text-xs"
 									disabled={isLoading}
 									onClick={() => handleArrive(appointment.id)}
 									size="sm"
@@ -461,7 +427,7 @@ export function JobAppointmentsTable({
 							)}
 							{canClose && (
 								<Button
-									className="h-8 bg-accent px-3 text-xs hover:bg-accent"
+									className="bg-accent hover:bg-accent h-8 px-3 text-xs"
 									disabled={isLoading}
 									onClick={() => handleClose(appointment)}
 									size="sm"
@@ -505,14 +471,14 @@ export function JobAppointmentsTable({
 			handleDispatch,
 			handleArrive,
 			handleClose,
-		],
+		]
 	);
 
 	return (
 		<FullWidthDataTable
 			columns={columns}
 			data={appointments}
-			emptyIcon={<Calendar className="size-12 text-muted-foreground/50" />}
+			emptyIcon={<Calendar className="text-muted-foreground/50 size-12" />}
 			emptyMessage="No appointments scheduled for this job"
 			getItemId={(appointment) => appointment.id}
 			searchFilter={(appointment, query) => {

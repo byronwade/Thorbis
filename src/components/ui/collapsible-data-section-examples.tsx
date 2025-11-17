@@ -24,10 +24,7 @@ export function BasicAccordionExample() {
 		<Accordion defaultValue={["jobs", "invoices"]} type="multiple">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton
-						icon={<Plus className="size-4" />}
-						onClick={() => {}}
-					>
+					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 						Add Job
 					</CollapsibleActionButton>
 				}
@@ -41,10 +38,7 @@ export function BasicAccordionExample() {
 
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton
-						icon={<Plus className="size-4" />}
-						onClick={() => {}}
-					>
+					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 						Add Invoice
 					</CollapsibleActionButton>
 				}
@@ -68,10 +62,7 @@ export function StandaloneExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={() => {}}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 					Add Job
 				</CollapsibleActionButton>
 			}
@@ -98,10 +89,7 @@ export function LoadingStateExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={() => {}}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 					Add Job
 				</CollapsibleActionButton>
 			}
@@ -126,10 +114,7 @@ export function ErrorStateExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={() => {}}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 					Retry
 				</CollapsibleActionButton>
 			}
@@ -154,24 +139,18 @@ export function EmptyStateExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={handleAddJob}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
 					Add Job
 				</CollapsibleActionButton>
 			}
 			count={0}
 			emptyState={{
 				show: true,
-				icon: <Briefcase className="h-8 w-8 text-muted-foreground" />,
+				icon: <Briefcase className="text-muted-foreground h-8 w-8" />,
 				title: "No jobs found",
 				description: "Get started by creating your first job.",
 				action: (
-					<EmptyStateActionButton
-						icon={<Plus className="size-4" />}
-						onClick={handleAddJob}
-					>
+					<EmptyStateActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
 						Add Job
 					</EmptyStateActionButton>
 				),
@@ -195,10 +174,7 @@ export function FullWidthContentExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={() => {}}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 					Add Job
 				</CollapsibleActionButton>
 			}
@@ -279,10 +255,7 @@ export function ControlledStateExample() {
 
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton
-						icon={<Plus className="size-4" />}
-						onClick={() => {}}
-					>
+					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 						Add Job
 					</CollapsibleActionButton>
 				}
@@ -312,10 +285,7 @@ export function MultipleActionsExample() {
 					<CollapsibleActionButton onClick={() => {}} variant="outline">
 						Export
 					</CollapsibleActionButton>
-					<CollapsibleActionButton
-						icon={<Plus className="size-4" />}
-						onClick={() => {}}
-					>
+					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={() => {}}>
 						Add Job
 					</CollapsibleActionButton>
 				</>
@@ -360,10 +330,7 @@ export function ComplexRealWorldExample() {
 		try {
 			// Simulate API call
 			await new Promise((resolve, reject) =>
-				setTimeout(
-					() => (Math.random() > 0.5 ? resolve(true) : reject("Error")),
-					1000,
-				),
+				setTimeout(() => (Math.random() > 0.5 ? resolve(true) : reject("Error")), 1000)
 			);
 		} catch (_err) {
 			// Rollback on error
@@ -376,10 +343,7 @@ export function ComplexRealWorldExample() {
 	return (
 		<CollapsibleDataSection
 			actions={
-				<CollapsibleActionButton
-					icon={<Plus className="size-4" />}
-					onClick={handleAddJob}
-				>
+				<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
 					Add Job
 				</CollapsibleActionButton>
 			}
@@ -389,14 +353,11 @@ export function ComplexRealWorldExample() {
 				jobs.length === 0 && !isLoading && !error
 					? {
 							show: true,
-							icon: <Briefcase className="h-8 w-8 text-muted-foreground" />,
+							icon: <Briefcase className="text-muted-foreground h-8 w-8" />,
 							title: "No jobs found",
 							description: "Get started by creating your first job.",
 							action: (
-								<EmptyStateActionButton
-									icon={<Plus className="size-4" />}
-									onClick={handleAddJob}
-								>
+								<EmptyStateActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
 									Add Job
 								</EmptyStateActionButton>
 							),

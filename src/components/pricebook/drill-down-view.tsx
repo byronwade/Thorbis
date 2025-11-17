@@ -32,11 +32,7 @@ type DrillDownViewProps = {
 	itemsPerPage?: number;
 };
 
-export function DrillDownView({
-	items,
-	categories = [],
-	itemsPerPage = 50,
-}: DrillDownViewProps) {
+export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: DrillDownViewProps) {
 	const router = useRouter();
 	const navigationPath = usePriceBookStore((state) => state.navigationPath);
 	const viewMode = usePriceBookStore((state) => state.viewMode);
@@ -76,9 +72,7 @@ export function DrillDownView({
 				return false;
 			}
 
-			return navigationPath.every(
-				(segment, index) => itemPath[index] === segment,
-			);
+			return navigationPath.every((segment, index) => itemPath[index] === segment);
 		});
 	};
 
@@ -114,9 +108,7 @@ export function DrillDownView({
 						<CategoryCard
 							count={0}
 							description="Create a new category"
-							name={
-								navigationPath.length === 0 ? "Add Category" : "Add Subcategory"
-							}
+							name={navigationPath.length === 0 ? "Add Category" : "Add Subcategory"}
 							onClick={() => {}}
 							variant="add"
 						/>
@@ -143,9 +135,9 @@ export function DrillDownView({
 			{!(hasCategories || hasItems) && navigationPath.length > 0 && (
 				<div className="flex min-h-[calc(100vh-20rem)] items-center justify-center px-6 py-12">
 					<div className="text-center">
-						<div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-muted">
+						<div className="bg-muted mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
 							<svg
-								className="size-8 text-muted-foreground"
+								className="text-muted-foreground size-8"
 								fill="none"
 								stroke="currentColor"
 								strokeWidth={1.5}
@@ -159,16 +151,14 @@ export function DrillDownView({
 								/>
 							</svg>
 						</div>
-						<h3 className="mb-2 font-semibold text-foreground text-lg">
-							No items yet
-						</h3>
-						<p className="mx-auto mb-6 max-w-sm text-muted-foreground text-sm">
-							This category is empty. Start building your price book by adding
-							items or creating subcategories.
+						<h3 className="text-foreground mb-2 text-lg font-semibold">No items yet</h3>
+						<p className="text-muted-foreground mx-auto mb-6 max-w-sm text-sm">
+							This category is empty. Start building your price book by adding items or creating
+							subcategories.
 						</p>
 						<div className="flex items-center justify-center gap-3">
 							<button
-								className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
+								className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
 								onClick={() => {}}
 							>
 								<svg
@@ -179,16 +169,12 @@ export function DrillDownView({
 									viewBox="0 0 24 24"
 									xmlns="http://www.w3.org/2000/svg"
 								>
-									<path
-										d="M12 4v16m8-8H4"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-									/>
+									<path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" />
 								</svg>
 								Add Item
 							</button>
 							<button
-								className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-4 py-2 font-medium text-sm transition-colors hover:bg-muted"
+								className="border-border bg-background hover:bg-muted inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
 								onClick={() => {}}
 							>
 								<svg

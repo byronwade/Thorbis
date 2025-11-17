@@ -219,9 +219,7 @@ export type StoreName =
 function openDatabase(): Promise<IDBDatabase> {
 	// SSR guard - IndexedDB only exists in browser
 	if (typeof window === "undefined" || typeof indexedDB === "undefined") {
-		return Promise.reject(
-			new Error("IndexedDB not available (server-side rendering)"),
-		);
+		return Promise.reject(new Error("IndexedDB not available (server-side rendering)"));
 	}
 
 	return new Promise((resolve, reject) => {
@@ -444,10 +442,7 @@ function openDatabase(): Promise<IDBDatabase> {
 /**
  * Add a record to a store
  */
-export async function addRecord<T>(
-	storeName: StoreName,
-	record: T,
-): Promise<void> {
+export async function addRecord<T>(storeName: StoreName, record: T): Promise<void> {
 	const db = await openDatabase();
 
 	return new Promise((resolve, reject) => {
@@ -470,10 +465,7 @@ export async function addRecord<T>(
 /**
  * Update a record in a store
  */
-export async function updateRecord<T>(
-	storeName: StoreName,
-	record: T,
-): Promise<void> {
+export async function updateRecord<T>(storeName: StoreName, record: T): Promise<void> {
 	const db = await openDatabase();
 
 	return new Promise((resolve, reject) => {
@@ -496,10 +488,7 @@ export async function updateRecord<T>(
 /**
  * Get a record by ID
  */
-export async function getRecord<T>(
-	storeName: StoreName,
-	id: string,
-): Promise<T | null> {
+export async function getRecord<T>(storeName: StoreName, id: string): Promise<T | null> {
 	const db = await openDatabase();
 
 	return new Promise((resolve, reject) => {
@@ -548,7 +537,7 @@ export async function getAllRecords<T>(storeName: StoreName): Promise<T[]> {
 export async function getRecordsByIndex<T>(
 	storeName: StoreName,
 	indexName: string,
-	value: any,
+	value: any
 ): Promise<T[]> {
 	const db = await openDatabase();
 
@@ -573,10 +562,7 @@ export async function getRecordsByIndex<T>(
 /**
  * Delete a record by ID
  */
-export async function deleteRecord(
-	storeName: StoreName,
-	id: string,
-): Promise<void> {
+export async function deleteRecord(storeName: StoreName, id: string): Promise<void> {
 	const db = await openDatabase();
 
 	return new Promise((resolve, reject) => {
@@ -660,7 +646,7 @@ export function isTempId(id: string): boolean {
  * Get unsynced records from a store
  */
 export async function getUnsyncedRecords<T extends { synced: boolean }>(
-	storeName: StoreName,
+	storeName: StoreName
 ): Promise<T[]> {
 	return getRecordsByIndex<T>(storeName, "synced", false);
 }

@@ -29,13 +29,7 @@ export default function robots(): MetadataRoute.Robots {
 			{
 				userAgent: "Googlebot",
 				allow: "/",
-				disallow: [
-					"/api/",
-					"/dashboard/",
-					"/admin/",
-					"/contracts/sign/",
-					"/contracts/download/",
-				],
+				disallow: ["/api/", "/dashboard/", "/admin/", "/contracts/sign/", "/contracts/download/"],
 			},
 		],
 		sitemap: [

@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function MaintenancePlansDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function MaintenancePlansDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -31,12 +27,7 @@ export default function MaintenancePlansDetailLayout({
 		},
 		toolbar: {
 			show: true,
-			back: (
-				<DetailBackButton
-					href="/dashboard/work/maintenance-plans"
-					label="Maintenance Plans"
-				/>
-			),
+			back: <DetailBackButton href="/dashboard/work/maintenance-plans" label="Maintenance Plans" />,
 			// TODO: Create MaintenancePlanDetailToolbar component
 			// actions: <MaintenancePlanDetailToolbar />,
 		},
@@ -46,10 +37,7 @@ export default function MaintenancePlansDetailLayout({
 	};
 
 	return (
-		<SectionLayout
-			config={config}
-			pathname="/dashboard/work/maintenance-plans/[id]"
-		>
+		<SectionLayout config={config} pathname="/dashboard/work/maintenance-plans/[id]">
 			{children}
 		</SectionLayout>
 	);

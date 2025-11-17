@@ -47,17 +47,17 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 
 	const getFileIcon = (fileType: string | null) => {
 		if (!fileType) {
-			return <FileText className="size-4 text-muted-foreground" />;
+			return <FileText className="text-muted-foreground size-4" />;
 		}
 		// You can add more file type icons here
-		return <FileText className="size-4 text-muted-foreground" />;
+		return <FileText className="text-muted-foreground size-4" />;
 	};
 
 	if (documents.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<FileText className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Documents</h3>
+				<FileText className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Documents</h3>
 				<p className="text-muted-foreground text-sm">
 					No documents have been attached to this job yet.
 				</p>
@@ -84,9 +84,7 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 								<TableCell>
 									<div className="flex items-center gap-2">
 										{getFileIcon(doc.file_type || doc.type)}
-										<span className="font-medium">
-											{doc.name || doc.file_name || "Untitled"}
-										</span>
+										<span className="font-medium">{doc.name || doc.file_name || "Untitled"}</span>
 									</div>
 								</TableCell>
 								<TableCell>
@@ -98,12 +96,8 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 										"—"
 									)}
 								</TableCell>
-								<TableCell>
-									{formatFileSize(doc.file_size || doc.size)}
-								</TableCell>
-								<TableCell>
-									{formatDate(doc.created_at || doc.uploaded_at)}
-								</TableCell>
+								<TableCell>{formatFileSize(doc.file_size || doc.size)}</TableCell>
+								<TableCell>{formatDate(doc.created_at || doc.uploaded_at)}</TableCell>
 								<TableCell className="text-right">
 									{(doc.url || doc.file_url) && (
 										<Button asChild size="sm" variant="ghost">
@@ -126,21 +120,18 @@ export function JobDocuments({ documents }: JobDocumentsProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
+			<div className="bg-muted/50 rounded-md p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="font-medium text-sm">Total Documents</p>
+						<p className="text-sm font-medium">Total Documents</p>
 						<p className="text-muted-foreground text-xs">
 							{documents.length} document{documents.length !== 1 ? "s" : ""}
 						</p>
 					</div>
 					<div className="text-right">
-						<p className="font-medium text-sm">
+						<p className="text-sm font-medium">
 							{formatFileSize(
-								documents.reduce(
-									(sum, doc) => sum + (doc.file_size || doc.size || 0),
-									0,
-								),
+								documents.reduce((sum, doc) => sum + (doc.file_size || doc.size || 0), 0)
 							)}
 						</p>
 						<p className="text-muted-foreground text-xs">Total Size</p>

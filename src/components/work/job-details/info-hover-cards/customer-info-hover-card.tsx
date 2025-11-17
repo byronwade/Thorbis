@@ -10,11 +10,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CustomerInfoHoverCardProps = {
@@ -35,9 +31,7 @@ type CustomerInfoHoverCardProps = {
 	};
 };
 
-export function CustomerInfoHoverCard({
-	customer,
-}: CustomerInfoHoverCardProps) {
+export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 
 	const copyToClipboard = (text: string, field: string) => {
@@ -51,12 +45,7 @@ export function CustomerInfoHoverCard({
 		`${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
 		"Unknown Customer";
 
-	const fullAddress = [
-		customer.address,
-		customer.city,
-		customer.state,
-		customer.zip_code,
-	]
+	const fullAddress = [customer.address, customer.city, customer.state, customer.zip_code]
 		.filter(Boolean)
 		.join(", ");
 
@@ -64,7 +53,7 @@ export function CustomerInfoHoverCard({
 		<HoverCard openDelay={200}>
 			<HoverCardTrigger asChild>
 				<Link
-					className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+					className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 					href={`/dashboard/customers/${customer.id}`}
 				>
 					<User className="size-4" />
@@ -76,11 +65,9 @@ export function CustomerInfoHoverCard({
 					{/* Header */}
 					<div className="flex items-start justify-between">
 						<div>
-							<h4 className="font-semibold text-sm">{displayName}</h4>
+							<h4 className="text-sm font-semibold">{displayName}</h4>
 							{customer.company_name && (
-								<p className="text-muted-foreground text-xs">
-									{customer.company_name}
-								</p>
+								<p className="text-muted-foreground text-xs">{customer.company_name}</p>
 							)}
 						</div>
 						{customer.status && (
@@ -97,9 +84,9 @@ export function CustomerInfoHoverCard({
 						{customer.email && (
 							<div className="group flex items-center justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-center gap-2">
-									<Mail className="size-3.5 shrink-0 text-muted-foreground" />
+									<Mail className="text-muted-foreground size-3.5 shrink-0" />
 									<a
-										className="truncate text-sm hover:text-primary hover:underline"
+										className="hover:text-primary truncate text-sm hover:underline"
 										href={`mailto:${customer.email}`}
 									>
 										{customer.email}
@@ -126,9 +113,9 @@ export function CustomerInfoHoverCard({
 						{customer.phone && (
 							<div className="group flex items-center justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-center gap-2">
-									<Phone className="size-3.5 shrink-0 text-muted-foreground" />
+									<Phone className="text-muted-foreground size-3.5 shrink-0" />
 									<a
-										className="text-sm hover:text-primary hover:underline"
+										className="hover:text-primary text-sm hover:underline"
 										href={`tel:${customer.phone}`}
 									>
 										{customer.phone}
@@ -155,7 +142,7 @@ export function CustomerInfoHoverCard({
 						{fullAddress && (
 							<div className="group flex items-start justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-start gap-2">
-									<MapPin className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+									<MapPin className="text-muted-foreground mt-0.5 size-3.5 shrink-0" />
 									<p className="text-sm">{fullAddress}</p>
 								</div>
 								<Button

@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Building2,
-	CheckCircle,
-	Clock,
-	Eye,
-	MapPin,
-	MoreHorizontal,
-} from "lucide-react";
+import { Building2, CheckCircle, Clock, Eye, MapPin, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -19,10 +12,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 
 type AssignedJob = {
 	id: string;
@@ -65,10 +55,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 			completed: "bg-success/10 text-success hover:bg-success/20",
 			cancelled: "bg-destructive/10 text-destructive hover:bg-destructive/20",
 		};
-		return (
-			statusColors[status.toLowerCase()] ||
-			"bg-secondary0/10 text-muted-foreground"
-		);
+		return statusColors[status.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
 	};
 
 	const getPriorityColor = (priority?: string) => {
@@ -81,10 +68,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 			high: "bg-warning/10 text-warning",
 			urgent: "bg-destructive/10 text-destructive",
 		};
-		return (
-			priorityColors[priority.toLowerCase()] ||
-			"bg-secondary0/10 text-muted-foreground"
-		);
+		return priorityColors[priority.toLowerCase()] || "bg-secondary0/10 text-muted-foreground";
 	};
 
 	const columns: ColumnDef<AssignedJob>[] = useMemo(
@@ -96,7 +80,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				shrink: true,
 				render: (assignment) => (
 					<Link
-						className="font-medium font-mono text-sm hover:underline"
+						className="font-mono text-sm font-medium hover:underline"
 						href={`/dashboard/work/${assignment.job.id}`}
 					>
 						{assignment.job.job_number}
@@ -113,13 +97,11 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex flex-col gap-1">
-							<span className="font-medium text-sm leading-tight hover:underline">
+							<span className="text-sm leading-tight font-medium hover:underline">
 								{assignment.job.title}
 							</span>
 							{assignment.role && (
-								<span className="text-muted-foreground text-xs">
-									Role: {assignment.role}
-								</span>
+								<span className="text-muted-foreground text-xs">Role: {assignment.role}</span>
 							)}
 						</div>
 					</Link>
@@ -136,7 +118,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 							className="flex items-center gap-2 hover:underline"
 							href={`/dashboard/sales/customers/${customer.id}`}
 						>
-							<Building2 className="size-4 text-muted-foreground" />
+							<Building2 className="text-muted-foreground size-4" />
 							<span>
 								{customer.first_name} {customer.last_name}
 							</span>
@@ -155,7 +137,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 					const property = assignment.job.property;
 					return property ? (
 						<div className="flex items-center gap-2 text-sm">
-							<MapPin className="size-4 text-muted-foreground" />
+							<MapPin className="text-muted-foreground size-4" />
 							<div className="flex flex-col">
 								<span>{property.name || property.address}</span>
 								{property.city && property.state && (
@@ -176,9 +158,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				width: "w-32",
 				shrink: true,
 				render: (assignment) => (
-					<Badge className={getStatusColor(assignment.job.status)}>
-						{assignment.job.status}
-					</Badge>
+					<Badge className={getStatusColor(assignment.job.status)}>{assignment.job.status}</Badge>
 				),
 			},
 			{
@@ -205,7 +185,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 					const scheduledStart = assignment.job.scheduled_start;
 					return scheduledStart ? (
 						<div className="flex items-center gap-2 text-sm">
-							<Clock className="size-4 text-muted-foreground" />
+							<Clock className="text-muted-foreground size-4" />
 							<span>
 								{new Date(scheduledStart).toLocaleDateString(undefined, {
 									month: "short",
@@ -249,7 +229,7 @@ export function AssignedJobsTable({ assignments }: AssignedJobsTableProps) {
 				),
 			},
 		],
-		[getPriorityColor, getStatusColor],
+		[getPriorityColor, getStatusColor]
 	);
 
 	return (

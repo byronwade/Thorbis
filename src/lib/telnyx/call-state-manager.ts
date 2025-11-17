@@ -35,7 +35,7 @@ export type TelnyxCallEventPayload = {
  */
 export function initializeCallFromWebhook(
 	eventType: TelnyxCallEvent,
-	payload: TelnyxCallEventPayload,
+	payload: TelnyxCallEventPayload
 ): void {
 	const store = useUIStore.getState();
 
@@ -97,10 +97,7 @@ export function initializeCallFromWebhook(
 /**
  * Broadcast call state to call window via PostMessage
  */
-export function broadcastCallStateToWindow(
-	callId: string,
-	state: Partial<CallState>,
-): void {
+export function broadcastCallStateToWindow(callId: string, state: Partial<CallState>): void {
 	// Find call window by callId
 	const _callWindows = Array.from(window.opener ? [window.opener] : []);
 
@@ -114,7 +111,7 @@ export function broadcastCallStateToWindow(
 				callData: state,
 				timestamp: Date.now(),
 			},
-			window.location.origin,
+			window.location.origin
 		);
 	}
 }
@@ -140,14 +137,8 @@ export function handleTelnyxError(error: Error, _context: string): void {
  * Sync call control state (mute, hold, record)
  */
 export function syncCallControlState(
-	action:
-		| "mute"
-		| "unmute"
-		| "hold"
-		| "unhold"
-		| "record_start"
-		| "record_stop",
-	callId: string,
+	action: "mute" | "unmute" | "hold" | "unhold" | "record_start" | "record_stop",
+	callId: string
 ): void {
 	const store = useUIStore.getState();
 
@@ -177,10 +168,7 @@ export function syncCallControlState(
 /**
  * Update call with customer data
  */
-export function updateCallWithCustomerData(
-	callId: string,
-	customerData: any,
-): void {
+export function updateCallWithCustomerData(callId: string, customerData: any): void {
 	const store = useUIStore.getState();
 
 	if (store.setCustomerData) {
@@ -190,8 +178,7 @@ export function updateCallWithCustomerData(
 	// Update caller info
 	if (customerData.customer) {
 		const customer = customerData.customer;
-		const callerName =
-			`${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+		const callerName = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
 
 		if (callerName) {
 			// Update call state with customer name

@@ -3,13 +3,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getFeatureBySlug } from "@/lib/marketing/features";
 import type { MarketingValueProp } from "@/lib/marketing/types";
 import {
@@ -45,8 +39,7 @@ type SolutionGroupConfig = {
 const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	{
 		heading: "Automation & AI",
-		description:
-			"Book every opportunity and run lifecycle campaigns without adding headcount.",
+		description: "Book every opportunity and run lifecycle campaigns without adding headcount.",
 		features: [
 			{ slug: "ai-assistant", label: "AI Assistant", highlight: "24/7 intake" },
 			{
@@ -72,8 +65,7 @@ const SOLUTION_GROUPS: SolutionGroupConfig[] = [
 	},
 	{
 		heading: "Revenue & Finance",
-		description:
-			"Invoice faster, sync with accounting, and protect cash flow in one workspace.",
+		description: "Invoice faster, sync with accounting, and protect cash flow in one workspace.",
 		features: [
 			{
 				slug: "invoicing",
@@ -248,7 +240,7 @@ export default function SolutionsOverviewPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Solutions", url: `${siteUrl}/solutions` },
-						]),
+						])
 					),
 				}}
 				id="solutions-breadcrumb-ld"
@@ -266,13 +258,13 @@ export default function SolutionsOverviewPage() {
 					<Badge className="mb-4" variant="secondary">
 						Thorbis Solutions
 					</Badge>
-					<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 						Platform building blocks for modern trades businesses
 					</h1>
-					<p className="mt-4 text-lg text-muted-foreground">
-						Each page below is a pSEO-ready deep dive that matches the intent of
-						operators evaluating ServiceTitan, Housecall Pro, and legacy
-						toolchains. Choose your path or explore them all.
+					<p className="text-muted-foreground mt-4 text-lg">
+						Each page below is a pSEO-ready deep dive that matches the intent of operators
+						evaluating ServiceTitan, Housecall Pro, and legacy toolchains. Choose your path or
+						explore them all.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -289,15 +281,13 @@ export default function SolutionsOverviewPage() {
 						<section key={group.heading}>
 							<div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 								<div>
-									<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+									<p className="text-primary text-sm font-semibold tracking-wide uppercase">
 										{group.heading}
 									</p>
-									<h2 className="font-semibold text-2xl text-foreground">
-										{group.description}
-									</h2>
+									<h2 className="text-foreground text-2xl font-semibold">{group.description}</h2>
 								</div>
 								<Link
-									className="font-semibold text-primary text-sm underline underline-offset-4"
+									className="text-primary text-sm font-semibold underline underline-offset-4"
 									href="/features"
 								>
 									Browse all features
@@ -307,38 +297,34 @@ export default function SolutionsOverviewPage() {
 							<div className="grid gap-6 md:grid-cols-2">
 								{group.features.map((feature) => (
 									<Card
-										className="flex h-full flex-col justify-between border-border/70"
+										className="border-border/70 flex h-full flex-col justify-between"
 										key={feature.slug}
 									>
 										<CardHeader className="space-y-3">
 											<div className="flex flex-wrap items-center gap-2">
 												<Badge variant="outline">{feature.label}</Badge>
 												{feature.highlight ? (
-													<span className="rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary text-xs">
+													<span className="bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-semibold">
 														{feature.highlight}
 													</span>
 												) : null}
 											</div>
 											{feature.heroEyebrow ? (
-												<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+												<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 													{feature.heroEyebrow}
 												</p>
 											) : null}
-											<CardTitle className="text-2xl">
-												{feature.heroTitle}
-											</CardTitle>
+											<CardTitle className="text-2xl">{feature.heroTitle}</CardTitle>
 											<CardDescription>{feature.summary}</CardDescription>
 										</CardHeader>
 										<CardContent className="flex flex-col gap-5">
 											{feature.valueProps && feature.valueProps.length > 0 ? (
-												<ul className="space-y-2 text-muted-foreground text-sm">
+												<ul className="text-muted-foreground space-y-2 text-sm">
 													{feature.valueProps.slice(0, 2).map((value) => (
 														<li className="flex gap-2" key={value.title}>
-															<span className="mt-1 text-primary">•</span>
+															<span className="text-primary mt-1">•</span>
 															<span>
-																<span className="font-semibold">
-																	{value.title}:{" "}
-																</span>
+																<span className="font-semibold">{value.title}: </span>
 																{value.description}
 															</span>
 														</li>
@@ -347,9 +333,7 @@ export default function SolutionsOverviewPage() {
 											) : null}
 											<div className="flex flex-wrap gap-3">
 												<Button asChild>
-													<Link href={`/features/${feature.slug}`}>
-														Explore {feature.label}
-													</Link>
+													<Link href={`/features/${feature.slug}`}>Explore {feature.label}</Link>
 												</Button>
 												<Button asChild variant="ghost">
 													<Link href="/contact">Talk to sales</Link>
@@ -363,17 +347,14 @@ export default function SolutionsOverviewPage() {
 					))}
 				</div>
 
-				<div className="mt-16 rounded-3xl border border-border/60 bg-muted/30 p-8 text-center">
-					<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+				<div className="border-border/60 bg-muted/30 mt-16 rounded-3xl border p-8 text-center">
+					<p className="text-primary text-sm font-semibold tracking-wide uppercase">
 						Switch Programs
 					</p>
-					<h2 className="mt-2 font-bold text-3xl">
-						Moving from ServiceTitan or Housecall Pro?
-					</h2>
-					<p className="mt-3 text-lg text-muted-foreground">
-						Our white-glove team migrates data, recreates automations, and
-						enables Dispatch AI in under 24 hours. Keep your workflows, drop the
-						bloat.
+					<h2 className="mt-2 text-3xl font-bold">Moving from ServiceTitan or Housecall Pro?</h2>
+					<p className="text-muted-foreground mt-3 text-lg">
+						Our white-glove team migrates data, recreates automations, and enables Dispatch AI in
+						under 24 hours. Keep your workflows, drop the bloat.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -390,28 +371,23 @@ export default function SolutionsOverviewPage() {
 						<Badge className="mb-4" variant="secondary">
 							Resource Library
 						</Badge>
-						<h2 className="font-bold text-3xl">
+						<h2 className="text-3xl font-bold">
 							All the research paths your buying committee needs
 						</h2>
-						<p className="mt-3 text-lg text-muted-foreground">
-							Every link below is an SEO-ready landing page with rich content,
-							schema markup, and clear CTAs—ideal for programmatic search
-							capture.
+						<p className="text-muted-foreground mt-3 text-lg">
+							Every link below is an SEO-ready landing page with rich content, schema markup, and
+							clear CTAs—ideal for programmatic search capture.
 						</p>
 					</div>
 					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 						{RESOURCE_LINKS.map((item) => (
 							<Link
-								className="rounded-2xl border border-border/60 bg-card/70 p-5 transition hover:border-primary/60 hover:shadow-lg"
+								className="border-border/60 bg-card/70 hover:border-primary/60 rounded-2xl border p-5 transition hover:shadow-lg"
 								href={item.href}
 								key={item.href}
 							>
-								<p className="font-semibold text-base text-foreground">
-									{item.label}
-								</p>
-								<p className="mt-2 text-muted-foreground text-sm">
-									{item.description}
-								</p>
+								<p className="text-foreground text-base font-semibold">{item.label}</p>
+								<p className="text-muted-foreground mt-2 text-sm">{item.description}</p>
 							</Link>
 						))}
 					</div>
@@ -422,42 +398,36 @@ export default function SolutionsOverviewPage() {
 						<Badge className="mb-4" variant="secondary">
 							Company & Trust
 						</Badge>
-						<h2 className="font-bold text-3xl">
-							Learn about the team behind Thorbis
-						</h2>
-						<p className="mt-3 text-lg text-muted-foreground">
-							Dive into pricing, careers, press, implementation, and security
-							resources that buyers, partners, and analysts ask for.
+						<h2 className="text-3xl font-bold">Learn about the team behind Thorbis</h2>
+						<p className="text-muted-foreground mt-3 text-lg">
+							Dive into pricing, careers, press, implementation, and security resources that buyers,
+							partners, and analysts ask for.
 						</p>
 					</div>
 					<div className="grid gap-4 md:grid-cols-3">
 						{COMPANY_LINKS.map((item) => (
 							<Link
-								className="rounded-2xl border border-border/60 bg-background p-5 text-left transition hover:border-primary/60 hover:shadow-lg"
+								className="border-border/60 bg-background hover:border-primary/60 rounded-2xl border p-5 text-left transition hover:shadow-lg"
 								href={item.href}
 								key={item.href}
 							>
-								<p className="font-semibold text-base text-foreground">
-									{item.label}
-								</p>
-								<p className="mt-2 text-muted-foreground text-sm">
-									Visit {item.label} →
-								</p>
+								<p className="text-foreground text-base font-semibold">{item.label}</p>
+								<p className="text-muted-foreground mt-2 text-sm">Visit {item.label} →</p>
 							</Link>
 						))}
 					</div>
 				</section>
 
-				<section className="mt-20 rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-background to-background p-10 text-center">
-					<p className="font-semibold text-primary text-sm uppercase tracking-wide">
+				<section className="border-border/60 from-primary/10 via-background to-background mt-20 rounded-3xl border bg-gradient-to-br p-10 text-center">
+					<p className="text-primary text-sm font-semibold tracking-wide uppercase">
 						Ready to build?
 					</p>
-					<h2 className="mt-2 font-bold text-3xl">
+					<h2 className="mt-2 text-3xl font-bold">
 						Create your account or schedule a working session
 					</h2>
-					<p className="mt-3 text-lg text-muted-foreground">
-						Thorbis is $100/month base plus usage, unlimited users, and data
-						exports whenever you like. No contracts, no surprise add-ons.
+					<p className="text-muted-foreground mt-3 text-lg">
+						Thorbis is $100/month base plus usage, unlimited users, and data exports whenever you
+						like. No contracts, no surprise add-ons.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">

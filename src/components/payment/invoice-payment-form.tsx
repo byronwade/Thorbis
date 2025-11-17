@@ -20,13 +20,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { processInvoicePayment } from "@/actions/payments/process-invoice-payment";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -38,12 +32,7 @@ type InvoicePaymentFormProps = {
 	customer: any;
 };
 
-export function InvoicePaymentForm({
-	invoice,
-	token,
-	company,
-	customer,
-}: InvoicePaymentFormProps) {
+export function InvoicePaymentForm({ invoice, token, company, customer }: InvoicePaymentFormProps) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 	const [paymentMethod, setPaymentMethod] = useState<"card" | "ach">("card");
@@ -55,14 +44,14 @@ export function InvoicePaymentForm({
 	const [cardExpiry, setCardExpiry] = useState("");
 	const [cardCvc, setCardCvc] = useState("");
 	const [cardName, setCardName] = useState(
-		customer.display_name || `${customer.first_name} ${customer.last_name}`,
+		customer.display_name || `${customer.first_name} ${customer.last_name}`
 	);
 
 	// ACH payment fields
 	const [accountNumber, setAccountNumber] = useState("");
 	const [routingNumber, setRoutingNumber] = useState("");
 	const [accountName, setAccountName] = useState(
-		customer.display_name || `${customer.first_name} ${customer.last_name}`,
+		customer.display_name || `${customer.first_name} ${customer.last_name}`
 	);
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -109,8 +98,7 @@ export function InvoicePaymentForm({
 					}, 2000);
 				} else {
 					toast.error("Payment failed", {
-						description:
-							result.error || "Unable to process payment. Please try again.",
+						description: result.error || "Unable to process payment. Please try again.",
 					});
 				}
 			} catch (_error) {
@@ -130,9 +118,7 @@ export function InvoicePaymentForm({
 					<div className="flex items-center gap-3">
 						<CheckCircle className="h-8 w-8 text-green-600" />
 						<div>
-							<CardTitle className="text-green-900">
-								Payment Successful!
-							</CardTitle>
+							<CardTitle className="text-green-900">Payment Successful!</CardTitle>
 							<CardDescription className="text-green-700">
 								Your payment has been processed successfully.
 							</CardDescription>
@@ -148,9 +134,7 @@ export function InvoicePaymentForm({
 			<Card>
 				<CardHeader>
 					<CardTitle>Payment Information</CardTitle>
-					<CardDescription>
-						Select your payment method and enter your details
-					</CardDescription>
+					<CardDescription>Select your payment method and enter your details</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{/* Payment Method Selection */}
@@ -162,20 +146,14 @@ export function InvoicePaymentForm({
 						>
 							<div className="flex items-center space-x-2">
 								<RadioGroupItem id="card" value="card" />
-								<Label
-									className="flex cursor-pointer items-center gap-2"
-									htmlFor="card"
-								>
+								<Label className="flex cursor-pointer items-center gap-2" htmlFor="card">
 									<CreditCard className="h-4 w-4" />
 									Credit or Debit Card
 								</Label>
 							</div>
 							<div className="flex items-center space-x-2">
 								<RadioGroupItem id="ach" value="ach" />
-								<Label
-									className="flex cursor-pointer items-center gap-2"
-									htmlFor="ach"
-								>
+								<Label className="flex cursor-pointer items-center gap-2" htmlFor="ach">
 									<Building2 className="h-4 w-4" />
 									Bank Account (ACH)
 								</Label>
@@ -203,8 +181,7 @@ export function InvoicePaymentForm({
 									maxLength={19}
 									onChange={(e) => {
 										const value = e.target.value.replace(/\s/g, "");
-										const formatted =
-											value.match(/.{1,4}/g)?.join(" ") || value;
+										const formatted = value.match(/.{1,4}/g)?.join(" ") || value;
 										setCardNumber(formatted);
 									}}
 									placeholder="1234 5678 9012 3456"
@@ -221,9 +198,7 @@ export function InvoicePaymentForm({
 										onChange={(e) => {
 											const value = e.target.value.replace(/\D/g, "");
 											if (value.length >= 2) {
-												setCardExpiry(
-													`${value.slice(0, 2)}/${value.slice(2, 4)}`,
-												);
+												setCardExpiry(`${value.slice(0, 2)}/${value.slice(2, 4)}`);
 											} else {
 												setCardExpiry(value);
 											}
@@ -238,9 +213,7 @@ export function InvoicePaymentForm({
 									<Input
 										id="cardCvc"
 										maxLength={4}
-										onChange={(e) =>
-											setCardCvc(e.target.value.replace(/\D/g, ""))
-										}
+										onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, ""))}
 										placeholder="123"
 										required
 										value={cardCvc}
@@ -268,9 +241,7 @@ export function InvoicePaymentForm({
 								<Input
 									id="routingNumber"
 									maxLength={9}
-									onChange={(e) =>
-										setRoutingNumber(e.target.value.replace(/\D/g, ""))
-									}
+									onChange={(e) => setRoutingNumber(e.target.value.replace(/\D/g, ""))}
 									placeholder="110000000"
 									required
 									value={routingNumber}
@@ -280,9 +251,7 @@ export function InvoicePaymentForm({
 								<Label htmlFor="accountNumber">Account Number</Label>
 								<Input
 									id="accountNumber"
-									onChange={(e) =>
-										setAccountNumber(e.target.value.replace(/\D/g, ""))
-									}
+									onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))}
 									placeholder="000123456789"
 									required
 									value={accountNumber}
@@ -292,12 +261,7 @@ export function InvoicePaymentForm({
 					)}
 
 					{/* Submit Button */}
-					<Button
-						className="w-full"
-						disabled={isProcessing || isPending}
-						size="lg"
-						type="submit"
-					>
+					<Button className="w-full" disabled={isProcessing || isPending} size="lg" type="submit">
 						{isProcessing || isPending ? (
 							<>
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />

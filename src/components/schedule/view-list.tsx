@@ -27,7 +27,7 @@ export default function ListView({
 					return s >= rangeStart && s < rangeEnd;
 				})
 				.sort((a, b) => compareAsc(new Date(a.start), new Date(b.start))),
-		[assignments, rangeStart, rangeEnd],
+		[assignments, rangeStart, rangeEnd]
 	);
 
 	function catOf(id: string) {
@@ -43,7 +43,7 @@ export default function ListView({
 				<div className="overflow-hidden rounded-xl border bg-white shadow-sm">
 					<table className="w-full border-collapse text-sm">
 						<thead className="sticky top-0 z-10 bg-white/80 backdrop-blur">
-							<tr className="border-b text-left text-neutral-600 text-xs">
+							<tr className="border-b text-left text-xs text-neutral-600">
 								<th className="px-3 py-2 font-medium">Date</th>
 								<th className="px-3 py-2 font-medium">Time</th>
 								<th className="px-3 py-2 font-medium">Title</th>
@@ -56,12 +56,9 @@ export default function ListView({
 								const cat = catOf(a.categoryId);
 								return (
 									<tr className="border-b last:border-0" key={a.id}>
-										<td className="px-3 py-2">
-											{format(new Date(a.start), "EEE, MMM d")}
-										</td>
+										<td className="px-3 py-2">{format(new Date(a.start), "EEE, MMM d")}</td>
 										<td className="px-3 py-2 text-neutral-600">
-											{format(new Date(a.start), "p")} –{" "}
-											{format(new Date(a.end), "p")}
+											{format(new Date(a.start), "p")} – {format(new Date(a.end), "p")}
 										</td>
 										<td className="px-3 py-2">{a.title}</td>
 										<td className="px-3 py-2">
@@ -79,10 +76,7 @@ export default function ListView({
 							})}
 							{rows.length === 0 && (
 								<tr>
-									<td
-										className="px-3 py-6 text-center text-neutral-500 text-xs"
-										colSpan={5}
-									>
+									<td className="px-3 py-6 text-center text-xs text-neutral-500" colSpan={5}>
 										No assignments in range
 									</td>
 								</tr>

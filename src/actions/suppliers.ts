@@ -1,10 +1,6 @@
 "use server";
 
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -19,10 +15,7 @@ export async function getSupplierIntegrations(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -39,11 +32,7 @@ export async function getSupplierIntegrations(): Promise<ActionResult<any[]>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Fetch supplier integrations
@@ -56,7 +45,7 @@ export async function getSupplierIntegrations(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch supplier integrations"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

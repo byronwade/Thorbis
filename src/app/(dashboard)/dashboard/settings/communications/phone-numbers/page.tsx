@@ -11,10 +11,7 @@
 
 import { Suspense } from "react";
 import { AppToolbar } from "@/components/layout/app-toolbar";
-import {
-	type PhoneNumberRecord,
-	PhoneNumbersList,
-} from "@/components/telnyx/phone-numbers-list";
+import { type PhoneNumberRecord, PhoneNumbersList } from "@/components/telnyx/phone-numbers-list";
 import { PhoneNumbersToolbar } from "@/components/telnyx/phone-numbers-toolbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { requireActiveCompany } from "@/lib/auth/company-context";
@@ -22,8 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
 	title: "Phone Numbers | Communications Settings",
-	description:
-		"Manage your company phone numbers, purchase new numbers, and port existing ones",
+	description: "Manage your company phone numbers, purchase new numbers, and port existing ones",
 };
 
 export default async function PhoneNumbersPage() {
@@ -54,7 +50,7 @@ export default async function PhoneNumbersPage() {
         created_at,
         metadata,
         porting_request_id
-      `,
+      `
 		)
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
@@ -96,8 +92,7 @@ function mapPhoneNumberRow(row: any): PhoneNumberRecord {
 	return {
 		id: row.id,
 		phoneNumber: row.phone_number,
-		formattedNumber:
-			row.formatted_number || formatDisplayPhoneNumber(row.phone_number ?? ""),
+		formattedNumber: row.formatted_number || formatDisplayPhoneNumber(row.phone_number ?? ""),
 		areaCode: row.area_code,
 		numberType: row.number_type,
 		status: row.status,

@@ -17,8 +17,7 @@ import { resolve } from "path";
 // Load .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
-const TELNYX_API_KEY =
-	process.env.TELNYX_API_KEY || process.env.TELNYX_API_SECRET;
+const TELNYX_API_KEY = process.env.TELNYX_API_KEY || process.env.TELNYX_API_SECRET;
 const TELNYX_API_URL = "https://api.telnyx.com/v2";
 
 async function listCredentialConnections() {
@@ -38,16 +37,13 @@ async function listCredentialConnections() {
 }
 
 async function deleteCredentialConnection(connectionId: string) {
-	const response = await fetch(
-		`${TELNYX_API_URL}/credential_connections/${connectionId}`,
-		{
-			method: "DELETE",
-			headers: {
-				Authorization: `Bearer ${TELNYX_API_KEY}`,
-				"Content-Type": "application/json",
-			},
+	const response = await fetch(`${TELNYX_API_URL}/credential_connections/${connectionId}`, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Bearer ${TELNYX_API_KEY}`,
+			"Content-Type": "application/json",
 		},
-	);
+	});
 
 	if (!response.ok) {
 		const error = await response.json();

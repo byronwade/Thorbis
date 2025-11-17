@@ -18,29 +18,23 @@ type FeaturePageProps = {
 export function FeaturePage({ feature }: FeaturePageProps) {
 	return (
 		<div className="space-y-16">
-			<section className="overflow-hidden rounded-3xl border bg-gradient-to-r from-primary/10 via-background to-background">
+			<section className="from-primary/10 via-background to-background overflow-hidden rounded-3xl border bg-gradient-to-r">
 				<div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
 					<div className="space-y-6 px-6 py-10 sm:px-10 lg:px-16">
-						<Badge className="uppercase tracking-wide" variant="secondary">
+						<Badge className="tracking-wide uppercase" variant="secondary">
 							{feature.heroEyebrow}
 						</Badge>
-						<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{feature.heroTitle}
 						</h1>
-						<p className="text-lg text-muted-foreground">
-							{feature.heroDescription}
-						</p>
+						<p className="text-muted-foreground text-lg">{feature.heroDescription}</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild size="lg">
-								<Link href={feature.primaryCta.href}>
-									{feature.primaryCta.label}
-								</Link>
+								<Link href={feature.primaryCta.href}>{feature.primaryCta.label}</Link>
 							</Button>
 							{feature.secondaryCta ? (
 								<Button asChild size="lg" variant="outline">
-									<Link href={feature.secondaryCta.href}>
-										{feature.secondaryCta.label}
-									</Link>
+									<Link href={feature.secondaryCta.href}>{feature.secondaryCta.label}</Link>
 								</Button>
 							) : null}
 						</div>
@@ -56,7 +50,7 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 								src={feature.heroImage}
 							/>
 						) : (
-							<div className="absolute inset-0 flex items-center justify-center bg-muted/40">
+							<div className="bg-muted/40 absolute inset-0 flex items-center justify-center">
 								<span className="text-6xl">✨</span>
 							</div>
 						)}
@@ -65,18 +59,16 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			</section>
 
 			<section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-				<div className="rounded-2xl border bg-muted/20 p-8">
-					<h2 className="font-semibold text-xl">Why teams choose Thorbis</h2>
-					<p className="mt-4 text-muted-foreground leading-relaxed">
-						{feature.summary}
-					</p>
+				<div className="bg-muted/20 rounded-2xl border p-8">
+					<h2 className="text-xl font-semibold">Why teams choose Thorbis</h2>
+					<p className="text-muted-foreground mt-4 leading-relaxed">{feature.summary}</p>
 				</div>
-				<div className="rounded-2xl border bg-background p-8">
-					<h3 className="font-semibold text-lg">Top challenges solved</h3>
-					<ul className="mt-4 space-y-3 text-muted-foreground">
+				<div className="bg-background rounded-2xl border p-8">
+					<h3 className="text-lg font-semibold">Top challenges solved</h3>
+					<ul className="text-muted-foreground mt-4 space-y-3">
 						{feature.painPoints.map((pain) => (
 							<li className="flex gap-3" key={pain}>
-								<span className="mt-1 text-primary">•</span>
+								<span className="text-primary mt-1">•</span>
 								<span>{pain}</span>
 							</li>
 						))}
@@ -85,18 +77,18 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			</section>
 
 			<section className="space-y-6">
-				<h2 className="font-semibold text-2xl">What’s included</h2>
+				<h2 className="text-2xl font-semibold">What’s included</h2>
 				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{feature.valueProps.map((prop) => {
 						const Icon = getMarketingIcon(prop.icon);
 						return (
 							<div
-								className="rounded-2xl border bg-muted/20 p-6 transition-shadow hover:shadow-md"
+								className="bg-muted/20 rounded-2xl border p-6 transition-shadow hover:shadow-md"
 								key={prop.title}
 							>
-								<Icon aria-hidden="true" className="mb-4 size-8 text-primary" />
-								<h3 className="font-semibold text-lg">{prop.title}</h3>
-								<p className="mt-2 text-muted-foreground text-sm leading-relaxed">
+								<Icon aria-hidden="true" className="text-primary mb-4 size-8" />
+								<h3 className="text-lg font-semibold">{prop.title}</h3>
+								<p className="text-muted-foreground mt-2 text-sm leading-relaxed">
 									{prop.description}
 								</p>
 							</div>
@@ -106,17 +98,17 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			</section>
 
 			<section className="grid gap-8 lg:grid-cols-2">
-				<div className="rounded-2xl border bg-background p-8">
-					<h2 className="font-semibold text-2xl">Key workflows</h2>
+				<div className="bg-background rounded-2xl border p-8">
+					<h2 className="text-2xl font-semibold">Key workflows</h2>
 					<div className="mt-4 space-y-6">
 						{feature.workflows.map((workflow) => (
 							<div className="space-y-2" key={workflow.title}>
-								<h3 className="font-semibold text-lg">{workflow.title}</h3>
+								<h3 className="text-lg font-semibold">{workflow.title}</h3>
 								<p className="text-muted-foreground text-sm leading-relaxed">
 									{workflow.description}
 								</p>
 								{workflow.steps ? (
-									<ul className="list-decimal space-y-1 pl-4 text-muted-foreground text-sm">
+									<ul className="text-muted-foreground list-decimal space-y-1 pl-4 text-sm">
 										{workflow.steps.map((step) => (
 											<li key={step}>{step}</li>
 										))}
@@ -126,29 +118,23 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 						))}
 					</div>
 				</div>
-				<div className="rounded-2xl border bg-muted/10 p-8">
-					<h2 className="font-semibold text-2xl">Performance impact</h2>
+				<div className="bg-muted/10 rounded-2xl border p-8">
+					<h2 className="text-2xl font-semibold">Performance impact</h2>
 					<dl className="mt-4 grid gap-4 sm:grid-cols-2">
 						{feature.stats.map((stat) => (
 							<div
-								className="rounded-xl border border-primary/30 border-dashed bg-background/80 p-4"
+								className="border-primary/30 bg-background/80 rounded-xl border border-dashed p-4"
 								key={stat.label}
 							>
-								<dt className="font-medium text-muted-foreground text-sm">
-									{stat.label}
-								</dt>
-								<dd className="font-semibold text-2xl text-primary">
-									{stat.value}
-								</dd>
-								<p className="mt-1 text-muted-foreground text-xs">
-									{stat.description}
-								</p>
+								<dt className="text-muted-foreground text-sm font-medium">{stat.label}</dt>
+								<dd className="text-primary text-2xl font-semibold">{stat.value}</dd>
+								<p className="text-muted-foreground mt-1 text-xs">{stat.description}</p>
 							</div>
 						))}
 					</dl>
 					{feature.integrations?.length ? (
 						<div className="mt-6">
-							<p className="font-medium text-muted-foreground text-sm">
+							<p className="text-muted-foreground text-sm font-medium">
 								Works with your existing tools
 							</p>
 							<div className="mt-2 flex flex-wrap gap-2">
@@ -164,11 +150,9 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			</section>
 
 			{feature.testimonial ? (
-				<section className="rounded-3xl border bg-primary/10 p-10 text-center">
-					<p className="font-semibold text-2xl text-primary">
-						“{feature.testimonial.quote}”
-					</p>
-					<p className="mt-4 text-muted-foreground">
+				<section className="bg-primary/10 rounded-3xl border p-10 text-center">
+					<p className="text-primary text-2xl font-semibold">“{feature.testimonial.quote}”</p>
+					<p className="text-muted-foreground mt-4">
 						— {feature.testimonial.attribution}
 						{feature.testimonial.role ? `, ${feature.testimonial.role}` : null}
 					</p>
@@ -176,13 +160,11 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			) : null}
 
 			<section className="space-y-4">
-				<h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+				<h2 className="text-2xl font-semibold">Frequently asked questions</h2>
 				<Accordion className="w-full" collapsible type="single">
 					{feature.faq.map((item, index) => (
 						<AccordionItem key={item.question} value={`faq-${index}`}>
-							<AccordionTrigger className="text-left">
-								{item.question}
-							</AccordionTrigger>
+							<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
 							<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 								{item.answer}
 							</AccordionContent>

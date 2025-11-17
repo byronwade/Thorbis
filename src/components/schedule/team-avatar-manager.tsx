@@ -29,8 +29,8 @@ export function TeamAvatar({
 			<Avatar
 				className={cn(
 					sizeClasses,
-					"border-2 border-card transition-all",
-					isHovered && "ring-2 ring-primary",
+					"border-card border-2 transition-all",
+					isHovered && "ring-primary ring-2"
 				)}
 				title={assignment.displayName}
 			>
@@ -41,9 +41,7 @@ export function TeamAvatar({
 						src={assignment.avatar}
 					/>
 				)}
-				<AvatarFallback
-					className={cn("bg-muted font-bold text-foreground", textSize)}
-				>
+				<AvatarFallback className={cn("bg-muted text-foreground font-bold", textSize)}>
 					{assignment.displayName
 						.split(" ")
 						.map((n) => n[0])
@@ -55,7 +53,7 @@ export function TeamAvatar({
 			{/* Remove button on hover */}
 			{isHovered && onRemove && (
 				<button
-					className="-right-1 -top-1 absolute flex size-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-md transition-transform hover:scale-110"
+					className="bg-destructive text-destructive-foreground absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full shadow-md transition-transform hover:scale-110"
 					onClick={(e) => {
 						e.stopPropagation();
 						onRemove();
@@ -85,30 +83,24 @@ export function TeamAvatarGroup({
 	jobId?: string;
 }) {
 	const [showAll, setShowAll] = useState(false);
-	const visibleAssignments = showAll
-		? assignments
-		: assignments.slice(0, maxVisible);
+	const visibleAssignments = showAll ? assignments : assignments.slice(0, maxVisible);
 	const remainingCount = assignments.length - maxVisible;
 
 	return (
 		<div className="flex shrink-0 items-center gap-1" data-job-id={jobId}>
-			<div className="-space-x-1.5 flex">
+			<div className="flex -space-x-1.5">
 				{visibleAssignments.map((assignment, idx) => (
 					<TeamAvatar
 						assignment={assignment}
 						key={idx}
-						onRemove={
-							onRemove
-								? () => onRemove(assignment.technicianId || "")
-								: undefined
-						}
+						onRemove={onRemove ? () => onRemove(assignment.technicianId || "") : undefined}
 						size={size}
 					/>
 				))}
 
 				{!showAll && remainingCount > 0 && (
 					<button
-						className="flex size-6 items-center justify-center rounded-full border-2 border-card bg-muted font-bold text-[8px] text-muted-foreground transition-all hover:bg-muted/80 hover:ring-2 hover:ring-primary"
+						className="border-card bg-muted text-muted-foreground hover:bg-muted/80 hover:ring-primary flex size-6 items-center justify-center rounded-full border-2 text-[8px] font-bold transition-all hover:ring-2"
 						onClick={(e) => {
 							e.stopPropagation();
 							setShowAll(true);
@@ -123,7 +115,7 @@ export function TeamAvatarGroup({
 			{/* Add member button */}
 			{onAddMember && (
 				<button
-					className="flex size-6 items-center justify-center rounded-full border-2 border-muted-foreground/30 border-dashed bg-muted/50 text-muted-foreground transition-all hover:border-primary hover:bg-primary/10 hover:text-primary"
+					className="border-muted-foreground/30 bg-muted/50 text-muted-foreground hover:border-primary hover:bg-primary/10 hover:text-primary flex size-6 items-center justify-center rounded-full border-2 border-dashed transition-all"
 					onClick={(e) => {
 						e.stopPropagation();
 						onAddMember();
@@ -131,7 +123,7 @@ export function TeamAvatarGroup({
 					title="Add team member"
 				>
 					<span
-						className="relative flex items-center justify-center font-bold text-base leading-none"
+						className="relative flex items-center justify-center text-base leading-none font-bold"
 						style={{ top: "-1px" }}
 					>
 						+

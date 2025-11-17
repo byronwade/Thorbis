@@ -53,11 +53,11 @@ export function SmartNotes() {
 	};
 
 	return (
-		<div className="flex h-full flex-col bg-background">
+		<div className="bg-background flex h-full flex-col">
 			{/* Header */}
-			<div className="flex items-center justify-between border-border border-b px-4 py-2">
+			<div className="border-border flex items-center justify-between border-b px-4 py-2">
 				<div className="flex items-center gap-2">
-					<h3 className="font-semibold text-sm">Call Notes</h3>
+					<h3 className="text-sm font-semibold">Call Notes</h3>
 					{isSaving ? (
 						<Badge className="gap-1 text-xs" variant="outline">
 							<Clock className="h-3 w-3 animate-spin" />
@@ -69,20 +69,15 @@ export function SmartNotes() {
 						</span>
 					) : null}
 				</div>
-				<Button
-					disabled={isSaving}
-					onClick={saveNotes}
-					size="sm"
-					variant="ghost"
-				>
+				<Button disabled={isSaving} onClick={saveNotes} size="sm" variant="ghost">
 					<Save className="h-3 w-3" />
 				</Button>
 			</div>
 
 			{/* Quick Snippets */}
-			<div className="border-border border-b bg-muted/50 p-2">
+			<div className="border-border bg-muted/50 border-b p-2">
 				<div className="mb-1 flex items-center gap-1">
-					<Sparkles className="h-3 w-3 text-muted-foreground" />
+					<Sparkles className="text-muted-foreground h-3 w-3" />
 					<span className="text-muted-foreground text-xs">Quick Snippets</span>
 				</div>
 				<div className="flex flex-wrap gap-1">

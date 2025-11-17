@@ -21,12 +21,7 @@ export function DetailBackButton({ href, label }: DetailBackButtonProps) {
 	const router = useRouter();
 
 	return (
-		<Button
-			className="h-8 gap-1.5"
-			onClick={() => router.push(href)}
-			size="sm"
-			variant="outline"
-		>
+		<Button className="h-8 gap-1.5" onClick={() => router.push(href)} size="sm" variant="outline">
 			<ArrowLeft className="size-4" />
 			{label}
 		</Button>

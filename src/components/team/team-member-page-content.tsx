@@ -29,13 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
@@ -89,10 +83,7 @@ export type TeamMemberPageContentProps = {
 	metrics: any;
 };
 
-export function TeamMemberPageContent({
-	entityData,
-	metrics,
-}: TeamMemberPageContentProps) {
+export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
@@ -124,19 +115,11 @@ export function TeamMemberPageContent({
 	};
 
 	const displayName = useMemo(
-		() =>
-			user?.name ||
-			localMember?.name ||
-			teamMember?.name ||
-			`${user?.email || "Unknown User"}`,
-		[user, localMember, teamMember],
+		() => user?.name || localMember?.name || teamMember?.name || `${user?.email || "Unknown User"}`,
+		[user, localMember, teamMember]
 	);
 
-	const memberStatus = (
-		localMember?.status ||
-		teamMember?.status ||
-		"active"
-	)?.toLowerCase();
+	const memberStatus = (localMember?.status || teamMember?.status || "active")?.toLowerCase();
 
 	const roleName =
 		localMember?.role?.name ||
@@ -145,8 +128,7 @@ export function TeamMemberPageContent({
 		teamMember?.job_title ||
 		"Team Member";
 
-	const departmentName =
-		localMember?.department?.name || teamMember?.department?.name || null;
+	const departmentName = localMember?.department?.name || teamMember?.department?.name || null;
 
 	const memberSince =
 		localMember?.joined_at ??
@@ -155,8 +137,7 @@ export function TeamMemberPageContent({
 		teamMember?.created_at ??
 		null;
 
-	const lastActive =
-		localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
+	const lastActive = localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
 
 	// Save changes
 	const handleSave = async () => {
@@ -179,9 +160,7 @@ export function TeamMemberPageContent({
 	};
 
 	// Get status badge variant
-	const getStatusBadgeVariant = (
-		status: string,
-	): "default" | "secondary" | "destructive" => {
+	const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" => {
 		switch (status) {
 			case "active":
 				return "default";
@@ -199,10 +178,7 @@ export function TeamMemberPageContent({
 		<Badge className="font-mono" key="identifier" variant="outline">
 			#{teamMember?.id?.slice(0, 8).toUpperCase() || "MEMBER"}
 		</Badge>,
-		<Badge
-			key="status"
-			variant={getStatusBadgeVariant(memberStatus || "active")}
-		>
+		<Badge key="status" variant={getStatusBadgeVariant(memberStatus || "active")}>
 			{memberStatus === "active"
 				? "Active"
 				: memberStatus === "invited"
@@ -244,24 +220,21 @@ export function TeamMemberPageContent({
 			key: "assign-job",
 			label: "Assign Job",
 			icon: Wrench,
-			onClick: () =>
-				router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
+			onClick: () => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "view-schedule",
 			label: "View Schedule",
 			icon: Calendar,
 			variant: "secondary" as const,
-			onClick: () =>
-				router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
+			onClick: () => router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "edit-permissions",
 			label: "Edit Permissions",
 			icon: Shield,
 			variant: "outline" as const,
-			onClick: () =>
-				router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
+			onClick: () => router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
 		},
 	] as const;
 
@@ -270,12 +243,7 @@ export function TeamMemberPageContent({
 			const { key, label, icon: Icon, onClick } = config;
 			const variant = "variant" in config ? config.variant : undefined;
 			return (
-				<Button
-					key={key}
-					onClick={onClick}
-					size="sm"
-					variant={variant ?? "default"}
-				>
+				<Button key={key} onClick={onClick} size="sm" variant={variant ?? "default"}>
 					<Icon className="mr-2 h-4 w-4" />
 					{label}
 				</Button>
@@ -308,15 +276,13 @@ export function TeamMemberPageContent({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-56">
-						<DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+						<DropdownMenuLabel className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 							Actions
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 
 						<DropdownMenuItem
-							onClick={() =>
-								router.push(`/dashboard/settings/team/${teamMember.id}`)
-							}
+							onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)}
 						>
 							<UserCog className="mr-2 size-3.5" />
 							Edit Full Profile
@@ -403,7 +369,7 @@ export function TeamMemberPageContent({
 			{lastActive ? (
 				<>
 					<span aria-hidden="true">•</span>
-					<span className="inline-flex items-center gap-1 text-muted-foreground">
+					<span className="text-muted-foreground inline-flex items-center gap-1">
 						<Clock className="h-4 w-4" />
 						Active {formatDate(lastActive, "relative")}
 					</span>
@@ -504,44 +470,38 @@ export function TeamMemberPageContent({
 		<DetailPageSurface padding="lg" variant="muted">
 			<div className="flex flex-col gap-6">
 				<div className="flex flex-col gap-3">
-					<Label className="font-medium text-muted-foreground text-xs uppercase">
+					<Label className="text-muted-foreground text-xs font-medium uppercase">
 						Display Name
 					</Label>
 					<Input
 						className={cn(
-							"h-12 rounded-lg border border-border/40 bg-background px-4 font-semibold text-xl shadow-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:text-2xl",
+							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl"
 						)}
 						onChange={(e) => handleFieldChange("name", e.target.value)}
 						placeholder="Enter member name..."
 						value={displayName}
 					/>
 					<p className="text-muted-foreground text-xs">
-						Update how this team member appears across Thorbis. Changes are
-						saved when you select Save changes.
+						Update how this team member appears across Thorbis. Changes are saved when you select
+						Save changes.
 					</p>
 				</div>
 
 				<div className="grid gap-3 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
-						<div
-							className="rounded-lg border border-border/40 bg-background px-3 py-3"
-							key={key}
-						>
+						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
 							<div className="flex items-center gap-3">
-								<Icon className="h-4 w-4 text-muted-foreground" />
+								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">
+									<span className="text-muted-foreground text-xs font-medium uppercase">
 										{label}
 									</span>
 									{href ? (
-										<a
-											className="font-semibold text-sm hover:underline"
-											href={href}
-										>
+										<a className="text-sm font-semibold hover:underline" href={href}>
 											{value}
 										</a>
 									) : (
-										<span className="font-semibold text-sm">{value}</span>
+										<span className="text-sm font-semibold">{value}</span>
 									)}
 								</div>
 							</div>
@@ -551,17 +511,14 @@ export function TeamMemberPageContent({
 
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
-						<div
-							className="rounded-lg border border-border/40 bg-background px-3 py-3"
-							key={key}
-						>
+						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
 							<div className="flex items-center gap-3">
-								<Icon className="h-4 w-4 text-muted-foreground" />
+								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
-									<span className="font-medium text-muted-foreground text-xs uppercase">
+									<span className="text-muted-foreground text-xs font-medium uppercase">
 										{label}
 									</span>
-									<span className="font-semibold text-sm">{value}</span>
+									<span className="text-sm font-semibold">{value}</span>
 								</div>
 							</div>
 						</div>
@@ -586,12 +543,7 @@ export function TeamMemberPageContent({
 									<div className="space-y-2">
 										<Label htmlFor="email">Email</Label>
 										<div className="flex gap-2">
-											<Input
-												id="email"
-												readOnly
-												type="email"
-												value={user?.email || ""}
-											/>
+											<Input id="email" readOnly type="email" value={user?.email || ""} />
 											{user?.email && (
 												<Button asChild size="icon" variant="outline">
 													<a href={`mailto:${user.email}`}>
@@ -606,9 +558,7 @@ export function TeamMemberPageContent({
 										<div className="flex gap-2">
 											<Input
 												id="phone"
-												onChange={(e) =>
-													handleFieldChange("phone", e.target.value)
-												}
+												onChange={(e) => handleFieldChange("phone", e.target.value)}
 												type="tel"
 												value={localMember.phone || ""}
 											/>
@@ -627,9 +577,7 @@ export function TeamMemberPageContent({
 										<Label htmlFor="job_title">Job Title</Label>
 										<Input
 											id="job_title"
-											onChange={(e) =>
-												handleFieldChange("job_title", e.target.value)
-											}
+											onChange={(e) => handleFieldChange("job_title", e.target.value)}
 											value={localMember.job_title || ""}
 										/>
 									</div>
@@ -637,9 +585,7 @@ export function TeamMemberPageContent({
 										<Label htmlFor="notes">Notes</Label>
 										<Textarea
 											id="notes"
-											onChange={(e) =>
-												handleFieldChange("notes", e.target.value)
-											}
+											onChange={(e) => handleFieldChange("notes", e.target.value)}
 											placeholder="Internal notes about this team member"
 											rows={3}
 											value={localMember.notes || ""}
@@ -668,8 +614,8 @@ export function TeamMemberPageContent({
 								{certifications.map((cert: any) => (
 									<div className="rounded-lg border p-4" key={cert.id}>
 										<div className="flex items-center gap-3">
-											<div className="rounded-md bg-primary/10 p-2">
-												<Award className="h-4 w-4 text-primary" />
+											<div className="bg-primary/10 rounded-md p-2">
+												<Award className="text-primary h-4 w-4" />
 											</div>
 											<div>
 												<p className="font-medium">{cert.name}</p>
@@ -688,20 +634,15 @@ export function TeamMemberPageContent({
 												<p
 													className={cn(
 														"text-muted-foreground",
-														new Date(cert.expiry_date) < new Date() &&
-															"text-destructive",
+														new Date(cert.expiry_date) < new Date() && "text-destructive"
 													)}
 												>
-													{new Date(cert.expiry_date) < new Date()
-														? "Expired"
-														: "Expires"}
-													: {formatDate(cert.expiry_date, "short")}
+													{new Date(cert.expiry_date) < new Date() ? "Expired" : "Expires"}:{" "}
+													{formatDate(cert.expiry_date, "short")}
 												</p>
 											)}
 											{cert.credential_id && (
-												<p className="text-muted-foreground">
-													ID: {cert.credential_id}
-												</p>
+												<p className="text-muted-foreground">ID: {cert.credential_id}</p>
 											)}
 										</div>
 									</div>
@@ -709,8 +650,8 @@ export function TeamMemberPageContent({
 							</div>
 						) : (
 							<div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
-								<Award className="h-6 w-6 text-muted-foreground" />
-								<p className="mt-2 text-muted-foreground text-sm">
+								<Award className="text-muted-foreground h-6 w-6" />
+								<p className="text-muted-foreground mt-2 text-sm">
 									No certifications on record for this team member yet.
 								</p>
 							</div>
@@ -725,9 +666,7 @@ export function TeamMemberPageContent({
 				count: assignedJobs.length,
 				actions: (
 					<Button
-						onClick={() =>
-							router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)
-						}
+						onClick={() => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)}
 						size="sm"
 						variant="outline"
 					>
@@ -736,7 +675,7 @@ export function TeamMemberPageContent({
 				),
 				content: (
 					<UnifiedAccordionContent className="p-0">
-						<div className="border-b px-6 py-4 text-muted-foreground text-sm">
+						<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 							Jobs currently assigned to this team member.
 						</div>
 						{assignedJobs.length > 0 ? (
@@ -768,9 +707,7 @@ export function TeamMemberPageContent({
 
 										return (
 											<TableRow key={assignment.id}>
-												<TableCell className="font-mono">
-													#{job.job_number}
-												</TableCell>
+												<TableCell className="font-mono">#{job.job_number}</TableCell>
 												<TableCell>{job.title || "Untitled Job"}</TableCell>
 												<TableCell>{customerName}</TableCell>
 												<TableCell>
@@ -793,11 +730,11 @@ export function TeamMemberPageContent({
 							</Table>
 						) : (
 							<div className="flex flex-col items-center justify-center p-8 text-center">
-								<Wrench className="mb-3 size-12 text-muted-foreground/50" />
-								<p className="font-medium text-muted-foreground text-sm">
+								<Wrench className="text-muted-foreground/50 mb-3 size-12" />
+								<p className="text-muted-foreground text-sm font-medium">
 									No jobs currently assigned
 								</p>
-								<p className="mt-1 text-muted-foreground text-xs">
+								<p className="text-muted-foreground mt-1 text-xs">
 									Assign jobs to track this member's work
 								</p>
 							</div>
@@ -812,7 +749,7 @@ export function TeamMemberPageContent({
 				count: timeEntries.length,
 				content: (
 					<UnifiedAccordionContent className="p-0">
-						<div className="border-b px-6 py-4 text-muted-foreground text-sm">
+						<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 							Recent time entries and clock in/out history.
 						</div>
 						{timeEntries.length > 0 ? (
@@ -829,9 +766,7 @@ export function TeamMemberPageContent({
 								<TableBody>
 									{timeEntries.slice(0, 20).map((entry: any) => (
 										<TableRow key={entry.id}>
-											<TableCell>
-												{formatDate(entry.clock_in, "short")}
-											</TableCell>
+											<TableCell>{formatDate(entry.clock_in, "short")}</TableCell>
 											<TableCell>
 												{entry.job ? (
 													<Link
@@ -844,9 +779,7 @@ export function TeamMemberPageContent({
 													"No job"
 												)}
 											</TableCell>
-											<TableCell>
-												{new Date(entry.clock_in).toLocaleTimeString()}
-											</TableCell>
+											<TableCell>{new Date(entry.clock_in).toLocaleTimeString()}</TableCell>
 											<TableCell>
 												{entry.clock_out ? (
 													new Date(entry.clock_out).toLocaleTimeString()
@@ -855,9 +788,7 @@ export function TeamMemberPageContent({
 												)}
 											</TableCell>
 											<TableCell>
-												{entry.total_hours
-													? `${entry.total_hours.toFixed(2)}h`
-													: "—"}
+												{entry.total_hours ? `${entry.total_hours.toFixed(2)}h` : "—"}
 											</TableCell>
 										</TableRow>
 									))}
@@ -865,11 +796,11 @@ export function TeamMemberPageContent({
 							</Table>
 						) : (
 							<div className="flex flex-col items-center justify-center p-8 text-center">
-								<Clock className="mb-3 size-12 text-muted-foreground/50" />
-								<p className="font-medium text-muted-foreground text-sm">
+								<Clock className="text-muted-foreground/50 mb-3 size-12" />
+								<p className="text-muted-foreground text-sm font-medium">
 									No time entries recorded
 								</p>
-								<p className="mt-1 text-muted-foreground text-xs">
+								<p className="text-muted-foreground mt-1 text-xs">
 									Time entries will appear here when work begins
 								</p>
 							</div>
@@ -884,44 +815,38 @@ export function TeamMemberPageContent({
 				content: (
 					<UnifiedAccordionContent>
 						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-							<div className="rounded-lg border bg-card p-4">
+							<div className="bg-card rounded-lg border p-4">
 								<div className="flex items-center gap-3">
-									<div className="rounded-md bg-primary/10 p-2">
-										<Wrench className="h-4 w-4 text-primary" />
+									<div className="bg-primary/10 rounded-md p-2">
+										<Wrench className="text-primary h-4 w-4" />
 									</div>
 									<div>
-										<p className="text-muted-foreground text-sm">
-											Jobs Completed
-										</p>
-										<p className="mt-1 font-bold text-2xl">
-											{metrics?.completedJobs ?? 0}
-										</p>
+										<p className="text-muted-foreground text-sm">Jobs Completed</p>
+										<p className="mt-1 text-2xl font-bold">{metrics?.completedJobs ?? 0}</p>
 									</div>
 								</div>
 							</div>
-							<div className="rounded-lg border bg-card p-4">
+							<div className="bg-card rounded-lg border p-4">
 								<div className="flex items-center gap-3">
-									<div className="rounded-md bg-primary/10 p-2">
-										<Clock className="h-4 w-4 text-primary" />
+									<div className="bg-primary/10 rounded-md p-2">
+										<Clock className="text-primary h-4 w-4" />
 									</div>
 									<div>
 										<p className="text-muted-foreground text-sm">Total Hours</p>
-										<p className="mt-1 font-bold text-2xl">
+										<p className="mt-1 text-2xl font-bold">
 											{Math.floor(metrics?.totalHours ?? 0)}h
 										</p>
 									</div>
 								</div>
 							</div>
-							<div className="rounded-lg border bg-card p-4">
+							<div className="bg-card rounded-lg border p-4">
 								<div className="flex items-center gap-3">
-									<div className="rounded-md bg-primary/10 p-2">
-										<TrendingUp className="h-4 w-4 text-primary" />
+									<div className="bg-primary/10 rounded-md p-2">
+										<TrendingUp className="text-primary h-4 w-4" />
 									</div>
 									<div>
 										<p className="text-muted-foreground text-sm">Active Jobs</p>
-										<p className="mt-1 font-bold text-2xl">
-											{metrics?.activeJobs ?? 0}
-										</p>
+										<p className="mt-1 text-2xl font-bold">{metrics?.activeJobs ?? 0}</p>
 									</div>
 								</div>
 							</div>
@@ -936,9 +861,7 @@ export function TeamMemberPageContent({
 				count: permissions?.length ?? 0,
 				actions: (
 					<Button
-						onClick={() =>
-							router.push(`/dashboard/settings/team/${teamMember.id}`)
-						}
+						onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)}
 						size="sm"
 						variant="outline"
 					>
@@ -949,13 +872,12 @@ export function TeamMemberPageContent({
 					<UnifiedAccordionContent>
 						<div className="rounded-lg border p-4">
 							<p className="text-muted-foreground text-sm">
-								Permissions are managed at the role level. This team member has
-								the <strong>{roleName}</strong> role
+								Permissions are managed at the role level. This team member has the{" "}
+								<strong>{roleName}</strong> role
 								{departmentName ? (
 									<>
 										{" "}
-										and is assigned to the <strong>{departmentName}</strong>{" "}
-										department
+										and is assigned to the <strong>{departmentName}</strong> department
 									</>
 								) : (
 									""
@@ -964,7 +886,7 @@ export function TeamMemberPageContent({
 							</p>
 							{permissions && permissions.length > 0 && (
 								<div className="mt-4">
-									<p className="mb-2 font-medium text-sm">
+									<p className="mb-2 text-sm font-medium">
 										Role Permissions ({permissions.length}):
 									</p>
 									<div className="flex flex-wrap gap-2">
@@ -974,9 +896,7 @@ export function TeamMemberPageContent({
 											</Badge>
 										))}
 										{permissions.length > 10 && (
-											<Badge variant="outline">
-												+{permissions.length - 10} more
-											</Badge>
+											<Badge variant="outline">+{permissions.length - 10} more</Badge>
 										)}
 									</div>
 								</div>

@@ -54,10 +54,7 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
+	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const NET_TERMS_MS = NET_TERMS_DAYS * MILLISECONDS_PER_DAY;
 const SENT_DATE_DAYS = 60;
 const VIEWED_DATE_DAYS = 50;
@@ -170,17 +167,11 @@ function generateInvoiceNumber(index: number): string {
 	return `INV-${year}${month}-${sequence}`;
 }
 
-function generatePaymentNumber(
-	invoiceIndex: number,
-	paymentIndex: number,
-): string {
+function generatePaymentNumber(invoiceIndex: number, paymentIndex: number): string {
 	const date = new Date();
 	const year = date.getFullYear();
 	const month = String(date.getMonth() + 1).padStart(2, "0");
-	const invoiceSequence = String(invoiceIndex).padStart(
-		SEQUENCE_PAD_LENGTH,
-		"0",
-	);
+	const invoiceSequence = String(invoiceIndex).padStart(SEQUENCE_PAD_LENGTH, "0");
 	return `PAY-${year}${month}-${invoiceSequence}-${paymentIndex}`;
 }
 
@@ -191,13 +182,10 @@ function generatePaymentNumber(
 function splitAmountIntoPayments(
 	totalAmount: number,
 	numPayments: number,
-	isPartialPaid = false,
+	isPartialPaid = false
 ): number[] {
 	const targetAmount = isPartialPaid
-		? Math.floor(
-				totalAmount *
-					(PARTIAL_MIN_PERCENT + Math.random() * PARTIAL_RANGE_PERCENT),
-			) // 50-90% paid
+		? Math.floor(totalAmount * (PARTIAL_MIN_PERCENT + Math.random() * PARTIAL_RANGE_PERCENT)) // 50-90% paid
 		: totalAmount;
 
 	const payments: number[] = [];
@@ -250,8 +238,7 @@ async function generateInvoicesAndPayments() {
 function initializeSupabaseClient(): SupabaseClientType {
 	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 	const supabaseKey =
-		process.env.SUPABASE_SERVICE_ROLE_KEY ||
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+		process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 	if (!(supabaseUrl && supabaseKey)) {
 		console.error("\n❌ Missing Supabase credentials!");
@@ -282,9 +269,7 @@ async function fetchCompanyId(supabase: SupabaseClientType): Promise<string> {
 	return data.id;
 }
 
-async function fetchCustomers(
-	supabase: SupabaseClientType,
-): Promise<CustomerRecord[]> {
+async function fetchCustomers(supabase: SupabaseClientType): Promise<CustomerRecord[]> {
 	const { data, error } = await supabase
 		.from<CustomerRecord>("customers")
 		.select("id")
@@ -298,10 +283,7 @@ async function fetchCustomers(
 	return data;
 }
 
-function buildInvoicesAndPayments(
-	companyId: string,
-	customers: CustomerRecord[],
-) {
+function buildInvoicesAndPayments(companyId: string, customers: CustomerRecord[]) {
 	console.log(`📝 Generating ${TOTAL_INVOICES} invoices...`);
 
 	const invoices: InvoiceInsert[] = [];
@@ -323,18 +305,11 @@ function buildInvoicesAndPayments(
 	return { invoices, payments };
 }
 
-function createInvoiceData(
-	index: number,
-	companyId: string,
-	customers: CustomerRecord[],
-) {
+function createInvoiceData(index: number, companyId: string, customers: CustomerRecord[]) {
 	const totalAmount = randomInt(MIN_INVOICE_AMOUNT, MAX_INVOICE_AMOUNT);
 	const subtotal = Math.floor(totalAmount / SALES_TAX_DIVISOR);
 	const taxAmount = totalAmount - subtotal;
-	const numPayments = randomInt(
-		MIN_PAYMENTS_PER_INVOICE,
-		MAX_PAYMENTS_PER_INVOICE,
-	);
+	const numPayments = randomInt(MIN_PAYMENTS_PER_INVOICE, MAX_PAYMENTS_PER_INVOICE);
 	const invoiceStatus = randomElement(INVOICE_STATUSES);
 	const isPartialPaid = invoiceStatus === "partial";
 	const isSent = invoiceStatus === "sent";
@@ -374,8 +349,7 @@ function createInvoiceData(
 		],
 		sent_at: randomRecentDate(SENT_DATE_DAYS).toISOString(),
 		viewed_at: randomRecentDate(VIEWED_DATE_DAYS).toISOString(),
-		paid_at:
-			amountDue === 0 ? randomRecentDate(PAID_DATE_DAYS).toISOString() : null,
+		paid_at: amountDue === 0 ? randomRecentDate(PAID_DATE_DAYS).toISOString() : null,
 		created_at: randomRecentDate(CREATED_DATE_DAYS).toISOString(),
 	};
 
@@ -398,14 +372,12 @@ function createPaymentData(
 	invoiceIndex: number,
 	invoice: InvoiceInsert,
 	paymentAmounts: number[],
-	companyId: string,
+	companyId: string
 ) {
 	const payments: PaymentInsert[] = [];
 
 	paymentAmounts.forEach((amount, paymentIndex) => {
-		const processorFee = Math.floor(
-			amount * PROCESSOR_PERCENT_FEE + PROCESSOR_FIXED_FEE_CENTS,
-		);
+		const processorFee = Math.floor(amount * PROCESSOR_PERCENT_FEE + PROCESSOR_FIXED_FEE_CENTS);
 		payments.push({
 			id: crypto.randomUUID(),
 			company_id: companyId,
@@ -440,10 +412,7 @@ function createPaymentData(
 	return payments;
 }
 
-async function insertInvoices(
-	supabase: SupabaseClientType,
-	invoices: InvoiceInsert[],
-) {
+async function insertInvoices(supabase: SupabaseClientType, invoices: InvoiceInsert[]) {
 	console.log("💾 Inserting invoices into database...");
 
 	const batchSize = 100;
@@ -454,10 +423,7 @@ async function insertInvoices(
 		const { error } = await supabase.from("invoices").insert(batch);
 
 		if (error) {
-			console.error(
-				`❌ Error inserting invoice batch ${i / batchSize + 1}:`,
-				error,
-			);
+			console.error(`❌ Error inserting invoice batch ${i / batchSize + 1}:`, error);
 			throw error;
 		}
 
@@ -468,10 +434,7 @@ async function insertInvoices(
 	console.log("✅ All invoices inserted\n");
 }
 
-async function insertPayments(
-	supabase: SupabaseClientType,
-	payments: PaymentInsert[],
-) {
+async function insertPayments(supabase: SupabaseClientType, payments: PaymentInsert[]) {
 	console.log("💾 Inserting payments into database...");
 
 	const batchSize = 100;
@@ -482,10 +445,7 @@ async function insertPayments(
 		const { error } = await supabase.from("payments").insert(batch);
 
 		if (error) {
-			console.error(
-				`❌ Error inserting payment batch ${i / batchSize + 1}:`,
-				error,
-			);
+			console.error(`❌ Error inserting payment batch ${i / batchSize + 1}:`, error);
 			throw error;
 		}
 
@@ -499,51 +459,37 @@ async function insertPayments(
 function logSummary(invoices: InvoiceInsert[], payments: PaymentInsert[]) {
 	console.log("📊 Generation Summary:");
 	console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-	console.log(
-		`✅ Invoices created:        ${invoices.length.toLocaleString()}`,
-	);
-	console.log(
-		`✅ Payments created:        ${payments.length.toLocaleString()}`,
-	);
-	console.log(
-		`✅ Avg payments/invoice:    ${(payments.length / invoices.length).toFixed(1)}`,
-	);
+	console.log(`✅ Invoices created:        ${invoices.length.toLocaleString()}`);
+	console.log(`✅ Payments created:        ${payments.length.toLocaleString()}`);
+	console.log(`✅ Avg payments/invoice:    ${(payments.length / invoices.length).toFixed(1)}`);
 
-	const totalInvoiceAmount = invoices.reduce(
-		(sum, inv) => sum + inv.total_amount,
-		0,
-	);
+	const totalInvoiceAmount = invoices.reduce((sum, inv) => sum + inv.total_amount, 0);
 	const totalPaymentAmount = payments.reduce((sum, pay) => sum + pay.amount, 0);
-	const totalAmountPaid = invoices.reduce(
-		(sum, inv) => sum + inv.amount_paid,
-		0,
-	);
+	const totalAmountPaid = invoices.reduce((sum, inv) => sum + inv.amount_paid, 0);
 
 	console.log(
-		`💰 Total invoice amount:    $${(totalInvoiceAmount / CENTS_IN_DOLLAR).toLocaleString()}`,
+		`💰 Total invoice amount:    $${(totalInvoiceAmount / CENTS_IN_DOLLAR).toLocaleString()}`
 	);
 	console.log(
-		`💰 Total payments made:     $${(totalPaymentAmount / CENTS_IN_DOLLAR).toLocaleString()}`,
+		`💰 Total payments made:     $${(totalPaymentAmount / CENTS_IN_DOLLAR).toLocaleString()}`
 	);
 	console.log(
-		`💰 Total amount paid:       $${(totalAmountPaid / CENTS_IN_DOLLAR).toLocaleString()}`,
+		`💰 Total amount paid:       $${(totalAmountPaid / CENTS_IN_DOLLAR).toLocaleString()}`
 	);
 
 	const paidInvoices = invoices.filter((inv) => inv.status === "paid").length;
-	const partialInvoices = invoices.filter(
-		(inv) => inv.status === "partial",
-	).length;
+	const partialInvoices = invoices.filter((inv) => inv.status === "partial").length;
 	const sentInvoices = invoices.filter((inv) => inv.status === "sent").length;
 
 	console.log("\n📈 Invoice Status Breakdown:");
 	console.log(
-		`   Paid:        ${paidInvoices} (${((paidInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`,
+		`   Paid:        ${paidInvoices} (${((paidInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`
 	);
 	console.log(
-		`   Partial:     ${partialInvoices} (${((partialInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`,
+		`   Partial:     ${partialInvoices} (${((partialInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`
 	);
 	console.log(
-		`   Sent:        ${sentInvoices} (${((sentInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`,
+		`   Sent:        ${sentInvoices} (${((sentInvoices / invoices.length) * PERCENT_FACTOR).toFixed(STATUS_PERCENT_DECIMALS)}%)`
 	);
 
 	console.log("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");

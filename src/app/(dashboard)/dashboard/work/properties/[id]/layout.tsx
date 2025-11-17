@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function PropertiesDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function PropertiesDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -31,12 +27,7 @@ export default function PropertiesDetailLayout({
 		},
 		toolbar: {
 			show: true,
-			back: (
-				<DetailBackButton
-					href="/dashboard/work/properties"
-					label="Properties"
-				/>
-			),
+			back: <DetailBackButton href="/dashboard/work/properties" label="Properties" />,
 			// TODO: Create PropertyDetailToolbar component
 			// actions: <PropertyDetailToolbar />,
 		},

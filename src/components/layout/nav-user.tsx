@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	BadgeCheck,
-	Bell,
-	ChevronsUpDown,
-	CreditCard,
-	LogOut,
-	Sparkles,
-} from "lucide-react";
+import { BadgeCheck, Bell, ChevronsUpDown, CreditCard, LogOut, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { type UserStatus, updateUserStatus } from "@/actions/user-status";
@@ -42,9 +35,7 @@ export function NavUser({
 	const { isMobile } = useSidebar();
 	const router = useRouter();
 	const [mounted, setMounted] = useState(false);
-	const [userStatus, setUserStatus] = useState<UserStatus>(
-		user.status || "online",
-	);
+	const [userStatus, setUserStatus] = useState<UserStatus>(user.status || "online");
 	const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
 	useEffect(() => {
@@ -81,14 +72,12 @@ export function NavUser({
 										.join("")}
 								</AvatarFallback>
 							</Avatar>
-							<div className="-bottom-0.5 -right-0.5 absolute">
+							<div className="absolute -right-0.5 -bottom-0.5">
 								<StatusIndicator size="sm" status={userStatus} />
 							</div>
 						</div>
 						<div className="grid flex-1 text-left leading-[1.2]">
-							<span className="truncate font-semibold text-sm">
-								{user.name}
-							</span>
+							<span className="truncate text-sm font-semibold">{user.name}</span>
 							<span className="truncate text-xs">{user.email}</span>
 						</div>
 						<ChevronsUpDown className="ml-auto size-4" />
@@ -104,7 +93,7 @@ export function NavUser({
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<SidebarMenuButton
-							className="h-10 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+							className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-10"
 							size="lg"
 						>
 							<div className="relative">
@@ -117,14 +106,12 @@ export function NavUser({
 											.join("")}
 									</AvatarFallback>
 								</Avatar>
-								<div className="-bottom-0.5 -right-0.5 absolute">
+								<div className="absolute -right-0.5 -bottom-0.5">
 									<StatusIndicator size="sm" status={userStatus} />
 								</div>
 							</div>
 							<div className="grid flex-1 text-left leading-[1.2]">
-								<span className="truncate font-semibold text-sm">
-									{user.name}
-								</span>
+								<span className="truncate text-sm font-semibold">{user.name}</span>
 								<span className="truncate text-xs">{user.email}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto size-4" />
@@ -148,7 +135,7 @@ export function NavUser({
 												.join("")}
 										</AvatarFallback>
 									</Avatar>
-									<div className="-bottom-0.5 -right-0.5 absolute">
+									<div className="absolute -right-0.5 -bottom-0.5">
 										<StatusIndicator size="md" status={userStatus} />
 									</div>
 								</div>
@@ -161,13 +148,11 @@ export function NavUser({
 						<DropdownMenuSeparator />
 
 						{/* Status Selector */}
-						<DropdownMenuLabel className="text-muted-foreground text-xs">
-							Status
-						</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-muted-foreground text-xs">Status</DropdownMenuLabel>
 						<div className="px-2 pb-2">
 							<div className="space-y-1">
 								<button
-									className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+									className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 										userStatus === "online" ? "bg-accent" : ""
 									}`}
 									disabled={isUpdatingStatus}
@@ -177,11 +162,11 @@ export function NavUser({
 									<StatusIndicator size="md" status="online" />
 									<span>Online</span>
 									{userStatus === "online" && (
-										<div className="ml-auto size-2 rounded-full bg-primary" />
+										<div className="bg-primary ml-auto size-2 rounded-full" />
 									)}
 								</button>
 								<button
-									className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+									className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 										userStatus === "available" ? "bg-accent" : ""
 									}`}
 									disabled={isUpdatingStatus}
@@ -191,11 +176,11 @@ export function NavUser({
 									<StatusIndicator size="md" status="available" />
 									<span>Available</span>
 									{userStatus === "available" && (
-										<div className="ml-auto size-2 rounded-full bg-primary" />
+										<div className="bg-primary ml-auto size-2 rounded-full" />
 									)}
 								</button>
 								<button
-									className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent ${
+									className={`hover:bg-accent flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors ${
 										userStatus === "busy" ? "bg-accent" : ""
 									}`}
 									disabled={isUpdatingStatus}
@@ -205,7 +190,7 @@ export function NavUser({
 									<StatusIndicator size="md" status="busy" />
 									<span>Busy</span>
 									{userStatus === "busy" && (
-										<div className="ml-auto size-2 rounded-full bg-primary" />
+										<div className="bg-primary ml-auto size-2 rounded-full" />
 									)}
 								</button>
 							</div>

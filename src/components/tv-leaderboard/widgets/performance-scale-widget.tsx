@@ -71,19 +71,15 @@ function getPerformanceLevel(score: number): { level: string; color: string } {
 	return { level: "Needs Work", color: "text-destructive" };
 }
 
-export function PerformanceScaleWidget({
-	data = DEFAULT_DATA,
-}: PerformanceScaleWidgetProps) {
+export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScaleWidgetProps) {
 	const scoreChange = data.currentScore - data.previousScore;
 	const scoreColor = getScoreColor(data.currentScore);
-	const { level: performanceLevel, color: levelColor } = getPerformanceLevel(
-		data.currentScore,
-	);
+	const { level: performanceLevel, color: levelColor } = getPerformanceLevel(data.currentScore);
 	const targetDiff = data.target - data.currentScore;
 	const _progressPercent = (data.currentScore / data.target) * 100;
 
 	return (
-		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-background/90 to-background/70">
+		<ResponsiveWidgetWrapper className="from-background/90 to-background/70 bg-gradient-to-br">
 			<ResponsiveContent className="flex flex-col gap-3">
 				{/* Header - adapts across stages */}
 				<div className="flex items-center justify-between gap-2">
@@ -94,10 +90,7 @@ export function PerformanceScaleWidget({
 						<ShowAt stage="full">
 							<div>
 								<ResponsiveText variant="title">{data.label}</ResponsiveText>
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									{data.metric}
 								</ResponsiveText>
 							</div>
@@ -118,9 +111,7 @@ export function PerformanceScaleWidget({
 									: "bg-destructive/20 text-destructive"
 							}`}
 						>
-							<TrendingUp
-								className={`size-3 ${scoreChange < 0 ? "rotate-180" : ""}`}
-							/>
+							<TrendingUp className={`size-3 ${scoreChange < 0 ? "rotate-180" : ""}`} />
 							{scoreChange >= 0 ? "+" : ""}
 							{scoreChange}
 						</div>
@@ -132,23 +123,17 @@ export function PerformanceScaleWidget({
 					<div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
 						{/* Large score display */}
 						<div className="text-center">
-							<ResponsiveText
-								className={cn("font-bold", scoreColor)}
-								variant="display"
-							>
+							<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
 								{data.currentScore}
 							</ResponsiveText>
-							<ResponsiveText
-								className="text-muted-foreground"
-								variant="caption"
-							>
+							<ResponsiveText className="text-muted-foreground" variant="caption">
 								out of 100
 							</ResponsiveText>
 						</div>
 
 						{/* Progress bar */}
 						<div className="space-y-1">
-							<div className="h-3 overflow-hidden rounded-full bg-background/50">
+							<div className="bg-background/50 h-3 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full transition-all duration-500"
 									style={{
@@ -157,7 +142,7 @@ export function PerformanceScaleWidget({
 									}}
 								/>
 							</div>
-							<div className="flex justify-between text-[10px] text-muted-foreground">
+							<div className="text-muted-foreground flex justify-between text-[10px]">
 								<span>0</span>
 								<span>50</span>
 								<span>100</span>
@@ -165,33 +150,22 @@ export function PerformanceScaleWidget({
 						</div>
 
 						{/* Performance level */}
-						<div className="rounded-lg bg-background/50 p-2 text-center">
-							<ResponsiveText
-								className="text-muted-foreground"
-								variant="caption"
-							>
+						<div className="bg-background/50 rounded-lg p-2 text-center">
+							<ResponsiveText className="text-muted-foreground" variant="caption">
 								Level
 							</ResponsiveText>
-							<ResponsiveText
-								className={`font-bold ${levelColor}`}
-								variant="body"
-							>
+							<ResponsiveText className={`font-bold ${levelColor}`} variant="body">
 								{performanceLevel}
 							</ResponsiveText>
 						</div>
 
 						{/* Target info */}
-						<div className="flex items-center justify-between rounded-lg bg-warning/10 p-1.5">
+						<div className="bg-warning/10 flex items-center justify-between rounded-lg p-1.5">
 							<div className="flex items-center gap-1.5">
-								<Target className="size-3.5 text-warning" />
-								<ResponsiveText variant="caption">
-									Target: {data.target}
-								</ResponsiveText>
+								<Target className="text-warning size-3.5" />
+								<ResponsiveText variant="caption">Target: {data.target}</ResponsiveText>
 							</div>
-							<ResponsiveText
-								className="font-bold text-warning"
-								variant="caption"
-							>
+							<ResponsiveText className="text-warning font-bold" variant="caption">
 								{targetDiff > 0 ? `${targetDiff} to go` : "Met!"}
 							</ResponsiveText>
 						</div>
@@ -203,10 +177,7 @@ export function PerformanceScaleWidget({
 					<div className="flex flex-1 flex-col justify-center gap-2">
 						{/* Score */}
 						<div className="text-center">
-							<ResponsiveText
-								className={cn("font-bold", scoreColor)}
-								variant="display"
-							>
+							<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
 								{data.currentScore}
 							</ResponsiveText>
 							<ResponsiveText className={levelColor} variant="caption">
@@ -215,7 +186,7 @@ export function PerformanceScaleWidget({
 						</div>
 
 						{/* Target */}
-						<div className="flex items-center justify-between rounded-lg bg-warning/10 p-1.5">
+						<div className="bg-warning/10 flex items-center justify-between rounded-lg p-1.5">
 							<ResponsiveText variant="caption">Target</ResponsiveText>
 							<ResponsiveText className="font-bold" variant="caption">
 								{data.target}
@@ -227,10 +198,7 @@ export function PerformanceScaleWidget({
 				{/* COMPACT Stage: Score with level only */}
 				<ShowAt stage="compact">
 					<div className="flex flex-1 flex-col items-center justify-center gap-1 text-center">
-						<ResponsiveText
-							className={cn("font-bold", scoreColor)}
-							variant="display"
-						>
+						<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
 							{data.currentScore}
 						</ResponsiveText>
 						<ResponsiveText className={levelColor} variant="caption">
@@ -242,10 +210,7 @@ export function PerformanceScaleWidget({
 				{/* TINY Stage: Just the score number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText
-							className={cn("font-bold", scoreColor)}
-							variant="display"
-						>
+						<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
 							{data.currentScore}
 						</ResponsiveText>
 					</div>

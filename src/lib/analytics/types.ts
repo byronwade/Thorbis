@@ -820,10 +820,7 @@ export type UserEngagementEvent =
 /**
  * Union of all event types
  */
-export type AnalyticsEvent =
-	| DashboardEvent
-	| MarketingEvent
-	| UserEngagementEvent;
+export type AnalyticsEvent = DashboardEvent | MarketingEvent | UserEngagementEvent;
 
 /**
  * Event category for filtering

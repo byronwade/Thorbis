@@ -94,10 +94,7 @@ export function EstimatesFilterDropdown({
 					<Filter className="size-4" />
 					<span className="ml-2">Filters</span>
 					{activeFilterCount > 0 && (
-						<Badge
-							className="ml-2 h-5 w-5 justify-center p-0 text-xs"
-							variant="secondary"
-						>
+						<Badge className="ml-2 h-5 w-5 justify-center p-0 text-xs" variant="secondary">
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -108,12 +105,7 @@ export function EstimatesFilterDropdown({
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Filter Estimates</span>
 					{activeFilterCount > 0 && (
-						<Button
-							className="h-6 px-2 text-xs"
-							onClick={handleClear}
-							size="sm"
-							variant="ghost"
-						>
+						<Button className="h-6 px-2 text-xs" onClick={handleClear} size="sm" variant="ghost">
 							Clear all
 						</Button>
 					)}
@@ -123,13 +115,10 @@ export function EstimatesFilterDropdown({
 				<div className="space-y-4 p-3">
 					{/* Archive Status */}
 					<div className="space-y-2">
-						<Label className="font-medium text-xs">Archive Status</Label>
+						<Label className="text-xs font-medium">Archive Status</Label>
 						<Select
 							onValueChange={(value) =>
-								handleLocalChange(
-									"archiveStatus",
-									value as EstimatesFilters["archiveStatus"],
-								)
+								handleLocalChange("archiveStatus", value as EstimatesFilters["archiveStatus"])
 							}
 							value={localFilters.archiveStatus}
 						>
@@ -144,8 +133,7 @@ export function EstimatesFilterDropdown({
 									All Estimates {totalCount !== undefined && `(${totalCount})`}
 								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only{" "}
-									{archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 							</SelectContent>
 						</Select>
@@ -155,7 +143,7 @@ export function EstimatesFilterDropdown({
 
 					{/* Status */}
 					<div className="space-y-2">
-						<Label className="font-medium text-xs">Status</Label>
+						<Label className="text-xs font-medium">Status</Label>
 						<Select
 							onValueChange={(value) => handleLocalChange("status", value)}
 							value={localFilters.status}
@@ -178,7 +166,7 @@ export function EstimatesFilterDropdown({
 
 					{/* Amount Range */}
 					<div className="space-y-2">
-						<Label className="font-medium text-xs">Amount Range</Label>
+						<Label className="text-xs font-medium">Amount Range</Label>
 						<div className="grid grid-cols-2 gap-2">
 							<Input
 								className="h-9"
@@ -201,12 +189,10 @@ export function EstimatesFilterDropdown({
 
 					{/* Customer Name */}
 					<div className="space-y-2">
-						<Label className="font-medium text-xs">Customer</Label>
+						<Label className="text-xs font-medium">Customer</Label>
 						<Input
 							className="h-9"
-							onChange={(e) =>
-								handleLocalChange("customerName", e.target.value)
-							}
+							onChange={(e) => handleLocalChange("customerName", e.target.value)}
 							placeholder="Search by customer name..."
 							type="text"
 							value={localFilters.customerName}
@@ -217,12 +203,10 @@ export function EstimatesFilterDropdown({
 
 					{/* Estimate Number */}
 					<div className="space-y-2">
-						<Label className="font-medium text-xs">Estimate Number</Label>
+						<Label className="text-xs font-medium">Estimate Number</Label>
 						<Input
 							className="h-9"
-							onChange={(e) =>
-								handleLocalChange("estimateNumber", e.target.value)
-							}
+							onChange={(e) => handleLocalChange("estimateNumber", e.target.value)}
 							placeholder="Search by estimate #..."
 							type="text"
 							value={localFilters.estimateNumber}
@@ -233,12 +217,7 @@ export function EstimatesFilterDropdown({
 				<DropdownMenuSeparator />
 
 				<div className="flex gap-2 p-3">
-					<Button
-						className="flex-1"
-						onClick={() => setIsOpen(false)}
-						size="sm"
-						variant="outline"
-					>
+					<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
 						Cancel
 					</Button>
 					<Button className="flex-1" onClick={handleApply} size="sm">

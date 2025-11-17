@@ -7,21 +7,9 @@
 
 "use client";
 
-import {
-	AlertCircle,
-	ArrowRight,
-	Clock,
-	Loader2,
-	MapPin,
-	RefreshCw,
-	Route,
-} from "lucide-react";
+import { AlertCircle, ArrowRight, Clock, Loader2, MapPin, RefreshCw, Route } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 
 type TravelTimeData = {
@@ -50,8 +38,7 @@ type TravelTimeProps = {
 const REFRESH_INTERVAL_MINUTES = 5;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
-const REFRESH_INTERVAL_MS =
-	REFRESH_INTERVAL_MINUTES * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const REFRESH_INTERVAL_MS = REFRESH_INTERVAL_MINUTES * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 const SECONDS_PER_HOUR = 3600;
 
 const splitAddress = (address: string | null | undefined) => {
@@ -68,14 +55,9 @@ const splitAddress = (address: string | null | undefined) => {
 	};
 };
 
-const buildDestinationAddress = (
-	property: NonNullable<TravelTimeProps["property"]>,
-) => {
+const buildDestinationAddress = (property: NonNullable<TravelTimeProps["property"]>) => {
 	const cityState = [property.city, property.state]
-		.filter(
-			(value): value is string =>
-				typeof value === "string" && value.trim().length > 0,
-		)
+		.filter((value): value is string => typeof value === "string" && value.trim().length > 0)
 		.join(", ");
 
 	const segments = [
@@ -84,8 +66,7 @@ const buildDestinationAddress = (
 		cityState || undefined,
 		property.zipCode ?? property.zip_code ?? undefined,
 	].filter(
-		(segment): segment is string =>
-			typeof segment === "string" && segment.trim().length > 0,
+		(segment): segment is string => typeof segment === "string" && segment.trim().length > 0
 	);
 
 	return segments.map((segment) => segment.trim()).join(", ");
@@ -113,8 +94,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	const hasFetchedRef = useRef(false);
 
 	const fetchTravelTime = useCallback(async () => {
-		const hasRequiredFields =
-			property?.address && property?.city && property?.state;
+		const hasRequiredFields = property?.address && property?.city && property?.state;
 
 		if (!hasRequiredFields) {
 			setIsLoading(false);
@@ -142,9 +122,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			setLastUpdated(new Date());
 			setError(null);
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "Failed to fetch travel time",
-			);
+			setError(err instanceof Error ? err.message : "Failed to fetch travel time");
 			setTravelTime(null);
 		} finally {
 			setIsLoading(false);
@@ -204,9 +182,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 	// Format duration for display
 	const formatDuration = (seconds: number): string => {
 		const hours = Math.floor(seconds / SECONDS_PER_HOUR);
-		const minutes = Math.floor(
-			(seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE,
-		);
+		const minutes = Math.floor((seconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
 
 		if (hours > 0) {
 			return `${hours}h ${minutes}m`;
@@ -243,20 +219,20 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 		return (
 			<div
 				className={cn(
-					"flex h-7 items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs",
-					className,
+					"bg-muted/50 flex h-7 items-center gap-2 rounded-md px-2.5 text-xs",
+					className
 				)}
 			>
 				{isLoading && (
 					<>
-						<Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+						<Loader2 className="text-muted-foreground h-3 w-3 animate-spin" />
 						<span className="text-muted-foreground">Calculating...</span>
 					</>
 				)}
 
 				{error && (
 					<>
-						<AlertCircle className="h-3 w-3 text-destructive" />
+						<AlertCircle className="text-destructive h-3 w-3" />
 						<span className="text-destructive">Travel time unavailable</span>
 					</>
 				)}
@@ -274,22 +250,18 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 			<HoverCardTrigger asChild>
 				<div
 					className={cn(
-						"flex h-7 cursor-help items-center gap-2 rounded-md bg-muted/50 px-2.5 text-xs transition-colors hover:bg-muted",
-						className,
+						"bg-muted/50 hover:bg-muted flex h-7 cursor-help items-center gap-2 rounded-md px-2.5 text-xs transition-colors",
+						className
 					)}
 				>
-					<Clock className="h-3 w-3 text-muted-foreground" />
-					<span className="font-medium tabular-nums">
-						{formatDuration(travelTime.duration)}
-					</span>
+					<Clock className="text-muted-foreground h-3 w-3" />
+					<span className="font-medium tabular-nums">{formatDuration(travelTime.duration)}</span>
 					<span className="text-muted-foreground">•</span>
-					<Route className="h-3 w-3 text-muted-foreground" />
-					<span className="text-muted-foreground">
-						{travelTime.distance.toFixed(1)} mi
-					</span>
+					<Route className="text-muted-foreground h-3 w-3" />
+					<span className="text-muted-foreground">{travelTime.distance.toFixed(1)} mi</span>
 					<button
 						aria-label="Refresh travel time"
-						className="ml-auto flex items-center gap-1 text-muted-foreground transition hover:text-foreground"
+						className="text-muted-foreground hover:text-foreground ml-auto flex items-center gap-1 transition"
 						onClick={fetchTravelTime}
 						type="button"
 					>
@@ -301,72 +273,58 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 				<div className="space-y-3">
 					{/* Header */}
 					<div className="flex items-center gap-2">
-						<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-							<Clock className="h-4 w-4 text-primary" />
+						<div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
+							<Clock className="text-primary h-4 w-4" />
 						</div>
 						<div>
-							<div className="font-semibold text-sm">Travel Time</div>
-							<div className="text-muted-foreground text-xs">
-								From company HQ
-							</div>
+							<div className="text-sm font-semibold">Travel Time</div>
+							<div className="text-muted-foreground text-xs">From company HQ</div>
 						</div>
 					</div>
 
 					{/* Main Stats */}
 					<div className="grid grid-cols-2 gap-3">
-						<div className="rounded-lg border border-border/50 bg-muted/20 p-3">
-							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+						<div className="border-border/50 bg-muted/20 rounded-lg border p-3">
+							<div className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
 								Duration
 							</div>
-							<div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
+							<div className="text-foreground mt-1 text-2xl font-bold tabular-nums">
 								{formatDuration(travelTime.duration)}
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-xs">
-								{travelTime.durationText}
-							</div>
+							<div className="text-muted-foreground mt-0.5 text-xs">{travelTime.durationText}</div>
 						</div>
-						<div className="rounded-lg border border-border/50 bg-muted/20 p-3">
-							<div className="font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+						<div className="border-border/50 bg-muted/20 rounded-lg border p-3">
+							<div className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
 								Distance
 							</div>
-							<div className="mt-1 font-bold text-2xl text-foreground tabular-nums">
+							<div className="text-foreground mt-1 text-2xl font-bold tabular-nums">
 								{travelTime.distance.toFixed(1)} mi
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-xs">
-								{travelTime.distanceText}
-							</div>
+							<div className="text-muted-foreground mt-0.5 text-xs">{travelTime.distanceText}</div>
 						</div>
 					</div>
 
 					{/* Route */}
-					<div className="space-y-1.5 rounded-lg border border-border/50 bg-muted/20 p-3">
-						<div className="flex items-center gap-1.5 font-medium text-[10px] text-muted-foreground uppercase tracking-wide">
+					<div className="border-border/50 bg-muted/20 space-y-1.5 rounded-lg border p-3">
+						<div className="text-muted-foreground flex items-center gap-1.5 text-[10px] font-medium tracking-wide uppercase">
 							<Route className="h-3 w-3" />
 							Route
 						</div>
 						<div className="flex items-start gap-2 text-sm">
-							<ArrowRight className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+							<ArrowRight className="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-foreground">
-									{origin?.primary}
-								</div>
+								<div className="text-foreground font-medium">{origin?.primary}</div>
 								{origin?.secondary && (
-									<div className="text-muted-foreground text-xs">
-										{origin.secondary}
-									</div>
+									<div className="text-muted-foreground text-xs">{origin.secondary}</div>
 								)}
 							</div>
 						</div>
 						<div className="flex items-start gap-2 text-sm">
-							<MapPin className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary" />
+							<MapPin className="text-primary mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-foreground">
-									{destination?.primary}
-								</div>
+								<div className="text-foreground font-medium">{destination?.primary}</div>
 								{destination?.secondary && (
-									<div className="text-muted-foreground text-xs">
-										{destination.secondary}
-									</div>
+									<div className="text-muted-foreground text-xs">{destination.secondary}</div>
 								)}
 							</div>
 						</div>
@@ -376,7 +334,7 @@ export function TravelTime({ property, className }: TravelTimeProps) {
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-1.5 rounded-md bg-emerald-500/10 px-2 py-1">
 							<span className="inline-flex h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-							<span className="font-medium text-emerald-700 text-xs dark:text-emerald-400">
+							<span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
 								Live traffic data
 							</span>
 						</div>

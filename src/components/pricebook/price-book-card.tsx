@@ -16,12 +16,7 @@ import { Box, Edit, Package, Plus, Wrench } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import type { PriceBookItem } from "@/components/work/price-book-table";
 
 type PriceBookCardProps = {
@@ -48,11 +43,7 @@ const itemTypeConfig = {
 	},
 };
 
-export function PriceBookCard({
-	item,
-	onEdit,
-	onAddToEstimate,
-}: PriceBookCardProps) {
+export function PriceBookCard({ item, onEdit, onAddToEstimate }: PriceBookCardProps) {
 	const config = itemTypeConfig[item.itemType];
 	const TypeIcon = config.icon;
 
@@ -60,7 +51,7 @@ export function PriceBookCard({
 		<Card className="group relative overflow-hidden transition-all hover:shadow-lg">
 			<Link href={`/dashboard/work/pricebook/${item.id}`}>
 				{/* Image */}
-				<div className="relative aspect-square w-full overflow-hidden bg-muted">
+				<div className="bg-muted relative aspect-square w-full overflow-hidden">
 					{item.imageUrl ? (
 						<Image
 							alt={item.name}
@@ -71,7 +62,7 @@ export function PriceBookCard({
 						/>
 					) : (
 						<div className="flex h-full items-center justify-center">
-							<TypeIcon className="h-16 w-16 text-muted-foreground/30" />
+							<TypeIcon className="text-muted-foreground/30 h-16 w-16" />
 						</div>
 					)}
 
@@ -109,10 +100,10 @@ export function PriceBookCard({
 					<div className="flex items-start justify-between gap-2">
 						<div className="flex-1 space-y-1">
 							{/* Title with pricing tier */}
-							<h3 className="line-clamp-2 font-medium leading-tight">
+							<h3 className="line-clamp-2 leading-tight font-medium">
 								{item.name}
 								{item.priceTier && item.priceTier !== "standard" && (
-									<span className="ml-2 font-normal text-muted-foreground text-xs">
+									<span className="text-muted-foreground ml-2 text-xs font-normal">
 										- {item.priceTier === "good" && "Good"}
 										{item.priceTier === "better" && "Better"}
 										{item.priceTier === "best" && "Best"}
@@ -120,7 +111,7 @@ export function PriceBookCard({
 								)}
 							</h3>
 							{/* SKU and Type in one line */}
-							<div className="flex items-center gap-2 text-muted-foreground text-xs">
+							<div className="text-muted-foreground flex items-center gap-2 text-xs">
 								<span>SKU: {item.sku}</span>
 								<span>•</span>
 								<span className="flex items-center gap-1">
@@ -140,7 +131,7 @@ export function PriceBookCard({
 
 				<CardContent className="p-4 pt-0">
 					{/* Category Breadcrumb */}
-					<div className="mb-2 flex flex-wrap gap-1 text-muted-foreground text-xs">
+					<div className="text-muted-foreground mb-2 flex flex-wrap gap-1 text-xs">
 						<span>{item.category}</span>
 						{item.subcategory && (
 							<>
@@ -152,35 +143,29 @@ export function PriceBookCard({
 
 					{/* Price */}
 					<div className="flex items-baseline gap-2">
-						<span className="font-semibold text-2xl">
-							${item.price.toFixed(2)}
-						</span>
+						<span className="text-2xl font-semibold">${item.price.toFixed(2)}</span>
 						{item.cost && item.cost < item.price && (
-							<span className="text-muted-foreground text-sm">
-								({item.markupPercent}% markup)
-							</span>
+							<span className="text-muted-foreground text-sm">({item.markupPercent}% markup)</span>
 						)}
 					</div>
 
 					{/* Labor Hours for Services */}
 					{item.itemType === "service" && item.laborHours && (
-						<div className="mt-1 text-muted-foreground text-xs">
+						<div className="text-muted-foreground mt-1 text-xs">
 							{item.laborHours} {item.laborHours === 1 ? "hour" : "hours"}
 						</div>
 					)}
 
 					{/* Unit */}
 					{item.unit && item.unit !== "each" && (
-						<div className="mt-1 text-muted-foreground text-xs">
-							per {item.unit}
-						</div>
+						<div className="text-muted-foreground mt-1 text-xs">per {item.unit}</div>
 					)}
 				</CardContent>
 
 				{/* Footer */}
 				{item.supplierName && (
-					<CardFooter className="border-t bg-muted/30 p-3">
-						<div className="flex items-center gap-2 text-muted-foreground text-xs">
+					<CardFooter className="bg-muted/30 border-t p-3">
+						<div className="text-muted-foreground flex items-center gap-2 text-xs">
 							<Package className="size-3" />
 							<span>{item.supplierName}</span>
 						</div>

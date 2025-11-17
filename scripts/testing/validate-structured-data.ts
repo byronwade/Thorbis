@@ -51,13 +51,11 @@ const schemas: Array<{ name: string; schema: ValidationTarget }> = [
 		schema: createFAQSchema([
 			{
 				question: "How do I get started with Thorbis?",
-				answer:
-					"Visit the Thorbis knowledge base to explore onboarding guides and tutorials.",
+				answer: "Visit the Thorbis knowledge base to explore onboarding guides and tutorials.",
 			},
 			{
 				question: "Does Thorbis support technician scheduling?",
-				answer:
-					"Yes. Thorbis includes end-to-end scheduling, dispatch, and job tracking features.",
+				answer: "Yes. Thorbis includes end-to-end scheduling, dispatch, and job tracking features.",
 			},
 		]),
 	},
@@ -73,16 +71,14 @@ const schemas: Array<{ name: string; schema: ValidationTarget }> = [
 		name: "Service",
 		schema: createServiceSchema({
 			name: SEO_BRAND.product,
-			description:
-				"End-to-end field management platform for service companies.",
+			description: "End-to-end field management platform for service companies.",
 		}),
 	},
 	{
 		name: "Article",
 		schema: createArticleSchema({
 			title: "Thorbis Knowledge Base Overview",
-			description:
-				"Learn how Thorbis helps you deliver world-class service operations.",
+			description: "Learn how Thorbis helps you deliver world-class service operations.",
 			url: `${siteUrl}/kb/getting-started/welcome`,
 			publishedTime: new Date().toISOString(),
 			authorName: SEO_BRAND.company,
@@ -140,7 +136,7 @@ for (const { name, schema } of schemas) {
 
 if (errors.length > 0) {
 	process.stderr.write(
-		`SEO structured data validation failed:\\n${errors.map((message) => `- ${message}`).join("\\n")}\\n`,
+		`SEO structured data validation failed:\\n${errors.map((message) => `- ${message}`).join("\\n")}\\n`
 	);
 	process.exit(1);
 }

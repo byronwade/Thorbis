@@ -10,11 +10,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  * This layout applies to /dashboard/customers/[id]
  * Shows detail page with back button, no sidebars
  */
-export default function CustomerDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function CustomerDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",

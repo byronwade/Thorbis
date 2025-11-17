@@ -42,21 +42,20 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 	const isNeutral = numericChange === 0;
 
 	// Format value if it's a number with commas
-	const formattedValue =
-		typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
+	const formattedValue = typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
 
 	return (
 		<div
 			className={cn(
-				"group cursor-default transition-all duration-200 hover:bg-muted/10 dark:hover:bg-muted/5",
-				compact ? "px-4 py-2" : "px-5 py-3",
+				"group hover:bg-muted/10 dark:hover:bg-muted/5 cursor-default transition-all duration-200",
+				compact ? "px-4 py-2" : "px-5 py-3"
 			)}
 		>
 			<div className="flex items-baseline gap-2">
 				<div
 					className={cn(
-						"font-semibold text-foreground tabular-nums tracking-tight transition-all duration-200",
-						compact ? "text-base leading-tight" : "text-xl leading-tight",
+						"text-foreground font-semibold tracking-tight tabular-nums transition-all duration-200",
+						compact ? "text-base leading-tight" : "text-xl leading-tight"
 					)}
 				>
 					{formattedValue}
@@ -64,12 +63,10 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 				{change !== null && (
 					<div
 						className={cn(
-							"flex items-center gap-0.5 rounded px-1 py-0.5 font-medium text-[10px] tabular-nums shadow-sm",
-							isPositive && "bg-success/10 text-success ring-1 ring-success/20",
-							isNegative &&
-								"bg-destructive/10 text-destructive ring-1 ring-destructive/20",
-							isNeutral &&
-								"bg-muted/50 text-muted-foreground ring-1 ring-border/50",
+							"flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium tabular-nums shadow-sm",
+							isPositive && "bg-success/10 text-success ring-success/20 ring-1",
+							isNegative && "bg-destructive/10 text-destructive ring-destructive/20 ring-1",
+							isNeutral && "bg-muted/50 text-muted-foreground ring-border/50 ring-1"
 						)}
 					>
 						{isPositive && <TrendingUp className="h-2.5 w-2.5" />}
@@ -82,16 +79,14 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 			</div>
 			<div
 				className={cn(
-					"font-medium text-muted-foreground/70 uppercase tracking-wide transition-all duration-200",
-					compact
-						? "mt-0.5 text-[10px] leading-tight"
-						: "mt-1 text-xs leading-tight",
+					"text-muted-foreground/70 font-medium tracking-wide uppercase transition-all duration-200",
+					compact ? "mt-0.5 text-[10px] leading-tight" : "mt-1 text-xs leading-tight"
 				)}
 			>
 				{stat.label}
 			</div>
 			{!compact && stat.changeLabel && (
-				<div className="mt-0.5 text-[10px] text-muted-foreground/60 leading-tight">
+				<div className="text-muted-foreground/60 mt-0.5 text-[10px] leading-tight">
 					{stat.changeLabel}
 				</div>
 			)}
@@ -99,11 +94,7 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 	);
 }
 
-export function StatsCards({
-	stats,
-	variant = "ticker",
-	compact = false,
-}: StatsCardsProps) {
+export function StatsCards({ stats, variant = "ticker", compact = false }: StatsCardsProps) {
 	// Dynamically determine grid columns based on number of stats
 	const gridColsClass =
 		{
@@ -117,11 +108,9 @@ export function StatsCards({
 
 	if (variant === "ticker") {
 		return (
-			<div className="w-full border-border/30 border-b bg-background dark:bg-background">
+			<div className="border-border/30 bg-background dark:bg-background w-full border-b">
 				{/* Stats Grid - Stock ticker style */}
-				<div
-					className={cn("grid w-full divide-x divide-border/30", gridColsClass)}
-				>
+				<div className={cn("divide-border/30 grid w-full divide-x", gridColsClass)}>
 					{stats.map((stat) => (
 						<TickerStat compact={compact} key={stat.label} stat={stat} />
 					))}
@@ -132,7 +121,7 @@ export function StatsCards({
 
 	// Chart variant (legacy)
 	return (
-		<div className="w-full border-b bg-background">
+		<div className="bg-background w-full border-b">
 			{/* Stats Grid with inline area charts */}
 			<div className={`grid w-full ${gridColsClass} divide-x`}>
 				{stats.map((stat) => (
@@ -140,18 +129,14 @@ export function StatsCards({
 						{/* Content with padding */}
 						<div className="relative z-10 px-4 py-3">
 							<div className="flex items-baseline gap-2">
-								<div className="font-semibold text-foreground text-xl tabular-nums">
+								<div className="text-foreground text-xl font-semibold tabular-nums">
 									{stat.value}
 								</div>
 								{stat.percentage !== undefined && (
-									<div className="text-muted-foreground text-xs">
-										{stat.percentage}%
-									</div>
+									<div className="text-muted-foreground text-xs">{stat.percentage}%</div>
 								)}
 							</div>
-							<div className="mt-0.5 text-muted-foreground text-sm">
-								{stat.label}
-							</div>
+							<div className="text-muted-foreground mt-0.5 text-sm">{stat.label}</div>
 						</div>
 
 						{/* Full-width chart positioned absolutely */}
@@ -166,28 +151,11 @@ export function StatsCards({
 										},
 									}}
 								>
-									<LazyAreaChart
-										data={stat.data}
-										margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-									>
+									<LazyAreaChart data={stat.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
 										<defs>
-											<linearGradient
-												id={`gradient-${stat.label}`}
-												x1="0"
-												x2="0"
-												y1="0"
-												y2="1"
-											>
-												<stop
-													offset="0%"
-													stopColor={stat.color}
-													stopOpacity={0.4}
-												/>
-												<stop
-													offset="100%"
-													stopColor={stat.color}
-													stopOpacity={0.05}
-												/>
+											<linearGradient id={`gradient-${stat.label}`} x1="0" x2="0" y1="0" y2="1">
+												<stop offset="0%" stopColor={stat.color} stopOpacity={0.4} />
+												<stop offset="100%" stopColor={stat.color} stopOpacity={0.05} />
 											</linearGradient>
 										</defs>
 										<Area

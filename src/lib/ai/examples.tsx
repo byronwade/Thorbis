@@ -78,11 +78,9 @@ export function ContentGeneratorExample() {
 					<div>
 						<h4>Research Phase</h4>
 						<ul>
-							{result.output.research.keyPoints.map(
-								(point: string, i: number) => (
-									<li key={i}>{point}</li>
-								),
-							)}
+							{result.output.research.keyPoints.map((point: string, i: number) => (
+								<li key={i}>{point}</li>
+							))}
 						</ul>
 					</div>
 
@@ -94,11 +92,9 @@ export function ContentGeneratorExample() {
 					<div>
 						<h4>Review Score: {result.output.review.score}/10</h4>
 						<ul>
-							{result.output.review.suggestions.map(
-								(suggestion: string, i: number) => (
-									<li key={i}>{suggestion}</li>
-								),
-							)}
+							{result.output.review.suggestions.map((suggestion: string, i: number) => (
+								<li key={i}>{suggestion}</li>
+							))}
 						</ul>
 					</div>
 
@@ -191,15 +187,13 @@ export function CodeReviewExample() {
 						<h4>Performance: {result.output.performance.score}/100</h4>
 						{result.output.performance.issues.length > 0 ? (
 							<ul>
-								{result.output.performance.issues.map(
-									(issue: any, i: number) => (
-										<li key={i}>
-											<strong>[{issue.severity}]</strong> {issue.description}
-											<br />
-											<em>Suggestion: {issue.suggestion}</em>
-										</li>
-									),
-								)}
+								{result.output.performance.issues.map((issue: any, i: number) => (
+									<li key={i}>
+										<strong>[{issue.severity}]</strong> {issue.description}
+										<br />
+										<em>Suggestion: {issue.suggestion}</em>
+									</li>
+								))}
 							</ul>
 						) : (
 							<p>No performance issues found!</p>
@@ -209,9 +203,7 @@ export function CodeReviewExample() {
 					<div>
 						<h4>Code Quality: {result.output.quality.score}/100</h4>
 						<p>Readability: {result.output.quality.readabilityScore}/100</p>
-						<p>
-							Maintainability: {result.output.quality.maintainabilityScore}/100
-						</p>
+						<p>Maintainability: {result.output.quality.maintainabilityScore}/100</p>
 					</div>
 
 					<div>

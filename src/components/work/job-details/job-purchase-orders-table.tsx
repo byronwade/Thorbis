@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Archive,
-	Download,
-	Eye,
-	MoreHorizontal,
-	Package,
-	Send,
-} from "lucide-react";
+import { Archive, Download, Eye, MoreHorizontal, Package, Send } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -47,9 +40,7 @@ type JobPurchaseOrdersTableProps = {
 	purchaseOrders: PurchaseOrder[];
 };
 
-export function JobPurchaseOrdersTable({
-	purchaseOrders,
-}: JobPurchaseOrdersTableProps) {
+export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTableProps) {
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -60,7 +51,7 @@ export function JobPurchaseOrdersTable({
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
-		[],
+		[]
 	);
 
 	const handleArchive = useCallback(async () => {
@@ -70,14 +61,11 @@ export function JobPurchaseOrdersTable({
 
 		setIsArchiving(true);
 		try {
-			const result = await bulkArchive(
-				Array.from(selectedIds),
-				"purchase_order",
-			);
+			const result = await bulkArchive(Array.from(selectedIds), "purchase_order");
 
 			if (result.success && result.data) {
 				toast.success(
-					`Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`,
+					`Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
@@ -103,7 +91,7 @@ export function JobPurchaseOrdersTable({
 				render: (po) => (
 					<div className="flex min-w-0 items-center gap-2">
 						<Link
-							className="truncate font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+							className="text-foreground hover:text-primary truncate text-sm font-medium transition-colors hover:underline"
 							href={`/dashboard/work/purchase-orders/${po.id}`}
 							title={po.po_number}
 						>
@@ -128,7 +116,7 @@ export function JobPurchaseOrdersTable({
 						onClick={(e) => e.stopPropagation()}
 						title={po.title || undefined}
 					>
-						<span className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+						<span className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
 							{po.title || "—"}
 						</span>
 					</Link>
@@ -140,10 +128,7 @@ export function JobPurchaseOrdersTable({
 				width: "w-48",
 				shrink: true,
 				render: (po) => (
-					<span
-						className="block truncate text-foreground text-sm"
-						title={po.vendor}
-					>
+					<span className="text-foreground block truncate text-sm" title={po.vendor}>
 						{po.vendor}
 					</span>
 				),
@@ -153,9 +138,7 @@ export function JobPurchaseOrdersTable({
 				header: "Status",
 				width: "w-32",
 				shrink: true,
-				render: (po) => (
-					<StatusBadge status={po.status} type="purchase_order" />
-				),
+				render: (po) => <StatusBadge status={po.status} type="purchase_order" />,
 			},
 			{
 				key: "total_amount",
@@ -164,7 +147,7 @@ export function JobPurchaseOrdersTable({
 				shrink: true,
 				align: "right",
 				render: (po) => (
-					<span className="font-semibold text-sm tabular-nums">
+					<span className="text-sm font-semibold tabular-nums">
 						{formatCurrencyCents(po.total_amount)}
 					</span>
 				),
@@ -177,9 +160,7 @@ export function JobPurchaseOrdersTable({
 				hideOnMobile: true,
 				render: (po) => (
 					<span className="text-muted-foreground text-sm tabular-nums">
-						{po.expected_delivery
-							? formatDate(po.expected_delivery, "short")
-							: "—"}
+						{po.expected_delivery ? formatDate(po.expected_delivery, "short") : "—"}
 					</span>
 				),
 			},
@@ -215,7 +196,7 @@ export function JobPurchaseOrdersTable({
 				),
 			},
 		],
-		[formatCurrencyCents],
+		[formatCurrencyCents]
 	);
 
 	const bulkActions: BulkAction[] = useMemo(
@@ -230,7 +211,7 @@ export function JobPurchaseOrdersTable({
 				},
 			},
 		],
-		[],
+		[]
 	);
 
 	return (
@@ -239,7 +220,7 @@ export function JobPurchaseOrdersTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={purchaseOrders}
-				emptyIcon={<Package className="size-12 text-muted-foreground/50" />}
+				emptyIcon={<Package className="text-muted-foreground/50 size-12" />}
 				emptyMessage="No purchase orders found for this job"
 				enableSelection={true}
 				getItemId={(po) => po.id}

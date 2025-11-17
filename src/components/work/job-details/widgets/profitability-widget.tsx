@@ -60,16 +60,11 @@ export function ProfitabilityWidget({
 	const revenue: RevenueBreakdown = {
 		services:
 			lineItems
-				.filter(
-					(item) => item.item_type === "service" || item.item_type === "labor",
-				)
+				.filter((item) => item.item_type === "service" || item.item_type === "labor")
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 		materials:
 			lineItems
-				.filter(
-					(item) =>
-						item.item_type === "material" || item.item_type === "product",
-				)
+				.filter((item) => item.item_type === "material" || item.item_type === "product")
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 		equipment:
 			lineItems
@@ -79,9 +74,7 @@ export function ProfitabilityWidget({
 			lineItems
 				.filter(
 					(item) =>
-						!["service", "labor", "material", "product", "equipment"].includes(
-							item.item_type,
-						),
+						!["service", "labor", "material", "product", "equipment"].includes(item.item_type)
 				)
 				.reduce((sum, item) => sum + (item.total_price || 0), 0) / 100,
 	};
@@ -90,30 +83,16 @@ export function ProfitabilityWidget({
 	const costs: CostBreakdown = {
 		labor:
 			lineItems
-				.filter(
-					(item) => item.item_type === "service" || item.item_type === "labor",
-				)
-				.reduce(
-					(sum, item) => sum + (item.cost || item.total_price * 0.6 || 0),
-					0,
-				) / 100,
+				.filter((item) => item.item_type === "service" || item.item_type === "labor")
+				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.6 || 0), 0) / 100,
 		materials:
 			lineItems
-				.filter(
-					(item) =>
-						item.item_type === "material" || item.item_type === "product",
-				)
-				.reduce(
-					(sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
-					0,
-				) / 100,
+				.filter((item) => item.item_type === "material" || item.item_type === "product")
+				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.7 || 0), 0) / 100,
 		equipment:
 			lineItems
 				.filter((item) => item.item_type === "equipment")
-				.reduce(
-					(sum, item) => sum + (item.cost || item.total_price * 0.7 || 0),
-					0,
-				) / 100,
+				.reduce((sum, item) => sum + (item.cost || item.total_price * 0.7 || 0), 0) / 100,
 		permits: 0, // TODO: Track permit costs separately
 		overhead: ((job.totalAmount || 0) * 0.1) / 100, // 10% overhead estimate
 		other: 0,
@@ -127,14 +106,10 @@ export function ProfitabilityWidget({
 	}
 
 	// Calculate totals
-	const totalRevenue = Object.values(revenue).reduce(
-		(sum, val) => sum + val,
-		0,
-	);
+	const totalRevenue = Object.values(revenue).reduce((sum, val) => sum + val, 0);
 	const totalCosts = Object.values(costs).reduce((sum, val) => sum + val, 0);
 	const grossProfit = totalRevenue - totalCosts;
-	const profitMargin =
-		totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
+	const profitMargin = totalRevenue > 0 ? (grossProfit / totalRevenue) * 100 : 0;
 
 	// Determine profit status
 	const isProfitable = grossProfit > 0;
@@ -157,7 +132,7 @@ export function ProfitabilityWidget({
 		<div className="space-y-4">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<h4 className="font-semibold text-sm">Job Profitability</h4>
+				<h4 className="text-sm font-semibold">Job Profitability</h4>
 				<Badge
 					className="text-xs"
 					variant={isLoss ? "destructive" : isLowMargin ? "outline" : "default"}
@@ -172,10 +147,10 @@ export function ProfitabilityWidget({
 				{/* Revenue */}
 				<div className="rounded-lg border bg-gradient-to-br from-green-50 to-green-100/50 p-3 dark:from-green-950/30 dark:to-green-900/20">
 					<div className="mb-1 flex items-center gap-1.5">
-						<DollarSign className="size-4 text-success" />
+						<DollarSign className="text-success size-4" />
 						<span className="text-muted-foreground text-xs">Revenue</span>
 					</div>
-					<p className="font-bold text-lg text-success dark:text-success">
+					<p className="text-success dark:text-success text-lg font-bold">
 						{formatCurrency(totalRevenue)}
 					</p>
 				</div>
@@ -183,10 +158,10 @@ export function ProfitabilityWidget({
 				{/* Costs */}
 				<div className="rounded-lg border bg-gradient-to-br from-red-50 to-red-100/50 p-3 dark:from-red-950/30 dark:to-red-900/20">
 					<div className="mb-1 flex items-center gap-1.5">
-						<TrendingDown className="size-4 text-destructive" />
+						<TrendingDown className="text-destructive size-4" />
 						<span className="text-muted-foreground text-xs">Costs</span>
 					</div>
-					<p className="font-bold text-destructive text-lg dark:text-destructive">
+					<p className="text-destructive dark:text-destructive text-lg font-bold">
 						{formatCurrency(totalCosts)}
 					</p>
 				</div>
@@ -195,20 +170,18 @@ export function ProfitabilityWidget({
 				<div
 					className={`col-span-2 rounded-lg border p-3 ${
 						isProfitable
-							? "bg-gradient-to-br from-primary/10 to-primary/5"
+							? "from-primary/10 to-primary/5 bg-gradient-to-br"
 							: "bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/30 dark:to-red-900/20"
 					}`}
 				>
 					<div className="mb-1 flex items-center justify-between">
 						<div className="flex items-center gap-1.5">
 							{isProfitable ? (
-								<TrendingUp className="size-4 text-primary" />
+								<TrendingUp className="text-primary size-4" />
 							) : (
-								<TrendingDown className="size-4 text-destructive" />
+								<TrendingDown className="text-destructive size-4" />
 							)}
-							<span className="text-muted-foreground text-xs">
-								Gross Profit
-							</span>
+							<span className="text-muted-foreground text-xs">Gross Profit</span>
 						</div>
 						{isOverPerforming ? (
 							<Badge className="text-xs" variant="default">
@@ -223,7 +196,7 @@ export function ProfitabilityWidget({
 						)}
 					</div>
 					<p
-						className={`font-bold text-xl ${isProfitable ? "text-primary" : "text-destructive dark:text-destructive"}`}
+						className={`text-xl font-bold ${isProfitable ? "text-primary" : "text-destructive dark:text-destructive"}`}
 					>
 						{formatCurrency(grossProfit)}
 					</p>
@@ -234,23 +207,17 @@ export function ProfitabilityWidget({
 
 			{/* Revenue Breakdown */}
 			<div className="space-y-2">
-				<h5 className="font-medium text-sm">Revenue Breakdown</h5>
+				<h5 className="text-sm font-medium">Revenue Breakdown</h5>
 				<div className="space-y-2">
 					{Object.entries(revenue).map(([category, amount]) => {
 						const percentage = (amount / totalRevenue) * 100;
 						return (
 							<div className="space-y-1" key={category}>
 								<div className="flex items-center justify-between text-xs">
-									<span className="text-muted-foreground capitalize">
-										{category}
-									</span>
+									<span className="text-muted-foreground capitalize">{category}</span>
 									<div className="flex items-center gap-2">
-										<span className="text-muted-foreground">
-											{percentage.toFixed(2)}%
-										</span>
-										<span className="font-medium">
-											{formatCurrency(amount)}
-										</span>
+										<span className="text-muted-foreground">{percentage.toFixed(2)}%</span>
+										<span className="font-medium">{formatCurrency(amount)}</span>
 									</div>
 								</div>
 								<Progress className="h-1.5" value={percentage} />
@@ -264,29 +231,20 @@ export function ProfitabilityWidget({
 
 			{/* Cost Breakdown */}
 			<div className="space-y-2">
-				<h5 className="font-medium text-sm">Cost Breakdown</h5>
+				<h5 className="text-sm font-medium">Cost Breakdown</h5>
 				<div className="space-y-2">
 					{Object.entries(costs).map(([category, amount]) => {
 						const percentage = getCostPercentage(amount);
 						return (
 							<div className="space-y-1" key={category}>
 								<div className="flex items-center justify-between text-xs">
-									<span className="text-muted-foreground capitalize">
-										{category}
-									</span>
+									<span className="text-muted-foreground capitalize">{category}</span>
 									<div className="flex items-center gap-2">
-										<span className="text-muted-foreground">
-											{percentage.toFixed(2)}%
-										</span>
-										<span className="font-medium">
-											{formatCurrency(amount)}
-										</span>
+										<span className="text-muted-foreground">{percentage.toFixed(2)}%</span>
+										<span className="font-medium">{formatCurrency(amount)}</span>
 									</div>
 								</div>
-								<Progress
-									className="h-1.5 [&>div]:bg-destructive"
-									value={percentage}
-								/>
+								<Progress className="[&>div]:bg-destructive h-1.5" value={percentage} />
 							</div>
 						);
 					})}
@@ -297,15 +255,14 @@ export function ProfitabilityWidget({
 			{isLoss && (
 				<>
 					<Separator />
-					<div className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30">
-						<AlertTriangle className="mt-0.5 size-4 shrink-0 text-destructive" />
+					<div className="border-destructive bg-destructive dark:bg-destructive/30 flex items-start gap-2 rounded-lg border-l-4 p-3">
+						<AlertTriangle className="text-destructive mt-0.5 size-4 shrink-0" />
 						<div>
-							<p className="font-medium text-destructive text-sm dark:text-destructive">
+							<p className="text-destructive dark:text-destructive text-sm font-medium">
 								Loss Alert
 							</p>
-							<p className="text-destructive text-xs dark:text-destructive">
-								This job is currently unprofitable. Review costs and consider
-								price adjustments.
+							<p className="text-destructive dark:text-destructive text-xs">
+								This job is currently unprofitable. Review costs and consider price adjustments.
 							</p>
 						</div>
 					</div>
@@ -315,13 +272,13 @@ export function ProfitabilityWidget({
 			{isLowMargin && !isLoss && (
 				<>
 					<Separator />
-					<div className="flex items-start gap-2 rounded-lg border-warning border-l-4 bg-warning p-3 dark:bg-warning/30">
-						<AlertTriangle className="mt-0.5 size-4 shrink-0 text-warning" />
+					<div className="border-warning bg-warning dark:bg-warning/30 flex items-start gap-2 rounded-lg border-l-4 p-3">
+						<AlertTriangle className="text-warning mt-0.5 size-4 shrink-0" />
 						<div>
-							<p className="font-medium text-sm text-warning dark:text-warning">
+							<p className="text-warning dark:text-warning text-sm font-medium">
 								Low Margin Warning
 							</p>
-							<p className="text-warning text-xs dark:text-warning">
+							<p className="text-warning dark:text-warning text-xs">
 								Profit margin is below 15%. Monitor costs closely.
 							</p>
 						</div>
@@ -332,15 +289,12 @@ export function ProfitabilityWidget({
 			{isHighMargin && (
 				<>
 					<Separator />
-					<div className="flex items-start gap-2 rounded-lg border-success border-l-4 bg-success p-3 dark:bg-success/30">
-						<TrendingUp className="mt-0.5 size-4 shrink-0 text-success" />
+					<div className="border-success bg-success dark:bg-success/30 flex items-start gap-2 rounded-lg border-l-4 p-3">
+						<TrendingUp className="text-success mt-0.5 size-4 shrink-0" />
 						<div>
-							<p className="font-medium text-sm text-success dark:text-success">
-								Healthy Margin
-							</p>
-							<p className="text-success text-xs dark:text-success">
-								Great work! This job has a strong profit margin of{" "}
-								{profitMargin.toFixed(2)}
+							<p className="text-success dark:text-success text-sm font-medium">Healthy Margin</p>
+							<p className="text-success dark:text-success text-xs">
+								Great work! This job has a strong profit margin of {profitMargin.toFixed(2)}
 								%.
 							</p>
 						</div>
@@ -352,36 +306,26 @@ export function ProfitabilityWidget({
 			<Separator />
 			<div className="space-y-2">
 				<Button asChild className="w-full" size="sm" variant="outline">
-					<Link href={`/dashboard/work/${job.id}/financials`}>
-						View Detailed Financials
-					</Link>
+					<Link href={`/dashboard/work/${job.id}/financials`}>View Detailed Financials</Link>
 				</Button>
 				<Button asChild className="w-full" size="sm" variant="outline">
-					<Link href={"/dashboard/reports/jobs"}>
-						Compare with Similar Jobs
-					</Link>
+					<Link href={"/dashboard/reports/jobs"}>Compare with Similar Jobs</Link>
 				</Button>
 			</div>
 
 			{/* Key Metrics Summary */}
-			<div className="grid grid-cols-2 gap-2 rounded-lg bg-muted p-3 text-xs">
+			<div className="bg-muted grid grid-cols-2 gap-2 rounded-lg p-3 text-xs">
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Labor Cost %</p>
-					<p className="font-semibold">
-						{getCostPercentage(costs.labor).toFixed(2)}%
-					</p>
+					<p className="font-semibold">{getCostPercentage(costs.labor).toFixed(2)}%</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Material Cost %</p>
-					<p className="font-semibold">
-						{getCostPercentage(costs.materials).toFixed(2)}%
-					</p>
+					<p className="font-semibold">{getCostPercentage(costs.materials).toFixed(2)}%</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Overhead %</p>
-					<p className="font-semibold">
-						{getCostPercentage(costs.overhead).toFixed(2)}%
-					</p>
+					<p className="font-semibold">{getCostPercentage(costs.overhead).toFixed(2)}%</p>
 				</div>
 				<div className="space-y-1">
 					<p className="text-muted-foreground">Target Margin</p>

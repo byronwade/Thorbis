@@ -1,11 +1,4 @@
-import {
-	Clock,
-	DollarSign,
-	History,
-	Package,
-	TrendingUp,
-	Wrench,
-} from "lucide-react";
+import { Clock, DollarSign, History, Package, TrendingUp, Wrench } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -81,8 +74,7 @@ function getItemTypeBadge(type: string) {
 			label: "Service",
 		},
 		material: {
-			className:
-				"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+			className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 			label: "Material",
 		},
 		package: {
@@ -137,9 +129,7 @@ function formatDateTime(dateString: string) {
  *
  * TODO: Replace mock data with real database queries
  */
-export async function PriceBookItemDetailData({
-	itemId,
-}: PriceBookItemDetailDataProps) {
+export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDataProps) {
 	// TODO: Fetch from database
 	// const supabase = await createClient();
 	// const { data: item, error: itemError } = await supabase
@@ -155,8 +145,7 @@ export async function PriceBookItemDetailData({
 
 	const item = mockItem;
 	const history = mockPriceHistory;
-	const IconComponent =
-		categoryIcons[item.category as keyof typeof categoryIcons] || Package;
+	const IconComponent = categoryIcons[item.category as keyof typeof categoryIcons] || Package;
 
 	const revenue = item.price - item.cost;
 	const marginPercent = ((revenue / item.price) * 100).toFixed(1);
@@ -166,7 +155,7 @@ export async function PriceBookItemDetailData({
 			{/* Item Header - Simplified (Actions now in AppToolbar) */}
 			<div className="space-y-2">
 				<div className="flex items-center gap-3">
-					<h1 className="font-semibold text-3xl tracking-tight">{item.name}</h1>
+					<h1 className="text-3xl font-semibold tracking-tight">{item.name}</h1>
 					{getItemTypeBadge(item.itemType)}
 					<Badge variant={item.isActive ? "default" : "secondary"}>
 						{item.isActive ? "Active" : "Inactive"}
@@ -188,38 +177,28 @@ export async function PriceBookItemDetailData({
 						</CardHeader>
 						<CardContent>
 							<div className="grid gap-6 sm:grid-cols-3">
-								<div className="space-y-2 rounded-lg border bg-muted/30 p-4">
-									<p className="font-medium text-muted-foreground text-xs uppercase">
-										Cost
-									</p>
-									<p className="font-semibold text-2xl">
-										{formatCurrency(item.cost)}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										Per {item.unit}
-									</p>
+								<div className="bg-muted/30 space-y-2 rounded-lg border p-4">
+									<p className="text-muted-foreground text-xs font-medium uppercase">Cost</p>
+									<p className="text-2xl font-semibold">{formatCurrency(item.cost)}</p>
+									<p className="text-muted-foreground text-xs">Per {item.unit}</p>
 								</div>
 
-								<div className="space-y-2 rounded-lg border bg-primary/5 p-4">
-									<p className="font-medium text-muted-foreground text-xs uppercase">
-										Price
-									</p>
-									<p className="font-semibold text-2xl text-primary">
+								<div className="bg-primary/5 space-y-2 rounded-lg border p-4">
+									<p className="text-muted-foreground text-xs font-medium uppercase">Price</p>
+									<p className="text-primary text-2xl font-semibold">
 										{formatCurrency(item.price)}
 									</p>
-									<p className="text-muted-foreground text-xs">
-										Per {item.unit}
-									</p>
+									<p className="text-muted-foreground text-xs">Per {item.unit}</p>
 								</div>
 
-								<div className="space-y-2 rounded-lg border bg-success/50 p-4 dark:bg-success/20">
-									<p className="font-medium text-muted-foreground text-xs uppercase">
+								<div className="bg-success/50 dark:bg-success/20 space-y-2 rounded-lg border p-4">
+									<p className="text-muted-foreground text-xs font-medium uppercase">
 										Profit Margin
 									</p>
-									<p className="font-semibold text-2xl text-success dark:text-success">
+									<p className="text-success dark:text-success text-2xl font-semibold">
 										{marginPercent}%
 									</p>
-									<p className="text-success text-xs dark:text-success">
+									<p className="text-success dark:text-success text-xs">
 										{formatCurrency(revenue)} profit
 									</p>
 								</div>
@@ -229,15 +208,11 @@ export async function PriceBookItemDetailData({
 
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Markup Percentage
-									</span>
+									<span className="text-muted-foreground text-sm">Markup Percentage</span>
 									<span className="font-medium">{item.markupPercent}%</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Minimum Quantity
-									</span>
+									<span className="text-muted-foreground text-sm">Minimum Quantity</span>
 									<span className="font-medium">{item.minimumQuantity}</span>
 								</div>
 								<div className="flex items-center justify-between">
@@ -257,9 +232,7 @@ export async function PriceBookItemDetailData({
 								<CardTitle>Description</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<p className="text-muted-foreground leading-relaxed">
-									{item.description}
-								</p>
+								<p className="text-muted-foreground leading-relaxed">{item.description}</p>
 							</CardContent>
 						</Card>
 					)}
@@ -269,23 +242,20 @@ export async function PriceBookItemDetailData({
 						<CardHeader>
 							<div className="flex items-center justify-between">
 								<CardTitle>Price History</CardTitle>
-								<History className="size-4 text-muted-foreground" />
+								<History className="text-muted-foreground size-4" />
 							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
 								{history.map((change) => (
-									<div
-										className="flex gap-4 rounded-lg border bg-muted/30 p-4"
-										key={change.id}
-									>
-										<div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background">
-											<TrendingUp className="size-5 text-muted-foreground" />
+									<div className="bg-muted/30 flex gap-4 rounded-lg border p-4" key={change.id}>
+										<div className="bg-background flex size-10 shrink-0 items-center justify-center rounded-full">
+											<TrendingUp className="text-muted-foreground size-5" />
 										</div>
 										<div className="flex-1 space-y-2">
 											<div className="flex items-start justify-between gap-4">
 												<div>
-													<p className="font-medium text-sm">
+													<p className="text-sm font-medium">
 														{change.changeType === "manual"
 															? "Manual Price Update"
 															: change.changeType === "bulk_update"
@@ -293,20 +263,16 @@ export async function PriceBookItemDetailData({
 																: "Supplier Sync"}
 													</p>
 													{change.changeReason && (
-														<p className="text-muted-foreground text-xs">
-															{change.changeReason}
-														</p>
+														<p className="text-muted-foreground text-xs">{change.changeReason}</p>
 													)}
 												</div>
-												<p className="text-nowrap text-muted-foreground text-xs">
+												<p className="text-muted-foreground text-xs text-nowrap">
 													{formatDateTime(change.effectiveDate)}
 												</p>
 											</div>
 											<div className="grid gap-3 text-sm sm:grid-cols-2">
 												<div>
-													<p className="text-muted-foreground text-xs">
-														Cost Change
-													</p>
+													<p className="text-muted-foreground text-xs">Cost Change</p>
 													<p className="font-medium">
 														{formatCurrency(change.oldCost)} →{" "}
 														<span className="text-success dark:text-success">
@@ -315,9 +281,7 @@ export async function PriceBookItemDetailData({
 													</p>
 												</div>
 												<div>
-													<p className="text-muted-foreground text-xs">
-														Price Change
-													</p>
+													<p className="text-muted-foreground text-xs">Price Change</p>
 													<p className="font-medium">
 														{formatCurrency(change.oldPrice)} →{" "}
 														<span className="text-success dark:text-success">
@@ -326,9 +290,7 @@ export async function PriceBookItemDetailData({
 													</p>
 												</div>
 											</div>
-											<p className="text-muted-foreground text-xs">
-												Changed by {change.changedBy}
-											</p>
+											<p className="text-muted-foreground text-xs">Changed by {change.changedBy}</p>
 										</div>
 									</div>
 								))}
@@ -358,15 +320,13 @@ export async function PriceBookItemDetailData({
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="flex items-center gap-3">
-								<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<IconComponent className="size-6 text-primary" />
+								<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+									<IconComponent className="text-primary size-6" />
 								</div>
 								<div className="flex-1">
-									<p className="font-medium text-sm">{item.category}</p>
+									<p className="text-sm font-medium">{item.category}</p>
 									{item.subcategory && (
-										<p className="text-muted-foreground text-xs">
-											{item.subcategory}
-										</p>
+										<p className="text-muted-foreground text-xs">{item.subcategory}</p>
 									)}
 								</div>
 							</div>
@@ -375,28 +335,24 @@ export async function PriceBookItemDetailData({
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">SKU / Item Code</p>
-								<p className="font-medium font-mono text-sm">{item.sku}</p>
+								<p className="font-mono text-sm font-medium">{item.sku}</p>
 							</div>
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">Unit Type</p>
-								<p className="font-medium text-sm capitalize">{item.unit}</p>
+								<p className="text-sm font-medium capitalize">{item.unit}</p>
 							</div>
 
 							<Separator />
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">Created</p>
-								<p className="font-medium text-sm">
-									{formatDate(item.createdAt)}
-								</p>
+								<p className="text-sm font-medium">{formatDate(item.createdAt)}</p>
 							</div>
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">Last Updated</p>
-								<p className="font-medium text-sm">
-									{formatDate(item.updatedAt)}
-								</p>
+								<p className="text-sm font-medium">{formatDate(item.updatedAt)}</p>
 							</div>
 						</CardContent>
 					</Card>
@@ -410,17 +366,13 @@ export async function PriceBookItemDetailData({
 							<CardContent className="space-y-3">
 								<div className="space-y-1">
 									<p className="text-muted-foreground text-xs">Supplier Name</p>
-									<p className="font-medium text-sm">{item.supplierName}</p>
+									<p className="text-sm font-medium">{item.supplierName}</p>
 								</div>
 
 								{item.supplierSku && (
 									<div className="space-y-1">
-										<p className="text-muted-foreground text-xs">
-											Supplier SKU
-										</p>
-										<p className="font-medium font-mono text-sm">
-											{item.supplierSku}
-										</p>
+										<p className="text-muted-foreground text-xs">Supplier SKU</p>
+										<p className="font-mono text-sm font-medium">{item.supplierSku}</p>
 									</div>
 								)}
 							</CardContent>
@@ -453,30 +405,28 @@ export async function PriceBookItemDetailData({
 						<CardContent className="space-y-4">
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<DollarSign className="size-4 text-muted-foreground" />
+									<DollarSign className="text-muted-foreground size-4" />
 									<span className="text-sm">Revenue per unit</span>
 								</div>
-								<span className="font-semibold text-sm text-success dark:text-success">
+								<span className="text-success dark:text-success text-sm font-semibold">
 									{formatCurrency(revenue)}
 								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<TrendingUp className="size-4 text-muted-foreground" />
+									<TrendingUp className="text-muted-foreground size-4" />
 									<span className="text-sm">Markup</span>
 								</div>
-								<span className="font-semibold text-sm">
-									{item.markupPercent}%
-								</span>
+								<span className="text-sm font-semibold">{item.markupPercent}%</span>
 							</div>
 
 							<div className="flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<Clock className="size-4 text-muted-foreground" />
+									<Clock className="text-muted-foreground size-4" />
 									<span className="text-sm">Price updates</span>
 								</div>
-								<span className="font-semibold text-sm">{history.length}</span>
+								<span className="text-sm font-semibold">{history.length}</span>
 							</div>
 						</CardContent>
 					</Card>

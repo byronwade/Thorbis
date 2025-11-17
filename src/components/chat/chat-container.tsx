@@ -10,14 +10,9 @@ type ChatContainerProps = {
 	messages: UIMessage[];
 	input: string;
 	onInputChange: (
-		e:
-			| React.ChangeEvent<HTMLTextAreaElement>
-			| React.ChangeEvent<HTMLInputElement>,
+		e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>
 	) => void;
-	onSubmit: (
-		e: FormEvent<HTMLFormElement>,
-		options?: { data?: Record<string, string> },
-	) => void;
+	onSubmit: (e: FormEvent<HTMLFormElement>, options?: { data?: Record<string, string> }) => void;
 	isLoading: boolean;
 	onStop: () => void;
 };
@@ -56,7 +51,7 @@ export function ChatContainer({
 					{messages.length === 0 ? (
 						<div className="mx-auto mt-4 flex size-full max-w-3xl flex-col justify-center px-4 md:mt-16 md:px-8">
 							<div
-								className="font-semibold text-xl md:text-2xl"
+								className="text-xl font-semibold md:text-2xl"
 								style={{ opacity: 1, transform: "none" }}
 							>
 								Hello there!
@@ -71,11 +66,7 @@ export function ChatContainer({
 					) : (
 						<>
 							{messages.map((message) => (
-								<ChatMessage
-									isLoading={false}
-									key={message.id}
-									message={message}
-								/>
+								<ChatMessage isLoading={false} key={message.id} message={message} />
 							))}
 							{isLoading && <ThinkingMessage />}
 						</>
@@ -85,7 +76,7 @@ export function ChatContainer({
 			</div>
 
 			{/* Input Area with Suggested Actions */}
-			<div className="shrink-0 bg-background">
+			<div className="bg-background shrink-0">
 				{messages.length === 0 && (
 					<div className="mx-auto mb-4 w-full max-w-4xl px-2 pt-4 md:px-4">
 						<SuggestedActions onSelect={handleSuggestedAction} />

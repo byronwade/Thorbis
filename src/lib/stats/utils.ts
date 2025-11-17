@@ -52,17 +52,12 @@ export function generateJobStats(metrics: {
 	// Calculate profit (revenue minus costs)
 	const estimatedProfit = metrics.totalAmount - metrics.materialsCost;
 	const profitMarginCalc =
-		metrics.totalAmount > 0
-			? ((estimatedProfit / metrics.totalAmount) * 100).toFixed(0)
-			: 0;
+		metrics.totalAmount > 0 ? ((estimatedProfit / metrics.totalAmount) * 100).toFixed(0) : 0;
 
 	// Calculate labor efficiency (actual vs estimated)
 	const laborEfficiency =
 		metrics.estimatedLaborHours > 0
-			? (
-					(metrics.totalLaborHours / metrics.estimatedLaborHours) * 100 -
-					100
-				).toFixed(0)
+			? ((metrics.totalLaborHours / metrics.estimatedLaborHours) * 100 - 100).toFixed(0)
 			: 0;
 
 	return [
@@ -73,8 +68,7 @@ export function generateJobStats(metrics: {
 				outstanding > 0
 					? Number((-((outstanding / metrics.totalAmount) * 100)).toFixed(2))
 					: undefined,
-			changeLabel:
-				outstanding > 0 ? `${formatCurrency(outstanding)} due` : "paid in full",
+			changeLabel: outstanding > 0 ? `${formatCurrency(outstanding)} due` : "paid in full",
 		},
 		{
 			label: "Labor Hours",
@@ -218,10 +212,7 @@ export function generatePropertyStats(metrics: {
 			label: "Total Jobs",
 			value: metrics.totalJobs.toString(),
 			change: metrics.activeJobs > 0 ? jobActivityChange : undefined,
-			changeLabel:
-				metrics.activeJobs > 0
-					? `${metrics.activeJobs} active`
-					: "no active jobs",
+			changeLabel: metrics.activeJobs > 0 ? `${metrics.activeJobs} active` : "no active jobs",
 		},
 		{
 			label: "Total Revenue",
@@ -242,9 +233,7 @@ export function generatePropertyStats(metrics: {
 			label: "Next Scheduled",
 			value: formatNextScheduled(metrics.nextScheduledDate),
 			change: metrics.nextScheduledDate ? 100 : undefined,
-			changeLabel: metrics.equipmentCount
-				? `${metrics.equipmentCount} equipment`
-				: "no equipment",
+			changeLabel: metrics.equipmentCount ? `${metrics.equipmentCount} equipment` : "no equipment",
 		},
 	];
 }
@@ -275,9 +264,7 @@ export function generateInvoiceStats(metrics: {
 }): StatCard[] {
 	// Calculate percentage paid
 	const percentPaid =
-		metrics.totalAmount > 0
-			? Math.round((metrics.paidAmount / metrics.totalAmount) * 100)
-			: 0;
+		metrics.totalAmount > 0 ? Math.round((metrics.paidAmount / metrics.totalAmount) * 100) : 0;
 
 	const days = daysUntilDue(metrics.dueDate);
 	const isOverdue = days !== null && days < 0;
@@ -321,10 +308,7 @@ export function generateInvoiceStats(metrics: {
 /**
  * Format valid until date for estimates
  */
-function formatValidUntil(
-	dateString: string | null,
-	daysUntil: number | null,
-): string {
+function formatValidUntil(dateString: string | null, daysUntil: number | null): string {
 	if (!dateString) {
 		return "No expiry";
 	}
@@ -360,10 +344,7 @@ export function generateEstimateStats(metrics: {
 	daysUntilExpiry: number | null;
 	isAccepted: boolean;
 }): StatCard[] {
-	const statusMap: Record<
-		string,
-		{ change: number | undefined; label: string }
-	> = {
+	const statusMap: Record<string, { change: number | undefined; label: string }> = {
 		draft: { change: undefined, label: "not sent" },
 		sent: { change: 50, label: "awaiting response" },
 		accepted: { change: 100, label: "customer approved" },
@@ -387,10 +368,7 @@ export function generateEstimateStats(metrics: {
 			label: "Line Items",
 			value: metrics.lineItemsCount.toString(),
 			change: metrics.lineItemsCount > 0 ? undefined : 0,
-			changeLabel:
-				metrics.totalAmount > 0
-					? formatCurrency(metrics.totalAmount)
-					: "no items",
+			changeLabel: metrics.totalAmount > 0 ? formatCurrency(metrics.totalAmount) : "no items",
 		},
 		{
 			label: "Status",
@@ -467,9 +445,7 @@ export function generateMaterialStats(metrics: {
 	const availabilityChange =
 		metrics.minimumQuantity > 0
 			? Math.round(
-					((metrics.quantityAvailable - metrics.minimumQuantity) /
-						metrics.minimumQuantity) *
-						100,
+					((metrics.quantityAvailable - metrics.minimumQuantity) / metrics.minimumQuantity) * 100
 				)
 			: undefined;
 
@@ -489,9 +465,7 @@ export function generateMaterialStats(metrics: {
 			value: metrics.quantityAvailable,
 			change: availabilityChange,
 			changeLabel:
-				metrics.minimumQuantity > 0
-					? `vs min ${metrics.minimumQuantity}`
-					: "available units",
+				metrics.minimumQuantity > 0 ? `vs min ${metrics.minimumQuantity}` : "available units",
 		},
 		{
 			label: "Reserved",
@@ -578,8 +552,7 @@ export function generateTeamMemberStatsSimple(metrics: {
 		},
 		{
 			label: "Rating",
-			value:
-				metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
+			value: metrics.customerRating > 0 ? metrics.customerRating.toFixed(1) : "N/A",
 			change: 0,
 			changeLabel: "customer rating",
 		},
@@ -638,8 +611,7 @@ export function generateContractStats(metrics: {
 										? "Today"
 										: "Expired"
 								: "Not set",
-						change:
-							daysUntilExpiry !== null && daysUntilExpiry < 7 ? -5 : undefined,
+						change: daysUntilExpiry !== null && daysUntilExpiry < 7 ? -5 : undefined,
 					},
 				]
 			: []),
@@ -660,9 +632,7 @@ export function generatePaymentStats(metrics: {
 }): StatCard[] {
 	const _now = new Date();
 	const createdAt = new Date(metrics.createdAt);
-	const processedAt = metrics.processedAt
-		? new Date(metrics.processedAt)
-		: null;
+	const processedAt = metrics.processedAt ? new Date(metrics.processedAt) : null;
 
 	// Calculate processing time if processed
 	const processingTime = processedAt
@@ -703,9 +673,7 @@ export function generatePaymentStats(metrics: {
 					: "Not processed",
 			change: processingTime !== null && processingTime < 30 ? 100 : undefined,
 			changeLabel:
-				processingTime !== null
-					? `from ${createdAt.toLocaleDateString()}`
-					: "awaiting processing",
+				processingTime !== null ? `from ${createdAt.toLocaleDateString()}` : "awaiting processing",
 		},
 	];
 }
@@ -731,7 +699,7 @@ export function generateTeamMemberStats(
 				totalCertifications: number;
 				completedJobs: number;
 				activeJobs: number;
-		  },
+		  }
 ): StatCard[] {
 	// Check which metrics format we have
 	if ("activeJobsCount" in metrics) {
@@ -750,24 +718,19 @@ export function generateTeamMemberStats(
 				? ((metrics.totalTasksCompleted / metrics.totalTasks) * 100).toFixed(0)
 				: 0;
 
-		const availabilityStatus =
-			metrics.availableHours > 0 ? "available" : "fully booked";
+		const availabilityStatus = metrics.availableHours > 0 ? "available" : "fully booked";
 
 		return [
 			{
 				label: "Active Jobs",
 				value: metrics.activeJobsCount.toString(),
 				change: metrics.activeJobsCount > 0 ? 12.5 : undefined,
-				changeLabel:
-					metrics.activeJobsCount > 0
-						? "currently assigned"
-						: "no active assignments",
+				changeLabel: metrics.activeJobsCount > 0 ? "currently assigned" : "no active assignments",
 			},
 			{
 				label: "Hours This Month",
 				value: formatHours(metrics.hoursThisMonth),
-				change:
-					metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
+				change: metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
 				changeLabel:
 					metrics.averageHoursPerMonth > 0
 						? `vs ${formatHours(metrics.averageHoursPerMonth)} avg`
@@ -789,17 +752,14 @@ export function generateTeamMemberStats(
 	}
 	// Simplified version for detail pages
 	const _completionRate =
-		metrics.totalJobs > 0
-			? Math.round((metrics.completedJobs / metrics.totalJobs) * 100)
-			: 0;
+		metrics.totalJobs > 0 ? Math.round((metrics.completedJobs / metrics.totalJobs) * 100) : 0;
 
 	return [
 		{
 			label: "Active Jobs",
 			value: metrics.activeJobs.toString(),
 			change: metrics.activeJobs > 0 ? undefined : 0,
-			changeLabel:
-				metrics.activeJobs > 0 ? "currently assigned" : "no active assignments",
+			changeLabel: metrics.activeJobs > 0 ? "currently assigned" : "no active assignments",
 		},
 		{
 			label: "Total Jobs",

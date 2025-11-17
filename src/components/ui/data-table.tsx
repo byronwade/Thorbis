@@ -66,7 +66,7 @@ export function DataTable<T extends Record<string, unknown>>({
 						return false;
 					}
 					return String(value).toLowerCase().includes(searchTerm.toLowerCase());
-				}),
+				})
 			)
 		: data;
 
@@ -117,7 +117,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
 	const getSortIcon = (columnKey: string) => {
 		if (sortColumn !== columnKey) {
-			return <ChevronsUpDown className="ml-2 size-3.5 text-muted-foreground" />;
+			return <ChevronsUpDown className="text-muted-foreground ml-2 size-3.5" />;
 		}
 		if (sortDirection === "asc") {
 			return <ChevronUp className="ml-2 size-3.5" />;
@@ -134,7 +134,7 @@ export function DataTable<T extends Record<string, unknown>>({
 			{/* Search Bar */}
 			<div className="flex items-center gap-2">
 				<div className="relative flex-1">
-					<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+					<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 					<Input
 						className="pl-9"
 						onChange={(e) => {
@@ -146,7 +146,7 @@ export function DataTable<T extends Record<string, unknown>>({
 					/>
 					{searchTerm && (
 						<Button
-							className="-translate-y-1/2 absolute top-1/2 right-1 size-7"
+							className="absolute top-1/2 right-1 size-7 -translate-y-1/2"
 							onClick={() => setSearchTerm("")}
 							size="icon"
 							variant="ghost"
@@ -166,7 +166,7 @@ export function DataTable<T extends Record<string, unknown>>({
 								<TableHead className={column.className} key={column.key}>
 									{column.sortable ? (
 										<button
-											className="flex items-center font-medium transition-colors hover:text-foreground"
+											className="hover:text-foreground flex items-center font-medium transition-colors"
 											onClick={() => handleSort(column.key)}
 											type="button"
 										>
@@ -184,7 +184,7 @@ export function DataTable<T extends Record<string, unknown>>({
 						{paginatedData.length === 0 ? (
 							<TableRow>
 								<TableCell
-									className="h-24 text-center text-muted-foreground"
+									className="text-muted-foreground h-24 text-center"
 									colSpan={columns.length}
 								>
 									{emptyMessage}
@@ -195,9 +195,7 @@ export function DataTable<T extends Record<string, unknown>>({
 								<TableRow key={String(item[keyField])}>
 									{columns.map((column) => (
 										<TableCell className={column.className} key={column.key}>
-											{column.render
-												? column.render(item)
-												: String(item[column.key] ?? "")}
+											{column.render ? column.render(item) : String(item[column.key] ?? "")}
 										</TableCell>
 									))}
 								</TableRow>
@@ -211,8 +209,8 @@ export function DataTable<T extends Record<string, unknown>>({
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between">
 					<div className="text-muted-foreground text-sm">
-						Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)}{" "}
-						of {sortedData.length} results
+						Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)} of{" "}
+						{sortedData.length} results
 					</div>
 					<div className="flex items-center gap-2">
 						<Button

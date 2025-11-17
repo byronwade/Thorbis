@@ -116,39 +116,24 @@ export function CallPopupMinimal({
 		customerData?.customer &&
 		typeof customerData.customer === "object" &&
 		"avatar_url" in customerData.customer
-			? ((customerData.customer as { avatar_url?: string }).avatar_url ??
-				undefined)
+			? ((customerData.customer as { avatar_url?: string }).avatar_url ?? undefined)
 			: undefined;
 
 	return (
 		<div
 			className={cn(
-				"fixed right-4 bottom-4 z-50 w-80 rounded-lg border bg-card shadow-2xl transition-all duration-300",
-				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+				"bg-card fixed right-4 bottom-4 z-50 w-80 rounded-lg border shadow-2xl transition-all duration-300",
+				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
 			)}
 		>
 			{/* Header */}
-			<div className="flex items-center justify-between border-b bg-card/50 p-3">
+			<div className="bg-card/50 flex items-center justify-between border-b p-3">
 				<div className="flex items-center gap-2">
-					<div
-						className={cn(
-							"h-2 w-2 animate-pulse rounded-full",
-							getStatusColor(),
-						)}
-					/>
-					<span className="font-medium text-sm capitalize">{status}</span>
-					{duration && (
-						<span className="font-mono text-muted-foreground text-xs">
-							{duration}
-						</span>
-					)}
+					<div className={cn("h-2 w-2 animate-pulse rounded-full", getStatusColor())} />
+					<span className="text-sm font-medium capitalize">{status}</span>
+					{duration && <span className="text-muted-foreground font-mono text-xs">{duration}</span>}
 				</div>
-				<Button
-					className="h-6 w-6"
-					onClick={onClose}
-					size="icon"
-					variant="ghost"
-				>
+				<Button className="h-6 w-6" onClick={onClose} size="icon" variant="ghost">
 					<X className="h-3 w-3" />
 				</Button>
 			</div>
@@ -165,18 +150,16 @@ export function CallPopupMinimal({
 
 					<div className="min-w-0 flex-1">
 						<div className="flex items-center gap-2">
-							<h3 className="truncate font-semibold text-sm">{callerName}</h3>
+							<h3 className="truncate text-sm font-semibold">{callerName}</h3>
 							{customerData?.isKnownCustomer && (
 								<Badge className="h-4 px-1.5 text-[10px]" variant="outline">
 									Customer
 								</Badge>
 							)}
 						</div>
-						<p className="font-mono text-muted-foreground text-xs">
-							{callerNumber}
-						</p>
+						<p className="text-muted-foreground font-mono text-xs">{callerNumber}</p>
 						{customerData?.customer?.email && (
-							<p className="truncate text-muted-foreground text-xs">
+							<p className="text-muted-foreground truncate text-xs">
 								{customerData.customer.email}
 							</p>
 						)}
@@ -185,7 +168,7 @@ export function CallPopupMinimal({
 			</div>
 
 			{/* Call Controls */}
-			<div className="border-t bg-muted/30 p-3">
+			<div className="bg-muted/30 border-t p-3">
 				<div className="flex items-center justify-between gap-2">
 					{/* Left: Primary actions */}
 					<div className="flex items-center gap-1">
@@ -205,11 +188,7 @@ export function CallPopupMinimal({
 							size="icon"
 							variant={isMuted ? "destructive" : "ghost"}
 						>
-							{isMuted ? (
-								<MicOff className="h-4 w-4" />
-							) : (
-								<Mic className="h-4 w-4" />
-							)}
+							{isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
 						</Button>
 
 						<Button

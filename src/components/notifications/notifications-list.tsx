@@ -34,10 +34,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import type {
-	NotificationPriority,
-	NotificationType,
-} from "@/lib/stores/notifications-store";
+import type { NotificationPriority, NotificationType } from "@/lib/stores/notifications-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { createClient } from "@/lib/supabase/client";
 
@@ -67,8 +64,7 @@ const priorityColors: Record<NotificationPriority, string> = {
 	low: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 	medium: "bg-primary text-primary dark:bg-primary dark:text-primary",
 	high: "bg-warning text-warning dark:bg-warning dark:text-warning",
-	urgent:
-		"bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
+	urgent: "bg-destructive text-destructive dark:bg-destructive dark:text-destructive",
 };
 
 function formatTimestamp(date: Date): string {
@@ -97,24 +93,14 @@ function formatTimestamp(date: Date): string {
 export function NotificationsList() {
 	const [isInitialized, setIsInitialized] = useState(false);
 	const [filterType, setFilterType] = useState<NotificationType | "all">("all");
-	const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">(
-		"all",
-	);
+	const [filterRead, setFilterRead] = useState<"all" | "unread" | "read">("all");
 
 	// Get notifications from Zustand store
 	const notifications = useNotificationsStore((state) => state.notifications);
-	const setNotifications = useNotificationsStore(
-		(state) => state.setNotifications,
-	);
-	const optimisticMarkAsRead = useNotificationsStore(
-		(state) => state.optimisticMarkAsRead,
-	);
-	const optimisticMarkAllAsRead = useNotificationsStore(
-		(state) => state.optimisticMarkAllAsRead,
-	);
-	const optimisticDelete = useNotificationsStore(
-		(state) => state.optimisticDelete,
-	);
+	const setNotifications = useNotificationsStore((state) => state.setNotifications);
+	const optimisticMarkAsRead = useNotificationsStore((state) => state.optimisticMarkAsRead);
+	const optimisticMarkAllAsRead = useNotificationsStore((state) => state.optimisticMarkAllAsRead);
+	const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
 	const subscribe = useNotificationsStore((state) => state.subscribe);
 	const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -249,29 +235,22 @@ export function NotificationsList() {
 					>
 						All Types
 					</Button>
-					{(
-						[
-							"message",
-							"alert",
-							"payment",
-							"job",
-							"team",
-							"system",
-						] as NotificationType[]
-					).map((type) => {
-						const Icon = notificationIcons[type];
-						return (
-							<Button
-								key={type}
-								onClick={() => setFilterType(type)}
-								size="sm"
-								variant={filterType === type ? "default" : "ghost"}
-							>
-								<Icon className="mr-2 size-3" />
-								{type.charAt(0).toUpperCase() + type.slice(1)}
-							</Button>
-						);
-					})}
+					{(["message", "alert", "payment", "job", "team", "system"] as NotificationType[]).map(
+						(type) => {
+							const Icon = notificationIcons[type];
+							return (
+								<Button
+									key={type}
+									onClick={() => setFilterType(type)}
+									size="sm"
+									variant={filterType === type ? "default" : "ghost"}
+								>
+									<Icon className="mr-2 size-3" />
+									{type.charAt(0).toUpperCase() + type.slice(1)}
+								</Button>
+							);
+						}
+					)}
 				</div>
 			</Card>
 
@@ -279,8 +258,8 @@ export function NotificationsList() {
 			{filteredNotifications.length === 0 ? (
 				<Card className="p-12">
 					<div className="flex flex-col items-center justify-center text-center">
-						<Bell className="mb-4 size-16 text-muted-foreground/30" />
-						<h3 className="mb-2 font-semibold text-lg">No notifications</h3>
+						<Bell className="text-muted-foreground/30 mb-4 size-16" />
+						<h3 className="mb-2 text-lg font-semibold">No notifications</h3>
 						<p className="text-muted-foreground text-sm">
 							{filterRead === "unread"
 								? "You're all caught up! No unread notifications."
@@ -301,9 +280,7 @@ export function NotificationsList() {
 							>
 								<div className="flex gap-4">
 									{/* Icon */}
-									<div
-										className={`mt-1 shrink-0 ${notificationColors[notification.type]}`}
-									>
+									<div className={`mt-1 shrink-0 ${notificationColors[notification.type]}`}>
 										<Icon className="size-5" />
 									</div>
 
@@ -311,24 +288,17 @@ export function NotificationsList() {
 									<div className="min-w-0 flex-1 space-y-2">
 										<div className="flex items-start justify-between gap-2">
 											<div className="flex-1">
-												<h3 className="font-semibold text-base">
-													{notification.title}
-												</h3>
-												<p className="mt-1 text-muted-foreground text-sm">
-													{notification.message}
-												</p>
+												<h3 className="text-base font-semibold">{notification.title}</h3>
+												<p className="text-muted-foreground mt-1 text-sm">{notification.message}</p>
 											</div>
-											<Badge
-												className={priorityColors[notification.priority]}
-												variant="outline"
-											>
+											<Badge className={priorityColors[notification.priority]} variant="outline">
 												{notification.priority}
 											</Badge>
 										</div>
 
 										{/* Footer */}
 										<div className="flex flex-wrap items-center justify-between gap-2">
-											<div className="flex items-center gap-1 text-muted-foreground text-xs">
+											<div className="text-muted-foreground flex items-center gap-1 text-xs">
 												<Clock className="size-3" />
 												{formatTimestamp(new Date(notification.created_at))}
 											</div>

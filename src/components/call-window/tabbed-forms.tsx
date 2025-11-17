@@ -47,51 +47,51 @@ export function TabbedForms() {
 	}, []);
 
 	return (
-		<div className="flex h-full flex-col bg-background">
+		<div className="bg-background flex h-full flex-col">
 			<Tabs
 				className="flex h-full flex-col"
 				onValueChange={(value) => setActiveTab(value as TabValue)}
 				value={activeTab}
 			>
 				{/* Tab Navigation */}
-				<div className="border-border border-b bg-card px-4">
+				<div className="border-border bg-card border-b px-4">
 					<TabsList className="h-14 w-full justify-start gap-1 bg-transparent p-0">
 						<TabsTrigger
 							className={cn(
-								"relative gap-2 rounded-none border-transparent border-b-2 px-4 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50",
+								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+								"hover:bg-accent/50"
 							)}
 							value="customer"
 						>
 							<User className="h-4 w-4" />
 							<span className="font-medium">Customer</span>
-							<kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-70 sm:flex">
+							<kbd className="bg-muted pointer-events-none ml-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-70 select-none sm:flex">
 								<span className="text-xs">⌘</span>1
 							</kbd>
 						</TabsTrigger>
 						<TabsTrigger
 							className={cn(
-								"relative gap-2 rounded-none border-transparent border-b-2 px-4 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50",
+								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+								"hover:bg-accent/50"
 							)}
 							value="job"
 						>
 							<Building2 className="h-4 w-4" />
 							<span className="font-medium">Job</span>
-							<kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-70 sm:flex">
+							<kbd className="bg-muted pointer-events-none ml-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-70 select-none sm:flex">
 								<span className="text-xs">⌘</span>2
 							</kbd>
 						</TabsTrigger>
 						<TabsTrigger
 							className={cn(
-								"relative gap-2 rounded-none border-transparent border-b-2 px-4 py-3 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50",
+								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+								"hover:bg-accent/50"
 							)}
 							value="appointment"
 						>
 							<Calendar className="h-4 w-4" />
 							<span className="font-medium">Appointment</span>
-							<kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-70 sm:flex">
+							<kbd className="bg-muted pointer-events-none ml-2 hidden h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-70 select-none sm:flex">
 								<span className="text-xs">⌘</span>3
 							</kbd>
 						</TabsTrigger>

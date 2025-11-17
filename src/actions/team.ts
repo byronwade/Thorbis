@@ -12,11 +12,7 @@ import { PasswordResetTemplate } from "@/components/emails/password-reset-templa
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { hasRole, isCompanyOwner } from "@/lib/auth/permissions";
 import { sendEmail } from "@/lib/email/email-sender";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -44,9 +40,7 @@ const createRoleSchema = z.object({
 		.string()
 		.regex(/^#([0-9A-Fa-f]{6})$/, "Color must be a hex value")
 		.optional(),
-	permissions: z
-		.array(z.string())
-		.min(1, "At least one permission is required"),
+	permissions: z.array(z.string()).min(1, "At least one permission is required"),
 });
 
 // Schema for creating departments
@@ -59,16 +53,11 @@ const createDepartmentSchema = z.object({
 /**
  * Invite team member
  */
-export async function inviteTeamMember(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function inviteTeamMember(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -88,7 +77,7 @@ export async function inviteTeamMember(
 			throw new ActionError(
 				"You must be part of a company to invite team members",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -126,7 +115,7 @@ export async function inviteTeamMember(
 			if (userError) {
 				throw new ActionError(
 					ERROR_MESSAGES.operationFailed("create user"),
-					ERROR_CODES.DB_QUERY_ERROR,
+					ERROR_CODES.DB_QUERY_ERROR
 				);
 			}
 
@@ -177,35 +166,23 @@ export async function inviteTeamMember(
 		if (inviteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("send invitation"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
 		// Send magic link invitation email
 		try {
-			const { sendSingleTeamInvitation } = await import(
-				"@/actions/team-invitations"
-			);
+			const { sendSingleTeamInvitation } = await import("@/actions/team-invitations");
 
 			// Create FormData for the invitation
 			const invitationFormData = new FormData();
 			invitationFormData.append("email", formData.get("email") as string);
-			invitationFormData.append(
-				"firstName",
-				(formData.get("first_name") as string) || "",
-			);
-			invitationFormData.append(
-				"lastName",
-				(formData.get("last_name") as string) || "",
-			);
+			invitationFormData.append("firstName", (formData.get("first_name") as string) || "");
+			invitationFormData.append("lastName", (formData.get("last_name") as string) || "");
 			invitationFormData.append("role", formData.get("role") as string);
-			invitationFormData.append(
-				"phone",
-				(formData.get("phone") as string) || "",
-			);
+			invitationFormData.append("phone", (formData.get("phone") as string) || "");
 
-			const invitationResult =
-				await sendSingleTeamInvitation(invitationFormData);
+			const invitationResult = await sendSingleTeamInvitation(invitationFormData);
 
 			if (!invitationResult.success) {
 				// Don't fail the whole operation if email fails
@@ -224,15 +201,12 @@ export async function inviteTeamMember(
  */
 export async function updateTeamMember(
 	memberId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -249,11 +223,7 @@ export async function updateTeamMember(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify team member belongs to same company
@@ -269,7 +239,7 @@ export async function updateTeamMember(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team member"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -314,7 +284,7 @@ export async function updateTeamMember(
 			if (company && company.owner_id === targetMember.user_id) {
 				throw new ActionError(
 					"Cannot archive or deactivate company owner. Transfer ownership first.",
-					ERROR_CODES.BUSINESS_RULE_VIOLATION,
+					ERROR_CODES.BUSINESS_RULE_VIOLATION
 				);
 			}
 		}
@@ -335,7 +305,7 @@ export async function updateTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -347,16 +317,11 @@ export async function updateTeamMember(
 /**
  * Remove team member
  */
-export async function removeTeamMember(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function removeTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -373,11 +338,7 @@ export async function removeTeamMember(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify team member belongs to same company
@@ -393,7 +354,7 @@ export async function removeTeamMember(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team member"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -401,7 +362,7 @@ export async function removeTeamMember(
 		if (targetMember.user_id === user.id) {
 			throw new ActionError(
 				"You cannot remove yourself from the team",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -409,14 +370,10 @@ export async function removeTeamMember(
 		const { canDeleteTeamMember } = await import("./roles");
 		const canDeleteResult = await canDeleteTeamMember(memberId);
 
-		if (
-			canDeleteResult.success &&
-			canDeleteResult.data &&
-			!canDeleteResult.data.canDelete
-		) {
+		if (canDeleteResult.success && canDeleteResult.data && !canDeleteResult.data.canDelete) {
 			throw new ActionError(
 				canDeleteResult.data.reason || "Cannot delete this team member",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -429,7 +386,7 @@ export async function removeTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("remove team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -441,16 +398,11 @@ export async function removeTeamMember(
 /**
  * Suspend team member - sets status to 'suspended'
  */
-export async function suspendTeamMember(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function suspendTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -463,11 +415,7 @@ export async function suspendTeamMember(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify team member belongs to same company
@@ -482,17 +430,14 @@ export async function suspendTeamMember(
 
 		// Prevent suspending yourself
 		if (targetMember.user_id === user.id) {
-			throw new ActionError(
-				"You cannot suspend yourself",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
-			);
+			throw new ActionError("You cannot suspend yourself", ERROR_CODES.BUSINESS_RULE_VIOLATION);
 		}
 
 		// Check if already suspended
 		if (targetMember.status === "suspended") {
 			throw new ActionError(
 				"Team member is already suspended",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -500,14 +445,10 @@ export async function suspendTeamMember(
 		const { canDeleteTeamMember } = await import("./roles");
 		const canSuspendResult = await canDeleteTeamMember(memberId);
 
-		if (
-			canSuspendResult.success &&
-			canSuspendResult.data &&
-			!canSuspendResult.data.canDelete
-		) {
+		if (canSuspendResult.success && canSuspendResult.data && !canSuspendResult.data.canDelete) {
 			throw new ActionError(
 				canSuspendResult.data.reason || "Cannot suspend this team member",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -520,7 +461,7 @@ export async function suspendTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("suspend team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -533,16 +474,11 @@ export async function suspendTeamMember(
 /**
  * Activate team member - sets status to 'active'
  */
-export async function activateTeamMember(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function activateTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -555,11 +491,7 @@ export async function activateTeamMember(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify team member belongs to same company
@@ -574,10 +506,7 @@ export async function activateTeamMember(
 
 		// Check if already active
 		if (targetMember.status === "active") {
-			throw new ActionError(
-				"Team member is already active",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
-			);
+			throw new ActionError("Team member is already active", ERROR_CODES.BUSINESS_RULE_VIOLATION);
 		}
 
 		// Update status to active
@@ -589,7 +518,7 @@ export async function activateTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("activate team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -602,16 +531,11 @@ export async function activateTeamMember(
 /**
  * Archive team member - permanently removes from team
  */
-export async function archiveTeamMember(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function archiveTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -624,11 +548,7 @@ export async function archiveTeamMember(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify team member belongs to same company
@@ -643,24 +563,17 @@ export async function archiveTeamMember(
 
 		// Prevent archiving yourself
 		if (targetMember.user_id === user.id) {
-			throw new ActionError(
-				"You cannot archive yourself",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
-			);
+			throw new ActionError("You cannot archive yourself", ERROR_CODES.BUSINESS_RULE_VIOLATION);
 		}
 
 		// Check if team member can be archived (prevents owner archival)
 		const { canDeleteTeamMember } = await import("./roles");
 		const canArchiveResult = await canDeleteTeamMember(memberId);
 
-		if (
-			canArchiveResult.success &&
-			canArchiveResult.data &&
-			!canArchiveResult.data.canDelete
-		) {
+		if (canArchiveResult.success && canArchiveResult.data && !canArchiveResult.data.canDelete) {
 			throw new ActionError(
 				canArchiveResult.data.reason || "Cannot archive this team member",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -673,7 +586,7 @@ export async function archiveTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("archive team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -686,13 +599,8 @@ export async function archiveTeamMember(
 			entity_id: memberId,
 			metadata: {
 				archived_by_name:
-					(
-						await supabase
-							.from("users")
-							.select("name")
-							.eq("id", user.id)
-							.single()
-					).data?.name || "Unknown",
+					(await supabase.from("users").select("name").eq("id", user.id).single()).data?.name ||
+					"Unknown",
 			},
 		});
 
@@ -704,16 +612,11 @@ export async function archiveTeamMember(
 /**
  * Restore an archived team member
  */
-export async function restoreTeamMember(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function restoreTeamMember(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -726,11 +629,7 @@ export async function restoreTeamMember(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if user is owner or manager
@@ -741,7 +640,7 @@ export async function restoreTeamMember(
 			throw new ActionError(
 				"Only owners and managers can restore team members",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -756,10 +655,7 @@ export async function restoreTeamMember(
 		assertExists(targetMember, "Team member");
 
 		if (!targetMember.archived_at) {
-			throw new ActionError(
-				"Team member is not archived",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
-			);
+			throw new ActionError("Team member is not archived", ERROR_CODES.BUSINESS_RULE_VIOLATION);
 		}
 
 		// Restore the team member (clear archived_at timestamp)
@@ -771,7 +667,7 @@ export async function restoreTeamMember(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("restore team member"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -784,13 +680,8 @@ export async function restoreTeamMember(
 			entity_id: memberId,
 			metadata: {
 				restored_by_name:
-					(
-						await supabase
-							.from("users")
-							.select("name")
-							.eq("id", user.id)
-							.single()
-					).data?.name || "Unknown",
+					(await supabase.from("users").select("name").eq("id", user.id).single()).data?.name ||
+					"Unknown",
 			},
 		});
 
@@ -803,16 +694,11 @@ export async function restoreTeamMember(
  * Send password reset email to team member
  * Only accessible by owners and managers
  */
-export async function sendPasswordResetEmail(
-	memberId: string,
-): Promise<ActionResult<void>> {
+export async function sendPasswordResetEmail(memberId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -825,11 +711,7 @@ export async function sendPasswordResetEmail(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if user is owner or manager
@@ -840,7 +722,7 @@ export async function sendPasswordResetEmail(
 			throw new ActionError(
 				"Only owners and managers can reset passwords",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -874,23 +756,19 @@ export async function sendPasswordResetEmail(
 			.single();
 
 		if (!userData?.email) {
-			throw new ActionError(
-				"Team member email not found",
-				ERROR_CODES.DB_RECORD_NOT_FOUND,
-			);
+			throw new ActionError("Team member email not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
 		}
 
 		// Generate password reset link via Supabase Admin API
-		const { data: resetData, error: resetError } =
-			await supabase.auth.admin.generateLink({
-				type: "recovery",
-				email: userData.email,
-			});
+		const { data: resetData, error: resetError } = await supabase.auth.admin.generateLink({
+			type: "recovery",
+			email: userData.email,
+		});
 
 		if (resetError || !resetData?.properties?.action_link) {
 			throw new ActionError(
 				"Failed to generate password reset link",
-				ERROR_CODES.INTERNAL_SERVER_ERROR,
+				ERROR_CODES.INTERNAL_SERVER_ERROR
 			);
 		}
 
@@ -915,7 +793,7 @@ export async function sendPasswordResetEmail(
 		if (!emailResult.success) {
 			throw new ActionError(
 				emailResult.error || "Failed to send password reset email",
-				ERROR_CODES.INTERNAL_SERVER_ERROR,
+				ERROR_CODES.INTERNAL_SERVER_ERROR
 			);
 		}
 
@@ -938,16 +816,11 @@ export async function sendPasswordResetEmail(
  * Check if current user can manage team member
  * Returns true if current user is owner or manager
  */
-export async function canManageTeamMember(
-	_memberId: string,
-): Promise<ActionResult<boolean>> {
+export async function canManageTeamMember(_memberId: string): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -986,10 +859,7 @@ export async function getTeamMemberPermissions(memberId: string): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1002,11 +872,7 @@ export async function getTeamMemberPermissions(memberId: string): Promise<
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if user can manage team members
@@ -1044,15 +910,12 @@ export async function getTeamMemberPermissions(memberId: string): Promise<
  */
 export async function updateTeamMemberPermissions(
 	memberId: string,
-	newRole: string,
+	newRole: string
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1065,11 +928,7 @@ export async function updateTeamMemberPermissions(
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Check if user is owner or manager
@@ -1081,7 +940,7 @@ export async function updateTeamMemberPermissions(
 			throw new ActionError(
 				"Only owners, admins, and managers can update permissions",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -1097,10 +956,7 @@ export async function updateTeamMemberPermissions(
 
 		// Prevent changing your own role
 		if (targetMember.user_id === user.id) {
-			throw new ActionError(
-				"You cannot change your own role",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
-			);
+			throw new ActionError("You cannot change your own role", ERROR_CODES.BUSINESS_RULE_VIOLATION);
 		}
 
 		// Get the new role ID
@@ -1112,10 +968,7 @@ export async function updateTeamMemberPermissions(
 			.single();
 
 		if (!roleData) {
-			throw new ActionError(
-				`Role '${newRole}' not found`,
-				ERROR_CODES.DB_RECORD_NOT_FOUND,
-			);
+			throw new ActionError(`Role '${newRole}' not found`, ERROR_CODES.DB_RECORD_NOT_FOUND);
 		}
 
 		// Update team member role
@@ -1127,7 +980,7 @@ export async function updateTeamMemberPermissions(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update permissions"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1153,16 +1006,11 @@ export async function updateTeamMemberPermissions(
 /**
  * Create role
  */
-export async function createRole(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createRole(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1179,11 +1027,7 @@ export async function createRole(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const permissionsString = formData.get("permissions") as string;
@@ -1205,10 +1049,7 @@ export async function createRole(
 			.single();
 
 		if (existingRole) {
-			throw new ActionError(
-				ERROR_MESSAGES.alreadyExists("Role"),
-				ERROR_CODES.DB_DUPLICATE_ENTRY,
-			);
+			throw new ActionError(ERROR_MESSAGES.alreadyExists("Role"), ERROR_CODES.DB_DUPLICATE_ENTRY);
 		}
 
 		// Create role
@@ -1228,7 +1069,7 @@ export async function createRole(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create role"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1240,17 +1081,11 @@ export async function createRole(
 /**
  * Update role
  */
-export async function updateRole(
-	roleId: string,
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateRole(roleId: string, formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1267,11 +1102,7 @@ export async function updateRole(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify role belongs to company and is not a system role
@@ -1284,18 +1115,11 @@ export async function updateRole(
 		assertExists(existingRole, "Role");
 
 		if (existingRole.company_id !== currentUserTeam.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("role"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("role"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		if (existingRole.is_system) {
-			throw new ActionError(
-				"System roles cannot be modified",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+			throw new ActionError("System roles cannot be modified", ERROR_CODES.OPERATION_NOT_ALLOWED);
 		}
 
 		const permissionsString = formData.get("permissions") as string;
@@ -1322,7 +1146,7 @@ export async function updateRole(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update role"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1338,10 +1162,7 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1358,11 +1179,7 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify role belongs to company and is not a system role
@@ -1375,18 +1192,11 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 		assertExists(existingRole, "Role");
 
 		if (existingRole.company_id !== currentUserTeam.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("role"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("role"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		if (existingRole.is_system) {
-			throw new ActionError(
-				"System roles cannot be deleted",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+			throw new ActionError("System roles cannot be deleted", ERROR_CODES.OPERATION_NOT_ALLOWED);
 		}
 
 		// Check if role is in use by any team members
@@ -1397,32 +1207,23 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 			.limit(1);
 
 		if (checkError) {
-			throw new ActionError(
-				"Failed to check role usage",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to check role usage", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		if (teamMembersWithRole && teamMembersWithRole.length > 0) {
 			throw new ActionError(
-				ERROR_MESSAGES.cannotDelete(
-					"role",
-					"it is currently assigned to team members",
-				),
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_MESSAGES.cannotDelete("role", "it is currently assigned to team members"),
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
 		// Delete role
-		const { error: deleteError } = await supabase
-			.from("custom_roles")
-			.delete()
-			.eq("id", roleId);
+		const { error: deleteError } = await supabase.from("custom_roles").delete().eq("id", roleId);
 
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete role"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1433,16 +1234,11 @@ export async function deleteRole(roleId: string): Promise<ActionResult<void>> {
 /**
  * Create department
  */
-export async function createDepartment(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createDepartment(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1459,11 +1255,7 @@ export async function createDepartment(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const data = createDepartmentSchema.parse({
@@ -1483,7 +1275,7 @@ export async function createDepartment(
 		if (existingDepartment) {
 			throw new ActionError(
 				ERROR_MESSAGES.alreadyExists("Department"),
-				ERROR_CODES.DB_DUPLICATE_ENTRY,
+				ERROR_CODES.DB_DUPLICATE_ENTRY
 			);
 		}
 
@@ -1501,7 +1293,7 @@ export async function createDepartment(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create department"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1515,15 +1307,12 @@ export async function createDepartment(
  */
 export async function updateDepartment(
 	departmentId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1540,11 +1329,7 @@ export async function updateDepartment(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify department belongs to company
@@ -1560,7 +1345,7 @@ export async function updateDepartment(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("department"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -1582,7 +1367,7 @@ export async function updateDepartment(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update department"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1593,16 +1378,11 @@ export async function updateDepartment(
 /**
  * Delete department
  */
-export async function deleteDepartment(
-	departmentId: string,
-): Promise<ActionResult<void>> {
+export async function deleteDepartment(departmentId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -1619,11 +1399,7 @@ export async function deleteDepartment(
 			.single();
 
 		if (!currentUserTeam?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify department belongs to company
@@ -1639,7 +1415,7 @@ export async function deleteDepartment(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("department"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -1651,19 +1427,13 @@ export async function deleteDepartment(
 			.limit(1);
 
 		if (checkError) {
-			throw new ActionError(
-				"Failed to check department usage",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to check department usage", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		if (teamMembersInDept && teamMembersInDept.length > 0) {
 			throw new ActionError(
-				ERROR_MESSAGES.cannotDelete(
-					"department",
-					"it still has team members assigned",
-				),
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_MESSAGES.cannotDelete("department", "it still has team members assigned"),
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -1676,7 +1446,7 @@ export async function deleteDepartment(
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete department"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1730,10 +1500,7 @@ export async function getTeamMembers() {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -1745,11 +1512,7 @@ export async function getTeamMembers() {
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Fetch all team members for the company (including archived)
@@ -1773,7 +1536,7 @@ export async function getTeamMembers() {
         archived_at,
         invited_name,
         invited_email
-      `,
+      `
 			)
 			.eq("company_id", companyId)
 			.order("created_at", { ascending: false });
@@ -1783,7 +1546,7 @@ export async function getTeamMembers() {
 				ERROR_MESSAGES.operationFailed("fetch team members"),
 				ERROR_CODES.DB_QUERY_ERROR,
 				undefined,
-				membersError,
+				membersError
 			);
 		}
 
@@ -1794,9 +1557,7 @@ export async function getTeamMembers() {
 		// Get unique user IDs and role IDs
 		const userIds = [
 			...new Set(
-				members
-					.map((m) => m.user_id)
-					.filter((value): value is string => typeof value === "string"),
+				members.map((m) => m.user_id).filter((value): value is string => typeof value === "string")
 			),
 		];
 		const roleIds = [...new Set(members.map((m) => m.role_id).filter(Boolean))];
@@ -1804,10 +1565,7 @@ export async function getTeamMembers() {
 		// Fetch user details from public.users
 		const { data: users } =
 			userIds.length > 0
-				? await supabase
-						.from("users")
-						.select("id, name, email, avatar")
-						.in("id", userIds)
+				? await supabase.from("users").select("id, name, email, avatar").in("id", userIds)
 				: { data: [] };
 
 		// Fetch role details
@@ -1823,15 +1581,10 @@ export async function getTeamMembers() {
 		// Transform the data to match expected structure
 		const transformedMembers = members.map((member: any) => {
 			const resolvedUser =
-				member.user_id && usersMap.get(member.user_id)
-					? usersMap.get(member.user_id)
-					: null;
+				member.user_id && usersMap.get(member.user_id) ? usersMap.get(member.user_id) : null;
 
 			const fallbackName =
-				member.invited_name ||
-				member.email ||
-				member.invited_email ||
-				"Pending team member";
+				member.invited_name || member.email || member.invited_email || "Pending team member";
 
 			const fallbackEmail = member.email || member.invited_email || "";
 
@@ -1890,10 +1643,7 @@ export async function getRoles(): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -1909,11 +1659,7 @@ export async function getRoles(): Promise<
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Fetch roles
@@ -1926,7 +1672,7 @@ export async function getRoles(): Promise<
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch roles"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1943,10 +1689,13 @@ export async function getRoles(): Promise<
 			.not("role_id", "is", null);
 
 		// Aggregate counts by role in-memory
-		const countsMap = (roleCounts || []).reduce((acc, member) => {
-			acc[member.role_id] = (acc[member.role_id] || 0) + 1;
-			return acc;
-		}, {} as Record<string, number>);
+		const countsMap = (roleCounts || []).reduce(
+			(acc, member) => {
+				acc[member.role_id] = (acc[member.role_id] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>
+		);
 
 		// Map roles with their counts
 		const rolesWithCounts = roles.map((role) => ({
@@ -1972,10 +1721,7 @@ export async function getRoleDetails(roleId: string): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -1985,34 +1731,21 @@ export async function getRoleDetails(roleId: string): Promise<
 
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const { data: role, error } = await supabase
 			.from("custom_roles")
-			.select(
-				"id, name, description, color, permissions, is_system, company_id",
-			)
+			.select("id, name, description, color, permissions, is_system, company_id")
 			.eq("id", roleId)
 			.single();
 
 		if (error || !role) {
-			throw new ActionError(
-				ERROR_MESSAGES.notFound("role"),
-				ERROR_CODES.NOT_FOUND,
-			);
+			throw new ActionError(ERROR_MESSAGES.notFound("role"), ERROR_CODES.NOT_FOUND);
 		}
 
 		if (role.company_id !== companyId) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("role"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("role"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const { count } = await supabase
@@ -2026,9 +1759,7 @@ export async function getRoleDetails(roleId: string): Promise<
 			name: role.name,
 			description: role.description,
 			color: role.color,
-			permissions: Array.isArray(role.permissions)
-				? (role.permissions as string[])
-				: [],
+			permissions: Array.isArray(role.permissions) ? (role.permissions as string[]) : [],
 			is_system: role.is_system,
 			member_count: count ?? 0,
 		};
@@ -2052,10 +1783,7 @@ export async function getDepartments(): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -2071,11 +1799,7 @@ export async function getDepartments(): Promise<
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Fetch departments
@@ -2088,7 +1812,7 @@ export async function getDepartments(): Promise<
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch departments"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -2105,10 +1829,13 @@ export async function getDepartments(): Promise<
 			.not("department_id", "is", null);
 
 		// Aggregate counts by department in-memory
-		const deptCountsMap = (deptCounts || []).reduce((acc, member) => {
-			acc[member.department_id] = (acc[member.department_id] || 0) + 1;
-			return acc;
-		}, {} as Record<string, number>);
+		const deptCountsMap = (deptCounts || []).reduce(
+			(acc, member) => {
+				acc[member.department_id] = (acc[member.department_id] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>
+		);
 
 		// Map departments with their counts
 		const departmentsWithCounts = departments.map((dept) => ({
@@ -2148,25 +1875,16 @@ export type TeamOverviewSnapshot = {
 	};
 };
 
-export async function getTeamOverview(): Promise<
-	ActionResult<TeamOverviewSnapshot>
-> {
+export async function getTeamOverview(): Promise<ActionResult<TeamOverviewSnapshot>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const [membersResult, rolesResult, departmentsResult] = await Promise.all([
@@ -2174,29 +1892,26 @@ export async function getTeamOverview(): Promise<
 				.from("team_members")
 				.select("status, invited_at, joined_at, department_id")
 				.eq("company_id", companyId),
-			supabase
-				.from("custom_roles")
-				.select("id, is_system")
-				.eq("company_id", companyId),
+			supabase.from("custom_roles").select("id, is_system").eq("company_id", companyId),
 			supabase.from("departments").select("id").eq("company_id", companyId),
 		]);
 
 		if (membersResult.error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch team members"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 		if (rolesResult.error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch roles"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 		if (departmentsResult.error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch departments"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -2221,29 +1936,22 @@ export async function getTeamOverview(): Promise<
 				}
 				return acc;
 			},
-			{ members: 0, active: 0, invited: 0, suspended: 0 },
+			{ members: 0, active: 0, invited: 0, suspended: 0 }
 		);
 
 		const lastInviteAt =
 			members
 				.filter((member) => member.invited_at)
-				.sort(
-					(a, b) =>
-						new Date(b.invited_at!).getTime() -
-						new Date(a.invited_at!).getTime(),
-				)[0]?.invited_at ?? null;
+				.sort((a, b) => new Date(b.invited_at!).getTime() - new Date(a.invited_at!).getTime())[0]
+				?.invited_at ?? null;
 
 		const onboardingAcceptanceRate =
-			totals.active + totals.invited === 0
-				? 1
-				: totals.active / (totals.active + totals.invited);
+			totals.active + totals.invited === 0 ? 1 : totals.active / (totals.active + totals.invited);
 
 		const systemRoles = roles.filter((role) => role.is_system).length;
 		const customRoles = roles.length - systemRoles;
 
-		const membersWithDepartments = members.filter(
-			(member) => member.department_id,
-		).length;
+		const membersWithDepartments = members.filter((member) => member.department_id).length;
 
 		const readinessSteps = [
 			totals.active > 0,
@@ -2254,9 +1962,7 @@ export async function getTeamOverview(): Promise<
 		];
 
 		const stepsCompleted = readinessSteps.filter(Boolean).length;
-		const readinessScore = Math.round(
-			(stepsCompleted / readinessSteps.length) * 100,
-		);
+		const readinessScore = Math.round((stepsCompleted / readinessSteps.length) * 100);
 
 		return {
 			generatedAt: new Date().toISOString(),

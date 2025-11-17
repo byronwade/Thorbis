@@ -35,11 +35,7 @@ import { Check, HelpCircle, Loader2, Save } from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type SettingsPageLayoutProps = {
 	/** Page title (displayed as text-4xl) */
@@ -89,7 +85,7 @@ export function SettingsPageLayout({
 	if (isLoading) {
 		return (
 			<div className="flex h-[50vh] items-center justify-center">
-				<Loader2 className="size-8 animate-spin text-muted-foreground" />
+				<Loader2 className="text-muted-foreground size-8 animate-spin" />
 			</div>
 		);
 	}
@@ -100,12 +96,12 @@ export function SettingsPageLayout({
 			<div className="space-y-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
-						<h1 className="font-bold text-4xl tracking-tight">{title}</h1>
+						<h1 className="text-4xl font-bold tracking-tight">{title}</h1>
 						{helpText && (
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<button className="flex-shrink-0" type="button">
-										<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+										<HelpCircle className="text-muted-foreground h-3.5 w-3.5" />
 									</button>
 								</TooltipTrigger>
 								<TooltipContent className="max-w-xs">
@@ -114,45 +110,37 @@ export function SettingsPageLayout({
 							</Tooltip>
 						)}
 					</div>
-					{hasChanges && (
-						<Badge className="bg-warning hover:bg-warning">
-							Unsaved Changes
-						</Badge>
-					)}
+					{hasChanges && <Badge className="bg-warning hover:bg-warning">Unsaved Changes</Badge>}
 				</div>
-				<p className="text-lg text-muted-foreground">{description}</p>
+				<p className="text-muted-foreground text-lg">{description}</p>
 			</div>
 
 			{/* CONTENT (Cards, forms, etc.) - space-y-6 automatically applied to children */}
 			<div className="space-y-6">{children}</div>
 
 			{/* STICKY BOTTOM ACTION BAR */}
-			<div className="sticky bottom-0 z-10 rounded-xl border bg-card p-6 shadow-lg">
+			<div className="bg-card sticky bottom-0 z-10 rounded-xl border p-6 shadow-lg">
 				<div className="flex items-center justify-between">
 					{/* Save status indicator */}
 					<div className="flex items-center gap-3">
 						{hasChanges ? (
 							<>
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning dark:bg-warning/30">
-									<div className="h-2 w-2 animate-pulse rounded-full bg-warning" />
+								<div className="bg-warning dark:bg-warning/30 flex h-8 w-8 items-center justify-center rounded-full">
+									<div className="bg-warning h-2 w-2 animate-pulse rounded-full" />
 								</div>
 								<div>
-									<p className="font-medium text-sm">Unsaved Changes</p>
-									<p className="text-muted-foreground text-xs">
-										Save your changes or discard them
-									</p>
+									<p className="text-sm font-medium">Unsaved Changes</p>
+									<p className="text-muted-foreground text-xs">Save your changes or discard them</p>
 								</div>
 							</>
 						) : (
 							<>
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-success dark:bg-success/30">
-									<Check className="h-4 w-4 text-success dark:text-success" />
+								<div className="bg-success dark:bg-success/30 flex h-8 w-8 items-center justify-center rounded-full">
+									<Check className="text-success dark:text-success h-4 w-4" />
 								</div>
 								<div>
-									<p className="font-medium text-sm">All Changes Saved</p>
-									<p className="text-muted-foreground text-xs">
-										Your settings are up to date
-									</p>
+									<p className="text-sm font-medium">All Changes Saved</p>
+									<p className="text-muted-foreground text-xs">Your settings are up to date</p>
 								</div>
 							</>
 						)}
@@ -168,11 +156,7 @@ export function SettingsPageLayout({
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isPending || !hasChanges}
-							onClick={onSave}
-							type="button"
-						>
+						<Button disabled={isPending || !hasChanges} onClick={onSave} type="button">
 							{isPending ? (
 								<>
 									<Loader2 className="mr-2 size-4 animate-spin" />
@@ -261,7 +245,7 @@ export function SettingsInfoBanner({
 			<CardContent className="flex items-start gap-3 pt-6">
 				<Icon className={`mt-0.5 h-5 w-5 shrink-0 ${styles.icon}`} />
 				<div className="space-y-1">
-					<p className={`font-medium text-sm ${styles.title}`}>{title}</p>
+					<p className={`text-sm font-medium ${styles.title}`}>{title}</p>
 					<p className="text-muted-foreground text-sm">{description}</p>
 				</div>
 			</CardContent>

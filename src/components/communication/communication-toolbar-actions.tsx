@@ -61,11 +61,7 @@ export function CommunicationToolbarActions() {
 			break;
 		case "phone":
 			buttonContent = (
-				<Button
-					onClick={() => openComposer("call")}
-					size="sm"
-					variant="default"
-				>
+				<Button onClick={() => openComposer("call")} size="sm" variant="default">
 					<Phone className="mr-2 size-4" />
 					<span className="hidden sm:inline">New Call</span>
 					<span className="sm:hidden">Call</span>
@@ -83,11 +79,7 @@ export function CommunicationToolbarActions() {
 			break;
 		default:
 			buttonContent = (
-				<Button
-					onClick={() => openComposer("email")}
-					size="sm"
-					variant="default"
-				>
+				<Button onClick={() => openComposer("email")} size="sm" variant="default">
 					<Plus className="mr-2 size-4" />
 					<span className="hidden sm:inline">New Message</span>
 					<span className="sm:hidden">New</span>

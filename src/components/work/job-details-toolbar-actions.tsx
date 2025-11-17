@@ -10,14 +10,7 @@
  * Uses Zustand store for edit mode state (no React Context)
  */
 
-import {
-	ClipboardList,
-	Edit3,
-	Eye,
-	LayoutGrid,
-	Plus,
-	RotateCcw,
-} from "lucide-react";
+import { ClipboardList, Edit3, Eye, LayoutGrid, Plus, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
@@ -40,12 +33,7 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { JobActivityTimeline } from "@/components/work/job-activity-timeline";
 import { ALL_PRESETS } from "@/lib/presets/job-layout-presets";
 import { useEditModeStore } from "@/lib/stores/edit-mode-store";
@@ -71,14 +59,12 @@ export function JobDetailsToolbarActions({
 	const widgets = useJobDetailsLayoutStore((state) => state.widgets);
 	const addWidget = useJobDetailsLayoutStore((state) => state.addWidget);
 	const loadPreset = useJobDetailsLayoutStore((state) => state.loadPreset);
-	const resetToDefault = useJobDetailsLayoutStore(
-		(state) => state.resetToDefault,
-	);
+	const resetToDefault = useJobDetailsLayoutStore((state) => state.resetToDefault);
 	const industry = useJobDetailsLayoutStore((state) => state.industry);
 
 	// Get available widgets (not already added)
 	const availableWidgets = Object.entries(WIDGET_METADATA).filter(
-		([widgetType]) => !widgets.some((w) => w.type === widgetType),
+		([widgetType]) => !widgets.some((w) => w.type === widgetType)
 	);
 
 	// Group by category
@@ -90,7 +76,7 @@ export function JobDetailsToolbarActions({
 			acc[metadata.category].push([widgetType, metadata]);
 			return acc;
 		},
-		{} as Record<string, [string, (typeof WIDGET_METADATA)[JobWidgetType]][]>,
+		{} as Record<string, [string, (typeof WIDGET_METADATA)[JobWidgetType]][]>
 	);
 
 	function handleLoadPreset(presetId: string) {
@@ -115,33 +101,27 @@ export function JobDetailsToolbarActions({
 	return (
 		<div className="flex items-center gap-1.5">
 			{/* Edit Mode Toggle */}
-			<div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-1.5">
+			<div className="bg-muted/30 flex items-center gap-2 rounded-lg border px-3 py-1.5">
 				{isEditMode ? (
-					<Edit3 className="size-4 text-primary" />
+					<Edit3 className="text-primary size-4" />
 				) : (
-					<Eye className="size-4 text-muted-foreground" />
+					<Eye className="text-muted-foreground size-4" />
 				)}
-				<span className="font-medium text-sm">
-					{isEditMode ? "Edit" : "View"}
-				</span>
+				<span className="text-sm font-medium">{isEditMode ? "Edit" : "View"}</span>
 				<Switch checked={isEditMode} onCheckedChange={setIsEditMode} />
 			</div>
 
 			<Separator className="h-6" orientation="vertical" />
 
 			{/* Layout Actions Group */}
-			<div className="flex items-center gap-1 rounded-lg border bg-muted/30 p-1">
+			<div className="bg-muted/30 flex items-center gap-1 rounded-lg border p-1">
 				{/* Presets */}
 				<Dialog onOpenChange={setIsPresetsOpen} open={isPresetsOpen}>
 					<TooltipProvider>
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<DialogTrigger asChild>
-									<Button
-										className="gap-2 hover:bg-background"
-										size="sm"
-										variant="ghost"
-									>
+									<Button className="hover:bg-background gap-2" size="sm" variant="ghost">
 										<LayoutGrid className="size-4" />
 										<span className="hidden sm:inline">Presets</span>
 									</Button>
@@ -163,21 +143,19 @@ export function JobDetailsToolbarActions({
 							<div className="grid gap-4 md:grid-cols-2">
 								{ALL_PRESETS.map((preset) => (
 									<button
-										className="group relative overflow-hidden rounded-lg border p-4 text-left transition-all hover:border-primary hover:shadow-md"
+										className="group hover:border-primary relative overflow-hidden rounded-lg border p-4 text-left transition-all hover:shadow-md"
 										key={preset.id}
 										onClick={() => handleLoadPreset(preset.id)}
 										type="button"
 									>
 										{industry === preset.industry && (
-											<div className="absolute top-2 right-2 rounded-full bg-primary px-2 py-0.5 text-primary-foreground text-xs">
+											<div className="bg-primary text-primary-foreground absolute top-2 right-2 rounded-full px-2 py-0.5 text-xs">
 												Current
 											</div>
 										)}
 										<h3 className="mb-1 font-semibold">{preset.name}</h3>
-										<p className="text-muted-foreground text-sm">
-											{preset.description}
-										</p>
-										<p className="mt-2 text-muted-foreground text-xs">
+										<p className="text-muted-foreground text-sm">{preset.description}</p>
+										<p className="text-muted-foreground mt-2 text-xs">
 											{preset.widgets.length} widgets
 										</p>
 									</button>
@@ -193,11 +171,7 @@ export function JobDetailsToolbarActions({
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<SheetTrigger asChild>
-									<Button
-										className="gap-2 hover:bg-background"
-										size="sm"
-										variant="ghost"
-									>
+									<Button className="hover:bg-background gap-2" size="sm" variant="ghost">
 										<Plus className="size-4" />
 										<span className="hidden sm:inline">Widget</span>
 									</Button>
@@ -211,43 +185,33 @@ export function JobDetailsToolbarActions({
 					<SheetContent className="w-full sm:max-w-xl">
 						<SheetHeader>
 							<SheetTitle>Add Widget</SheetTitle>
-							<SheetDescription>
-								Add widgets to customize your view
-							</SheetDescription>
+							<SheetDescription>Add widgets to customize your view</SheetDescription>
 						</SheetHeader>
 						<ScrollArea className="h-[calc(100vh-120px)] pr-4">
 							<div className="space-y-6 py-4">
-								{Object.entries(widgetsByCategory).map(
-									([category, widgets]) => (
-										<div key={category}>
-											<h3 className="mb-3 font-semibold text-sm capitalize">
-												{category}
-											</h3>
-											<div className="space-y-2">
-												{widgets.map(([widgetType, metadata]) => (
-													<button
-														className="flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all hover:border-primary"
-														key={widgetType}
-														onClick={() =>
-															handleAddWidget(widgetType as JobWidgetType)
-														}
-														type="button"
-													>
-														<div className="flex-1">
-															<div className="font-medium text-sm">
-																{metadata.title}
-															</div>
-															<div className="text-muted-foreground text-xs">
-																{metadata.description}
-															</div>
+								{Object.entries(widgetsByCategory).map(([category, widgets]) => (
+									<div key={category}>
+										<h3 className="mb-3 text-sm font-semibold capitalize">{category}</h3>
+										<div className="space-y-2">
+											{widgets.map(([widgetType, metadata]) => (
+												<button
+													className="hover:border-primary flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all"
+													key={widgetType}
+													onClick={() => handleAddWidget(widgetType as JobWidgetType)}
+													type="button"
+												>
+													<div className="flex-1">
+														<div className="text-sm font-medium">{metadata.title}</div>
+														<div className="text-muted-foreground text-xs">
+															{metadata.description}
 														</div>
-														<Plus className="size-4 text-muted-foreground" />
-													</button>
-												))}
-											</div>
+													</div>
+													<Plus className="text-muted-foreground size-4" />
+												</button>
+											))}
 										</div>
-									),
-								)}
+									</div>
+								))}
 							</div>
 						</ScrollArea>
 					</SheetContent>
@@ -258,7 +222,7 @@ export function JobDetailsToolbarActions({
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="gap-2 hover:bg-background"
+								className="hover:bg-background gap-2"
 								onClick={handleReset}
 								size="sm"
 								variant="ghost"
@@ -283,11 +247,11 @@ export function JobDetailsToolbarActions({
 						<TooltipTrigger asChild>
 							<SheetTrigger asChild>
 								<Button
-									className="gap-2 border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10"
+									className="border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10 gap-2"
 									size="sm"
 									variant="outline"
 								>
-									<ClipboardList className="size-4 text-primary" />
+									<ClipboardList className="text-primary size-4" />
 									<span className="hidden font-medium sm:inline">Activity</span>
 								</Button>
 							</SheetTrigger>

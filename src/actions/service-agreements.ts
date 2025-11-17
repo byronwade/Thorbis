@@ -35,14 +35,7 @@ const createServiceAgreementSchema = z.object({
 	totalValue: z.number().min(0).optional(),
 	currency: z.string().default("USD"),
 	paymentSchedule: z
-		.enum([
-			"monthly",
-			"quarterly",
-			"semiannual",
-			"annual",
-			"milestone",
-			"one_time",
-		])
+		.enum(["monthly", "quarterly", "semiannual", "annual", "milestone", "one_time"])
 		.optional(),
 	monthlyAmount: z.number().min(0).optional(),
 	autoRenew: z.boolean().default(false),
@@ -62,27 +55,13 @@ const updateServiceAgreementSchema = z.object({
 	title: z.string().min(1, "Agreement title is required").optional(),
 	description: z.string().optional(),
 	status: z
-		.enum([
-			"draft",
-			"active",
-			"pending_signature",
-			"expired",
-			"terminated",
-			"cancelled",
-		])
+		.enum(["draft", "active", "pending_signature", "expired", "terminated", "cancelled"])
 		.optional(),
 	startDate: z.string().optional(),
 	endDate: z.string().optional(),
 	totalValue: z.number().min(0).optional(),
 	paymentSchedule: z
-		.enum([
-			"monthly",
-			"quarterly",
-			"semiannual",
-			"annual",
-			"milestone",
-			"one_time",
-		])
+		.enum(["monthly", "quarterly", "semiannual", "annual", "milestone", "one_time"])
 		.optional(),
 	monthlyAmount: z.number().min(0).optional(),
 	autoRenew: z.boolean().optional(),
@@ -102,16 +81,10 @@ const updateServiceAgreementSchema = z.object({
 /**
  * Generate unique service agreement number using database function
  */
-async function generateServiceAgreementNumber(
-	supabase: any,
-	companyId: string,
-): Promise<string> {
-	const { data, error } = await supabase.rpc(
-		"generate_service_agreement_number",
-		{
-			p_company_id: companyId,
-		},
-	);
+async function generateServiceAgreementNumber(supabase: any, companyId: string): Promise<string> {
+	const { data, error } = await supabase.rpc("generate_service_agreement_number", {
+		p_company_id: companyId,
+	});
 
 	if (error || !data) {
 		// Fallback to manual generation
@@ -155,36 +128,24 @@ function calculateTermMonths(startDate: string, endDate: string): number {
 /**
  * Validate service agreement dates
  */
-function validateServiceAgreementDates(
-	startDate: string,
-	endDate: string,
-): void {
+function validateServiceAgreementDates(startDate: string, endDate: string): void {
 	const start = new Date(startDate);
 	const end = new Date(endDate);
 
 	if (end <= start) {
-		throw new ActionError(
-			"End date must be after start date",
-			ERROR_CODES.VALIDATION_FAILED,
-		);
+		throw new ActionError("End date must be after start date", ERROR_CODES.VALIDATION_FAILED);
 	}
 
 	const termMonths = calculateTermMonths(startDate, endDate);
 	if (termMonths < 1) {
-		throw new ActionError(
-			"Agreement must be at least 1 month long",
-			ERROR_CODES.VALIDATION_FAILED,
-		);
+		throw new ActionError("Agreement must be at least 1 month long", ERROR_CODES.VALIDATION_FAILED);
 	}
 }
 
 /**
  * Validate SLA times
  */
-function validateSLATimes(
-	responseTimeHours?: number,
-	resolutionTimeHours?: number,
-): void {
+function validateSLATimes(responseTimeHours?: number, resolutionTimeHours?: number): void {
 	if (
 		responseTimeHours !== undefined &&
 		resolutionTimeHours !== undefined &&
@@ -192,7 +153,7 @@ function validateSLATimes(
 	) {
 		throw new ActionError(
 			"Resolution time must be greater than or equal to response time",
-			ERROR_CODES.VALIDATION_FAILED,
+			ERROR_CODES.VALIDATION_FAILED
 		);
 	}
 }
@@ -200,16 +161,11 @@ function validateSLATimes(
 /**
  * Create a new service agreement
  */
-export async function createServiceAgreement(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createServiceAgreement(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -284,28 +240,16 @@ export async function createServiceAgreement(
 		const validatedData = createServiceAgreementSchema.parse(rawData);
 
 		// Validate dates
-		validateServiceAgreementDates(
-			validatedData.startDate,
-			validatedData.endDate,
-		);
+		validateServiceAgreementDates(validatedData.startDate, validatedData.endDate);
 
 		// Validate SLA times
-		validateSLATimes(
-			validatedData.responseTimeHours,
-			validatedData.resolutionTimeHours,
-		);
+		validateSLATimes(validatedData.responseTimeHours, validatedData.resolutionTimeHours);
 
 		// Calculate term months
-		const termMonths = calculateTermMonths(
-			validatedData.startDate,
-			validatedData.endDate,
-		);
+		const termMonths = calculateTermMonths(validatedData.startDate, validatedData.endDate);
 
 		// Generate agreement number
-		const agreementNumber = await generateServiceAgreementNumber(
-			supabase,
-			companyId,
-		);
+		const agreementNumber = await generateServiceAgreementNumber(supabase, companyId);
 
 		// Create service agreement
 		const { data: agreement, error } = await supabase
@@ -345,7 +289,7 @@ export async function createServiceAgreement(
 		if (error) {
 			throw new ActionError(
 				`Failed to create service agreement: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -362,15 +306,12 @@ export async function createServiceAgreement(
  */
 export async function updateServiceAgreement(
 	agreementId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -392,10 +333,7 @@ export async function updateServiceAgreement(
 			.single();
 
 		if (fetchError || !existingAgreement) {
-			throw new ActionError(
-				"Service agreement not found",
-				ERROR_CODES.DB_RECORD_NOT_FOUND,
-			);
+			throw new ActionError("Service agreement not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
 		}
 
 		// Parse and validate form data
@@ -437,10 +375,7 @@ export async function updateServiceAgreement(
 
 		// Validate dates if both are provided
 		if (validatedData.startDate && validatedData.endDate) {
-			validateServiceAgreementDates(
-				validatedData.startDate,
-				validatedData.endDate,
-			);
+			validateServiceAgreementDates(validatedData.startDate, validatedData.endDate);
 		}
 
 		// Validate SLA times if provided
@@ -448,19 +383,13 @@ export async function updateServiceAgreement(
 			validatedData.responseTimeHours !== undefined ||
 			validatedData.resolutionTimeHours !== undefined
 		) {
-			validateSLATimes(
-				validatedData.responseTimeHours,
-				validatedData.resolutionTimeHours,
-			);
+			validateSLATimes(validatedData.responseTimeHours, validatedData.resolutionTimeHours);
 		}
 
 		// Calculate term months if dates changed
 		let termMonths: number | undefined;
 		if (validatedData.startDate && validatedData.endDate) {
-			termMonths = calculateTermMonths(
-				validatedData.startDate,
-				validatedData.endDate,
-			);
+			termMonths = calculateTermMonths(validatedData.startDate, validatedData.endDate);
 		}
 
 		// Convert camelCase to snake_case for database
@@ -484,7 +413,7 @@ export async function updateServiceAgreement(
 		if (error) {
 			throw new ActionError(
 				`Failed to update service agreement: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -503,15 +432,12 @@ export async function signServiceAgreement(
 	agreementId: string,
 	signedByCustomerName: string,
 	signedByCompanyName: string,
-	signedDocumentUrl?: string,
+	signedDocumentUrl?: string
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -540,7 +466,7 @@ export async function signServiceAgreement(
 		if (error) {
 			throw new ActionError(
 				`Failed to sign service agreement: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -556,15 +482,12 @@ export async function signServiceAgreement(
  */
 export async function terminateServiceAgreement(
 	agreementId: string,
-	terminationReason: string,
+	terminationReason: string
 ): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -591,7 +514,7 @@ export async function terminateServiceAgreement(
 		if (error) {
 			throw new ActionError(
 				`Failed to terminate service agreement: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -605,16 +528,11 @@ export async function terminateServiceAgreement(
 /**
  * Delete a service agreement
  */
-export async function deleteServiceAgreement(
-	agreementId: string,
-): Promise<ActionResult<boolean>> {
+export async function deleteServiceAgreement(agreementId: string): Promise<ActionResult<boolean>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -637,7 +555,7 @@ export async function deleteServiceAgreement(
 		if (error) {
 			throw new ActionError(
 				`Failed to delete service agreement: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -655,15 +573,12 @@ export async function searchServiceAgreements(
 	options?: {
 		limit?: number;
 		offset?: number;
-	},
+	}
 ): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		// Get current user
@@ -677,21 +592,15 @@ export async function searchServiceAgreements(
 		assertExists(companyId, "Company not found for user");
 
 		// Use the RPC function for ranked search
-		const { data, error } = await supabase.rpc(
-			"search_service_agreements_ranked",
-			{
-				p_company_id: companyId,
-				p_search_query: searchQuery,
-				p_limit: options?.limit || 50,
-				p_offset: options?.offset || 0,
-			},
-		);
+		const { data, error } = await supabase.rpc("search_service_agreements_ranked", {
+			p_company_id: companyId,
+			p_search_query: searchQuery,
+			p_limit: options?.limit || 50,
+			p_offset: options?.offset || 0,
+		});
 
 		if (error) {
-			throw new ActionError(
-				`Search failed: ${error.message}`,
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError(`Search failed: ${error.message}`, ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		return data || [];
@@ -702,7 +611,7 @@ export async function searchServiceAgreements(
  * Archive a service agreement (soft delete)
  */
 export async function archiveServiceAgreement(
-	agreementId: string,
+	agreementId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();

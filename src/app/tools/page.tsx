@@ -41,13 +41,7 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type ResourceCategory = {
 	title: string;
@@ -74,8 +68,7 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Google Business Profile",
-				description:
-					"Claim and optimize your Google Business listing to appear in local searches",
+				description: "Claim and optimize your Google Business listing to appear in local searches",
 				href: "/tools/marketing/google-business",
 				icon: Search,
 				badge: "Essential",
@@ -83,8 +76,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Google Local Services Ads",
-				description:
-					"Get verified and appear at the top of Google search results",
+				description: "Get verified and appear at the top of Google search results",
 				href: "/tools/marketing/local-services",
 				icon: BadgeCheck,
 				badge: "Recommended",
@@ -111,8 +103,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "LinkedIn Company Page",
-				description:
-					"Build professional network and attract commercial clients",
+				description: "Build professional network and attract commercial clients",
 				href: "/tools/marketing/linkedin",
 				icon: Linkedin,
 			},
@@ -132,16 +123,14 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Licensing & Permits",
-				description:
-					"State and local license requirements for trade contractors",
+				description: "State and local license requirements for trade contractors",
 				href: "/tools/business/licensing",
 				icon: FileText,
 				badge: "Required",
 			},
 			{
 				title: "Business Insurance",
-				description:
-					"General liability, workers comp, and commercial auto insurance",
+				description: "General liability, workers comp, and commercial auto insurance",
 				href: "/tools/business/insurance",
 				icon: Shield,
 				badge: "Essential",
@@ -149,8 +138,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Banking & Payroll",
-				description:
-					"Business banking, payroll services, and accounting software",
+				description: "Business banking, payroll services, and accounting software",
 				href: "/tools/business/banking",
 				icon: Landmark,
 			},
@@ -169,8 +157,7 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Consumer Financing",
-				description:
-					"Offer customer financing through Wisetack, GreenSky, or Synchrony",
+				description: "Offer customer financing through Wisetack, GreenSky, or Synchrony",
 				href: "/tools/financing/consumer",
 				icon: CreditCard,
 				badge: "Popular",
@@ -178,8 +165,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Business Loans & Lines of Credit",
-				description:
-					"Working capital loans, equipment financing, and SBA loans",
+				description: "Working capital loans, equipment financing, and SBA loans",
 				href: "/tools/financing/business-loans",
 				icon: TrendingUp,
 			},
@@ -191,8 +177,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Credit Card Processing",
-				description:
-					"Accept payments with Square, Stripe, or merchant services",
+				description: "Accept payments with Square, Stripe, or merchant services",
 				href: "/tools/financing/credit-card",
 				icon: CreditCard,
 			},
@@ -205,8 +190,7 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Nexstar Network",
-				description:
-					"The largest network of home service contractors in North America",
+				description: "The largest network of home service contractors in North America",
 				href: "/tools/networks/nexstar",
 				icon: Network,
 				badge: "Premium",
@@ -221,8 +205,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "ACCA - HVAC Excellence",
-				description:
-					"Air Conditioning Contractors of America trade association",
+				description: "Air Conditioning Contractors of America trade association",
 				href: "/tools/networks/acca",
 				icon: Zap,
 			},
@@ -247,8 +230,7 @@ const resourceCategories: ResourceCategory[] = [
 		items: [
 			{
 				title: "Trade Certifications",
-				description:
-					"State licensing, master certifications, and specialty credentials",
+				description: "State licensing, master certifications, and specialty credentials",
 				href: "/tools/training/certifications",
 				icon: BadgeCheck,
 			},
@@ -261,15 +243,13 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "EPA Certifications",
-				description:
-					"EPA 608 refrigerant handling and environmental certifications",
+				description: "EPA 608 refrigerant handling and environmental certifications",
 				href: "/tools/training/epa",
 				icon: Shield,
 			},
 			{
 				title: "Business Management Training",
-				description:
-					"Operations, sales, customer service, and leadership courses",
+				description: "Operations, sales, customer service, and leadership courses",
 				href: "/tools/training/business",
 				icon: GraduationCap,
 			},
@@ -277,14 +257,12 @@ const resourceCategories: ResourceCategory[] = [
 	},
 	{
 		title: "Business Calculators",
-		description:
-			"Essential calculators for pricing, profit, and growth planning",
+		description: "Essential calculators for pricing, profit, and growth planning",
 		icon: Calculator,
 		items: [
 			{
 				title: "Hourly Rate Calculator",
-				description:
-					"Calculate what to charge per hour based on your costs and target profit",
+				description: "Calculate what to charge per hour based on your costs and target profit",
 				href: "/tools/calculators/hourly-rate",
 				icon: DollarSign,
 				badge: "Popular",
@@ -292,8 +270,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Job Pricing Calculator",
-				description:
-					"Price jobs accurately with material, labor, and overhead costs",
+				description: "Price jobs accurately with material, labor, and overhead costs",
 				href: "/tools/calculators/job-pricing",
 				icon: Calculator,
 				badge: "Essential",
@@ -301,8 +278,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Profit & Loss Calculator",
-				description:
-					"Track revenue, expenses, and calculate your net profit margins",
+				description: "Track revenue, expenses, and calculate your net profit margins",
 				href: "/tools/calculators/profit-loss",
 				icon: TrendingUp,
 				badge: "Popular",
@@ -322,8 +298,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Industry Pricing Standards",
-				description:
-					"Compare your pricing against industry benchmarks and averages",
+				description: "Compare your pricing against industry benchmarks and averages",
 				href: "/tools/calculators/industry-pricing",
 				icon: BarChart,
 				badge: "Premium",
@@ -349,8 +324,7 @@ const resourceCategories: ResourceCategory[] = [
 			},
 			{
 				title: "Emergency Services Info",
-				description:
-					"After-hours support, emergency dispatch, and on-call resources",
+				description: "After-hours support, emergency dispatch, and on-call resources",
 				href: "/tools/resources/emergency",
 				icon: AlertTriangle,
 			},
@@ -365,10 +339,8 @@ export default function ToolsPage() {
 			<div className="space-y-6">
 				<div className="flex items-center justify-between">
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">
-							Tools & Resources
-						</h1>
-						<p className="mt-2 text-lg text-muted-foreground">
+						<h1 className="text-4xl font-bold tracking-tight">Tools & Resources</h1>
+						<p className="text-muted-foreground mt-2 text-lg">
 							Everything you need to grow your trade business
 						</p>
 					</div>
@@ -380,8 +352,8 @@ export default function ToolsPage() {
 				<Card className="border-primary/20 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent">
 					<CardHeader>
 						<div className="flex items-start gap-4">
-							<div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/15">
-								<Calculator className="size-6 text-primary dark:text-primary" />
+							<div className="bg-primary/15 flex size-12 shrink-0 items-center justify-center rounded-xl">
+								<Calculator className="text-primary dark:text-primary size-6" />
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Business Calculators</CardTitle>
@@ -404,14 +376,12 @@ export default function ToolsPage() {
 				<Card className="border-primary/20 bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent">
 					<CardHeader>
 						<div className="flex items-start gap-4">
-							<div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-success/15">
-								<Search className="size-6 text-success dark:text-success" />
+							<div className="bg-success/15 flex size-12 shrink-0 items-center justify-center rounded-xl">
+								<Search className="text-success dark:text-success size-6" />
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Google Business</CardTitle>
-								<CardDescription className="text-sm">
-									Get found in local searches
-								</CardDescription>
+								<CardDescription className="text-sm">Get found in local searches</CardDescription>
 							</div>
 						</div>
 					</CardHeader>
@@ -428,8 +398,8 @@ export default function ToolsPage() {
 				<Card className="border-primary/20 bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent">
 					<CardHeader>
 						<div className="flex items-start gap-4">
-							<div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-accent/15">
-								<CreditCard className="size-6 text-accent-foreground dark:text-accent-foreground" />
+							<div className="bg-accent/15 flex size-12 shrink-0 items-center justify-center rounded-xl">
+								<CreditCard className="text-accent-foreground dark:text-accent-foreground size-6" />
 							</div>
 							<div className="space-y-1">
 								<CardTitle className="text-lg">Consumer Financing</CardTitle>
@@ -458,16 +428,12 @@ export default function ToolsPage() {
 						<div className="space-y-4" key={category.title}>
 							{/* Category Header */}
 							<div className="flex items-center gap-3">
-								<div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5">
-									<CategoryIcon className="size-6 text-primary" />
+								<div className="from-primary/15 to-primary/5 flex size-11 items-center justify-center rounded-xl bg-gradient-to-br">
+									<CategoryIcon className="text-primary size-6" />
 								</div>
 								<div>
-									<h2 className="font-semibold text-xl tracking-tight">
-										{category.title}
-									</h2>
-									<p className="text-muted-foreground text-sm">
-										{category.description}
-									</p>
+									<h2 className="text-xl font-semibold tracking-tight">{category.title}</h2>
+									<p className="text-muted-foreground text-sm">{category.description}</p>
 								</div>
 							</div>
 
@@ -477,11 +443,11 @@ export default function ToolsPage() {
 									const ItemIcon = item.icon;
 									return (
 										<Link href={item.href} key={item.href}>
-											<Card className="group h-full transition-all hover:border-primary/50 hover:shadow-lg">
+											<Card className="group hover:border-primary/50 h-full transition-all hover:shadow-lg">
 												<CardHeader className="space-y-3">
 													<div className="flex items-start justify-between gap-3">
-														<div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/10">
-															<ItemIcon className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
+														<div className="bg-muted/50 group-hover:bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors">
+															<ItemIcon className="text-muted-foreground group-hover:text-primary size-5 transition-colors" />
 														</div>
 														<div className="flex items-center gap-2">
 															{item.badge && (
@@ -495,14 +461,14 @@ export default function ToolsPage() {
 																</Badge>
 															)}
 															{item.external && (
-																<ExternalLink className="size-4 text-muted-foreground" />
+																<ExternalLink className="text-muted-foreground size-4" />
 															)}
 														</div>
 													</div>
 													<div className="space-y-1.5">
 														<CardTitle className="flex items-center justify-between text-base">
 															{item.title}
-															<ChevronRight className="size-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+															<ChevronRight className="text-muted-foreground size-4 opacity-0 transition-opacity group-hover:opacity-100" />
 														</CardTitle>
 														<CardDescription className="line-clamp-2 text-sm leading-relaxed">
 															{item.description}
@@ -527,8 +493,7 @@ export default function ToolsPage() {
 						Need Help Getting Started?
 					</CardTitle>
 					<CardDescription>
-						Our team can help you set up any of these resources for your
-						business
+						Our team can help you set up any of these resources for your business
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">

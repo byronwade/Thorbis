@@ -35,10 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	UnifiedAccordion,
-	type UnifiedAccordionSection,
-} from "@/components/ui/unified-accordion";
+import { UnifiedAccordion, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
 import type { CustomerCallData } from "@/types/call-window";
 import { DEFAULT_CSR_REMINDERS } from "@/types/csr-reminders";
 
@@ -47,24 +44,19 @@ type CustomerSidebarProps = {
 	isLoading?: boolean;
 };
 
-export function CustomerSidebar({
-	customerData,
-	isLoading,
-}: CustomerSidebarProps) {
+export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProps) {
 	// TODO: Fetch CSR reminders from user settings/company settings
 	// For now, use default reminders
 	const csrReminders = DEFAULT_CSR_REMINDERS.filter((r) => r.enabled).sort(
-		(a, b) => a.order - b.order,
+		(a, b) => a.order - b.order
 	);
 
 	if (isLoading) {
 		return (
 			<div className="flex h-full items-center justify-center p-6">
 				<div className="text-center">
-					<div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-					<p className="text-muted-foreground text-sm">
-						Loading customer data...
-					</p>
+					<div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
+					<p className="text-muted-foreground text-sm">Loading customer data...</p>
 				</div>
 			</div>
 		);
@@ -74,9 +66,9 @@ export function CustomerSidebar({
 		return (
 			<div className="flex h-full items-center justify-center p-6">
 				<div className="text-center">
-					<AlertCircle className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-					<p className="font-medium text-foreground">No customer data</p>
-					<p className="mt-1 text-muted-foreground text-sm">
+					<AlertCircle className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+					<p className="text-foreground font-medium">No customer data</p>
+					<p className="text-muted-foreground mt-1 text-sm">
 						Customer information will appear here
 					</p>
 				</div>
@@ -84,16 +76,8 @@ export function CustomerSidebar({
 		);
 	}
 
-	const {
-		customer,
-		stats,
-		jobs,
-		invoices,
-		estimates,
-		appointments,
-		properties,
-		equipment,
-	} = customerData;
+	const { customer, stats, jobs, invoices, estimates, appointments, properties, equipment } =
+		customerData;
 
 	// Format currency
 	const formatCurrency = (amount: number) =>
@@ -116,10 +100,10 @@ export function CustomerSidebar({
 
 	// State for editable customer data
 	const [phoneNumbers, setPhoneNumbers] = useState<string[]>(
-		customer?.phone ? [customer.phone] : [""],
+		customer?.phone ? [customer.phone] : [""]
 	);
 	const [emailAddresses, setEmailAddresses] = useState<string[]>(
-		customer?.email ? [customer.email] : [""],
+		customer?.email ? [customer.email] : [""]
 	);
 
 	// Add/remove phone numbers
@@ -171,7 +155,7 @@ export function CustomerSidebar({
 				<div className="space-y-6 p-6">
 					{/* Basic Information */}
 					<div className="space-y-4">
-						<h4 className="font-semibold text-sm">Basic Information</h4>
+						<h4 className="text-sm font-semibold">Basic Information</h4>
 
 						<div className="grid gap-4 sm:grid-cols-2">
 							<div className="space-y-2">
@@ -195,7 +179,7 @@ export function CustomerSidebar({
 						<div className="space-y-2">
 							<Label htmlFor="company">Company</Label>
 							<div className="relative">
-								<Building2 className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+								<Building2 className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 								<Input
 									className="pl-9"
 									defaultValue={customer?.company_name || ""}
@@ -209,7 +193,7 @@ export function CustomerSidebar({
 					{/* Contact Information */}
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
-							<h4 className="font-semibold text-sm">Contact Information</h4>
+							<h4 className="text-sm font-semibold">Contact Information</h4>
 						</div>
 
 						{/* Email Addresses */}
@@ -218,12 +202,10 @@ export function CustomerSidebar({
 							{emailAddresses.map((email, index) => (
 								<div className="flex gap-2" key={index}>
 									<div className="relative flex-1">
-										<Mail className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
 											className="pl-9"
-											onChange={(e) =>
-												updateEmailAddress(index, e.target.value)
-											}
+											onChange={(e) => updateEmailAddress(index, e.target.value)}
 											placeholder="email@example.com"
 											type="email"
 											value={email}
@@ -241,12 +223,7 @@ export function CustomerSidebar({
 									)}
 								</div>
 							))}
-							<Button
-								className="w-full"
-								onClick={addEmailAddress}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="w-full" onClick={addEmailAddress} size="sm" variant="outline">
 								<Plus className="mr-2 h-4 w-4" />
 								Add Email
 							</Button>
@@ -258,7 +235,7 @@ export function CustomerSidebar({
 							{phoneNumbers.map((phone, index) => (
 								<div className="flex gap-2" key={index}>
 									<div className="relative flex-1">
-										<Phone className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<Phone className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
 											className="pl-9"
 											onChange={(e) => updatePhoneNumber(index, e.target.value)}
@@ -279,12 +256,7 @@ export function CustomerSidebar({
 									)}
 								</div>
 							))}
-							<Button
-								className="w-full"
-								onClick={addPhoneNumber}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="w-full" onClick={addPhoneNumber} size="sm" variant="outline">
 								<Plus className="mr-2 h-4 w-4" />
 								Add Phone
 							</Button>
@@ -293,12 +265,12 @@ export function CustomerSidebar({
 
 					{/* Address */}
 					<div className="space-y-4">
-						<h4 className="font-semibold text-sm">Address</h4>
+						<h4 className="text-sm font-semibold">Address</h4>
 
 						<div className="space-y-2">
 							<Label htmlFor="address">Street Address</Label>
 							<div className="relative">
-								<MapPin className="absolute top-3 left-3 h-4 w-4 text-muted-foreground" />
+								<MapPin className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
 								<Textarea
 									className="min-h-[60px] pl-9"
 									defaultValue={customer?.address || ""}
@@ -311,27 +283,15 @@ export function CustomerSidebar({
 						<div className="grid gap-4 sm:grid-cols-3">
 							<div className="space-y-2">
 								<Label htmlFor="city">City</Label>
-								<Input
-									defaultValue={customer?.city || ""}
-									id="city"
-									placeholder="City"
-								/>
+								<Input defaultValue={customer?.city || ""} id="city" placeholder="City" />
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="state">State</Label>
-								<Input
-									defaultValue={customer?.state || ""}
-									id="state"
-									placeholder="State"
-								/>
+								<Input defaultValue={customer?.state || ""} id="state" placeholder="State" />
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="zipCode">ZIP Code</Label>
-								<Input
-									defaultValue={customer?.zip_code || ""}
-									id="zipCode"
-									placeholder="12345"
-								/>
+								<Input defaultValue={customer?.zip_code || ""} id="zipCode" placeholder="12345" />
 							</div>
 						</div>
 					</div>
@@ -339,12 +299,12 @@ export function CustomerSidebar({
 					{/* Enrichment Data */}
 					{customer && (
 						<div className="space-y-4">
-							<h4 className="font-semibold text-sm">Enrichment Data</h4>
+							<h4 className="text-sm font-semibold">Enrichment Data</h4>
 
 							<div className="space-y-2">
 								<Label htmlFor="website">Website</Label>
 								<div className="relative">
-									<Globe className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+									<Globe className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 									<Input
 										className="pl-9"
 										defaultValue=""
@@ -359,7 +319,7 @@ export function CustomerSidebar({
 								<div className="space-y-2">
 									<Label htmlFor="linkedin">LinkedIn</Label>
 									<div className="relative">
-										<Linkedin className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<Linkedin className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
 											className="pl-9"
 											defaultValue=""
@@ -371,19 +331,14 @@ export function CustomerSidebar({
 								<div className="space-y-2">
 									<Label htmlFor="twitter">Twitter</Label>
 									<div className="relative">
-										<Twitter className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
-										<Input
-											className="pl-9"
-											defaultValue=""
-											id="twitter"
-											placeholder="@username"
-										/>
+										<Twitter className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+										<Input className="pl-9" defaultValue="" id="twitter" placeholder="@username" />
 									</div>
 								</div>
 								<div className="space-y-2">
 									<Label htmlFor="facebook">Facebook</Label>
 									<div className="relative">
-										<Facebook className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
+										<Facebook className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
 											className="pl-9"
 											defaultValue=""
@@ -405,12 +360,7 @@ export function CustomerSidebar({
 			icon: <Briefcase className="h-4 w-4" />,
 			count: jobs.length,
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Job
 				</Button>
@@ -419,36 +369,25 @@ export function CustomerSidebar({
 				jobs.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{jobs.map((job) => (
-							<div
-								className="rounded-lg border bg-muted/30 p-3 text-sm"
-								key={job.id}
-							>
+							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={job.id}>
 								<div className="mb-1 flex items-start justify-between">
-									<span className="font-medium">
-										{job.title || "Untitled Job"}
-									</span>
+									<span className="font-medium">{job.title || "Untitled Job"}</span>
 									<Badge className="text-xs" variant="outline">
 										{job.status}
 									</Badge>
 								</div>
-								<p className="font-mono text-muted-foreground text-xs">
-									#{job.job_number}
-								</p>
+								<p className="text-muted-foreground font-mono text-xs">#{job.job_number}</p>
 								{job.financial?.total_amount && (
-									<p className="mt-1 text-xs">
-										{formatCurrency(job.financial.total_amount)}
-									</p>
+									<p className="mt-1 text-xs">{formatCurrency(job.financial.total_amount)}</p>
 								)}
 							</div>
 						))}
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
-						<Briefcase className="mb-4 h-12 w-12 text-muted-foreground" />
+						<Briefcase className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No jobs found</p>
-						<p className="text-muted-foreground text-xs">
-							This customer has no jobs yet
-						</p>
+						<p className="text-muted-foreground text-xs">This customer has no jobs yet</p>
 					</div>
 				),
 		},
@@ -459,12 +398,7 @@ export function CustomerSidebar({
 			icon: <FileText className="h-4 w-4" />,
 			count: invoices.length,
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Invoice
 				</Button>
@@ -473,14 +407,9 @@ export function CustomerSidebar({
 				invoices.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{invoices.map((invoice) => (
-							<div
-								className="rounded-lg border bg-muted/30 p-3 text-sm"
-								key={invoice.id}
-							>
+							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={invoice.id}>
 								<div className="mb-1 flex items-start justify-between">
-									<span className="font-medium">
-										Invoice #{invoice.invoice_number}
-									</span>
+									<span className="font-medium">Invoice #{invoice.invoice_number}</span>
 									<Badge
 										className="text-xs"
 										variant={
@@ -494,22 +423,16 @@ export function CustomerSidebar({
 										{invoice.status}
 									</Badge>
 								</div>
-								<p className="font-semibold">
-									{formatCurrency(invoice.total_amount || 0)}
-								</p>
-								<p className="text-muted-foreground text-xs">
-									Due: {formatDate(invoice.due_date)}
-								</p>
+								<p className="font-semibold">{formatCurrency(invoice.total_amount || 0)}</p>
+								<p className="text-muted-foreground text-xs">Due: {formatDate(invoice.due_date)}</p>
 							</div>
 						))}
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
-						<FileText className="mb-4 h-12 w-12 text-muted-foreground" />
+						<FileText className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No invoices found</p>
-						<p className="text-muted-foreground text-xs">
-							This customer has no invoices yet
-						</p>
+						<p className="text-muted-foreground text-xs">This customer has no invoices yet</p>
 					</div>
 				),
 		},
@@ -520,12 +443,7 @@ export function CustomerSidebar({
 			icon: <Calendar className="h-4 w-4" />,
 			count: appointments.length,
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Schedule
 				</Button>
@@ -542,22 +460,15 @@ export function CustomerSidebar({
 								null;
 
 							return (
-								<div
-									className="rounded-lg border bg-muted/30 p-3 text-sm"
-									key={appointment.id}
-								>
+								<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={appointment.id}>
 									<div className="mb-1 flex items-start justify-between">
-										<span className="font-medium">
-											{appointment.title || "Appointment"}
-										</span>
+										<span className="font-medium">{appointment.title || "Appointment"}</span>
 										<Badge className="text-xs" variant="outline">
 											{appointment.status}
 										</Badge>
 									</div>
 									<p className="text-muted-foreground text-xs">
-										{appointmentDate
-											? formatDate(appointmentDate)
-											: "Date to be scheduled"}
+										{appointmentDate ? formatDate(appointmentDate) : "Date to be scheduled"}
 									</p>
 								</div>
 							);
@@ -565,7 +476,7 @@ export function CustomerSidebar({
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
-						<Calendar className="mb-4 h-12 w-12 text-muted-foreground" />
+						<Calendar className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No appointments</p>
 						<p className="text-muted-foreground text-xs">
 							No scheduled appointments for this customer
@@ -580,12 +491,7 @@ export function CustomerSidebar({
 			icon: <Home className="h-4 w-4" />,
 			count: properties.length,
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Property
 				</Button>
@@ -594,17 +500,12 @@ export function CustomerSidebar({
 				properties.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{properties.map((property) => (
-							<div
-								className="rounded-lg border bg-muted/30 p-3 text-sm"
-								key={property.id}
-							>
+							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={property.id}>
 								<div className="mb-1 flex items-start gap-2">
-									<MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+									<MapPin className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
 									<div className="flex-1">
 										<p className="font-medium">{property.name || "Property"}</p>
-										<p className="text-muted-foreground text-xs">
-											{property.address}
-										</p>
+										<p className="text-muted-foreground text-xs">{property.address}</p>
 									</div>
 								</div>
 							</div>
@@ -612,7 +513,7 @@ export function CustomerSidebar({
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
-						<Home className="mb-4 h-12 w-12 text-muted-foreground" />
+						<Home className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No properties</p>
 						<p className="text-muted-foreground text-xs">
 							No properties associated with this customer
@@ -627,12 +528,7 @@ export function CustomerSidebar({
 			icon: <Wrench className="h-4 w-4" />,
 			count: equipment.length,
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Add Equipment
 				</Button>
@@ -641,18 +537,11 @@ export function CustomerSidebar({
 				equipment.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{equipment.map((item) => (
-							<div
-								className="rounded-lg border bg-muted/30 p-3 text-sm"
-								key={item.id}
-							>
+							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={item.id}>
 								<p className="font-medium">{item.name || "Equipment"}</p>
-								{item.model && (
-									<p className="text-muted-foreground text-xs">
-										Model: {item.model}
-									</p>
-								)}
+								{item.model && <p className="text-muted-foreground text-xs">Model: {item.model}</p>}
 								{item.serial_number && (
-									<p className="font-mono text-muted-foreground text-xs">
+									<p className="text-muted-foreground font-mono text-xs">
 										S/N: {item.serial_number}
 									</p>
 								)}
@@ -661,7 +550,7 @@ export function CustomerSidebar({
 					</div>
 				) : (
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
-						<Wrench className="mb-4 h-12 w-12 text-muted-foreground" />
+						<Wrench className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No equipment</p>
 						<p className="text-muted-foreground text-xs">
 							No equipment associated with this customer
@@ -676,12 +565,7 @@ export function CustomerSidebar({
 			icon: <FileText className="h-4 w-4" />,
 			count: 0, // TODO: Get actual notes count
 			actions: (
-				<Button
-					className="h-8 gap-1.5 px-3"
-					onClick={() => {}}
-					size="sm"
-					variant="outline"
-				>
+				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Add Note
 				</Button>
@@ -692,37 +576,26 @@ export function CustomerSidebar({
 					{customer?.notes ? (
 						<div className="space-y-3">
 							{/* Single note example */}
-							<div className="rounded-lg border bg-muted/30 p-4">
+							<div className="bg-muted/30 rounded-lg border p-4">
 								<div className="mb-2 flex items-start justify-between">
 									<div className="flex-1">
 										<p className="text-sm">{customer.notes}</p>
 									</div>
 								</div>
-								<div className="flex items-center gap-2 text-muted-foreground text-xs">
+								<div className="text-muted-foreground flex items-center gap-2 text-xs">
 									<User className="h-3 w-3" />
 									<span>System</span>
 									<span>•</span>
-									<span>
-										{formatDate(
-											customer.created_at || new Date().toISOString(),
-										)}
-									</span>
+									<span>{formatDate(customer.created_at || new Date().toISOString())}</span>
 								</div>
 							</div>
 						</div>
 					) : (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<FileText className="mb-4 h-12 w-12 text-muted-foreground" />
+							<FileText className="text-muted-foreground mb-4 h-12 w-12" />
 							<p className="text-muted-foreground text-sm">No notes yet</p>
-							<p className="text-muted-foreground text-xs">
-								Add notes about this customer
-							</p>
-							<Button
-								className="mt-4"
-								onClick={() => {}}
-								size="sm"
-								variant="outline"
-							>
+							<p className="text-muted-foreground text-xs">Add notes about this customer</p>
+							<Button className="mt-4" onClick={() => {}} size="sm" variant="outline">
 								<Plus className="mr-2 h-4 w-4" />
 								Add Note
 							</Button>
@@ -738,19 +611,17 @@ export function CustomerSidebar({
 			<div className="flex flex-col gap-4 p-4">
 				{/* CSR Reminders */}
 				{csrReminders.length > 0 && (
-					<section className="overflow-hidden rounded-xl border border-primary/20 bg-primary/5 shadow-sm">
+					<section className="border-primary/20 bg-primary/5 overflow-hidden rounded-xl border shadow-sm">
 						<div className="flex items-start gap-3 p-4">
-							<div className="rounded-full bg-primary/10 p-2">
-								<Lightbulb className="h-4 w-4 text-primary" />
+							<div className="bg-primary/10 rounded-full p-2">
+								<Lightbulb className="text-primary h-4 w-4" />
 							</div>
 							<div className="flex-1 space-y-2">
-								<h3 className="font-semibold text-foreground text-sm">
-									Call Reminders
-								</h3>
-								<ul className="space-y-1.5 text-muted-foreground text-xs">
+								<h3 className="text-foreground text-sm font-semibold">Call Reminders</h3>
+								<ul className="text-muted-foreground space-y-1.5 text-xs">
 									{csrReminders.map((reminder) => (
 										<li className="flex items-start gap-2" key={reminder.id}>
-											<span className="mt-0.5 text-primary">•</span>
+											<span className="text-primary mt-0.5">•</span>
 											<span>{reminder.text}</span>
 										</li>
 									))}
@@ -762,20 +633,15 @@ export function CustomerSidebar({
 
 				{/* Customer Stats & Tags */}
 				{customer && (
-					<section className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm">
+					<section className="border-border/60 bg-card overflow-hidden rounded-xl border shadow-sm">
 						<div className="space-y-4 p-4">
 							{/* Customer Tags */}
 							<div className="space-y-2">
 								<div className="flex items-center justify-between">
-									<h4 className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+									<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 										Customer Tags
 									</h4>
-									<Button
-										className="h-6 px-2 text-xs"
-										onClick={() => {}}
-										size="sm"
-										variant="ghost"
-									>
+									<Button className="h-6 px-2 text-xs" onClick={() => {}} size="sm" variant="ghost">
 										<Plus className="mr-1 h-3 w-3" />
 										Add
 									</Button>
@@ -788,10 +654,7 @@ export function CustomerSidebar({
 									<Badge className="text-xs" variant="secondary">
 										Recurring
 									</Badge>
-									<Badge
-										className="cursor-pointer text-xs hover:bg-muted"
-										variant="outline"
-									>
+									<Badge className="hover:bg-muted cursor-pointer text-xs" variant="outline">
 										<Plus className="mr-1 h-3 w-3" />
 										Add Tag
 									</Badge>
@@ -800,42 +663,36 @@ export function CustomerSidebar({
 
 							{/* Customer Stats */}
 							<div className="space-y-2">
-								<h4 className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+								<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 									Customer Stats
 								</h4>
 								<div className="grid grid-cols-4 gap-2">
-									<div className="rounded-lg border bg-muted/20 p-2.5 text-center">
-										<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
+										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Revenue
 										</p>
-										<p className="mt-0.5 font-bold text-foreground text-sm">
+										<p className="text-foreground mt-0.5 text-sm font-bold">
 											{formatCurrency(stats.totalRevenue)}
 										</p>
 									</div>
-									<div className="rounded-lg border bg-muted/20 p-2.5 text-center">
-										<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
+										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Active
 										</p>
-										<p className="mt-0.5 font-bold text-foreground text-sm">
-											{stats.activeJobs}
-										</p>
+										<p className="text-foreground mt-0.5 text-sm font-bold">{stats.activeJobs}</p>
 									</div>
-									<div className="rounded-lg border bg-muted/20 p-2.5 text-center">
-										<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
+										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Invoices
 										</p>
-										<p className="mt-0.5 font-bold text-foreground text-sm">
-											{stats.openInvoices}
-										</p>
+										<p className="text-foreground mt-0.5 text-sm font-bold">{stats.openInvoices}</p>
 									</div>
-									<div className="rounded-lg border bg-muted/20 p-2.5 text-center">
-										<p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
+										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Since
 										</p>
-										<p className="mt-0.5 font-bold text-foreground text-sm">
-											{stats.customerSince
-												? new Date(stats.customerSince).getFullYear()
-												: "N/A"}
+										<p className="text-foreground mt-0.5 text-sm font-bold">
+											{stats.customerSince ? new Date(stats.customerSince).getFullYear() : "N/A"}
 										</p>
 									</div>
 								</div>
@@ -845,7 +702,7 @@ export function CustomerSidebar({
 				)}
 
 				{/* Customer Data Sections */}
-				<section className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm">
+				<section className="border-border/60 bg-card overflow-hidden rounded-xl border shadow-sm">
 					<div className="flex flex-col gap-4 p-0">
 						<UnifiedAccordion
 							defaultOpenSection={null}

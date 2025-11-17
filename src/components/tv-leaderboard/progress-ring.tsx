@@ -18,11 +18,7 @@ type ProgressRingProps = {
 	className?: string;
 };
 
-export function ProgressRing({
-	progress,
-	isPaused,
-	className,
-}: ProgressRingProps) {
+export function ProgressRing({ progress, isPaused, className }: ProgressRingProps) {
 	const size = 32;
 	const strokeWidth = 3;
 	const radius = (size - strokeWidth) / 2;
@@ -68,7 +64,7 @@ export function ProgressRing({
 				</svg>
 				{/* Center dot */}
 				<div className="absolute inset-0 flex items-center justify-center">
-					<div className="size-2 rounded-full bg-primary" />
+					<div className="bg-primary size-2 rounded-full" />
 				</div>
 			</div>
 		</motion.div>

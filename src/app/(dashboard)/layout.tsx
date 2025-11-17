@@ -45,24 +45,24 @@ export default function DashboardLayout({
 // Header skeleton - renders instantly while header loads
 function HeaderSkeleton() {
 	return (
-		<header className="sticky top-0 z-50 w-full border-border/40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+		<header className="border-border/40 bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
 			<div className="flex h-14 items-center px-4">
 				<div className="flex flex-1 items-center gap-4">
 					{/* Logo skeleton */}
-					<div className="h-8 w-32 animate-pulse rounded bg-muted" />
+					<div className="bg-muted h-8 w-32 animate-pulse rounded" />
 
 					{/* Nav skeleton */}
 					<div className="hidden md:flex md:gap-2">
-						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
-						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
-						<div className="h-8 w-20 animate-pulse rounded bg-muted" />
+						<div className="bg-muted h-8 w-20 animate-pulse rounded" />
+						<div className="bg-muted h-8 w-20 animate-pulse rounded" />
+						<div className="bg-muted h-8 w-20 animate-pulse rounded" />
 					</div>
 				</div>
 
 				{/* Right side skeleton */}
 				<div className="flex items-center gap-2">
-					<div className="size-8 animate-pulse rounded-full bg-muted" />
-					<div className="size-8 animate-pulse rounded-full bg-muted" />
+					<div className="bg-muted size-8 animate-pulse rounded-full" />
+					<div className="bg-muted size-8 animate-pulse rounded-full" />
 				</div>
 			</div>
 		</header>

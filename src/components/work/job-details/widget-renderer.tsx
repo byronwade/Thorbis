@@ -12,10 +12,7 @@ import type { JobWidget } from "@/lib/stores/job-details-layout-store";
 import { ActivityLogWidget } from "./widgets/activity-log-widget";
 // Core widgets
 import { CommunicationsWidget } from "./widgets/communications-widget";
-import {
-	type CustomerData,
-	CustomerInfoWidgetClient,
-} from "./widgets/customer-info-widget-client";
+import { type CustomerData, CustomerInfoWidgetClient } from "./widgets/customer-info-widget-client";
 import { DocumentsWidget } from "./widgets/documents-widget";
 import { EstimatesWidget } from "./widgets/estimates-widget";
 import { InvoicesWidget } from "./widgets/invoices-widget";
@@ -39,7 +36,7 @@ function PlaceholderWidget({ title }: { title: string }) {
 	return (
 		<div className="flex h-full min-h-[150px] items-center justify-center">
 			<div className="text-center">
-				<p className="font-medium text-muted-foreground text-sm">{title}</p>
+				<p className="text-muted-foreground text-sm font-medium">{title}</p>
 				<p className="text-muted-foreground/60 text-xs">Coming soon</p>
 			</div>
 		</div>
@@ -118,19 +115,11 @@ export function WidgetRenderer({
 			return <PropertyDetailsWidget property={property} />;
 
 		case "property-enrichment":
-			return (
-				<PropertyIntelligenceWidget
-					enrichment={propertyEnrichment}
-					property={property}
-				/>
-			);
+			return <PropertyIntelligenceWidget enrichment={propertyEnrichment} property={property} />;
 
 		case "customer-info":
 			return customer ? (
-				<CustomerInfoWidgetClient
-					customer={userToCustomerData(customer)}
-					jobId={job.id}
-				/>
+				<CustomerInfoWidgetClient customer={userToCustomerData(customer)} jobId={job.id} />
 			) : (
 				<div className="text-muted-foreground text-sm">No customer data</div>
 			);
@@ -159,9 +148,7 @@ export function WidgetRenderer({
 			return <ScheduleWidget job={job} />;
 
 		case "team-assignments":
-			return (
-				<TeamAssignmentsWidget job={job} teamAssignments={teamAssignments} />
-			);
+			return <TeamAssignmentsWidget job={job} teamAssignments={teamAssignments} />;
 
 		case "materials-list":
 			return <MaterialsListWidget job={job} materials={materials} />;
@@ -183,9 +170,7 @@ export function WidgetRenderer({
 			return <PermitsWidget job={job} />;
 
 		case "communications":
-			return (
-				<CommunicationsWidget communications={communications} jobId={job.id} />
-			);
+			return <CommunicationsWidget communications={communications} jobId={job.id} />;
 
 		case "activity-log":
 			return <ActivityLogWidget activities={activities} job={job} />;

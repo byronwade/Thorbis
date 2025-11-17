@@ -11,9 +11,7 @@
 import { Resend } from "resend";
 
 // Initialize Resend client
-export const resend = process.env.RESEND_API_KEY
-	? new Resend(process.env.RESEND_API_KEY)
-	: null;
+export const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // Email configuration
 export const emailConfig = {
@@ -24,9 +22,7 @@ export const emailConfig = {
 		(process.env.NODE_ENV === "development" && !process.env.RESEND_API_KEY),
 	siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 	appUrl:
-		process.env.NEXT_PUBLIC_APP_URL ||
-		process.env.NEXT_PUBLIC_SITE_URL ||
-		"http://localhost:3000",
+		process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
 };
 
 // Check if Resend is properly configured

@@ -40,10 +40,7 @@ export function CustomerJobsWidget({
 		>
 			{({ isVisible }) => {
 				// Only fetch when widget is visible
-				const { data: jobs, isLoading, error } = useCustomerJobs(
-					customerId,
-					isVisible,
-				);
+				const { data: jobs, isLoading, error } = useCustomerJobs(customerId, isVisible);
 
 				if (isLoading) {
 					return <WidgetSkeleton rows={3} />;
@@ -51,18 +48,12 @@ export function CustomerJobsWidget({
 
 				if (error) {
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							Failed to load jobs
-						</div>
+						<div className="text-muted-foreground text-center text-sm">Failed to load jobs</div>
 					);
 				}
 
 				if (!jobs || jobs.length === 0) {
-					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No jobs found
-						</div>
-					);
+					return <div className="text-muted-foreground text-center text-sm">No jobs found</div>;
 				}
 
 				return (
@@ -71,22 +62,18 @@ export function CustomerJobsWidget({
 							<Link
 								key={job.id}
 								href={`/dashboard/work/${job.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="font-medium text-sm">
-												{job.job_number}
-											</span>
+											<span className="text-sm font-medium">{job.job_number}</span>
 											<JobStatusBadge status={job.status} />
 										</div>
-										<p className="text-muted-foreground text-sm line-clamp-1">
+										<p className="text-muted-foreground line-clamp-1 text-sm">
 											{job.title || "Untitled Job"}
 										</p>
-										<p className="text-muted-foreground text-xs">
-											{formatDate(job.created_at)}
-										</p>
+										<p className="text-muted-foreground text-xs">{formatDate(job.created_at)}</p>
 									</div>
 								</div>
 							</Link>
@@ -94,9 +81,7 @@ export function CustomerJobsWidget({
 
 						{jobs.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link href={`/dashboard/work?customer=${customerId}`}>
-									View All Jobs
-								</Link>
+								<Link href={`/dashboard/work?customer=${customerId}`}>View All Jobs</Link>
 							</Button>
 						)}
 					</div>

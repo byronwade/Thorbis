@@ -18,9 +18,8 @@ export default function BoardView({
 	assignments: Assignment[];
 }) {
 	const dayDates = React.useMemo(
-		() =>
-			Array.from({ length: days }).map((_, i) => addDays(startOfDay(date), i)),
-		[date, days],
+		() => Array.from({ length: days }).map((_, i) => addDays(startOfDay(date), i)),
+		[date, days]
 	);
 	const byDay = React.useMemo(() => {
 		const map = new Map<string, Assignment[]>();
@@ -51,19 +50,14 @@ export default function BoardView({
 				{dayDates.map((d) => {
 					const list = byDay.get(d.toDateString()) ?? [];
 					return (
-						<div
-							className="rounded-xl border bg-white shadow-sm"
-							key={d.toISOString()}
-						>
+						<div className="rounded-xl border bg-white shadow-sm" key={d.toISOString()}>
 							<div className="sticky top-0 z-10 rounded-t-xl border-b bg-white/80 p-3 backdrop-blur">
-								<div className="font-semibold text-sm">{format(d, "EEEE")}</div>
-								<div className="text-neutral-500 text-xs">
-									{format(d, "MMM d, yyyy")}
-								</div>
+								<div className="text-sm font-semibold">{format(d, "EEEE")}</div>
+								<div className="text-xs text-neutral-500">{format(d, "MMM d, yyyy")}</div>
 							</div>
 							<div className="space-y-2 p-3">
 								{list.length === 0 && (
-									<div className="rounded-lg border border-dashed p-6 text-center text-neutral-500 text-xs">
+									<div className="rounded-lg border border-dashed p-6 text-center text-xs text-neutral-500">
 										No assignments
 									</div>
 								)}
@@ -79,12 +73,9 @@ export default function BoardView({
 											}}
 										>
 											<div className="font-medium">{a.title}</div>
-											<div className="text-neutral-600">
-												{memberName(a.memberId)}
-											</div>
+											<div className="text-neutral-600">{memberName(a.memberId)}</div>
 											<div className="text-neutral-500">
-												{format(new Date(a.start), "p")} –{" "}
-												{format(new Date(a.end), "p")}
+												{format(new Date(a.start), "p")} – {format(new Date(a.end), "p")}
 											</div>
 										</div>
 									);

@@ -44,10 +44,7 @@ export function LoginForm() {
 			}
 			// If successful, the server action will redirect
 		} catch (caughtError) {
-			if (
-				caughtError instanceof Error &&
-				caughtError.message === "NEXT_REDIRECT"
-			) {
+			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return;
 			}
 
@@ -72,18 +69,12 @@ export function LoginForm() {
 			// Keep loading spinner active during redirect
 		} catch (caughtError) {
 			// Ignore NEXT_REDIRECT errors - these are expected during successful OAuth
-			if (
-				caughtError instanceof Error &&
-				caughtError.message === "NEXT_REDIRECT"
-			) {
+			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return; // Let the redirect happen, keep loading state
 			}
 
 			if (caughtError instanceof Error) {
-				setError(
-					caughtError.message ||
-						"An unexpected error occurred. Please try again.",
-				);
+				setError(caughtError.message || "An unexpected error occurred. Please try again.");
 			} else {
 				setError("An unexpected error occurred. Please try again.");
 			}
@@ -102,15 +93,13 @@ export function LoginForm() {
 					src="/ThorbisLogo.webp"
 					width={34}
 				/>
-				<span className="font-semibold text-xl">Thorbis</span>
+				<span className="text-xl font-semibold">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
-				<h2 className="mb-1.5 font-semibold text-2xl">Welcome Back</h2>
-				<p className="text-muted-foreground">
-					Welcome back! Access your field service dashboard:
-				</p>
+				<h2 className="mb-1.5 text-2xl font-semibold">Welcome Back</h2>
+				<p className="text-muted-foreground">Welcome back! Access your field service dashboard:</p>
 			</div>
 
 			{/* Error Alert */}
@@ -194,14 +183,8 @@ export function LoginForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showPassword ? (
-								<EyeOff className="h-4 w-4" />
-							) : (
-								<Eye className="h-4 w-4" />
-							)}
-							<span className="sr-only">
-								{showPassword ? "Hide password" : "Show password"}
-							</span>
+							{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+							<span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
 						</Button>
 					</div>
 				</div>
@@ -233,7 +216,7 @@ export function LoginForm() {
 			</form>
 
 			{/* Sign Up Link */}
-			<p className="text-center text-muted-foreground">
+			<p className="text-muted-foreground text-center">
 				New to Thorbis?{" "}
 				<Link className="text-foreground hover:underline" href="/register">
 					Create an account

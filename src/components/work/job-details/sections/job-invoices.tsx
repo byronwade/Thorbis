@@ -50,10 +50,7 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<
-			string,
-			"default" | "secondary" | "outline" | "destructive"
-		> = {
+		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
 			draft: "outline",
 			sent: "secondary",
 			paid: "default",
@@ -67,15 +64,13 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
 	if (invoices.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<Receipt className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Invoices</h3>
-				<p className="mb-4 text-muted-foreground text-sm">
+				<Receipt className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Invoices</h3>
+				<p className="text-muted-foreground mb-4 text-sm">
 					Create an invoice for this job to bill the customer.
 				</p>
 				<Button asChild size="sm">
-					<Link href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
-						Create Invoice
-					</Link>
+					<Link href={`/dashboard/work/invoices/new?jobId=${jobId}`}>Create Invoice</Link>
 				</Button>
 			</div>
 		);
@@ -107,26 +102,18 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
 										{invoice.status || "draft"}
 									</Badge>
 								</TableCell>
+								<TableCell>{formatCurrency(invoice.total_amount || invoice.total)}</TableCell>
 								<TableCell>
-									{formatCurrency(invoice.total_amount || invoice.total)}
-								</TableCell>
-								<TableCell>
-									{formatCurrency(
-										invoice.balance_amount || invoice.balance || 0,
-									)}
+									{formatCurrency(invoice.balance_amount || invoice.balance || 0)}
 								</TableCell>
 								<TableCell>{formatDate(invoice.due_date)}</TableCell>
 								<TableCell className="max-w-[280px] align-top">
 									<EntityTags
 										entityId={invoice.id}
 										entityType="invoice"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("invoice", id, tags)
-										}
+										onUpdateTags={(id, tags) => updateEntityTags("invoice", id, tags)}
 										tags={
-											Array.isArray(invoice?.metadata?.tags)
-												? (invoice.metadata.tags as any[])
-												: []
+											Array.isArray(invoice?.metadata?.tags) ? (invoice.metadata.tags as any[]) : []
 										}
 									/>
 								</TableCell>
@@ -146,33 +133,25 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
 
 			{/* Summary */}
 			<div className="grid gap-4 md:grid-cols-3">
-				<div className="rounded-md bg-muted/50 p-4">
-					<p className="font-medium text-sm">Total Invoiced</p>
-					<p className="mt-1 font-bold text-2xl">
+				<div className="bg-muted/50 rounded-md p-4">
+					<p className="text-sm font-medium">Total Invoiced</p>
+					<p className="mt-1 text-2xl font-bold">
 						{formatCurrency(
-							invoices.reduce(
-								(sum, inv) => sum + (inv.total_amount || inv.total || 0),
-								0,
-							),
+							invoices.reduce((sum, inv) => sum + (inv.total_amount || inv.total || 0), 0)
 						)}
 					</p>
 				</div>
-				<div className="rounded-md bg-muted/50 p-4">
-					<p className="font-medium text-sm">Paid</p>
-					<p className="mt-1 font-bold text-2xl">
-						{formatCurrency(
-							invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0),
-						)}
+				<div className="bg-muted/50 rounded-md p-4">
+					<p className="text-sm font-medium">Paid</p>
+					<p className="mt-1 text-2xl font-bold">
+						{formatCurrency(invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0))}
 					</p>
 				</div>
-				<div className="rounded-md bg-muted/50 p-4">
-					<p className="font-medium text-sm">Balance Due</p>
-					<p className="mt-1 font-bold text-2xl">
+				<div className="bg-muted/50 rounded-md p-4">
+					<p className="text-sm font-medium">Balance Due</p>
+					<p className="mt-1 text-2xl font-bold">
 						{formatCurrency(
-							invoices.reduce(
-								(sum, inv) => sum + (inv.balance_amount || inv.balance || 0),
-								0,
-							),
+							invoices.reduce((sum, inv) => sum + (inv.balance_amount || inv.balance || 0), 0)
 						)}
 					</p>
 				</div>
@@ -180,9 +159,7 @@ export function JobInvoices({ invoices, jobId }: JobInvoicesProps) {
 
 			{/* Create New Button */}
 			<Button asChild className="w-full" size="sm" variant="outline">
-				<Link href={`/dashboard/work/invoices/new?jobId=${jobId}`}>
-					Create New Invoice
-				</Link>
+				<Link href={`/dashboard/work/invoices/new?jobId=${jobId}`}>Create New Invoice</Link>
 			</Button>
 		</div>
 	);

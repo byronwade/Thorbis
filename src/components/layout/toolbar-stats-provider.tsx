@@ -17,10 +17,7 @@ type ToolbarStatsProviderProps = {
 	children: React.ReactNode;
 };
 
-export function ToolbarStatsProvider({
-	stats,
-	children,
-}: ToolbarStatsProviderProps) {
+export function ToolbarStatsProvider({ stats, children }: ToolbarStatsProviderProps) {
 	const pathname = usePathname();
 	const safePathname = pathname || "/dashboard";
 	const setStats = useToolbarStatsStore((state) => state.setStats);

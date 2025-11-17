@@ -12,14 +12,7 @@
  * - Click to view payment details
  */
 
-import {
-	Archive,
-	CreditCard,
-	Edit,
-	Eye,
-	MoreHorizontal,
-	Plus,
-} from "lucide-react";
+import { Archive, CreditCard, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -120,8 +113,7 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		failed: {
-			className:
-				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Failed",
 		},
 		refunded: {
@@ -145,10 +137,7 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge
-			className={cn("font-medium text-xs", config.className)}
-			variant="outline"
-		>
+		<Badge className={cn("text-xs font-medium", config.className)} variant="outline">
 			{config.label}
 		</Badge>
 	);
@@ -212,7 +201,7 @@ export function PaymentsTable({
 			sortable: true,
 			render: (payment) => (
 				<Link
-					className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/payments/${payment.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -228,9 +217,7 @@ export function PaymentsTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Always show customer for quick identification
 			render: (payment) => (
-				<span className="text-muted-foreground text-sm">
-					{getCustomerName(payment)}
-				</span>
+				<span className="text-muted-foreground text-sm">{getCustomerName(payment)}</span>
 			),
 		},
 		{
@@ -242,9 +229,7 @@ export function PaymentsTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Financial data essential
 			render: (payment) => (
-				<span className="font-semibold tabular-nums">
-					{formatCurrency(payment.amount)}
-				</span>
+				<span className="font-semibold tabular-nums">{formatCurrency(payment.amount)}</span>
 			),
 		},
 		{
@@ -380,14 +365,12 @@ export function PaymentsTable({
 						Record Payment
 					</Button>
 				}
-				emptyIcon={<CreditCard className="h-8 w-8 text-muted-foreground" />}
+				emptyIcon={<CreditCard className="text-muted-foreground h-8 w-8" />}
 				emptyMessage="No payments found"
 				enableSelection={true}
 				entity="payments"
 				getItemId={(payment) => payment.id}
-				isArchived={(payment) =>
-					Boolean(payment.archived_at || payment.deleted_at)
-				}
+				isArchived={(payment) => Boolean(payment.archived_at || payment.deleted_at)}
 				itemsPerPage={itemsPerPage}
 				onRefresh={handleRefresh}
 				onRowClick={handleRowClick}
@@ -398,16 +381,13 @@ export function PaymentsTable({
 			/>
 
 			{/* Archive Payment Dialog */}
-			<AlertDialog
-				onOpenChange={setIsArchiveDialogOpen}
-				open={isArchiveDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Payment?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This payment will be archived and can be restored within 90 days.
-							After 90 days, it will be permanently deleted.
+							This payment will be archived and can be restored within 90 days. After 90 days, it
+							will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

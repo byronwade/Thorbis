@@ -26,20 +26,14 @@ const MAINTENANCE_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(
-	MAINTENANCE_COLUMNS.map((column) => [column.id, column.name]),
-);
+const columnLabel = new Map(MAINTENANCE_COLUMNS.map((column) => [column.id, column.name]));
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
 });
 
-export function MaintenancePlansKanban({
-	plans,
-}: {
-	plans: MaintenancePlan[];
-}) {
+export function MaintenancePlansKanban({ plans }: { plans: MaintenancePlan[] }) {
 	return (
 		<EntityKanban<MaintenancePlan, MaintenanceStatus>
 			columns={MAINTENANCE_COLUMNS}
@@ -52,15 +46,11 @@ export function MaintenancePlansKanban({
 				plan,
 			})}
 			renderCard={(item) => (
-				<MaintenancePlanCard
-					item={{ ...item, plan: item.entity } as MaintenanceKanbanItem}
-				/>
+				<MaintenancePlanCard item={{ ...item, plan: item.entity } as MaintenanceKanbanItem} />
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<MaintenancePlanCard
-						item={{ ...item, plan: item.entity } as MaintenanceKanbanItem}
-					/>
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
+					<MaintenancePlanCard item={{ ...item, plan: item.entity } as MaintenanceKanbanItem} />
 				</div>
 			)}
 			updateEntityStatus={(plan, newStatus) => ({
@@ -77,17 +67,14 @@ function MaintenancePlanCard({ item }: { item: MaintenanceKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div>
-					<h3 className="font-semibold text-foreground text-sm">
-						{plan.planName}
-					</h3>
+					<h3 className="text-foreground text-sm font-semibold">{plan.planName}</h3>
 					<p className="text-muted-foreground text-xs">{plan.customer}</p>
 					<div className="mt-2 flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
-								columnId === "cancelled" &&
-									"bg-destructive/10 text-destructive",
-								columnId === "active" && "bg-primary/10 text-primary",
+								columnId === "cancelled" && "bg-destructive/10 text-destructive",
+								columnId === "active" && "bg-primary/10 text-primary"
 							)}
 							variant={
 								columnId === "active"
@@ -106,33 +93,31 @@ function MaintenancePlanCard({ item }: { item: MaintenanceKanbanItem }) {
 				</div>
 			</div>
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<UserCheck className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{plan.serviceType}
-					</span>
+					<UserCheck className="text-primary size-4" />
+					<span className="text-foreground font-medium">{plan.serviceType}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<Repeat className="size-4 text-primary" />
+					<Repeat className="text-primary size-4" />
 					<span>{plan.frequency}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<CalendarDays className="size-4 text-primary" />
+					<CalendarDays className="text-primary size-4" />
 					<span>Next visit {plan.nextVisit}</span>
 				</div>
 			</div>
 
-			<div className="flex items-center justify-between pt-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-xs">
 				<span>Monthly fee</span>
-				<span className="font-semibold text-foreground">
+				<span className="text-foreground font-semibold">
 					{currencyFormatter.format(plan.monthlyFee / 100)}
 				</span>
 			</div>
 
 			<Button
 				asChild
-				className="w-full justify-between text-primary text-xs"
+				className="text-primary w-full justify-between text-xs"
 				size="sm"
 				variant="ghost"
 			>

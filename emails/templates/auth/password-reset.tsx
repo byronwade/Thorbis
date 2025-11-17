@@ -27,17 +27,15 @@ export default function PasswordResetEmail({
 			{name && <Text style={paragraph}>Hi {name},</Text>}
 
 			<Text style={paragraph}>
-				We received a request to reset the password for your Thorbis account.
-				Click the button below to create a new password.
+				We received a request to reset the password for your Thorbis account. Click the button below
+				to create a new password.
 			</Text>
 
 			<div style={buttonContainer}>
 				<Button href={resetUrl}>Reset Password</Button>
 			</div>
 
-			<Text style={paragraph}>
-				Or copy and paste this URL into your browser:
-			</Text>
+			<Text style={paragraph}>Or copy and paste this URL into your browser:</Text>
 
 			<Card style={urlCard}>
 				<Text style={urlText}>{resetUrl}</Text>
@@ -49,9 +47,7 @@ export default function PasswordResetEmail({
 					<li style={listItem}>
 						This password reset link will expire in {expiresInMinutes} minutes
 					</li>
-					<li style={listItem}>
-						If you didn't request a password reset, please ignore this email
-					</li>
+					<li style={listItem}>If you didn't request a password reset, please ignore this email</li>
 					<li style={listItem}>Never share this link with anyone</li>
 				</ul>
 				<Text style={warningText}>

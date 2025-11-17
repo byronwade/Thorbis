@@ -19,8 +19,7 @@ import { useNetworkStatus } from "@/lib/offline/network-status";
 import { cn } from "@/lib/utils";
 
 export function OfflineIndicator() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } =
-		useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -41,11 +40,11 @@ export function OfflineIndicator() {
 	// Offline mode
 	if (!isOnline) {
 		return (
-			<div className="flex items-center gap-2 rounded-md bg-warning/10 px-3 py-1 text-sm text-warning dark:text-warning">
+			<div className="bg-warning/10 text-warning dark:text-warning flex items-center gap-2 rounded-md px-3 py-1 text-sm">
 				<WifiOff className="size-4" />
 				<span className="hidden sm:inline">Offline Mode</span>
 				{pendingOperations > 0 && (
-					<span className="rounded-full bg-warning/20 px-2 py-0.5 font-medium text-xs">
+					<span className="bg-warning/20 rounded-full px-2 py-0.5 text-xs font-medium">
 						{pendingOperations}
 					</span>
 				)}
@@ -56,11 +55,11 @@ export function OfflineIndicator() {
 	// Syncing
 	if (isSyncing) {
 		return (
-			<div className="flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-primary text-sm dark:text-primary">
+			<div className="bg-primary/10 text-primary dark:text-primary flex items-center gap-2 rounded-md px-3 py-1 text-sm">
 				<RefreshCw className="size-4 animate-spin" />
 				<span className="hidden sm:inline">Syncing...</span>
 				{pendingOperations > 0 && (
-					<span className="rounded-full bg-primary/20 px-2 py-0.5 font-medium text-xs">
+					<span className="bg-primary/20 rounded-full px-2 py-0.5 text-xs font-medium">
 						{pendingOperations}
 					</span>
 				)}
@@ -71,7 +70,7 @@ export function OfflineIndicator() {
 	// Pending operations (online but not syncing)
 	if (pendingOperations > 0) {
 		return (
-			<div className="flex items-center gap-2 rounded-md bg-warning/10 px-3 py-1 text-sm text-warning dark:text-warning">
+			<div className="bg-warning/10 text-warning dark:text-warning flex items-center gap-2 rounded-md px-3 py-1 text-sm">
 				<AlertCircle className="size-4" />
 				<span className="hidden sm:inline">{pendingOperations} pending</span>
 				<span className="sm:hidden">{pendingOperations}</span>
@@ -82,7 +81,7 @@ export function OfflineIndicator() {
 	// Recently synced (show for 5 seconds)
 	if (lastSync && Date.now() - lastSync.getTime() < 5000) {
 		return (
-			<div className="flex items-center gap-2 rounded-md bg-success/10 px-3 py-1 text-sm text-success dark:text-success">
+			<div className="bg-success/10 text-success dark:text-success flex items-center gap-2 rounded-md px-3 py-1 text-sm">
 				<CheckCircle2 className="size-4" />
 				<span className="hidden sm:inline">Synced</span>
 			</div>
@@ -96,8 +95,7 @@ export function OfflineIndicator() {
  * Detailed sync status for settings/debug pages
  */
 export function SyncStatusDetail() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } =
-		useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -124,23 +122,21 @@ export function SyncStatusDetail() {
 				<div className="flex items-center gap-2">
 					{isOnline ? (
 						<>
-							<div className="size-2 rounded-full bg-success" />
-							<span className="font-medium text-sm">Online</span>
+							<div className="bg-success size-2 rounded-full" />
+							<span className="text-sm font-medium">Online</span>
 						</>
 					) : (
 						<>
-							<div className="size-2 rounded-full bg-warning" />
-							<span className="font-medium text-sm">Offline</span>
+							<div className="bg-warning size-2 rounded-full" />
+							<span className="text-sm font-medium">Offline</span>
 						</>
 					)}
 				</div>
 			</div>
 
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">
-					Pending Operations
-				</span>
-				<span className="font-medium text-sm">
+				<span className="text-muted-foreground text-sm">Pending Operations</span>
+				<span className="text-sm font-medium">
 					{pendingOperations === 0 ? "None" : `${pendingOperations}`}
 				</span>
 			</div>
@@ -149,8 +145,8 @@ export function SyncStatusDetail() {
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Sync Status</span>
 					<div className="flex items-center gap-2">
-						<RefreshCw className="size-4 animate-spin text-primary" />
-						<span className="font-medium text-sm">Syncing...</span>
+						<RefreshCw className="text-primary size-4 animate-spin" />
+						<span className="text-sm font-medium">Syncing...</span>
 					</div>
 				</div>
 			)}
@@ -158,9 +154,7 @@ export function SyncStatusDetail() {
 			{lastSync && (
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Last Sync</span>
-					<span className="font-medium text-sm">
-						{new Date(lastSync).toLocaleTimeString()}
-					</span>
+					<span className="text-sm font-medium">{new Date(lastSync).toLocaleTimeString()}</span>
 				</div>
 			)}
 		</div>
@@ -191,15 +185,11 @@ export function OfflineBadge() {
 	return (
 		<div
 			className={cn(
-				"flex size-6 items-center justify-center rounded-full font-bold text-xs",
-				isOnline ? "bg-warning text-white" : "bg-warning text-white",
+				"flex size-6 items-center justify-center rounded-full text-xs font-bold",
+				isOnline ? "bg-warning text-white" : "bg-warning text-white"
 			)}
 		>
-			{pendingOperations > 0 ? (
-				pendingOperations
-			) : (
-				<WifiOff className="size-3" />
-			)}
+			{pendingOperations > 0 ? pendingOperations : <WifiOff className="size-3" />}
 		</div>
 	);
 }

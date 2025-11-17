@@ -45,7 +45,7 @@ export const stripe = getStripeServer();
 export async function getOrCreateStripeCustomer(
 	userId: string,
 	email: string,
-	name?: string,
+	name?: string
 ): Promise<string | null> {
 	if (!stripe) {
 		return null;
@@ -157,7 +157,7 @@ export async function createCheckoutSession({
  */
 export async function createBillingPortalSession(
 	customerId: string,
-	returnUrl: string,
+	returnUrl: string
 ): Promise<string | null> {
 	if (!stripe) {
 		return null;
@@ -180,9 +180,7 @@ export async function createBillingPortalSession(
  *
  * Cancels subscription at the end of the current billing period
  */
-export async function cancelSubscription(
-	subscriptionId: string,
-): Promise<boolean> {
+export async function cancelSubscription(subscriptionId: string): Promise<boolean> {
 	if (!stripe) {
 		return false;
 	}
@@ -203,9 +201,7 @@ export async function cancelSubscription(
  *
  * Removes the cancellation flag from a subscription
  */
-export async function reactivateSubscription(
-	subscriptionId: string,
-): Promise<boolean> {
+export async function reactivateSubscription(subscriptionId: string): Promise<boolean> {
 	if (!stripe) {
 		return false;
 	}
@@ -224,9 +220,7 @@ export async function reactivateSubscription(
 /**
  * Get subscription details
  */
-export async function getSubscription(
-	subscriptionId: string,
-): Promise<Stripe.Subscription | null> {
+export async function getSubscription(subscriptionId: string): Promise<Stripe.Subscription | null> {
 	if (!stripe) {
 		return null;
 	}
@@ -243,7 +237,7 @@ export async function getSubscription(
  * List all subscriptions for a customer
  */
 export async function listCustomerSubscriptions(
-	customerId: string,
+	customerId: string
 ): Promise<Stripe.Subscription[]> {
 	if (!stripe) {
 		return [];
@@ -269,7 +263,7 @@ export async function listCustomerSubscriptions(
  */
 export async function attachPaymentMethodToCustomer(
 	paymentMethodId: string,
-	customerId: string,
+	customerId: string
 ): Promise<boolean> {
 	if (!stripe) {
 		return false;

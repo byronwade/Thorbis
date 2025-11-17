@@ -31,9 +31,7 @@ export default function TechEnRouteEmail({
 
 			<Card style={notificationCard}>
 				<div style={notificationIcon}>🚗</div>
-				<Text style={notificationText}>
-					{technicianName} is heading to your location
-				</Text>
+				<Text style={notificationText}>{technicianName} is heading to your location</Text>
 				<Text style={etaText}>Estimated arrival: {estimatedArrival}</Text>
 			</Card>
 
@@ -41,8 +39,8 @@ export default function TechEnRouteEmail({
 				<Heading level={3}>Your Technician</Heading>
 				<Text style={techName}>{technicianName}</Text>
 				<Text style={techDesc}>
-					{technicianName} is a certified service professional with years of
-					experience. They'll take great care of your service needs.
+					{technicianName} is a certified service professional with years of experience. They'll
+					take great care of your service needs.
 				</Text>
 			</Card>
 
@@ -55,9 +53,7 @@ export default function TechEnRouteEmail({
 			<Card style={tipsCard}>
 				<Heading level={3}>Quick Tips</Heading>
 				<ul style={list}>
-					<li style={listItem}>
-						Please ensure someone is available to greet the technician
-					</li>
+					<li style={listItem}>Please ensure someone is available to greet the technician</li>
 					<li style={listItem}>Have any specific concerns ready to discuss</li>
 					<li style={listItem}>Feel free to ask questions about the service</li>
 				</ul>

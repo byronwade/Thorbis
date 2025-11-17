@@ -14,9 +14,7 @@ export async function POST(req: Request) {
 			return Response.json({ error: "Messages are required" }, { status: 400 });
 		}
 
-		const model = createAIProvider(
-			requestedModel ? { model: requestedModel } : undefined,
-		);
+		const model = createAIProvider(requestedModel ? { model: requestedModel } : undefined);
 
 		const result = streamText({
 			model,
@@ -28,7 +26,7 @@ export async function POST(req: Request) {
 	} catch (error) {
 		return Response.json(
 			{ error: error instanceof Error ? error.message : "Unknown error" },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

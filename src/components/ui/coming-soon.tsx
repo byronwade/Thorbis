@@ -47,15 +47,15 @@ export function ComingSoon({
 		<div className="relative flex min-h-screen items-center justify-center overflow-auto px-4 py-16 md:py-24">
 			{/* Background gradient blobs */}
 			<div className="pointer-events-none absolute inset-0 overflow-hidden">
-				<div className="absolute top-1/4 left-1/4 size-96 rounded-full bg-primary/10 blur-3xl" />
-				<div className="absolute right-1/4 bottom-1/4 size-96 rounded-full bg-primary/5 blur-3xl" />
+				<div className="bg-primary/10 absolute top-1/4 left-1/4 size-96 rounded-full blur-3xl" />
+				<div className="bg-primary/5 absolute right-1/4 bottom-1/4 size-96 rounded-full blur-3xl" />
 			</div>
 
 			{/* Main content */}
 			<div className="relative w-full max-w-6xl space-y-16 text-center">
 				{/* Status badge */}
 				<div className="flex justify-center">
-					<div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-6 py-3 text-sm backdrop-blur-sm">
+					<div className="border-primary/20 bg-primary/5 inline-flex items-center rounded-full border px-6 py-3 text-sm backdrop-blur-sm">
 						<Clock className="mr-2 size-4" />
 						<span className="font-medium">Coming Soon</span>
 					</div>
@@ -64,23 +64,23 @@ export function ComingSoon({
 				{/* Icon with gradient background */}
 				<div className="flex justify-center">
 					<div className="relative">
-						<div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-primary/20 to-primary/10 blur-2xl" />
-						<div className="relative flex size-32 items-center justify-center rounded-full border border-primary/20 bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm">
-							<Icon className="size-16 text-primary" strokeWidth={1.5} />
+						<div className="from-primary/20 to-primary/10 absolute inset-0 animate-pulse rounded-full bg-gradient-to-r blur-2xl" />
+						<div className="border-primary/20 from-primary/10 to-primary/5 relative flex size-32 items-center justify-center rounded-full border bg-gradient-to-br backdrop-blur-sm">
+							<Icon className="text-primary size-16" strokeWidth={1.5} />
 						</div>
 					</div>
 				</div>
 
 				{/* Main heading with gradient */}
 				<div className="space-y-4">
-					<h1 className="font-bold text-5xl tracking-tight md:text-6xl">
+					<h1 className="text-5xl font-bold tracking-tight md:text-6xl">
 						<span
 							className={`bg-gradient-to-r ${titleGradient} bg-clip-text font-extrabold text-transparent`}
 						>
 							{title}
 						</span>
 					</h1>
-					<p className="mx-auto max-w-3xl text-foreground/60 text-xl leading-relaxed">
+					<p className="text-foreground/60 mx-auto max-w-3xl text-xl leading-relaxed">
 						{description}
 					</p>
 				</div>
@@ -88,7 +88,7 @@ export function ComingSoon({
 				{/* Features Grid (if provided) */}
 				{features.length > 0 && (
 					<div className="mx-auto max-w-6xl space-y-10 pt-4">
-						<h2 className="font-semibold text-3xl">What's Coming</h2>
+						<h2 className="text-3xl font-semibold">What's Coming</h2>
 						<div
 							className={`grid gap-8 ${
 								features.length === 1
@@ -110,7 +110,7 @@ export function ComingSoon({
 
 								return (
 									<div
-										className={`group hover:-translate-y-1 rounded-2xl border border-primary/10 bg-gradient-to-br from-${colorClass}/5 to-transparent p-8 transition-all duration-300 hover:border-${colorClass}/20 hover:shadow-lg hover:shadow-${colorClass}/10`}
+										className={`group border-primary/10 rounded-2xl border bg-gradient-to-br hover:-translate-y-1 from-${colorClass}/5 to-transparent p-8 transition-all duration-300 hover:border-${colorClass}/20 hover:shadow-lg hover:shadow-${colorClass}/10`}
 										key={index}
 									>
 										<div className="mb-5 flex justify-center">
@@ -120,12 +120,8 @@ export function ComingSoon({
 												<FeatureIcon className={`size-7 text-${colorClass}`} />
 											</div>
 										</div>
-										<h3 className="mb-3 font-semibold text-xl">
-											{feature.title}
-										</h3>
-										<p className="text-muted-foreground leading-relaxed">
-											{feature.description}
-										</p>
+										<h3 className="mb-3 text-xl font-semibold">{feature.title}</h3>
+										<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
 									</div>
 								);
 							})}
@@ -138,7 +134,7 @@ export function ComingSoon({
 					{showViewAllLink && (
 						<div className="flex justify-center">
 							<Link
-								className="inline-flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-8 py-4 font-medium transition-all hover:border-primary/30 hover:bg-primary/10"
+								className="border-primary/20 bg-primary/5 hover:border-primary/30 hover:bg-primary/10 inline-flex items-center gap-2 rounded-lg border px-8 py-4 font-medium transition-all"
 								href="/dashboard/coming-soon"
 							>
 								View All Upcoming Features
@@ -146,12 +142,9 @@ export function ComingSoon({
 							</Link>
 						</div>
 					)}
-					<div className="flex items-center justify-center gap-2 text-muted-foreground">
+					<div className="text-muted-foreground flex items-center justify-center gap-2">
 						<Rocket className="size-5" />
-						<p>
-							In the meantime, explore the platform and reach out if you need
-							help
-						</p>
+						<p>In the meantime, explore the platform and reach out if you need help</p>
 					</div>
 				</div>
 			</div>

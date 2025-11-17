@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	Building2,
-	Download,
-	Mail,
-	MoreHorizontal,
-	Pause,
-	Phone,
-} from "lucide-react";
+import { Building2, Download, Mail, MoreHorizontal, Pause, Phone } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -38,18 +31,14 @@ export type Vendor = {
 	created_at: string;
 };
 
-const statusConfig: Record<
-	"active" | "inactive",
-	{ label: string; className: string }
-> = {
+const statusConfig: Record<"active" | "inactive", { label: string; className: string }> = {
 	active: {
 		label: "Active",
 		className: "bg-success text-success dark:bg-success/20 dark:text-success",
 	},
 	inactive: {
 		label: "Inactive",
-		className:
-			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 	},
 };
 
@@ -60,8 +49,7 @@ const categoryConfig: Record<string, { label: string; className: string }> = {
 	},
 	distributor: {
 		label: "Distributor",
-		className:
-			"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+		className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 	},
 	manufacturer: {
 		label: "Manufacturer",
@@ -69,13 +57,11 @@ const categoryConfig: Record<string, { label: string; className: string }> = {
 	},
 	service_provider: {
 		label: "Service Provider",
-		className:
-			"bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
+		className: "bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400",
 	},
 	other: {
 		label: "Other",
-		className:
-			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 	},
 };
 
@@ -87,7 +73,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 		shrink: true,
 		render: (vendor) => (
 			<Link
-				className="font-medium text-foreground text-sm leading-tight hover:underline"
+				className="text-foreground text-sm leading-tight font-medium hover:underline"
 				href={`${basePath}/${vendor.id}`}
 				onClick={(e) => e.stopPropagation()}
 			>
@@ -102,7 +88,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 		render: (vendor) => (
 			<div className="flex flex-col">
 				<Link
-					className="font-medium text-foreground text-sm leading-tight hover:underline"
+					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`${basePath}/${vendor.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -129,7 +115,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 			<div className="flex flex-col gap-1 text-sm">
 				{vendor.email && (
 					<div className="flex items-center gap-2">
-						<Mail className="h-3 w-3 text-muted-foreground" />
+						<Mail className="text-muted-foreground h-3 w-3" />
 						<a
 							className="text-primary hover:underline"
 							href={`mailto:${vendor.email}`}
@@ -141,7 +127,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 				)}
 				{vendor.phone && (
 					<div className="flex items-center gap-2">
-						<Phone className="h-3 w-3 text-muted-foreground" />
+						<Phone className="text-muted-foreground h-3 w-3" />
 						<a
 							className="text-primary hover:underline"
 							href={`tel:${vendor.phone}`}
@@ -203,9 +189,7 @@ const getColumns = (basePath: string): ColumnDef<Vendor>[] => [
 					)}
 					<DropdownMenuSeparator />
 					<DropdownMenuItem asChild>
-						<Link
-							href={`/dashboard/work/purchase-orders?vendorId=${vendor.id}`}
-						>
+						<Link href={`/dashboard/work/purchase-orders?vendorId=${vendor.id}`}>
 							View Purchase Orders
 						</Link>
 					</DropdownMenuItem>
@@ -255,7 +239,7 @@ export function VendorTable({
 					</Link>
 				</Button>
 			}
-			emptyIcon={<Building2 className="h-12 w-12 text-muted-foreground" />}
+			emptyIcon={<Building2 className="text-muted-foreground h-12 w-12" />}
 			emptyMessage="No vendors found. Create your first vendor to get started."
 			getItemId={(vendor) => vendor.id}
 			itemsPerPage={itemsPerPage}

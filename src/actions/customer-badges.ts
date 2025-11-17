@@ -15,18 +15,9 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
-type AutoBadgeVariant =
-	| "default"
-	| "destructive"
-	| "warning"
-	| "success"
-	| "secondary"
-	| "outline";
+type AutoBadgeVariant = "default" | "destructive" | "warning" | "success" | "secondary" | "outline";
 
 type BadgeMetadata = Record<string, unknown>;
 
@@ -146,7 +137,7 @@ export async function generateAutoBadges(customerId: string) {
         outstanding_balance,
         total_revenue,
         invoices:invoices!customer_id(status,is_overdue)
-      `,
+      `
 			)
 			.eq("id", customerId)
 			.single();
@@ -156,20 +147,14 @@ export async function generateAutoBadges(customerId: string) {
 		}
 
 		const autoBadges = buildAutoBadges(customer);
-		await replaceAutoBadges(
-			supabase,
-			customerId,
-			teamMember.company_id,
-			autoBadges,
-		);
+		await replaceAutoBadges(supabase, customerId, teamMember.company_id, autoBadges);
 
 		revalidatePath(`/dashboard/customers/${customerId}`);
 		return { success: true, data: autoBadges };
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to generate badges",
+			error: error instanceof Error ? error.message : "Failed to generate badges",
 		};
 	}
 }
@@ -186,13 +171,7 @@ export async function addCustomerBadge({
 }: {
 	customerId: string;
 	label: string;
-	variant?:
-		| "default"
-		| "destructive"
-		| "warning"
-		| "success"
-		| "secondary"
-		| "outline";
+	variant?: "default" | "destructive" | "warning" | "success" | "secondary" | "outline";
 	badgeType?: "custom" | "premade";
 	icon?: string;
 }) {
@@ -291,10 +270,7 @@ const buildAutoBadges = (customer: CustomerRecord): AutoBadgeDefinition[] => {
 		});
 	}
 
-	if (
-		customer.total_revenue &&
-		customer.total_revenue > HIGH_VALUE_REVENUE_CENTS
-	) {
+	if (customer.total_revenue && customer.total_revenue > HIGH_VALUE_REVENUE_CENTS) {
 		badges.push({
 			label: `High Value $${formatWholeCurrency(customer.total_revenue)}`,
 			variant: "success",
@@ -311,12 +287,8 @@ const qualifiesForOnTimeBadge = (invoices: CustomerInvoice[]): boolean => {
 		return false;
 	}
 
-	const hasLatePayments = invoices.some((invoice) =>
-		Boolean(invoice.is_overdue),
-	);
-	const paidInvoicesCount = invoices.filter(
-		(invoice) => invoice.status === "paid",
-	).length;
+	const hasLatePayments = invoices.some((invoice) => Boolean(invoice.is_overdue));
+	const paidInvoicesCount = invoices.filter((invoice) => invoice.status === "paid").length;
 
 	return paidInvoicesCount >= ALWAYS_PAYS_THRESHOLD && !hasLatePayments;
 };
@@ -325,7 +297,7 @@ const replaceAutoBadges = async (
 	supabase: SupabaseServerClient,
 	customerId: string,
 	companyId: string,
-	badges: AutoBadgeDefinition[],
+	badges: AutoBadgeDefinition[]
 ) => {
 	await supabase
 		.from("customer_badges")
@@ -348,12 +320,11 @@ const replaceAutoBadges = async (
 			auto_generated_key: badge.auto_generated_key,
 			metadata: badge.metadata,
 			display_order: AUTO_BADGE_DISPLAY_OFFSET + index,
-		})),
+		}))
 	);
 };
 
-const formatCurrency = (amountInCents: number): string =>
-	(amountInCents / DOLLAR_CENTS).toFixed(2);
+const formatCurrency = (amountInCents: number): string => (amountInCents / DOLLAR_CENTS).toFixed(2);
 
 const formatWholeCurrency = (amountInCents: number): string =>
 	(amountInCents / DOLLAR_CENTS).toFixed(0);

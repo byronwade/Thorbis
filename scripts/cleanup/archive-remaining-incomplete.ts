@@ -25,12 +25,8 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
-const PERMANENT_DELETE_DELAY_MS =
-	DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
+	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const PERMANENT_DELETE_DELAY_MS = DAYS_TO_PERMANENT_DELETE * MILLISECONDS_PER_DAY;
 
 type CompanyRecord = {
 	id: string;
@@ -54,8 +50,7 @@ async function archiveRemainingIncomplete() {
 		const userEmail = "bcw1995@gmail.com";
 
 		// Find user by email
-		const { data: authUsers, error: userError } =
-			await supabase.auth.admin.listUsers();
+		const { data: authUsers, error: userError } = await supabase.auth.admin.listUsers();
 
 		if (userError) {
 			console.error("Error fetching users:", userError);
@@ -74,7 +69,8 @@ async function archiveRemainingIncomplete() {
 		// Get all active companies that are NOT archived and NOT the completed one
 		const { data: memberships, error: membershipError } = await supabase
 			.from("team_members")
-			.select(`
+			.select(
+				`
 				id,
 				company_id,
 				companies!inner (
@@ -83,7 +79,8 @@ async function archiveRemainingIncomplete() {
 					stripe_subscription_status,
 					deleted_at
 				)
-			`)
+			`
+			)
 			.eq("user_id", user.id)
 			.eq("status", "active")
 			.is("companies.deleted_at", null)
@@ -99,9 +96,7 @@ async function archiveRemainingIncomplete() {
 			return;
 		}
 
-		console.log(
-			`Found ${memberships.length} incomplete companies to archive:\n`,
-		);
+		console.log(`Found ${memberships.length} incomplete companies to archive:\n`);
 
 		// Deduplicate by company_id
 		const companyMap = new Map<string, MembershipRecord>();

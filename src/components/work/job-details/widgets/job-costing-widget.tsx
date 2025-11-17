@@ -25,25 +25,19 @@ export function JobCostingWidget({ job }: { job: Job }) {
 				</div>
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">Materials</span>
-					<span className="font-medium">
-						{formatCurrency(mockCosts.materials)}
-					</span>
+					<span className="font-medium">{formatCurrency(mockCosts.materials)}</span>
 				</div>
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">Equipment</span>
-					<span className="font-medium">
-						{formatCurrency(mockCosts.equipment)}
-					</span>
+					<span className="font-medium">{formatCurrency(mockCosts.equipment)}</span>
 				</div>
 				<div className="flex justify-between">
 					<span className="text-muted-foreground">Subcontractors</span>
-					<span className="font-medium">
-						{formatCurrency(mockCosts.subcontractors)}
-					</span>
+					<span className="font-medium">{formatCurrency(mockCosts.subcontractors)}</span>
 				</div>
 			</div>
 			<Separator />
-			<div className="flex justify-between font-bold text-sm">
+			<div className="flex justify-between text-sm font-bold">
 				<span>Total Cost</span>
 				<span>{formatCurrency(totalCost)}</span>
 			</div>

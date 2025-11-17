@@ -1,8 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-type CustomerPortalRow =
-	| Database["public"]["Tables"]["customer_portal_settings"]["Row"]
-	| null;
+type CustomerPortalRow = Database["public"]["Tables"]["customer_portal_settings"]["Row"] | null;
 
 export type CustomerPortalSettingsState = {
 	portalEnabled: boolean;
@@ -41,7 +39,7 @@ export const DEFAULT_CUSTOMER_PORTAL_SETTINGS: CustomerPortalSettingsState = {
 };
 
 export function mapCustomerPortalSettings(
-	row: CustomerPortalRow,
+	row: CustomerPortalRow
 ): Partial<CustomerPortalSettingsState> {
 	if (!row) {
 		return {};

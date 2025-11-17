@@ -1,9 +1,6 @@
 import { notFound } from "next/navigation";
 import { EstimatesKanban } from "@/components/work/estimates-kanban";
-import {
-	type Estimate,
-	EstimatesTable,
-} from "@/components/work/estimates-table";
+import { type Estimate, EstimatesTable } from "@/components/work/estimates-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -50,7 +47,7 @@ export async function EstimatesData() {
       archived_at,
       deleted_at,
       customers!customer_id(display_name, first_name, last_name)
-    `,
+    `
 		)
 		.eq("company_id", activeCompanyId)
 		.order("created_at", { ascending: false });
@@ -61,9 +58,7 @@ export async function EstimatesData() {
 
 	// Transform data for table component
 	const estimates: Estimate[] = (estimatesRaw || []).map((est: any) => {
-		const customer = Array.isArray(est.customers)
-			? est.customers[0]
-			: est.customers;
+		const customer = Array.isArray(est.customers) ? est.customers[0] : est.customers;
 
 		return {
 			id: est.id,

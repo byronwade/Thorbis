@@ -108,9 +108,7 @@ export const useCustomersStore = create<CustomersStore>()(
 				toggleSelection: (id) =>
 					set((state) => ({
 						selectedCustomerIds: state.selectedCustomerIds.includes(id)
-							? state.selectedCustomerIds.filter(
-									(customerId) => customerId !== id,
-								)
+							? state.selectedCustomerIds.filter((customerId) => customerId !== id)
 							: [...state.selectedCustomerIds, id],
 					})),
 
@@ -174,8 +172,7 @@ export const useCustomersStore = create<CustomersStore>()(
 				},
 
 				// Sidebar Actions
-				toggleSidebar: () =>
-					set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+				toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
 				setActiveSection: (section) => set({ activeSection: section }),
 
@@ -192,8 +189,8 @@ export const useCustomersStore = create<CustomersStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			},
+			}
 		),
-		{ name: "CustomersStore" },
-	),
+		{ name: "CustomersStore" }
+	)
 );

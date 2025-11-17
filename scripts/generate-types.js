@@ -20,7 +20,7 @@ try {
 		{
 			encoding: "utf-8",
 			maxBuffer: MAX_BUFFER_SIZE_BYTES,
-		},
+		}
 	);
 
 	// Write to types file

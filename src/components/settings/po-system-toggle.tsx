@@ -7,13 +7,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { togglePurchaseOrderSystem } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { trackCustomEvent } from "@/lib/analytics/client";
 
@@ -22,10 +16,7 @@ type POSystemToggleProps = {
 	lastEnabledAt?: string | null;
 };
 
-export function POSystemToggle({
-	enabled,
-	lastEnabledAt,
-}: POSystemToggleProps) {
+export function POSystemToggle({ enabled, lastEnabledAt }: POSystemToggleProps) {
 	const [isEnabled, setIsEnabled] = useState(enabled);
 	const [isPending, startTransition] = useTransition();
 
@@ -38,17 +29,10 @@ export function POSystemToggle({
 				trackCustomEvent("settings.po_system_toggle", {
 					enabled: result.enabled,
 				});
-				toast.success(
-					result.enabled
-						? "Purchase orders enabled"
-						: "Purchase orders disabled",
-				);
+				toast.success(result.enabled ? "Purchase orders enabled" : "Purchase orders disabled");
 			} catch (error) {
 				setIsEnabled(!nextValue);
-				const message =
-					error instanceof Error
-						? error.message
-						: "Unable to update purchase orders";
+				const message = error instanceof Error ? error.message : "Unable to update purchase orders";
 				toast.error(message);
 			}
 		});
@@ -63,7 +47,7 @@ export function POSystemToggle({
 			<CardHeader>
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div className="flex items-center gap-3">
-						<div className="flex size-10 items-center justify-center rounded-lg bg-muted">
+						<div className="bg-muted flex size-10 items-center justify-center rounded-lg">
 							<Package className="size-5" />
 						</div>
 						<div>
@@ -77,11 +61,7 @@ export function POSystemToggle({
 						<span className="text-muted-foreground text-sm">
 							{isEnabled ? "Enabled" : "Disabled"}
 						</span>
-						<Switch
-							checked={isEnabled}
-							disabled={isPending}
-							onCheckedChange={handleToggle}
-						/>
+						<Switch checked={isEnabled} disabled={isPending} onCheckedChange={handleToggle} />
 					</div>
 				</div>
 			</CardHeader>
@@ -91,9 +71,7 @@ export function POSystemToggle({
 				</div>
 				{isEnabled && (
 					<Button asChild disabled={isPending} variant="outline">
-						<Link href="/dashboard/work/purchase-orders">
-							Manage purchase orders
-						</Link>
+						<Link href="/dashboard/work/purchase-orders">Manage purchase orders</Link>
 					</Button>
 				)}
 			</CardContent>

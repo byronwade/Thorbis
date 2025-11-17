@@ -29,7 +29,7 @@ export function useInvoiceJob(jobId: string | null, enabled = true) {
 				.eq("id", jobId)
 				.single();
 		},
-		{ enabled: enabled && !!jobId },
+		{ enabled: enabled && !!jobId }
 	);
 }
 
@@ -43,23 +43,16 @@ export function useInvoiceProperty(propertyId: string | null, enabled = true) {
 			if (!propertyId) return { data: null, error: null };
 
 			const supabase = createClient();
-			return await supabase
-				.from("properties")
-				.select("*")
-				.eq("id", propertyId)
-				.single();
+			return await supabase.from("properties").select("*").eq("id", propertyId).single();
 		},
-		{ enabled: enabled && !!propertyId },
+		{ enabled: enabled && !!propertyId }
 	);
 }
 
 /**
  * Load estimate that generated this invoice (workflow timeline)
  */
-export function useInvoiceEstimate(
-	estimateId: string | null,
-	enabled = true,
-) {
+export function useInvoiceEstimate(estimateId: string | null, enabled = true) {
 	return useProgressiveData(
 		["invoice-estimate", estimateId],
 		async () => {
@@ -72,7 +65,7 @@ export function useInvoiceEstimate(
 				.eq("id", estimateId)
 				.maybeSingle();
 		},
-		{ enabled: enabled && !!estimateId },
+		{ enabled: enabled && !!estimateId }
 	);
 }
 
@@ -91,17 +84,14 @@ export function useInvoiceContract(invoiceId: string, enabled = true) {
 				.is("deleted_at", null)
 				.maybeSingle();
 		},
-		{ enabled },
+		{ enabled }
 	);
 }
 
 /**
  * Load customer payment methods
  */
-export function useInvoicePaymentMethods(
-	customerId: string,
-	enabled = true,
-) {
+export function useInvoicePaymentMethods(customerId: string, enabled = true) {
 	return useProgressiveData(
 		["invoice-payment-methods", customerId],
 		async () => {
@@ -113,7 +103,7 @@ export function useInvoicePaymentMethods(
 				.eq("is_active", true)
 				.order("is_default", { ascending: false });
 		},
-		{ enabled },
+		{ enabled }
 	);
 }
 
@@ -153,12 +143,12 @@ export function useInvoicePayments(invoiceId: string, enabled = true) {
 						completed_at,
 						notes
 					)
-				`,
+				`
 				)
 				.eq("invoice_id", invoiceId)
 				.order("applied_at", { ascending: false });
 		},
-		{ enabled },
+		{ enabled }
 	);
 }
 
@@ -171,7 +161,7 @@ export function useInvoiceCommunications(
 	customerId: string | null,
 	jobId: string | null,
 	companyId: string,
-	enabled = true,
+	enabled = true
 ) {
 	return useProgressiveData(
 		["invoice-communications", invoiceId, customerId, jobId],
@@ -193,7 +183,7 @@ export function useInvoiceCommunications(
 					`
 					*,
 					customer:customers!customer_id(id, first_name, last_name)
-				`,
+				`
 				)
 				.eq("company_id", companyId)
 				.order("created_at", { ascending: false })
@@ -217,6 +207,6 @@ export function useInvoiceCommunications(
 
 			return { data: uniqueCommunications, error: result.error };
 		},
-		{ enabled },
+		{ enabled }
 	);
 }

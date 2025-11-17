@@ -15,11 +15,7 @@ import {
 	Wrench,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TechJobInfoProps = {
@@ -89,7 +85,7 @@ export function TechJobInfo({
 			{(equipment.length > 0 || jobEquipment.length > 0) && (
 				<HoverCard openDelay={200}>
 					<HoverCardTrigger asChild>
-						<button className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+						<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 							<Wrench className="size-4" />
 							{equipment.length + jobEquipment.length} Equipment
 						</button>
@@ -97,26 +93,22 @@ export function TechJobInfo({
 					<HoverCardContent align="start" className="w-80" side="bottom">
 						<div className="space-y-3">
 							<div>
-								<h4 className="font-semibold text-sm">Equipment on Site</h4>
-								<p className="text-muted-foreground text-xs">
-									Units to service on this job
-								</p>
+								<h4 className="text-sm font-semibold">Equipment on Site</h4>
+								<p className="text-muted-foreground text-xs">Units to service on this job</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{equipment.map((eq) => (
 									<div
-										className="flex items-start justify-between rounded-md bg-muted/50 p-2"
+										className="bg-muted/50 flex items-start justify-between rounded-md p-2"
 										key={eq.id}
 									>
 										<div className="flex flex-col gap-0.5">
-											<span className="font-medium text-sm">
+											<span className="text-sm font-medium">
 												{eq.equipment_type || "Equipment"}
 											</span>
 											{eq.model && (
-												<span className="text-muted-foreground text-xs">
-													Model: {eq.model}
-												</span>
+												<span className="text-muted-foreground text-xs">Model: {eq.model}</span>
 											)}
 											{eq.serial_number && (
 												<span className="text-muted-foreground text-xs">
@@ -141,7 +133,7 @@ export function TechJobInfo({
 			{materials.length > 0 && (
 				<HoverCard openDelay={200}>
 					<HoverCardTrigger asChild>
-						<button className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+						<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 							<Package className="size-4" />
 							{materials.length} Material{materials.length !== 1 ? "s" : ""}
 						</button>
@@ -149,18 +141,13 @@ export function TechJobInfo({
 					<HoverCardContent align="start" className="w-72" side="bottom">
 						<div className="space-y-3">
 							<div>
-								<h4 className="font-semibold text-sm">Materials List</h4>
-								<p className="text-muted-foreground text-xs">
-									Items needed for this job
-								</p>
+								<h4 className="text-sm font-semibold">Materials List</h4>
+								<p className="text-muted-foreground text-xs">Items needed for this job</p>
 							</div>
 							<Separator />
 							<div className="space-y-1">
 								{materials.map((material) => (
-									<div
-										className="flex items-center justify-between text-sm"
-										key={material.id}
-									>
+									<div className="flex items-center justify-between text-sm" key={material.id}>
 										<span>{material.material_name}</span>
 										<span className="text-muted-foreground">
 											{material.quantity} {material.unit}
@@ -177,7 +164,7 @@ export function TechJobInfo({
 			{importantNotes.length > 0 && (
 				<HoverCard openDelay={200}>
 					<HoverCardTrigger asChild>
-						<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 font-medium text-red-700 text-sm transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+						<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
 							<AlertCircle className="size-4" />
 							{importantNotes.length} Important
 						</button>
@@ -185,16 +172,14 @@ export function TechJobInfo({
 					<HoverCardContent align="start" className="w-80" side="bottom">
 						<div className="space-y-3">
 							<div>
-								<h4 className="font-semibold text-sm">Important Notes</h4>
-								<p className="text-muted-foreground text-xs">
-									Critical information for this job
-								</p>
+								<h4 className="text-sm font-semibold">Important Notes</h4>
+								<p className="text-muted-foreground text-xs">Critical information for this job</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
 								{importantNotes.map((note) => (
 									<div
-										className="rounded-md border-destructive border-l-2 bg-destructive/10 p-2"
+										className="border-destructive bg-destructive/10 rounded-md border-l-2 p-2"
 										key={note.id}
 									>
 										<p className="text-sm">{note.content}</p>
@@ -213,7 +198,7 @@ export function TechJobInfo({
 
 			{/* Documents */}
 			{documents.length > 0 && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+				<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 					<FileText className="size-4" />
 					{documents.length} Doc{documents.length !== 1 ? "s" : ""}
 				</button>
@@ -221,7 +206,7 @@ export function TechJobInfo({
 
 			{/* Photos */}
 			{photos.length > 0 && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+				<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 					<Camera className="size-4" />
 					{photos.length} Photo{photos.length !== 1 ? "s" : ""}
 				</button>
@@ -229,20 +214,19 @@ export function TechJobInfo({
 
 			{/* All Notes Count */}
 			{notes.length > 0 && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+				<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 					<StickyNote className="size-4" />
 					{notes.length} Note{notes.length !== 1 ? "s" : ""}
 				</button>
 			)}
 
 			{/* Completion Status */}
-			{jobEquipment.length > 0 &&
-				jobEquipment.every((je) => je.action === "completed") && (
-					<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 font-medium text-green-700 text-sm transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
-						<CheckCircle className="size-4" />
-						All Tasks Complete
-					</button>
-				)}
+			{jobEquipment.length > 0 && jobEquipment.every((je) => je.action === "completed") && (
+				<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
+					<CheckCircle className="size-4" />
+					All Tasks Complete
+				</button>
+			)}
 		</div>
 	);
 }

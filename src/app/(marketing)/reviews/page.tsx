@@ -105,16 +105,16 @@ export default function ReviewsPage() {
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Social Proof
 					</Badge>
-					<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 						Thorbis earns 4.9/5 stars for AI automation and dispatch excellence
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Contractors choose Thorbis for transparent pricing, fast
-						implementation, and AI-powered workflows. Every customer pays the
-						same $100/month base with pay-as-you-go usage—no per-user surprises.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Contractors choose Thorbis for transparent pricing, fast implementation, and AI-powered
+						workflows. Every customer pays the same $100/month base with pay-as-you-go usage—no
+						per-user surprises.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -137,25 +137,19 @@ export default function ReviewsPage() {
 							{
 								score: "98%",
 								label: "Support satisfaction",
-								subtext:
-									"Teams praise dedicated success managers and fast responses.",
+								subtext: "Teams praise dedicated success managers and fast responses.",
 							},
 							{
 								score: "6 weeks",
 								label: "Average go-live",
-								subtext:
-									"From contract to production across multi-location contractors.",
+								subtext: "From contract to production across multi-location contractors.",
 							},
 						].map((stat) => (
 							<Card className="bg-primary/5" key={stat.label}>
 								<CardContent className="flex h-full flex-col items-center justify-center gap-3 py-10 text-center">
-									<span className="font-bold text-5xl text-primary">
-										{stat.score}
-									</span>
-									<p className="font-semibold text-base">{stat.label}</p>
-									<p className="text-muted-foreground text-sm">
-										{stat.subtext}
-									</p>
+									<span className="text-primary text-5xl font-bold">{stat.score}</span>
+									<p className="text-base font-semibold">{stat.label}</p>
+									<p className="text-muted-foreground text-sm">{stat.subtext}</p>
 								</CardContent>
 							</Card>
 						))}
@@ -163,28 +157,20 @@ export default function ReviewsPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
-								What customers say about Thorbis
-							</h2>
+							<h2 className="text-3xl font-semibold">What customers say about Thorbis</h2>
 							<p className="text-muted-foreground">
-								A sampling of the feedback we hear from field service operators
-								who replaced legacy tools.
+								A sampling of the feedback we hear from field service operators who replaced legacy
+								tools.
 							</p>
 						</div>
 						<div className="grid gap-6 md:grid-cols-3">
 							{TESTIMONIALS.map((testimonial) => (
 								<Card key={testimonial.quote}>
 									<CardContent className="flex h-full flex-col justify-between gap-4 py-8">
-										<p className="text-muted-foreground leading-relaxed">
-											“{testimonial.quote}”
-										</p>
+										<p className="text-muted-foreground leading-relaxed">“{testimonial.quote}”</p>
 										<div className="space-y-1 text-sm">
-											<p className="font-semibold text-foreground">
-												{testimonial.name}
-											</p>
-											<p className="text-muted-foreground">
-												{testimonial.role}
-											</p>
+											<p className="text-foreground font-semibold">{testimonial.name}</p>
+											<p className="text-muted-foreground">{testimonial.role}</p>
 										</div>
 									</CardContent>
 								</Card>
@@ -194,12 +180,10 @@ export default function ReviewsPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
-								Platform badges & ratings
-							</h2>
+							<h2 className="text-3xl font-semibold">Platform badges & ratings</h2>
 							<p className="text-muted-foreground">
-								Verified reviews from trusted directories. Thorbis leads in ease
-								of use, support, and ROI.
+								Verified reviews from trusted directories. Thorbis leads in ease of use, support,
+								and ROI.
 							</p>
 						</div>
 						<div className="grid gap-6 md:grid-cols-3">
@@ -213,8 +197,7 @@ export default function ReviewsPage() {
 								{
 									platform: "Capterra",
 									rating: "4.8 / 5",
-									description:
-										"Best ease of use award for mid-market contractors.",
+									description: "Best ease of use award for mid-market contractors.",
 									href: "https://www.capterra.com/p/Thorbis/",
 								},
 								{
@@ -231,7 +214,7 @@ export default function ReviewsPage() {
 										</Badge>
 										<CardTitle className="text-2xl">{listing.rating}</CardTitle>
 									</CardHeader>
-									<CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
+									<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
 										<p>{listing.description}</p>
 										<Button asChild variant="outline">
 											<Link href={listing.href} rel="noopener" target="_blank">
@@ -246,12 +229,10 @@ export default function ReviewsPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
-								Explore proof by industry
-							</h2>
+							<h2 className="text-3xl font-semibold">Explore proof by industry</h2>
 							<p className="text-muted-foreground">
-								Dive deeper into stories from contractors like you, complete
-								with KPI improvements and AI adoption stats.
+								Dive deeper into stories from contractors like you, complete with KPI improvements
+								and AI adoption stats.
 							</p>
 						</div>
 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -275,7 +256,7 @@ export default function ReviewsPage() {
 							].map((item) => (
 								<Card className="bg-muted/40" key={item.label}>
 									<CardContent className="flex h-full flex-col items-start justify-between gap-4 py-6">
-										<p className="font-semibold text-base">{item.label}</p>
+										<p className="text-base font-semibold">{item.label}</p>
 										<Button asChild variant="ghost">
 											<Link href={item.href}>View stories →</Link>
 										</Button>
@@ -286,7 +267,7 @@ export default function ReviewsPage() {
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="font-semibold text-3xl">Reviews FAQ</h2>
+						<h2 className="text-3xl font-semibold">Reviews FAQ</h2>
 						<div className="grid gap-4 md:grid-cols-3">
 							{FAQS.map((faq) => (
 								<Card key={faq.question}>

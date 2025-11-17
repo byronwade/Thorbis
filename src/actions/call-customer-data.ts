@@ -10,16 +10,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { lookupCallerInfo } from "@/lib/telnyx/number-lookup";
 import type { ActionResult } from "@/types/actions";
-import type {
-	CustomerCallData,
-	CustomerStats,
-	TelnyxEnrichmentData,
-} from "@/types/call-window";
+import type { CustomerCallData, CustomerStats, TelnyxEnrichmentData } from "@/types/call-window";
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
 type RelatedCustomerData = {
 	jobs: CustomerCallData["jobs"];
@@ -40,7 +33,7 @@ type RelatedCustomerData = {
  */
 export async function getCustomerCallData(
 	phoneNumber: string,
-	companyId: string,
+	companyId: string
 ): Promise<ActionResult<CustomerCallData>> {
 	try {
 		const supabase = await createClient();
@@ -63,16 +56,14 @@ export async function getCustomerCallData(
 			.select("*")
 			.eq("company_id", companyId)
 			.or(
-				`phone.eq.${phoneNumber},phone.eq.${normalizedPhone},secondary_phone.eq.${phoneNumber},secondary_phone.eq.${normalizedPhone}`,
+				`phone.eq.${phoneNumber},phone.eq.${normalizedPhone},secondary_phone.eq.${phoneNumber},secondary_phone.eq.${normalizedPhone}`
 			)
 			.maybeSingle();
 
 		const isKnownCustomer = !!customer;
 
 		// 2. Enrich with Telnyx data if customer is not found
-		const telnyxData = customer
-			? undefined
-			: await getTelnyxEnrichmentData(phoneNumber);
+		const telnyxData = customer ? undefined : await getTelnyxEnrichmentData(phoneNumber);
 
 		let source: "database" | "telnyx" | "unknown" = "unknown";
 		if (customer) {
@@ -112,10 +103,7 @@ export async function getCustomerCallData(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to fetch customer data",
+			error: error instanceof Error ? error.message : "Failed to fetch customer data",
 		};
 	}
 }
@@ -130,7 +118,7 @@ type TelnyxLookupPayload = {
 };
 
 async function getTelnyxEnrichmentData(
-	phoneNumber: string,
+	phoneNumber: string
 ): Promise<TelnyxEnrichmentData | undefined> {
 	const lookupResult = await lookupCallerInfo(phoneNumber);
 
@@ -164,7 +152,7 @@ function getEmptyRelatedCustomerData(): RelatedCustomerData {
 
 async function fetchRelatedCustomerData(
 	supabase: SupabaseServerClient,
-	customerId: string,
+	customerId: string
 ): Promise<RelatedCustomerData> {
 	const [
 		jobsResult,
@@ -178,12 +166,14 @@ async function fetchRelatedCustomerData(
 		// Use getJobListSelect() to get core + financial data (total_amount, paid_amount needed for call window)
 		supabase
 			.from("jobs")
-			.select(`
+			.select(
+				`
 				id, job_number, title, description, status, priority, job_type,
 				created_at, updated_at, scheduled_date,
 				customer_id, property_id, company_id, created_by,
 				financial:job_financial(total_amount, paid_amount, deposit_amount)
-			`)
+			`
+			)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })
@@ -211,11 +201,13 @@ async function fetchRelatedCustomerData(
 		// Appointments (upcoming only)
 		supabase
 			.from("schedules")
-			.select(`
+			.select(
+				`
         *,
         job:jobs!job_id(id, job_number, title),
         property:properties!property_id(id, name, address)
-      `)
+      `
+			)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
 			.gte("scheduled_start", new Date().toISOString())
@@ -244,8 +236,7 @@ async function fetchRelatedCustomerData(
 		jobs: (jobsResult.data || []) as CustomerCallData["jobs"],
 		invoices: (invoicesResult.data || []) as CustomerCallData["invoices"],
 		estimates: (estimatesResult.data || []) as CustomerCallData["estimates"],
-		appointments: (appointmentsResult.data ||
-			[]) as CustomerCallData["appointments"],
+		appointments: (appointmentsResult.data || []) as CustomerCallData["appointments"],
 		properties: (propertiesResult.data || []) as CustomerCallData["properties"],
 		equipment: (equipmentResult.data || []) as CustomerCallData["equipment"],
 		// Note: Contracts table may not exist, handle gracefully
@@ -256,23 +247,19 @@ async function fetchRelatedCustomerData(
 function buildCustomerStats(
 	customer: CustomerCallData["customer"],
 	jobs: CustomerCallData["jobs"],
-	invoices: CustomerCallData["invoices"],
+	invoices: CustomerCallData["invoices"]
 ): CustomerStats {
 	const openInvoices = invoices.filter(
-		(invoice) => invoice.status === "unpaid" || invoice.status === "partial",
+		(invoice) => invoice.status === "unpaid" || invoice.status === "partial"
 	);
 
 	return {
 		totalJobs: jobs.length,
-		activeJobs: jobs.filter(
-			(job) => job.status === "in_progress" || job.status === "scheduled",
-		).length,
+		activeJobs: jobs.filter((job) => job.status === "in_progress" || job.status === "scheduled")
+			.length,
 		totalRevenue: customer?.total_revenue || 0,
 		openInvoices: openInvoices.length,
-		openInvoicesAmount: openInvoices.reduce(
-			(sum, invoice) => sum + (invoice.total_amount || 0),
-			0,
-		),
+		openInvoicesAmount: openInvoices.reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0),
 		customerSince: customer?.created_at || null,
 	};
 }
@@ -282,7 +269,7 @@ function buildCustomerStats(
  */
 export async function getCustomerCallDataById(
 	customerId: string,
-	companyId: string,
+	companyId: string
 ): Promise<ActionResult<CustomerCallData>> {
 	try {
 		const supabase = await createClient();
@@ -339,10 +326,7 @@ export async function getCustomerCallDataById(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to fetch customer data",
+			error: error instanceof Error ? error.message : "Failed to fetch customer data",
 		};
 	}
 }

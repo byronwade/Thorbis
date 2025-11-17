@@ -19,7 +19,7 @@ export function distributeWidgetsToSlides(widgets: Widget[]): Slide[] {
 
 	// Sort widgets by size (largest first) for better packing
 	const sortedWidgets = [...widgets].sort(
-		(a, b) => getWidgetCellCount(b.size) - getWidgetCellCount(a.size),
+		(a, b) => getWidgetCellCount(b.size) - getWidgetCellCount(a.size)
 	);
 
 	for (const widget of sortedWidgets) {
@@ -105,19 +105,11 @@ export function optimizeSlideDistribution(widgets: Widget[]): Slide[] {
 /**
  * Redistributes widgets when a widget is added, removed, or resized
  */
-export function redistributeWidgets(
-	currentSlides: Slide[],
-	allWidgets: Widget[],
-): Slide[] {
+export function redistributeWidgets(currentSlides: Slide[], allWidgets: Widget[]): Slide[] {
 	// Flatten current widgets and merge with new widgets
-	const existingWidgetIds = new Set(
-		currentSlides.flatMap((s) => s.widgets.map((w) => w.id)),
-	);
+	const existingWidgetIds = new Set(currentSlides.flatMap((s) => s.widgets.map((w) => w.id)));
 	const newWidgets = allWidgets.filter((w) => !existingWidgetIds.has(w.id));
-	const allCurrentWidgets = [
-		...currentSlides.flatMap((s) => s.widgets),
-		...newWidgets,
-	];
+	const allCurrentWidgets = [...currentSlides.flatMap((s) => s.widgets), ...newWidgets];
 
 	// Re-distribute everything
 	return optimizeSlideDistribution(allCurrentWidgets);
@@ -127,10 +119,7 @@ export function redistributeWidgets(
  * Checks if a widget can fit in a specific slide
  */
 export function canWidgetFitInSlide(slide: Slide, widget: Widget): boolean {
-	const currentUsage = slide.widgets.reduce(
-		(sum, w) => sum + getWidgetCellCount(w.size),
-		0,
-	);
+	const currentUsage = slide.widgets.reduce((sum, w) => sum + getWidgetCellCount(w.size), 0);
 	const widgetCells = getWidgetCellCount(widget.size);
 	return currentUsage + widgetCells <= GRID_CAPACITY;
 }
@@ -141,7 +130,7 @@ export function canWidgetFitInSlide(slide: Slide, widget: Widget): boolean {
 export function moveWidgetBetweenSlides(
 	slides: Slide[],
 	widgetId: string,
-	targetSlideId: string,
+	targetSlideId: string
 ): Slide[] {
 	const newSlides = slides.map((slide) => ({
 		...slide,
@@ -149,9 +138,7 @@ export function moveWidgetBetweenSlides(
 	}));
 
 	// Find source and target slides
-	const sourceSlide = newSlides.find((s) =>
-		s.widgets.some((w) => w.id === widgetId),
-	);
+	const sourceSlide = newSlides.find((s) => s.widgets.some((w) => w.id === widgetId));
 	const targetSlide = newSlides.find((s) => s.id === targetSlideId);
 
 	if (!(sourceSlide && targetSlide)) {

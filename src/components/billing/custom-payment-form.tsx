@@ -118,9 +118,7 @@ export function CustomPaymentForm({
 				setIsProcessing(false);
 			}
 		} catch (err) {
-			onError(
-				err instanceof Error ? err.message : "An unexpected error occurred",
-			);
+			onError(err instanceof Error ? err.message : "An unexpected error occurred");
 			setIsProcessing(false);
 		}
 	};
@@ -130,7 +128,7 @@ export function CustomPaymentForm({
 			{/* Card Number */}
 			<div className="space-y-2">
 				<Label htmlFor="card-number">Card Number</Label>
-				<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+				<div className="border-input bg-background ring-offset-background focus-within:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:outline-none">
 					<CardNumberElement
 						className="w-full"
 						id="card-number"
@@ -139,7 +137,7 @@ export function CustomPaymentForm({
 					/>
 				</div>
 				{cardError && (
-					<div className="flex items-center gap-1 text-destructive text-sm">
+					<div className="text-destructive flex items-center gap-1 text-sm">
 						<AlertCircle className="size-3" />
 						<span>{cardError}</span>
 					</div>
@@ -150,7 +148,7 @@ export function CustomPaymentForm({
 			<div className="grid grid-cols-2 gap-4">
 				<div className="space-y-2">
 					<Label htmlFor="card-expiry">Expiry Date</Label>
-					<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+					<div className="border-input bg-background ring-offset-background focus-within:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:outline-none">
 						<CardExpiryElement
 							className="w-full"
 							id="card-expiry"
@@ -162,7 +160,7 @@ export function CustomPaymentForm({
 
 				<div className="space-y-2">
 					<Label htmlFor="card-cvc">CVC</Label>
-					<div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+					<div className="border-input bg-background ring-offset-background focus-within:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-offset-2 focus-within:outline-none">
 						<CardCvcElement
 							className="w-full"
 							id="card-cvc"
@@ -175,7 +173,7 @@ export function CustomPaymentForm({
 
 			{/* Success Indicator */}
 			{isFormComplete && !isProcessing && (
-				<div className="flex items-center gap-2 rounded-lg border border-success bg-success p-3 text-sm text-success dark:border-success dark:bg-success dark:text-success">
+				<div className="border-success bg-success text-success dark:border-success dark:bg-success dark:text-success flex items-center gap-2 rounded-lg border p-3 text-sm">
 					<CheckCircle2 className="size-4" />
 					<span>Payment information is valid</span>
 				</div>

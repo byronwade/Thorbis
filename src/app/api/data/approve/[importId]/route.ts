@@ -24,10 +24,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database not configured" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
 		}
 
 		const { importId } = context.params;
@@ -39,10 +36,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			return NextResponse.json(
-				{ error: "No active company found" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "No active company found" }, { status: 400 });
 		}
 
 		// Check if user is admin (TODO: Implement proper role check)
@@ -61,17 +55,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
 		}
 
 		if (!importRecord.requires_approval) {
-			return NextResponse.json(
-				{ error: "This import does not require approval" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "This import does not require approval" }, { status: 400 });
 		}
 
 		if (importRecord.status !== "pending") {
-			return NextResponse.json(
-				{ error: "Import is not pending approval" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "Import is not pending approval" }, { status: 400 });
 		}
 
 		// Update import record
@@ -86,10 +74,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 			.eq("id", importId);
 
 		if (updateError) {
-			return NextResponse.json(
-				{ error: "Failed to update import" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Failed to update import" }, { status: 500 });
 		}
 
 		// TODO: If approved, trigger actual import processing
@@ -101,9 +86,6 @@ export async function POST(request: NextRequest, context: RouteContext) {
 			status: newStatus,
 		});
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

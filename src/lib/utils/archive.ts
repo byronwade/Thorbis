@@ -43,9 +43,10 @@ export function isItemArchived(archivedAt: string | null | undefined): boolean {
 /**
  * Filter items based on archive status
  */
-export function filterByArchiveStatus<
-	T extends { archived_at?: string | null },
->(items: T[], filter: ArchiveFilter): T[] {
+export function filterByArchiveStatus<T extends { archived_at?: string | null }>(
+	items: T[],
+	filter: ArchiveFilter
+): T[] {
 	switch (filter) {
 		case "active":
 			return items.filter((item) => !isItemArchived(item.archived_at));
@@ -82,9 +83,7 @@ export function getArchiveQueryFilter(filter: ArchiveFilter): {
 /**
  * Format archive date for display
  */
-export function formatArchiveDate(
-	archivedAt: string | null | undefined,
-): string {
+export function formatArchiveDate(archivedAt: string | null | undefined): string {
 	if (!archivedAt) {
 		return "N/A";
 	}
@@ -100,8 +99,6 @@ export function formatArchiveDate(
 /**
  * Get archive badge variant
  */
-export function getArchiveBadgeVariant(
-	isArchived: boolean,
-): "outline" | "secondary" {
+export function getArchiveBadgeVariant(isArchived: boolean): "outline" | "secondary" {
 	return isArchived ? "outline" : "secondary";
 }

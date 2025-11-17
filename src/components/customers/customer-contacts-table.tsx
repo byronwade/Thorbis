@@ -39,12 +39,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,10 +57,7 @@ type CustomerContactsTableProps = {
 	triggerAdd?: number;
 };
 
-export function CustomerContactsTable({
-	customerId,
-	triggerAdd,
-}: CustomerContactsTableProps) {
+export function CustomerContactsTable({ customerId, triggerAdd }: CustomerContactsTableProps) {
 	const queryClient = useQueryClient();
 
 	// Local UI state (not data state)
@@ -165,16 +157,13 @@ export function CustomerContactsTable({
 			});
 
 			// Snapshot previous value
-			const previousContacts = queryClient.getQueryData([
-				"customer-contacts",
-				customerId,
-			]);
+			const previousContacts = queryClient.getQueryData(["customer-contacts", customerId]);
 
 			// Optimistically remove contact
 			queryClient.setQueryData(
 				["customer-contacts", customerId],
 				(old: CustomerContact[] | undefined) =>
-					old ? old.filter((contact) => contact.id !== contactId) : old,
+					old ? old.filter((contact) => contact.id !== contactId) : old
 			);
 
 			return { previousContacts };
@@ -182,10 +171,7 @@ export function CustomerContactsTable({
 		onError: (error: Error, _contactId, context) => {
 			// Rollback on error
 			if (context?.previousContacts) {
-				queryClient.setQueryData(
-					["customer-contacts", customerId],
-					context.previousContacts,
-				);
+				queryClient.setQueryData(["customer-contacts", customerId], context.previousContacts);
 			}
 			toast.error(error.message);
 		},
@@ -237,11 +223,9 @@ export function CustomerContactsTable({
 	// Error state
 	if (error) {
 		return (
-			<div className="flex min-h-[400px] items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 p-8">
+			<div className="border-destructive/50 bg-destructive/10 flex min-h-[400px] items-center justify-center rounded-lg border p-8">
 				<div className="text-center">
-					<p className="mb-2 font-semibold text-destructive">
-						Failed to load contacts
-					</p>
+					<p className="text-destructive mb-2 font-semibold">Failed to load contacts</p>
 					<p className="text-muted-foreground text-sm">{error.message}</p>
 				</div>
 			</div>
@@ -268,10 +252,8 @@ export function CustomerContactsTable({
 							<TableRow>
 								<TableCell className="h-24 text-center" colSpan={6}>
 									<div className="flex flex-col items-center gap-2">
-										<User className="size-8 text-muted-foreground/50" />
-										<p className="text-muted-foreground text-sm">
-											No additional contacts
-										</p>
+										<User className="text-muted-foreground/50 size-8" />
+										<p className="text-muted-foreground text-sm">No additional contacts</p>
 									</div>
 								</TableCell>
 							</TableRow>
@@ -281,21 +263,13 @@ export function CustomerContactsTable({
 									<TableCell className="font-medium">
 										{contact.first_name} {contact.last_name}
 										{contact.is_primary && (
-											<Star
-												className="ml-1 inline-block size-3 text-warning"
-												fill="currentColor"
-											/>
+											<Star className="text-warning ml-1 inline-block size-3" fill="currentColor" />
 										)}
 									</TableCell>
-									<TableCell className="text-sm">
-										{contact.title || "—"}
-									</TableCell>
+									<TableCell className="text-sm">{contact.title || "—"}</TableCell>
 									<TableCell className="text-sm">
 										{contact.email ? (
-											<a
-												className="text-primary hover:underline"
-												href={`mailto:${contact.email}`}
-											>
+											<a className="text-primary hover:underline" href={`mailto:${contact.email}`}>
 												{contact.email}
 											</a>
 										) : (
@@ -304,10 +278,7 @@ export function CustomerContactsTable({
 									</TableCell>
 									<TableCell className="text-sm">
 										{contact.phone ? (
-											<a
-												className="text-primary hover:underline"
-												href={`tel:${contact.phone}`}
-											>
+											<a className="text-primary hover:underline" href={`tel:${contact.phone}`}>
 												{contact.phone}
 											</a>
 										) : (
@@ -339,7 +310,7 @@ export function CustomerContactsTable({
 											size="sm"
 											variant="ghost"
 										>
-											<Trash2 className="size-4 text-destructive" />
+											<Trash2 className="text-destructive size-4" />
 										</Button>
 									</TableCell>
 								</TableRow>
@@ -360,9 +331,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>First Name *</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, firstName: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
 									placeholder="John"
 									value={formData.firstName}
 								/>
@@ -370,9 +339,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>Last Name *</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, lastName: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
 									placeholder="Smith"
 									value={formData.lastName}
 								/>
@@ -380,9 +347,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>Title</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, title: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, title: e.target.value })}
 									placeholder="Mr., Ms., Dr., etc."
 									value={formData.title}
 								/>
@@ -390,9 +355,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>Email</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, email: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, email: e.target.value })}
 									placeholder="john@example.com"
 									type="email"
 									value={formData.email}
@@ -401,9 +364,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>Phone</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, phone: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
 									placeholder="(555) 123-4567"
 									type="tel"
 									value={formData.phone}
@@ -412,9 +373,7 @@ export function CustomerContactsTable({
 							<div className="space-y-2">
 								<Label>Secondary Phone</Label>
 								<Input
-									onChange={(e) =>
-										setFormData({ ...formData, secondaryPhone: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
 									placeholder="(555) 987-6543"
 									type="tel"
 									value={formData.secondaryPhone}
@@ -423,7 +382,7 @@ export function CustomerContactsTable({
 						</div>
 
 						<div className="space-y-2">
-							<Label className="font-medium text-sm">Contact Roles</Label>
+							<Label className="text-sm font-medium">Contact Roles</Label>
 							<div className="flex flex-wrap gap-4">
 								<div className="flex items-center space-x-2">
 									<Checkbox
@@ -460,10 +419,7 @@ export function CustomerContactsTable({
 											})
 										}
 									/>
-									<label
-										className="cursor-pointer text-sm"
-										htmlFor="isEmergency"
-									>
+									<label className="cursor-pointer text-sm" htmlFor="isEmergency">
 										Emergency Contact
 									</label>
 								</div>
@@ -471,11 +427,7 @@ export function CustomerContactsTable({
 						</div>
 
 						<div className="flex gap-2 pt-4">
-							<Button
-								className="flex-1"
-								onClick={() => setShowAddDialog(false)}
-								variant="outline"
-							>
+							<Button className="flex-1" onClick={() => setShowAddDialog(false)} variant="outline">
 								Cancel
 							</Button>
 							<Button
@@ -492,16 +444,13 @@ export function CustomerContactsTable({
 			</Dialog>
 
 			{/* Archive Contact Dialog */}
-			<AlertDialog
-				onOpenChange={setIsArchiveDialogOpen}
-				open={isArchiveDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Contact?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This contact will be archived and can be restored within 90 days.
-							After 90 days, it will be permanently deleted.
+							This contact will be archived and can be restored within 90 days. After 90 days, it
+							will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

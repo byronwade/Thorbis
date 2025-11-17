@@ -35,10 +35,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
-import {
-	type FieldDefinition,
-	getAvailableFields,
-} from "@/lib/datatable/field-introspection";
+import { type FieldDefinition, getAvailableFields } from "@/lib/datatable/field-introspection";
 import type { CustomColumn } from "@/lib/stores/custom-columns-store";
 import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 
@@ -48,20 +45,14 @@ type ColumnBuilderDialogProps = {
 	entity: string; // Entity type (e.g., "appointments", "jobs")
 };
 
-export function ColumnBuilderDialog({
-	open,
-	onOpenChange,
-	entity,
-}: ColumnBuilderDialogProps) {
+export function ColumnBuilderDialog({ open, onOpenChange, entity }: ColumnBuilderDialogProps) {
 	const addColumn = useCustomColumnsStore((state) => state.addColumn);
 
 	// Available fields for this entity
 	const availableFields = getAvailableFields(entity);
 
 	// Form state
-	const [selectedField, setSelectedField] = useState<FieldDefinition | null>(
-		null,
-	);
+	const [selectedField, setSelectedField] = useState<FieldDefinition | null>(null);
 	const [label, setLabel] = useState("");
 	const [width, setWidth] = useState<string>("auto");
 	const [format, setFormat] = useState<CustomColumn["format"]>("text");
@@ -121,8 +112,8 @@ export function ColumnBuilderDialog({
 				<DialogHeader>
 					<DialogTitle>Add Custom Column</DialogTitle>
 					<DialogDescription>
-						Select a database field to add as a custom column to your table. The
-						column will appear after existing columns.
+						Select a database field to add as a custom column to your table. The column will appear
+						after existing columns.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -130,10 +121,7 @@ export function ColumnBuilderDialog({
 					{/* Field Selector */}
 					<div className="space-y-2">
 						<Label htmlFor="field">Database Field</Label>
-						<Select
-							onValueChange={handleFieldSelect}
-							value={selectedField?.path || ""}
-						>
+						<Select onValueChange={handleFieldSelect} value={selectedField?.path || ""}>
 							<SelectTrigger className="w-full" id="field">
 								<SelectValue placeholder="Select a field..." />
 							</SelectTrigger>
@@ -141,9 +129,7 @@ export function ColumnBuilderDialog({
 								{availableFields.map((field) => (
 									<SelectItem key={field.path} value={field.path}>
 										{field.label}{" "}
-										<span className="text-muted-foreground text-xs">
-											({field.path})
-										</span>
+										<span className="text-muted-foreground text-xs">({field.path})</span>
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -182,9 +168,7 @@ export function ColumnBuilderDialog({
 					<div className="space-y-2">
 						<Label htmlFor="format">Format</Label>
 						<Select
-							onValueChange={(value) =>
-								setFormat(value as CustomColumn["format"])
-							}
+							onValueChange={(value) => setFormat(value as CustomColumn["format"])}
 							value={format}
 						>
 							<SelectTrigger id="format">
@@ -207,25 +191,20 @@ export function ColumnBuilderDialog({
 							id="sortable"
 							onCheckedChange={(checked) => setSortable(checked === true)}
 						/>
-						<Label
-							className="cursor-pointer font-normal text-sm"
-							htmlFor="sortable"
-						>
+						<Label className="cursor-pointer text-sm font-normal" htmlFor="sortable">
 							Enable sorting for this column
 						</Label>
 					</div>
 
 					{/* Preview */}
 					{selectedField && (
-						<div className="space-y-2 rounded-lg border bg-muted/30 p-4">
+						<div className="bg-muted/30 space-y-2 rounded-lg border p-4">
 							<Label>Preview</Label>
 							<div className="flex items-center gap-4">
-								<div className="font-semibold text-muted-foreground text-xs">
+								<div className="text-muted-foreground text-xs font-semibold">
 									{label || selectedField.label}:
 								</div>
-								<div>
-									{renderCustomColumn(previewData, selectedField.type, format)}
-								</div>
+								<div>{renderCustomColumn(previewData, selectedField.type, format)}</div>
 							</div>
 						</div>
 					)}
@@ -235,10 +214,7 @@ export function ColumnBuilderDialog({
 					<Button onClick={() => onOpenChange(false)} variant="outline">
 						Cancel
 					</Button>
-					<Button
-						disabled={!(selectedField && label.trim())}
-						onClick={handleSubmit}
-					>
+					<Button disabled={!(selectedField && label.trim())} onClick={handleSubmit}>
 						Add Column
 					</Button>
 				</DialogFooter>

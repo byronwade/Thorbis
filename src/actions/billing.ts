@@ -37,10 +37,7 @@ type BillingActionResult = {
 	data?: Record<string, unknown>;
 };
 
-const toBillingError = (
-	error: unknown,
-	fallbackMessage: string,
-): BillingActionResult => ({
+const toBillingError = (error: unknown, fallbackMessage: string): BillingActionResult => ({
 	success: false,
 	error: error instanceof Error ? error.message : fallbackMessage,
 });
@@ -69,7 +66,7 @@ export async function createOrganizationCheckoutSession(
 	companyId: string,
 	successUrl?: string,
 	cancelUrl?: string,
-	phoneNumber?: string,
+	phoneNumber?: string
 ): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
@@ -99,7 +96,7 @@ export async function createOrganizationCheckoutSession(
 			customerId = await getOrCreateStripeCustomer(
 				user.id,
 				userData.email,
-				userData.name || undefined,
+				userData.name || undefined
 			);
 
 			if (!customerId) {
@@ -110,10 +107,7 @@ export async function createOrganizationCheckoutSession(
 			}
 
 			// Save customer ID to database
-			await supabase
-				.from("users")
-				.update({ stripe_customer_id: customerId })
-				.eq("id", user.id);
+			await supabase.from("users").update({ stripe_customer_id: customerId }).eq("id", user.id);
 		}
 
 		// Check if this is an additional organization
@@ -125,8 +119,7 @@ export async function createOrganizationCheckoutSession(
 			.returns<MembershipWithSubscriptionStatus[]>();
 
 		const activeOrgsCount = (existingMemberships ?? []).filter(
-			(membership) =>
-				membership.companies?.stripe_subscription_status === "active",
+			(membership) => membership.companies?.stripe_subscription_status === "active"
 		).length;
 
 		const isAdditionalOrg = activeOrgsCount > 0;
@@ -138,8 +131,7 @@ export async function createOrganizationCheckoutSession(
 			companyId,
 			isAdditionalOrg,
 			successUrl:
-				successUrl ||
-				`${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
+				successUrl || `${siteUrl}/dashboard/settings/billing?session_id={CHECKOUT_SESSION_ID}`,
 			cancelUrl: cancelUrl || `${siteUrl}/dashboard/welcome`,
 			phoneNumber,
 		});
@@ -166,9 +158,7 @@ export async function createOrganizationCheckoutSession(
  * Creates a Stripe billing portal session for managing subscription
  * Users can update payment methods, view invoices, and cancel subscription
  */
-export async function createBillingPortal(
-	companyId?: string,
-): Promise<BillingActionResult> {
+export async function createBillingPortal(companyId?: string): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -200,10 +190,7 @@ export async function createBillingPortal(
 			? `${siteUrl}/dashboard/settings/billing?company=${companyId}`
 			: `${siteUrl}/dashboard/settings/billing`;
 
-		const portalUrl = await createBillingPortalSession(
-			userData.stripe_customer_id,
-			returnUrl,
-		);
+		const portalUrl = await createBillingPortalSession(userData.stripe_customer_id, returnUrl);
 
 		if (!portalUrl) {
 			return {
@@ -227,7 +214,7 @@ export async function createBillingPortal(
  * Returns the current subscription status for a company
  */
 export async function getCompanySubscriptionStatus(
-	companyId: string,
+	companyId: string
 ): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
@@ -267,7 +254,7 @@ export async function getCompanySubscriptionStatus(
         subscription_current_period_end,
         subscription_cancel_at_period_end,
         trial_ends_at
-      `,
+      `
 			)
 			.eq("id", companyId)
 			.single();
@@ -279,9 +266,7 @@ export async function getCompanySubscriptionStatus(
 		// Get detailed subscription info from Stripe if we have a subscription ID
 		let stripeSubscription: Stripe.Subscription | null = null;
 		if (company.stripe_subscription_id) {
-			stripeSubscription = await getSubscription(
-				company.stripe_subscription_id,
-			);
+			stripeSubscription = await getSubscription(company.stripe_subscription_id);
 		}
 
 		return {
@@ -301,9 +286,7 @@ export async function getCompanySubscriptionStatus(
  *
  * Cancels subscription at the end of the current billing period
  */
-export async function cancelCompanySubscription(
-	companyId: string,
-): Promise<BillingActionResult> {
+export async function cancelCompanySubscription(companyId: string): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();
 		if (!user) {
@@ -374,7 +357,7 @@ export async function cancelCompanySubscription(
  * Removes the cancellation flag from a subscription
  */
 export async function reactivateCompanySubscription(
-	companyId: string,
+	companyId: string
 ): Promise<BillingActionResult> {
 	try {
 		const user = await getCurrentUser();

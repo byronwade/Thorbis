@@ -2,13 +2,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -21,11 +15,7 @@ export const metadata = generateSEOMetadata({
 		"Join the Thorbis community for webinars, office hours, and peer-led discussions. Share best practices with fellow operators.",
 	path: "/community",
 	section: "Resources",
-	keywords: [
-		"thorbis community",
-		"field service community",
-		"thorbis office hours",
-	],
+	keywords: ["thorbis community", "field service community", "thorbis office hours"],
 });
 
 const COMMUNITY_PROGRAMS = [
@@ -55,7 +45,7 @@ export default function CommunityPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Community", url: `${siteUrl}/community` },
-						]),
+						])
 					),
 				}}
 				id="community-breadcrumb-ld"
@@ -63,16 +53,16 @@ export default function CommunityPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="max-w-3xl space-y-6">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Thorbis Community
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						Learn from operators building the future of service
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Join thousands of service professionals who share playbooks,
-						automation tips, and growth strategies in the Thorbis community.
-						Participate in live sessions or catch on-demand recordings anytime.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Join thousands of service professionals who share playbooks, automation tips, and growth
+						strategies in the Thorbis community. Participate in live sessions or catch on-demand
+						recordings anytime.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
@@ -85,7 +75,7 @@ export default function CommunityPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Community programs</h2>
+					<h2 className="text-2xl font-semibold">Community programs</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{COMMUNITY_PROGRAMS.map((program) => (
 							<Card key={program.title}>
@@ -103,11 +93,11 @@ export default function CommunityPage() {
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="font-semibold text-2xl">Join the conversation</h2>
+					<h2 className="text-2xl font-semibold">Join the conversation</h2>
 					<p className="text-muted-foreground text-sm">
-						Thorbis community members connect inside our private Slack workspace
-						and in-person meetups at industry events. Request an invite to
-						collaborate with peers and share best practices.
+						Thorbis community members connect inside our private Slack workspace and in-person
+						meetups at industry events. Request an invite to collaborate with peers and share best
+						practices.
 					</p>
 					<Button asChild variant="secondary">
 						<a href="mailto:community@thorbis.com?subject=Join%20Thorbis%20Community">

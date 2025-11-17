@@ -49,10 +49,7 @@ type AppleGridLayoutProps = {
 /**
  * Calculate widget dimensions based on grid size
  */
-function getWidgetStyle(
-	widget: GridWidget,
-	dimensions: GridDimensions,
-): React.CSSProperties {
+function getWidgetStyle(widget: GridWidget, dimensions: GridDimensions): React.CSSProperties {
 	const { cellWidth, cellHeight, gap } = dimensions;
 
 	// Clamp widget size to grid dimensions
@@ -117,7 +114,7 @@ export function AppleGridLayout({
 						animate={{ opacity: 1, scale: 1 }}
 						className={cn(
 							"relative overflow-hidden rounded-2xl",
-							isEditMode && "cursor-pointer hover:ring-2 hover:ring-primary",
+							isEditMode && "hover:ring-primary cursor-pointer hover:ring-2"
 						)}
 						exit={{ opacity: 0, scale: 0.95 }}
 						initial={{ opacity: 0, scale: 0.95 }}
@@ -142,7 +139,7 @@ export function AppleGridLayout({
  * Helper to convert legacy widget sizes to grid sizes
  */
 export function convertLegacySize(
-	legacySize: "small" | "medium" | "large" | "full" | string,
+	legacySize: "small" | "medium" | "large" | "full" | string
 ): WidgetGridSize {
 	switch (legacySize) {
 		case "small":
@@ -168,7 +165,7 @@ export function convertLegacySize(
  */
 export function constrainWidgetSize(
 	requestedSize: WidgetGridSize,
-	dimensions: GridDimensions,
+	dimensions: GridDimensions
 ): WidgetGridSize {
 	return {
 		cols: Math.min(requestedSize.cols, dimensions.cols),

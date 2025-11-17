@@ -6,26 +6,24 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
 	return (
-		<div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+		<div className="bg-background flex min-h-screen flex-col items-center justify-center p-4">
 			<div className="max-w-md space-y-6 text-center">
 				<div className="flex justify-center">
-					<HardHat className="h-24 w-24 text-muted-foreground/50" />
+					<HardHat className="text-muted-foreground/50 h-24 w-24" />
 				</div>
 
 				<div className="space-y-2">
-					<h1 className="font-bold text-6xl text-foreground">404</h1>
-					<h2 className="font-semibold text-2xl text-foreground">
-						Page Not Found
-					</h2>
+					<h1 className="text-foreground text-6xl font-bold">404</h1>
+					<h2 className="text-foreground text-2xl font-semibold">Page Not Found</h2>
 				</div>
 
-				<div className="space-y-4 text-muted-foreground">
+				<div className="text-muted-foreground space-y-4">
 					<p className="text-lg">
 						Looks like this page went on a coffee break and never came back.
 					</p>
 					<p className="text-sm">
-						We searched high and low, but couldn't find what you're looking for.
-						Maybe it's still in the truck? 🚚
+						We searched high and low, but couldn't find what you're looking for. Maybe it's still in
+						the truck? 🚚
 					</p>
 				</div>
 

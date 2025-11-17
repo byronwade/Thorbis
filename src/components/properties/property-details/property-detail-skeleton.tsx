@@ -15,12 +15,12 @@ export function PropertyDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="space-y-2">
-							<div className="h-8 w-64 animate-pulse rounded bg-muted" />
-							<div className="h-4 w-96 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-8 w-64 animate-pulse rounded" />
+							<div className="bg-muted h-4 w-96 animate-pulse rounded" />
 						</div>
 						<div className="flex gap-2">
-							<div className="h-10 w-24 animate-pulse rounded bg-muted" />
-							<div className="h-10 w-24 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-10 w-24 animate-pulse rounded" />
+							<div className="bg-muted h-10 w-24 animate-pulse rounded" />
 						</div>
 					</div>
 				</div>
@@ -29,15 +29,15 @@ export function PropertyDetailSkeleton() {
 				<div className="grid gap-4 md:grid-cols-4">
 					{[1, 2, 3, 4].map((i) => (
 						<div className="space-y-2 rounded-lg border p-4" key={i}>
-							<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
-							<div className="h-3 w-20 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-4 w-24 animate-pulse rounded" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
+							<div className="bg-muted h-3 w-20 animate-pulse rounded" />
 						</div>
 					))}
 				</div>
 
 				{/* Map skeleton */}
-				<div className="h-64 w-full animate-pulse rounded-lg bg-muted" />
+				<div className="bg-muted h-64 w-full animate-pulse rounded-lg" />
 
 				{/* Main content skeleton */}
 				<div className="grid gap-6 lg:grid-cols-3">
@@ -45,22 +45,22 @@ export function PropertyDetailSkeleton() {
 					<div className="space-y-6 lg:col-span-2">
 						{/* Customer info */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-2">
-								<div className="h-4 w-full animate-pulse rounded bg-muted" />
-								<div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-								<div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+								<div className="bg-muted h-4 w-full animate-pulse rounded" />
+								<div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
+								<div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
 							</div>
 						</div>
 
 						{/* Jobs history */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-3">
 								{[1, 2, 3].map((i) => (
 									<div className="flex justify-between" key={i}>
-										<div className="h-4 w-48 animate-pulse rounded bg-muted" />
-										<div className="h-4 w-24 animate-pulse rounded bg-muted" />
+										<div className="bg-muted h-4 w-48 animate-pulse rounded" />
+										<div className="bg-muted h-4 w-24 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -68,12 +68,12 @@ export function PropertyDetailSkeleton() {
 
 						{/* Equipment */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-3">
 								{[1, 2].map((i) => (
 									<div className="space-y-2" key={i}>
-										<div className="h-4 w-full animate-pulse rounded bg-muted" />
-										<div className="h-3 w-2/3 animate-pulse rounded bg-muted" />
+										<div className="bg-muted h-4 w-full animate-pulse rounded" />
+										<div className="bg-muted h-3 w-2/3 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -84,35 +84,32 @@ export function PropertyDetailSkeleton() {
 					<div className="space-y-6">
 						{/* Property info */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-2">
-								<div className="h-4 w-full animate-pulse rounded bg-muted" />
-								<div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-								<div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+								<div className="bg-muted h-4 w-full animate-pulse rounded" />
+								<div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
+								<div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
 							</div>
 						</div>
 
 						{/* Upcoming schedules */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-2">
 								{[1, 2].map((i) => (
-									<div
-										className="h-4 w-full animate-pulse rounded bg-muted"
-										key={i}
-									/>
+									<div className="bg-muted h-4 w-full animate-pulse rounded" key={i} />
 								))}
 							</div>
 						</div>
 
 						{/* Financial summary */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-2">
 								{[1, 2, 3].map((i) => (
 									<div className="flex justify-between" key={i}>
-										<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-										<div className="h-4 w-20 animate-pulse rounded bg-muted" />
+										<div className="bg-muted h-4 w-24 animate-pulse rounded" />
+										<div className="bg-muted h-4 w-20 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -124,18 +121,12 @@ export function PropertyDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex gap-4 border-b">
 						{[1, 2, 3, 4, 5].map((i) => (
-							<div
-								className="h-10 w-24 animate-pulse rounded-t bg-muted"
-								key={i}
-							/>
+							<div className="bg-muted h-10 w-24 animate-pulse rounded-t" key={i} />
 						))}
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div
-								className="h-20 w-full animate-pulse rounded bg-muted"
-								key={i}
-							/>
+							<div className="bg-muted h-20 w-full animate-pulse rounded" key={i} />
 						))}
 					</div>
 				</div>

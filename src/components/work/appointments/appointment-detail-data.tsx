@@ -24,9 +24,7 @@ type AppointmentDetailDataProps = {
 	appointmentId: string;
 };
 
-export async function AppointmentDetailData({
-	appointmentId,
-}: AppointmentDetailDataProps) {
+export async function AppointmentDetailData({ appointmentId }: AppointmentDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -60,13 +58,15 @@ export async function AppointmentDetailData({
 	// Fetch appointment with all related data
 	const { data: appointment, error: appointmentError } = await supabase
 		.from("schedules")
-		.select(`
+		.select(
+			`
       *,
       customer:customers!customer_id(*),
       property:properties!property_id(*),
       job:jobs!job_id(*),
       assigned_user:users!assigned_to(id, name, email, avatar)
-    `)
+    `
+		)
 		.eq("id", appointmentId)
 		.eq("type", "appointment")
 		.is("deleted_at", null)
@@ -87,37 +87,34 @@ export async function AppointmentDetailData({
 	const property = Array.isArray(appointment.property)
 		? appointment.property[0]
 		: appointment.property;
-	const job = Array.isArray(appointment.job)
-		? appointment.job[0]
-		: appointment.job;
+	const job = Array.isArray(appointment.job) ? appointment.job[0] : appointment.job;
 	const assignedUser = Array.isArray(appointment.assigned_user)
 		? appointment.assigned_user[0]
 		: appointment.assigned_user;
 
 	// Fetch all related data in parallel
-	const [{ data: activities }, { data: notes }, { data: attachments }] =
-		await Promise.all([
-			supabase
-				.from("activity_log")
-				.select("*, user:users!user_id(*)")
-				.eq("entity_type", "schedule")
-				.eq("entity_id", appointmentId)
-				.order("created_at", { ascending: false })
-				.limit(50),
-			supabase
-				.from("notes")
-				.select("*")
-				.eq("entity_type", "schedule")
-				.eq("entity_id", appointmentId)
-				.is("deleted_at", null)
-				.order("created_at", { ascending: false }),
-			supabase
-				.from("attachments")
-				.select("*")
-				.eq("entity_type", "schedule")
-				.eq("entity_id", appointmentId)
-				.order("created_at", { ascending: false }),
-		]);
+	const [{ data: activities }, { data: notes }, { data: attachments }] = await Promise.all([
+		supabase
+			.from("activity_log")
+			.select("*, user:users!user_id(*)")
+			.eq("entity_type", "schedule")
+			.eq("entity_id", appointmentId)
+			.order("created_at", { ascending: false })
+			.limit(50),
+		supabase
+			.from("notes")
+			.select("*")
+			.eq("entity_type", "schedule")
+			.eq("entity_id", appointmentId)
+			.is("deleted_at", null)
+			.order("created_at", { ascending: false }),
+		supabase
+			.from("attachments")
+			.select("*")
+			.eq("entity_type", "schedule")
+			.eq("entity_id", appointmentId)
+			.order("created_at", { ascending: false }),
+	]);
 
 	const appointmentData = {
 		appointment,
@@ -131,17 +128,11 @@ export async function AppointmentDetailData({
 	};
 
 	// Calculate metrics
-	const scheduledStart = appointment.scheduled_start
-		? new Date(appointment.scheduled_start)
-		: null;
-	const scheduledEnd = appointment.scheduled_end
-		? new Date(appointment.scheduled_end)
-		: null;
+	const scheduledStart = appointment.scheduled_start ? new Date(appointment.scheduled_start) : null;
+	const scheduledEnd = appointment.scheduled_end ? new Date(appointment.scheduled_end) : null;
 	const duration =
 		scheduledStart && scheduledEnd
-			? Math.round(
-					(scheduledEnd.getTime() - scheduledStart.getTime()) / (1000 * 60),
-				)
+			? Math.round((scheduledEnd.getTime() - scheduledStart.getTime()) / (1000 * 60))
 			: 0;
 
 	const metrics = {

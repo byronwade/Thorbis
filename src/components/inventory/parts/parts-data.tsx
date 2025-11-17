@@ -24,71 +24,63 @@ export async function PartsData() {
 				{/* Features grid */}
 				<div className="grid gap-6 md:grid-cols-2">
 					{/* Parts catalog */}
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Box className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Box className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Parts Catalog</h3>
+						<h3 className="text-lg font-semibold">Parts Catalog</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Organize all your parts with SKUs, descriptions, manufacturers,
-							and cross-references
+							Organize all your parts with SKUs, descriptions, manufacturers, and cross-references
 						</p>
 					</div>
 
 					{/* Barcode scanning */}
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Search className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Search className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Barcode Scanning</h3>
+						<h3 className="text-lg font-semibold">Barcode Scanning</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Scan barcodes to quickly add, remove, or update parts in your
-							inventory
+							Scan barcodes to quickly add, remove, or update parts in your inventory
 						</p>
 					</div>
 
 					{/* Vendor management */}
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Settings className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Settings className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Vendor Management</h3>
+						<h3 className="text-lg font-semibold">Vendor Management</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track preferred vendors, pricing tiers, and lead times for each
-							part
+							Track preferred vendors, pricing tiers, and lead times for each part
 						</p>
 					</div>
 
 					{/* Usage tracking */}
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<BarChart2 className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<BarChart2 className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Usage Tracking</h3>
+						<h3 className="text-lg font-semibold">Usage Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor which parts are used most frequently and optimize your
-							stock levels
+							Monitor which parts are used most frequently and optimize your stock levels
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
-				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">
-						Streamline Parts Management
-					</h3>
-					<p className="mb-6 text-muted-foreground">
-						Never waste time searching for parts again
-					</p>
+				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
+					<h3 className="mb-3 text-xl font-semibold">Streamline Parts Management</h3>
+					<p className="text-muted-foreground mb-6">Never waste time searching for parts again</p>
 					<div className="flex justify-center gap-4">
 						<button
-							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
+							className="border-primary/20 bg-background hover:bg-primary/5 rounded-lg border px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Learn More
 						</button>
 						<button
-							className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Request Access

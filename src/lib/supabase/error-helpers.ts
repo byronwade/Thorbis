@@ -12,7 +12,7 @@ export const hasReportableError = (error: QueryError) =>
 	Boolean(
 		error &&
 			!isRowNotFoundError(error) &&
-			(error.message || error.details || error.hint || error.code),
+			(error.message || error.details || error.hint || error.code)
 	);
 
 export const isMissingColumnError = (error: QueryError, columnName: string) => {

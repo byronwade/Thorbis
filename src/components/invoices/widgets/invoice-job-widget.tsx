@@ -17,10 +17,7 @@ type InvoiceJobWidgetProps = {
 	loadImmediately?: boolean;
 };
 
-export function InvoiceJobWidget({
-	jobId,
-	loadImmediately = false,
-}: InvoiceJobWidgetProps) {
+export function InvoiceJobWidget({ jobId, loadImmediately = false }: InvoiceJobWidgetProps) {
 	if (!jobId) {
 		return (
 			<ProgressiveWidget
@@ -28,7 +25,7 @@ export function InvoiceJobWidget({
 				icon={<Briefcase className="h-5 w-5" />}
 				loadImmediately={true}
 			>
-				<div className="text-center text-muted-foreground text-sm">
+				<div className="text-muted-foreground text-center text-sm">
 					No job linked to this invoice
 				</div>
 			</ProgressiveWidget>
@@ -47,33 +44,25 @@ export function InvoiceJobWidget({
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load job details
 						</div>
 					);
 				if (!job)
-					return (
-						<div className="text-center text-muted-foreground text-sm">
-							Job not found
-						</div>
-					);
+					return <div className="text-muted-foreground text-center text-sm">Job not found</div>;
 
 				return (
 					<Link
 						href={`/dashboard/work/jobs/${job.id}`}
-						className="block rounded-lg border p-4 transition-colors hover:bg-accent"
+						className="hover:bg-accent block rounded-lg border p-4 transition-colors"
 					>
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
-								<span className="font-medium text-sm">
-									Job #{job.job_number}
-								</span>
+								<span className="text-sm font-medium">Job #{job.job_number}</span>
 								<span className="text-muted-foreground text-xs">View Details →</span>
 							</div>
 							{job.title && (
-								<p className="text-muted-foreground text-sm line-clamp-2">
-									{job.title}
-								</p>
+								<p className="text-muted-foreground line-clamp-2 text-sm">{job.title}</p>
 							)}
 						</div>
 					</Link>

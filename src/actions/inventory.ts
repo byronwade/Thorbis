@@ -14,11 +14,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -37,11 +33,7 @@ const HTTP_STATUS_FORBIDDEN = 403;
 
 const inventorySchema = z.object({
 	priceBookItemId: z.string().uuid("Price book item is required"),
-	quantityOnHand: z
-		.number()
-		.int()
-		.min(0, "Quantity cannot be negative")
-		.default(0),
+	quantityOnHand: z.number().int().min(0, "Quantity cannot be negative").default(0),
 	minimumQuantity: z.number().int().min(0).default(0),
 	maximumQuantity: z.number().int().min(0).optional(),
 	reorderPoint: z.number().int().min(0).default(0),
@@ -55,15 +47,7 @@ const inventorySchema = z.object({
 const stockAdjustmentSchema = z.object({
 	inventoryId: z.string().uuid(),
 	quantityChange: z.number().int(),
-	reason: z.enum([
-		"restock",
-		"sale",
-		"damage",
-		"theft",
-		"correction",
-		"transfer",
-		"return",
-	]),
+	reason: z.enum(["restock", "sale", "damage", "theft", "correction", "transfer", "return"]),
 	reference: z.string().max(REFERENCE_MAX_LENGTH).optional(), // PO number, job number, etc.
 	notes: z.string().optional(),
 });
@@ -82,26 +66,17 @@ const reserveStockSchema = z.object({
 /**
  * Create new inventory record for a price book item
  */
-export async function createInventory(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createInventory(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const companyId = await getUserCompanyIdOrThrow(supabase);
 		const data = parseInventoryFormData(formData);
 
-		await getPriceBookItemForCompanyOrThrow(
-			supabase,
-			data.priceBookItemId,
-			companyId,
-		);
+		await getPriceBookItemForCompanyOrThrow(supabase, data.priceBookItemId, companyId);
 
 		await ensureNoExistingInventoryForItem(supabase, data.priceBookItemId);
 
@@ -116,7 +91,7 @@ export async function createInventory(
 		if (createError || !inventory) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create inventory"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -131,15 +106,12 @@ export async function createInventory(
  */
 export async function updateInventory(
 	inventoryId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const companyId = await getUserCompanyIdOrThrow(supabase);
@@ -147,7 +119,7 @@ export async function updateInventory(
 			supabase,
 			inventoryId,
 			companyId,
-			"id, company_id, price_book_item_id",
+			"id, company_id, price_book_item_id"
 		);
 
 		const data = parseInventoryUpdateFormData(formData, inventory);
@@ -160,7 +132,7 @@ export async function updateInventory(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update inventory"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -171,16 +143,11 @@ export async function updateInventory(
 /**
  * Delete inventory record (soft delete)
  */
-export async function deleteInventory(
-	inventoryId: string,
-): Promise<ActionResult<void>> {
+export async function deleteInventory(inventoryId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -198,7 +165,7 @@ export async function deleteInventory(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -216,7 +183,7 @@ export async function deleteInventory(
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -224,7 +191,7 @@ export async function deleteInventory(
 		if (inventory.quantity_reserved > 0) {
 			throw new ActionError(
 				"Cannot delete inventory with reserved stock. Release reservations first.",
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -241,7 +208,7 @@ export async function deleteInventory(
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete inventory"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -256,16 +223,11 @@ export async function deleteInventory(
 /**
  * Adjust stock levels (add or remove inventory)
  */
-export async function adjustStock(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function adjustStock(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const companyId = await getUserCompanyIdOrThrow(supabase);
@@ -275,15 +237,11 @@ export async function adjustStock(
 			supabase,
 			adjustment.inventoryId,
 			companyId,
-			"id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit, minimum_quantity, reorder_point",
+			"id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit, minimum_quantity, reorder_point"
 		);
 
 		const derived = calculateAdjustedQuantities(inventory, adjustment);
-		const updateData = buildStockAdjustmentUpdatePayload(
-			derived,
-			adjustment,
-			inventory,
-		);
+		const updateData = buildStockAdjustmentUpdatePayload(derived, adjustment, inventory);
 
 		const { error: updateError } = await supabase
 			.from("inventory")
@@ -293,7 +251,7 @@ export async function adjustStock(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("adjust stock"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -310,9 +268,7 @@ export async function adjustStock(
 
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 
-async function getUserCompanyIdOrThrow(
-	supabase: SupabaseClientType,
-): Promise<string> {
+async function getUserCompanyIdOrThrow(supabase: SupabaseClientType): Promise<string> {
 	const {
 		data: { user },
 	} = await supabase.auth.getUser();
@@ -328,7 +284,7 @@ async function getUserCompanyIdOrThrow(
 		throw new ActionError(
 			"You must be part of a company",
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
+			HTTP_STATUS_FORBIDDEN
 		);
 	}
 
@@ -338,26 +294,16 @@ async function getUserCompanyIdOrThrow(
 function parseInventoryFormData(formData: FormData) {
 	return inventorySchema.parse({
 		priceBookItemId: formData.get("priceBookItemId"),
-		quantityOnHand: formData.get("quantityOnHand")
-			? Number(formData.get("quantityOnHand"))
-			: 0,
-		minimumQuantity: formData.get("minimumQuantity")
-			? Number(formData.get("minimumQuantity"))
-			: 0,
+		quantityOnHand: formData.get("quantityOnHand") ? Number(formData.get("quantityOnHand")) : 0,
+		minimumQuantity: formData.get("minimumQuantity") ? Number(formData.get("minimumQuantity")) : 0,
 		maximumQuantity: formData.get("maximumQuantity")
 			? Number(formData.get("maximumQuantity"))
 			: undefined,
-		reorderPoint: formData.get("reorderPoint")
-			? Number(formData.get("reorderPoint"))
-			: 0,
-		reorderQuantity: formData.get("reorderQuantity")
-			? Number(formData.get("reorderQuantity"))
-			: 0,
+		reorderPoint: formData.get("reorderPoint") ? Number(formData.get("reorderPoint")) : 0,
+		reorderQuantity: formData.get("reorderQuantity") ? Number(formData.get("reorderQuantity")) : 0,
 		warehouseLocation: formData.get("warehouseLocation") || undefined,
 		primaryLocation: formData.get("primaryLocation") || undefined,
-		costPerUnit: formData.get("costPerUnit")
-			? Number(formData.get("costPerUnit"))
-			: 0,
+		costPerUnit: formData.get("costPerUnit") ? Number(formData.get("costPerUnit")) : 0,
 		notes: formData.get("notes") || undefined,
 	});
 }
@@ -365,7 +311,7 @@ function parseInventoryFormData(formData: FormData) {
 async function getPriceBookItemForCompanyOrThrow(
 	supabase: SupabaseClientType,
 	priceBookItemId: string,
-	companyId: string,
+	companyId: string
 ) {
 	const { data: priceBookItem } = await supabase
 		.from("price_book_items")
@@ -379,7 +325,7 @@ async function getPriceBookItemForCompanyOrThrow(
 		throw new ActionError(
 			"Price book item not found",
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
+			HTTP_STATUS_FORBIDDEN
 		);
 	}
 
@@ -388,7 +334,7 @@ async function getPriceBookItemForCompanyOrThrow(
 
 async function ensureNoExistingInventoryForItem(
 	supabase: SupabaseClientType,
-	priceBookItemId: string,
+	priceBookItemId: string
 ) {
 	const { data: existingInventory } = await supabase
 		.from("inventory")
@@ -400,14 +346,14 @@ async function ensureNoExistingInventoryForItem(
 	if (existingInventory) {
 		throw new ActionError(
 			"Inventory already exists for this item. Use update instead.",
-			ERROR_CODES.DB_DUPLICATE_ENTRY,
+			ERROR_CODES.DB_DUPLICATE_ENTRY
 		);
 	}
 }
 
 function buildInventoryInsertPayload(
 	companyId: string,
-	data: ReturnType<typeof parseInventoryFormData>,
+	data: ReturnType<typeof parseInventoryFormData>
 ) {
 	const quantityAvailable = data.quantityOnHand;
 	const totalCostValue = data.quantityOnHand * data.costPerUnit;
@@ -435,13 +381,11 @@ function buildInventoryInsertPayload(
 	};
 }
 
-async function getInventoryForCompanyOrThrow<
-	T extends string = "id, company_id",
->(
+async function getInventoryForCompanyOrThrow<T extends string = "id, company_id">(
 	supabase: SupabaseClientType,
 	inventoryId: string,
 	companyId: string,
-	select: T,
+	select: T
 ): Promise<Record<string, unknown>> {
 	const { data: inventory } = await supabase
 		.from("inventory")
@@ -453,46 +397,29 @@ async function getInventoryForCompanyOrThrow<
 	assertExists(inventory, "Inventory");
 
 	if (inventory.company_id !== companyId) {
-		throw new ActionError(
-			"Inventory not found",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN,
-		);
+		throw new ActionError("Inventory not found", ERROR_CODES.AUTH_FORBIDDEN, HTTP_STATUS_FORBIDDEN);
 	}
 
 	return inventory;
 }
 
-function parseInventoryUpdateFormData(
-	formData: FormData,
-	inventory: Record<string, unknown>,
-) {
+function parseInventoryUpdateFormData(formData: FormData, inventory: Record<string, unknown>) {
 	return inventorySchema.omit({ quantityOnHand: true }).parse({
 		priceBookItemId: inventory.price_book_item_id,
-		minimumQuantity: formData.get("minimumQuantity")
-			? Number(formData.get("minimumQuantity"))
-			: 0,
+		minimumQuantity: formData.get("minimumQuantity") ? Number(formData.get("minimumQuantity")) : 0,
 		maximumQuantity: formData.get("maximumQuantity")
 			? Number(formData.get("maximumQuantity"))
 			: undefined,
-		reorderPoint: formData.get("reorderPoint")
-			? Number(formData.get("reorderPoint"))
-			: 0,
-		reorderQuantity: formData.get("reorderQuantity")
-			? Number(formData.get("reorderQuantity"))
-			: 0,
+		reorderPoint: formData.get("reorderPoint") ? Number(formData.get("reorderPoint")) : 0,
+		reorderQuantity: formData.get("reorderQuantity") ? Number(formData.get("reorderQuantity")) : 0,
 		warehouseLocation: formData.get("warehouseLocation") || undefined,
 		primaryLocation: formData.get("primaryLocation") || undefined,
-		costPerUnit: formData.get("costPerUnit")
-			? Number(formData.get("costPerUnit"))
-			: 0,
+		costPerUnit: formData.get("costPerUnit") ? Number(formData.get("costPerUnit")) : 0,
 		notes: formData.get("notes") || undefined,
 	});
 }
 
-function buildInventoryUpdatePayload(
-	data: ReturnType<typeof parseInventoryUpdateFormData>,
-) {
+function buildInventoryUpdatePayload(data: ReturnType<typeof parseInventoryUpdateFormData>) {
 	return {
 		minimum_quantity: data.minimumQuantity,
 		maximum_quantity: data.maximumQuantity,
@@ -536,22 +463,21 @@ type StockDerivedQuantities = {
 
 function calculateAdjustedQuantities(
 	inventory: InventoryForAdjustment,
-	adjustment: StockAdjustmentInput,
+	adjustment: StockAdjustmentInput
 ): StockDerivedQuantities {
-	const newQuantityOnHand =
-		inventory.quantity_on_hand + adjustment.quantityChange;
+	const newQuantityOnHand = inventory.quantity_on_hand + adjustment.quantityChange;
 
 	if (newQuantityOnHand < 0) {
 		throw new ActionError(
 			"Stock adjustment would result in negative inventory",
-			ERROR_CODES.BUSINESS_RULE_VIOLATION,
+			ERROR_CODES.BUSINESS_RULE_VIOLATION
 		);
 	}
 
 	if (newQuantityOnHand < inventory.quantity_reserved) {
 		throw new ActionError(
 			`Cannot reduce stock below reserved quantity (${inventory.quantity_reserved})`,
-			ERROR_CODES.BUSINESS_RULE_VIOLATION,
+			ERROR_CODES.BUSINESS_RULE_VIOLATION
 		);
 	}
 
@@ -569,7 +495,7 @@ function calculateAdjustedQuantities(
 
 function buildStockAdjustmentUpdatePayload(
 	derived: StockDerivedQuantities,
-	adjustment: StockAdjustmentInput,
+	adjustment: StockAdjustmentInput
 ): Record<string, unknown> {
 	const updateData: Record<string, unknown> = {
 		quantity_on_hand: derived.newQuantityOnHand,
@@ -595,16 +521,11 @@ function buildStockAdjustmentUpdatePayload(
 /**
  * Reserve stock for a job
  */
-export async function reserveStock(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function reserveStock(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -622,7 +543,7 @@ export async function reserveStock(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -648,24 +569,22 @@ export async function reserveStock(
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
 		// Check if enough stock is available
-		const availableQuantity =
-			inventory.quantity_on_hand - inventory.quantity_reserved;
+		const availableQuantity = inventory.quantity_on_hand - inventory.quantity_reserved;
 		if (data.quantity > availableQuantity) {
 			throw new ActionError(
 				`Insufficient stock available. Only ${availableQuantity} units available.`,
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
 		// Update inventory with new reservation
 		const newQuantityReserved = inventory.quantity_reserved + data.quantity;
-		const newQuantityAvailable =
-			inventory.quantity_on_hand - newQuantityReserved;
+		const newQuantityAvailable = inventory.quantity_on_hand - newQuantityReserved;
 
 		const { error: updateError } = await supabase
 			.from("inventory")
@@ -678,7 +597,7 @@ export async function reserveStock(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("reserve stock"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -697,15 +616,12 @@ export async function reserveStock(
  */
 export async function releaseReservedStock(
 	inventoryId: string,
-	quantity: number,
+	quantity: number
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -723,7 +639,7 @@ export async function releaseReservedStock(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -741,7 +657,7 @@ export async function releaseReservedStock(
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -749,14 +665,13 @@ export async function releaseReservedStock(
 		if (quantity > inventory.quantity_reserved) {
 			throw new ActionError(
 				`Cannot release more than reserved quantity (${inventory.quantity_reserved})`,
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
 		// Update inventory
 		const newQuantityReserved = inventory.quantity_reserved - quantity;
-		const newQuantityAvailable =
-			inventory.quantity_on_hand - newQuantityReserved;
+		const newQuantityAvailable = inventory.quantity_on_hand - newQuantityReserved;
 
 		const { error: updateError } = await supabase
 			.from("inventory")
@@ -769,7 +684,7 @@ export async function releaseReservedStock(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("release reserved stock"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -783,15 +698,12 @@ export async function releaseReservedStock(
 export async function useReservedStock(
 	inventoryId: string,
 	quantity: number,
-	jobId?: string,
+	jobId?: string
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -809,16 +721,14 @@ export async function useReservedStock(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
 		// Verify inventory exists and belongs to company
 		const { data: inventory } = await supabase
 			.from("inventory")
-			.select(
-				"id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit",
-			)
+			.select("id, company_id, quantity_on_hand, quantity_reserved, cost_per_unit")
 			.eq("id", inventoryId)
 			.is("deleted_at", null)
 			.single();
@@ -829,7 +739,7 @@ export async function useReservedStock(
 			throw new ActionError(
 				"Inventory not found",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -837,7 +747,7 @@ export async function useReservedStock(
 		if (quantity > inventory.quantity_reserved) {
 			throw new ActionError(
 				`Cannot use more than reserved quantity (${inventory.quantity_reserved})`,
-				ERROR_CODES.BUSINESS_RULE_VIOLATION,
+				ERROR_CODES.BUSINESS_RULE_VIOLATION
 			);
 		}
 
@@ -867,7 +777,7 @@ export async function useReservedStock(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("use reserved stock"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -881,16 +791,11 @@ export async function useReservedStock(
 /**
  * Archive an inventory item (soft delete)
  */
-export async function archiveInventoryItem(
-	inventoryId: string,
-): Promise<ActionResult<void>> {
+export async function archiveInventoryItem(inventoryId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -918,7 +823,7 @@ export async function archiveInventoryItem(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("inventory item"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -933,7 +838,7 @@ export async function archiveInventoryItem(
 			if (archiveError) {
 				throw new ActionError(
 					ERROR_MESSAGES.operationFailed("archive inventory item"),
-					ERROR_CODES.DB_QUERY_ERROR,
+					ERROR_CODES.DB_QUERY_ERROR
 				);
 			}
 		}
@@ -955,10 +860,7 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -976,7 +878,7 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -987,7 +889,7 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 				`
         *,
         item:price_book_items(id, name, sku, unit, supplier_id)
-      `,
+      `
 			)
 			.eq("company_id", teamMember.company_id)
 			.eq("status", "active")
@@ -998,7 +900,7 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch low stock items"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -1010,15 +912,12 @@ export async function getLowStockItems(): Promise<ActionResult<unknown[]>> {
  * Get inventory items that need stock check
  */
 export async function getItemsNeedingStockCheck(
-	daysSinceLastCheck = 30,
+	daysSinceLastCheck = 30
 ): Promise<ActionResult<unknown[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -1036,7 +935,7 @@ export async function getItemsNeedingStockCheck(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN,
+				HTTP_STATUS_FORBIDDEN
 			);
 		}
 
@@ -1049,20 +948,18 @@ export async function getItemsNeedingStockCheck(
 				`
         *,
         item:price_book_items(id, name, sku)
-      `,
+      `
 			)
 			.eq("company_id", teamMember.company_id)
 			.eq("status", "active")
 			.is("deleted_at", null)
-			.or(
-				`last_stock_check_date.is.null,last_stock_check_date.lt.${checkDate.toISOString()}`,
-			)
+			.or(`last_stock_check_date.is.null,last_stock_check_date.lt.${checkDate.toISOString()}`)
 			.order("last_stock_check_date", { ascending: true, nullsFirst: true });
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch items needing stock check"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

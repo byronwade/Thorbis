@@ -26,9 +26,7 @@ const ESTIMATE_COLUMNS: Array<{
 	{ id: "declined", name: "Declined", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(
-	ESTIMATE_COLUMNS.map((column) => [column.id, column.name]),
-);
+const columnLabel = new Map(ESTIMATE_COLUMNS.map((column) => [column.id, column.name]));
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -40,10 +38,7 @@ export function EstimatesKanban({ estimates }: { estimates: Estimate[] }) {
 		<EntityKanban<Estimate, EstimateStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce(
-					(sum, item) => sum + (item.entity as Estimate).amount,
-					0,
-				);
+				const total = columnItems.reduce((sum, item) => sum + (item.entity as Estimate).amount, 0);
 				return { count: columnItems.length, total };
 			}}
 			columns={ESTIMATE_COLUMNS}
@@ -57,15 +52,11 @@ export function EstimatesKanban({ estimates }: { estimates: Estimate[] }) {
 				estimate,
 			})}
 			renderCard={(item) => (
-				<EstimateCard
-					item={{ ...item, estimate: item.entity } as EstimatesKanbanItem}
-				/>
+				<EstimateCard item={{ ...item, estimate: item.entity } as EstimatesKanbanItem} />
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<EstimateCard
-						item={{ ...item, estimate: item.entity } as EstimatesKanbanItem}
-					/>
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
+					<EstimateCard item={{ ...item, estimate: item.entity } as EstimatesKanbanItem} />
 				</div>
 			)}
 			showTotals={true}
@@ -83,53 +74,41 @@ function EstimateCard({ item }: { item: EstimatesKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+					<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 						{estimate.estimateNumber}
 					</p>
-					<h3 className="font-semibold text-foreground text-sm">
-						{estimate.project}
-					</h3>
+					<h3 className="text-foreground text-sm font-semibold">{estimate.project}</h3>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
-								columnId === "declined" && "bg-destructive/10 text-destructive",
+								columnId === "declined" && "bg-destructive/10 text-destructive"
 							)}
 							variant={columnId === "declined" ? "destructive" : "secondary"}
 						>
 							{columnLabel.get(columnId as EstimateStatus) ?? columnId}
 						</Badge>
-						<Badge
-							className="bg-muted/60 text-muted-foreground"
-							variant="outline"
-						>
+						<Badge className="bg-muted/60 text-muted-foreground" variant="outline">
 							{currencyFormatter.format(estimate.amount / 100)}
 						</Badge>
 					</div>
 				</div>
 			</div>
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<ClipboardList className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{estimate.customer}
-					</span>
+					<ClipboardList className="text-primary size-4" />
+					<span className="text-foreground font-medium">{estimate.customer}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<CalendarDays className="size-4 text-primary" />
+					<CalendarDays className="text-primary size-4" />
 					<span>
 						{estimate.date} → {estimate.validUntil}
 					</span>
 				</div>
 			</div>
-			<div className="flex items-center justify-between pt-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-xs">
 				<span>Valid until {estimate.validUntil}</span>
-				<Button
-					asChild
-					className="gap-1 text-primary text-xs"
-					size="sm"
-					variant="ghost"
-				>
+				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
 					<Link href={`/dashboard/work/estimates/${estimate.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />

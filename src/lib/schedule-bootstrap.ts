@@ -15,17 +15,11 @@ export type SerializedCustomer = Omit<Customer, "createdAt" | "updatedAt"> & {
 	updatedAt: string;
 };
 
-export type SerializedTechnicianSchedule = Omit<
-	TechnicianSchedule,
-	"daysOff"
-> & {
+export type SerializedTechnicianSchedule = Omit<TechnicianSchedule, "daysOff"> & {
 	daysOff: string[];
 };
 
-export type SerializedTechnician = Omit<
-	Technician,
-	"createdAt" | "updatedAt" | "schedule"
-> & {
+export type SerializedTechnician = Omit<Technician, "createdAt" | "updatedAt" | "schedule"> & {
 	createdAt: string;
 	updatedAt: string;
 	schedule: SerializedTechnicianSchedule;
@@ -33,12 +27,7 @@ export type SerializedTechnician = Omit<
 
 export type SerializedJob = Omit<
 	Job,
-	| "startTime"
-	| "endTime"
-	| "createdAt"
-	| "updatedAt"
-	| "customer"
-	| "recurrence"
+	"startTime" | "endTime" | "createdAt" | "updatedAt" | "customer" | "recurrence"
 > & {
 	startTime: string;
 	endTime: string;
@@ -71,7 +60,7 @@ export type ScheduleHydrationPayload = {
 };
 
 export function serializeScheduleBootstrap(
-	payload: ScheduleHydrationPayload,
+	payload: ScheduleHydrationPayload
 ): ScheduleBootstrapSerialized {
 	return {
 		companyId: payload.companyId,
@@ -86,7 +75,7 @@ export function serializeScheduleBootstrap(
 }
 
 export function deserializeScheduleBootstrap(
-	payload: ScheduleBootstrapSerialized,
+	payload: ScheduleBootstrapSerialized
 ): ScheduleHydrationPayload {
 	return {
 		companyId: payload.companyId,
@@ -112,9 +101,7 @@ function serializeJob(job: Job): SerializedJob {
 			createdAt: job.customer.createdAt.toISOString(),
 			updatedAt: job.customer.updatedAt.toISOString(),
 		},
-		recurrence: job.recurrence
-			? serializeRecurrence(job.recurrence)
-			: undefined,
+		recurrence: job.recurrence ? serializeRecurrence(job.recurrence) : undefined,
 	};
 }
 
@@ -130,9 +117,7 @@ function deserializeJob(job: SerializedJob): Job {
 			createdAt: new Date(job.customer.createdAt),
 			updatedAt: new Date(job.customer.updatedAt),
 		},
-		recurrence: job.recurrence
-			? deserializeRecurrence(job.recurrence)
-			: undefined,
+		recurrence: job.recurrence ? deserializeRecurrence(job.recurrence) : undefined,
 	};
 }
 
@@ -154,36 +139,28 @@ function deserializeTechnician(technician: SerializedTechnician): Technician {
 	};
 }
 
-function serializeTechnicianSchedule(
-	schedule: TechnicianSchedule,
-): SerializedTechnicianSchedule {
+function serializeTechnicianSchedule(schedule: TechnicianSchedule): SerializedTechnicianSchedule {
 	return {
 		...schedule,
 		daysOff: schedule.daysOff.map((date) => date.toISOString()),
 	};
 }
 
-function deserializeTechnicianSchedule(
-	schedule: SerializedTechnicianSchedule,
-): TechnicianSchedule {
+function deserializeTechnicianSchedule(schedule: SerializedTechnicianSchedule): TechnicianSchedule {
 	return {
 		...schedule,
 		daysOff: schedule.daysOff.map((value) => new Date(value)),
 	};
 }
 
-function serializeRecurrence(
-	recurrence: RecurrenceRule,
-): SerializedRecurrenceRule {
+function serializeRecurrence(recurrence: RecurrenceRule): SerializedRecurrenceRule {
 	return {
 		...recurrence,
 		endDate: recurrence.endDate ? recurrence.endDate.toISOString() : undefined,
 	};
 }
 
-function deserializeRecurrence(
-	recurrence: SerializedRecurrenceRule,
-): RecurrenceRule {
+function deserializeRecurrence(recurrence: SerializedRecurrenceRule): RecurrenceRule {
 	return {
 		...recurrence,
 		endDate: recurrence.endDate ? new Date(recurrence.endDate) : undefined,

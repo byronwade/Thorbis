@@ -76,10 +76,7 @@ type InvoicePaymentsProps = {
 	payments?: PaymentData[];
 };
 
-export function InvoicePayments({
-	invoice,
-	payments = [],
-}: InvoicePaymentsProps) {
+export function InvoicePayments({ invoice, payments = [] }: InvoicePaymentsProps) {
 	const [showRecordPayment, setShowRecordPayment] = useState(false);
 	const [removePaymentId, setRemovePaymentId] = useState<string | null>(null);
 	const [isRemoving, setIsRemoving] = useState(false);
@@ -171,8 +168,8 @@ export function InvoicePayments({
 		<Card className="mb-8 p-6">
 			<div className="mb-4 flex items-center justify-between">
 				<div className="flex items-center gap-2">
-					<DollarSign className="h-5 w-5 text-muted-foreground" />
-					<Label className="font-semibold text-base">Payment History</Label>
+					<DollarSign className="text-muted-foreground h-5 w-5" />
+					<Label className="text-base font-semibold">Payment History</Label>
 					{payments.length > 0 && (
 						<Badge variant="secondary">
 							{payments.length} payment{payments.length !== 1 ? "s" : ""}
@@ -195,18 +192,16 @@ export function InvoicePayments({
 				<div>
 					{/* Payment Summary */}
 					<div className="mb-4 grid gap-4 md:grid-cols-3">
-						<div className="rounded-lg bg-muted p-4">
+						<div className="bg-muted rounded-lg p-4">
 							<div className="text-muted-foreground text-sm">Total Paid</div>
-							<div className="mt-1 font-bold text-success text-xl">
+							<div className="text-success mt-1 text-xl font-bold">
 								{formatCurrency(invoice.paid_amount)}
 							</div>
 						</div>
-						<div className="rounded-lg bg-muted p-4">
-							<div className="text-muted-foreground text-sm">
-								Remaining Balance
-							</div>
+						<div className="bg-muted rounded-lg p-4">
+							<div className="text-muted-foreground text-sm">Remaining Balance</div>
 							<div
-								className={`mt-1 font-bold text-xl ${
+								className={`mt-1 text-xl font-bold ${
 									invoice.balance_amount > 0
 										? invoice.status === "overdue"
 											? "text-destructive"
@@ -217,10 +212,8 @@ export function InvoicePayments({
 								{formatCurrency(invoice.balance_amount)}
 							</div>
 						</div>
-						<div className="rounded-lg bg-muted p-4">
-							<div className="text-muted-foreground text-sm">
-								Payment Status
-							</div>
+						<div className="bg-muted rounded-lg p-4">
+							<div className="text-muted-foreground text-sm">Payment Status</div>
 							<div className="mt-1">
 								{invoice.balance_amount === 0 ? (
 									<Badge className="bg-success" variant="default">
@@ -286,13 +279,11 @@ export function InvoicePayments({
 													>
 														{payment.status}
 													</Badge>
-													{payment.refunded_amount &&
-														payment.refunded_amount > 0 && (
-															<Badge className="ml-1" variant="outline">
-																Refunded:{" "}
-																{formatCurrency(payment.refunded_amount)}
-															</Badge>
-														)}
+													{payment.refunded_amount && payment.refunded_amount > 0 && (
+														<Badge className="ml-1" variant="outline">
+															Refunded: {formatCurrency(payment.refunded_amount)}
+														</Badge>
+													)}
 												</TableCell>
 												<TableCell className="font-medium">
 													{formatCurrency(paymentData.balanceAfter)}
@@ -300,13 +291,11 @@ export function InvoicePayments({
 												<TableCell>
 													<div className="flex items-center gap-1">
 														<Link
-															className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
+															className="hover:bg-muted inline-flex h-8 w-8 items-center justify-center rounded-md"
 															href={`/dashboard/work/payments/${payment.id}`}
 														>
-															<ExternalLink className="h-4 w-4 text-muted-foreground" />
-															<span className="sr-only">
-																View payment details
-															</span>
+															<ExternalLink className="text-muted-foreground h-4 w-4" />
+															<span className="sr-only">View payment details</span>
 														</Link>
 														<Button
 															className="h-8 w-8 p-0"
@@ -314,10 +303,8 @@ export function InvoicePayments({
 															size="sm"
 															variant="ghost"
 														>
-															<X className="h-4 w-4 text-destructive" />
-															<span className="sr-only">
-																Remove payment from invoice
-															</span>
+															<X className="text-destructive h-4 w-4" />
+															<span className="sr-only">Remove payment from invoice</span>
 														</Button>
 													</div>
 												</TableCell>
@@ -328,7 +315,7 @@ export function InvoicePayments({
 							</Table>
 						</div>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							{invoice.paid_at
 								? `Payment received on ${formatDate(invoice.paid_at)}`
 								: "No detailed payment records available"}
@@ -358,9 +345,9 @@ export function InvoicePayments({
 					<DialogHeader>
 						<DialogTitle>Remove Payment from Invoice?</DialogTitle>
 						<DialogDescription>
-							This will remove the payment application from this invoice. The
-							payment will remain in the system but won't be applied to this
-							invoice. The invoice balance will be recalculated.
+							This will remove the payment application from this invoice. The payment will remain in
+							the system but won't be applied to this invoice. The invoice balance will be
+							recalculated.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -371,11 +358,7 @@ export function InvoicePayments({
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isRemoving}
-							onClick={handleRemovePayment}
-							variant="destructive"
-						>
+						<Button disabled={isRemoving} onClick={handleRemovePayment} variant="destructive">
 							{isRemoving ? "Removing..." : "Remove Payment"}
 						</Button>
 					</DialogFooter>

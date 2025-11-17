@@ -202,15 +202,13 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
-			<div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
+			<div className="bg-muted/50 mx-auto max-w-7xl rounded-md shadow-sm">
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">
-								{headerBadges}
-							</div>
+							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="font-semibold text-2xl sm:text-3xl">
+								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{invoice.title || `Invoice ${invoice.invoice_number || ""}`}
 								</h1>
 								<p className="text-muted-foreground text-sm sm:text-base">
@@ -229,7 +227,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					{customer && (
 						<div className="flex flex-wrap items-center gap-3">
 							<Link
-								className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+								className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 								href={`/dashboard/customers/${customer.id}`}
 							>
 								<User className="size-4" />
@@ -240,7 +238,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 
 							{customer.email && (
 								<a
-									className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+									className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 									href={`mailto:${customer.email}`}
 								>
 									<FileText className="size-4" />
@@ -263,8 +261,8 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					)}
 
 					<div className="flex flex-wrap items-center gap-3">
-						<div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
-							<DollarSign className="size-4 text-muted-foreground" />
+						<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+							<DollarSign className="text-muted-foreground size-4" />
 							<span className="font-medium">
 								{new Intl.NumberFormat("en-US", {
 									style: "currency",
@@ -274,8 +272,8 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 						</div>
 
 						{invoice.balance_amount > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
-								<Receipt className="size-4 text-muted-foreground" />
+							<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+								<Receipt className="text-muted-foreground size-4" />
 								<span className="font-medium">
 									{new Intl.NumberFormat("en-US", {
 										style: "currency",
@@ -288,10 +286,10 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 
 						{job && (
 							<Link
-								className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm transition-colors hover:bg-muted/80"
+								className="bg-muted hover:bg-muted/80 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors"
 								href={`/dashboard/work/${job.id}`}
 							>
-								<Wrench className="size-4 text-muted-foreground" />
+								<Wrench className="text-muted-foreground size-4" />
 								<span className="font-medium">Job #{job.job_number}</span>
 							</Link>
 						)}
@@ -305,40 +303,27 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 		<div className="space-y-3">
 			{items.slice(0, 25).map((communication: any) => {
 				const contactName =
-					communication.customer?.first_name ||
-					communication.customer?.last_name
+					communication.customer?.first_name || communication.customer?.last_name
 						? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
 						: communication.direction === "inbound"
 							? communication.from_address
 							: communication.to_address;
 				const preview =
-					communication.subject ||
-					communication.body?.slice(0, 160) ||
-					"No additional details";
+					communication.subject || communication.body?.slice(0, 160) || "No additional details";
 				const timestamp = new Date(communication.created_at).toLocaleString();
 
 				return (
 					<div className="rounded-lg border p-3" key={communication.id}>
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant="outline">
-								{communication.type?.toUpperCase()}
-							</Badge>
-							<Badge
-								variant={
-									communication.direction === "inbound"
-										? "secondary"
-										: "default"
-								}
-							>
+							<Badge variant="outline">{communication.type?.toUpperCase()}</Badge>
+							<Badge variant={communication.direction === "inbound" ? "secondary" : "default"}>
 								{communication.direction === "inbound" ? "Inbound" : "Outbound"}
 							</Badge>
-							{communication.status && (
-								<Badge variant="outline">{communication.status}</Badge>
-							)}
+							{communication.status && <Badge variant="outline">{communication.status}</Badge>}
 							<span className="text-muted-foreground text-xs">{timestamp}</span>
 						</div>
 						<div className="mt-2">
-							<p className="font-medium text-sm">{contactName || "Contact"}</p>
+							<p className="text-sm font-medium">{contactName || "Contact"}</p>
 							<p className="text-muted-foreground text-sm">{preview}</p>
 						</div>
 					</div>
@@ -369,27 +354,17 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					label: "Estimate Created",
 					status: estimate ? ("completed" as const) : ("pending" as const),
 					date: estimate?.created_at,
-					href: estimate?.id
-						? `/dashboard/work/estimates/${estimate.id}`
-						: undefined,
-					description: estimate?.estimate_number
-						? `#${estimate.estimate_number}`
-						: undefined,
+					href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
+					description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
 				},
 				{
 					id: "contract",
 					label: "Contract Generated",
 					status: contract ? ("completed" as const) : ("pending" as const),
 					date: contract?.created_at,
-					href: contract?.id
-						? `/dashboard/work/contracts/${contract.id}`
-						: undefined,
+					href: contract?.id ? `/dashboard/work/contracts/${contract.id}` : undefined,
 					description:
-						contract?.status === "signed"
-							? "Signed"
-							: contract
-								? "Pending signature"
-								: undefined,
+						contract?.status === "signed" ? "Signed" : contract ? "Pending signature" : undefined,
 				},
 				{
 					id: "invoice",
@@ -499,11 +474,7 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				icon: <FileCheck className="size-4" />,
 				content: (
 					<UnifiedAccordionContent>
-						<InvoiceTerms
-							notes={invoice.notes}
-							onUpdate={updateField}
-							terms={invoice.terms}
-						/>
+						<InvoiceTerms notes={invoice.notes} onUpdate={updateField} terms={invoice.terms} />
 					</UnifiedAccordionContent>
 				),
 			});
@@ -565,8 +536,8 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 			content: (
 				<UnifiedAccordionContent>
 					{communications.length === 0 ? (
-						<div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground text-sm">
-							<MessageSquare className="mb-4 size-10 text-muted-foreground" />
+						<div className="text-muted-foreground flex flex-col items-center justify-center py-12 text-center text-sm">
+							<MessageSquare className="text-muted-foreground mb-4 size-10" />
 							No communications logged for this invoice yet.
 						</div>
 					) : (
@@ -617,15 +588,9 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				title: job.title || `Job #${job.job_number}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status
-					? { label: job.status, variant: "outline" as const }
-					: undefined,
+				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
 				actions: (
-					<Button
-						onClick={() => setUnlinkJobId(job.id)}
-						size="sm"
-						variant="outline"
-					>
+					<Button onClick={() => setUnlinkJobId(job.id)} size="sm" variant="outline">
 						<Link2Off className="mr-2 size-4" />
 						Unlink
 					</Button>
@@ -674,13 +639,12 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					<DialogHeader>
 						<DialogTitle>Archive Invoice?</DialogTitle>
 						<DialogDescription>
-							This will archive invoice #{invoice.invoice_number}. You can
-							restore it from the archive within 90 days.
+							This will archive invoice #{invoice.invoice_number}. You can restore it from the
+							archive within 90 days.
 							{invoice.status === "paid" && (
 								<div className="mt-2 rounded-md bg-yellow-50 p-3 dark:bg-yellow-900/20">
 									<p className="text-sm text-yellow-800 dark:text-yellow-200">
-										Note: Paid invoices cannot be archived for compliance
-										reasons.
+										Note: Paid invoices cannot be archived for compliance reasons.
 									</p>
 								</div>
 							)}
@@ -706,32 +670,20 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 			</Dialog>
 
 			{/* Unlink Job Confirmation Dialog */}
-			<Dialog
-				onOpenChange={(open) => !open && setUnlinkJobId(null)}
-				open={unlinkJobId !== null}
-			>
+			<Dialog onOpenChange={(open) => !open && setUnlinkJobId(null)} open={unlinkJobId !== null}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Unlink Job from Invoice?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this invoice. The
-							invoice will remain in the system but will no longer appear on the
-							job's page.
+							This will remove the job association from this invoice. The invoice will remain in the
+							system but will no longer appear on the job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button
-							disabled={isUnlinking}
-							onClick={() => setUnlinkJobId(null)}
-							variant="outline"
-						>
+						<Button disabled={isUnlinking} onClick={() => setUnlinkJobId(null)} variant="outline">
 							Cancel
 						</Button>
-						<Button
-							disabled={isUnlinking}
-							onClick={handleUnlinkJob}
-							variant="destructive"
-						>
+						<Button disabled={isUnlinking} onClick={handleUnlinkJob} variant="destructive">
 							{isUnlinking ? "Unlinking..." : "Unlink Job"}
 						</Button>
 					</DialogFooter>

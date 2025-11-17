@@ -15,12 +15,7 @@ import { useState } from "react";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function InvoiceToolbarActions() {
 	const [_isSaving, setIsSaving] = useState(false);
@@ -45,12 +40,7 @@ export function InvoiceToolbarActions() {
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Button
-							className="h-8 gap-1.5"
-							onClick={handlePreview}
-							size="sm"
-							variant="outline"
-						>
+						<Button className="h-8 gap-1.5" onClick={handlePreview} size="sm" variant="outline">
 							<Eye className="size-3.5" />
 							<span className="hidden md:inline">Preview</span>
 						</Button>
@@ -64,12 +54,7 @@ export function InvoiceToolbarActions() {
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Button
-							className="h-8 gap-1.5"
-							onClick={handleExportPDF}
-							size="sm"
-							variant="outline"
-						>
+						<Button className="h-8 gap-1.5" onClick={handleExportPDF} size="sm" variant="outline">
 							<Download className="size-3.5" />
 							<span className="hidden lg:inline">PDF</span>
 						</Button>
@@ -83,12 +68,7 @@ export function InvoiceToolbarActions() {
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger asChild>
-						<Button
-							className="h-8 gap-1.5"
-							onClick={handleSendEmail}
-							size="sm"
-							variant="outline"
-						>
+						<Button className="h-8 gap-1.5" onClick={handleSendEmail} size="sm" variant="outline">
 							<Mail className="size-3.5" />
 							<span className="hidden lg:inline">Send</span>
 						</Button>

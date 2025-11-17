@@ -31,10 +31,12 @@ export async function ServiceAgreementsData() {
 
 	const { data: agreementsRaw, error } = await supabase
 		.from("service_plans")
-		.select(`
+		.select(
+			`
       *,
       customer:customers!customer_id(display_name, first_name, last_name)
-    `)
+    `
+		)
 		.eq("company_id", activeCompanyId)
 		.eq("type", "contract")
 		.order("created_at", { ascending: false });
@@ -74,9 +76,7 @@ export async function ServiceAgreementsData() {
 
 			// Map backend type (e.g. "contract", "sla") to UI-friendly label
 			let type: ServiceAgreement["type"] = "Maintenance Contract";
-			const rawType = String(
-				agreement.plan_type || agreement.type || "",
-			).toLowerCase();
+			const rawType = String(agreement.plan_type || agreement.type || "").toLowerCase();
 			if (rawType.includes("sla")) {
 				type = "Service Level Agreement";
 			} else if (rawType.includes("warranty")) {
@@ -103,9 +103,7 @@ export async function ServiceAgreementsData() {
 		<WorkDataView
 			kanban={<ServiceAgreementsKanban agreements={agreements} />}
 			section="serviceAgreements"
-			table={
-				<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />
-			}
+			table={<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />}
 		/>
 	);
 }

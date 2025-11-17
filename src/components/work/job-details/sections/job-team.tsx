@@ -17,11 +17,7 @@ type JobTeamProps = {
 	jobId: string;
 };
 
-export function JobTeam({
-	assignedUser,
-	teamAssignments,
-	jobId,
-}: JobTeamProps) {
+export function JobTeam({ assignedUser, teamAssignments, jobId }: JobTeamProps) {
 	const formatDate = (dateString: string | null) => {
 		if (!dateString) {
 			return "—";
@@ -36,8 +32,8 @@ export function JobTeam({
 	if (!assignedUser && teamAssignments.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<Users className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Team Assigned</h3>
+				<Users className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Team Assigned</h3>
 				<p className="text-muted-foreground text-sm">
 					Assign team members to this job to track who's working on it.
 				</p>
@@ -68,14 +64,10 @@ export function JobTeam({
 									{assignedUser.first_name} {assignedUser.last_name}
 								</p>
 								{assignedUser.email && (
-									<p className="text-muted-foreground text-sm">
-										{assignedUser.email}
-									</p>
+									<p className="text-muted-foreground text-sm">{assignedUser.email}</p>
 								)}
 							</div>
-							{assignedUser.role && (
-								<Badge variant="secondary">{assignedUser.role}</Badge>
-							)}
+							{assignedUser.role && <Badge variant="secondary">{assignedUser.role}</Badge>}
 						</div>
 					</div>
 					{teamAssignments.length > 0 && <Separator />}
@@ -94,10 +86,7 @@ export function JobTeam({
 							}
 
 							return (
-								<div
-									className="flex items-center gap-4 rounded-md border p-4"
-									key={assignment.id}
-								>
+								<div className="flex items-center gap-4 rounded-md border p-4" key={assignment.id}>
 									<Avatar className="size-10">
 										<AvatarImage
 											alt={`${member.first_name} ${member.last_name}`}
@@ -113,16 +102,11 @@ export function JobTeam({
 											{member.first_name} {member.last_name}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											Assigned{" "}
-											{formatDate(
-												assignment.created_at || assignment.assigned_at,
-											)}
+											Assigned {formatDate(assignment.created_at || assignment.assigned_at)}
 										</p>
 									</div>
 									{(assignment.role || member.role) && (
-										<Badge variant="outline">
-											{assignment.role || member.role}
-										</Badge>
+										<Badge variant="outline">{assignment.role || member.role}</Badge>
 									)}
 								</div>
 							);
@@ -132,8 +116,8 @@ export function JobTeam({
 			)}
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
-				<p className="font-medium text-sm">Total Team Members</p>
+			<div className="bg-muted/50 rounded-md p-4">
+				<p className="text-sm font-medium">Total Team Members</p>
 				<p className="text-muted-foreground text-xs">
 					{(assignedUser ? 1 : 0) + teamAssignments.length} member
 					{(assignedUser ? 1 : 0) + teamAssignments.length !== 1 ? "s" : ""}

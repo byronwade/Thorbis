@@ -26,7 +26,7 @@ export default function JobStatusPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Job Status</h1>
+				<h1 className="text-3xl font-bold tracking-tight">Job Status</h1>
 				<p className="text-muted-foreground">
 					Track job progress, status updates, and completion metrics
 				</p>

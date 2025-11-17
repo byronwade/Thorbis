@@ -24,12 +24,7 @@ type EquipmentTabProps = {
 	isEditMode: boolean;
 };
 
-export function EquipmentTab({
-	job,
-	equipment,
-	property,
-	isEditMode,
-}: EquipmentTabProps) {
+export function EquipmentTab({ job, equipment, property, isEditMode }: EquipmentTabProps) {
 	const formatDate = (date: string | null) => {
 		if (!date) {
 			return "N/A";
@@ -47,7 +42,7 @@ export function EquipmentTab({
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
-							<Wrench className="h-5 w-5 text-muted-foreground" />
+							<Wrench className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Equipment at Property</CardTitle>
 							<Badge variant="secondary">{equipment.length}</Badge>
 						</div>
@@ -96,7 +91,7 @@ export function EquipmentTab({
 							</TableBody>
 						</Table>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No equipment recorded at this property
 							{isEditMode && (
 								<Button className="mt-2 ml-2" size="sm" variant="outline">
@@ -113,7 +108,7 @@ export function EquipmentTab({
 				<Card>
 					<CardHeader>
 						<div className="flex items-center gap-2">
-							<Calendar className="h-5 w-5 text-muted-foreground" />
+							<Calendar className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Serviced on This Job</CardTitle>
 						</div>
 					</CardHeader>
@@ -122,9 +117,7 @@ export function EquipmentTab({
 							{job.equipment_serviced.map((item: any, index: number) => (
 								<div className="rounded-lg border p-3" key={index}>
 									<p className="font-medium">{item.name}</p>
-									<p className="text-muted-foreground text-sm">
-										{item.service_performed}
-									</p>
+									<p className="text-muted-foreground text-sm">{item.service_performed}</p>
 								</div>
 							))}
 						</div>

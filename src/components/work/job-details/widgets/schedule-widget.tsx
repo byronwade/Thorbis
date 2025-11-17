@@ -10,15 +10,7 @@
  * - Minimal JavaScript to client
  */
 
-import {
-	AlertCircle,
-	Calendar,
-	CheckCircle2,
-	Clock,
-	MapPin,
-	Users,
-	XCircle,
-} from "lucide-react";
+import { AlertCircle, Calendar, CheckCircle2, Clock, MapPin, Users, XCircle } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -38,12 +30,7 @@ type ScheduleDetails = {
 	estimatedDuration: number; // minutes
 	actualStart?: Date;
 	actualEnd?: Date;
-	status:
-		| "scheduled"
-		| "in_progress"
-		| "completed"
-		| "rescheduled"
-		| "cancelled";
+	status: "scheduled" | "in_progress" | "completed" | "rescheduled" | "cancelled";
 	technicians: {
 		id: string;
 		name: string;
@@ -178,9 +165,7 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 		}
 		const diffMs = date.getTime() - Date.now();
 		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-		const diffHours = Math.floor(
-			(diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-		);
+		const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 
 		if (diffDays > 1) {
 			return `in ${diffDays} days`;
@@ -203,10 +188,8 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 		return (
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
-					<Calendar className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-					<p className="mb-2 text-muted-foreground text-sm">
-						Not scheduled yet
-					</p>
+					<Calendar className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
+					<p className="text-muted-foreground mb-2 text-sm">Not scheduled yet</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/schedule?jobId=${job.id}`}>
 							<Clock className="mr-2 size-4" />
@@ -222,7 +205,7 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 		<div className="space-y-4">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<h4 className="font-semibold text-sm">Schedule</h4>
+				<h4 className="text-sm font-semibold">Schedule</h4>
 				<Badge className="text-xs" variant={config.variant}>
 					<Icon className="mr-1 size-3" />
 					{config.label}
@@ -230,10 +213,10 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			</div>
 
 			{/* Date & Time Card */}
-			<div className="rounded-lg border bg-gradient-to-br from-primary/5 to-primary/10 p-4">
+			<div className="from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-4">
 				<div className="mb-3 flex items-center gap-2">
-					<Calendar className="size-4 text-primary" />
-					<span className="font-medium text-primary text-xs uppercase tracking-wide">
+					<Calendar className="text-primary size-4" />
+					<span className="text-primary text-xs font-medium tracking-wide uppercase">
 						Scheduled Time
 					</span>
 				</div>
@@ -241,9 +224,7 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				{/* Start Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">Start</p>
-					<p className="font-semibold text-base">
-						{formatDateTime(schedule.scheduledStart)}
-					</p>
+					<p className="text-base font-semibold">{formatDateTime(schedule.scheduledStart)}</p>
 					<Badge className="text-xs" variant="outline">
 						{getTimeUntilStart(schedule.scheduledStart)}
 					</Badge>
@@ -254,17 +235,13 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				{/* End Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">End (Estimated)</p>
-					<p className="font-medium text-sm">
-						{formatTime(schedule.scheduledEnd)}
-					</p>
+					<p className="text-sm font-medium">{formatTime(schedule.scheduledEnd)}</p>
 				</div>
 
 				{/* Duration */}
-				<div className="mt-3 flex items-center justify-between rounded-lg bg-background/50 p-2 text-xs">
+				<div className="bg-background/50 mt-3 flex items-center justify-between rounded-lg p-2 text-xs">
 					<span className="text-muted-foreground">Duration</span>
-					<span className="font-semibold">
-						{formatDuration(schedule.estimatedDuration)}
-					</span>
+					<span className="font-semibold">{formatDuration(schedule.estimatedDuration)}</span>
 				</div>
 			</div>
 
@@ -272,23 +249,19 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			{schedule.actualStart && (
 				<>
 					<Separator />
-					<div className="space-y-2 rounded-lg bg-muted p-3">
-						<h5 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+					<div className="bg-muted space-y-2 rounded-lg p-3">
+						<h5 className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 							Actual Times
 						</h5>
 						<div className="space-y-1.5 text-xs">
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Started:</span>
-								<span className="font-medium">
-									{formatTime(schedule.actualStart)}
-								</span>
+								<span className="font-medium">{formatTime(schedule.actualStart)}</span>
 							</div>
 							{schedule.actualEnd && (
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Completed:</span>
-									<span className="font-medium">
-										{formatTime(schedule.actualEnd)}
-									</span>
+									<span className="font-medium">{formatTime(schedule.actualEnd)}</span>
 								</div>
 							)}
 						</div>
@@ -301,24 +274,21 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			{/* Assigned Technicians */}
 			<div className="space-y-2">
 				<div className="flex items-center gap-2">
-					<Users className="size-4 text-muted-foreground" />
-					<h5 className="font-medium text-sm">Assigned Technicians</h5>
+					<Users className="text-muted-foreground size-4" />
+					<h5 className="text-sm font-medium">Assigned Technicians</h5>
 				</div>
 				<div className="space-y-2">
 					{schedule.technicians.map((tech) => (
-						<div
-							className="flex items-center justify-between rounded-lg border p-2"
-							key={tech.id}
-						>
+						<div className="flex items-center justify-between rounded-lg border p-2" key={tech.id}>
 							<div className="flex items-center gap-2">
-								<div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
+								<div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-xs font-semibold">
 									{tech.name
 										.split(" ")
 										.map((n) => n[0])
 										.join("")}
 								</div>
 								<div>
-									<p className="font-medium text-sm">{tech.name}</p>
+									<p className="text-sm font-medium">{tech.name}</p>
 									{tech.isLead && (
 										<Badge className="mt-0.5 text-xs" variant="outline">
 											Lead
@@ -336,15 +306,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 											: "destructive"
 								}
 							>
-								{tech.availability === "available" && (
-									<CheckCircle2 className="mr-1 size-3" />
-								)}
-								{tech.availability === "conflict" && (
-									<AlertCircle className="mr-1 size-3" />
-								)}
-								{tech.availability === "unavailable" && (
-									<XCircle className="mr-1 size-3" />
-								)}
+								{tech.availability === "available" && <CheckCircle2 className="mr-1 size-3" />}
+								{tech.availability === "conflict" && <AlertCircle className="mr-1 size-3" />}
+								{tech.availability === "unavailable" && <XCircle className="mr-1 size-3" />}
 								{tech.availability}
 							</Badge>
 						</div>
@@ -360,23 +324,19 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 						{schedule.travelTime && (
 							<div className="rounded-lg border p-2">
 								<div className="mb-1 flex items-center gap-1.5">
-									<MapPin className="size-3 text-muted-foreground" />
+									<MapPin className="text-muted-foreground size-3" />
 									<span className="text-muted-foreground">Travel Time</span>
 								</div>
-								<p className="font-semibold">
-									{formatDuration(schedule.travelTime)}
-								</p>
+								<p className="font-semibold">{formatDuration(schedule.travelTime)}</p>
 							</div>
 						)}
 						{schedule.bufferTime && (
 							<div className="rounded-lg border p-2">
 								<div className="mb-1 flex items-center gap-1.5">
-									<Clock className="size-3 text-muted-foreground" />
+									<Clock className="text-muted-foreground size-3" />
 									<span className="text-muted-foreground">Buffer Time</span>
 								</div>
-								<p className="font-semibold">
-									{formatDuration(schedule.bufferTime)}
-								</p>
+								<p className="font-semibold">{formatDuration(schedule.bufferTime)}</p>
 							</div>
 						)}
 					</div>
@@ -390,15 +350,15 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 					<div className="space-y-2">
 						{schedule.conflicts?.map((conflict, index) => (
 							<div
-								className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30"
+								className="border-destructive bg-destructive dark:bg-destructive/30 flex items-start gap-2 rounded-lg border-l-4 p-3"
 								key={index}
 							>
-								<AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
+								<AlertCircle className="text-destructive mt-0.5 size-4 shrink-0" />
 								<div>
-									<p className="font-medium text-destructive text-sm dark:text-destructive">
+									<p className="text-destructive dark:text-destructive text-sm font-medium">
 										Scheduling Conflict
 									</p>
-									<p className="text-destructive text-xs dark:text-destructive">
+									<p className="text-destructive dark:text-destructive text-xs">
 										{conflict.message}
 									</p>
 								</div>
@@ -414,12 +374,12 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 					<Separator />
 					<div className="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 p-3 dark:from-purple-950/30 dark:to-purple-900/20">
 						<div className="mb-1 flex items-center gap-1.5">
-							<Calendar className="size-4 text-accent-foreground" />
-							<span className="font-medium text-accent-foreground text-sm dark:text-accent-foreground">
+							<Calendar className="text-accent-foreground size-4" />
+							<span className="text-accent-foreground dark:text-accent-foreground text-sm font-medium">
 								Recurring Job
 							</span>
 						</div>
-						<p className="text-accent-foreground text-xs dark:text-accent-foreground">
+						<p className="text-accent-foreground dark:text-accent-foreground text-xs">
 							{schedule.recurringSchedule.frequency} • Next:{" "}
 							{formatDateTime(schedule.recurringSchedule.nextOccurrence)}
 						</p>

@@ -16,12 +16,7 @@ type ActivityTabProps = {
 	customer: any;
 };
 
-export function ActivityTab({
-	job,
-	activities,
-	communications,
-	customer,
-}: ActivityTabProps) {
+export function ActivityTab({ job, activities, communications, customer }: ActivityTabProps) {
 	const formatDateTime = (date: string) =>
 		new Intl.DateTimeFormat("en-US", {
 			month: "short",
@@ -34,17 +29,14 @@ export function ActivityTab({
 	const timeline = [
 		...activities.map((a) => ({ ...a, type: "activity" })),
 		...communications.map((c) => ({ ...c, type: "communication" })),
-	].sort(
-		(a, b) =>
-			new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-	);
+	].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
 	return (
 		<div className="mx-auto max-w-6xl space-y-6">
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<Activity className="h-5 w-5 text-muted-foreground" />
+						<Activity className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Activity Timeline</CardTitle>
 						<Badge variant="secondary">{timeline.length}</Badge>
 					</div>
@@ -53,9 +45,7 @@ export function ActivityTab({
 					{timeline.length > 0 ? (
 						<div className="space-y-4">
 							{timeline.map((item, index) => {
-								const user = Array.isArray(item.user)
-									? item.user[0]
-									: item.user;
+								const user = Array.isArray(item.user) ? item.user[0] : item.user;
 								return (
 									<div className="flex gap-3" key={item.id || index}>
 										<Avatar className="h-8 w-8">
@@ -69,9 +59,7 @@ export function ActivityTab({
 										</Avatar>
 										<div className="flex-1">
 											<div className="flex items-center gap-2">
-												<span className="font-medium text-sm">
-													{user?.name || "System"}
-												</span>
+												<span className="text-sm font-medium">{user?.name || "System"}</span>
 												<span className="text-muted-foreground text-xs">
 													{formatDateTime(item.created_at)}
 												</span>
@@ -80,10 +68,7 @@ export function ActivityTab({
 												</Badge>
 											</div>
 											<p className="text-muted-foreground text-sm">
-												{item.description ||
-													item.subject ||
-													item.body ||
-													"Activity logged"}
+												{item.description || item.subject || item.body || "Activity logged"}
 											</p>
 										</div>
 									</div>
@@ -91,7 +76,7 @@ export function ActivityTab({
 							})}
 						</div>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No activity recorded yet
 						</div>
 					)}
@@ -101,7 +86,7 @@ export function ActivityTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<MessageSquare className="h-5 w-5 text-muted-foreground" />
+						<MessageSquare className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Communications</CardTitle>
 						<Badge variant="secondary">{communications.length}</Badge>
 					</div>
@@ -117,17 +102,13 @@ export function ActivityTab({
 											{formatDateTime(comm.created_at)}
 										</span>
 									</div>
-									<p className="font-medium text-sm">{comm.subject}</p>
-									{comm.body && (
-										<p className="mt-1 text-muted-foreground text-sm">
-											{comm.body}
-										</p>
-									)}
+									<p className="text-sm font-medium">{comm.subject}</p>
+									{comm.body && <p className="text-muted-foreground mt-1 text-sm">{comm.body}</p>}
 								</div>
 							))}
 						</div>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No communications logged
 						</div>
 					)}

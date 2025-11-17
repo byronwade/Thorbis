@@ -5,13 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createContract } from "@/actions/contracts";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -50,12 +44,7 @@ type ContractFormProps = {
 	};
 };
 
-export function ContractForm({
-	jobId,
-	estimateId,
-	invoiceId,
-	initialData,
-}: ContractFormProps) {
+export function ContractForm({ jobId, estimateId, invoiceId, initialData }: ContractFormProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -132,9 +121,7 @@ export function ContractForm({
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="service">Service Agreement</SelectItem>
-									<SelectItem value="maintenance">
-										Maintenance Contract
-									</SelectItem>
+									<SelectItem value="maintenance">Maintenance Contract</SelectItem>
 									<SelectItem value="custom">Custom Contract</SelectItem>
 								</SelectContent>
 							</Select>
@@ -149,9 +136,7 @@ export function ContractForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Contract Terms</CardTitle>
-						<CardDescription>
-							The main body of the contract that will be signed
-						</CardDescription>
+						<CardDescription>The main body of the contract that will be signed</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
@@ -168,8 +153,8 @@ export function ContractForm({
 								required
 							/>
 							<p className="text-muted-foreground text-xs">
-								Use placeholders like [DATE], [COMPANY], [CUSTOMER] that can be
-								replaced automatically
+								Use placeholders like [DATE], [COMPANY], [CUSTOMER] that can be replaced
+								automatically
 							</p>
 						</div>
 
@@ -189,9 +174,7 @@ export function ContractForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Validity Period</CardTitle>
-						<CardDescription>
-							When this contract is valid from and until
-						</CardDescription>
+						<CardDescription>When this contract is valid from and until</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -213,8 +196,7 @@ export function ContractForm({
 					<CardHeader>
 						<CardTitle>Signer Information</CardTitle>
 						<CardDescription>
-							Person who will sign this contract - we'll email them the signing
-							link
+							Person who will sign this contract - we'll email them the signing link
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
@@ -248,20 +230,12 @@ export function ContractForm({
 						<div className="grid gap-4 md:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="signerTitle">Signer Title</Label>
-								<Input
-									id="signerTitle"
-									name="signerTitle"
-									placeholder="e.g., CEO, Director"
-								/>
+								<Input id="signerTitle" name="signerTitle" placeholder="e.g., CEO, Director" />
 							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="signerCompany">Signer Company</Label>
-								<Input
-									id="signerCompany"
-									name="signerCompany"
-									placeholder="Company name"
-								/>
+								<Input id="signerCompany" name="signerCompany" placeholder="Company name" />
 							</div>
 						</div>
 					</CardContent>
@@ -271,9 +245,7 @@ export function ContractForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Internal Notes</CardTitle>
-						<CardDescription>
-							Notes for internal use only (not visible to customer)
-						</CardDescription>
+						<CardDescription>Notes for internal use only (not visible to customer)</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<Textarea
@@ -287,8 +259,8 @@ export function ContractForm({
 
 				{/* Error Message */}
 				{error && (
-					<div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-						<p className="font-medium text-destructive text-sm">{error}</p>
+					<div className="border-destructive bg-destructive/10 rounded-lg border p-4">
+						<p className="text-destructive text-sm font-medium">{error}</p>
 					</div>
 				)}
 

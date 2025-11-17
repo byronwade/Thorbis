@@ -21,8 +21,7 @@ export const STORAGE_BUCKETS = {
 	estimates: "estimates",
 } as const;
 
-export type StorageBucket =
-	(typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];
+export type StorageBucket = (typeof STORAGE_BUCKETS)[keyof typeof STORAGE_BUCKETS];
 
 // Upload result type
 export type UploadResult = {
@@ -44,7 +43,7 @@ export async function uploadFile(
 	bucket: StorageBucket,
 	file: File,
 	path?: string,
-	options?: { upsert?: boolean; onProgress?: (progress: number) => void },
+	options?: { upsert?: boolean; onProgress?: (progress: number) => void }
 ): Promise<UploadResult> {
 	try {
 		const supabase = createClient();
@@ -60,12 +59,10 @@ export async function uploadFile(
 		const filePath = path || generateFilePath(file.name);
 
 		// Upload file
-		const { data, error } = await supabase.storage
-			.from(bucket)
-			.upload(filePath, file, {
-				cacheControl: "3600",
-				upsert: options?.upsert ?? false,
-			});
+		const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, {
+			cacheControl: "3600",
+			upsert: options?.upsert ?? false,
+		});
 
 		if (error) {
 			return {
@@ -98,10 +95,7 @@ export async function uploadFile(
  * @param file - Image file
  * @param userId - User ID for path generation
  */
-export async function uploadAvatar(
-	file: File,
-	userId: string,
-): Promise<UploadResult> {
+export async function uploadAvatar(file: File, userId: string): Promise<UploadResult> {
 	// Validate file type
 	if (!file.type.startsWith("image/")) {
 		return {
@@ -128,10 +122,7 @@ export async function uploadAvatar(
  * @param file - Document file
  * @param userId - User ID for path generation
  */
-export async function uploadDocument(
-	file: File,
-	userId: string,
-): Promise<UploadResult> {
+export async function uploadDocument(file: File, userId: string): Promise<UploadResult> {
 	// Validate file type
 	const allowedTypes = [
 		"application/pdf",
@@ -172,7 +163,7 @@ export async function uploadDocument(
 export async function uploadCompanyFile(
 	file: File,
 	companyId: string,
-	folder?: string,
+	folder?: string
 ): Promise<UploadResult> {
 	// Validate file size (100MB max)
 	if (file.size > 100 * 1024 * 1024) {
@@ -197,7 +188,7 @@ export async function uploadCompanyFile(
 export async function uploadJobPhoto(
 	file: File,
 	companyId: string,
-	jobId: string,
+	jobId: string
 ): Promise<UploadResult> {
 	// Validate file type
 	if (!file.type.startsWith("image/")) {
@@ -229,7 +220,7 @@ export async function uploadJobPhoto(
 export async function uploadInvoice(
 	file: File,
 	companyId: string,
-	invoiceId: string,
+	invoiceId: string
 ): Promise<UploadResult> {
 	// Validate file type
 	if (!["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
@@ -261,7 +252,7 @@ export async function uploadInvoice(
 export async function uploadEstimate(
 	file: File,
 	companyId: string,
-	estimateId: string,
+	estimateId: string
 ): Promise<UploadResult> {
 	// Validate file type
 	if (!["application/pdf", "image/jpeg", "image/png"].includes(file.type)) {
@@ -291,7 +282,7 @@ export async function uploadEstimate(
  */
 export async function deleteFile(
 	bucket: StorageBucket,
-	path: string,
+	path: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = createClient();
@@ -331,7 +322,7 @@ export async function deleteFile(
 export async function getSignedUrl(
 	bucket: StorageBucket,
 	path: string,
-	expiresIn = 3600,
+	expiresIn = 3600
 ): Promise<{ url?: string; error?: string }> {
 	try {
 		const supabase = createClient();
@@ -342,9 +333,7 @@ export async function getSignedUrl(
 			};
 		}
 
-		const { data, error } = await supabase.storage
-			.from(bucket)
-			.createSignedUrl(path, expiresIn);
+		const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, expiresIn);
 
 		if (error) {
 			return {
@@ -357,8 +346,7 @@ export async function getSignedUrl(
 		};
 	} catch (error) {
 		return {
-			error:
-				error instanceof Error ? error.message : "Failed to get signed URL",
+			error: error instanceof Error ? error.message : "Failed to get signed URL",
 		};
 	}
 }

@@ -1,13 +1,4 @@
-import {
-	AlertCircle,
-	Clock,
-	MapPin,
-	Navigation,
-	Phone,
-	Radio,
-	Users,
-	Zap,
-} from "lucide-react";
+import { AlertCircle, Clock, MapPin, Navigation, Phone, Radio, Users, Zap } from "lucide-react";
 import { KPICard } from "@/components/dashboard/kpi-card";
 import { SectionHeader } from "@/components/dashboard/section-header";
 import { Badge } from "@/components/ui/badge";
@@ -34,34 +25,28 @@ export default function DispatcherDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="font-bold text-4xl tracking-tight">
-						Dispatch Command Center
-					</h1>
+					<h1 className="text-4xl font-bold tracking-tight">Dispatch Command Center</h1>
 					<Badge className="text-primary" variant="outline">
 						Dispatcher View
 					</Badge>
-					<div className="flex items-center gap-2 rounded-full border border-border bg-muted/30 px-3 py-1">
-						<div className="size-2 animate-pulse rounded-full bg-success" />
-						<span className="font-medium text-muted-foreground text-xs">
-							Live
-						</span>
+					<div className="border-border bg-muted/30 flex items-center gap-2 rounded-full border px-3 py-1">
+						<div className="bg-success size-2 animate-pulse rounded-full" />
+						<span className="text-muted-foreground text-xs font-medium">Live</span>
 					</div>
 				</div>
-				<p className="text-lg text-muted-foreground">{currentDate}</p>
+				<p className="text-muted-foreground text-lg">{currentDate}</p>
 			</div>
 
 			{/* Emergency Alert Banner */}
 			<Card className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30">
 				<CardContent className="flex items-center justify-between pt-6">
 					<div className="flex items-center gap-3">
-						<div className="flex size-10 items-center justify-center rounded-full bg-destructive">
+						<div className="bg-destructive flex size-10 items-center justify-center rounded-full">
 							<Zap className="size-5 text-white" />
 						</div>
 						<div>
-							<p className="font-bold text-sm">2 Emergency Jobs Waiting</p>
-							<p className="text-muted-foreground text-xs">
-								Longest wait: 18 minutes
-							</p>
+							<p className="text-sm font-bold">2 Emergency Jobs Waiting</p>
+							<p className="text-muted-foreground text-xs">Longest wait: 18 minutes</p>
 						</div>
 					</div>
 					<Button size="sm" variant="destructive">
@@ -118,8 +103,8 @@ export default function DispatcherDashboard() {
 				<Card className="min-h-[400px]">
 					<CardContent className="flex items-center justify-center pt-6">
 						<div className="text-center">
-							<MapPin className="mx-auto size-16 text-muted-foreground" />
-							<p className="mt-4 font-medium text-lg text-muted-foreground">
+							<MapPin className="text-muted-foreground mx-auto size-16" />
+							<p className="text-muted-foreground mt-4 text-lg font-medium">
 								Interactive Map Component
 							</p>
 							<p className="text-muted-foreground text-sm">
@@ -142,20 +127,16 @@ export default function DispatcherDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Emergency Job */}
-							<div className="flex items-start gap-3 rounded-lg border-2 border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-destructive">
+							<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30 flex items-start gap-3 rounded-lg border-2 p-3">
+								<div className="bg-destructive flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<Zap className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
 										<Badge variant="destructive">EMERGENCY</Badge>
-										<span className="text-muted-foreground text-xs">
-											18 min ago
-										</span>
+										<span className="text-muted-foreground text-xs">18 min ago</span>
 									</div>
-									<p className="mt-1 font-bold text-sm">
-										No Hot Water - Urgent
-									</p>
+									<p className="mt-1 text-sm font-bold">No Hot Water - Urgent</p>
 									<p className="text-muted-foreground text-xs">
 										Sarah Johnson • 123 Main St • Water heater failure
 									</p>
@@ -186,21 +167,16 @@ export default function DispatcherDashboard() {
 									time: "1 hour ago",
 								},
 							].map((job, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-										<Radio className="size-5 text-primary" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<Radio className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
 											<Badge variant="outline">Standard</Badge>
-											<span className="text-muted-foreground text-xs">
-												{job.time}
-											</span>
+											<span className="text-muted-foreground text-xs">{job.time}</span>
 										</div>
-										<p className="mt-1 font-bold text-sm">{job.issue}</p>
+										<p className="mt-1 text-sm font-bold">{job.issue}</p>
 										<p className="text-muted-foreground text-xs">
 											{job.customer} • {job.address}
 										</p>
@@ -237,24 +213,19 @@ export default function DispatcherDashboard() {
 								},
 							].map((tech, index) => (
 								<div
-									className="flex items-center gap-3 rounded-lg border border-success bg-success p-3 dark:border-success dark:bg-success/30"
+									className="border-success bg-success dark:border-success dark:bg-success/30 flex items-center gap-3 rounded-lg border p-3"
 									key={index}
 								>
-									<div className="flex size-10 items-center justify-center rounded-full bg-success">
+									<div className="bg-success flex size-10 items-center justify-center rounded-full">
 										<Users className="size-5 text-white" />
 									</div>
 									<div className="flex-1">
-										<p className="font-bold text-sm">{tech.name}</p>
+										<p className="text-sm font-bold">{tech.name}</p>
 										<div className="flex items-center gap-2">
-											<Badge
-												className="border-success text-success"
-												variant="outline"
-											>
+											<Badge className="border-success text-success" variant="outline">
 												✓ Available
 											</Badge>
-											<span className="text-muted-foreground text-xs">
-												{tech.location}
-											</span>
+											<span className="text-muted-foreground text-xs">{tech.location}</span>
 										</div>
 									</div>
 									<Button size="sm" variant="outline">
@@ -284,20 +255,14 @@ export default function DispatcherDashboard() {
 									eta: "30 min",
 								},
 							].map((tech, index) => (
-								<div
-									className="flex items-center gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
-										<Navigation className="size-5 text-primary" />
+								<div className="bg-card flex items-center gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-primary/10 flex size-10 items-center justify-center rounded-full">
+										<Navigation className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
-										<p className="font-bold text-sm">{tech.name}</p>
+										<p className="text-sm font-bold">{tech.name}</p>
 										<div className="flex items-center gap-2">
-											<Badge
-												className="border-primary text-primary"
-												variant="outline"
-											>
+											<Badge className="border-primary text-primary" variant="outline">
 												On Job
 											</Badge>
 											<span className="text-muted-foreground text-xs">
@@ -312,22 +277,17 @@ export default function DispatcherDashboard() {
 							))}
 
 							{/* Late Technicians */}
-							<div className="flex items-center gap-3 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
-								<div className="flex size-10 items-center justify-center rounded-full bg-warning">
+							<div className="border-warning bg-warning dark:border-warning dark:bg-warning/30 flex items-center gap-3 rounded-lg border p-3">
+								<div className="bg-warning flex size-10 items-center justify-center rounded-full">
 									<Clock className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
-									<p className="font-bold text-sm">Chris Martinez</p>
+									<p className="text-sm font-bold">Chris Martinez</p>
 									<div className="flex items-center gap-2">
-										<Badge
-											className="border-warning text-warning"
-											variant="outline"
-										>
+										<Badge className="border-warning text-warning" variant="outline">
 											⚠ Running Late
 										</Badge>
-										<span className="text-muted-foreground text-xs">
-											25 min behind schedule
-										</span>
+										<span className="text-muted-foreground text-xs">25 min behind schedule</span>
 									</div>
 								</div>
 								<Button size="sm" variant="outline">
@@ -344,12 +304,10 @@ export default function DispatcherDashboard() {
 				<CardContent className="pt-6">
 					<div className="flex flex-wrap items-center justify-between gap-4">
 						<div className="flex items-center gap-3">
-							<Radio className="size-6 text-primary" />
+							<Radio className="text-primary size-6" />
 							<div>
-								<p className="font-bold text-sm">Quick Actions</p>
-								<p className="text-muted-foreground text-xs">
-									Common dispatch operations
-								</p>
+								<p className="text-sm font-bold">Quick Actions</p>
+								<p className="text-muted-foreground text-xs">Common dispatch operations</p>
 							</div>
 						</div>
 						<div className="flex flex-wrap gap-2">

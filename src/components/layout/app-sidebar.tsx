@@ -19,12 +19,7 @@ import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
 import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
 import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav";
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarFooter,
-	SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from "@/components/ui/sidebar";
 import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import {
 	Archive,
@@ -2286,10 +2281,7 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 	pathname?: string;
 };
 
-export function AppSidebar({
-	pathname: externalPathname,
-	...props
-}: AppSidebarProps) {
+export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
 	const currentSection = getCurrentSection(pathname);
@@ -2298,8 +2290,7 @@ export function AppSidebar({
 	const isAISection = currentSection === "ai";
 	const isReportingSection = currentSection === "reporting";
 	const isJobDetailsSection = currentSection === "jobDetails";
-	const isCommunicationDetail =
-		pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
+	const isCommunicationDetail = pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
 	// Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
 	const useGroupedNav =
@@ -2358,23 +2349,21 @@ export function AppSidebar({
 				{isAISection && !hasCustomConfig && <NavChatHistory />}
 			</SidebarContent>
 			<SidebarFooter>
-				<div className="group relative flex flex-col gap-2 overflow-hidden rounded-lg border border-border bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 p-4 transition-all hover:border-primary/30 hover:shadow-md">
+				<div className="group border-border from-primary/5 via-primary/10 to-primary/5 hover:border-primary/30 relative flex flex-col gap-2 overflow-hidden rounded-lg border bg-gradient-to-br p-4 transition-all hover:shadow-md">
 					<Link className="absolute inset-0 z-0" href="/changelog" />
 					<div className="relative z-10 flex items-center gap-2">
-						<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-							<Sparkles className="h-4 w-4 text-primary" />
+						<div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
+							<Sparkles className="text-primary h-4 w-4" />
 						</div>
 						<div className="flex flex-col">
-							<span className="font-semibold text-sm">What's New</span>
-							<span className="text-muted-foreground text-xs">
-								Version 2.1.0
-							</span>
+							<span className="text-sm font-semibold">What's New</span>
+							<span className="text-muted-foreground text-xs">Version 2.1.0</span>
 						</div>
 					</div>
-					<p className="relative z-10 text-muted-foreground text-xs leading-relaxed">
+					<p className="text-muted-foreground relative z-10 text-xs leading-relaxed">
 						Check out the latest features, improvements, and bug fixes.
 					</p>
-					<div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+					<div className="via-primary/5 absolute inset-0 bg-gradient-to-r from-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 				</div>
 			</SidebarFooter>
 			<SidebarRail />

@@ -26,9 +26,7 @@ const INVOICE_COLUMNS: Array<{
 	{ id: "overdue", name: "Overdue", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(
-	INVOICE_COLUMNS.map((column) => [column.id, column.name]),
-);
+const columnLabel = new Map(INVOICE_COLUMNS.map((column) => [column.id, column.name]));
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -40,10 +38,7 @@ export function InvoicesKanban({ invoices }: { invoices: Invoice[] }) {
 		<EntityKanban<Invoice, InvoiceStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce(
-					(sum, item) => sum + (item.entity as Invoice).amount,
-					0,
-				);
+				const total = columnItems.reduce((sum, item) => sum + (item.entity as Invoice).amount, 0);
 				return { count: columnItems.length, total };
 			}}
 			columns={INVOICE_COLUMNS}
@@ -57,15 +52,11 @@ export function InvoicesKanban({ invoices }: { invoices: Invoice[] }) {
 				invoice,
 			})}
 			renderCard={(item) => (
-				<InvoiceCard
-					item={{ ...item, invoice: item.entity } as InvoicesKanbanItem}
-				/>
+				<InvoiceCard item={{ ...item, invoice: item.entity } as InvoicesKanbanItem} />
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<InvoiceCard
-						item={{ ...item, invoice: item.entity } as InvoicesKanbanItem}
-					/>
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
+					<InvoiceCard item={{ ...item, invoice: item.entity } as InvoicesKanbanItem} />
 				</div>
 			)}
 			showTotals={true}
@@ -83,18 +74,16 @@ function InvoiceCard({ item }: { item: InvoicesKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+					<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 						{invoice.invoiceNumber}
 					</p>
-					<h3 className="font-semibold text-foreground text-sm">
-						{invoice.customer}
-					</h3>
+					<h3 className="text-foreground text-sm font-semibold">{invoice.customer}</h3>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
 								columnId === "overdue" && "bg-destructive/10 text-destructive",
-								columnId === "paid" && "bg-primary/10 text-primary",
+								columnId === "paid" && "bg-primary/10 text-primary"
 							)}
 							variant={
 								columnId === "overdue"
@@ -106,27 +95,24 @@ function InvoiceCard({ item }: { item: InvoicesKanbanItem }) {
 						>
 							{columnLabel.get(columnId as InvoiceStatus) ?? columnId}
 						</Badge>
-						<Badge
-							className="bg-muted/60 text-muted-foreground"
-							variant="outline"
-						>
+						<Badge className="bg-muted/60 text-muted-foreground" variant="outline">
 							{currencyFormatter.format(invoice.amount / 100)}
 						</Badge>
 					</div>
 				</div>
 			</div>
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<FileText className="size-4 text-primary" />
+					<FileText className="text-primary size-4" />
 					<span>Issued {invoice.date}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<CalendarDays className="size-4 text-primary" />
+					<CalendarDays className="text-primary size-4" />
 					<span
 						className={cn(
 							"font-medium",
-							columnId === "overdue" ? "text-destructive" : "text-foreground",
+							columnId === "overdue" ? "text-destructive" : "text-foreground"
 						)}
 					>
 						Due {invoice.dueDate}
@@ -134,14 +120,9 @@ function InvoiceCard({ item }: { item: InvoicesKanbanItem }) {
 				</div>
 			</div>
 
-			<div className="flex items-center justify-between pt-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-xs">
 				<span>Total {currencyFormatter.format(invoice.amount / 100)}</span>
-				<Button
-					asChild
-					className="gap-1 text-primary text-xs"
-					size="sm"
-					variant="ghost"
-				>
+				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
 					<Link href={`/dashboard/work/invoices/${invoice.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />

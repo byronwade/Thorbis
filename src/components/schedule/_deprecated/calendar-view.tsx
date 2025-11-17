@@ -23,7 +23,7 @@ export function CalendarView() {
 		tech.jobs.map((job) => ({
 			...job,
 			technician: tech,
-		})),
+		}))
 	);
 
 	const formatDate = (date: Date) =>
@@ -37,12 +37,10 @@ export function CalendarView() {
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
 			{/* Calendar Header */}
-			<div className="flex items-center justify-between border-b bg-background px-6 py-4">
+			<div className="bg-background flex items-center justify-between border-b px-6 py-4">
 				<div>
-					<h2 className="font-semibold text-xl">{formatDate(currentDate)}</h2>
-					<p className="text-muted-foreground text-sm">
-						{allJobs.length} jobs scheduled today
-					</p>
+					<h2 className="text-xl font-semibold">{formatDate(currentDate)}</h2>
+					<p className="text-muted-foreground text-sm">{allJobs.length} jobs scheduled today</p>
 				</div>
 				<div className="flex items-center gap-2">
 					<Button size="sm" variant="outline">
@@ -60,18 +58,14 @@ export function CalendarView() {
 			{/* Calendar Grid */}
 			<div className="flex min-h-0 flex-1">
 				{/* Time Column */}
-				<div className="w-20 shrink-0 border-r bg-muted/30">
+				<div className="bg-muted/30 w-20 shrink-0 border-r">
 					<div className="h-16" /> {/* Spacer for header */}
 					{HOURS.map((hour) => (
 						<div
-							className="flex h-24 items-start justify-end border-t px-3 py-2 text-muted-foreground text-xs"
+							className="text-muted-foreground flex h-24 items-start justify-end border-t px-3 py-2 text-xs"
 							key={hour}
 						>
-							{hour === 12
-								? "12 PM"
-								: hour > 12
-									? `${hour - 12} PM`
-									: `${hour} AM`}
+							{hour === 12 ? "12 PM" : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
 						</div>
 					))}
 				</div>
@@ -80,26 +74,22 @@ export function CalendarView() {
 				<div className="min-w-0 flex-1 overflow-auto">
 					<div className="grid grid-cols-1 gap-0">
 						{/* Technician Columns Header */}
-						<div className="sticky top-0 z-10 grid h-16 grid-cols-4 gap-0 border-b bg-background">
+						<div className="bg-background sticky top-0 z-10 grid h-16 grid-cols-4 gap-0 border-b">
 							{mockTechnicians.slice(0, 4).map((tech) => (
 								<div
 									className="flex flex-col items-center justify-center border-r px-4 py-2"
 									key={tech.id}
 								>
 									<div className="flex items-center gap-2">
-										<div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-xs">
+										<div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-xs font-semibold">
 											{tech.name
 												.split(" ")
 												.map((n) => n[0])
 												.join("")}
 										</div>
 										<div className="text-left">
-											<p className="font-medium text-sm leading-tight">
-												{tech.name}
-											</p>
-											<p className="text-muted-foreground text-xs">
-												{tech.jobs.length} jobs
-											</p>
+											<p className="text-sm leading-tight font-medium">{tech.name}</p>
+											<p className="text-muted-foreground text-xs">{tech.jobs.length} jobs</p>
 										</div>
 									</div>
 								</div>
@@ -129,12 +119,8 @@ export function CalendarView() {
 									}}
 								>
 									{tech.jobs.map((job) => {
-										const [startHour, startMin] = job.startTime
-											.split(":")
-											.map(Number);
-										const [endHour, endMin] = job.endTime
-											.split(":")
-											.map(Number);
+										const [startHour, startMin] = job.startTime.split(":").map(Number);
+										const [endHour, endMin] = job.endTime.split(":").map(Number);
 
 										const startMinutes = (startHour - 7) * 60 + startMin;
 										const endMinutes = (endHour - 7) * 60 + endMin;
@@ -148,7 +134,7 @@ export function CalendarView() {
 												className={cn(
 													"absolute right-1 left-1 overflow-hidden rounded-md border-l-4 p-2 shadow-sm",
 													"pointer-events-auto cursor-pointer transition-all hover:scale-[1.02] hover:shadow-md",
-													statusColors[job.status],
+													statusColors[job.status]
 												)}
 												key={job.id}
 												style={{
@@ -157,12 +143,10 @@ export function CalendarView() {
 												}}
 											>
 												<div className="flex h-full flex-col gap-1">
-													<h5 className="line-clamp-2 font-semibold text-xs leading-tight">
+													<h5 className="line-clamp-2 text-xs leading-tight font-semibold">
 														{job.title}
 													</h5>
-													<p className="line-clamp-1 text-[10px] opacity-90">
-														{job.customer}
-													</p>
+													<p className="line-clamp-1 text-[10px] opacity-90">{job.customer}</p>
 													<div className="mt-auto flex items-center gap-1 text-[10px] opacity-90">
 														<Clock className="size-3" />
 														<span>

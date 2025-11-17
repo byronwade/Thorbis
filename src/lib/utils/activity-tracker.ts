@@ -37,7 +37,7 @@ import type {
 export function createStatusChangeActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		metadata: StatusChangeActivity;
-	},
+	}
 ): CreateActivityData {
 	const { oldStatus, newStatus } = data.metadata;
 	return {
@@ -56,7 +56,7 @@ export function createStatusChangeActivity(
 export function createFieldUpdateActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		metadata: FieldUpdateActivity;
-	},
+	}
 ): CreateActivityData {
 	const { fieldName, fieldLabel, oldValue, newValue } = data.metadata;
 	return {
@@ -75,7 +75,7 @@ export function createFieldUpdateActivity(
 export function createNoteActivity(
 	data: Omit<CreateActivityData, "activityType" | "action" | "description"> & {
 		noteContent: string;
-	},
+	}
 ): CreateActivityData {
 	return {
 		...data,
@@ -91,15 +91,11 @@ export function createNoteActivity(
 export function createPhotoActivity(
 	data: Omit<
 		CreateActivityData,
-		| "activityType"
-		| "action"
-		| "attachmentType"
-		| "attachmentUrl"
-		| "attachmentName"
+		"activityType" | "action" | "attachmentType" | "attachmentUrl" | "attachmentName"
 	> & {
 		photoUrl: string;
 		photoName: string;
-	},
+	}
 ): CreateActivityData {
 	return {
 		...data,
@@ -117,15 +113,11 @@ export function createPhotoActivity(
 export function createDocumentActivity(
 	data: Omit<
 		CreateActivityData,
-		| "activityType"
-		| "action"
-		| "attachmentType"
-		| "attachmentUrl"
-		| "attachmentName"
+		"activityType" | "action" | "attachmentType" | "attachmentUrl" | "attachmentName"
 	> & {
 		documentUrl: string;
 		documentName: string;
-	},
+	}
 ): CreateActivityData {
 	return {
 		...data,
@@ -143,7 +135,7 @@ export function createDocumentActivity(
 export function createAssignmentActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		metadata: AssignmentChangeActivity;
-	},
+	}
 ): CreateActivityData {
 	const { oldAssignee, newAssignee } = data.metadata;
 	const action = oldAssignee
@@ -168,7 +160,7 @@ export function createAssignmentActivity(
 export function createAIInsightActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		metadata: AIInsightActivity;
-	},
+	}
 ): CreateActivityData {
 	const { model, insightType, confidence } = data.metadata;
 	return {
@@ -179,9 +171,7 @@ export function createAIInsightActivity(
 		actorType: "ai",
 		actorName: "AI Assistant",
 		aiModel: model,
-		description: confidence
-			? `Confidence: ${Math.round(confidence * 100)}%`
-			: undefined,
+		description: confidence ? `Confidence: ${Math.round(confidence * 100)}%` : undefined,
 		isSystemGenerated: true,
 	};
 }
@@ -192,7 +182,7 @@ export function createAIInsightActivity(
 export function createAutomationActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		metadata: AutomationActivity;
-	},
+	}
 ): CreateActivityData {
 	const { workflowName, actionType, result } = data.metadata;
 	return {
@@ -215,7 +205,7 @@ export function createCommunicationActivity(
 	data: Omit<CreateActivityData, "activityType" | "action"> & {
 		communicationType: "email" | "sms" | "call" | "chat";
 		subject?: string;
-	},
+	}
 ): CreateActivityData {
 	const typeLabels = {
 		email: "sent an email",
@@ -240,7 +230,7 @@ export function createCommunicationActivity(
  * Create an entity creation activity
  */
 export function createEntityCreatedActivity(
-	data: Omit<CreateActivityData, "activityType" | "action">,
+	data: Omit<CreateActivityData, "activityType" | "action">
 ): CreateActivityData {
 	return {
 		...data,
@@ -253,9 +243,7 @@ export function createEntityCreatedActivity(
 /**
  * Convert activity to timeline item for UI display
  */
-export function activityToTimelineItem(
-	activity: Activity,
-): ActivityTimelineItem {
+export function activityToTimelineItem(activity: Activity): ActivityTimelineItem {
 	const icon = getActivityIcon(activity.activityType);
 	const iconColor = getActivityIconColor(activity.category);
 
@@ -310,9 +298,7 @@ export function getActivityIcon(activityType: ActivityType): LucideIcon {
 /**
  * Get color for activity category
  */
-export function getActivityIconColor(
-	category: "system" | "user" | "ai" | "automation",
-): string {
+export function getActivityIconColor(category: "system" | "user" | "ai" | "automation"): string {
 	const colorMap = {
 		system: "text-blue-500",
 		user: "text-green-500",
@@ -356,9 +342,7 @@ export function formatActivityTimestamp(date: Date): string {
 /**
  * Group activities by date
  */
-export function groupActivitiesByDate(
-	activities: Activity[],
-): Map<string, Activity[]> {
+export function groupActivitiesByDate(activities: Activity[]): Map<string, Activity[]> {
 	const grouped = new Map<string, Activity[]>();
 
 	for (const activity of activities) {
@@ -380,21 +364,13 @@ export function groupActivitiesByDate(
 /**
  * Filter activities by type
  */
-export function filterActivitiesByType(
-	activities: Activity[],
-	types: ActivityType[],
-): Activity[] {
+export function filterActivitiesByType(activities: Activity[], types: ActivityType[]): Activity[] {
 	return activities.filter((activity) => types.includes(activity.activityType));
 }
 
 /**
  * Get recent activities (last N)
  */
-export function getRecentActivities(
-	activities: Activity[],
-	count: number,
-): Activity[] {
-	return activities
-		.sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime())
-		.slice(0, count);
+export function getRecentActivities(activities: Activity[], count: number): Activity[] {
+	return activities.sort((a, b) => b.occurredAt.getTime() - a.occurredAt.getTime()).slice(0, count);
 }

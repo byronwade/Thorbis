@@ -17,9 +17,7 @@ type CustomerDetailDataProps = {
  *
  * Fetches 13 parallel queries for complete customer 360° view.
  */
-export async function CustomerDetailData({
-	customerId,
-}: CustomerDetailDataProps) {
+export async function CustomerDetailData({ customerId }: CustomerDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -80,13 +78,13 @@ export async function CustomerDetailData({
 		if (customerError.code === "PGRST116") {
 			return (
 				<div className="flex min-h-screen items-center justify-center">
-					<div className="max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
-						<h1 className="mb-4 font-bold text-2xl">Customer Not Found</h1>
-						<p className="mb-6 text-muted-foreground text-sm">
+					<div className="border-border bg-card max-w-md rounded-lg border p-8 text-center shadow-lg">
+						<h1 className="mb-4 text-2xl font-bold">Customer Not Found</h1>
+						<p className="text-muted-foreground mb-6 text-sm">
 							This customer doesn't exist or has been deleted.
 						</p>
 						<a
-							className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium"
 							href="/dashboard/customers"
 						>
 							Back to Customers
@@ -99,17 +97,17 @@ export async function CustomerDetailData({
 		if (customerError.code === "42501") {
 			return (
 				<div className="flex min-h-screen items-center justify-center">
-					<div className="max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
-						<h1 className="mb-4 font-bold text-2xl">Wrong Company</h1>
-						<p className="mb-2 text-muted-foreground text-sm">
+					<div className="border-border bg-card max-w-md rounded-lg border p-8 text-center shadow-lg">
+						<h1 className="mb-4 text-2xl font-bold">Wrong Company</h1>
+						<p className="text-muted-foreground mb-2 text-sm">
 							This customer belongs to a different company.
 						</p>
-						<p className="mb-6 text-muted-foreground text-sm">
-							If you need to access this customer, please switch to the correct
-							company using the company selector in the header.
+						<p className="text-muted-foreground mb-6 text-sm">
+							If you need to access this customer, please switch to the correct company using the
+							company selector in the header.
 						</p>
 						<a
-							className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm hover:bg-primary/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium"
 							href="/dashboard/customers"
 						>
 							Back to Customers
@@ -170,23 +168,27 @@ export async function CustomerDetailData({
 			.limit(10),
 		supabase
 			.from("schedules")
-			.select(`
+			.select(
+				`
         *,
         job:jobs!job_id(id, job_number, title),
         property:properties!property_id(id, name, address)
-      `)
+      `
+			)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
 			.order("scheduled_start", { ascending: false })
 			.limit(10),
 		supabase
 			.from("contracts")
-			.select(`
+			.select(
+				`
         *,
         job:jobs!job_id(id, job_number),
         estimate:estimates!estimate_id(id, estimate_number),
         invoice:invoices!invoice_id(id, invoice_number)
-      `)
+      `
+			)
 			.eq("company_id", teamMember.company_id)
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })
@@ -245,9 +247,7 @@ export async function CustomerDetailData({
 	// Filter contracts to only include those related to this customer
 	const customerContracts = (contracts || []).filter((contract) => {
 		const hasJob = jobs?.some((job) => job.id === contract.job_id);
-		const hasEstimate = estimates?.some(
-			(est) => est.id === contract.estimate_id,
-		);
+		const hasEstimate = estimates?.some((est) => est.id === contract.estimate_id);
 		const hasInvoice = invoices?.some((inv) => inv.id === contract.invoice_id);
 		return hasJob || hasEstimate || hasInvoice;
 	});

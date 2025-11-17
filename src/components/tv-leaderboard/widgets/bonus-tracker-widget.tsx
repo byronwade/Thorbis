@@ -40,14 +40,12 @@ const DEFAULT_DATA: BonusTrackerData = {
 	progress: 62.5,
 };
 
-export function BonusTrackerWidget({
-	data = DEFAULT_DATA,
-}: BonusTrackerWidgetProps) {
+export function BonusTrackerWidget({ data = DEFAULT_DATA }: BonusTrackerWidgetProps) {
 	const bonusPerPerson = Math.round(data.currentBonus / data.teamMembers);
 	const remaining = data.targetBonus - data.currentBonus;
 
 	return (
-		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-background/80">
+		<ResponsiveWidgetWrapper className="to-background/80 bg-gradient-to-br from-green-500/20 via-emerald-500/10">
 			<ResponsiveContent className="flex flex-col gap-3">
 				{/* Header - adapts across stages */}
 				<div className="flex items-center justify-between gap-2">
@@ -65,7 +63,7 @@ export function BonusTrackerWidget({
 						</ShowAt>
 					</div>
 					<ShowAt stage="full-comfortable">
-						<div className="rounded-full bg-success/20 px-2 py-0.5 text-success text-xs">
+						<div className="bg-success/20 text-success rounded-full px-2 py-0.5 text-xs">
 							{data.daysRemaining}d
 						</div>
 					</ShowAt>
@@ -77,24 +75,15 @@ export function BonusTrackerWidget({
 						{/* Main metrics */}
 						<div className="grid grid-cols-2 gap-3">
 							<div className="space-y-1">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									Current Bonus
 								</ResponsiveText>
-								<ResponsiveText
-									className="font-bold text-success"
-									variant="display"
-								>
+								<ResponsiveText className="text-success font-bold" variant="display">
 									{formatCurrency(data.currentBonus, "comfortable")}
 								</ResponsiveText>
 							</div>
 							<div className="space-y-1">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									Target
 								</ResponsiveText>
 								<ResponsiveText className="font-bold" variant="display">
@@ -107,11 +96,11 @@ export function BonusTrackerWidget({
 						<div className="space-y-1">
 							<div className="flex justify-between text-xs">
 								<span className="text-muted-foreground">Progress</span>
-								<span className="font-bold text-success">
+								<span className="text-success font-bold">
 									{formatPercentage(data.progress, "full")}
 								</span>
 							</div>
-							<div className="relative h-2 overflow-hidden rounded-full bg-background/50">
+							<div className="bg-background/50 relative h-2 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
 									style={{ width: `${Math.min(data.progress, 100)}%` }}
@@ -121,13 +110,10 @@ export function BonusTrackerWidget({
 
 						{/* Bottom stats */}
 						<div className="grid grid-cols-3 gap-2">
-							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
-								<Users className="size-3.5 text-primary" />
+							<div className="bg-background/50 flex items-center gap-1.5 rounded-lg p-2">
+								<Users className="text-primary size-3.5" />
 								<div>
-									<ResponsiveText
-										className="text-muted-foreground"
-										variant="caption"
-									>
+									<ResponsiveText className="text-muted-foreground" variant="caption">
 										Team
 									</ResponsiveText>
 									<ResponsiveText className="font-bold" variant="body">
@@ -135,36 +121,24 @@ export function BonusTrackerWidget({
 									</ResponsiveText>
 								</div>
 							</div>
-							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
-								<DollarSign className="size-3.5 text-success" />
+							<div className="bg-background/50 flex items-center gap-1.5 rounded-lg p-2">
+								<DollarSign className="text-success size-3.5" />
 								<div>
-									<ResponsiveText
-										className="text-muted-foreground"
-										variant="caption"
-									>
+									<ResponsiveText className="text-muted-foreground" variant="caption">
 										Each
 									</ResponsiveText>
-									<ResponsiveText
-										className="font-bold text-success"
-										variant="body"
-									>
+									<ResponsiveText className="text-success font-bold" variant="body">
 										${bonusPerPerson}
 									</ResponsiveText>
 								</div>
 							</div>
-							<div className="flex items-center gap-1.5 rounded-lg bg-background/50 p-2">
-								<Target className="size-3.5 text-warning" />
+							<div className="bg-background/50 flex items-center gap-1.5 rounded-lg p-2">
+								<Target className="text-warning size-3.5" />
 								<div>
-									<ResponsiveText
-										className="text-muted-foreground"
-										variant="caption"
-									>
+									<ResponsiveText className="text-muted-foreground" variant="caption">
 										Left
 									</ResponsiveText>
-									<ResponsiveText
-										className="font-bold text-warning"
-										variant="body"
-									>
+									<ResponsiveText className="text-warning font-bold" variant="body">
 										${(remaining / 1000).toFixed(0)}k
 									</ResponsiveText>
 								</div>
@@ -178,28 +152,22 @@ export function BonusTrackerWidget({
 					<div className="space-y-2">
 						<div className="flex items-center justify-between">
 							<ResponsiveText variant="caption">Current</ResponsiveText>
-							<ResponsiveText className="font-bold text-success" variant="body">
+							<ResponsiveText className="text-success font-bold" variant="body">
 								{formatCurrency(data.currentBonus, "comfortable")}
 							</ResponsiveText>
 						</div>
 						<div className="space-y-1">
-							<div className="relative h-1.5 overflow-hidden rounded-full bg-background/50">
+							<div className="bg-background/50 relative h-1.5 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all"
 									style={{ width: `${Math.min(data.progress, 100)}%` }}
 								/>
 							</div>
 							<div className="flex justify-between">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									{formatPercentage(data.progress, "comfortable")}
 								</ResponsiveText>
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									{formatCurrency(data.targetBonus, "comfortable")}
 								</ResponsiveText>
 							</div>
@@ -213,10 +181,7 @@ export function BonusTrackerWidget({
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Bonus
 						</ResponsiveText>
-						<ResponsiveText
-							className="font-bold text-success"
-							variant="display"
-						>
+						<ResponsiveText className="text-success font-bold" variant="display">
 							{formatCurrency(data.currentBonus, "compact")}
 						</ResponsiveText>
 						<ResponsiveText className="text-muted-foreground" variant="caption">
@@ -228,10 +193,7 @@ export function BonusTrackerWidget({
 				{/* TINY Stage: Just the current bonus */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText
-							className="font-bold text-success"
-							variant="display"
-						>
+						<ResponsiveText className="text-success font-bold" variant="display">
 							{formatCurrency(data.currentBonus, "tiny")}
 						</ResponsiveText>
 					</div>

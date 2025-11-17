@@ -103,7 +103,7 @@ const VirtualRow = memo(function VirtualRow<T>({
 		(_checked: boolean) => {
 			onSelectItem(itemId);
 		},
-		[itemId, onSelectItem],
+		[itemId, onSelectItem]
 	);
 
 	const handleClick = useCallback(() => {
@@ -114,7 +114,7 @@ const VirtualRow = memo(function VirtualRow<T>({
 
 	return (
 		<div
-			className={`flex border-border/60 border-b transition-colors hover:bg-secondary/30 dark:hover:bg-secondary/20 ${
+			className={`border-border/60 hover:bg-secondary/30 dark:hover:bg-secondary/20 flex border-b transition-colors ${
 				isHighlighted ? highlightClass : ""
 			} ${rowClassName || ""} ${onRowClick ? "cursor-pointer" : ""}`}
 			onClick={handleClick}
@@ -199,7 +199,7 @@ export function VirtualizedDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[filteredData, getItemId],
+		[filteredData, getItemId]
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -225,12 +225,9 @@ export function VirtualizedDataTable<T>({
 	}, []);
 
 	const allSelected =
-		filteredData.length > 0 &&
-		filteredData.every((item) => selectedIds.has(getItemId(item)));
+		filteredData.length > 0 && filteredData.every((item) => selectedIds.has(getItemId(item)));
 
-	const _someSelected = filteredData.some((item) =>
-		selectedIds.has(getItemId(item)),
-	);
+	const _someSelected = filteredData.some((item) => selectedIds.has(getItemId(item)));
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -239,7 +236,7 @@ export function VirtualizedDataTable<T>({
 				{/* Search */}
 				{searchFilter && (
 					<div className="relative max-w-sm flex-1">
-						<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+						<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 						<Input
 							className="pl-9"
 							onChange={(e) => handleSearch(e.target.value)}
@@ -263,7 +260,7 @@ export function VirtualizedDataTable<T>({
 
 			{/* Bulk Actions Bar */}
 			{selectedIds.size > 0 && bulkActions.length > 0 && (
-				<div className="flex items-center gap-2 rounded-lg bg-primary p-4 text-primary-foreground">
+				<div className="bg-primary text-primary-foreground flex items-center gap-2 rounded-lg p-4">
 					<span className="text-sm">{selectedIds.size} selected</span>
 					<div className="ml-auto flex gap-2">
 						{bulkActions.map((action, index) => (
@@ -282,9 +279,9 @@ export function VirtualizedDataTable<T>({
 			)}
 
 			{/* Virtual Table */}
-			<div className="overflow-hidden rounded-lg border border-border">
+			<div className="border-border overflow-hidden rounded-lg border">
 				{/* Header */}
-				<div className="flex border-border border-b bg-muted/60">
+				<div className="border-border bg-muted/60 flex border-b">
 					{enableSelection && (
 						<div className="flex w-12 items-center px-4 py-3">
 							<Checkbox
@@ -296,7 +293,7 @@ export function VirtualizedDataTable<T>({
 					)}
 					{columns.map((column) => (
 						<div
-							className={`flex items-center px-4 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider ${
+							className={`text-muted-foreground flex items-center px-4 py-3 text-left text-xs font-medium tracking-wider uppercase ${
 								column.hideOnMobile ? "hidden md:flex" : ""
 							}`}
 							key={column.key}
@@ -312,7 +309,7 @@ export function VirtualizedDataTable<T>({
 
 				{/* Scrollable Body with Virtual Rows */}
 				<div
-					className="overflow-auto bg-card"
+					className="bg-card overflow-auto"
 					ref={parentRef}
 					style={{
 						height: "600px", // Fixed height for virtual scrolling
@@ -370,7 +367,7 @@ export function VirtualizedDataTable<T>({
 				</div>
 
 				{/* Footer with scroll stats */}
-				<div className="flex items-center justify-between border-border border-t bg-muted/30 px-4 py-2 text-muted-foreground text-xs">
+				<div className="border-border bg-muted/30 text-muted-foreground flex items-center justify-between border-t px-4 py-2 text-xs">
 					<div>
 						{filteredData.length.toLocaleString()} total rows
 						{searchQuery && ` (filtered from ${data.length.toLocaleString()})`}
@@ -386,5 +383,5 @@ export function VirtualizedDataTable<T>({
 
 // Export memoized version
 export const MemoizedVirtualizedDataTable = memo(
-	VirtualizedDataTable,
+	VirtualizedDataTable
 ) as typeof VirtualizedDataTable;

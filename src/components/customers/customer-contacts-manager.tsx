@@ -10,13 +10,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -119,18 +113,9 @@ export function CustomerContactsManager({
 			formDataObj.set("phone", formData.phone);
 			formDataObj.set("secondaryPhone", formData.secondaryPhone);
 			formDataObj.set("isPrimary", formData.isPrimary ? "true" : "false");
-			formDataObj.set(
-				"isBillingContact",
-				formData.isBillingContact ? "true" : "false",
-			);
-			formDataObj.set(
-				"isEmergencyContact",
-				formData.isEmergencyContact ? "true" : "false",
-			);
-			formDataObj.set(
-				"preferredContactMethod",
-				formData.preferredContactMethod,
-			);
+			formDataObj.set("isBillingContact", formData.isBillingContact ? "true" : "false");
+			formDataObj.set("isEmergencyContact", formData.isEmergencyContact ? "true" : "false");
+			formDataObj.set("preferredContactMethod", formData.preferredContactMethod);
 			formDataObj.set("notes", formData.notes);
 
 			if (editingId) {
@@ -154,8 +139,8 @@ export function CustomerContactsManager({
 										preferred_contact_method: formData.preferredContactMethod,
 										notes: formData.notes,
 									}
-								: c,
-						),
+								: c
+						)
 					);
 					resetForm();
 					toast.success("Contact updated successfully");
@@ -241,30 +226,24 @@ export function CustomerContactsManager({
 			<CardHeader>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<User className="size-5 text-primary" />
+						<User className="text-primary size-5" />
 						<CardTitle>Business Contacts</CardTitle>
 					</div>
 					<Badge variant="secondary">
 						{contacts.length} contact{contacts.length !== 1 ? "s" : ""}
 					</Badge>
 				</div>
-				<CardDescription>
-					Manage multiple contacts for this business customer
-				</CardDescription>
+				<CardDescription>Manage multiple contacts for this business customer</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{/* Existing Contacts */}
 				{contacts.map((contact) => (
-					<div className="rounded-lg border bg-muted/50 p-4" key={contact.id}>
+					<div className="bg-muted/50 rounded-lg border p-4" key={contact.id}>
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex flex-1 items-start gap-3">
 								<Avatar className="size-10">
 									<AvatarFallback
-										className={
-											contact.is_primary
-												? "bg-primary text-primary-foreground"
-												: ""
-										}
+										className={contact.is_primary ? "bg-primary text-primary-foreground" : ""}
 									>
 										{getInitials(contact)}
 									</AvatarFallback>
@@ -294,21 +273,19 @@ export function CustomerContactsManager({
 									</div>
 
 									{contact.title && (
-										<p className="text-muted-foreground text-sm">
-											{contact.title}
-										</p>
+										<p className="text-muted-foreground text-sm">{contact.title}</p>
 									)}
 
 									<div className="flex flex-wrap gap-3 text-sm">
 										<a
-											className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+											className="text-muted-foreground hover:text-foreground flex items-center gap-1"
 											href={`tel:${contact.phone}`}
 										>
 											<Phone className="size-3" />
 											{contact.phone}
 										</a>
 										<a
-											className="flex items-center gap-1 text-muted-foreground hover:text-foreground"
+											className="text-muted-foreground hover:text-foreground flex items-center gap-1"
 											href={`mailto:${contact.email}`}
 										>
 											<Mail className="size-3" />
@@ -317,9 +294,7 @@ export function CustomerContactsManager({
 									</div>
 
 									{contact.notes && (
-										<p className="text-muted-foreground text-xs">
-											{contact.notes}
-										</p>
+										<p className="text-muted-foreground text-xs">{contact.notes}</p>
 									)}
 								</div>
 							</div>
@@ -337,7 +312,7 @@ export function CustomerContactsManager({
 									Edit
 								</Button>
 								<Button
-									className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+									className="text-destructive hover:text-destructive h-8 w-8 p-0"
 									disabled={isLoading || contact.is_primary}
 									onClick={() => handleDelete(contact.id)}
 									size="sm"
@@ -353,12 +328,9 @@ export function CustomerContactsManager({
 
 				{/* Add/Edit Form */}
 				{showAddForm ? (
-					<form
-						className="space-y-4 rounded-lg border bg-card p-4"
-						onSubmit={handleSubmit}
-					>
+					<form className="bg-card space-y-4 rounded-lg border p-4" onSubmit={handleSubmit}>
 						<div className="flex items-center justify-between">
-							<h4 className="font-semibold text-sm">
+							<h4 className="text-sm font-semibold">
 								{editingId ? "Edit Contact" : "Add New Contact"}
 							</h4>
 							<Button
@@ -380,9 +352,7 @@ export function CustomerContactsManager({
 								<Input
 									className="h-9"
 									id="firstName"
-									onChange={(e) =>
-										setFormData({ ...formData, firstName: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
 									required
 									value={formData.firstName}
 								/>
@@ -394,9 +364,7 @@ export function CustomerContactsManager({
 								<Input
 									className="h-9"
 									id="lastName"
-									onChange={(e) =>
-										setFormData({ ...formData, lastName: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
 									required
 									value={formData.lastName}
 								/>
@@ -410,9 +378,7 @@ export function CustomerContactsManager({
 							<Input
 								className="h-9"
 								id="title"
-								onChange={(e) =>
-									setFormData({ ...formData, title: e.target.value })
-								}
+								onChange={(e) => setFormData({ ...formData, title: e.target.value })}
 								placeholder="Property Manager, Facilities Director, etc."
 								value={formData.title}
 							/>
@@ -426,9 +392,7 @@ export function CustomerContactsManager({
 								<Input
 									className="h-9"
 									id="email"
-									onChange={(e) =>
-										setFormData({ ...formData, email: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, email: e.target.value })}
 									required
 									type="email"
 									value={formData.email}
@@ -441,9 +405,7 @@ export function CustomerContactsManager({
 								<Input
 									className="h-9"
 									id="phone"
-									onChange={(e) =>
-										setFormData({ ...formData, phone: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
 									required
 									type="tel"
 									value={formData.phone}
@@ -459,9 +421,7 @@ export function CustomerContactsManager({
 								<Input
 									className="h-9"
 									id="secondaryPhone"
-									onChange={(e) =>
-										setFormData({ ...formData, secondaryPhone: e.target.value })
-									}
+									onChange={(e) => setFormData({ ...formData, secondaryPhone: e.target.value })}
 									type="tel"
 									value={formData.secondaryPhone}
 								/>
@@ -489,7 +449,7 @@ export function CustomerContactsManager({
 						</div>
 
 						{/* Flags */}
-						<div className="space-y-2 rounded-lg border bg-muted/50 p-3">
+						<div className="bg-muted/50 space-y-2 rounded-lg border p-3">
 							<div className="flex items-center justify-between">
 								<Label className="text-xs" htmlFor="isPrimary">
 									Primary Contact
@@ -497,9 +457,7 @@ export function CustomerContactsManager({
 								<Switch
 									checked={formData.isPrimary}
 									id="isPrimary"
-									onCheckedChange={(checked) =>
-										setFormData({ ...formData, isPrimary: checked })
-									}
+									onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
 								/>
 							</div>
 							<div className="flex items-center justify-between">
@@ -535,9 +493,7 @@ export function CustomerContactsManager({
 							<Textarea
 								className="text-sm"
 								id="notes"
-								onChange={(e) =>
-									setFormData({ ...formData, notes: e.target.value })
-								}
+								onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
 								placeholder="Additional notes about this contact..."
 								rows={2}
 								value={formData.notes}
@@ -545,17 +501,8 @@ export function CustomerContactsManager({
 						</div>
 
 						<div className="flex gap-2">
-							<Button
-								className="flex-1"
-								disabled={isLoading}
-								size="sm"
-								type="submit"
-							>
-								{isLoading
-									? "Saving..."
-									: editingId
-										? "Update Contact"
-										: "Add Contact"}
+							<Button className="flex-1" disabled={isLoading} size="sm" type="submit">
+								{isLoading ? "Saving..." : editingId ? "Update Contact" : "Add Contact"}
 							</Button>
 							<Button
 								disabled={isLoading}
@@ -583,13 +530,9 @@ export function CustomerContactsManager({
 
 				{contacts.length === 0 && !showAddForm && (
 					<div className="py-6 text-center">
-						<User className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-						<p className="text-muted-foreground text-sm">
-							No contacts added yet
-						</p>
-						<p className="text-muted-foreground text-xs">
-							Add contacts for business customers
-						</p>
+						<User className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
+						<p className="text-muted-foreground text-sm">No contacts added yet</p>
+						<p className="text-muted-foreground text-xs">Add contacts for business customers</p>
 					</div>
 				)}
 			</CardContent>

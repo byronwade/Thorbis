@@ -5,12 +5,7 @@
  * Loads faster than main data, so users see metrics first.
  */
 
-import {
-	AlertCircle,
-	CheckCircle,
-	ClipboardList,
-	DollarSign,
-} from "lucide-react";
+import { AlertCircle, CheckCircle, ClipboardList, DollarSign } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -39,50 +34,44 @@ export async function WorkOrdersStats() {
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Active Orders</CardTitle>
-					<ClipboardList className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Active Orders</CardTitle>
+					<ClipboardList className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.activeOrders}</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.activeChange} from yesterday
-					</p>
+					<div className="text-2xl font-bold">{stats.activeOrders}</div>
+					<p className="text-muted-foreground text-xs">{stats.activeChange} from yesterday</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Completed</CardTitle>
-					<CheckCircle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Completed</CardTitle>
+					<CheckCircle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.completed}</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.completedPeriod}
-					</p>
+					<div className="text-2xl font-bold">{stats.completed}</div>
+					<p className="text-muted-foreground text-xs">{stats.completedPeriod}</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">
-						Pending Approval
-					</CardTitle>
-					<AlertCircle className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Pending Approval</CardTitle>
+					<AlertCircle className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.pendingApproval}</div>
+					<div className="text-2xl font-bold">{stats.pendingApproval}</div>
 					<p className="text-muted-foreground text-xs">Awaiting review</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Average Value</CardTitle>
-					<DollarSign className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Average Value</CardTitle>
+					<DollarSign className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">${stats.avgValue}</div>
+					<div className="text-2xl font-bold">${stats.avgValue}</div>
 					<p className="text-muted-foreground text-xs">Per work order</p>
 				</CardContent>
 			</Card>

@@ -21,7 +21,7 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
 		<div className="mb-8 grid gap-6 md:grid-cols-2">
 			{/* Terms and Conditions */}
 			<Card className="p-6">
-				<Label className="font-semibold text-base" htmlFor="terms">
+				<Label className="text-base font-semibold" htmlFor="terms">
 					Terms and Conditions
 				</Label>
 				<Textarea
@@ -31,14 +31,14 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
 					placeholder="Payment terms, late fees, warranty information, etc."
 					value={terms || ""}
 				/>
-				<p className="mt-2 text-muted-foreground text-xs">
+				<p className="text-muted-foreground mt-2 text-xs">
 					Standard payment terms, late fees, warranties, and other conditions
 				</p>
 			</Card>
 
 			{/* Notes */}
 			<Card className="p-6">
-				<Label className="font-semibold text-base" htmlFor="notes">
+				<Label className="text-base font-semibold" htmlFor="notes">
 					Notes
 				</Label>
 				<Textarea
@@ -48,7 +48,7 @@ export function InvoiceTerms({ terms, notes, onUpdate }: InvoiceTermsProps) {
 					placeholder="Additional notes or instructions for the customer..."
 					value={notes || ""}
 				/>
-				<p className="mt-2 text-muted-foreground text-xs">
+				<p className="text-muted-foreground mt-2 text-xs">
 					Internal notes or special instructions for this invoice
 				</p>
 			</Card>

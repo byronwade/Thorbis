@@ -1,0 +1,12 @@
+{
+	"ignore_dirs": [
+		".git",
+		".next",
+		"node_modules",
+		".claude",
+		".cursor",
+		".windsurf",
+		".mcp",
+		".swc"
+	]
+}

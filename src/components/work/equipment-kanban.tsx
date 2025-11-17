@@ -26,9 +26,7 @@ const EQUIPMENT_COLUMNS: Array<{
 	{ id: "retired", name: "Retired", accentColor: "#6B7280" },
 ];
 
-const columnLabel = new Map(
-	EQUIPMENT_COLUMNS.map((column) => [column.id, column.name]),
-);
+const columnLabel = new Map(EQUIPMENT_COLUMNS.map((column) => [column.id, column.name]));
 
 export function EquipmentKanban({ equipment }: { equipment: Equipment[] }) {
 	return (
@@ -43,15 +41,11 @@ export function EquipmentKanban({ equipment }: { equipment: Equipment[] }) {
 				equipment: item,
 			})}
 			renderCard={(item) => (
-				<EquipmentCard
-					item={{ ...item, equipment: item.entity } as EquipmentKanbanItem}
-				/>
+				<EquipmentCard item={{ ...item, equipment: item.entity } as EquipmentKanbanItem} />
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
-					<EquipmentCard
-						item={{ ...item, equipment: item.entity } as EquipmentKanbanItem}
-					/>
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
+					<EquipmentCard item={{ ...item, equipment: item.entity } as EquipmentKanbanItem} />
 				</div>
 			)}
 			updateEntityStatus={(item, newStatus) => ({
@@ -68,18 +62,16 @@ function EquipmentCard({ item }: { item: EquipmentKanbanItem }) {
 	return (
 		<div className="space-y-3">
 			<div>
-				<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+				<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 					{equipment.assetId}
 				</p>
-				<h3 className="font-semibold text-foreground text-sm">
-					{equipment.name}
-				</h3>
+				<h3 className="text-foreground text-sm font-semibold">{equipment.name}</h3>
 				<div className="mt-2 flex flex-wrap items-center gap-2">
 					<Badge
 						className={cn(
 							"text-xs",
 							columnId === "retired" && "bg-destructive/10 text-destructive",
-							columnId === "available" && "bg-primary/10 text-primary",
+							columnId === "available" && "bg-primary/10 text-primary"
 						)}
 						variant={
 							columnId === "available"
@@ -94,37 +86,31 @@ function EquipmentCard({ item }: { item: EquipmentKanbanItem }) {
 					<Badge className="text-xs" variant="outline">
 						{equipment.classificationLabel}
 						{equipment.typeLabel &&
-							equipment.typeLabel.toLowerCase() !==
-								equipment.classificationLabel.toLowerCase() && (
-								<span className="text-muted-foreground/80">
-									{" "}
-									• {equipment.typeLabel}
-								</span>
+							equipment.typeLabel.toLowerCase() !== equipment.classificationLabel.toLowerCase() && (
+								<span className="text-muted-foreground/80"> • {equipment.typeLabel}</span>
 							)}
 					</Badge>
 				</div>
 			</div>
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<User className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{equipment.assignedTo}
-					</span>
+					<User className="text-primary size-4" />
+					<span className="text-foreground font-medium">{equipment.assignedTo}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<Wrench className="size-4 text-primary" />
+					<Wrench className="text-primary size-4" />
 					<span>Last service {equipment.lastService}</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<CalendarDays className="size-4 text-primary" />
+					<CalendarDays className="text-primary size-4" />
 					<span>Next service {equipment.nextService}</span>
 				</div>
 			</div>
 
 			<Button
 				asChild
-				className="w-full justify-between text-primary text-xs"
+				className="text-primary w-full justify-between text-xs"
 				size="sm"
 				variant="ghost"
 			>

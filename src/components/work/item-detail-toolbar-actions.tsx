@@ -23,12 +23,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type ItemDetailToolbarActionsProps = {
 	/** Item ID for edit/delete operations */
@@ -73,7 +68,7 @@ export function ItemDetailToolbarActions({
 			{/* More Actions Dropdown */}
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button className="gap-2 hover:bg-muted" size="sm" variant="ghost">
+					<Button className="hover:bg-muted gap-2" size="sm" variant="ghost">
 						<MoreVertical className="size-4" />
 						<span className="hidden sm:inline">More</span>
 						<span className="sr-only">More actions</span>

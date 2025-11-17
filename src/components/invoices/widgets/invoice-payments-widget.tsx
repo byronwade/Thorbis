@@ -29,21 +29,16 @@ export function InvoicePaymentsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: payments, isLoading, error } = useInvoicePayments(
-					invoiceId,
-					isVisible,
-				);
+				const { data: payments, isLoading, error } = useInvoicePayments(invoiceId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							Failed to load payments
-						</div>
+						<div className="text-muted-foreground text-center text-sm">Failed to load payments</div>
 					);
 				if (!payments || payments.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No payments received yet
 						</div>
 					);
@@ -55,17 +50,14 @@ export function InvoicePaymentsWidget({
 							if (!payment) return null;
 
 							return (
-								<div
-									key={invoicePayment.id}
-									className="rounded-lg border p-3"
-								>
+								<div key={invoicePayment.id} className="rounded-lg border p-3">
 									<div className="flex items-start gap-3">
 										<div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
 											<CreditCard className="h-4 w-4 text-green-600" />
 										</div>
 										<div className="flex-1 space-y-1">
 											<div className="flex items-center justify-between">
-												<span className="font-medium text-sm">
+												<span className="text-sm font-medium">
 													{formatCurrency(invoicePayment.amount_applied)}
 												</span>
 												<span
@@ -86,8 +78,7 @@ export function InvoicePaymentsWidget({
 											{payment.payment_method && (
 												<p className="text-muted-foreground text-xs">
 													{payment.payment_method}
-													{payment.card_last4 &&
-														` ending in ${payment.card_last4}`}
+													{payment.card_last4 && ` ending in ${payment.card_last4}`}
 												</p>
 											)}
 											<p className="text-muted-foreground text-xs">

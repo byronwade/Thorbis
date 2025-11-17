@@ -5,13 +5,7 @@
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export async function JobStatusData() {
 	// Future: Fetch real job status updates
@@ -75,27 +69,20 @@ export async function JobStatusData() {
 			<Card className="col-span-4">
 				<CardHeader>
 					<CardTitle>Job Status Updates</CardTitle>
-					<CardDescription>
-						Real-time job status and progress tracking
-					</CardDescription>
+					<CardDescription>Real-time job status and progress tracking</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						{sampleJobs.map((job, index) => (
-							<div
-								className="flex items-center gap-4 rounded-lg border p-4"
-								key={index}
-							>
-								<div className="flex size-12 items-center justify-center rounded-full bg-accent">
-									<span className="font-medium text-sm">{job.jobId}</span>
+							<div className="flex items-center gap-4 rounded-lg border p-4" key={index}>
+								<div className="bg-accent flex size-12 items-center justify-center rounded-full">
+									<span className="text-sm font-medium">{job.jobId}</span>
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center gap-2">
-										<p className="font-medium text-sm leading-none">
-											{job.customer}
-										</p>
+										<p className="text-sm leading-none font-medium">{job.customer}</p>
 										<span
-											className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
+											className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
 												job.status === "In Progress"
 													? "bg-blue-100 text-blue-800"
 													: job.status === "Completed"
@@ -112,22 +99,18 @@ export async function JobStatusData() {
 										{job.service} • {job.technician}
 									</p>
 									<div className="flex items-center gap-2">
-										<div className="h-2 flex-1 rounded-full bg-muted">
+										<div className="bg-muted h-2 flex-1 rounded-full">
 											<div
-												className="h-2 rounded-full bg-primary"
+												className="bg-primary h-2 rounded-full"
 												style={{ width: job.progress }}
 											/>
 										</div>
-										<span className="text-muted-foreground text-xs">
-											{job.progress}
-										</span>
+										<span className="text-muted-foreground text-xs">{job.progress}</span>
 									</div>
 								</div>
 								<div className="text-right">
-									<p className="font-medium text-sm">{job.lastUpdate}</p>
-									<p className="text-muted-foreground text-xs">
-										ETA: {job.eta}
-									</p>
+									<p className="text-sm font-medium">{job.lastUpdate}</p>
+									<p className="text-muted-foreground text-xs">ETA: {job.eta}</p>
 								</div>
 							</div>
 						))}
@@ -138,69 +121,57 @@ export async function JobStatusData() {
 			<Card className="col-span-3">
 				<CardHeader>
 					<CardTitle>Status Analytics</CardTitle>
-					<CardDescription>
-						Job completion and performance metrics
-					</CardDescription>
+					<CardDescription>Job completion and performance metrics</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Completion Rate</p>
+								<p className="text-sm font-medium">Completion Rate</p>
 								<p className="text-muted-foreground text-xs">This week</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">94%</p>
-								<p className="text-muted-foreground text-xs">
-									+2% from last week
-								</p>
+								<p className="text-sm font-bold">94%</p>
+								<p className="text-muted-foreground text-xs">+2% from last week</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Average Duration</p>
+								<p className="text-sm font-medium">Average Duration</p>
 								<p className="text-muted-foreground text-xs">Per job</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">2.3h</p>
-								<p className="text-muted-foreground text-xs">
-									-0.2h from last month
-								</p>
+								<p className="text-sm font-bold">2.3h</p>
+								<p className="text-muted-foreground text-xs">-0.2h from last month</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">On-Time Rate</p>
-								<p className="text-muted-foreground text-xs">
-									Scheduled vs actual
-								</p>
+								<p className="text-sm font-medium">On-Time Rate</p>
+								<p className="text-muted-foreground text-xs">Scheduled vs actual</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">89%</p>
-								<p className="text-muted-foreground text-xs">
-									+3% from last month
-								</p>
+								<p className="text-sm font-bold">89%</p>
+								<p className="text-muted-foreground text-xs">+3% from last month</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Status Updates</p>
+								<p className="text-sm font-medium">Status Updates</p>
 								<p className="text-muted-foreground text-xs">Per job average</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">3.2</p>
-								<p className="text-muted-foreground text-xs">
-									+0.3 from last month
-								</p>
+								<p className="text-sm font-bold">3.2</p>
+								<p className="text-muted-foreground text-xs">+0.3 from last month</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Customer Satisfaction</p>
+								<p className="text-sm font-medium">Customer Satisfaction</p>
 								<p className="text-muted-foreground text-xs">Based on status</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">4.8</p>
+								<p className="text-sm font-bold">4.8</p>
 								<p className="text-muted-foreground text-xs">out of 5.0</p>
 							</div>
 						</div>

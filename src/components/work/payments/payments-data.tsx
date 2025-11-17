@@ -28,10 +28,12 @@ export async function UpaymentsData() {
 	// Fetch payments from payments table
 	const { data: paymentsRaw, error } = await supabase
 		.from("payments")
-		.select(`
+		.select(
+			`
       *,
       customers!customer_id(first_name, last_name, display_name)
-    `)
+    `
+		)
 		.eq("company_id", activeCompanyId)
 		.order("processed_at", { ascending: false })
 		.order("created_at", { ascending: false })
@@ -39,10 +41,7 @@ export async function UpaymentsData() {
 
 	if (error) {
 		const errorMessage =
-			error.message ||
-			error.hint ||
-			JSON.stringify(error) ||
-			"Unknown database error";
+			error.message || error.hint || JSON.stringify(error) || "Unknown database error";
 		throw new Error(`Failed to load payments: ${errorMessage}`);
 	}
 
@@ -56,9 +55,7 @@ export async function UpaymentsData() {
 		processed_at: payment.processed_at ? new Date(payment.processed_at) : null,
 		created_at: new Date(payment.created_at),
 		updated_at: new Date(payment.updated_at),
-		customer: Array.isArray(payment.customers)
-			? payment.customers[0]
-			: payment.customers,
+		customer: Array.isArray(payment.customers) ? payment.customers[0] : payment.customers,
 		invoice_id: payment.invoice_id,
 		job_id: payment.job_id,
 		customer_id: payment.customer_id,

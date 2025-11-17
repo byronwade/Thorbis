@@ -8,13 +8,7 @@ import { CheckCircle } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
 	title: "Payment Successful - Thorbis",
@@ -40,9 +34,7 @@ export default async function PaymentSuccessPage({ params }: PageProps) {
 								<CheckCircle className="h-12 w-12 text-green-600" />
 							</div>
 							<div>
-								<CardTitle className="text-2xl text-green-900">
-									Payment Successful!
-								</CardTitle>
+								<CardTitle className="text-2xl text-green-900">Payment Successful!</CardTitle>
 								<CardDescription className="mt-2 text-green-700">
 									Your payment has been processed successfully.
 								</CardDescription>
@@ -50,13 +42,10 @@ export default async function PaymentSuccessPage({ params }: PageProps) {
 						</div>
 					</CardHeader>
 					<CardContent className="space-y-4 text-center">
-						<p className="text-green-800 text-sm">
-							You will receive a confirmation email shortly with the payment
-							details.
+						<p className="text-sm text-green-800">
+							You will receive a confirmation email shortly with the payment details.
 						</p>
-						<p className="text-green-800 text-sm">
-							Thank you for your business!
-						</p>
+						<p className="text-sm text-green-800">Thank you for your business!</p>
 						<div className="pt-4">
 							<Button asChild className="bg-white" variant="outline">
 								<Link href="/">Return to Home</Link>

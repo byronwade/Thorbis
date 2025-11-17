@@ -16,17 +16,13 @@ const __dirname = dirname(__filename);
 // Load environment variables
 config({ path: join(__dirname, "../.env.local") });
 
-const supabaseUrl =
-	process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseKey =
-	process.env.SUPABASE_SERVICE_ROLE_KEY ||
-	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+	process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!(supabaseUrl && supabaseKey)) {
 	console.error("❌ Missing Supabase credentials");
-	console.error(
-		"Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY",
-	);
+	console.error("Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
 	process.exit(1);
 }
 
@@ -72,9 +68,7 @@ NOTIFY pgrst, 'reload schema';
 try {
 	console.log("Executing SQL migration...");
 
-	const { error } = await supabase
-		.rpc("exec_sql", { sql_string: sql })
-		.single();
+	const { error } = await supabase.rpc("exec_sql", { sql_string: sql }).single();
 
 	if (error) {
 		// Try alternative method - using REST API directly
@@ -91,9 +85,7 @@ try {
 		});
 
 		if (!response.ok) {
-			throw new Error(
-				`HTTP error! status: ${response.status} - ${await response.text()}`,
-			);
+			throw new Error(`HTTP error! status: ${response.status} - ${await response.text()}`);
 		}
 
 		console.log("✅ Migration completed successfully!");
@@ -110,8 +102,6 @@ try {
 } catch (err) {
 	console.error("❌ Migration failed:", err.message);
 	console.error("\n📋 Please run the SQL manually in Supabase Dashboard:");
-	console.error(
-		"   SQL Editor → Paste contents of fix_customer_relationships.sql → Run",
-	);
+	console.error("   SQL Editor → Paste contents of fix_customer_relationships.sql → Run");
 	process.exit(1);
 }

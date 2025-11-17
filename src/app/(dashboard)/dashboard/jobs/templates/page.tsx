@@ -26,10 +26,9 @@ export default function JobTemplatesPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Job Templates</h1>
+				<h1 className="text-3xl font-bold tracking-tight">Job Templates</h1>
 				<p className="text-muted-foreground">
-					Manage job templates, service packages, and standardized work
-					procedures
+					Manage job templates, service packages, and standardized work procedures
 				</p>
 			</div>
 

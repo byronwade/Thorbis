@@ -36,27 +36,22 @@ export function InvoiceCommunicationsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: communications, isLoading, error } =
-					useInvoiceCommunications(
-						invoiceId,
-						customerId,
-						jobId,
-						companyId,
-						isVisible,
-					);
+				const {
+					data: communications,
+					isLoading,
+					error,
+				} = useInvoiceCommunications(invoiceId, customerId, jobId, companyId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load communications
 						</div>
 					);
 				if (!communications || communications.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No communications found
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No communications found</div>
 					);
 
 				const getCommIcon = (type: string) => {
@@ -86,10 +81,7 @@ export function InvoiceCommunicationsWidget({
 				return (
 					<div className="space-y-3">
 						{communications.slice(0, 10).map((comm) => (
-							<div
-								key={comm.id}
-								className="rounded-lg border p-3"
-							>
+							<div key={comm.id} className="rounded-lg border p-3">
 								<div className="flex items-start gap-3">
 									<div
 										className={`mt-0.5 flex h-8 w-8 items-center justify-center rounded-full ${getCommColor(comm.type)}`}
@@ -98,20 +90,16 @@ export function InvoiceCommunicationsWidget({
 									</div>
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center justify-between">
-											<span className="font-medium text-sm capitalize">
+											<span className="text-sm font-medium capitalize">
 												{comm.type || "Communication"}
 											</span>
 											<span className="text-muted-foreground text-xs">
 												{formatDate(comm.created_at)}
 											</span>
 										</div>
-										{comm.subject && (
-											<p className="font-medium text-sm">{comm.subject}</p>
-										)}
+										{comm.subject && <p className="text-sm font-medium">{comm.subject}</p>}
 										{comm.message && (
-											<p className="text-muted-foreground text-sm line-clamp-2">
-												{comm.message}
-											</p>
+											<p className="text-muted-foreground line-clamp-2 text-sm">{comm.message}</p>
 										)}
 										{comm.customer && (
 											<p className="text-muted-foreground text-xs">

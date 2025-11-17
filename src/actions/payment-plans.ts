@@ -13,11 +13,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -62,16 +58,11 @@ const recordPaymentSchema = z.object({
 /**
  * Create payment plan
  */
-export async function createPaymentPlan(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createPaymentPlan(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -86,11 +77,7 @@ export async function createPaymentPlan(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const data = createPaymentPlanSchema.parse({
@@ -101,10 +88,7 @@ export async function createPaymentPlan(
 				? Number.parseFloat(formData.get("downPaymentAmount") as string)
 				: 0,
 			paymentFrequency: formData.get("paymentFrequency") as any,
-			numberOfPayments: Number.parseInt(
-				formData.get("numberOfPayments") as string,
-				10,
-			),
+			numberOfPayments: Number.parseInt(formData.get("numberOfPayments") as string, 10),
 			startDate: formData.get("startDate") as string,
 			hasInterest: formData.get("hasInterest") === "true",
 			interestRate: formData.get("interestRate")
@@ -113,9 +97,7 @@ export async function createPaymentPlan(
 			setupFee: formData.get("setupFee")
 				? Number.parseFloat(formData.get("setupFee") as string)
 				: 0,
-			lateFee: formData.get("lateFee")
-				? Number.parseFloat(formData.get("lateFee") as string)
-				: 0,
+			lateFee: formData.get("lateFee") ? Number.parseFloat(formData.get("lateFee") as string) : 0,
 			gracePeriodDays: formData.get("gracePeriodDays")
 				? Number.parseInt(formData.get("gracePeriodDays") as string, 10)
 				: 0,
@@ -135,11 +117,7 @@ export async function createPaymentPlan(
 		assertExists(customer, "Customer");
 
 		if (customer.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("customer"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("customer"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Calculate financed amount
@@ -157,24 +135,16 @@ export async function createPaymentPlan(
 		const finalPaymentDate = new Date(firstPaymentDate);
 		switch (data.paymentFrequency) {
 			case "weekly":
-				finalPaymentDate.setDate(
-					finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 7,
-				);
+				finalPaymentDate.setDate(finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 7);
 				break;
 			case "bi_weekly":
-				finalPaymentDate.setDate(
-					finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 14,
-				);
+				finalPaymentDate.setDate(finalPaymentDate.getDate() + (data.numberOfPayments - 1) * 14);
 				break;
 			case "monthly":
-				finalPaymentDate.setMonth(
-					finalPaymentDate.getMonth() + (data.numberOfPayments - 1),
-				);
+				finalPaymentDate.setMonth(finalPaymentDate.getMonth() + (data.numberOfPayments - 1));
 				break;
 			case "quarterly":
-				finalPaymentDate.setMonth(
-					finalPaymentDate.getMonth() + (data.numberOfPayments - 1) * 3,
-				);
+				finalPaymentDate.setMonth(finalPaymentDate.getMonth() + (data.numberOfPayments - 1) * 3);
 				break;
 		}
 
@@ -187,8 +157,7 @@ export async function createPaymentPlan(
 				invoice_id: data.invoiceId,
 				plan_number: planNumber,
 				plan_name:
-					(formData.get("planName") as string) ||
-					`Payment Plan for ${data.customerId.slice(0, 8)}`,
+					(formData.get("planName") as string) || `Payment Plan for ${data.customerId.slice(0, 8)}`,
 				total_amount: Math.round(data.totalAmount * 100), // Convert to cents
 				down_payment_amount: Math.round(data.downPaymentAmount * 100),
 				financed_amount: Math.round(financedAmount * 100),
@@ -216,7 +185,7 @@ export async function createPaymentPlan(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create payment plan"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -256,7 +225,7 @@ async function createPaymentSchedule(
 		paymentAmount: number;
 		firstPaymentDate: Date;
 		frequency: string;
-	},
+	}
 ) {
 	const supabase = await createClient();
 	if (!supabase) {
@@ -302,16 +271,11 @@ async function createPaymentSchedule(
 /**
  * Record payment against schedule
  */
-export async function recordScheduledPayment(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function recordScheduledPayment(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -339,7 +303,7 @@ export async function recordScheduledPayment(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("record payment"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -370,8 +334,7 @@ export async function recordScheduledPayment(
 						amount_remaining: Math.max(0, newAmountRemaining),
 						last_payment_date: new Date().toISOString().split("T")[0],
 						status: newAmountRemaining <= 0 ? "completed" : "active",
-						completed_at:
-							newAmountRemaining <= 0 ? new Date().toISOString() : null,
+						completed_at: newAmountRemaining <= 0 ? new Date().toISOString() : null,
 					})
 					.eq("id", schedule.payment_plan_id);
 
@@ -401,16 +364,11 @@ export async function recordScheduledPayment(
 /**
  * Get payment plan with schedules
  */
-export async function getPaymentPlan(
-	planId: string,
-): Promise<ActionResult<any>> {
+export async function getPaymentPlan(planId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -425,21 +383,19 @@ export async function getPaymentPlan(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const { data: paymentPlan, error } = await supabase
 			.from("payment_plans")
-			.select(`
+			.select(
+				`
         *,
         customer:customers(*),
         invoice:invoices(*),
         schedules:payment_plan_schedules(*)
-      `)
+      `
+			)
 			.eq("id", planId)
 			.eq("company_id", teamMember.company_id)
 			.single();
@@ -448,7 +404,7 @@ export async function getPaymentPlan(
 			throw new ActionError(
 				ERROR_MESSAGES.notFound("Payment plan"),
 				ERROR_CODES.DB_RECORD_NOT_FOUND,
-				404,
+				404
 			);
 		}
 
@@ -459,16 +415,11 @@ export async function getPaymentPlan(
 /**
  * Get upcoming payments (across all payment plans)
  */
-export async function getUpcomingPayments(
-	daysAhead = 30,
-): Promise<ActionResult<any[]>> {
+export async function getUpcomingPayments(daysAhead = 30): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -483,11 +434,7 @@ export async function getUpcomingPayments(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const endDate = new Date();
@@ -495,13 +442,15 @@ export async function getUpcomingPayments(
 
 		const { data: upcomingPayments, error } = await supabase
 			.from("payment_plan_schedules")
-			.select(`
+			.select(
+				`
         *,
         payment_plan:payment_plans(
           *,
           customer:customers(first_name, last_name, email, phone)
         )
-      `)
+      `
+			)
 			.in("status", ["pending", "late"])
 			.lte("due_date", endDate.toISOString().split("T")[0])
 			.order("due_date", { ascending: true });
@@ -509,7 +458,7 @@ export async function getUpcomingPayments(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch upcoming payments"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -528,16 +477,11 @@ export async function getUpcomingPayments(
 /**
  * Apply late fee to overdue payment
  */
-export async function applyLateFee(
-	scheduleId: string,
-): Promise<ActionResult<void>> {
+export async function applyLateFee(scheduleId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -548,10 +492,12 @@ export async function applyLateFee(
 		// Get schedule with payment plan
 		const { data: schedule } = await supabase
 			.from("payment_plan_schedules")
-			.select(`
+			.select(
+				`
         *,
         payment_plan:payment_plans(late_fee, company_id)
-      `)
+      `
+			)
 			.eq("id", scheduleId)
 			.single();
 
@@ -563,10 +509,7 @@ export async function applyLateFee(
 
 		// Check if already late fee applied
 		if (schedule.late_fee_applied > 0) {
-			throw new ActionError(
-				"Late fee already applied",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+			throw new ActionError("Late fee already applied", ERROR_CODES.OPERATION_NOT_ALLOWED);
 		}
 
 		// Apply late fee
@@ -583,7 +526,7 @@ export async function applyLateFee(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("apply late fee"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -609,15 +552,12 @@ export async function applyLateFee(
  */
 export async function cancelPaymentPlan(
 	planId: string,
-	reason: string,
+	reason: string
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -632,11 +572,7 @@ export async function cancelPaymentPlan(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify plan belongs to company
@@ -652,7 +588,7 @@ export async function cancelPaymentPlan(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("payment plan"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -669,7 +605,7 @@ export async function cancelPaymentPlan(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("cancel payment plan"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

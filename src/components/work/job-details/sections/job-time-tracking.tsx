@@ -42,10 +42,7 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 		});
 	};
 
-	const calculateDuration = (
-		startTime: string | null,
-		endTime: string | null,
-	) => {
+	const calculateDuration = (startTime: string | null, endTime: string | null) => {
 		if (!(startTime && endTime)) {
 			return "—";
 		}
@@ -60,11 +57,9 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 	if (timeEntries.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<Clock className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Time Entries</h3>
-				<p className="text-muted-foreground text-sm">
-					No time has been tracked for this job yet.
-				</p>
+				<Clock className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Time Entries</h3>
+				<p className="text-muted-foreground text-sm">No time has been tracked for this job yet.</p>
 			</div>
 		);
 	}
@@ -126,17 +121,17 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
+			<div className="bg-muted/50 rounded-md p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="font-medium text-sm">Total Entries</p>
+						<p className="text-sm font-medium">Total Entries</p>
 						<p className="text-muted-foreground text-xs">
 							{timeEntries.length} entry
 							{timeEntries.length !== 1 ? "ies" : ""}
 						</p>
 					</div>
 					<div className="text-right">
-						<p className="font-bold text-2xl">
+						<p className="text-2xl font-bold">
 							{timeEntries
 								.reduce((total, entry) => {
 									if (!(entry.start_time && entry.end_time)) {
@@ -144,8 +139,7 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 									}
 									const start = new Date(entry.start_time);
 									const end = new Date(entry.end_time);
-									const hours =
-										(end.getTime() - start.getTime()) / (1000 * 60 * 60);
+									const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 									return total + hours;
 								}, 0)
 								.toFixed(1)}

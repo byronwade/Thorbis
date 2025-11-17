@@ -34,7 +34,7 @@ const PAYMENT_NUMBER_REGEX = /PAY-\d{4}-(\d+)/;
  */
 async function generatePaymentNumber(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	companyId: string,
+	companyId: string
 ): Promise<string> {
 	const { data: latestPayment } = await supabase
 		.from("payments")
@@ -80,10 +80,7 @@ export async function processInvoicePayment({
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -93,16 +90,14 @@ export async function processInvoicePayment({
 			throw new ActionError(
 				"Not authenticated",
 				ERROR_CODES.AUTH_UNAUTHORIZED,
-				HTTP_STATUS_UNAUTHORIZED,
+				HTTP_STATUS_UNAUTHORIZED
 			);
 		}
 
 		// Get invoice details
 		const { data: invoice, error: invoiceError } = await supabase
 			.from("invoices")
-			.select(
-				"*, customer:customers!customer_id(*), company:companies!company_id(*)",
-			)
+			.select("*, customer:customers!customer_id(*), company:companies!company_id(*)")
 			.eq("id", invoiceId)
 			.single();
 
@@ -110,26 +105,21 @@ export async function processInvoicePayment({
 			throw new ActionError(
 				"Invoice not found",
 				ERROR_CODES.DB_RECORD_NOT_FOUND,
-				HTTP_STATUS_NOT_FOUND,
+				HTTP_STATUS_NOT_FOUND
 			);
 		}
 
 		if (invoice.balance_amount <= 0) {
-			throw new ActionError(
-				"Invoice is already paid",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
-			);
+			throw new ActionError("Invoice is already paid", ERROR_CODES.OPERATION_NOT_ALLOWED);
 		}
 
 		// Determine payment amount
-		const paymentAmount = amount
-			? Math.round(amount * CENTS_PER_DOLLAR)
-			: invoice.balance_amount;
+		const paymentAmount = amount ? Math.round(amount * CENTS_PER_DOLLAR) : invoice.balance_amount;
 
 		if (paymentAmount > invoice.balance_amount) {
 			throw new ActionError(
 				"Payment amount exceeds invoice balance",
-				ERROR_CODES.PAYMENT_INVALID_AMOUNT,
+				ERROR_CODES.PAYMENT_INVALID_AMOUNT
 			);
 		}
 
@@ -144,20 +134,17 @@ export async function processInvoicePayment({
 		if (!bankAccounts || bankAccounts.length === 0) {
 			throw new ActionError(
 				"Bank account required. Please set up a bank account in Settings → Finance → Bank Accounts before collecting payments.",
-				ERROR_CODES.OPERATION_NOT_ALLOWED,
+				ERROR_CODES.OPERATION_NOT_ALLOWED
 			);
 		}
 
 		// Check trust score and payment limits
-		const trustCheck = await calculatePaymentTrustScore(
-			invoice.company_id,
-			paymentAmount,
-		);
+		const trustCheck = await calculatePaymentTrustScore(invoice.company_id, paymentAmount);
 
 		if (!trustCheck.allowed) {
 			throw new ActionError(
 				trustCheck.reason || "Payment not allowed based on trust score",
-				ERROR_CODES.PAYMENT_INVALID_AMOUNT,
+				ERROR_CODES.PAYMENT_INVALID_AMOUNT
 			);
 		}
 
@@ -179,7 +166,7 @@ export async function processInvoicePayment({
 		if (!processor) {
 			throw new ActionError(
 				"No payment processor configured. Please configure a payment processor in settings.",
-				ERROR_CODES.PAYMENT_INVALID_AMOUNT,
+				ERROR_CODES.PAYMENT_INVALID_AMOUNT
 			);
 		}
 
@@ -194,15 +181,11 @@ export async function processInvoicePayment({
 
 		if (!paymentResponse.success) {
 			// Update trust score (failed payment)
-			await updateTrustScoreAfterPayment(
-				invoice.company_id,
-				false,
-				paymentAmount,
-			);
+			await updateTrustScoreAfterPayment(invoice.company_id, false, paymentAmount);
 
 			throw new ActionError(
 				paymentResponse.error || "Payment processing failed",
-				ERROR_CODES.PAYMENT_FAILED,
+				ERROR_CODES.PAYMENT_FAILED
 			);
 		}
 
@@ -216,10 +199,7 @@ export async function processInvoicePayment({
 		});
 
 		// Generate payment number
-		const paymentNumber = await generatePaymentNumber(
-			supabase,
-			invoice.company_id,
-		);
+		const paymentNumber = await generatePaymentNumber(supabase, invoice.company_id);
 
 		const paymentRecord = await createPayment(
 			buildPaymentInsertPayload({
@@ -230,13 +210,13 @@ export async function processInvoicePayment({
 				channel,
 				paymentResponse,
 				processor,
-			}),
+			})
 		);
 
 		if (!paymentRecord.success) {
 			throw new ActionError(
 				paymentRecord.error || "Failed to create payment record",
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -257,11 +237,7 @@ export async function processInvoicePayment({
 				.eq("id", invoiceId);
 
 			// Update trust score (successful payment)
-			await updateTrustScoreAfterPayment(
-				invoice.company_id,
-				true,
-				paymentAmount,
-			);
+			await updateTrustScoreAfterPayment(invoice.company_id, true, paymentAmount);
 		}
 
 		revalidatePath("/dashboard/work/invoices");
@@ -289,11 +265,8 @@ type BuildPaymentRequestOptions = {
 	channel: "online" | "card_present" | "tap_to_pay" | "ach";
 };
 
-function buildProcessPaymentRequest(
-	options: BuildPaymentRequestOptions,
-): ProcessPaymentRequest {
-	const { invoice, invoiceId, paymentAmount, paymentMethodId, channel } =
-		options;
+function buildProcessPaymentRequest(options: BuildPaymentRequestOptions): ProcessPaymentRequest {
+	const { invoice, invoiceId, paymentAmount, paymentMethodId, channel } = options;
 	const descriptionSuffix = invoice.title ? ` - ${invoice.title}` : "";
 	const description = `Invoice ${invoice.invoice_number}${descriptionSuffix}`;
 
@@ -326,26 +299,13 @@ type RecordProcessorTransactionOptions = {
 	paymentAmount: number;
 };
 
-async function recordProcessorTransaction(
-	options: RecordProcessorTransactionOptions,
-) {
-	const {
-		supabase,
-		processor,
-		companyId,
-		paymentResponse,
-		channel,
-		paymentAmount,
-	} = options;
+async function recordProcessorTransaction(options: RecordProcessorTransactionOptions) {
+	const { supabase, processor, companyId, paymentResponse, channel, paymentAmount } = options;
 	await supabase.from("payment_processor_transactions").insert({
 		company_id: companyId,
-		processor_type: processor.constructor.name
-			.toLowerCase()
-			.replace("processor", ""),
+		processor_type: processor.constructor.name.toLowerCase().replace("processor", ""),
 		processor_transaction_id:
-			paymentResponse.processorTransactionId ||
-			paymentResponse.transactionId ||
-			"",
+			paymentResponse.processorTransactionId || paymentResponse.transactionId || "",
 		channel,
 		amount: paymentAmount,
 		currency: "USD",
@@ -374,9 +334,7 @@ type PaymentInsertParams = {
 	processor: { constructor: { name: string } };
 };
 
-function resolvePaymentMethod(
-	channel: "online" | "card_present" | "tap_to_pay" | "ach",
-): string {
+function resolvePaymentMethod(channel: "online" | "card_present" | "tap_to_pay" | "ach"): string {
 	if (channel === "ach") {
 		return "ach";
 	}
@@ -384,15 +342,8 @@ function resolvePaymentMethod(
 }
 
 function buildPaymentInsertPayload(params: PaymentInsertParams) {
-	const {
-		invoice,
-		invoiceId,
-		paymentNumber,
-		paymentAmount,
-		channel,
-		paymentResponse,
-		processor,
-	} = params;
+	const { invoice, invoiceId, paymentNumber, paymentAmount, channel, paymentResponse, processor } =
+		params;
 
 	return {
 		company_id: invoice.company_id,
@@ -404,13 +355,9 @@ function buildPaymentInsertPayload(params: PaymentInsertParams) {
 		payment_method: resolvePaymentMethod(channel),
 		payment_type: "payment",
 		status: paymentResponse.status === "succeeded" ? "completed" : "processing",
-		processor_name: processor.constructor.name
-			.toLowerCase()
-			.replace("processor", ""),
+		processor_name: processor.constructor.name.toLowerCase().replace("processor", ""),
 		processor_transaction_id:
-			paymentResponse.processorTransactionId ||
-			paymentResponse.transactionId ||
-			"",
+			paymentResponse.processorTransactionId || paymentResponse.transactionId || "",
 		processor_fee: 0,
 		net_amount: paymentAmount,
 		processor_metadata: paymentResponse.processorMetadata || {},
@@ -425,7 +372,7 @@ function buildPaymentInsertPayload(params: PaymentInsertParams) {
  */
 export async function checkPaymentApproval(
 	invoiceId: string,
-	amount?: number,
+	amount?: number
 ): Promise<{
 	requiresApproval: boolean;
 	reason?: string;
@@ -447,13 +394,8 @@ export async function checkPaymentApproval(
 			return { requiresApproval: true, reason: "Invoice not found" };
 		}
 
-		const paymentAmount = amount
-			? Math.round(amount * CENTS_PER_DOLLAR)
-			: invoice.balance_amount;
-		const trustCheck = await calculatePaymentTrustScore(
-			invoice.company_id,
-			paymentAmount,
-		);
+		const paymentAmount = amount ? Math.round(amount * CENTS_PER_DOLLAR) : invoice.balance_amount;
+		const trustCheck = await calculatePaymentTrustScore(invoice.company_id, paymentAmount);
 
 		return {
 			requiresApproval: trustCheck.requiresApproval,
@@ -471,9 +413,7 @@ export async function checkPaymentApproval(
 /**
  * Get payment processor status for an invoice
  */
-export async function getInvoicePaymentProcessorStatus(
-	invoiceId: string,
-): Promise<{
+export async function getInvoicePaymentProcessorStatus(invoiceId: string): Promise<{
 	success: boolean;
 	error?: string;
 	processor?: string;
@@ -506,10 +446,7 @@ export async function getInvoicePaymentProcessorStatus(
 			.limit(1);
 
 		const processor = processors?.[0];
-		const trustCheck = await calculatePaymentTrustScore(
-			invoice.company_id,
-			invoice.balance_amount,
-		);
+		const trustCheck = await calculatePaymentTrustScore(invoice.company_id, invoice.balance_amount);
 
 		return {
 			success: true,
@@ -538,7 +475,7 @@ export async function getInvoicePaymentProcessorStatus(
  * @returns Promise<{ success: boolean; error?: string }>
  */
 export async function removePaymentFromInvoice(
-	invoicePaymentId: string,
+	invoicePaymentId: string
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -598,10 +535,7 @@ export async function removePaymentFromInvoice(
 			.eq("invoice_id", invoice_id);
 
 		const newPaidAmount = remainingPayments
-			? remainingPayments.reduce(
-					(sum, payment) => sum + payment.amount_applied,
-					0,
-				)
+			? remainingPayments.reduce((sum, payment) => sum + payment.amount_applied, 0)
 			: Math.max(0, invoice.paid_amount - amount_applied);
 
 		// Calculate new balance
@@ -647,10 +581,7 @@ export async function removePaymentFromInvoice(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to remove payment from invoice",
+			error: error instanceof Error ? error.message : "Failed to remove payment from invoice",
 		};
 	}
 }

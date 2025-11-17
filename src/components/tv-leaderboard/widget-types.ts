@@ -15,14 +15,7 @@ export type WidgetType =
 	| "performance-scale"
 	| "company-randomizer";
 
-export type WidgetSize =
-	| "1x1"
-	| "2x2"
-	| "3x3"
-	| "full"
-	| "small"
-	| "medium"
-	| "large";
+export type WidgetSize = "1x1" | "2x2" | "3x3" | "full" | "small" | "medium" | "large";
 
 export type Widget = {
 	id: string;

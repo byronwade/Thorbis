@@ -9,11 +9,7 @@
  */
 
 import { TrendingDown, TrendingUp, Trophy } from "lucide-react";
-import {
-	formatCurrency,
-	formatNumber,
-	getTrendClass,
-} from "@/lib/utils/responsive-utils";
+import { formatCurrency, formatNumber, getTrendClass } from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveIcon,
@@ -56,7 +52,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 	const { technicians } = data;
 
 	return (
-		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-primary/10 to-primary/5">
+		<ResponsiveWidgetWrapper className="from-primary/10 to-primary/5 bg-gradient-to-br">
 			<ResponsiveContent className="flex flex-col gap-3">
 				{/* Header - adapts across stages */}
 				<div className="flex items-center gap-2">
@@ -82,7 +78,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 
 							return (
 								<div
-									className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-2"
+									className="border-primary/10 bg-primary/5 flex items-center gap-2 rounded-lg border p-2"
 									key={tech.id}
 								>
 									{/* Rank + Trophy */}
@@ -94,16 +90,13 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 									</div>
 
 									{/* Avatar */}
-									<div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/20 font-bold text-primary text-xs">
+									<div className="bg-primary/20 text-primary flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
 										{tech.avatar}
 									</div>
 
 									{/* Name + Trend */}
 									<div className="min-w-0 flex-1">
-										<ResponsiveText
-											className="truncate font-semibold"
-											variant="body"
-										>
+										<ResponsiveText className="truncate font-semibold" variant="body">
 											{tech.name}
 										</ResponsiveText>
 										<span
@@ -120,12 +113,8 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 										<ResponsiveText className="font-bold" variant="body">
 											{formatCurrency(tech.stats.revenue, "comfortable")}
 										</ResponsiveText>
-										<ResponsiveText
-											className="text-muted-foreground"
-											variant="caption"
-										>
-											{formatNumber(tech.stats.jobsCompleted, "comfortable")}{" "}
-											jobs
+										<ResponsiveText className="text-muted-foreground" variant="caption">
+											{formatNumber(tech.stats.jobsCompleted, "comfortable")} jobs
 										</ResponsiveText>
 									</div>
 								</div>
@@ -139,7 +128,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 					<div className="space-y-2">
 						{technicians.slice(0, 3).map((tech, idx) => (
 							<div
-								className="flex items-center gap-2 rounded-lg border border-primary/10 bg-primary/5 p-1.5"
+								className="border-primary/10 bg-primary/5 flex items-center gap-2 rounded-lg border p-1.5"
 								key={tech.id}
 							>
 								{/* Rank */}
@@ -151,16 +140,13 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 								</div>
 
 								{/* Avatar */}
-								<div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 font-bold text-[10px] text-primary">
+								<div className="bg-primary/20 text-primary flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
 									{tech.avatar}
 								</div>
 
 								{/* Name */}
 								<div className="min-w-0 flex-1">
-									<ResponsiveText
-										className="truncate font-semibold"
-										variant="caption"
-									>
+									<ResponsiveText className="truncate font-semibold" variant="caption">
 										{tech.name}
 									</ResponsiveText>
 								</div>
@@ -179,12 +165,12 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 					{technicians[0] && (
 						<div className="flex flex-col items-center justify-center gap-1">
 							<div className="flex items-center gap-1">
-								<Trophy className="size-3 text-warning" />
+								<Trophy className="text-warning size-3" />
 								<ResponsiveText className="font-bold" variant="caption">
 									#1
 								</ResponsiveText>
 							</div>
-							<div className="flex size-6 items-center justify-center rounded-full bg-primary/20 font-bold text-[10px] text-primary">
+							<div className="bg-primary/20 text-primary flex size-6 items-center justify-center rounded-full text-[10px] font-bold">
 								{technicians[0].avatar}
 							</div>
 							<ResponsiveText className="font-bold" variant="body">
@@ -198,10 +184,7 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 				<ShowAt stage="tiny">
 					{technicians[0] && (
 						<div className="flex h-full items-center justify-center">
-							<ResponsiveText
-								className="font-bold text-warning"
-								variant="display"
-							>
+							<ResponsiveText className="text-warning font-bold" variant="display">
 								{formatCurrency(technicians[0].stats.revenue, "tiny")}
 							</ResponsiveText>
 						</div>

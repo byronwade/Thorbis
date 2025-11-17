@@ -5,20 +5,9 @@
  * Extracted to prevent circular dependencies.
  */
 
-export type PaymentProcessorType =
-	| "stripe"
-	| "adyen"
-	| "plaid"
-	| "profitstars"
-	| "manual";
+export type PaymentProcessorType = "stripe" | "adyen" | "plaid" | "profitstars" | "manual";
 
-export type PaymentChannel =
-	| "online"
-	| "card_present"
-	| "tap_to_pay"
-	| "ach"
-	| "wire"
-	| "check";
+export type PaymentChannel = "online" | "card_present" | "tap_to_pay" | "ach" | "wire" | "check";
 
 export type PaymentProcessorConfig = {
 	companyId: string;
@@ -69,9 +58,7 @@ export type PaymentProcessor = {
 	/**
 	 * Process a payment
 	 */
-	processPayment(
-		request: ProcessPaymentRequest,
-	): Promise<ProcessPaymentResponse>;
+	processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse>;
 
 	/**
 	 * Refund a payment

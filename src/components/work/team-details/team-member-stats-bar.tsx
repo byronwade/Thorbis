@@ -46,8 +46,7 @@ export function TeamMemberStatsBar({
 	const hoursVsAverage =
 		metrics.averageHoursPerMonth > 0
 			? (
-					((metrics.hoursThisMonth - metrics.averageHoursPerMonth) /
-						metrics.averageHoursPerMonth) *
+					((metrics.hoursThisMonth - metrics.averageHoursPerMonth) / metrics.averageHoursPerMonth) *
 					100
 				).toFixed(0)
 			: 0;
@@ -59,24 +58,19 @@ export function TeamMemberStatsBar({
 			: 0;
 
 	// Availability status
-	const availabilityStatus =
-		metrics.availableHours > 0 ? "available" : "fully booked";
+	const availabilityStatus = metrics.availableHours > 0 ? "available" : "fully booked";
 
 	const memberStats: StatCard[] = [
 		{
 			label: "Active Jobs",
 			value: metrics.activeJobsCount.toString(),
 			change: metrics.activeJobsCount > 0 ? Number(jobsChange) : undefined,
-			changeLabel:
-				metrics.activeJobsCount > 0
-					? "currently assigned"
-					: "no active assignments",
+			changeLabel: metrics.activeJobsCount > 0 ? "currently assigned" : "no active assignments",
 		},
 		{
 			label: "Hours This Month",
 			value: formatHours(metrics.hoursThisMonth),
-			change:
-				metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
+			change: metrics.averageHoursPerMonth > 0 ? Number(hoursVsAverage) : undefined,
 			changeLabel:
 				metrics.averageHoursPerMonth > 0
 					? `vs ${formatHours(metrics.averageHoursPerMonth)} avg`

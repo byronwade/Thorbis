@@ -36,25 +36,14 @@ export default function Home() {
 			>
 				{JSON.stringify(
 					createOrganizationSchema({
-						sameAs: [
-							"https://www.linkedin.com/company/thorbis",
-							"https://twitter.com/thorbis",
-						],
-					}),
+						sameAs: ["https://www.linkedin.com/company/thorbis", "https://twitter.com/thorbis"],
+					})
 				)}
 			</Script>
-			<Script
-				id="thorbis-website-schema"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="thorbis-website-schema" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(createWebsiteSchema())}
 			</Script>
-			<Script
-				id="thorbis-review-schema"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="thorbis-review-schema" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(
 					createReviewAggregateSchema({
 						item: {
@@ -64,7 +53,7 @@ export default function Home() {
 						},
 						ratingValue: 4.9,
 						reviewCount: 327,
-					}),
+					})
 				)}
 			</Script>
 			<ModernHomepage />

@@ -21,11 +21,7 @@ import { createClient } from "@/lib/supabase/server";
 const TELNYX_PUBLIC_KEY = process.env.TELNYX_PUBLIC_KEY || "";
 
 // Verify webhook signature
-function verifyWebhookSignature(
-	payload: string,
-	signature: string,
-	timestamp: string,
-): boolean {
+function verifyWebhookSignature(payload: string, signature: string, timestamp: string): boolean {
 	try {
 		// Check if signature verification is enabled
 		if (!TELNYX_PUBLIC_KEY) {
@@ -58,7 +54,7 @@ function verifyWebhookSignature(
 				key: publicKey,
 				dsaEncoding: "ieee-p1363",
 			},
-			Buffer.from(signature, "base64"),
+			Buffer.from(signature, "base64")
 		);
 
 		return isValid;
@@ -88,7 +84,7 @@ export async function POST(request: NextRequest) {
 		if (!data) {
 			return NextResponse.json(
 				{ error: "Invalid webhook structure: missing data" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -98,14 +94,14 @@ export async function POST(request: NextRequest) {
 		if (!eventType) {
 			return NextResponse.json(
 				{ error: "Invalid webhook structure: missing event_type" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
 		if (!payload) {
 			return NextResponse.json(
 				{ error: "Invalid webhook structure: missing payload" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -136,10 +132,7 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json({ received: true });
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Webhook processing failed" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
 	}
 }
 
@@ -155,15 +148,7 @@ async function handleCallInitiated(payload: any) {
 		return;
 	}
 
-	const {
-		call_control_id,
-		call_leg_id,
-		call_session_id,
-		direction,
-		from,
-		to,
-		state,
-	} = payload;
+	const { call_control_id, call_leg_id, call_session_id, direction, from, to, state } = payload;
 
 	// Create initial call log entry
 	const { error } = await supabase.from("call_logs").insert({
@@ -224,8 +209,7 @@ async function handleCallHangup(payload: any) {
 		return;
 	}
 
-	const { call_control_id, call_session_id, sip_hangup_cause, hangup_source } =
-		payload;
+	const { call_control_id, call_session_id, sip_hangup_cause, hangup_source } = payload;
 
 	// Get call start time to calculate duration
 	const { data: callLog } = await supabase

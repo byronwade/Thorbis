@@ -32,11 +32,7 @@ import {
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import {
-	horizontalListSortingStrategy,
-	SortableContext,
-	useSortable,
-} from "@dnd-kit/sortable";
+import { horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -55,10 +51,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import {
-	getColumnWidthClass,
-	renderCustomColumn,
-} from "@/lib/datatable/custom-column-renderer";
+import { getColumnWidthClass, renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
 import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 import { useDataTableColumnsStore } from "@/lib/stores/datatable-columns-store";
 
@@ -117,14 +110,9 @@ function SortableColumnHeader<T>({
 		y: number;
 	} | null>(null);
 
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = useSortable({ id: column.key });
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+		id: column.key,
+	});
 
 	const widthClass = column.width || "flex-1";
 	const shrinkClass = column.shrink ? "shrink-0" : "";
@@ -135,8 +123,7 @@ function SortableColumnHeader<T>({
 				? "justify-center text-center"
 				: "justify-start text-left";
 	const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
-	const cellBorder =
-		colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
+	const cellBorder = colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
 
 	const style: React.CSSProperties = {
 		transform: CSS.Transform.toString(transform),
@@ -294,27 +281,19 @@ export function FullWidthDataTable<T>({
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	// Column visibility and ordering from Zustand store
-	const _isColumnVisible = useDataTableColumnsStore(
-		(state) => state.isColumnVisible,
-	);
-	const getColumnOrder = useDataTableColumnsStore(
-		(state) => state.getColumnOrder,
-	);
-	const setColumnOrder = useDataTableColumnsStore(
-		(state) => state.setColumnOrder,
-	);
-	const initializeEntity = useDataTableColumnsStore(
-		(state) => state.initializeEntity,
-	);
+	const _isColumnVisible = useDataTableColumnsStore((state) => state.isColumnVisible);
+	const getColumnOrder = useDataTableColumnsStore((state) => state.getColumnOrder);
+	const setColumnOrder = useDataTableColumnsStore((state) => state.setColumnOrder);
+	const initializeEntity = useDataTableColumnsStore((state) => state.initializeEntity);
 
 	// Subscribe to column visibility state to trigger re-renders when columns are toggled
 	const columnVisibilityState = useDataTableColumnsStore((state) =>
-		entity ? state.entities[entity] : null,
+		entity ? state.entities[entity] : null
 	);
 
 	// Subscribe to column order state to trigger re-renders when columns are reordered
 	const columnOrderState = useDataTableColumnsStore((state) =>
-		entity ? state.columnOrder[entity] : null,
+		entity ? state.columnOrder[entity] : null
 	);
 
 	// Set client flag after mount to prevent hydration issues
@@ -326,7 +305,7 @@ export function FullWidthDataTable<T>({
 	const allCustomColumns = useCustomColumnsStore((state) => state.columns);
 	const customColumns = useMemo(
 		() => (entity ? allCustomColumns[entity] || [] : []),
-		[allCustomColumns, entity],
+		[allCustomColumns, entity]
 	);
 
 	// Measure toolbar height dynamically
@@ -375,7 +354,7 @@ export function FullWidthDataTable<T>({
 		if (isClient && entity && allColumns.length > 0) {
 			initializeEntity(
 				entity,
-				allColumns.map((col) => col.key),
+				allColumns.map((col) => col.key)
 			);
 		}
 		// ESLint disable: initializeEntity is a Zustand action with stable reference
@@ -437,15 +416,12 @@ export function FullWidthDataTable<T>({
 
 		// Ensure at least one column has flex-1 for intelligent spacing
 		// If no columns have flex-1, assign it to the first column without a specific width
-		const hasFlexColumn = filtered.some(
-			(col) => col.width === "flex-1" || !col.width,
-		);
+		const hasFlexColumn = filtered.some((col) => col.width === "flex-1" || !col.width);
 
 		if (!hasFlexColumn && filtered.length > 0) {
 			// Find the first column that doesn't have a fixed width or is the longest content column
 			const flexibleColumnIndex = filtered.findIndex(
-				(col) =>
-					!col.width || col.width === "flex-1" || !col.width.startsWith("w-"),
+				(col) => !col.width || col.width === "flex-1" || !col.width.startsWith("w-")
 			);
 
 			if (flexibleColumnIndex !== -1) {
@@ -466,9 +442,7 @@ export function FullWidthDataTable<T>({
 
 		// Filter by search query
 		if (searchQuery && searchFilter) {
-			filtered = filtered.filter((item) =>
-				searchFilter(item, searchQuery.toLowerCase()),
-			);
+			filtered = filtered.filter((item) => searchFilter(item, searchQuery.toLowerCase()));
 		}
 
 		// Filter archived items if showArchived is false
@@ -537,18 +511,10 @@ export function FullWidthDataTable<T>({
 		const start = (currentPage - 1) * itemsPerPage;
 		const end = start + itemsPerPage;
 		return sortedData.slice(start, end);
-	}, [
-		sortedData,
-		currentPage,
-		itemsPerPage,
-		showPagination,
-		useVirtualization,
-	]);
+	}, [sortedData, currentPage, itemsPerPage, showPagination, useVirtualization]);
 
 	// Get virtual items OUTSIDE of useMemo so it re-renders on scroll
-	const virtualItems = useVirtualization
-		? rowVirtualizer.getVirtualItems()
-		: [];
+	const virtualItems = useVirtualization ? rowVirtualizer.getVirtualItems() : [];
 
 	// Display data: either virtual items or paginated items
 	const displayData = useMemo(() => {
@@ -611,8 +577,7 @@ export function FullWidthDataTable<T>({
 		router.push(`?page=${newPage}`, { scroll: false });
 	};
 
-	const isAllSelected =
-		selectedIds.size === paginatedData.length && paginatedData.length > 0;
+	const isAllSelected = selectedIds.size === paginatedData.length && paginatedData.length > 0;
 
 	// Sort handler - click once = asc, twice = desc, third = clear
 	const handleSort = (columnKey: string) => {
@@ -645,7 +610,7 @@ export function FullWidthDataTable<T>({
 				tolerance: 5,
 			},
 		}),
-		useSensor(KeyboardSensor),
+		useSensor(KeyboardSensor)
 	);
 
 	// Track active drag column for overlay
@@ -712,14 +677,11 @@ export function FullWidthDataTable<T>({
 	};
 
 	return (
-		<div className="relative flex h-full flex-col overflow-hidden bg-background">
-			<div
-				className="momentum-scroll flex-1 overflow-auto"
-				ref={scrollContainerRef}
-			>
+		<div className="bg-background relative flex h-full flex-col overflow-hidden">
+			<div className="momentum-scroll flex-1 overflow-auto" ref={scrollContainerRef}>
 				{/* Sticky Top Toolbar */}
 				<div
-					className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-border/30 border-b bg-background px-4 py-2 sm:gap-2 sm:px-4 dark:bg-background"
+					className="border-border/30 bg-background dark:bg-background sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-2 sm:px-4"
 					ref={toolbarRef}
 				>
 					{/* Left Section - Selection & Actions */}
@@ -749,7 +711,7 @@ export function FullWidthDataTable<T>({
 						{/* Bulk Actions */}
 						{selectedIds.size > 0 && bulkActions.length > 0 && (
 							<>
-								<div className="mx-1.5 hidden h-4 w-px bg-border md:block" />
+								<div className="bg-border mx-1.5 hidden h-4 w-px md:block" />
 								<div className="flex flex-wrap items-center gap-1.5">
 									{bulkActions.map((action, index) => (
 										<Button
@@ -760,12 +722,10 @@ export function FullWidthDataTable<T>({
 											variant={action.variant || "ghost"}
 										>
 											{action.icon}
-											<span className="ml-2 hidden sm:inline">
-												{action.label}
-											</span>
+											<span className="ml-2 hidden sm:inline">{action.label}</span>
 										</Button>
 									))}
-									<span className="ml-1 font-medium text-muted-foreground text-xs">
+									<span className="text-muted-foreground ml-1 text-xs font-medium">
 										{selectedIds.size} selected
 									</span>
 								</div>
@@ -779,9 +739,9 @@ export function FullWidthDataTable<T>({
 
 						{searchFilter && (
 							<div className="relative">
-								<Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-muted-foreground transition-colors" />
+								<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
 								<Input
-									className="h-9 w-64 pl-9 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/20 md:w-96"
+									className="focus:ring-primary/20 h-9 w-64 pl-9 text-sm transition-all duration-200 focus:ring-2 md:w-96"
 									onChange={(e) => {
 										setSearchQuery(e.target.value);
 										setCurrentPage(1); // Reset to first page on search
@@ -794,7 +754,7 @@ export function FullWidthDataTable<T>({
 
 						{showPagination && !useVirtualization && (
 							<>
-								<div className="hidden h-4 w-px bg-border md:block" />
+								<div className="bg-border hidden h-4 w-px md:block" />
 								<div className="flex items-center gap-2">
 									<Button
 										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
@@ -805,10 +765,10 @@ export function FullWidthDataTable<T>({
 									>
 										<ChevronLeft className="h-4 w-4" />
 									</Button>
-									<span className="text-nowrap font-medium text-muted-foreground text-xs tabular-nums">
+									<span className="text-muted-foreground text-xs font-medium text-nowrap tabular-nums">
 										{(currentPage - 1) * itemsPerPage + 1}-
-										{Math.min(currentPage * itemsPerPage, totalCount || filteredData.length)}{" "}
-										of {(totalCount || filteredData.length).toLocaleString()}
+										{Math.min(currentPage * itemsPerPage, totalCount || filteredData.length)} of{" "}
+										{(totalCount || filteredData.length).toLocaleString()}
 									</span>
 									<Button
 										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
@@ -824,8 +784,8 @@ export function FullWidthDataTable<T>({
 						)}
 						{useVirtualization && (
 							<>
-								<div className="hidden h-4 w-px bg-border md:block" />
-								<span className="text-nowrap text-muted-foreground text-xs">
+								<div className="bg-border hidden h-4 w-px md:block" />
+								<span className="text-muted-foreground text-xs text-nowrap">
 									{filteredData.length.toLocaleString()} rows (virtualized)
 								</span>
 							</>
@@ -843,7 +803,7 @@ export function FullWidthDataTable<T>({
 							sensors={sensors}
 						>
 							<div
-								className="sticky z-20 flex items-center gap-4 border-border/30 border-b bg-muted px-4 py-2 font-semibold text-foreground text-xs sm:gap-6 sm:px-4 dark:bg-muted"
+								className="border-border/30 bg-muted text-foreground dark:bg-muted sticky z-20 flex items-center gap-4 border-b px-4 py-2 text-xs font-semibold sm:gap-6 sm:px-4"
 								style={{ top: `${toolbarHeight}px` }}
 							>
 								{/* Spacer for checkbox */}
@@ -874,7 +834,7 @@ export function FullWidthDataTable<T>({
 							<DragOverlay dropAnimation={null}>
 								{activeColumn ? (
 									<div
-										className={`flex cursor-grabbing items-center gap-1.5 overflow-hidden border border-primary/40 bg-background/95 px-2 py-2 font-medium text-foreground text-xs shadow-2xl ring-2 ring-primary/30 backdrop-blur-sm ${
+										className={`border-primary/40 bg-background/95 text-foreground ring-primary/30 flex cursor-grabbing items-center gap-1.5 overflow-hidden border px-2 py-2 text-xs font-medium shadow-2xl ring-2 backdrop-blur-sm ${
 											activeColumn.align === "right"
 												? "justify-end text-right"
 												: activeColumn.align === "center"
@@ -883,9 +843,7 @@ export function FullWidthDataTable<T>({
 										}`}
 										style={{ width: `${activeColumn.width}px` }}
 									>
-										<span className="truncate">
-											{activeColumn.column.header}
-										</span>
+										<span className="truncate">{activeColumn.column.header}</span>
 										{activeColumn.column.sortable && (
 											<ArrowUpDown className="size-3 shrink-0 opacity-50" />
 										)}
@@ -895,7 +853,7 @@ export function FullWidthDataTable<T>({
 						</DndContext>
 					) : (
 						<div
-							className="sticky z-20 flex items-center gap-4 border-border/30 border-b bg-muted px-4 py-2 font-semibold text-foreground text-xs sm:gap-6 sm:px-4 dark:bg-muted"
+							className="border-border/30 bg-muted text-foreground dark:bg-muted sticky z-20 flex items-center gap-4 border-b px-4 py-2 text-xs font-semibold sm:gap-6 sm:px-4"
 							style={{ top: `${toolbarHeight}px` }}
 						>
 							{/* Spacer for checkbox */}
@@ -911,13 +869,9 @@ export function FullWidthDataTable<T>({
 										: column.align === "center"
 											? "justify-center text-center"
 											: "justify-start text-left";
-								const hideClass = column.hideOnMobile
-									? "hidden md:flex"
-									: "flex";
+								const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
 								const cellBorder =
-									colIndex < visibleColumns.length - 1
-										? "border-r border-border/30"
-										: "";
+									colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
 
 								const isSorted = sortBy === column.key;
 
@@ -928,7 +882,7 @@ export function FullWidthDataTable<T>({
 									>
 										{column.sortable ? (
 											<button
-												className="flex items-center gap-1.5 transition-all duration-200 hover:scale-105 hover:text-foreground active:scale-100"
+												className="hover:text-foreground flex items-center gap-1.5 transition-all duration-200 hover:scale-105 active:scale-100"
 												onClick={() => handleSort(column.key)}
 												type="button"
 											>
@@ -956,15 +910,14 @@ export function FullWidthDataTable<T>({
 				{paginatedData.length === 0 ? (
 					<div className="flex min-h-[50vh] items-center justify-center px-4 py-12 md:min-h-[60vh]">
 						<div className="mx-auto w-full max-w-md space-y-4 text-center">
-							<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+							<div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
 								{emptyIcon}
 							</div>
 							<div className="space-y-2">
-								<h3 className="font-semibold text-lg">{emptyMessage}</h3>
+								<h3 className="text-lg font-semibold">{emptyMessage}</h3>
 								{searchQuery && (
 									<p className="text-muted-foreground text-sm">
-										No results found for "{searchQuery}". Try adjusting your
-										search terms.
+										No results found for "{searchQuery}". Try adjusting your search terms.
 									</p>
 								)}
 								{!searchQuery && (
@@ -972,11 +925,7 @@ export function FullWidthDataTable<T>({
 										<p className="text-muted-foreground text-sm">
 											Get started by creating your first item.
 										</p>
-										{emptyAction && (
-											<div className="flex justify-center pt-2">
-												{emptyAction}
-											</div>
-										)}
+										{emptyAction && <div className="flex justify-center pt-2">{emptyAction}</div>}
 									</>
 								)}
 							</div>
@@ -1004,23 +953,18 @@ export function FullWidthDataTable<T>({
 
 							// Excel-like styling
 							const highlightClass = highlighted
-								? getHighlightClass?.(item) ||
-									"bg-primary/30 dark:bg-primary/10"
+								? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10"
 								: "";
 							const customRowClass = getRowClassName?.(item) || "";
-							const excelRowClass = isEvenRow
-								? "bg-background"
-								: "bg-muted/30 dark:bg-muted/20";
-							const selectedClass = isSelected
-								? "bg-blue-50 dark:bg-blue-950/50"
-								: "";
+							const excelRowClass = isEvenRow ? "bg-background" : "bg-muted/30 dark:bg-muted/20";
+							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
 							const archivedClass = archived
 								? "opacity-60 pointer-events-auto cursor-not-allowed bg-muted/40 line-through"
 								: "";
 
 							return (
 								<div
-									className={`group absolute top-0 left-0 flex w-full items-center gap-4 border-border/50 border-b px-3 py-1.5 transition-all duration-150 sm:gap-6 sm:px-4 sm:py-2 ${archived ? "" : "cursor-pointer hover:bg-accent/80 dark:hover:bg-accent/60"} ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass} ${archivedClass}`}
+									className={`group border-border/50 absolute top-0 left-0 flex w-full items-center gap-4 border-b px-3 py-1.5 transition-all duration-150 sm:gap-6 sm:px-4 sm:py-2 ${archived ? "" : "hover:bg-accent/80 dark:hover:bg-accent/60 cursor-pointer"} ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass} ${archivedClass}`}
 									data-index={virtualItem.index}
 									key={`virtual-${itemId}-${virtualItem.index}`}
 									onClick={(e) => handleRowClick(item, e)}
@@ -1053,14 +997,10 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile
-											? "hidden md:flex"
-											: "flex";
+										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
 										// Excel-like cell borders
 										const cellBorder =
-											colIndex < visibleColumns.length - 1
-												? "border-r border-border/30"
-												: "";
+											colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
 
 										return (
 											<div
@@ -1078,7 +1018,7 @@ export function FullWidthDataTable<T>({
 						{/* End of Data Message - Virtualization Mode */}
 						{sortedData.length > 10 && (
 							<div
-								className="flex flex-col items-center justify-center gap-3 border-border/50 border-t-2 bg-gradient-to-b from-muted/30 to-muted/50 py-8 text-center backdrop-blur-sm"
+								className="border-border/50 from-muted/30 to-muted/50 flex flex-col items-center justify-center gap-3 border-t-2 bg-gradient-to-b py-8 text-center backdrop-blur-sm"
 								style={{
 									position: "absolute",
 									top: `${rowVirtualizer.getTotalSize()}px`,
@@ -1089,9 +1029,7 @@ export function FullWidthDataTable<T>({
 							>
 								<div className="flex items-center gap-2">
 									<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-									<span className="font-semibold text-foreground text-lg">
-										All Data Loaded
-									</span>
+									<span className="text-foreground text-lg font-semibold">All Data Loaded</span>
 								</div>
 								<p className="text-muted-foreground text-sm">
 									Showing {(totalCount || filteredData.length).toLocaleString()} total rows
@@ -1110,18 +1048,15 @@ export function FullWidthDataTable<T>({
 
 							// Modern clean styling
 							const highlightClass = highlighted
-								? getHighlightClass?.(item) ||
-									"bg-primary/30 dark:bg-primary/10"
+								? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10"
 								: "";
 							const customRowClass = getRowClassName?.(item) || "";
 							const excelRowClass = isEvenRow ? "bg-card" : "bg-card/70";
-							const selectedClass = isSelected
-								? "bg-blue-50 dark:bg-blue-950/50"
-								: "";
+							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
 
 							return (
 								<div
-									className={`group hover:-translate-y-[1px] flex cursor-pointer items-center gap-4 border-border/30 border-b px-4 py-2.5 transition-all duration-200 hover:bg-muted/25 hover:shadow-sm active:translate-y-0 sm:gap-6 sm:px-4 dark:hover:bg-muted/20 ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass}`}
+									className={`group border-border/30 hover:bg-muted/25 dark:hover:bg-muted/20 flex cursor-pointer items-center gap-4 border-b px-4 py-2.5 transition-all duration-200 hover:-translate-y-[1px] hover:shadow-sm active:translate-y-0 sm:gap-6 sm:px-4 ${excelRowClass} ${highlightClass} ${selectedClass} ${customRowClass}`}
 									key={itemId}
 									onClick={(e) => handleRowClick(item, e)}
 								>
@@ -1149,14 +1084,10 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile
-											? "hidden md:flex"
-											: "flex";
+										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
 										// Subtle cell dividers
 										const cellBorder =
-											colIndex < visibleColumns.length - 1
-												? "border-r border-border/20"
-												: "";
+											colIndex < visibleColumns.length - 1 ? "border-r border-border/20" : "";
 
 										return (
 											<div
@@ -1173,14 +1104,12 @@ export function FullWidthDataTable<T>({
 
 						{/* End of Data Message - Pagination Mode */}
 						{filteredData.length > 10 && (
-							<div className="flex flex-col items-center justify-center gap-3 border-border/50 border-t-2 bg-gradient-to-b from-muted/30 to-muted/50 py-8 text-center backdrop-blur-sm">
+							<div className="border-border/50 from-muted/30 to-muted/50 flex flex-col items-center justify-center gap-3 border-t-2 bg-gradient-to-b py-8 text-center backdrop-blur-sm">
 								{currentPage === totalPages ? (
 									<>
 										<div className="flex items-center gap-2">
 											<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-											<span className="font-semibold text-foreground text-lg">
-												All Data Loaded
-											</span>
+											<span className="text-foreground text-lg font-semibold">All Data Loaded</span>
 										</div>
 										<p className="text-muted-foreground text-sm">
 											Page {currentPage} of {totalPages} •{" "}
@@ -1190,7 +1119,7 @@ export function FullWidthDataTable<T>({
 								) : (
 									<>
 										<div className="flex items-center gap-2">
-											<span className="font-semibold text-foreground text-lg">
+											<span className="text-foreground text-lg font-semibold">
 												Page {currentPage} of {totalPages}
 											</span>
 										</div>

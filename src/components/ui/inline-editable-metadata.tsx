@@ -37,10 +37,7 @@ type InlineEditableMetadataProps = {
 	className?: string;
 };
 
-export function InlineEditableMetadata({
-	field,
-	className,
-}: InlineEditableMetadataProps) {
+export function InlineEditableMetadata({ field, className }: InlineEditableMetadataProps) {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editValue, setEditValue] = useState(String(field.value));
 	const [isSaving, setIsSaving] = useState(false);
@@ -81,9 +78,7 @@ export function InlineEditableMetadata({
 		<div className={cn("flex items-start gap-2", className)}>
 			<div className="flex-1 space-y-0.5">
 				<div className="flex items-center gap-2">
-					{field.icon && (
-						<span className="text-muted-foreground">{field.icon}</span>
-					)}
+					{field.icon && <span className="text-muted-foreground">{field.icon}</span>}
 					<span className="text-muted-foreground text-xs">{field.label}</span>
 				</div>
 
@@ -121,7 +116,7 @@ export function InlineEditableMetadata({
 							size="sm"
 							variant="ghost"
 						>
-							<Check className="size-4 text-success" />
+							<Check className="text-success size-4" />
 						</Button>
 						<Button
 							className="h-8 w-8 p-0"
@@ -130,15 +125,13 @@ export function InlineEditableMetadata({
 							size="sm"
 							variant="ghost"
 						>
-							<X className="size-4 text-destructive" />
+							<X className="text-destructive size-4" />
 						</Button>
 					</div>
 				) : (
 					<div className="group flex items-center gap-2">
-						<span className="font-medium text-sm">
-							{field.value || (
-								<span className="text-muted-foreground italic">Not set</span>
-							)}
+						<span className="text-sm font-medium">
+							{field.value || <span className="text-muted-foreground italic">Not set</span>}
 						</span>
 						{field.editable && field.onSave && (
 							<Button

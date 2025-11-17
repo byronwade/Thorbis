@@ -10,10 +10,10 @@ export function DashboardSkeleton() {
 			{/* Stats skeleton - 4 cards */}
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				{[...new Array(4)].map((_, i) => (
-					<div className="animate-pulse rounded-lg border bg-card p-6" key={i}>
-						<div className="h-4 w-24 rounded bg-muted" />
-						<div className="mt-2 h-8 w-32 rounded bg-muted" />
-						<div className="mt-2 h-3 w-20 rounded bg-muted" />
+					<div className="bg-card animate-pulse rounded-lg border p-6" key={i}>
+						<div className="bg-muted h-4 w-24 rounded" />
+						<div className="bg-muted mt-2 h-8 w-32 rounded" />
+						<div className="bg-muted mt-2 h-3 w-20 rounded" />
 					</div>
 				))}
 			</div>
@@ -23,21 +23,21 @@ export function DashboardSkeleton() {
 				{/* Left column */}
 				<div className="space-y-6">
 					{/* Operations card */}
-					<div className="animate-pulse rounded-lg border bg-card p-6">
-						<div className="h-6 w-32 rounded bg-muted" />
+					<div className="bg-card animate-pulse rounded-lg border p-6">
+						<div className="bg-muted h-6 w-32 rounded" />
 						<div className="mt-4 space-y-3">
 							{[...new Array(5)].map((_, i) => (
-								<div className="h-16 rounded bg-muted" key={i} />
+								<div className="bg-muted h-16 rounded" key={i} />
 							))}
 						</div>
 					</div>
 
 					{/* Schedule card */}
-					<div className="animate-pulse rounded-lg border bg-card p-6">
-						<div className="h-6 w-32 rounded bg-muted" />
+					<div className="bg-card animate-pulse rounded-lg border p-6">
+						<div className="bg-muted h-6 w-32 rounded" />
 						<div className="mt-4 space-y-3">
 							{[...new Array(4)].map((_, i) => (
-								<div className="h-16 rounded bg-muted" key={i} />
+								<div className="bg-muted h-16 rounded" key={i} />
 							))}
 						</div>
 					</div>
@@ -46,21 +46,21 @@ export function DashboardSkeleton() {
 				{/* Right column */}
 				<div className="space-y-6">
 					{/* Communications card */}
-					<div className="animate-pulse rounded-lg border bg-card p-6">
-						<div className="h-6 w-32 rounded bg-muted" />
+					<div className="bg-card animate-pulse rounded-lg border p-6">
+						<div className="bg-muted h-6 w-32 rounded" />
 						<div className="mt-4 space-y-3">
 							{[...new Array(5)].map((_, i) => (
-								<div className="h-16 rounded bg-muted" key={i} />
+								<div className="bg-muted h-16 rounded" key={i} />
 							))}
 						</div>
 					</div>
 
 					{/* Financial card */}
-					<div className="animate-pulse rounded-lg border bg-card p-6">
-						<div className="h-6 w-32 rounded bg-muted" />
+					<div className="bg-card animate-pulse rounded-lg border p-6">
+						<div className="bg-muted h-6 w-32 rounded" />
 						<div className="mt-4 space-y-3">
 							{[...new Array(4)].map((_, i) => (
-								<div className="h-16 rounded bg-muted" key={i} />
+								<div className="bg-muted h-16 rounded" key={i} />
 							))}
 						</div>
 					</div>

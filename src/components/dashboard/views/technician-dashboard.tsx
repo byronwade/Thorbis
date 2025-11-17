@@ -36,18 +36,16 @@ export default function TechnicianDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="font-bold text-4xl tracking-tight">My Dashboard</h1>
+					<h1 className="text-4xl font-bold tracking-tight">My Dashboard</h1>
 					<Badge className="text-warning" variant="outline">
 						Technician View
 					</Badge>
-					<div className="flex items-center gap-2 rounded-full border border-border bg-success/10 px-3 py-1">
-						<div className="size-2 rounded-full bg-success" />
-						<span className="font-medium text-success text-xs dark:text-success">
-							Clocked In
-						</span>
+					<div className="border-border bg-success/10 flex items-center gap-2 rounded-full border px-3 py-1">
+						<div className="bg-success size-2 rounded-full" />
+						<span className="text-success dark:text-success text-xs font-medium">Clocked In</span>
 					</div>
 				</div>
-				<p className="text-lg text-muted-foreground">{currentDate}</p>
+				<p className="text-muted-foreground text-lg">{currentDate}</p>
 			</div>
 
 			{/* Active Job Alert */}
@@ -55,17 +53,15 @@ export default function TechnicianDashboard() {
 				<CardContent className="pt-6">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-3">
-							<div className="flex size-12 items-center justify-center rounded-full bg-primary">
+							<div className="bg-primary flex size-12 items-center justify-center rounded-full">
 								<Wrench className="size-6 text-white" />
 							</div>
 							<div>
-								<p className="font-bold text-lg">Current Job in Progress</p>
+								<p className="text-lg font-bold">Current Job in Progress</p>
 								<p className="text-muted-foreground text-sm">
 									AC Repair - Sarah Johnson - 123 Main St
 								</p>
-								<p className="text-muted-foreground text-xs">
-									Started 45 minutes ago
-								</p>
+								<p className="text-muted-foreground text-xs">Started 45 minutes ago</p>
 							</div>
 						</div>
 						<div className="flex gap-2">
@@ -129,19 +125,17 @@ export default function TechnicianDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Current Job - In Progress */}
-							<div className="flex items-start gap-3 rounded-lg border-2 border-primary bg-primary p-3 dark:border-primary dark:bg-primary/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary">
+							<div className="border-primary bg-primary dark:border-primary dark:bg-primary/30 flex items-start gap-3 rounded-lg border-2 p-3">
+								<div className="bg-primary flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<Wrench className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<Badge variant="default">IN PROGRESS</Badge>
-									<p className="mt-1 font-bold text-sm">
-										9:00 AM - AC Not Cooling
-									</p>
+									<p className="mt-1 text-sm font-bold">9:00 AM - AC Not Cooling</p>
 									<p className="text-muted-foreground text-xs">
 										Sarah Johnson • 123 Main St, Suite 200
 									</p>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										Est. value: $420 • Started 45 min ago
 									</p>
 								</div>
@@ -178,24 +172,19 @@ export default function TechnicianDashboard() {
 									status: "Scheduled",
 								},
 							].map((job, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-muted">
-										<Clock className="size-5 text-muted-foreground" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-muted flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<Clock className="text-muted-foreground size-5" />
 									</div>
 									<div className="flex-1">
 										<Badge variant="outline">{job.status}</Badge>
-										<p className="mt-1 font-bold text-sm">
+										<p className="mt-1 text-sm font-bold">
 											{job.time} - {job.type}
 										</p>
 										<p className="text-muted-foreground text-xs">
 											{job.customer} • {job.address}
 										</p>
-										<p className="mt-1 text-muted-foreground text-xs">
-											Est. value: {job.value}
-										</p>
+										<p className="text-muted-foreground mt-1 text-xs">Est. value: {job.value}</p>
 									</div>
 									<Button size="sm" variant="outline">
 										<Navigation className="mr-2 size-4" />
@@ -217,25 +206,19 @@ export default function TechnicianDashboard() {
 					<Card>
 						<CardContent className="space-y-4 pt-6">
 							{/* This Week Stats */}
-							<div className="rounded-lg border bg-muted/50 p-4">
-								<p className="font-bold text-sm">This Week</p>
+							<div className="bg-muted/50 rounded-lg border p-4">
+								<p className="text-sm font-bold">This Week</p>
 								<div className="mt-3 space-y-3">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Total Revenue
-										</span>
-										<span className="font-bold text-success">$12,840</span>
+										<span className="text-muted-foreground text-sm">Total Revenue</span>
+										<span className="text-success font-bold">$12,840</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Jobs Completed
-										</span>
+										<span className="text-muted-foreground text-sm">Jobs Completed</span>
 										<span className="font-bold">24 jobs</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">
-											Avg. per Day
-										</span>
+										<span className="text-muted-foreground text-sm">Avg. per Day</span>
 										<span className="font-bold">4.8 jobs</span>
 									</div>
 								</div>
@@ -243,56 +226,43 @@ export default function TechnicianDashboard() {
 
 							{/* Performance Badges */}
 							<div className="space-y-2">
-								<p className="font-medium text-sm">Achievements</p>
+								<p className="text-sm font-medium">Achievements</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge
-										className="border-success text-success"
-										variant="outline"
-									>
+									<Badge className="border-success text-success" variant="outline">
 										⭐ Top Performer
 									</Badge>
-									<Badge
-										className="border-primary text-primary"
-										variant="outline"
-									>
+									<Badge className="border-primary text-primary" variant="outline">
 										🎯 Target Met
 									</Badge>
-									<Badge
-										className="border-border text-accent-foreground"
-										variant="outline"
-									>
+									<Badge className="border-border text-accent-foreground" variant="outline">
 										💰 Highest Revenue
 									</Badge>
 								</div>
 							</div>
 
 							{/* Team Ranking */}
-							<div className="rounded-lg border bg-success p-4 dark:bg-success/30">
+							<div className="bg-success dark:bg-success/30 rounded-lg border p-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="font-bold text-sm">Team Ranking</p>
-										<p className="text-muted-foreground text-xs">
-											Out of 12 technicians
-										</p>
+										<p className="text-sm font-bold">Team Ranking</p>
+										<p className="text-muted-foreground text-xs">Out of 12 technicians</p>
 									</div>
 									<div className="text-right">
-										<p className="font-bold text-3xl text-success">#2</p>
+										<p className="text-success text-3xl font-bold">#2</p>
 										<p className="text-success text-xs">This week</p>
 									</div>
 								</div>
 							</div>
 
 							{/* Commission Estimate */}
-							<div className="rounded-lg border bg-primary p-4 dark:bg-primary/30">
+							<div className="bg-primary dark:bg-primary/30 rounded-lg border p-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="font-bold text-sm">Estimated Commission</p>
-										<p className="text-muted-foreground text-xs">
-											Based on this week
-										</p>
+										<p className="text-sm font-bold">Estimated Commission</p>
+										<p className="text-muted-foreground text-xs">Based on this week</p>
 									</div>
 									<div className="text-right">
-										<p className="font-bold text-2xl text-primary">$1,284</p>
+										<p className="text-primary text-2xl font-bold">$1,284</p>
 										<p className="text-primary text-xs">10% of revenue</p>
 									</div>
 								</div>
@@ -314,14 +284,12 @@ export default function TechnicianDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Low Stock Warning */}
-							<div className="flex items-start gap-3 rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
-								<AlertCircle className="mt-0.5 size-5 text-destructive" />
+							<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30 flex items-start gap-3 rounded-lg border p-3">
+								<AlertCircle className="text-destructive mt-0.5 size-5" />
 								<div className="flex-1">
 									<Badge variant="destructive">LOW STOCK</Badge>
-									<p className="mt-1 font-bold text-sm">PEX Fittings - 1/2"</p>
-									<p className="text-muted-foreground text-xs">
-										Only 3 left • Restock needed
-									</p>
+									<p className="mt-1 text-sm font-bold">PEX Fittings - 1/2"</p>
+									<p className="text-muted-foreground text-xs">Only 3 left • Restock needed</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Request
@@ -343,16 +311,14 @@ export default function TechnicianDashboard() {
 								{ item: "Drain Snake", quantity: "1 unit", status: "Good" },
 							].map((item, index) => (
 								<div
-									className="flex items-center justify-between rounded-lg border bg-card p-3"
+									className="bg-card flex items-center justify-between rounded-lg border p-3"
 									key={index}
 								>
 									<div className="flex items-center gap-3">
-										<Package className="size-5 text-muted-foreground" />
+										<Package className="text-muted-foreground size-5" />
 										<div>
-											<p className="font-medium text-sm">{item.item}</p>
-											<p className="text-muted-foreground text-xs">
-												{item.quantity}
-											</p>
+											<p className="text-sm font-medium">{item.item}</p>
+											<p className="text-muted-foreground text-xs">{item.quantity}</p>
 										</div>
 									</div>
 									<Badge className="text-success" variant="outline">
@@ -378,16 +344,14 @@ export default function TechnicianDashboard() {
 					<Card>
 						<CardContent className="space-y-4 pt-6">
 							{/* Time Tracking */}
-							<div className="rounded-lg border bg-muted/50 p-4">
+							<div className="bg-muted/50 rounded-lg border p-4">
 								<div className="flex items-center justify-between">
 									<div>
-										<p className="font-bold text-sm">Time Tracking</p>
-										<p className="text-muted-foreground text-xs">
-											Clocked in at 7:30 AM
-										</p>
+										<p className="text-sm font-bold">Time Tracking</p>
+										<p className="text-muted-foreground text-xs">Clocked in at 7:30 AM</p>
 									</div>
 									<div className="text-right">
-										<p className="font-bold text-2xl">4h 15m</p>
+										<p className="text-2xl font-bold">4h 15m</p>
 										<p className="text-muted-foreground text-xs">Today</p>
 									</div>
 								</div>
@@ -422,9 +386,9 @@ export default function TechnicianDashboard() {
 							</div>
 
 							{/* Notes Section */}
-							<div className="rounded-lg border bg-muted/50 p-4">
-								<p className="font-bold text-sm">Today's Notes</p>
-								<p className="mt-2 text-muted-foreground text-sm">
+							<div className="bg-muted/50 rounded-lg border p-4">
+								<p className="text-sm font-bold">Today's Notes</p>
+								<p className="text-muted-foreground mt-2 text-sm">
 									• Pick up parts from warehouse before 3 PM
 									<br />• Mike Davis job may need water heater replacement
 									<br />• Team meeting tomorrow at 8 AM
@@ -469,23 +433,16 @@ export default function TechnicianDashboard() {
 								job: "Furnace Check",
 							},
 						].map((review, index) => (
-							<div
-								className="rounded-lg border bg-success p-3 dark:bg-success/30"
-								key={index}
-							>
+							<div className="bg-success dark:bg-success/30 rounded-lg border p-3" key={index}>
 								<div className="flex items-center gap-2">
-									<Star className="size-4 text-warning" />
-									<span className="font-bold text-sm">
-										{review.rating}.0 ⭐
-									</span>
+									<Star className="text-warning size-4" />
+									<span className="text-sm font-bold">{review.rating}.0 ⭐</span>
 									<Badge className="ml-auto text-xs" variant="outline">
 										{review.job}
 									</Badge>
 								</div>
-								<p className="mt-2 font-medium text-sm">{review.customer}</p>
-								<p className="mt-1 text-muted-foreground text-xs">
-									"{review.comment}"
-								</p>
+								<p className="mt-2 text-sm font-medium">{review.customer}</p>
+								<p className="text-muted-foreground mt-1 text-xs">"{review.comment}"</p>
 							</div>
 						))}
 					</CardContent>

@@ -24,15 +24,11 @@ const DETAIL_PAGE_PATTERNS = [
  *
  * This prevents nested layouts from composing incorrectly.
  */
-export function CustomersSectionLayout({
-	children,
-}: CustomersSectionLayoutProps) {
+export function CustomersSectionLayout({ children }: CustomersSectionLayoutProps) {
 	const pathname = usePathname() ?? "";
 
 	// Check if the current pathname matches any detail page pattern
-	const isDetailPage = DETAIL_PAGE_PATTERNS.some((pattern) =>
-		pattern.test(pathname),
-	);
+	const isDetailPage = DETAIL_PAGE_PATTERNS.some((pattern) => pattern.test(pathname));
 
 	// If it's a detail page, just render children (the specific detail layout will apply)
 	if (isDetailPage) {

@@ -23,10 +23,7 @@
  * - Minimal bundle impact
  */
 
-import {
-	Elements,
-	ExpressCheckoutElement as StripeExpressCheckout,
-} from "@stripe/react-stripe-js";
+import { Elements, ExpressCheckoutElement as StripeExpressCheckout } from "@stripe/react-stripe-js";
 import type { Stripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { useEffect, useState } from "react";
 import { getStripe } from "@/lib/stripe/client";
@@ -72,9 +69,7 @@ function ExpressCheckoutInner({
 	const [isReady, setIsReady] = useState(false);
 
 	return (
-		<div
-			className={`transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}
-		>
+		<div className={`transition-opacity duration-300 ${isReady ? "opacity-100" : "opacity-0"}`}>
 			<StripeExpressCheckout
 				onCancel={() => {}}
 				onConfirm={async (event) => {
@@ -124,9 +119,7 @@ function ExpressCheckoutInner({
 						}
 					} catch (error) {
 						(event as any).complete("fail");
-						onPaymentError?.(
-							error instanceof Error ? error : new Error("Payment failed"),
-						);
+						onPaymentError?.(error instanceof Error ? error : new Error("Payment failed"));
 					}
 				}}
 				onReady={(_event) => {
@@ -180,8 +173,7 @@ function ExpressCheckoutInner({
  * - Country restrictions
  */
 export function ExpressCheckoutElement(props: ExpressCheckoutElementProps) {
-	const [stripePromise, setStripePromise] =
-		useState<Promise<Stripe | null> | null>(null);
+	const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
 
 	useEffect(() => {
 		setStripePromise(getStripe());

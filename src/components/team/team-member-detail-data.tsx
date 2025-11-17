@@ -21,9 +21,7 @@ type TeamMemberDetailDataProps = {
  *
  * Streams in after shell renders (100-400ms).
  */
-export async function TeamMemberDetailData({
-	teamMemberId,
-}: TeamMemberDetailDataProps) {
+export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -63,11 +61,13 @@ export async function TeamMemberDetailData({
 	// Fetch team member with user data
 	const { data: teamMember, error } = await supabase
 		.from("team_members")
-		.select(`
+		.select(
+			`
       *,
       user:users(*),
       company:companies(name)
-    `)
+    `
+		)
 		.eq("id", teamMemberId)
 		.eq("company_id", activeCompanyId)
 		.single();
@@ -86,13 +86,15 @@ export async function TeamMemberDetailData({
 		// Get jobs assigned to this team member
 		supabase
 			.from("job_team_assignments")
-			.select(`
+			.select(
+				`
         *,
         job:jobs(
           *,
           customer:customers(first_name, last_name)
         )
-      `)
+      `
+			)
 			.eq("team_member_id", teamMemberId)
 			.eq("status", "assigned")
 			.order("created_at", { ascending: false })
@@ -101,10 +103,12 @@ export async function TeamMemberDetailData({
 		// Get time entries
 		supabase
 			.from("job_time_entries")
-			.select(`
+			.select(
+				`
         *,
         job:jobs(id, job_number, title)
-      `)
+      `
+			)
 			.eq("user_id", teamMember.user_id)
 			.order("clock_in", { ascending: false })
 			.limit(50),
@@ -116,9 +120,7 @@ export async function TeamMemberDetailData({
 			.eq("team_member_id", teamMemberId)
 			.is("deleted_at", null)
 			.then((result) =>
-				result.error
-					? { data: [], error: null }
-					: { data: result.data || [], error: null },
+				result.error ? { data: [], error: null } : { data: result.data || [], error: null }
 			),
 
 		// Get activity log
@@ -132,16 +134,12 @@ export async function TeamMemberDetailData({
 	]);
 
 	// Extract user from team member
-	const memberUser = Array.isArray(teamMember.user)
-		? teamMember.user[0]
-		: teamMember.user;
+	const memberUser = Array.isArray(teamMember.user) ? teamMember.user[0] : teamMember.user;
 
 	// Calculate metrics
 	const _totalJobs = assignedJobs?.length || 0;
-	const totalHours =
-		timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
-	const completedJobs =
-		assignedJobs?.filter((j) => j.job?.status === "completed").length || 0;
+	const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+	const completedJobs = assignedJobs?.filter((j) => j.job?.status === "completed").length || 0;
 	const revenueGenerated =
 		assignedJobs
 			?.filter((j) => j.job?.status === "completed")

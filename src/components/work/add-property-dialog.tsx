@@ -79,9 +79,7 @@ export function AddPropertyDialog({
 
 		if (propertiesResult.success && propertiesResult.data) {
 			// Find the newly created property
-			const newProperty = propertiesResult.data.find(
-				(p) => p.id === result.data,
-			);
+			const newProperty = propertiesResult.data.find((p) => p.id === result.data);
 
 			if (newProperty) {
 				// Notify parent component with full property data
@@ -108,14 +106,13 @@ export function AddPropertyDialog({
 			<DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
 				<DialogHeader>
 					<div className="flex items-center gap-2">
-						<MapPin className="size-5 text-primary" />
+						<MapPin className="text-primary size-5" />
 						<DialogTitle>Add New Property</DialogTitle>
 					</div>
 					<DialogDescription>
-						Add a new service location for this customer. All fields marked with
-						* are required.
+						Add a new service location for this customer. All fields marked with * are required.
 						{customerAddress?.address && (
-							<span className="mt-2 block font-medium text-success">
+							<span className="text-success mt-2 block font-medium">
 								✓ Address fields pre-filled from customer profile
 							</span>
 						)}
@@ -125,7 +122,7 @@ export function AddPropertyDialog({
 				<form className="space-y-4" key={customerId} onSubmit={handleSubmit}>
 					{/* Error Display */}
 					{error && (
-						<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-3">
+						<div className="border-destructive/50 bg-destructive/10 rounded-lg border p-3">
 							<p className="text-destructive text-sm">{error}</p>
 						</div>
 					)}
@@ -134,9 +131,7 @@ export function AddPropertyDialog({
 					<div className="space-y-2">
 						<Label htmlFor="name">Property Name *</Label>
 						<Input
-							defaultValue={
-								customerAddress?.address ? "Primary Location" : undefined
-							}
+							defaultValue={customerAddress?.address ? "Primary Location" : undefined}
 							disabled={isLoading}
 							id="name"
 							name="name"
@@ -160,9 +155,7 @@ export function AddPropertyDialog({
 							required
 						/>
 						{customerAddress?.address && (
-							<p className="text-muted-foreground text-xs">
-								Pre-filled from customer profile
-							</p>
+							<p className="text-muted-foreground text-xs">Pre-filled from customer profile</p>
 						)}
 					</div>
 

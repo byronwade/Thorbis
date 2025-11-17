@@ -13,9 +13,7 @@ import { revalidatePath } from "next/cache";
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
 
-const _resend = process.env.RESEND_API_KEY
-	? new Resend(process.env.RESEND_API_KEY)
-	: null;
+const _resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Send invoice via email
@@ -39,7 +37,8 @@ export async function sendInvoiceEmail(invoiceId: string) {
 		// Get invoice with customer details
 		const { data: invoice, error } = await supabase
 			.from("invoices")
-			.select(`
+			.select(
+				`
         *,
         customer:customers!customer_id(
           id,
@@ -47,7 +46,8 @@ export async function sendInvoiceEmail(invoiceId: string) {
           last_name,
           email
         )
-      `)
+      `
+			)
 			.eq("id", invoiceId)
 			.single();
 
@@ -102,7 +102,8 @@ export async function sendEstimateEmail(estimateId: string) {
 		// Get estimate with customer details (using invoices table for now)
 		const { data: estimate, error } = await supabase
 			.from("invoices")
-			.select(`
+			.select(
+				`
         *,
         customer:customers!customer_id(
           id,
@@ -110,7 +111,8 @@ export async function sendEstimateEmail(estimateId: string) {
           last_name,
           email
         )
-      `)
+      `
+			)
 			.eq("id", estimateId)
 			.single();
 

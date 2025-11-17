@@ -34,48 +34,44 @@ export async function JobTemplatesStats() {
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Total Templates</CardTitle>
-					<FileText className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Total Templates</CardTitle>
+					<FileText className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.totalTemplates}</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.newThisMonth} this month
-					</p>
+					<div className="text-2xl font-bold">{stats.totalTemplates}</div>
+					<p className="text-muted-foreground text-xs">{stats.newThisMonth} this month</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Most Used</CardTitle>
-					<TrendingUp className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Most Used</CardTitle>
+					<TrendingUp className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.mostUsed}</div>
-					<p className="text-muted-foreground text-xs">
-						{stats.mostUsedCategory}
-					</p>
+					<div className="text-2xl font-bold">{stats.mostUsed}</div>
+					<p className="text-muted-foreground text-xs">{stats.mostUsedCategory}</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Template Usage</CardTitle>
-					<BarChart2 className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Template Usage</CardTitle>
+					<BarChart2 className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.templateUsage}%</div>
+					<div className="text-2xl font-bold">{stats.templateUsage}%</div>
 					<p className="text-muted-foreground text-xs">Jobs use templates</p>
 				</CardContent>
 			</Card>
 
 			<Card>
 				<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-					<CardTitle className="font-medium text-sm">Time Saved</CardTitle>
-					<Clock className="size-4 text-muted-foreground" />
+					<CardTitle className="text-sm font-medium">Time Saved</CardTitle>
+					<Clock className="text-muted-foreground size-4" />
 				</CardHeader>
 				<CardContent>
-					<div className="font-bold text-2xl">{stats.timeSaved}</div>
+					<div className="text-2xl font-bold">{stats.timeSaved}</div>
 					<p className="text-muted-foreground text-xs">Per job setup</p>
 				</CardContent>
 			</Card>

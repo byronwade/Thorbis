@@ -81,14 +81,8 @@ const buckets: VirtualBucket[] = [
 ];
 
 export function VirtualBucketsOverview() {
-	const totalAllocated = buckets.reduce(
-		(sum, bucket) => sum + bucket.currentBalance,
-		0,
-	);
-	const totalTarget = buckets.reduce(
-		(sum, bucket) => sum + bucket.targetAmount,
-		0,
-	);
+	const totalAllocated = buckets.reduce((sum, bucket) => sum + bucket.currentBalance, 0);
+	const totalTarget = buckets.reduce((sum, bucket) => sum + bucket.targetAmount, 0);
 
 	return (
 		<Card>
@@ -96,33 +90,25 @@ export function VirtualBucketsOverview() {
 				<div className="flex items-center justify-between">
 					<div>
 						<CardTitle className="flex items-center gap-2">
-							<Layers className="h-5 w-5 text-accent-foreground" />
+							<Layers className="text-accent-foreground h-5 w-5" />
 							Virtual Savings Buckets
 						</CardTitle>
 						<CardDescription>Organize funds for specific goals</CardDescription>
 					</div>
 					<Button asChild size="sm" variant="ghost">
-						<Link href="/dashboard/settings/finance/virtual-buckets">
-							Manage
-						</Link>
+						<Link href="/dashboard/settings/finance/virtual-buckets">Manage</Link>
 					</Button>
 				</div>
 			</CardHeader>
 
 			<CardContent>
 				{/* Total Overview */}
-				<div className="rounded-lg border-2 border-border/20 bg-accent/5 p-4">
+				<div className="border-border/20 bg-accent/5 rounded-lg border-2 p-4">
 					<p className="text-muted-foreground text-sm">Total in Buckets</p>
-					<p className="font-bold text-3xl">
-						${totalAllocated.toLocaleString()}
-					</p>
+					<p className="text-3xl font-bold">${totalAllocated.toLocaleString()}</p>
 					<div className="mt-2 flex items-center justify-between text-xs">
-						<span className="text-muted-foreground">
-							{buckets.length} buckets
-						</span>
-						<span className="text-muted-foreground">
-							Target: ${totalTarget.toLocaleString()}
-						</span>
+						<span className="text-muted-foreground">{buckets.length} buckets</span>
+						<span className="text-muted-foreground">Target: ${totalTarget.toLocaleString()}</span>
 					</div>
 				</div>
 			</CardContent>
@@ -135,33 +121,29 @@ export function VirtualBucketsOverview() {
 					return (
 						<div key={bucket.id}>
 							{index > 0 && <Separator />}
-							<div className="flex items-center justify-between p-4 transition-colors hover:bg-muted/50">
+							<div className="hover:bg-muted/50 flex items-center justify-between p-4 transition-colors">
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
-										<p className="font-medium text-sm">{bucket.name}</p>
+										<p className="text-sm font-medium">{bucket.name}</p>
 										{bucket.autoAllocate && (
-											<span className="rounded-full bg-accent/10 px-2 py-0.5 text-accent-foreground text-xs dark:text-accent-foreground">
+											<span className="bg-accent/10 text-accent-foreground dark:text-accent-foreground rounded-full px-2 py-0.5 text-xs">
 												Auto {bucket.allocationValue}
 												{bucket.allocationType === "percentage" ? "%" : "$"}
 											</span>
 										)}
 									</div>
 									<div className="mt-1 flex items-center gap-2">
-										<div className="h-1.5 w-24 overflow-hidden rounded-full bg-muted">
+										<div className="bg-muted h-1.5 w-24 overflow-hidden rounded-full">
 											<div
-												className="h-full bg-accent transition-all"
+												className="bg-accent h-full transition-all"
 												style={{ width: `${Math.min(progress, 100)}%` }}
 											/>
 										</div>
-										<span className="text-muted-foreground text-xs">
-											{progress.toFixed(0)}%
-										</span>
+										<span className="text-muted-foreground text-xs">{progress.toFixed(0)}%</span>
 									</div>
 								</div>
 								<div className="text-right">
-									<p className="font-semibold text-sm">
-										${bucket.currentBalance.toLocaleString()}
-									</p>
+									<p className="text-sm font-semibold">${bucket.currentBalance.toLocaleString()}</p>
 									<p className="text-muted-foreground text-xs">
 										/ ${bucket.targetAmount.toLocaleString()}
 									</p>

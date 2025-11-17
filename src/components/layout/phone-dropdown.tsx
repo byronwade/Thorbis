@@ -58,11 +58,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -113,9 +109,7 @@ export function PhoneDropdown({
 	// Dialer state
 	const [toNumber, setToNumber] = useState("");
 	const [fromNumber, setFromNumber] = useState(companyPhones[0]?.number || "");
-	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
-		null,
-	);
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 	const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
 
 	// WebRTC state for browser calling
@@ -161,10 +155,8 @@ export function PhoneDropdown({
 	// Prevents creating connections on every page load (was hitting Telnyx 5-connection limit)
 	// This was causing 2-8 second timeouts on EVERY page!
 	const webrtc = useTelnyxWebRTC({
-		username:
-			open && webrtcCredentials?.username ? webrtcCredentials.username : "",
-		password:
-			open && webrtcCredentials?.password ? webrtcCredentials.password : "",
+		username: open && webrtcCredentials?.username ? webrtcCredentials.username : "",
+		password: open && webrtcCredentials?.password ? webrtcCredentials.password : "",
 		autoConnect: false,
 		disabled: !open, // Don't initialize WebRTC unless dropdown is open
 		debug: true,
@@ -174,21 +166,11 @@ export function PhoneDropdown({
 
 	// Manually connect when credentials become available AND dropdown is open
 	useEffect(() => {
-		if (
-			open &&
-			webrtcCredentials &&
-			!webrtc.isConnected &&
-			!webrtc.isConnecting
-		) {
+		if (open && webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
 			webrtc.connect().catch((error) => {
 				// Handle 403 account limit errors gracefully
-				if (
-					error?.message?.includes("403") ||
-					error?.message?.includes("limit")
-				) {
-					console.warn(
-						"[WebRTC] Account connection limit reached. Close other connections.",
-					);
+				if (error?.message?.includes("403") || error?.message?.includes("limit")) {
+					console.warn("[WebRTC] Account connection limit reached. Close other connections.");
 				}
 			});
 		}
@@ -231,9 +213,7 @@ export function PhoneDropdown({
 	// Handle call initiation using WebRTC for browser audio
 	const handleStartCall = useCallback(async () => {
 		if (!companyId) {
-			toast.error(
-				"No company selected. Please select a company to make calls.",
-			);
+			toast.error("No company selected. Please select a company to make calls.");
 			return;
 		}
 
@@ -285,9 +265,7 @@ export function PhoneDropdown({
 				setSelectedCustomer(null);
 			} catch (error) {
 				if (error instanceof Error && error.message.includes("permission")) {
-					toast.error(
-						"Microphone access denied. Please allow microphone access to make calls.",
-					);
+					toast.error("Microphone access denied. Please allow microphone access to make calls.");
 				} else {
 					toast.error("Failed to initiate call. Please try again.");
 				}
@@ -295,15 +273,7 @@ export function PhoneDropdown({
 		} else {
 			toast.error("Your browser does not support audio calling.");
 		}
-	}, [
-		toNumber,
-		fromNumber,
-		companyId,
-		selectedCustomer,
-		isPending,
-		toast,
-		webrtc,
-	]);
+	}, [toNumber, fromNumber, companyId, selectedCustomer, isPending, toast, webrtc]);
 
 	// Calculate values needed for rendering (before any returns)
 	const hasIncomingCalls = displayCount > 0;
@@ -312,7 +282,7 @@ export function PhoneDropdown({
 			fromNumber &&
 			companyPhones.length > 0 &&
 			webrtc.isConnected &&
-			!isLoadingWebRTC,
+			!isLoadingWebRTC
 	);
 
 	// Debug button state - MUST be before any conditional returns
@@ -328,7 +298,7 @@ export function PhoneDropdown({
 		return (
 			<div className="relative">
 				<button
-					className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+					className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 					disabled
 					title="Phone"
 					type="button"
@@ -344,21 +314,17 @@ export function PhoneDropdown({
 		<DropdownMenu onOpenChange={handleOpenChange} open={open}>
 			<DropdownMenuTrigger asChild>
 				<button
-					className={`hover-gradient relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${
-						hasIncomingCalls ? "animate-pulse text-primary" : ""
+					className={`hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 ${
+						hasIncomingCalls ? "text-primary animate-pulse" : ""
 					}`}
 					title={hasIncomingCalls ? "Incoming Call" : "Phone Dialer"}
 					type="button"
 				>
-					{hasIncomingCalls ? (
-						<PhoneIncoming className="size-4" />
-					) : (
-						<Phone className="size-4" />
-					)}
+					{hasIncomingCalls ? <PhoneIncoming className="size-4" /> : <Phone className="size-4" />}
 					<span className="sr-only">Phone Dialer</span>
 					{hasIncomingCalls && (
 						<Badge
-							className="-right-1 -top-1 absolute flex h-5 w-5 items-center justify-center rounded-full p-0 font-semibold text-[10px]"
+							className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px] font-semibold"
 							variant="destructive"
 						>
 							{displayCount > 9 ? "9+" : displayCount}
@@ -371,22 +337,20 @@ export function PhoneDropdown({
 					{/* Header */}
 					<div className="flex items-center justify-between gap-2">
 						<div className="flex items-center gap-2">
-							<PhoneCall className="size-5 text-primary" />
+							<PhoneCall className="text-primary size-5" />
 							<div>
-								<h3 className="font-semibold text-sm">Make a Call</h3>
-								<p className="text-muted-foreground text-xs">
-									Browser audio calling
-								</p>
+								<h3 className="text-sm font-semibold">Make a Call</h3>
+								<p className="text-muted-foreground text-xs">Browser audio calling</p>
 							</div>
 						</div>
 						{/* WebRTC Status Indicator */}
 						<div className="flex items-center gap-1.5">
 							{isLoadingWebRTC ? (
-								<Loader2 className="size-3 animate-spin text-muted-foreground" />
+								<Loader2 className="text-muted-foreground size-3 animate-spin" />
 							) : webrtc.isConnected ? (
 								<>
 									<Mic className="size-3 text-green-600 dark:text-green-400" />
-									<span className="font-medium text-green-600 text-xs dark:text-green-400">
+									<span className="text-xs font-medium text-green-600 dark:text-green-400">
 										Ready
 									</span>
 								</>
@@ -394,7 +358,7 @@ export function PhoneDropdown({
 								<>
 									<AlertCircle className="size-3 text-red-600 dark:text-red-400" />
 									<span
-										className="font-medium text-red-600 text-xs dark:text-red-400"
+										className="text-xs font-medium text-red-600 dark:text-red-400"
 										title={webrtc.connectionError}
 									>
 										Error
@@ -403,14 +367,14 @@ export function PhoneDropdown({
 							) : webrtc.isConnecting ? (
 								<>
 									<Loader2 className="size-3 animate-spin text-yellow-600 dark:text-yellow-400" />
-									<span className="font-medium text-xs text-yellow-600 dark:text-yellow-400">
+									<span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
 										Connecting...
 									</span>
 								</>
 							) : (
 								<>
 									<WifiOff className="size-3 text-gray-600 dark:text-gray-400" />
-									<span className="font-medium text-gray-600 text-xs dark:text-gray-400">
+									<span className="text-xs font-medium text-gray-600 dark:text-gray-400">
 										Disconnected
 									</span>
 								</>
@@ -421,13 +385,11 @@ export function PhoneDropdown({
 					{/* Incoming Call Alert */}
 					{hasIncomingCalls && (
 						<>
-							<div className="rounded-md bg-destructive/10 p-3">
+							<div className="bg-destructive/10 rounded-md p-3">
 								<div className="flex items-center gap-2">
-									<PhoneIncoming className="size-4 animate-pulse text-destructive" />
+									<PhoneIncoming className="text-destructive size-4 animate-pulse" />
 									<div className="flex-1">
-										<p className="font-semibold text-destructive text-sm">
-											Incoming Call
-										</p>
+										<p className="text-destructive text-sm font-semibold">Incoming Call</p>
 										<p className="text-destructive/80 text-xs">
 											{caller?.name || caller?.number || "Unknown"}
 										</p>
@@ -441,10 +403,7 @@ export function PhoneDropdown({
 					{/* Customer Search */}
 					<div className="space-y-2">
 						<Label className="text-xs">Customer (Optional)</Label>
-						<Popover
-							onOpenChange={setCustomerSearchOpen}
-							open={customerSearchOpen}
-						>
+						<Popover onOpenChange={setCustomerSearchOpen} open={customerSearchOpen}>
 							<PopoverTrigger asChild>
 								<Button
 									className="w-full justify-start text-left font-normal"
@@ -472,7 +431,7 @@ export function PhoneDropdown({
 													value={`${customer.first_name} ${customer.last_name} ${customer.email} ${customer.phone}`}
 												>
 													<div className="flex flex-1 flex-col">
-														<span className="font-medium text-sm">
+														<span className="text-sm font-medium">
 															{customer.first_name} {customer.last_name}
 														</span>
 														{customer.company_name && (
@@ -539,18 +498,12 @@ export function PhoneDropdown({
 							</SelectContent>
 						</Select>
 						{companyPhones.length === 0 && (
-							<p className="text-muted-foreground text-xs">
-								No company phone numbers configured
-							</p>
+							<p className="text-muted-foreground text-xs">No company phone numbers configured</p>
 						)}
 					</div>
 
 					{/* Call Button */}
-					<Button
-						className="w-full"
-						disabled={!canCall || isPending}
-						onClick={handleStartCall}
-					>
+					<Button className="w-full" disabled={!canCall || isPending} onClick={handleStartCall}>
 						{isPending ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />
@@ -568,7 +521,7 @@ export function PhoneDropdown({
 					<DropdownMenuSeparator />
 					<div className="space-y-1">
 						<Link
-							className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+							className="hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
 							href="/dashboard/communication?filter=calls"
 							onClick={() => setOpen(false)}
 						>
@@ -576,7 +529,7 @@ export function PhoneDropdown({
 							<span>Call History</span>
 						</Link>
 						<Link
-							className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-muted"
+							className="hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors"
 							href="/dashboard/communication"
 							onClick={() => setOpen(false)}
 						>

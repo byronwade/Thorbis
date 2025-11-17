@@ -7,22 +7,10 @@
  * - ISR with 1 hour revalidation
  */
 
-import {
-	BarChart,
-	Calculator,
-	ChevronRight,
-	DollarSign,
-	TrendingUp,
-} from "lucide-react";
+import { BarChart, Calculator, ChevronRight, DollarSign, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type CalculatorTool = {
 	title: string;
@@ -56,8 +44,7 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Job Pricing Calculator",
-		description:
-			"Price jobs accurately with material, labor, and overhead costs",
+		description: "Price jobs accurately with material, labor, and overhead costs",
 		detailedDescription:
 			"Build accurate job quotes by calculating material costs, labor hours, equipment usage, and overhead. Ensure profitable pricing on every project.",
 		href: "/tools/calculators/job-pricing",
@@ -73,8 +60,7 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Profit & Loss Calculator",
-		description:
-			"Track revenue, expenses, and calculate your net profit margins",
+		description: "Track revenue, expenses, and calculate your net profit margins",
 		detailedDescription:
 			"Monitor your business financial health with detailed P&L tracking. Calculate gross profit, operating profit, and net profit margins to understand your bottom line.",
 		href: "/tools/calculators/profit-loss",
@@ -118,8 +104,7 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Industry Pricing Standards",
-		description:
-			"Compare your pricing against industry benchmarks and averages",
+		description: "Compare your pricing against industry benchmarks and averages",
 		detailedDescription:
 			"Access industry-specific pricing data and benchmarks. Compare your rates to regional and national averages to ensure competitive pricing.",
 		href: "/tools/calculators/industry-pricing",
@@ -140,29 +125,26 @@ export default function CalculatorsPage() {
 			{/* Header */}
 			<div className="space-y-4">
 				<div className="flex items-center gap-3">
-					<div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5">
-						<Calculator className="size-6 text-primary" />
+					<div className="from-primary/15 to-primary/5 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br">
+						<Calculator className="text-primary size-6" />
 					</div>
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">
-							Business Calculators
-						</h1>
-						<p className="mt-1 text-lg text-muted-foreground">
+						<h1 className="text-4xl font-bold tracking-tight">Business Calculators</h1>
+						<p className="text-muted-foreground mt-1 text-lg">
 							Essential tools for pricing, profit analysis, and growth planning
 						</p>
 					</div>
 				</div>
 
-				<p className="max-w-3xl text-muted-foreground">
-					Make data-driven decisions with our suite of business calculators.
-					From pricing jobs and calculating hourly rates to analyzing profit
-					margins and planning commissions, these tools help you run a more
-					profitable trade business.
+				<p className="text-muted-foreground max-w-3xl">
+					Make data-driven decisions with our suite of business calculators. From pricing jobs and
+					calculating hourly rates to analyzing profit margins and planning commissions, these tools
+					help you run a more profitable trade business.
 				</p>
 			</div>
 
 			{/* Why Use Calculators Section */}
-			<Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+			<Card className="border-primary/20 from-primary/5 bg-gradient-to-br to-transparent">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2">
 						<TrendingUp className="size-5" />
@@ -175,19 +157,19 @@ export default function CalculatorsPage() {
 				<CardContent>
 					<ul className="grid gap-2 sm:grid-cols-2">
 						<li className="flex items-start gap-2">
-							<span className="mt-0.5 text-primary">✓</span>
+							<span className="text-primary mt-0.5">✓</span>
 							<span>Price jobs accurately and competitively</span>
 						</li>
 						<li className="flex items-start gap-2">
-							<span className="mt-0.5 text-primary">✓</span>
+							<span className="text-primary mt-0.5">✓</span>
 							<span>Ensure every job is profitable</span>
 						</li>
 						<li className="flex items-start gap-2">
-							<span className="mt-0.5 text-primary">✓</span>
+							<span className="text-primary mt-0.5">✓</span>
 							<span>Track and improve profit margins</span>
 						</li>
 						<li className="flex items-start gap-2">
-							<span className="mt-0.5 text-primary">✓</span>
+							<span className="text-primary mt-0.5">✓</span>
 							<span>Make data-driven business decisions</span>
 						</li>
 					</ul>
@@ -196,19 +178,17 @@ export default function CalculatorsPage() {
 
 			{/* Calculator Tools Grid */}
 			<div className="space-y-4">
-				<h2 className="font-semibold text-2xl tracking-tight">
-					Available Calculators
-				</h2>
+				<h2 className="text-2xl font-semibold tracking-tight">Available Calculators</h2>
 				<div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
 					{calculators.map((calculator) => {
 						const Icon = calculator.icon;
 						return (
 							<Link href={calculator.href} key={calculator.href}>
-								<Card className="group h-full transition-all hover:border-primary/50 hover:shadow-lg">
+								<Card className="group hover:border-primary/50 h-full transition-all hover:shadow-lg">
 									<CardHeader className="space-y-3">
 										<div className="flex items-start justify-between gap-3">
-											<div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted/50 transition-colors group-hover:bg-primary/10">
-												<Icon className="size-6 text-muted-foreground transition-colors group-hover:text-primary" />
+											<div className="bg-muted/50 group-hover:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded-lg transition-colors">
+												<Icon className="text-muted-foreground group-hover:text-primary size-6 transition-colors" />
 											</div>
 											<div className="flex items-center gap-2">
 												{calculator.badge && (
@@ -226,7 +206,7 @@ export default function CalculatorsPage() {
 										<div className="space-y-2">
 											<CardTitle className="flex items-center justify-between text-lg">
 												{calculator.title}
-												<ChevronRight className="size-5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+												<ChevronRight className="text-muted-foreground size-5 opacity-0 transition-opacity group-hover:opacity-100" />
 											</CardTitle>
 											<CardDescription className="text-sm leading-relaxed">
 												{calculator.detailedDescription}
@@ -235,19 +215,14 @@ export default function CalculatorsPage() {
 									</CardHeader>
 									<CardContent>
 										<div className="space-y-2">
-											<p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+											<p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 												Key Features:
 											</p>
 											<ul className="space-y-1">
 												{calculator.features.slice(0, 3).map((feature, idx) => (
-													<li
-														className="flex items-start gap-2 text-sm"
-														key={idx}
-													>
-														<span className="mt-0.5 text-primary">•</span>
-														<span className="text-muted-foreground">
-															{feature}
-														</span>
+													<li className="flex items-start gap-2 text-sm" key={idx}>
+														<span className="text-primary mt-0.5">•</span>
+														<span className="text-muted-foreground">{feature}</span>
 													</li>
 												))}
 											</ul>
@@ -268,14 +243,14 @@ export default function CalculatorsPage() {
 						Need Help Using These Calculators?
 					</CardTitle>
 					<CardDescription>
-						Our team can help you understand your numbers and make the right
-						pricing decisions for your business
+						Our team can help you understand your numbers and make the right pricing decisions for
+						your business
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">
 					<Link href="/contact">
 						<button
-							className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+							className="border-input bg-background ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 							type="button"
 						>
 							Contact Support
@@ -284,7 +259,7 @@ export default function CalculatorsPage() {
 					</Link>
 					<Link href="/tools">
 						<button
-							className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border border-input bg-background px-4 py-2 font-medium text-sm ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+							className="border-input bg-background ring-offset-background hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 							type="button"
 						>
 							Browse All Tools

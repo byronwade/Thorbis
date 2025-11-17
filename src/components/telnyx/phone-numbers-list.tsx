@@ -22,13 +22,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -68,9 +62,7 @@ export function PhoneNumbersList({ numbers }: PhoneNumbersListProps) {
 			{numbers.length === 0 ? (
 				<EmptyState />
 			) : (
-				numbers.map((number) => (
-					<PhoneNumberCard key={number.id} number={number} />
-				))
+				numbers.map((number) => <PhoneNumberCard key={number.id} number={number} />)
 			)}
 		</div>
 	);
@@ -83,21 +75,17 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
 				<div className="flex items-start justify-between">
 					<div className="space-y-1">
 						<div className="flex items-center gap-3">
-							<CardTitle className="font-semibold text-2xl">
-								{number.formattedNumber}
-							</CardTitle>
+							<CardTitle className="text-2xl font-semibold">{number.formattedNumber}</CardTitle>
 							<Badge variant={getStatusVariant(number.status)}>
 								{getStatusLabel(number.status)}
 							</Badge>
-							{number.numberType === "toll-free" && (
-								<Badge variant="secondary">Toll-Free</Badge>
-							)}
+							{number.numberType === "toll-free" && <Badge variant="secondary">Toll-Free</Badge>}
 						</div>
 						<CardDescription>
 							{number.routingRule ?? "Routing not configured"}{" "}
 							{number.voicemailEnabled && "• Voicemail enabled"}
 						</CardDescription>
-						<div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+						<div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
 							{number.metadata?.ten_dlc_campaign_id ? (
 								<Badge variant="secondary">10DLC Linked</Badge>
 							) : (
@@ -134,13 +122,13 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
 			<CardContent>
 				{/* Porting Status (if applicable) */}
 				{number.status === "porting" && (
-					<div className="mb-4 rounded-lg border border-primary bg-primary p-4 dark:border-primary dark:bg-primary/20">
+					<div className="border-primary bg-primary dark:border-primary dark:bg-primary/20 mb-4 rounded-lg border p-4">
 						<div className="flex items-center justify-between">
 							<div>
-								<div className="font-medium text-primary dark:text-primary">
+								<div className="text-primary dark:text-primary font-medium">
 									Porting {number.portingStatus}
 								</div>
-								<div className="text-primary text-sm dark:text-primary">
+								<div className="text-primary dark:text-primary text-sm">
 									Estimated completion: {number.portingEta}
 								</div>
 							</div>
@@ -205,11 +193,11 @@ function MetricCard({
 }) {
 	return (
 		<div className="flex flex-col gap-1">
-			<div className="flex items-center gap-2 text-muted-foreground text-sm">
+			<div className="text-muted-foreground flex items-center gap-2 text-sm">
 				<Icon className={`size-4 ${color}`} />
 				{label}
 			</div>
-			<div className="font-semibold text-xl">{value}</div>
+			<div className="text-xl font-semibold">{value}</div>
 		</div>
 	);
 }
@@ -218,9 +206,9 @@ function EmptyState() {
 	return (
 		<Card>
 			<CardContent className="flex flex-col items-center justify-center py-12">
-				<Phone className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No phone numbers yet</h3>
-				<p className="mb-6 text-center text-muted-foreground text-sm">
+				<Phone className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No phone numbers yet</h3>
+				<p className="text-muted-foreground mb-6 text-center text-sm">
 					Get started by purchasing a new number or porting an existing one
 				</p>
 				<div className="flex gap-3">
@@ -239,7 +227,7 @@ function EmptyState() {
 }
 
 function getStatusVariant(
-	status: string | null,
+	status: string | null
 ): "default" | "secondary" | "destructive" | "outline" {
 	switch (status) {
 		case "active":

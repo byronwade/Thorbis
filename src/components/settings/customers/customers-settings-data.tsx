@@ -59,7 +59,7 @@ export async function CustomersSettingsData() {
 					const Icon = section.icon;
 					return (
 						<Link href={section.href} key={section.title}>
-							<Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+							<Card className="group hover:border-primary/50 transition-all hover:shadow-md">
 								<CardContent className="p-6">
 									<div className="flex items-start gap-4">
 										<div
@@ -68,12 +68,8 @@ export async function CustomersSettingsData() {
 											<Icon className={`size-6 ${section.color}`} />
 										</div>
 										<div className="flex-1 space-y-1">
-											<h3 className="font-semibold group-hover:text-primary">
-												{section.title}
-											</h3>
-											<p className="text-muted-foreground text-sm">
-												{section.description}
-											</p>
+											<h3 className="group-hover:text-primary font-semibold">{section.title}</h3>
+											<p className="text-muted-foreground text-sm">{section.description}</p>
 										</div>
 									</div>
 								</CardContent>
@@ -86,15 +82,14 @@ export async function CustomersSettingsData() {
 			<Card>
 				<CardContent className="p-6">
 					<div className="flex items-start gap-3">
-						<Settings className="mt-0.5 h-5 w-5 shrink-0 text-muted-foreground" />
+						<Settings className="text-muted-foreground mt-0.5 h-5 w-5 shrink-0" />
 						<div className="space-y-1">
-							<p className="font-medium text-sm">Customer Settings Overview</p>
+							<p className="text-sm font-medium">Customer Settings Overview</p>
 							<p className="text-muted-foreground text-sm">
-								These settings control how customer data is managed, stored, and
-								used throughout the system. Configure default preferences, set
-								up loyalty programs, manage notifications, ensure privacy
-								compliance, and customize customer profile fields to match your
-								business needs.
+								These settings control how customer data is managed, stored, and used throughout the
+								system. Configure default preferences, set up loyalty programs, manage
+								notifications, ensure privacy compliance, and customize customer profile fields to
+								match your business needs.
 							</p>
 						</div>
 					</div>

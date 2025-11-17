@@ -26,7 +26,7 @@ export default function JobHistoryPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Job History</h1>
+				<h1 className="text-3xl font-bold tracking-tight">Job History</h1>
 				<p className="text-muted-foreground">
 					Complete job history, completed services, and performance analytics
 				</p>

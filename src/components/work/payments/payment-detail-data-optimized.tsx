@@ -22,9 +22,7 @@ type PaymentDetailDataProps = {
 	paymentId: string;
 };
 
-export async function PaymentDetailDataOptimized({
-	paymentId,
-}: PaymentDetailDataProps) {
+export async function PaymentDetailDataOptimized({ paymentId }: PaymentDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -82,7 +80,8 @@ export async function PaymentDetailDataOptimized({
 	// Activities, notes, attachments will load on-demand when user opens those tabs
 	const { data: payment, error: paymentError } = await supabase
 		.from("payments")
-		.select(`
+		.select(
+			`
       *,
       customer:customers!customer_id(*),
       invoice:invoices!invoice_id(*),
@@ -104,7 +103,8 @@ export async function PaymentDetailDataOptimized({
         contact_email,
         contact_phone
       )
-    `)
+    `
+		)
 		.eq("id", paymentId)
 		.is("deleted_at", null)
 		.single();
@@ -118,12 +118,8 @@ export async function PaymentDetailDataOptimized({
 	}
 
 	// Get related data
-	const customer = Array.isArray(payment.customer)
-		? payment.customer[0]
-		: payment.customer;
-	const invoice = Array.isArray(payment.invoice)
-		? payment.invoice[0]
-		: payment.invoice;
+	const customer = Array.isArray(payment.customer) ? payment.customer[0] : payment.customer;
+	const invoice = Array.isArray(payment.invoice) ? payment.invoice[0] : payment.invoice;
 	const job = Array.isArray(payment.job) ? payment.job[0] : payment.job;
 	const paymentPlanSchedule = Array.isArray(payment.payment_plan_schedule)
 		? payment.payment_plan_schedule[0]

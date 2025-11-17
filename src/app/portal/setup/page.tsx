@@ -12,13 +12,7 @@ import { AlertCircle, CheckCircle2, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/server";
@@ -76,19 +70,17 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 		.single();
 
 	if (!customer) {
-		return (
-			<InvalidTokenUI message="Customer not found or invitation has been revoked" />
-		);
+		return <InvalidTokenUI message="Customer not found or invitation has been revoked" />;
 	}
 
 	// Check if already set up
 	if (customer.user_id) {
 		return (
-			<div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+			<div className="from-background via-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
 				<Card className="w-full max-w-md">
 					<CardHeader className="text-center">
-						<div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-success">
-							<CheckCircle2 className="size-8 text-success" />
+						<div className="bg-success mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+							<CheckCircle2 className="text-success size-8" />
 						</div>
 						<CardTitle className="text-2xl">Account Already Set Up</CardTitle>
 						<CardDescription>
@@ -174,16 +166,15 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 	}
 
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+		<div className="from-background via-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
 			<Card className="w-full max-w-md">
 				<CardHeader className="text-center">
-					<div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
-						<Lock className="size-8 text-primary" />
+					<div className="bg-primary/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+						<Lock className="text-primary size-8" />
 					</div>
 					<CardTitle className="text-2xl">Set Up Your Portal Account</CardTitle>
 					<CardDescription>
-						Welcome, {customer.display_name}! Create a password to access your
-						customer portal.
+						Welcome, {customer.display_name}! Create a password to access your customer portal.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -192,7 +183,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 						<div className="space-y-2">
 							<Label htmlFor="email">Email Address</Label>
 							<div className="relative">
-								<Mail className="absolute top-3 left-3 size-4 text-muted-foreground" />
+								<Mail className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
 									className="bg-muted pl-10"
 									disabled
@@ -211,7 +202,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 						<div className="space-y-2">
 							<Label htmlFor="name">Full Name</Label>
 							<div className="relative">
-								<User className="absolute top-3 left-3 size-4 text-muted-foreground" />
+								<User className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
 									className="bg-muted pl-10"
 									disabled
@@ -229,7 +220,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 								Create Password <span className="text-destructive">*</span>
 							</Label>
 							<div className="relative">
-								<Lock className="absolute top-3 left-3 size-4 text-muted-foreground" />
+								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
 									className="pl-10"
 									id="password"
@@ -240,9 +231,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 									type="password"
 								/>
 							</div>
-							<p className="text-muted-foreground text-xs">
-								Must be at least 8 characters
-							</p>
+							<p className="text-muted-foreground text-xs">Must be at least 8 characters</p>
 						</div>
 
 						{/* Confirm password */}
@@ -251,7 +240,7 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 								Confirm Password <span className="text-destructive">*</span>
 							</Label>
 							<div className="relative">
-								<Lock className="absolute top-3 left-3 size-4 text-muted-foreground" />
+								<Lock className="text-muted-foreground absolute top-3 left-3 size-4" />
 								<Input
 									className="pl-10"
 									id="confirmPassword"
@@ -265,14 +254,13 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 						</div>
 
 						{/* Security notice */}
-						<div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+						<div className="border-primary/20 bg-primary/5 rounded-lg border p-4">
 							<div className="flex gap-3">
-								<Lock className="size-5 text-primary" />
+								<Lock className="text-primary size-5" />
 								<div className="space-y-1">
-									<p className="font-medium text-sm">Secure & Private</p>
+									<p className="text-sm font-medium">Secure & Private</p>
 									<p className="text-muted-foreground text-xs">
-										Your password is encrypted and secure. We never share your
-										information.
+										Your password is encrypted and secure. We never share your information.
 									</p>
 								</div>
 							</div>
@@ -284,12 +272,9 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 						</Button>
 
 						{/* Help text */}
-						<p className="text-center text-muted-foreground text-sm">
+						<p className="text-muted-foreground text-center text-sm">
 							Need help?{" "}
-							<a
-								className="text-primary underline"
-								href="mailto:support@thorbis.com"
-							>
+							<a className="text-primary underline" href="mailto:support@thorbis.com">
 								Contact Support
 							</a>
 						</p>
@@ -305,17 +290,17 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
  */
 function InvalidTokenUI({ message }: { message: string }) {
 	return (
-		<div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted p-4">
+		<div className="from-background via-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
 			<Card className="w-full max-w-md">
 				<CardHeader className="text-center">
-					<div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-destructive/10">
-						<AlertCircle className="size-8 text-destructive" />
+					<div className="bg-destructive/10 mx-auto mb-4 flex size-16 items-center justify-center rounded-full">
+						<AlertCircle className="text-destructive size-8" />
 					</div>
 					<CardTitle className="text-2xl">Invalid Invitation</CardTitle>
 					<CardDescription>{message}</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
-					<p className="text-center text-muted-foreground text-sm">
+					<p className="text-muted-foreground text-center text-sm">
 						If you believe this is an error, please contact our support team.
 					</p>
 					<Button asChild className="w-full" size="lg" variant="outline">

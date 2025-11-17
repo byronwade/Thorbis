@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	Archive,
-	Download,
-	MoreHorizontal,
-	Package,
-	ShoppingCart,
-} from "lucide-react";
+import { Archive, Download, MoreHorizontal, Package, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,9 +58,7 @@ function renderStatusBadge(status: Material["status"]) {
 		className: "bg-muted text-muted-foreground",
 		label: status.replace(/[-_]/g, " "),
 	};
-	const config =
-		MATERIAL_STATUS_CONFIG[status as keyof typeof MATERIAL_STATUS_CONFIG] ??
-		fallback;
+	const config = MATERIAL_STATUS_CONFIG[status as keyof typeof MATERIAL_STATUS_CONFIG] ?? fallback;
 	return (
 		<Badge className={`text-xs ${config.className}`} variant="outline">
 			{config.label}
@@ -105,7 +97,7 @@ export function MaterialsTable({
 			shrink: true,
 			render: (material) => (
 				<Link
-					className="font-medium text-foreground text-sm leading-tight hover:underline"
+					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`/dashboard/work/materials/${material.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -124,10 +116,10 @@ export function MaterialsTable({
 					href={`/dashboard/work/materials/${material.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
 						{material.description}
 					</div>
-					<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+					<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
 						{material.category}
 					</div>
 				</Link>
@@ -166,9 +158,7 @@ export function MaterialsTable({
 			shrink: true,
 			align: "right",
 			render: (material) => (
-				<span className="font-semibold tabular-nums">
-					{formatCurrency(material.totalValue)}
-				</span>
+				<span className="font-semibold tabular-nums">{formatCurrency(material.totalValue)}</span>
 			),
 		},
 		{
@@ -248,23 +238,17 @@ export function MaterialsTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredMaterials}
-			emptyIcon={
-				<Package className="mx-auto h-12 w-12 text-muted-foreground" />
-			}
+			emptyIcon={<Package className="text-muted-foreground mx-auto h-12 w-12" />}
 			emptyMessage="No materials found"
 			enableSelection={true}
 			entity="materials"
 			getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
 			getItemId={(material) => material.id}
-			isArchived={(material) =>
-				Boolean(material.archived_at || material.deleted_at)
-			}
+			isArchived={(material) => Boolean(material.archived_at || material.deleted_at)}
 			isHighlighted={(material) => material.status === "out-of-stock"}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
-			onRowClick={(material) =>
-				(window.location.href = `/dashboard/work/materials/${material.id}`)
-			}
+			onRowClick={(material) => (window.location.href = `/dashboard/work/materials/${material.id}`)}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search materials by code, description, category, or status..."
 			showArchived={archiveFilter !== "active"}

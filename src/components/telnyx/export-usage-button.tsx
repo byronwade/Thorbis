@@ -61,9 +61,7 @@ export function ExportUsageButton({
 			const csvRows: string[] = [];
 
 			// Header
-			csvRows.push(
-				"Date,Type,Direction,From,To,Duration (seconds),Cost,Status,Details",
-			);
+			csvRows.push("Date,Type,Direction,From,To,Duration (seconds),Cost,Status,Details");
 
 			// Add communications
 			communications?.forEach((comm) => {
@@ -86,7 +84,7 @@ export function ExportUsageButton({
 				const details = comm.body?.replace(/,/g, ";") || ""; // Replace commas to avoid CSV issues
 
 				csvRows.push(
-					`"${date}","${type}","${direction}","${from}","${to}",${duration},$${cost.toFixed(4)},"${status}","${details}"`,
+					`"${date}","${type}","${direction}","${from}","${to}",${duration},$${cost.toFixed(4)},"${status}","${details}"`
 				);
 			});
 
@@ -101,7 +99,7 @@ export function ExportUsageButton({
 				const details = vm.transcription?.replace(/,/g, ";") || "";
 
 				csvRows.push(
-					`"${date}","Voicemail","inbound","${from}","${to}",${duration},$${cost.toFixed(4)},"${status}","${details}"`,
+					`"${date}","Voicemail","inbound","${from}","${to}",${duration},$${cost.toFixed(4)},"${status}","${details}"`
 				);
 			});
 
@@ -113,10 +111,7 @@ export function ExportUsageButton({
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.setAttribute("href", url);
-			link.setAttribute(
-				"download",
-				`telnyx-usage-${new Date().toISOString().split("T")[0]}.csv`,
-			);
+			link.setAttribute("download", `telnyx-usage-${new Date().toISOString().split("T")[0]}.csv`);
 			link.style.visibility = "hidden";
 			document.body.appendChild(link);
 			link.click();

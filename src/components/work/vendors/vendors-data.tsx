@@ -52,15 +52,12 @@ export async function VendorsData() {
 	return (
 		<WorkDataView
 			kanban={
-				<div className="flex h-full items-center justify-center rounded-lg border border-dashed p-8 text-center text-muted-foreground">
-					Vendor pipeline view coming soon. Switch back to table mode to manage
-					vendors.
+				<div className="text-muted-foreground flex h-full items-center justify-center rounded-lg border border-dashed p-8 text-center">
+					Vendor pipeline view coming soon. Switch back to table mode to manage vendors.
 				</div>
 			}
 			section="vendors"
-			table={
-				<VendorTable basePath="/dashboard/work/vendors" vendors={vendors} />
-			}
+			table={<VendorTable basePath="/dashboard/work/vendors" vendors={vendors} />}
 		/>
 	);
 }

@@ -34,7 +34,7 @@ export function useEntityActivities(
 	entityType: EntityType,
 	entityId: string,
 	enabled = true,
-	limit = 50,
+	limit = 50
 ) {
 	return useQuery({
 		queryKey: ["entity-activities", entityType, entityId],

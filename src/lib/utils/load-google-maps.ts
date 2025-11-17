@@ -22,11 +22,7 @@ const errorCallbacks: ErrorCallback[] = [];
 export function loadGoogleMapsScript(): Promise<void> {
 	return new Promise((resolve, reject) => {
 		// If already loaded, resolve immediately
-		if (
-			isLoaded &&
-			typeof window !== "undefined" &&
-			(window as any).google?.maps
-		) {
+		if (isLoaded && typeof window !== "undefined" && (window as any).google?.maps) {
 			resolve();
 			return;
 		}
@@ -34,16 +30,12 @@ export function loadGoogleMapsScript(): Promise<void> {
 		// If currently loading, add to callbacks queue
 		if (isLoading) {
 			loadCallbacks.push(() => resolve());
-			errorCallbacks.push(() =>
-				reject(new Error("Failed to load Google Maps")),
-			);
+			errorCallbacks.push(() => reject(new Error("Failed to load Google Maps")));
 			return;
 		}
 
 		// Check if script tag already exists
-		const existingScript = document.querySelector(
-			'script[src*="maps.googleapis.com/maps/api/js"]',
-		);
+		const existingScript = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]');
 
 		if (existingScript) {
 			// Script tag exists, wait for it to load
@@ -123,7 +115,5 @@ export function loadGoogleMapsScript(): Promise<void> {
  * Check if Google Maps is already loaded
  */
 export function isGoogleMapsLoaded(): boolean {
-	return (
-		typeof window !== "undefined" && !!(window as any).google?.maps && isLoaded
-	);
+	return typeof window !== "undefined" && !!(window as any).google?.maps && isLoaded;
 }

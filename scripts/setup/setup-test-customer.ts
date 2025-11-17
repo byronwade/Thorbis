@@ -16,9 +16,7 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!(supabaseUrl && supabaseKey)) {
 	console.error("❌ Missing environment variables!");
-	console.error(
-		"Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY",
-	);
+	console.error("Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY");
 	process.exit(1);
 }
 
@@ -82,7 +80,7 @@ async function ensureTestCustomer(companyId: string): Promise<string> {
 
 	if (existingCustomer) {
 		console.log(
-			`✅ Found existing customer: ${existingCustomer.first_name} ${existingCustomer.last_name}`,
+			`✅ Found existing customer: ${existingCustomer.first_name} ${existingCustomer.last_name}`
 		);
 		console.log(`   Email: ${existingCustomer.email}`);
 		console.log(`   ID: ${existingCustomer.id}\n`);
@@ -158,7 +156,7 @@ async function linkInvoicesToCustomer(customerId: string) {
 	console.log("📋 Linked Invoices:");
 	for (const invoice of invoicesToLink) {
 		console.log(
-			`   - ${invoice.invoice_number} | ${invoice.status} | $${formatCurrency(invoice.total_amount)}`,
+			`   - ${invoice.invoice_number} | ${invoice.status} | $${formatCurrency(invoice.total_amount)}`
 		);
 	}
 	console.log("");
@@ -185,11 +183,9 @@ async function verifyCustomerInvoices(customerId: string) {
 
 	console.log("📋 Current Invoices (most recent):");
 	for (const invoice of linkedInvoices) {
-		const status = invoice.sent_at
-			? `${invoice.status} (sent)`
-			: invoice.status;
+		const status = invoice.sent_at ? `${invoice.status} (sent)` : invoice.status;
 		console.log(
-			`   - ${invoice.invoice_number} | ${status} | $${formatCurrency(invoice.total_amount)}`,
+			`   - ${invoice.invoice_number} | ${status} | $${formatCurrency(invoice.total_amount)}`
 		);
 	}
 	console.log("");
@@ -198,18 +194,14 @@ async function verifyCustomerInvoices(customerId: string) {
 function printTestingInstructions() {
 	console.log("✨ Setup complete! Ready to test bulk email send.\n");
 	console.log("📝 Next Steps:");
-	console.log(
-		"   1. Navigate to: http://localhost:3000/dashboard/work/invoices",
-	);
+	console.log("   1. Navigate to: http://localhost:3000/dashboard/work/invoices");
 	console.log("   2. Search for: Byron Wade");
 	console.log("   3. Select 2-3 invoices");
 	console.log("   4. Click the 'Send' button in bulk actions");
 	console.log("   5. Confirm in the dialog");
 	console.log("   6. Watch for success message\n");
 	console.log("📧 Test emails will be sent to: bcw1995@gmail.com\n");
-	console.log(
-		"💡 In development mode, emails are logged to console instead of sent",
-	);
+	console.log("💡 In development mode, emails are logged to console instead of sent");
 	console.log("   Check your terminal for '[DEV MODE]' messages\n");
 }
 

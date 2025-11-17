@@ -36,9 +36,7 @@ export async function ensureCompanyTrialStatus({
 		.maybeSingle();
 
 	if (error || !company) {
-		throw new Error(
-			error?.message || "Company not found while provisioning trial",
-		);
+		throw new Error(error?.message || "Company not found while provisioning trial");
 	}
 
 	const updates: Record<string, unknown> = {};
@@ -46,19 +44,13 @@ export async function ensureCompanyTrialStatus({
 	const currentStatus = company.stripe_subscription_status;
 	const existingTrialEndsAt = company.trial_ends_at as string | null;
 
-	if (
-		currentStatus !== "active" &&
-		currentStatus !== "trialing" &&
-		currentStatus !== "paused"
-	) {
+	if (currentStatus !== "active" && currentStatus !== "trialing" && currentStatus !== "paused") {
 		updates.stripe_subscription_status = "trialing";
 		statusChanged = true;
 	}
 
 	if (!existingTrialEndsAt) {
-		const calculatedEndsAt = new Date(
-			now.getTime() + trialLengthDays * DAY_IN_MS,
-		).toISOString();
+		const calculatedEndsAt = new Date(now.getTime() + trialLengthDays * DAY_IN_MS).toISOString();
 		updates.trial_ends_at = calculatedEndsAt;
 	}
 
@@ -66,8 +58,7 @@ export async function ensureCompanyTrialStatus({
 		await client.from("companies").update(updates).eq("id", companyId);
 	}
 
-	const newTrialEndsAt =
-		(updates.trial_ends_at as string | undefined) ?? existingTrialEndsAt;
+	const newTrialEndsAt = (updates.trial_ends_at as string | undefined) ?? existingTrialEndsAt;
 
 	if (!newTrialEndsAt) {
 		throw new Error("Unable to determine trial end date");

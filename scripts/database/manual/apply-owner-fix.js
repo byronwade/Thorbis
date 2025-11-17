@@ -22,7 +22,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!(supabaseUrl && supabaseServiceKey)) {
 	console.error("❌ Error: Missing Supabase credentials");
 	console.error(
-		"Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local",
+		"Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set in .env.local"
 	);
 	process.exit(1);
 }
@@ -36,7 +36,7 @@ async function applyMigration() {
 
 	const migrationPath = path.join(
 		projectRoot,
-		"supabase/migrations/20250213000000_fix_owner_permissions.sql",
+		"supabase/migrations/20250213000000_fix_owner_permissions.sql"
 	);
 
 	if (!fs.existsSync(migrationPath)) {
@@ -105,11 +105,9 @@ async function applyMigration() {
 		console.log("\n✨ Company owners now have full access to all operations.");
 	} else {
 		console.log("⚠️  Migration completed with some errors.");
+		console.log("You may need to apply this migration manually through the Supabase SQL Editor:");
 		console.log(
-			"You may need to apply this migration manually through the Supabase SQL Editor:",
-		);
-		console.log(
-			`   ${supabaseUrl.replace("https://", "https://supabase.com/dashboard/project/")}/sql/new`,
+			`   ${supabaseUrl.replace("https://", "https://supabase.com/dashboard/project/")}/sql/new`
 		);
 	}
 }

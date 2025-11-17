@@ -37,9 +37,7 @@ export function CategoryCard({
 		<Card
 			className={cn(
 				"group relative h-40 cursor-pointer overflow-hidden transition-all hover:shadow-xl",
-				variant === "add"
-					? "border-dashed hover:border-primary/50"
-					: "hover:border-primary/50",
+				variant === "add" ? "hover:border-primary/50 border-dashed" : "hover:border-primary/50"
 			)}
 			onClick={onClick}
 		>
@@ -48,7 +46,7 @@ export function CategoryCard({
 				<>
 					{/* Full Background Image */}
 					<div
-						className="absolute inset-0 bg-center bg-cover transition-transform duration-300 group-hover:scale-105"
+						className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105"
 						style={{ backgroundImage: `url(${imageUrl})` }}
 					/>
 					{/* Dark Overlay for readability */}
@@ -61,7 +59,7 @@ export function CategoryCard({
 						"absolute inset-0 bg-gradient-to-br transition-opacity",
 						variant === "add"
 							? "from-muted/50 to-muted/30"
-							: "from-primary/10 via-primary/5 to-background",
+							: "from-primary/10 via-primary/5 to-background"
 					)}
 				/>
 			)}
@@ -73,29 +71,19 @@ export function CategoryCard({
 					<div className="flex-1">
 						<h3
 							className={cn(
-								"mb-1 font-semibold text-lg leading-tight",
-								hasImage ? "text-white" : "text-foreground",
+								"mb-1 text-lg leading-tight font-semibold",
+								hasImage ? "text-white" : "text-foreground"
 							)}
 						>
 							{name}
 						</h3>
 						{description ? (
-							<p
-								className={cn(
-									"text-sm",
-									hasImage ? "text-white/80" : "text-muted-foreground",
-								)}
-							>
+							<p className={cn("text-sm", hasImage ? "text-white/80" : "text-muted-foreground")}>
 								{description}
 							</p>
 						) : (
 							variant === "default" && (
-								<p
-									className={cn(
-										"text-sm",
-										hasImage ? "text-white/80" : "text-muted-foreground",
-									)}
-								>
+								<p className={cn("text-sm", hasImage ? "text-white/80" : "text-muted-foreground")}>
 									{count} {count === 1 ? "item" : "items"}
 								</p>
 							)
@@ -106,7 +94,7 @@ export function CategoryCard({
 					<ChevronRight
 						className={cn(
 							"size-6 shrink-0 transition-transform group-hover:translate-x-1",
-							hasImage ? "text-white/80" : "text-muted-foreground",
+							hasImage ? "text-white/80" : "text-muted-foreground"
 						)}
 					/>
 				</div>

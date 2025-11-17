@@ -16,13 +16,7 @@ import { SettingsSearch } from "@/components/settings/settings-search";
 import { SettingsSection } from "@/components/settings/settings-section";
 import { SettingsShell } from "@/components/settings/settings-shell";
 import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSettingsOverviewData } from "@/lib/settings/overview-data";
 
 type PageProps = {
@@ -37,42 +31,31 @@ async function SettingsData({ searchParams }: PageProps) {
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const sections = normalizedQuery
 		? overview.sections.filter((section) => {
-				const matchesTitle = section.title
-					.toLowerCase()
-					.includes(normalizedQuery);
-				const matchesDescription = section.description
-					.toLowerCase()
-					.includes(normalizedQuery);
+				const matchesTitle = section.title.toLowerCase().includes(normalizedQuery);
+				const matchesDescription = section.description.toLowerCase().includes(normalizedQuery);
 				const matchesLink = section.links.some(
 					(link) =>
 						link.title.toLowerCase().includes(normalizedQuery) ||
-						link.description.toLowerCase().includes(normalizedQuery),
+						link.description.toLowerCase().includes(normalizedQuery)
 				);
 				return matchesTitle || matchesDescription || matchesLink;
 			})
 		: overview.sections;
 
-	const generatedAtLabel = formatDistanceToNow(
-		new Date(overview.meta.generatedAt),
-		{
-			addSuffix: true,
-		},
-	);
+	const generatedAtLabel = formatDistanceToNow(new Date(overview.meta.generatedAt), {
+		addSuffix: true,
+	});
 	const planStatus = overview.meta.subscriptionStatus ?? "unknown";
 	const planBadgeVariant =
-		planStatus === "active" || planStatus === "trialing"
-			? "default"
-			: "destructive";
-	const analyticsSection = overview.sections.find(
-		(section) => section.slug === "analytics",
-	);
+		planStatus === "active" || planStatus === "trialing" ? "default" : "destructive";
+	const analyticsSection = overview.sections.find((section) => section.slug === "analytics");
 
 	return (
 		<div className="space-y-12">
 			<header className="space-y-6">
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">Settings</h1>
+						<h1 className="text-4xl font-bold tracking-tight">Settings</h1>
 						<p className="text-muted-foreground">
 							Workspace controls, advanced configuration, and telemetry
 						</p>
@@ -90,7 +73,7 @@ async function SettingsData({ searchParams }: PageProps) {
 							<CardDescription>Active workspace members</CardDescription>
 						</CardHeader>
 						<CardContent className="flex items-baseline gap-2">
-							<span className="font-semibold text-3xl tracking-tight">
+							<span className="text-3xl font-semibold tracking-tight">
 								{overview.meta.teamCount}
 							</span>
 							<span className="text-muted-foreground text-sm">active</span>
@@ -102,19 +85,15 @@ async function SettingsData({ searchParams }: PageProps) {
 								<CardTitle className="text-base">Alerts</CardTitle>
 								<CardDescription>Clusters needing attention</CardDescription>
 							</div>
-							<Badge
-								variant={
-									overview.meta.alerts.length ? "destructive" : "secondary"
-								}
-							>
+							<Badge variant={overview.meta.alerts.length ? "destructive" : "secondary"}>
 								{overview.meta.alerts.length}
 							</Badge>
 						</CardHeader>
-						<CardContent className="space-y-1.5 text-muted-foreground text-sm">
+						<CardContent className="text-muted-foreground space-y-1.5 text-sm">
 							{overview.meta.alerts.length ? (
 								overview.meta.alerts.slice(0, 2).map((alert) => (
 									<div className="flex items-start gap-2" key={alert}>
-										<AlertCircle className="mt-0.5 size-4 text-warning" />
+										<AlertCircle className="text-warning mt-0.5 size-4" />
 										<span>{alert}</span>
 									</div>
 								))
@@ -154,19 +133,15 @@ async function SettingsData({ searchParams }: PageProps) {
 						<CardContent className="grid gap-4 md:grid-cols-3">
 							{analyticsSection.metrics.slice(0, 3).map((metric) => (
 								<div
-									className="rounded-xl border border-primary/20 bg-background/80 p-4 shadow-sm"
+									className="border-primary/20 bg-background/80 rounded-xl border p-4 shadow-sm"
 									key={`${analyticsSection.slug}-${metric.key}-snapshot`}
 								>
-									<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+									<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 										{metric.label}
 									</p>
-									<p className="mt-1 font-semibold text-2xl tracking-tight">
-										{metric.value}
-									</p>
+									<p className="mt-1 text-2xl font-semibold tracking-tight">{metric.value}</p>
 									{metric.helper && (
-										<p className="text-muted-foreground text-sm">
-											{metric.helper}
-										</p>
+										<p className="text-muted-foreground text-sm">{metric.helper}</p>
 									)}
 								</div>
 							))}
@@ -179,9 +154,7 @@ async function SettingsData({ searchParams }: PageProps) {
 				{sections.length === 0 ? (
 					<Card className="py-12">
 						<CardContent className="flex flex-col items-center gap-3 text-center">
-							<p className="font-semibold text-lg">
-								No settings match “{searchQuery}”.
-							</p>
+							<p className="text-lg font-semibold">No settings match “{searchQuery}”.</p>
 							<p className="text-muted-foreground text-sm">
 								Try another query or clear the search bar.
 							</p>
@@ -206,7 +179,7 @@ function SettingsSkeleton() {
 			<header className="space-y-6">
 				<div className="flex flex-wrap items-center justify-between gap-4">
 					<div>
-						<h1 className="font-bold text-4xl tracking-tight">Settings</h1>
+						<h1 className="text-4xl font-bold tracking-tight">Settings</h1>
 						<p className="text-muted-foreground">
 							Workspace controls, advanced configuration, and telemetry
 						</p>
@@ -219,13 +192,13 @@ function SettingsSkeleton() {
 				</div>
 				<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 					{[1, 2, 3, 4].map((i) => (
-						<div className="h-32 animate-pulse rounded-lg bg-muted" key={i} />
+						<div className="bg-muted h-32 animate-pulse rounded-lg" key={i} />
 					))}
 				</div>
 			</header>
 			<div className="space-y-8">
 				{[1, 2, 3].map((i) => (
-					<div className="h-48 animate-pulse rounded-lg bg-muted" key={i} />
+					<div className="bg-muted h-48 animate-pulse rounded-lg" key={i} />
 				))}
 			</div>
 		</div>

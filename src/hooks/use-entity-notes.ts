@@ -30,11 +30,7 @@ type EntityType =
 	| "vendor"
 	| "material";
 
-export function useEntityNotes(
-	entityType: EntityType,
-	entityId: string,
-	enabled = true,
-) {
+export function useEntityNotes(entityType: EntityType, entityId: string, enabled = true) {
 	return useQuery({
 		queryKey: ["entity-notes", entityType, entityId],
 		queryFn: async () => {
@@ -46,7 +42,7 @@ export function useEntityNotes(
 				.eq("entity_type", entityType)
 				.eq("entity_id", entityId)
 				.is("deleted_at", null)
-				.order("created_at", { ascending: false});
+				.order("created_at", { ascending: false });
 
 			if (error) throw error;
 			return data;

@@ -1,16 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import {
-	ArrowRight,
-	Briefcase,
-	Clock,
-	MapPin,
-	Plus,
-	Search,
-	Sparkles,
-	User,
-} from "lucide-react";
+import { ArrowRight, Briefcase, Clock, MapPin, Plus, Search, Sparkles, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -62,7 +53,7 @@ export function ScheduleCommandMenu({
 			}
 			onClose();
 		},
-		[router, onClose],
+		[router, onClose]
 	);
 
 	// Filter unassigned jobs by search query
@@ -88,8 +79,8 @@ export function ScheduleCommandMenu({
 			<CommandList>
 				<CommandEmpty>
 					<div className="flex flex-col items-center justify-center py-6 text-center">
-						<Search className="mb-2 size-8 text-muted-foreground/50" />
-						<p className="mb-1 font-medium text-sm">No jobs found</p>
+						<Search className="text-muted-foreground/50 mb-2 size-8" />
+						<p className="mb-1 text-sm font-medium">No jobs found</p>
 						<p className="text-muted-foreground text-xs">
 							Try a different search or create a new job
 						</p>
@@ -99,23 +90,21 @@ export function ScheduleCommandMenu({
 				{/* Create New */}
 				<CommandGroup heading="Quick Actions">
 					<CommandItem className="group" onSelect={handleCreateNew}>
-						<div className="mr-3 flex size-8 items-center justify-center rounded-md bg-primary/10 group-aria-selected:bg-primary/20">
-							<Plus className="size-4 text-primary" />
+						<div className="bg-primary/10 group-aria-selected:bg-primary/20 mr-3 flex size-8 items-center justify-center rounded-md">
+							<Plus className="text-primary size-4" />
 						</div>
 						<div className="flex flex-1 flex-col">
 							<div className="flex items-center gap-2">
-								<span className="font-semibold text-sm">Create New Job</span>
+								<span className="text-sm font-semibold">Create New Job</span>
 								{selectedDate && (
 									<Badge className="font-medium" variant="secondary">
 										{format(selectedDate, "MMM d, yyyy")}
 									</Badge>
 								)}
 							</div>
-							<span className="text-muted-foreground text-xs">
-								Start a new job or appointment
-							</span>
+							<span className="text-muted-foreground text-xs">Start a new job or appointment</span>
 						</div>
-						<ArrowRight className="ml-2 size-4 text-muted-foreground opacity-0 transition-opacity group-aria-selected:opacity-100" />
+						<ArrowRight className="text-muted-foreground ml-2 size-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
 					</CommandItem>
 				</CommandGroup>
 
@@ -123,14 +112,10 @@ export function ScheduleCommandMenu({
 				{filteredJobs.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup
-							heading={`Unscheduled Jobs · ${filteredJobs.length} total`}
-						>
+						<CommandGroup heading={`Unscheduled Jobs · ${filteredJobs.length} total`}>
 							{filteredJobs.slice(0, 10).map((job) => {
 								const startTime =
-									job.startTime instanceof Date
-										? job.startTime
-										: new Date(job.startTime);
+									job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 
 								return (
 									<CommandItem
@@ -143,24 +128,20 @@ export function ScheduleCommandMenu({
 										</div>
 										<div className="flex flex-1 flex-col gap-1.5">
 											<div className="flex items-center gap-2">
-												<span className="font-semibold text-sm">
-													{job.title}
-												</span>
+												<span className="text-sm font-semibold">{job.title}</span>
 												{job.customer?.name && (
-													<span className="text-muted-foreground text-xs">
-														{job.customer.name}
-													</span>
+													<span className="text-muted-foreground text-xs">{job.customer.name}</span>
 												)}
 											</div>
 											<div className="flex flex-wrap items-center gap-x-3 gap-y-1">
 												{job.startTime && (
-													<div className="flex items-center gap-1 text-muted-foreground text-xs">
+													<div className="text-muted-foreground flex items-center gap-1 text-xs">
 														<Clock className="size-3" />
 														<span>{format(startTime, "MMM d, h:mm a")}</span>
 													</div>
 												)}
 												{job.assignments.length > 0 && (
-													<div className="flex items-center gap-1 text-muted-foreground text-xs">
+													<div className="text-muted-foreground flex items-center gap-1 text-xs">
 														<User className="size-3" />
 														<span>
 															{job.assignments.length} team member
@@ -169,7 +150,7 @@ export function ScheduleCommandMenu({
 													</div>
 												)}
 												{job.location?.address?.street && (
-													<div className="flex items-center gap-1 text-muted-foreground text-xs">
+													<div className="text-muted-foreground flex items-center gap-1 text-xs">
 														<MapPin className="size-3" />
 														<span className="max-w-[200px] truncate">
 															{job.location.address.street}
@@ -178,14 +159,14 @@ export function ScheduleCommandMenu({
 												)}
 											</div>
 										</div>
-										<ArrowRight className="ml-2 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-aria-selected:opacity-100" />
+										<ArrowRight className="text-muted-foreground ml-2 size-4 shrink-0 opacity-0 transition-opacity group-aria-selected:opacity-100" />
 									</CommandItem>
 								);
 							})}
 							{filteredJobs.length > 10 && (
 								<CommandItem disabled>
 									<div className="mr-3 flex size-8 items-center justify-center">
-										<Sparkles className="size-4 text-muted-foreground/50" />
+										<Sparkles className="text-muted-foreground/50 size-4" />
 									</div>
 									<span className="text-muted-foreground text-sm">
 										+{filteredJobs.length - 10} more jobs available

@@ -1,10 +1,4 @@
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 /**
  * Jobs Data - Async Server Component
@@ -20,9 +14,9 @@ export async function JobsData() {
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="font-medium text-sm">Active Jobs</CardTitle>
+						<CardTitle className="text-sm font-medium">Active Jobs</CardTitle>
 						<svg
-							className="size-4 text-muted-foreground"
+							className="text-muted-foreground size-4"
 							fill="none"
 							stroke="currentColor"
 							strokeLinecap="round"
@@ -37,16 +31,16 @@ export async function JobsData() {
 						</svg>
 					</CardHeader>
 					<CardContent>
-						<div className="font-bold text-2xl">24</div>
+						<div className="text-2xl font-bold">24</div>
 						<p className="text-muted-foreground text-xs">+3 from yesterday</p>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="font-medium text-sm">In Progress</CardTitle>
+						<CardTitle className="text-sm font-medium">In Progress</CardTitle>
 						<svg
-							className="size-4 text-muted-foreground"
+							className="text-muted-foreground size-4"
 							fill="none"
 							stroke="currentColor"
 							strokeLinecap="round"
@@ -61,20 +55,16 @@ export async function JobsData() {
 						</svg>
 					</CardHeader>
 					<CardContent>
-						<div className="font-bold text-2xl">12</div>
-						<p className="text-muted-foreground text-xs">
-							Average duration: 2.5h
-						</p>
+						<div className="text-2xl font-bold">12</div>
+						<p className="text-muted-foreground text-xs">Average duration: 2.5h</p>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="font-medium text-sm">
-							Completed Today
-						</CardTitle>
+						<CardTitle className="text-sm font-medium">Completed Today</CardTitle>
 						<svg
-							className="size-4 text-muted-foreground"
+							className="text-muted-foreground size-4"
 							fill="none"
 							stroke="currentColor"
 							strokeLinecap="round"
@@ -89,16 +79,16 @@ export async function JobsData() {
 						</svg>
 					</CardHeader>
 					<CardContent>
-						<div className="font-bold text-2xl">18</div>
+						<div className="text-2xl font-bold">18</div>
 						<p className="text-muted-foreground text-xs">94% completion rate</p>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="font-medium text-sm">Overdue</CardTitle>
+						<CardTitle className="text-sm font-medium">Overdue</CardTitle>
 						<svg
-							className="size-4 text-muted-foreground"
+							className="text-muted-foreground size-4"
 							fill="none"
 							stroke="currentColor"
 							strokeLinecap="round"
@@ -113,7 +103,7 @@ export async function JobsData() {
 						</svg>
 					</CardHeader>
 					<CardContent>
-						<div className="font-bold text-2xl">2</div>
+						<div className="text-2xl font-bold">2</div>
 						<p className="text-muted-foreground text-xs">Need attention</p>
 					</CardContent>
 				</Card>
@@ -124,9 +114,7 @@ export async function JobsData() {
 				<Card className="col-span-4">
 					<CardHeader>
 						<CardTitle>Active Jobs</CardTitle>
-						<CardDescription>
-							Current work orders and job assignments
-						</CardDescription>
+						<CardDescription>Current work orders and job assignments</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-4">
@@ -182,20 +170,15 @@ export async function JobsData() {
 									location: "654 Factory St",
 								},
 							].map((job, index) => (
-								<div
-									className="flex items-center gap-4 rounded-lg border p-4"
-									key={index}
-								>
-									<div className="flex size-12 items-center justify-center rounded-full bg-accent">
-										<span className="font-medium text-sm">{job.jobId}</span>
+								<div className="flex items-center gap-4 rounded-lg border p-4" key={index}>
+									<div className="bg-accent flex size-12 items-center justify-center rounded-full">
+										<span className="text-sm font-medium">{job.jobId}</span>
 									</div>
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<p className="font-medium text-sm leading-none">
-												{job.customer}
-											</p>
+											<p className="text-sm leading-none font-medium">{job.customer}</p>
 											<span
-												className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
+												className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
 													job.status === "In Progress"
 														? "bg-primary text-primary"
 														: job.status === "Assigned"
@@ -208,7 +191,7 @@ export async function JobsData() {
 												{job.status}
 											</span>
 											<span
-												className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
+												className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
 													job.priority === "High"
 														? "bg-destructive text-destructive"
 														: job.priority === "Medium"
@@ -222,12 +205,10 @@ export async function JobsData() {
 										<p className="text-muted-foreground text-sm">
 											{job.service} • {job.technician}
 										</p>
-										<p className="text-muted-foreground text-sm">
-											{job.location}
-										</p>
+										<p className="text-muted-foreground text-sm">{job.location}</p>
 									</div>
 									<div className="text-right">
-										<p className="font-medium text-sm">{job.scheduled}</p>
+										<p className="text-sm font-medium">{job.scheduled}</p>
 									</div>
 								</div>
 							))}
@@ -238,74 +219,58 @@ export async function JobsData() {
 				<Card className="col-span-3">
 					<CardHeader>
 						<CardTitle>Job Summary</CardTitle>
-						<CardDescription>
-							Work order analytics and performance
-						</CardDescription>
+						<CardDescription>Work order analytics and performance</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="space-y-4">
-							<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+							<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 								<div>
-									<p className="font-medium text-sm">Completion Rate</p>
+									<p className="text-sm font-medium">Completion Rate</p>
 									<p className="text-muted-foreground text-xs">This week</p>
 								</div>
 								<div className="text-right">
-									<p className="font-bold text-sm">94%</p>
-									<p className="text-muted-foreground text-xs">
-										+2% from last week
-									</p>
+									<p className="text-sm font-bold">94%</p>
+									<p className="text-muted-foreground text-xs">+2% from last week</p>
 								</div>
 							</div>
-							<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+							<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 								<div>
-									<p className="font-medium text-sm">Average Duration</p>
+									<p className="text-sm font-medium">Average Duration</p>
 									<p className="text-muted-foreground text-xs">Per job</p>
 								</div>
 								<div className="text-right">
-									<p className="font-bold text-sm">2.3h</p>
-									<p className="text-muted-foreground text-xs">
-										-0.2h from last month
-									</p>
+									<p className="text-sm font-bold">2.3h</p>
+									<p className="text-muted-foreground text-xs">-0.2h from last month</p>
 								</div>
 							</div>
-							<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+							<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 								<div>
-									<p className="font-medium text-sm">On-Time Rate</p>
-									<p className="text-muted-foreground text-xs">
-										Scheduled vs actual
-									</p>
+									<p className="text-sm font-medium">On-Time Rate</p>
+									<p className="text-muted-foreground text-xs">Scheduled vs actual</p>
 								</div>
 								<div className="text-right">
-									<p className="font-bold text-sm">89%</p>
-									<p className="text-muted-foreground text-xs">
-										+3% from last month
-									</p>
+									<p className="text-sm font-bold">89%</p>
+									<p className="text-muted-foreground text-xs">+3% from last month</p>
 								</div>
 							</div>
-							<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+							<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 								<div>
-									<p className="font-medium text-sm">Customer Satisfaction</p>
-									<p className="text-muted-foreground text-xs">
-										Average rating
-									</p>
+									<p className="text-sm font-medium">Customer Satisfaction</p>
+									<p className="text-muted-foreground text-xs">Average rating</p>
 								</div>
 								<div className="text-right">
-									<p className="font-bold text-sm">4.8</p>
+									<p className="text-sm font-bold">4.8</p>
 									<p className="text-muted-foreground text-xs">out of 5.0</p>
 								</div>
 							</div>
-							<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+							<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 								<div>
-									<p className="font-medium text-sm">Revenue This Week</p>
-									<p className="text-muted-foreground text-xs">
-										From completed jobs
-									</p>
+									<p className="text-sm font-medium">Revenue This Week</p>
+									<p className="text-muted-foreground text-xs">From completed jobs</p>
 								</div>
 								<div className="text-right">
-									<p className="font-bold text-sm">$24,500</p>
-									<p className="text-muted-foreground text-xs">
-										+$2,100 from last week
-									</p>
+									<p className="text-sm font-bold">$24,500</p>
+									<p className="text-muted-foreground text-xs">+$2,100 from last week</p>
 								</div>
 							</div>
 						</div>

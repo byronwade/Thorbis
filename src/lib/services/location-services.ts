@@ -73,16 +73,13 @@ export type LocationIntelligence = z.infer<typeof LocationIntelligenceSchema>;
 // ============================================================================
 
 export class LocationServices {
-	private readonly cache: Map<string, { data: any; timestamp: number }> =
-		new Map();
+	private readonly cache: Map<string, { data: any; timestamp: number }> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
 	/**
 	 * Geocode using Google Geocoding API (more accurate than Nominatim)
 	 */
-	private async geocodeWithGoogle(
-		address: string,
-	): Promise<GeocodingResult | null> {
+	private async geocodeWithGoogle(address: string): Promise<GeocodingResult | null> {
 		const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
 		if (!apiKey) {
@@ -95,12 +92,9 @@ export class LocationServices {
 				key: apiKey,
 			});
 
-			const res = await fetch(
-				`https://maps.googleapis.com/maps/api/geocode/json?${params}`,
-				{
-					signal: AbortSignal.timeout(10_000), // 10 second timeout
-				},
-			);
+			const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?${params}`, {
+				signal: AbortSignal.timeout(10_000), // 10 second timeout
+			});
 
 			if (!res.ok) {
 				return null;
@@ -130,9 +124,7 @@ export class LocationServices {
 					house_number: getComponent("street_number"),
 					road: getComponent("route"),
 					city:
-						getComponent("locality") ||
-						getComponent("sublocality") ||
-						getComponent("postal_town"),
+						getComponent("locality") || getComponent("sublocality") || getComponent("postal_town"),
 					state: getComponentShort("administrative_area_level_1"),
 					postcode: getComponent("postal_code"),
 					country: getComponent("country"),
@@ -151,9 +143,7 @@ export class LocationServices {
 	/**
 	 * Geocode using Nominatim (OpenStreetMap) - fallback option
 	 */
-	private async geocodeWithNominatim(
-		address: string,
-	): Promise<GeocodingResult | null> {
+	private async geocodeWithNominatim(address: string): Promise<GeocodingResult | null> {
 		try {
 			const params = new URLSearchParams({
 				q: address,
@@ -162,13 +152,10 @@ export class LocationServices {
 				limit: "1",
 			});
 
-			const res = await fetch(
-				`https://nominatim.openstreetmap.org/search?${params}`,
-				{
-					headers: { "User-Agent": USER_AGENT },
-					signal: AbortSignal.timeout(15_000), // 15 second timeout
-				},
-			);
+			const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+				headers: { "User-Agent": USER_AGENT },
+				signal: AbortSignal.timeout(15_000), // 15 second timeout
+			});
 
 			if (!res.ok) {
 				if (res.status === 429) {
@@ -193,10 +180,7 @@ export class LocationServices {
 					? {
 							house_number: first.address.house_number,
 							road: first.address.road,
-							city:
-								first.address.city ||
-								first.address.town ||
-								first.address.village,
+							city: first.address.city || first.address.town || first.address.village,
 							state: first.address.state,
 							postcode: first.address.postcode,
 							country: first.address.country,
@@ -242,10 +226,7 @@ export class LocationServices {
 	/**
 	 * Reverse geocode coordinates to address
 	 */
-	async reverseGeocode(
-		lat: number,
-		lon: number,
-	): Promise<GeocodingResult | null> {
+	async reverseGeocode(lat: number, lon: number): Promise<GeocodingResult | null> {
 		const cacheKey = `reverse:${lat},${lon}`;
 		const cached = this.cache.get(cacheKey);
 		if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
@@ -260,12 +241,9 @@ export class LocationServices {
 				addressdetails: "1",
 			});
 
-			const res = await fetch(
-				`https://nominatim.openstreetmap.org/reverse?${params}`,
-				{
-					headers: { "User-Agent": USER_AGENT },
-				},
-			);
+			const res = await fetch(`https://nominatim.openstreetmap.org/reverse?${params}`, {
+				headers: { "User-Agent": USER_AGENT },
+			});
 
 			if (!res.ok) {
 				return null;
@@ -281,8 +259,7 @@ export class LocationServices {
 					? {
 							house_number: data.address.house_number,
 							road: data.address.road,
-							city:
-								data.address.city || data.address.town || data.address.village,
+							city: data.address.city || data.address.town || data.address.village,
 							state: data.address.state,
 							postcode: data.address.postcode,
 							country: data.address.country,
@@ -382,7 +359,7 @@ export class LocationServices {
 
 			// Check for Special Flood Hazard Area
 			const floodFeature = features.find((f) =>
-				/Zone [A|AE|AO|AH|VE|V]/i.test(f.attributes?.FLD_ZONE || ""),
+				/Zone [A|AE|AO|AH|VE|V]/i.test(f.attributes?.FLD_ZONE || "")
 			);
 
 			if (floodFeature) {
@@ -436,10 +413,7 @@ export class LocationServices {
 	/**
 	 * Get complete location intelligence for a point
 	 */
-	async getLocationIntelligence(
-		lat: number,
-		lon: number,
-	): Promise<LocationIntelligence> {
+	async getLocationIntelligence(lat: number, lon: number): Promise<LocationIntelligence> {
 		const [county, floodZone] = await Promise.all([
 			this.getCountyData(lat, lon),
 			this.getFloodZoneData(lat, lon),

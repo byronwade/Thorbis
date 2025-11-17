@@ -2,13 +2,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
@@ -23,12 +17,7 @@ export const metadata = generateSEOMetadata({
 		"Build on the Thorbis platform with secure REST and GraphQL APIs. Access authentication guides, webhooks, and developer tooling.",
 	path: "/api-docs",
 	section: "Resources",
-	keywords: [
-		"thorbis api",
-		"thorbis developer docs",
-		"field service api",
-		"thorbis webhooks",
-	],
+	keywords: ["thorbis api", "thorbis developer docs", "field service api", "thorbis webhooks"],
 });
 
 const FAQ_DATA = [
@@ -114,24 +103,20 @@ export default function ApiDocsPage() {
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="max-w-3xl space-y-6">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Developer Platform
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						Thorbis API Documentation
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Build integrations that automate workflows, surface analytics, and
-						keep your tech stack in sync. Thorbis provides secure REST and
-						GraphQL endpoints with robust webhooks and SDK support.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Build integrations that automate workflows, surface analytics, and keep your tech stack
+						in sync. Thorbis provides secure REST and GraphQL endpoints with robust webhooks and SDK
+						support.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild size="lg">
-							<a
-								href="https://developer.thorbis.com"
-								rel="noopener"
-								target="_blank"
-							>
+							<a href="https://developer.thorbis.com" rel="noopener" target="_blank">
 								Open developer portal
 							</a>
 						</Button>
@@ -148,7 +133,7 @@ export default function ApiDocsPage() {
 				</header>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Start shipping faster</h2>
+					<h2 className="text-2xl font-semibold">Start shipping faster</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{RESOURCES.map((resource) => (
 							<Card key={resource.title}>
@@ -160,11 +145,7 @@ export default function ApiDocsPage() {
 										{resource.description}
 									</CardDescription>
 									<Button asChild variant="outline">
-										<a
-											href={resource.action.href}
-											rel="noopener"
-											target="_blank"
-										>
+										<a href={resource.action.href} rel="noopener" target="_blank">
 											{resource.action.label}
 										</a>
 									</Button>
@@ -175,29 +156,26 @@ export default function ApiDocsPage() {
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="font-semibold text-2xl">Key capabilities</h2>
-					<ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
+					<h2 className="text-2xl font-semibold">Key capabilities</h2>
+					<ul className="text-muted-foreground space-y-2 text-sm leading-relaxed">
 						<li>
-							• Comprehensive REST endpoints for customers, jobs, schedules,
-							invoices, payments, and equipment.
+							• Comprehensive REST endpoints for customers, jobs, schedules, invoices, payments, and
+							equipment.
 						</li>
 						<li>
-							• Real-time webhooks with configurable retry policies and signing
-							secrets for verification.
+							• Real-time webhooks with configurable retry policies and signing secrets for
+							verification.
 						</li>
+						<li>• SDKs for TypeScript, Python, and Go plus OpenAPI specs for generated clients.</li>
 						<li>
-							• SDKs for TypeScript, Python, and Go plus OpenAPI specs for
-							generated clients.
-						</li>
-						<li>
-							• Robust rate limits, audit logging, and scoped OAuth permissions
-							to keep integrations secure.
+							• Robust rate limits, audit logging, and scoped OAuth permissions to keep integrations
+							secure.
 						</li>
 					</ul>
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+					<h2 className="text-2xl font-semibold">Frequently asked questions</h2>
 					<div className="grid gap-4 md:grid-cols-3">
 						{FAQ_DATA.map((item) => (
 							<Card key={item.question}>

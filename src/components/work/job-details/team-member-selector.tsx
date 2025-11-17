@@ -23,14 +23,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-	Check,
-	ChevronsUpDown,
-	Loader2,
-	UserPlus,
-	Users,
-	X,
-} from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, UserPlus, Users, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -51,11 +44,7 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -78,10 +67,7 @@ type TeamMember = {
 };
 
 // eslint-disable-next-line complexity
-export function TeamMemberSelector({
-	jobId,
-	isEditMode,
-}: TeamMemberSelectorProps) {
+export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProps) {
 	const queryClient = useQueryClient();
 
 	// Local UI state
@@ -124,13 +110,7 @@ export function TeamMemberSelector({
 
 	// React Query: Assign team member mutation
 	const assignMutation = useMutation({
-		mutationFn: async ({
-			teamMemberId,
-			role,
-		}: {
-			teamMemberId: string;
-			role: string;
-		}) => {
+		mutationFn: async ({ teamMemberId, role }: { teamMemberId: string; role: string }) => {
 			const result = await assignTeamMemberToJob({
 				jobId,
 				teamMemberId,
@@ -179,24 +159,18 @@ export function TeamMemberSelector({
 		onMutate: (teamMemberId) => {
 			setProcessingIds((prev) => new Set(prev).add(teamMemberId));
 			// Optimistic update
-			const previousAssignments = queryClient.getQueryData([
-				"job-team-assignments",
-				jobId,
-			]);
+			const previousAssignments = queryClient.getQueryData(["job-team-assignments", jobId]);
 			queryClient.setQueryData(
 				["job-team-assignments", jobId],
 				(old: TeamMemberAssignment[] | undefined) =>
-					old ? old.filter((a) => a.teamMemberId !== teamMemberId) : old,
+					old ? old.filter((a) => a.teamMemberId !== teamMemberId) : old
 			);
 			return { previousAssignments };
 		},
 		onError: (error: Error, _teamMemberId, context) => {
 			// Rollback on error
 			if (context?.previousAssignments) {
-				queryClient.setQueryData(
-					["job-team-assignments", jobId],
-					context.previousAssignments,
-				);
+				queryClient.setQueryData(["job-team-assignments", jobId], context.previousAssignments);
 			}
 			toast.error(error.message);
 		},
@@ -262,7 +236,7 @@ export function TeamMemberSelector({
 	// Error state
 	if (error) {
 		return (
-			<div className="flex items-center gap-2 text-destructive text-sm">
+			<div className="text-destructive flex items-center gap-2 text-sm">
 				<Users className="h-4 w-4" />
 				<span>Failed to load team members: {error.message}</span>
 			</div>
@@ -273,7 +247,7 @@ export function TeamMemberSelector({
 	if (!isEditMode) {
 		if (assignments.length === 0) {
 			return (
-				<div className="flex items-center gap-2 text-muted-foreground text-sm">
+				<div className="text-muted-foreground flex items-center gap-2 text-sm">
 					<Users className="h-4 w-4" />
 					<span>No team assigned</span>
 				</div>
@@ -282,43 +256,40 @@ export function TeamMemberSelector({
 
 		const MAX_VISIBLE_AVATARS = 5;
 		const visibleAssignments = assignments.slice(0, MAX_VISIBLE_AVATARS);
-		const remainingCount = Math.max(
-			0,
-			assignments.length - MAX_VISIBLE_AVATARS,
-		);
+		const remainingCount = Math.max(0, assignments.length - MAX_VISIBLE_AVATARS);
 
 		return (
 			<div className="space-y-2">
 				{/* Avatar Stack */}
 				<div className="flex items-center gap-2">
-					<div className="-space-x-2 flex">
+					<div className="flex -space-x-2">
 						{visibleAssignments.map((assignment) => (
 							<Avatar
-								className="h-8 w-8 border-2 border-background ring-1 ring-muted transition-transform hover:z-10 hover:scale-110"
+								className="border-background ring-muted h-8 w-8 border-2 ring-1 transition-transform hover:z-10 hover:scale-110"
 								key={assignment.id}
 								title={getFullName(
 									assignment.teamMember.user.firstName,
-									assignment.teamMember.user.lastName,
+									assignment.teamMember.user.lastName
 								)}
 							>
 								<AvatarImage
 									alt={getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName,
+										assignment.teamMember.user.lastName
 									)}
 									src={assignment.teamMember.user.avatarUrl || undefined}
 								/>
 								<AvatarFallback className="text-xs">
 									{getInitials(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName,
+										assignment.teamMember.user.lastName
 									)}
 								</AvatarFallback>
 							</Avatar>
 						))}
 						{remainingCount > 0 && (
 							<div
-								className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-muted font-medium text-muted-foreground text-xs ring-1 ring-muted"
+								className="border-background bg-muted text-muted-foreground ring-muted flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-medium ring-1"
 								title={`${remainingCount} more team member${remainingCount === 1 ? "" : "s"}`}
 							>
 								+{remainingCount}
@@ -329,7 +300,7 @@ export function TeamMemberSelector({
 					{/* Team count and toggle */}
 					{assignments.length > 1 && (
 						<Button
-							className="h-auto p-1 text-muted-foreground text-xs hover:text-foreground"
+							className="text-muted-foreground hover:text-foreground h-auto p-1 text-xs"
 							onClick={() => setShowAll(!showAll)}
 							size="sm"
 							variant="ghost"
@@ -344,28 +315,28 @@ export function TeamMemberSelector({
 					<div className="flex flex-wrap gap-2">
 						{assignments.map((assignment) => (
 							<div
-								className="flex items-center gap-2 rounded-md border bg-muted/30 px-2 py-1"
+								className="bg-muted/30 flex items-center gap-2 rounded-md border px-2 py-1"
 								key={assignment.id}
 							>
 								<Avatar className="h-6 w-6">
 									<AvatarImage
 										alt={getFullName(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName,
+											assignment.teamMember.user.lastName
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
 										{getInitials(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName,
+											assignment.teamMember.user.lastName
 										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
 									{getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName,
+										assignment.teamMember.user.lastName
 									)}
 								</span>
 								{assignment.role === "primary" && (
@@ -383,9 +354,7 @@ export function TeamMemberSelector({
 
 	// Edit mode: Show selector with assigned members (compact for many members)
 	const MAX_VISIBLE_IN_EDIT = 10;
-	const visibleInEdit = showAllEdit
-		? assignments
-		: assignments.slice(0, MAX_VISIBLE_IN_EDIT);
+	const visibleInEdit = showAllEdit ? assignments : assignments.slice(0, MAX_VISIBLE_IN_EDIT);
 	const remainingInEdit = Math.max(0, assignments.length - MAX_VISIBLE_IN_EDIT);
 
 	return (
@@ -400,7 +369,7 @@ export function TeamMemberSelector({
 						</span>
 						{assignments.length > MAX_VISIBLE_IN_EDIT && (
 							<Button
-								className="h-auto p-1 text-muted-foreground text-xs hover:text-foreground"
+								className="text-muted-foreground hover:text-foreground h-auto p-1 text-xs"
 								onClick={() => setShowAllEdit(!showAllEdit)}
 								size="sm"
 								variant="ghost"
@@ -413,28 +382,28 @@ export function TeamMemberSelector({
 					<div className="flex flex-wrap items-center gap-2">
 						{visibleInEdit.map((assignment) => (
 							<div
-								className="group flex items-center gap-2 rounded-md border bg-muted/30 px-2 py-1 transition-colors hover:bg-muted/50"
+								className="group bg-muted/30 hover:bg-muted/50 flex items-center gap-2 rounded-md border px-2 py-1 transition-colors"
 								key={assignment.id}
 							>
 								<Avatar className="h-6 w-6">
 									<AvatarImage
 										alt={getFullName(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName,
+											assignment.teamMember.user.lastName
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
 										{getInitials(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName,
+											assignment.teamMember.user.lastName
 										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
 									{getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName,
+										assignment.teamMember.user.lastName
 									)}
 								</span>
 								{assignment.role === "primary" && (
@@ -443,7 +412,7 @@ export function TeamMemberSelector({
 									</Badge>
 								)}
 								<button
-									className="ml-1 opacity-0 transition-opacity disabled:opacity-50 group-hover:opacity-100"
+									className="ml-1 opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50"
 									disabled={processingIds.has(assignment.teamMemberId)}
 									onClick={() => handleRemove(assignment.teamMemberId)}
 									type="button"
@@ -451,13 +420,13 @@ export function TeamMemberSelector({
 									{processingIds.has(assignment.teamMemberId) ? (
 										<Loader2 className="h-3 w-3 animate-spin" />
 									) : (
-										<X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+										<X className="text-muted-foreground hover:text-destructive h-3 w-3" />
 									)}
 								</button>
 							</div>
 						))}
 						{!showAllEdit && remainingInEdit > 0 && (
-							<div className="flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-muted-foreground text-xs">
+							<div className="text-muted-foreground flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-xs">
 								+{remainingInEdit} more
 							</div>
 						)}
@@ -485,9 +454,7 @@ export function TeamMemberSelector({
 						<CommandInput placeholder="Search team members..." />
 						<CommandList className="max-h-[400px]">
 							<CommandEmpty>No team members found.</CommandEmpty>
-							<CommandGroup
-								heading={`Available Team Members (${availableMembers.length})`}
-							>
+							<CommandGroup heading={`Available Team Members (${availableMembers.length})`}>
 								{availableMembers.map((member) => {
 									const assigned = isAssigned(member.id);
 									const processing = processingIds.has(member.id);
@@ -506,7 +473,7 @@ export function TeamMemberSelector({
 													"flex h-4 w-4 items-center justify-center rounded-sm border",
 													assigned
 														? "border-primary bg-primary text-primary-foreground"
-														: "border-muted-foreground",
+														: "border-muted-foreground"
 												)}
 											>
 												{assigned && <Check className="h-3 w-3" />}
@@ -515,39 +482,26 @@ export function TeamMemberSelector({
 											{/* Avatar */}
 											<Avatar className="h-6 w-6">
 												<AvatarImage
-													alt={getFullName(
-														member.user.firstName,
-														member.user.lastName,
-													)}
+													alt={getFullName(member.user.firstName, member.user.lastName)}
 													src={member.user.avatarUrl || undefined}
 												/>
 												<AvatarFallback className="text-[10px]">
-													{getInitials(
-														member.user.firstName,
-														member.user.lastName,
-													)}
+													{getInitials(member.user.firstName, member.user.lastName)}
 												</AvatarFallback>
 											</Avatar>
 
 											{/* Name and Title */}
 											<div className="flex flex-1 flex-col">
 												<span className="text-sm">
-													{getFullName(
-														member.user.firstName,
-														member.user.lastName,
-													)}
+													{getFullName(member.user.firstName, member.user.lastName)}
 												</span>
 												{member.jobTitle && (
-													<span className="text-muted-foreground text-xs">
-														{member.jobTitle}
-													</span>
+													<span className="text-muted-foreground text-xs">{member.jobTitle}</span>
 												)}
 											</div>
 
 											{/* Loading spinner */}
-											{processing && (
-												<Loader2 className="h-4 w-4 animate-spin" />
-											)}
+											{processing && <Loader2 className="h-4 w-4 animate-spin" />}
 										</CommandItem>
 									);
 								})}

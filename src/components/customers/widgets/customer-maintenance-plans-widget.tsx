@@ -28,23 +28,22 @@ export function CustomerMaintenancePlansWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: plans, isLoading, error } = useCustomerMaintenancePlans(
-					customerId,
-					isVisible,
-				);
+				const {
+					data: plans,
+					isLoading,
+					error,
+				} = useCustomerMaintenancePlans(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load maintenance plans
 						</div>
 					);
 				if (!plans || plans.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No maintenance plans
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No maintenance plans</div>
 					);
 
 				return (
@@ -53,13 +52,11 @@ export function CustomerMaintenancePlansWidget({
 							<Link
 								key={plan.id}
 								href={`/dashboard/work/maintenance-plans/${plan.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<span className="font-medium text-sm">
-											{plan.name || "Unnamed Plan"}
-										</span>
+										<span className="text-sm font-medium">{plan.name || "Unnamed Plan"}</span>
 										<Badge variant="outline" className="text-xs">
 											{plan.status || "active"}
 										</Badge>
@@ -79,9 +76,7 @@ export function CustomerMaintenancePlansWidget({
 
 						{plans.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link
-									href={`/dashboard/work/maintenance-plans?customer=${customerId}`}
-								>
+								<Link href={`/dashboard/work/maintenance-plans?customer=${customerId}`}>
 									View All Plans
 								</Link>
 							</Button>

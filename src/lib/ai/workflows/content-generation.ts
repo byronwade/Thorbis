@@ -44,10 +44,7 @@ type ContentOutput = {
  * Content Generation Workflow
  * Steps: Research → Draft → Review → Polish
  */
-export const contentGenerationWorkflow: WorkflowDefinition<
-	ContentInput,
-	ContentOutput
-> = {
+export const contentGenerationWorkflow: WorkflowDefinition<ContentInput, ContentOutput> = {
 	id: "content-generation",
 	name: "Content Generation Workflow",
 	description:

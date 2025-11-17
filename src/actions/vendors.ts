@@ -7,11 +7,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 
 // Regex constants
 const VENDOR_NUMBER_REGEX = /VND-\d{4}-(\d+)/;
@@ -32,10 +28,7 @@ import {
 /**
  * Generate unique vendor number
  */
-async function generateVendorNumber(
-	supabase: any,
-	companyId: string,
-): Promise<string> {
+async function generateVendorNumber(supabase: any, companyId: string): Promise<string> {
 	const { data: latestVendor } = await supabase
 		.from("vendors")
 		.select("vendor_number")
@@ -61,16 +54,11 @@ async function generateVendorNumber(
 /**
  * Create a new vendor
  */
-export async function createVendor(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function createVendor(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -86,11 +74,7 @@ export async function createVendor(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Generate vendor number if not provided
@@ -119,12 +103,9 @@ export async function createVendor(
 			credit_limit: formData.get("credit_limit")
 				? Number.parseInt(formData.get("credit_limit") as string, 10) * 100
 				: 0,
-			preferred_payment_method:
-				formData.get("preferred_payment_method") || undefined,
+			preferred_payment_method: formData.get("preferred_payment_method") || undefined,
 			category: formData.get("category") || undefined,
-			tags: formData.get("tags")
-				? JSON.parse(formData.get("tags") as string)
-				: undefined,
+			tags: formData.get("tags") ? JSON.parse(formData.get("tags") as string) : undefined,
 			status: formData.get("status") || "active",
 			notes: formData.get("notes") || undefined,
 			internal_notes: formData.get("internal_notes") || undefined,
@@ -143,10 +124,7 @@ export async function createVendor(
 			.single();
 
 		if (existingVendor) {
-			throw new ActionError(
-				"Vendor number already exists",
-				ERROR_CODES.VALIDATION_FAILED,
-			);
+			throw new ActionError("Vendor number already exists", ERROR_CODES.VALIDATION_FAILED);
 		}
 
 		// Insert vendor
@@ -182,10 +160,7 @@ export async function createVendor(
 			.single();
 
 		if (error) {
-			throw new ActionError(
-				"Failed to create vendor",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to create vendor", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		assertExists(vendor, "Vendor");
@@ -202,15 +177,12 @@ export async function createVendor(
  */
 export async function updateVendor(
 	vendorId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -226,11 +198,7 @@ export async function updateVendor(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify vendor exists and belongs to company
@@ -244,11 +212,7 @@ export async function updateVendor(
 		assertExists(existingVendor, "Vendor");
 
 		if (existingVendor.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("vendor"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("vendor"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Build update object from form data
@@ -270,8 +234,7 @@ export async function updateVendor(
 			updateData.phone = (formData.get("phone") as string) || undefined;
 		}
 		if (formData.has("secondary_phone")) {
-			updateData.secondary_phone =
-				(formData.get("secondary_phone") as string) || undefined;
+			updateData.secondary_phone = (formData.get("secondary_phone") as string) || undefined;
 		}
 		if (formData.has("website")) {
 			updateData.website = (formData.get("website") as string) || undefined;
@@ -301,13 +264,10 @@ export async function updateVendor(
 			updateData.payment_terms = formData.get("payment_terms") as any;
 		}
 		if (formData.has("credit_limit")) {
-			updateData.credit_limit =
-				Number.parseInt(formData.get("credit_limit") as string, 10) * 100;
+			updateData.credit_limit = Number.parseInt(formData.get("credit_limit") as string, 10) * 100;
 		}
 		if (formData.has("preferred_payment_method")) {
-			updateData.preferred_payment_method = formData.get(
-				"preferred_payment_method",
-			) as any;
+			updateData.preferred_payment_method = formData.get("preferred_payment_method") as any;
 		}
 		if (formData.has("category")) {
 			updateData.category = formData.get("category") as any;
@@ -322,23 +282,17 @@ export async function updateVendor(
 			updateData.notes = (formData.get("notes") as string) || undefined;
 		}
 		if (formData.has("internal_notes")) {
-			updateData.internal_notes =
-				(formData.get("internal_notes") as string) || undefined;
+			updateData.internal_notes = (formData.get("internal_notes") as string) || undefined;
 		}
 		if (formData.has("custom_fields")) {
-			updateData.custom_fields = JSON.parse(
-				formData.get("custom_fields") as string,
-			);
+			updateData.custom_fields = JSON.parse(formData.get("custom_fields") as string);
 		}
 
 		// Validate update data
 		const validated = vendorUpdateSchema.parse(updateData);
 
 		// Check vendor number uniqueness if changed
-		if (
-			validated.vendor_number &&
-			validated.vendor_number !== existingVendor.vendor_number
-		) {
+		if (validated.vendor_number && validated.vendor_number !== existingVendor.vendor_number) {
 			const { data: duplicate } = await supabase
 				.from("vendors")
 				.select("id")
@@ -349,24 +303,15 @@ export async function updateVendor(
 				.single();
 
 			if (duplicate) {
-				throw new ActionError(
-					"Vendor number already exists",
-					ERROR_CODES.VALIDATION_FAILED,
-				);
+				throw new ActionError("Vendor number already exists", ERROR_CODES.VALIDATION_FAILED);
 			}
 		}
 
 		// Update vendor
-		const { error } = await supabase
-			.from("vendors")
-			.update(validated)
-			.eq("id", vendorId);
+		const { error } = await supabase.from("vendors").update(validated).eq("id", vendorId);
 
 		if (error) {
-			throw new ActionError(
-				"Failed to update vendor",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to update vendor", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		revalidatePath("/dashboard/inventory/vendors");
@@ -377,16 +322,11 @@ export async function updateVendor(
 /**
  * Delete (soft delete) a vendor
  */
-export async function deleteVendor(
-	vendorId: string,
-): Promise<ActionResult<void>> {
+export async function deleteVendor(vendorId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -402,11 +342,7 @@ export async function deleteVendor(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify vendor exists and belongs to company
@@ -420,11 +356,7 @@ export async function deleteVendor(
 		assertExists(vendor, "Vendor");
 
 		if (vendor.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("vendor"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("vendor"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Soft delete vendor
@@ -437,10 +369,7 @@ export async function deleteVendor(
 			.eq("id", vendorId);
 
 		if (error) {
-			throw new ActionError(
-				"Failed to delete vendor",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to delete vendor", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		revalidatePath("/dashboard/inventory/vendors");
@@ -454,10 +383,7 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -473,11 +399,7 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const { data: vendor, error } = await supabase
@@ -489,10 +411,7 @@ export async function getVendor(vendorId: string): Promise<ActionResult<any>> {
 			.single();
 
 		if (error) {
-			throw new ActionError(
-				"Failed to fetch vendor",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to fetch vendor", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		assertExists(vendor, "Vendor");
@@ -512,10 +431,7 @@ export async function listVendors(options?: {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -531,11 +447,7 @@ export async function listVendors(options?: {
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		let query = supabase
@@ -555,17 +467,14 @@ export async function listVendors(options?: {
 
 		if (options?.search) {
 			query = query.or(
-				`name.ilike.%${options.search}%,display_name.ilike.%${options.search}%,vendor_number.ilike.%${options.search}%,email.ilike.%${options.search}%`,
+				`name.ilike.%${options.search}%,display_name.ilike.%${options.search}%,vendor_number.ilike.%${options.search}%,email.ilike.%${options.search}%`
 			);
 		}
 
 		const { data: vendors, error } = await query;
 
 		if (error) {
-			throw new ActionError(
-				"Failed to fetch vendors",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to fetch vendors", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		return vendors || [];
@@ -575,16 +484,11 @@ export async function listVendors(options?: {
 /**
  * Search vendors by query string
  */
-export async function searchVendors(
-	query: string,
-): Promise<ActionResult<any[]>> {
+export async function searchVendors(query: string): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -600,11 +504,7 @@ export async function searchVendors(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		const { data: vendors, error } = await supabase
@@ -614,15 +514,12 @@ export async function searchVendors(
 			.eq("status", "active")
 			.is("deleted_at", null)
 			.or(
-				`name.ilike.%${query}%,display_name.ilike.%${query}%,vendor_number.ilike.%${query}%,email.ilike.%${query}%`,
+				`name.ilike.%${query}%,display_name.ilike.%${query}%,vendor_number.ilike.%${query}%,email.ilike.%${query}%`
 			)
 			.limit(20);
 
 		if (error) {
-			throw new ActionError(
-				"Failed to search vendors",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to search vendors", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		return vendors || [];
@@ -634,15 +531,12 @@ export async function searchVendors(
  */
 export async function linkPurchaseOrderToVendor(
 	purchaseOrderId: string,
-	vendorId: string,
+	vendorId: string
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -658,11 +552,7 @@ export async function linkPurchaseOrderToVendor(
 			.single();
 
 		if (!teamMember?.company_id) {
-			throw new ActionError(
-				"You must be part of a company",
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Verify purchase order exists and belongs to company
@@ -679,7 +569,7 @@ export async function linkPurchaseOrderToVendor(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
+				403
 			);
 		}
 
@@ -694,11 +584,7 @@ export async function linkPurchaseOrderToVendor(
 		assertExists(vendor, "Vendor");
 
 		if (vendor.company_id !== teamMember.company_id) {
-			throw new ActionError(
-				ERROR_MESSAGES.forbidden("vendor"),
-				ERROR_CODES.AUTH_FORBIDDEN,
-				403,
-			);
+			throw new ActionError(ERROR_MESSAGES.forbidden("vendor"), ERROR_CODES.AUTH_FORBIDDEN, 403);
 		}
 
 		// Link purchase order to vendor
@@ -708,10 +594,7 @@ export async function linkPurchaseOrderToVendor(
 			.eq("id", purchaseOrderId);
 
 		if (error) {
-			throw new ActionError(
-				"Failed to link purchase order",
-				ERROR_CODES.DB_QUERY_ERROR,
-			);
+			throw new ActionError("Failed to link purchase order", ERROR_CODES.DB_QUERY_ERROR);
 		}
 
 		revalidatePath("/dashboard/work/vendors");

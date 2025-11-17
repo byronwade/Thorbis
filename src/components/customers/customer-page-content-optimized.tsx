@@ -86,22 +86,16 @@ export function CustomerPageContentOptimized({
 
 					<div className="flex-1 space-y-2">
 						<div className="flex items-center gap-3">
-							<h1 className="font-bold text-2xl">{displayName}</h1>
-							<CustomerStatusBadge
-								status={localCustomer?.status || "active"}
-							/>
+							<h1 className="text-2xl font-bold">{displayName}</h1>
+							<CustomerStatusBadge status={localCustomer?.status || "active"} />
 						</div>
 
-						<div className="flex flex-wrap gap-4 text-muted-foreground text-sm">
+						<div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
 							{localCustomer?.email && (
-								<span className="flex items-center gap-1">
-									{localCustomer.email}
-								</span>
+								<span className="flex items-center gap-1">{localCustomer.email}</span>
 							)}
 							{localCustomer?.phone && (
-								<span className="flex items-center gap-1">
-									{localCustomer.phone}
-								</span>
+								<span className="flex items-center gap-1">{localCustomer.phone}</span>
 							)}
 						</div>
 					</div>
@@ -117,9 +111,7 @@ export function CustomerPageContentOptimized({
 							id="email"
 							type="email"
 							value={localCustomer?.email || ""}
-							onChange={(e) =>
-								setLocalCustomer({ ...localCustomer, email: e.target.value })
-							}
+							onChange={(e) => setLocalCustomer({ ...localCustomer, email: e.target.value })}
 						/>
 					</div>
 
@@ -129,9 +121,7 @@ export function CustomerPageContentOptimized({
 							id="phone"
 							type="tel"
 							value={localCustomer?.phone || ""}
-							onChange={(e) =>
-								setLocalCustomer({ ...localCustomer, phone: e.target.value })
-							}
+							onChange={(e) => setLocalCustomer({ ...localCustomer, phone: e.target.value })}
 						/>
 					</div>
 
@@ -140,9 +130,7 @@ export function CustomerPageContentOptimized({
 						<Input
 							id="address"
 							value={localCustomer?.address || ""}
-							onChange={(e) =>
-								setLocalCustomer({ ...localCustomer, address: e.target.value })
-							}
+							onChange={(e) => setLocalCustomer({ ...localCustomer, address: e.target.value })}
 						/>
 					</div>
 
@@ -152,9 +140,7 @@ export function CustomerPageContentOptimized({
 							id="notes"
 							rows={3}
 							value={localCustomer?.notes || ""}
-							onChange={(e) =>
-								setLocalCustomer({ ...localCustomer, notes: e.target.value })
-							}
+							onChange={(e) => setLocalCustomer({ ...localCustomer, notes: e.target.value })}
 						/>
 					</div>
 				</div>
@@ -163,7 +149,7 @@ export function CustomerPageContentOptimized({
 
 				{/* Customer 360° Dashboard - Progressive Widgets */}
 				<div>
-					<h2 className="mb-4 font-semibold text-xl">Customer 360° Overview</h2>
+					<h2 className="mb-4 text-xl font-semibold">Customer 360° Overview</h2>
 
 					{/* Grid of progressive widgets - each loads data on-demand */}
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -178,10 +164,7 @@ export function CustomerPageContentOptimized({
 						<CustomerPaymentsWidget customerId={customer.id} />
 
 						{/* Row 3 - Secondary (Load when scrolled into view) */}
-						<CustomerContractsWidget
-							customerId={customer.id}
-							companyId={companyId}
-						/>
+						<CustomerContractsWidget customerId={customer.id} companyId={companyId} />
 						<CustomerMaintenancePlansWidget customerId={customer.id} />
 						<CustomerServiceAgreementsWidget customerId={customer.id} />
 

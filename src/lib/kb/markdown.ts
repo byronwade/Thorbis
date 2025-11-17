@@ -35,9 +35,7 @@ export function parseMarkdown(content: string): {
 		updatedAt: data.updated_at,
 		author: data.author,
 		featuredImage: data.featured_image,
-		relatedArticles: Array.isArray(data.relatedArticles)
-			? data.relatedArticles
-			: [],
+		relatedArticles: Array.isArray(data.relatedArticles) ? data.relatedArticles : [],
 		seo: data.seo || {},
 	};
 

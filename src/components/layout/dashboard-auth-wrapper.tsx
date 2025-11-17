@@ -58,9 +58,7 @@ export async function DashboardAuthWrapper() {
 
 			supabase
 				.from("companies")
-				.select(
-					"stripe_subscription_status, onboarding_progress, onboarding_completed_at",
-				)
+				.select("stripe_subscription_status, onboarding_progress, onboarding_completed_at")
 				.eq("id", activeCompanyId)
 				.maybeSingle(),
 		]);
@@ -69,10 +67,8 @@ export async function DashboardAuthWrapper() {
 		const company = companyResult.data;
 
 		const subscriptionStatus = company?.stripe_subscription_status;
-		const subscriptionActive =
-			subscriptionStatus === "active" || subscriptionStatus === "trialing";
-		const onboardingProgress =
-			(company?.onboarding_progress as Record<string, unknown>) || null;
+		const subscriptionActive = subscriptionStatus === "active" || subscriptionStatus === "trialing";
+		const onboardingProgress = (company?.onboarding_progress as Record<string, unknown>) || null;
 		const onboardingFinished = isOnboardingComplete({
 			progress: onboardingProgress,
 			completedAt: company?.onboarding_completed_at ?? null,
@@ -80,8 +76,7 @@ export async function DashboardAuthWrapper() {
 
 		isCompanyOnboardingComplete =
 			!!teamMember &&
-			((subscriptionActive && onboardingFinished) ||
-				process.env.NODE_ENV === "development");
+			((subscriptionActive && onboardingFinished) || process.env.NODE_ENV === "development");
 	}
 
 	// If no active company or onboarding not complete, redirect to welcome
@@ -91,13 +86,11 @@ export async function DashboardAuthWrapper() {
 		// Use already imported headers (parallelized earlier)
 		const headersList = await headersImport();
 		const referer = headersList.get("referer") || "";
-		const pathname =
-			headersList.get("x-invoke-path") || headersList.get("x-pathname") || "";
+		const pathname = headersList.get("x-invoke-path") || headersList.get("x-pathname") || "";
 
 		// More reliable check: look in both referer and pathname headers
 		const currentPath = pathname || referer;
-		const isOnWelcomePage =
-			currentPath.includes("/welcome") || currentPath.endsWith("/welcome");
+		const isOnWelcomePage = currentPath.includes("/welcome") || currentPath.endsWith("/welcome");
 
 		// Only redirect if definitely NOT on welcome page
 		if (!isOnWelcomePage && currentPath) {

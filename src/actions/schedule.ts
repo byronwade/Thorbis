@@ -64,7 +64,8 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
 	// Fetch all technicians/team members for the company
 	const { data: technicians, error: techError } = await supabase
 		.from("team_members")
-		.select(`
+		.select(
+			`
         user_id,
         role,
         users:user_id (
@@ -72,7 +73,8 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
           email,
           raw_user_meta_data
         )
-      `)
+      `
+		)
 		.eq("company_id", companyId)
 		.in("role", ["technician", "lead_technician", "admin"]);
 
@@ -87,7 +89,8 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
 	// Fetch all jobs for the day with assigned team members
 	const { data: jobs, error: jobsError } = await supabase
 		.from("jobs")
-		.select(`
+		.select(
+			`
         id,
         job_number,
         title,
@@ -114,7 +117,8 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
             raw_user_meta_data
           )
         )
-      `)
+      `
+		)
 		.eq("company_id", companyId)
 		.gte("scheduled_start", startOfDay.toISOString())
 		.lte("scheduled_start", endOfDay.toISOString())
@@ -143,48 +147,38 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
 		const user = tech.users as any;
 		const userId = user?.id || tech.user_id;
 		const metadata = user?.raw_user_meta_data || {};
-		const fullName =
-			metadata.full_name ||
-			metadata.name ||
-			user?.email?.split("@")[0] ||
-			"Unknown";
+		const fullName = metadata.full_name || metadata.name || user?.email?.split("@")[0] || "Unknown";
 
 		// Find all jobs assigned to this technician
 		const techJobs = (jobs || [])
-			.filter((job: any) =>
-				job.job_team_members?.some((member: any) => member.user_id === userId),
-			)
+			.filter((job: any) => job.job_team_members?.some((member: any) => member.user_id === userId))
 			.map((job: any) => {
 				const customer = job.customer as any;
 				const property = job.property as any;
 				const customerName = customer
-					? `${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
-						"Unknown Customer"
+					? `${customer.first_name || ""} ${customer.last_name || ""}`.trim() || "Unknown Customer"
 					: "Unknown Customer";
 
 				// Calculate duration
 				const start = new Date(job.scheduled_start);
 				const end = new Date(job.scheduled_end);
-				const durationHours =
-					(end.getTime() - start.getTime()) / (1000 * 60 * 60);
+				const durationHours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
 				// Get all assigned technicians for this job
-				const assignedTechs = (job.job_team_members || []).map(
-					(member: any) => {
-						const memberUser = member.users as any;
-						const memberMetadata = memberUser?.raw_user_meta_data || {};
-						return {
-							id: memberUser?.id || member.user_id,
-							name:
-								memberMetadata.full_name ||
-								memberMetadata.name ||
-								memberUser?.email?.split("@")[0] ||
-								"Unknown",
-							avatar_url: memberMetadata.avatar_url,
-							is_lead: member.is_lead,
-						};
-					},
-				);
+				const assignedTechs = (job.job_team_members || []).map((member: any) => {
+					const memberUser = member.users as any;
+					const memberMetadata = memberUser?.raw_user_meta_data || {};
+					return {
+						id: memberUser?.id || member.user_id,
+						name:
+							memberMetadata.full_name ||
+							memberMetadata.name ||
+							memberUser?.email?.split("@")[0] ||
+							"Unknown",
+						avatar_url: memberMetadata.avatar_url,
+						is_lead: member.is_lead,
+					};
+				});
 
 				return {
 					id: job.id,
@@ -223,13 +217,8 @@ export async function getTechnicianSchedules(date: Date, companyId: string) {
 }
 
 // Map job status to appointment status
-function mapJobStatus(
-	jobStatus: string,
-): "scheduled" | "in_progress" | "completed" | "cancelled" {
-	const statusMap: Record<
-		string,
-		"scheduled" | "in_progress" | "completed" | "cancelled"
-	> = {
+function mapJobStatus(jobStatus: string): "scheduled" | "in_progress" | "completed" | "cancelled" {
+	const statusMap: Record<string, "scheduled" | "in_progress" | "completed" | "cancelled"> = {
 		scheduled: "scheduled",
 		in_progress: "in_progress",
 		active: "in_progress",

@@ -21,11 +21,7 @@ import "server-only";
 const ASSEMBLYAI_API_KEY = process.env.ASSEMBLYAI_API_KEY;
 const ASSEMBLYAI_API_URL = "https://api.assemblyai.com/v2";
 
-export type TranscriptionStatus =
-	| "queued"
-	| "processing"
-	| "completed"
-	| "error";
+export type TranscriptionStatus = "queued" | "processing" | "completed" | "error";
 
 export type TranscriptionResponse = {
 	id: string;
@@ -73,7 +69,7 @@ export type TranscriptionRequest = {
  * ```
  */
 export async function submitTranscription(
-	params: TranscriptionRequest,
+	params: TranscriptionRequest
 ): Promise<{ success: boolean; data?: TranscriptionResponse; error?: string }> {
 	try {
 		if (!ASSEMBLYAI_API_KEY) {
@@ -126,21 +122,18 @@ export async function submitTranscription(
  * ```
  */
 export async function getTranscription(
-	transcriptionId: string,
+	transcriptionId: string
 ): Promise<{ success: boolean; data?: TranscriptionResponse; error?: string }> {
 	try {
 		if (!ASSEMBLYAI_API_KEY) {
 			throw new Error("ASSEMBLYAI_API_KEY is not configured");
 		}
 
-		const response = await fetch(
-			`${ASSEMBLYAI_API_URL}/transcript/${transcriptionId}`,
-			{
-				headers: {
-					Authorization: ASSEMBLYAI_API_KEY,
-				},
+		const response = await fetch(`${ASSEMBLYAI_API_URL}/transcript/${transcriptionId}`, {
+			headers: {
+				Authorization: ASSEMBLYAI_API_KEY,
 			},
-		);
+		});
 
 		if (!response.ok) {
 			const error = await response.text();
@@ -177,7 +170,7 @@ export function formatTranscriptWithSpeakers(
 	utterances?: Array<{
 		text: string;
 		speaker: string;
-	}>,
+	}>
 ): string {
 	if (!utterances || utterances.length === 0) {
 		return "";

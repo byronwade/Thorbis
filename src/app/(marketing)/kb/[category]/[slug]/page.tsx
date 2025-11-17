@@ -9,11 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Script from "next/script";
-import {
-	getKBArticle,
-	getKBRelatedArticles,
-	incrementArticleViews,
-} from "@/actions/kb";
+import { getKBArticle, getKBRelatedArticles, incrementArticleViews } from "@/actions/kb";
 import { KBArticleContent } from "@/components/kb/kb-article-content";
 import { KBFeedback } from "@/components/kb/kb-feedback";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
@@ -61,18 +57,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 	});
 
 	// Get related articles
-	const relatedArticlesResult = await getKBRelatedArticles(
-		article.id,
-		RELATED_ARTICLE_LIMIT,
-	);
+	const relatedArticlesResult = await getKBRelatedArticles(article.id, RELATED_ARTICLE_LIMIT);
 	const relatedArticles =
 		relatedArticlesResult.success && relatedArticlesResult.articles
 			? relatedArticlesResult.articles
 			: [];
 
-	const publishedDate = article.published_at
-		? new Date(article.published_at as string)
-		: null;
+	const publishedDate = article.published_at ? new Date(article.published_at as string) : null;
 
 	return (
 		<>
@@ -98,8 +89,8 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 						{
 							slug: article.slug as string,
 							title: article.title as string,
-						},
-					),
+						}
+					)
 				)}
 			</Script>
 
@@ -112,10 +103,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 				<div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
 					{/* Breadcrumb */}
 					<nav className="mb-8 flex items-center gap-2 text-sm">
-						<Link
-							className="text-muted-foreground hover:text-foreground"
-							href="/kb"
-						>
+						<Link className="text-muted-foreground hover:text-foreground" href="/kb">
 							Knowledge Base
 						</Link>
 						<span className="text-muted-foreground">/</span>
@@ -135,23 +123,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 						<header className="mb-8">
 							<div className="mb-4 flex items-center gap-2">
 								<Link href={`/kb/${article.category.slug}`}>
-									<Badge variant="secondary">
-										{String(article.category.title)}
-									</Badge>
+									<Badge variant="secondary">{String(article.category.title)}</Badge>
 								</Link>
-								{Boolean(article.featured) && (
-									<Badge variant="default">Featured</Badge>
-								)}
+								{Boolean(article.featured) && <Badge variant="default">Featured</Badge>}
 							</div>
-							<h1 className="mb-4 font-bold text-4xl tracking-tight">
-								{String(article.title)}
-							</h1>
+							<h1 className="mb-4 text-4xl font-bold tracking-tight">{String(article.title)}</h1>
 							{article.excerpt && (
-								<p className="mb-6 text-muted-foreground text-xl">
-									{String(article.excerpt)}
-								</p>
+								<p className="text-muted-foreground mb-6 text-xl">{String(article.excerpt)}</p>
 							)}
-							<div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
+							<div className="text-muted-foreground flex flex-wrap items-center gap-4 text-sm">
 								{publishedDate && (
 									<div className="flex items-center gap-1">
 										<Calendar className="size-4" />
@@ -167,9 +147,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 								{(article.viewCount as number) > 0 && (
 									<div className="flex items-center gap-1">
 										<Eye className="size-4" />
-										<span>
-											{(article.viewCount as number).toLocaleString()} views
-										</span>
+										<span>{(article.viewCount as number).toLocaleString()} views</span>
 									</div>
 								)}
 								{article.author && (
@@ -200,17 +178,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 						{/* Tags */}
 						{article.tags && article.tags.length > 0 && (
 							<div className="mt-8 flex flex-wrap gap-2">
-								{article.tags.map(
-									(tag: { id: string; slug: string; name: string }) => (
-										<Link
-											className="text-primary text-sm hover:underline"
-											href={`/kb/search?tag=${tag.slug}`}
-											key={tag.id}
-										>
-											#{tag.name}
-										</Link>
-									),
-								)}
+								{article.tags.map((tag: { id: string; slug: string; name: string }) => (
+									<Link
+										className="text-primary text-sm hover:underline"
+										href={`/kb/search?tag=${tag.slug}`}
+										key={tag.id}
+									>
+										#{tag.name}
+									</Link>
+								))}
 							</div>
 						)}
 

@@ -32,11 +32,7 @@ export default function PricingPage() {
 	return (
 		<>
 			{/* SoftwareApplication and Service Structured Data */}
-			<Script
-				id="pricing-software-schema"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="pricing-software-schema" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(
 					createSoftwareApplicationSchema({
 						price: {
@@ -50,14 +46,10 @@ export default function PricingPage() {
 							bestRating: "5",
 						},
 						operatingSystems: ["Web", "iOS", "Android"],
-					}),
+					})
 				)}
 			</Script>
-			<Script
-				id="pricing-service-schema"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="pricing-service-schema" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(
 					createServiceSchema({
 						name: "Thorbis Field Management Platform",
@@ -68,24 +60,18 @@ export default function PricingPage() {
 							{
 								price: "100",
 								currency: "USD",
-								description:
-									"Base subscription – includes 5 teams and unlimited jobs.",
+								description: "Base subscription – includes 5 teams and unlimited jobs.",
 							},
 							{
 								price: "15",
 								currency: "USD",
-								description:
-									"Add-on: AI job enrichment per technician per month.",
+								description: "Add-on: AI job enrichment per technician per month.",
 							},
 						],
-					}),
+					})
 				)}
 			</Script>
-			<Script
-				id="pricing-review-schema"
-				strategy="afterInteractive"
-				type="application/ld+json"
-			>
+			<Script id="pricing-review-schema" strategy="afterInteractive" type="application/ld+json">
 				{JSON.stringify(
 					createReviewAggregateSchema({
 						item: {
@@ -95,7 +81,7 @@ export default function PricingPage() {
 						},
 						ratingValue: 4.9,
 						reviewCount: 327,
-					}),
+					})
 				)}
 			</Script>
 			<PricingCalculator />

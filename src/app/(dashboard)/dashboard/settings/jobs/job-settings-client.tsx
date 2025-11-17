@@ -14,13 +14,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,59 +40,31 @@ type JobSettingsClientProps = {
 };
 
 export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
-	const {
-		settings,
-		isLoading,
-		isPending,
-		hasUnsavedChanges,
-		updateSetting,
-		saveSettings,
-		reload,
-	} = useSettings<JobSettingsState>({
-		getter: getJobSettings,
-		setter: updateJobSettings,
-		initialState: DEFAULT_JOB_SETTINGS,
-		settingsName: "jobs",
-		prefetchedData: initialSettings ?? undefined,
-		transformLoad: (data) => mapJobSettings(data),
-		transformSave: (state) => {
-			const formData = new FormData();
-			formData.append("jobNumberPrefix", state.jobNumberPrefix);
-			formData.append("jobNumberFormat", state.jobNumberFormat);
-			formData.append("nextJobNumber", state.nextJobNumber.toString());
-			formData.append("defaultJobStatus", state.defaultJobStatus);
-			formData.append("defaultPriority", state.defaultPriority);
-			formData.append(
-				"requireCustomerSignature",
-				state.requireCustomerSignature.toString(),
-			);
-			formData.append(
-				"requirePhotoCompletion",
-				state.requirePhotoCompletion.toString(),
-			);
-			formData.append(
-				"autoInvoiceOnCompletion",
-				state.autoInvoiceOnCompletion.toString(),
-			);
-			formData.append(
-				"autoSendCompletionEmail",
-				state.autoSendCompletionEmail.toString(),
-			);
-			formData.append(
-				"trackTechnicianTime",
-				state.trackTechnicianTime.toString(),
-			);
-			formData.append(
-				"requireArrivalConfirmation",
-				state.requireArrivalConfirmation.toString(),
-			);
-			formData.append(
-				"requireCompletionNotes",
-				state.requireCompletionNotes.toString(),
-			);
-			return formData;
-		},
-	});
+	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
+		useSettings<JobSettingsState>({
+			getter: getJobSettings,
+			setter: updateJobSettings,
+			initialState: DEFAULT_JOB_SETTINGS,
+			settingsName: "jobs",
+			prefetchedData: initialSettings ?? undefined,
+			transformLoad: (data) => mapJobSettings(data),
+			transformSave: (state) => {
+				const formData = new FormData();
+				formData.append("jobNumberPrefix", state.jobNumberPrefix);
+				formData.append("jobNumberFormat", state.jobNumberFormat);
+				formData.append("nextJobNumber", state.nextJobNumber.toString());
+				formData.append("defaultJobStatus", state.defaultJobStatus);
+				formData.append("defaultPriority", state.defaultPriority);
+				formData.append("requireCustomerSignature", state.requireCustomerSignature.toString());
+				formData.append("requirePhotoCompletion", state.requirePhotoCompletion.toString());
+				formData.append("autoInvoiceOnCompletion", state.autoInvoiceOnCompletion.toString());
+				formData.append("autoSendCompletionEmail", state.autoSendCompletionEmail.toString());
+				formData.append("trackTechnicianTime", state.trackTechnicianTime.toString());
+				formData.append("requireArrivalConfirmation", state.requireArrivalConfirmation.toString());
+				formData.append("requireCompletionNotes", state.requireCompletionNotes.toString());
+				return formData;
+			},
+		});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {
@@ -123,7 +89,7 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 		};
 		return Object.entries(map).reduce(
 			(acc, [placeholder, value]) => acc.replaceAll(placeholder, value),
-			settings.jobNumberFormat,
+			settings.jobNumberFormat
 		);
 	})();
 
@@ -171,9 +137,7 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 							<FileText className="size-4" />
 							Job numbering
 						</CardTitle>
-						<CardDescription>
-							Control how IDs are formatted and incremented
-						</CardDescription>
+						<CardDescription>Control how IDs are formatted and incremented</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -183,10 +147,7 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 									className="mt-2"
 									maxLength={8}
 									onChange={(event) =>
-										updateSetting(
-											"jobNumberPrefix",
-											event.target.value.toUpperCase(),
-										)
+										updateSetting("jobNumberPrefix", event.target.value.toUpperCase())
 									}
 									value={settings.jobNumberPrefix}
 								/>
@@ -196,9 +157,7 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 								<Input
 									className="mt-2"
 									min={1}
-									onChange={(event) =>
-										updateSetting("nextJobNumber", Number(event.target.value))
-									}
+									onChange={(event) => updateSetting("nextJobNumber", Number(event.target.value))}
 									type="number"
 									value={settings.nextJobNumber}
 								/>
@@ -208,12 +167,10 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 							<Label>Format template</Label>
 							<Input
 								className="mt-2 font-mono text-sm"
-								onChange={(event) =>
-									updateSetting("jobNumberFormat", event.target.value)
-								}
+								onChange={(event) => updateSetting("jobNumberFormat", event.target.value)}
 								value={settings.jobNumberFormat}
 							/>
-							<p className="mt-1 text-muted-foreground text-xs">
+							<p className="text-muted-foreground mt-1 text-xs">
 								Supports placeholders: {"{PREFIX} {YYYY} {MM} {DD} {XXXX}"}
 							</p>
 						</div>
@@ -230,17 +187,13 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 							<ClipboardList className="size-4" />
 							Defaults & requirements
 						</CardTitle>
-						<CardDescription>
-							What every new job should start with
-						</CardDescription>
+						<CardDescription>What every new job should start with</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-2">
 						<div>
 							<Label>Default status</Label>
 							<Select
-								onValueChange={(value) =>
-									updateSetting("defaultJobStatus", value)
-								}
+								onValueChange={(value) => updateSetting("defaultJobStatus", value)}
 								value={settings.defaultJobStatus}
 							>
 								<SelectTrigger className="mt-2">
@@ -258,9 +211,7 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 						<div>
 							<Label>Default priority</Label>
 							<Select
-								onValueChange={(value) =>
-									updateSetting("defaultPriority", value)
-								}
+								onValueChange={(value) => updateSetting("defaultPriority", value)}
 								value={settings.defaultPriority}
 							>
 								<SelectTrigger className="mt-2">
@@ -277,32 +228,26 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">
-									Require customer signature
-								</p>
+								<p className="text-sm font-medium">Require customer signature</p>
 								<p className="text-muted-foreground text-xs">
 									Jobs cannot close until signatures are captured.
 								</p>
 							</div>
 							<Switch
 								checked={settings.requireCustomerSignature}
-								onCheckedChange={(checked) =>
-									updateSetting("requireCustomerSignature", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("requireCustomerSignature", checked)}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Require job photos</p>
+								<p className="text-sm font-medium">Require job photos</p>
 								<p className="text-muted-foreground text-xs">
 									Mandate photo uploads before completion.
 								</p>
 							</div>
 							<Switch
 								checked={settings.requirePhotoCompletion}
-								onCheckedChange={(checked) =>
-									updateSetting("requirePhotoCompletion", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("requirePhotoCompletion", checked)}
 							/>
 						</div>
 					</CardContent>
@@ -314,51 +259,43 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 							<ShieldCheck className="size-4" />
 							Completion checklist
 						</CardTitle>
-						<CardDescription>
-							Guardrails before technicians can mark a job done
-						</CardDescription>
+						<CardDescription>Guardrails before technicians can mark a job done</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-2">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Track technician time</p>
+								<p className="text-sm font-medium">Track technician time</p>
 								<p className="text-muted-foreground text-xs">
 									Capture hours for payroll and costing.
 								</p>
 							</div>
 							<Switch
 								checked={settings.trackTechnicianTime}
-								onCheckedChange={(checked) =>
-									updateSetting("trackTechnicianTime", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("trackTechnicianTime", checked)}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Arrival confirmation</p>
+								<p className="text-sm font-medium">Arrival confirmation</p>
 								<p className="text-muted-foreground text-xs">
 									Require acknowledgement when tech arrives onsite.
 								</p>
 							</div>
 							<Switch
 								checked={settings.requireArrivalConfirmation}
-								onCheckedChange={(checked) =>
-									updateSetting("requireArrivalConfirmation", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("requireArrivalConfirmation", checked)}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Completion notes</p>
+								<p className="text-sm font-medium">Completion notes</p>
 								<p className="text-muted-foreground text-xs">
 									Prevent closing unless notes are documented.
 								</p>
 							</div>
 							<Switch
 								checked={settings.requireCompletionNotes}
-								onCheckedChange={(checked) =>
-									updateSetting("requireCompletionNotes", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("requireCompletionNotes", checked)}
 							/>
 						</div>
 					</CardContent>
@@ -370,37 +307,31 @@ export function JobSettingsClient({ initialSettings }: JobSettingsClientProps) {
 							<Zap className="size-4" />
 							Automation
 						</CardTitle>
-						<CardDescription>
-							Automate downstream billing and communication
-						</CardDescription>
+						<CardDescription>Automate downstream billing and communication</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-2">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Auto-generate invoices</p>
+								<p className="text-sm font-medium">Auto-generate invoices</p>
 								<p className="text-muted-foreground text-xs">
 									Create a draft invoice as soon as jobs are completed.
 								</p>
 							</div>
 							<Switch
 								checked={settings.autoInvoiceOnCompletion}
-								onCheckedChange={(checked) =>
-									updateSetting("autoInvoiceOnCompletion", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("autoInvoiceOnCompletion", checked)}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
-								<p className="font-medium text-sm">Send completion email</p>
+								<p className="text-sm font-medium">Send completion email</p>
 								<p className="text-muted-foreground text-xs">
 									Notify customers with summary + next steps.
 								</p>
 							</div>
 							<Switch
 								checked={settings.autoSendCompletionEmail}
-								onCheckedChange={(checked) =>
-									updateSetting("autoSendCompletionEmail", checked)
-								}
+								onCheckedChange={(checked) => updateSetting("autoSendCompletionEmail", checked)}
 							/>
 						</div>
 					</CardContent>

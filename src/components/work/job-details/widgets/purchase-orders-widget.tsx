@@ -37,13 +37,7 @@ type PurchaseOrder = {
 	id: string;
 	poNumber: string;
 	vendor: string;
-	status:
-		| "draft"
-		| "sent"
-		| "confirmed"
-		| "shipped"
-		| "delivered"
-		| "cancelled";
+	status: "draft" | "sent" | "confirmed" | "shipped" | "delivered" | "cancelled";
 	orderDate: Date;
 	expectedDelivery?: Date;
 	actualDelivery?: Date;
@@ -139,16 +133,10 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 	};
 
 	// Calculate totals and progress
-	const totalAmount = purchaseOrders.reduce(
-		(sum, po) => sum + po.totalAmount,
-		0,
-	);
-	const deliveredOrders = purchaseOrders.filter(
-		(po) => po.status === "delivered",
-	).length;
+	const totalAmount = purchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0);
+	const deliveredOrders = purchaseOrders.filter((po) => po.status === "delivered").length;
 	const totalOrders = purchaseOrders.length;
-	const progressPercentage =
-		totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
+	const progressPercentage = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
 
 	function getDaysUntil(date?: Date): string {
 		if (!date) {
@@ -173,10 +161,8 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 		return (
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
-					<Package className="mx-auto mb-2 size-8 text-muted-foreground opacity-50" />
-					<p className="mb-2 text-muted-foreground text-sm">
-						No purchase orders yet
-					</p>
+					<Package className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
+					<p className="text-muted-foreground mb-2 text-sm">No purchase orders yet</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/work/purchase-orders?jobId=${job.id}`}>
 							<FileText className="mr-2 size-4" />
@@ -192,7 +178,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 		<div className="space-y-4">
 			{/* Header */}
 			<div className="flex items-center justify-between">
-				<h4 className="font-semibold text-sm">Purchase Orders</h4>
+				<h4 className="text-sm font-semibold">Purchase Orders</h4>
 				<Badge className="text-xs" variant="secondary">
 					{deliveredOrders}/{totalOrders} delivered
 				</Badge>
@@ -208,12 +194,10 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 			</div>
 
 			{/* Total Amount */}
-			<div className="rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 p-3">
+			<div className="from-primary/5 to-primary/10 rounded-lg bg-gradient-to-br p-3">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Total PO Amount</span>
-					<span className="font-bold text-lg">
-						{formatCurrency(totalAmount)}
-					</span>
+					<span className="text-lg font-bold">{formatCurrency(totalAmount)}</span>
 				</div>
 			</div>
 
@@ -238,9 +222,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 										<Icon className={`size-4 ${config.color}`} />
 									</div>
 									<div>
-										<h5 className="font-mono font-semibold text-sm">
-											{po.poNumber}
-										</h5>
+										<h5 className="font-mono text-sm font-semibold">{po.poNumber}</h5>
 										<p className="text-muted-foreground text-xs">{po.vendor}</p>
 									</div>
 								</div>
@@ -253,27 +235,18 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 							<div className="ml-10 space-y-1.5 text-xs">
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Order Date:</span>
-									<span className="font-medium">
-										{formatDate(po.orderDate)}
-									</span>
+									<span className="font-medium">{formatDate(po.orderDate)}</span>
 								</div>
 
 								{po.expectedDelivery && (
 									<div className="flex justify-between">
-										<span className="text-muted-foreground">
-											Expected Delivery:
-										</span>
+										<span className="text-muted-foreground">Expected Delivery:</span>
 										<div className="flex items-center gap-1.5">
-											<span
-												className={`font-medium ${isOverdue ? "text-destructive" : ""}`}
-											>
+											<span className={`font-medium ${isOverdue ? "text-destructive" : ""}`}>
 												{formatDate(po.expectedDelivery)}
 											</span>
 											{!po.actualDelivery && (
-												<Badge
-													className="text-xs"
-													variant={isOverdue ? "destructive" : "outline"}
-												>
+												<Badge className="text-xs" variant={isOverdue ? "destructive" : "outline"}>
 													{getDaysUntil(po.expectedDelivery)}
 												</Badge>
 											)}
@@ -284,7 +257,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 								{po.actualDelivery && (
 									<div className="flex justify-between">
 										<span className="text-muted-foreground">Delivered:</span>
-										<span className="font-medium text-success">
+										<span className="text-success font-medium">
 											{formatDate(po.actualDelivery)}
 										</span>
 									</div>
@@ -297,18 +270,16 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 
 								<div className="flex justify-between border-t pt-1.5">
 									<span className="text-muted-foreground">Amount:</span>
-									<span className="font-semibold">
-										{formatCurrency(po.totalAmount)}
-									</span>
+									<span className="font-semibold">{formatCurrency(po.totalAmount)}</span>
 								</div>
 
 								{/* Tracking Number */}
 								{po.trackingNumber && (
-									<div className="mt-2 rounded bg-muted p-2">
+									<div className="bg-muted mt-2 rounded p-2">
 										<div className="flex items-center justify-between">
 											<span className="text-muted-foreground">Tracking:</span>
 											<a
-												className="flex items-center gap-1 font-medium font-mono text-primary hover:underline"
+												className="text-primary flex items-center gap-1 font-mono font-medium hover:underline"
 												href={`https://www.ups.com/track?tracknum=${po.trackingNumber}`}
 												rel="noopener noreferrer"
 												target="_blank"
@@ -322,18 +293,16 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 
 								{/* Notes */}
 								{po.notes && (
-									<div className="mt-2 rounded border-warning border-l-2 bg-warning p-2 dark:bg-warning/30">
-										<p className="text-warning text-xs dark:text-warning">
-											{po.notes}
-										</p>
+									<div className="border-warning bg-warning dark:bg-warning/30 mt-2 rounded border-l-2 p-2">
+										<p className="text-warning dark:text-warning text-xs">{po.notes}</p>
 									</div>
 								)}
 
 								{/* Overdue Warning */}
 								{isOverdue && (
-									<div className="mt-2 flex items-start gap-1.5 rounded border-destructive border-l-2 bg-destructive p-2 dark:bg-destructive/30">
-										<AlertCircle className="mt-0.5 size-3 shrink-0 text-destructive" />
-										<p className="text-destructive text-xs dark:text-destructive">
+									<div className="border-destructive bg-destructive dark:bg-destructive/30 mt-2 flex items-start gap-1.5 rounded border-l-2 p-2">
+										<AlertCircle className="text-destructive mt-0.5 size-3 shrink-0" />
+										<p className="text-destructive dark:text-destructive text-xs">
 											Delivery overdue. Contact vendor for status update.
 										</p>
 									</div>
@@ -349,19 +318,18 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 				(po) =>
 					po.expectedDelivery &&
 					po.expectedDelivery.getTime() < Date.now() &&
-					po.status !== "delivered",
+					po.status !== "delivered"
 			) && (
 				<>
 					<Separator />
-					<div className="flex items-start gap-2 rounded-lg border-destructive border-l-4 bg-destructive p-3 dark:bg-destructive/30">
-						<AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
+					<div className="border-destructive bg-destructive dark:bg-destructive/30 flex items-start gap-2 rounded-lg border-l-4 p-3">
+						<AlertCircle className="text-destructive mt-0.5 size-4 shrink-0" />
 						<div>
-							<p className="font-medium text-destructive text-sm dark:text-destructive">
+							<p className="text-destructive dark:text-destructive text-sm font-medium">
 								Overdue Orders
 							</p>
-							<p className="text-destructive text-xs dark:text-destructive">
-								Some purchase orders are overdue. Follow up with vendors to
-								avoid job delays.
+							<p className="text-destructive dark:text-destructive text-xs">
+								Some purchase orders are overdue. Follow up with vendors to avoid job delays.
 							</p>
 						</div>
 					</div>
@@ -383,7 +351,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 			</div>
 
 			{/* Quick Stats */}
-			<div className="grid grid-cols-3 gap-2 rounded-lg bg-muted p-3 text-xs">
+			<div className="bg-muted grid grid-cols-3 gap-2 rounded-lg p-3 text-xs">
 				<div className="space-y-1 text-center">
 					<p className="text-muted-foreground">Total POs</p>
 					<p className="font-semibold">{totalOrders}</p>
@@ -398,9 +366,8 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 					<p className="text-muted-foreground">Pending</p>
 					<p className="font-semibold">
 						{
-							purchaseOrders.filter(
-								(po) => po.status === "sent" || po.status === "confirmed",
-							).length
+							purchaseOrders.filter((po) => po.status === "sent" || po.status === "confirmed")
+								.length
 						}
 					</p>
 				</div>

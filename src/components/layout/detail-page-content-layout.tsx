@@ -18,11 +18,8 @@ import { RelatedItemsSection } from "./standard-sections/related-items-section";
 export type { DetailPageHeaderConfig };
 
 const UnifiedAccordion = dynamic(
-	() =>
-		import("@/components/ui/unified-accordion").then(
-			(mod) => mod.UnifiedAccordion,
-		),
-	{ ssr: false },
+	() => import("@/components/ui/unified-accordion").then((mod) => mod.UnifiedAccordion),
+	{ ssr: false }
 );
 
 type DetailPageContentLayoutProps = {

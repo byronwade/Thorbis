@@ -28,46 +28,28 @@ export async function InventoryStats() {
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Total Items
-				</h3>
-				<p className="mt-2 font-bold text-2xl">{stats.totalItems}</p>
-				<p className="mt-1 text-muted-foreground text-xs">
-					Inventory items tracked
-				</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Total Items</h3>
+				<p className="mt-2 text-2xl font-bold">{stats.totalItems}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Inventory items tracked</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">Low Stock</h3>
-				<p className="mt-2 font-bold text-2xl text-yellow-600">
-					{stats.lowStock}
-				</p>
-				<p className="mt-1 text-muted-foreground text-xs">
-					Items need reordering
-				</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Low Stock</h3>
+				<p className="mt-2 text-2xl font-bold text-yellow-600">{stats.lowStock}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Items need reordering</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Out of Stock
-				</h3>
-				<p className="mt-2 font-bold text-2xl text-red-600">
-					{stats.outOfStock}
-				</p>
-				<p className="mt-1 text-muted-foreground text-xs">Items unavailable</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Out of Stock</h3>
+				<p className="mt-2 text-2xl font-bold text-red-600">{stats.outOfStock}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Items unavailable</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Total Value
-				</h3>
-				<p className="mt-2 font-bold text-2xl">
-					${stats.totalValue.toLocaleString()}
-				</p>
-				<p className="mt-1 text-muted-foreground text-xs">
-					Inventory asset value
-				</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Total Value</h3>
+				<p className="mt-2 text-2xl font-bold">${stats.totalValue.toLocaleString()}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Inventory asset value</p>
 			</div>
 		</div>
 	);

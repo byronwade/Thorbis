@@ -16,7 +16,7 @@ type TVDisplayShellProps = {
  */
 export function TVDisplayShell({ children }: TVDisplayShellProps) {
 	return (
-		<div className="fixed inset-0 bg-background">
+		<div className="bg-background fixed inset-0">
 			{/* Instant shell - shows immediately */}
 			{children}
 		</div>

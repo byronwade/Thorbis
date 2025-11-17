@@ -70,7 +70,7 @@ export function PropertyIntelligenceWidget({
 				{property ? (
 					<>
 						<div className="flex items-start gap-2">
-							<MapPin className="mt-0.5 size-4 text-muted-foreground" />
+							<MapPin className="text-muted-foreground mt-0.5 size-4" />
 							<div className="flex-1">
 								<div className="text-muted-foreground text-xs">Location</div>
 								<div className="text-sm">
@@ -88,32 +88,24 @@ export function PropertyIntelligenceWidget({
 						<div className="grid grid-cols-2 gap-3">
 							<div>
 								<div className="text-muted-foreground text-xs">Type</div>
-								<div className="text-sm capitalize">
-									{property.propertyType}
-								</div>
+								<div className="text-sm capitalize">{property.propertyType}</div>
 							</div>
 							{property.squareFootage ? (
 								<div>
-									<div className="text-muted-foreground text-xs">
-										Square Feet
-									</div>
-									<div className="text-sm">
-										{property.squareFootage.toLocaleString()}
-									</div>
+									<div className="text-muted-foreground text-xs">Square Feet</div>
+									<div className="text-sm">{property.squareFootage.toLocaleString()}</div>
 								</div>
 							) : null}
 							{property.yearBuilt ? (
 								<div>
-									<div className="text-muted-foreground text-xs">
-										Year Built
-									</div>
+									<div className="text-muted-foreground text-xs">Year Built</div>
 									<div className="text-sm">{property.yearBuilt}</div>
 								</div>
 							) : null}
 						</div>
 					</>
 				) : (
-					<div className="text-center text-muted-foreground text-sm">
+					<div className="text-muted-foreground text-center text-sm">
 						No property data available
 					</div>
 				)}
@@ -121,10 +113,8 @@ export function PropertyIntelligenceWidget({
 				<Separator />
 
 				{/* Enrichment status */}
-				<div className="rounded-lg border border-muted-foreground/25 border-dashed p-3 text-center">
-					<p className="text-muted-foreground text-xs">
-						Property intelligence unavailable
-					</p>
+				<div className="border-muted-foreground/25 rounded-lg border border-dashed p-3 text-center">
+					<p className="text-muted-foreground text-xs">Property intelligence unavailable</p>
 					<p className="text-muted-foreground text-xs">
 						Configure API keys to enrich property data
 					</p>
@@ -137,8 +127,7 @@ export function PropertyIntelligenceWidget({
 	// Enriched Data Display
 	// ============================================================================
 
-	const { details, ownership, taxes, permits, utilities, riskFactors } =
-		enrichment;
+	const { details, ownership, taxes, permits, utilities, riskFactors } = enrichment;
 
 	return (
 		<div className="space-y-4">
@@ -155,31 +144,25 @@ export function PropertyIntelligenceWidget({
 
 			{/* Property Details */}
 			<div className="space-y-2">
-				<h4 className="flex items-center gap-1.5 font-semibold text-xs">
+				<h4 className="flex items-center gap-1.5 text-xs font-semibold">
 					<Home className="size-3.5" />
 					Property Details
 				</h4>
 				<div className="grid grid-cols-2 gap-2 text-xs">
 					<div>
 						<div className="text-muted-foreground">Type</div>
-						<div className="font-medium capitalize">
-							{details.propertyType.replace("_", " ")}
-						</div>
+						<div className="font-medium capitalize">{details.propertyType.replace("_", " ")}</div>
 					</div>
 					{details.squareFootage ? (
 						<div>
 							<div className="text-muted-foreground">Square Feet</div>
-							<div className="font-medium">
-								{details.squareFootage.toLocaleString()}
-							</div>
+							<div className="font-medium">{details.squareFootage.toLocaleString()}</div>
 						</div>
 					) : null}
 					{details.lotSizeSquareFeet ? (
 						<div>
 							<div className="text-muted-foreground">Lot Size</div>
-							<div className="font-medium">
-								{details.lotSizeSquareFeet.toLocaleString()} sq ft
-							</div>
+							<div className="font-medium">{details.lotSizeSquareFeet.toLocaleString()} sq ft</div>
 						</div>
 					) : null}
 					{details.yearBuilt ? (
@@ -204,24 +187,24 @@ export function PropertyIntelligenceWidget({
 
 				{/* Systems */}
 				{details.heatingType || details.coolingType || details.roofType ? (
-					<div className="mt-2 space-y-1 rounded-md bg-muted/50 p-2 text-xs">
+					<div className="bg-muted/50 mt-2 space-y-1 rounded-md p-2 text-xs">
 						{details.heatingType ? (
 							<div className="flex items-center gap-1.5">
-								<Flame className="size-3 text-warning" />
+								<Flame className="text-warning size-3" />
 								<span className="text-muted-foreground">Heating:</span>
 								<span className="font-medium">{details.heatingType}</span>
 							</div>
 						) : null}
 						{details.coolingType ? (
 							<div className="flex items-center gap-1.5">
-								<Zap className="size-3 text-primary" />
+								<Zap className="text-primary size-3" />
 								<span className="text-muted-foreground">Cooling:</span>
 								<span className="font-medium">{details.coolingType}</span>
 							</div>
 						) : null}
 						{details.roofType ? (
 							<div className="flex items-center gap-1.5">
-								<Home className="size-3 text-muted-foreground" />
+								<Home className="text-muted-foreground size-3" />
 								<span className="text-muted-foreground">Roof:</span>
 								<span className="font-medium">{details.roofType}</span>
 							</div>
@@ -234,7 +217,7 @@ export function PropertyIntelligenceWidget({
 
 			{/* Ownership Information */}
 			<div className="space-y-2">
-				<h4 className="flex items-center gap-1.5 font-semibold text-xs">
+				<h4 className="flex items-center gap-1.5 text-xs font-semibold">
 					<Users className="size-3.5" />
 					Ownership
 				</h4>
@@ -248,17 +231,13 @@ export function PropertyIntelligenceWidget({
 					{ownership.lastSaleDate ? (
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground">Last Sale</span>
-							<span className="font-medium">
-								{formatDate(ownership.lastSaleDate)}
-							</span>
+							<span className="font-medium">{formatDate(ownership.lastSaleDate)}</span>
 						</div>
 					) : null}
 					{ownership.lastSalePrice ? (
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground">Sale Price</span>
-							<span className="font-medium">
-								{formatCurrency(ownership.lastSalePrice)}
-							</span>
+							<span className="font-medium">{formatCurrency(ownership.lastSalePrice)}</span>
 						</div>
 					) : null}
 				</div>
@@ -268,7 +247,7 @@ export function PropertyIntelligenceWidget({
 
 			{/* Valuation */}
 			<div className="space-y-2">
-				<h4 className="flex items-center gap-1.5 font-semibold text-xs">
+				<h4 className="flex items-center gap-1.5 text-xs font-semibold">
 					<CircleDollarSign className="size-3.5" />
 					Valuation
 				</h4>
@@ -276,25 +255,19 @@ export function PropertyIntelligenceWidget({
 					{ownership.assessedValue ? (
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground">Assessed Value</span>
-							<span className="font-medium">
-								{formatCurrency(ownership.assessedValue)}
-							</span>
+							<span className="font-medium">{formatCurrency(ownership.assessedValue)}</span>
 						</div>
 					) : null}
 					{ownership.marketValue ? (
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground">Market Value</span>
-							<span className="font-medium">
-								{formatCurrency(ownership.marketValue)}
-							</span>
+							<span className="font-medium">{formatCurrency(ownership.marketValue)}</span>
 						</div>
 					) : null}
 					{taxes.annualAmount ? (
 						<div className="flex items-center justify-between">
 							<span className="text-muted-foreground">Annual Taxes</span>
-							<span className="font-medium">
-								{formatCurrency(taxes.annualAmount)}
-							</span>
+							<span className="font-medium">{formatCurrency(taxes.annualAmount)}</span>
 						</div>
 					) : null}
 				</div>
@@ -305,26 +278,21 @@ export function PropertyIntelligenceWidget({
 				<>
 					<Separator />
 					<div className="space-y-2">
-						<h4 className="flex items-center gap-1.5 font-semibold text-xs">
+						<h4 className="flex items-center gap-1.5 text-xs font-semibold">
 							<FileCheck className="size-3.5" />
 							Recent Permits ({permits.length})
 						</h4>
 						<div className="space-y-1.5">
 							{permits.slice(0, 3).map((permit) => (
-								<div
-									className="rounded-md border p-2 text-xs"
-									key={permit.permitNumber}
-								>
+								<div className="rounded-md border p-2 text-xs" key={permit.permitNumber}>
 									<div className="flex items-center justify-between">
 										<span className="font-medium">{permit.type}</span>
 										<Badge className="text-xs" variant="outline">
 											{permit.status}
 										</Badge>
 									</div>
-									<div className="mt-1 text-muted-foreground">
-										{permit.description}
-									</div>
-									<div className="mt-1 text-muted-foreground">
+									<div className="text-muted-foreground mt-1">{permit.description}</div>
+									<div className="text-muted-foreground mt-1">
 										{formatDate(permit.issuedDate)}
 										{permit.value ? ` • ${formatCurrency(permit.value)}` : ""}
 									</div>
@@ -343,7 +311,7 @@ export function PropertyIntelligenceWidget({
 				<>
 					<Separator />
 					<div className="space-y-2">
-						<h4 className="flex items-center gap-1.5 font-semibold text-xs">
+						<h4 className="flex items-center gap-1.5 text-xs font-semibold">
 							<AlertTriangle className="size-3.5" />
 							Risk Factors
 						</h4>
@@ -367,9 +335,7 @@ export function PropertyIntelligenceWidget({
 							{riskFactors.fireZone ? (
 								<div className="flex items-center justify-between">
 									<span className="text-muted-foreground">Fire Zone</span>
-									<span className={getRiskColor(riskFactors.fireZone)}>
-										{riskFactors.fireZone}
-									</span>
+									<span className={getRiskColor(riskFactors.fireZone)}>{riskFactors.fireZone}</span>
 								</div>
 							) : null}
 							{riskFactors.hurricaneZone ? (
@@ -387,7 +353,7 @@ export function PropertyIntelligenceWidget({
 
 			{/* Data Source */}
 			<Separator />
-			<div className="flex items-center justify-between text-muted-foreground text-xs">
+			<div className="text-muted-foreground flex items-center justify-between text-xs">
 				<span>Data source: {enrichment.source}</span>
 				<span>Updated: {formatDate(enrichment.enrichedAt)}</span>
 			</div>

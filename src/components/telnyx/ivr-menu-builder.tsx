@@ -30,13 +30,7 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -58,13 +52,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 // IVR Node Types
-type NodeType =
-	| "greeting"
-	| "menu"
-	| "route"
-	| "voicemail"
-	| "hangup"
-	| "repeat";
+type NodeType = "greeting" | "menu" | "route" | "voicemail" | "hangup" | "repeat";
 
 // IVR Action Types
 type ActionType = "transfer" | "voicemail" | "submenu" | "repeat" | "hangup";
@@ -201,8 +189,7 @@ export function IVRMenuBuilder() {
 		setMenu((prev) => ({
 			...prev,
 			nodes: prev.nodes.map((n) => (n.id === updatedNode.id ? updatedNode : n)),
-			rootNode:
-				prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
+			rootNode: prev.rootNode.id === updatedNode.id ? updatedNode : prev.rootNode,
 		}));
 		setSelectedNode(updatedNode);
 	};
@@ -221,11 +208,7 @@ export function IVRMenuBuilder() {
 							<CardDescription>{menu.description}</CardDescription>
 						</div>
 						<div className="flex items-center gap-2">
-							<Button
-								onClick={() => setTestMode(!testMode)}
-								size="sm"
-								variant="outline"
-							>
+							<Button onClick={() => setTestMode(!testMode)} size="sm" variant="outline">
 								<Play className="mr-2 size-3" />
 								{testMode ? "Stop Test" : "Test Menu"}
 							</Button>
@@ -242,7 +225,7 @@ export function IVRMenuBuilder() {
 			{testMode && (
 				<Card className="border-primary bg-primary dark:border-primary dark:bg-primary/20">
 					<CardHeader>
-						<CardTitle className="text-base text-primary dark:text-primary">
+						<CardTitle className="text-primary dark:text-primary text-base">
 							Test Mode Active
 						</CardTitle>
 						<CardDescription className="text-primary dark:text-primary">
@@ -250,12 +233,10 @@ export function IVRMenuBuilder() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<div className="rounded-lg border bg-background p-4">
+						<div className="bg-background rounded-lg border p-4">
 							<div className="mb-3 flex items-center gap-2">
 								<Volume2 className="size-4" />
-								<span className="text-sm">
-									"{menu.rootNode.greeting?.content}"
-								</span>
+								<span className="text-sm">"{menu.rootNode.greeting?.content}"</span>
 							</div>
 							<div className="grid grid-cols-3 gap-2">
 								{menu.rootNode.keypressOptions.map((option) => (
@@ -273,9 +254,7 @@ export function IVRMenuBuilder() {
 			<Card>
 				<CardHeader>
 					<CardTitle className="text-base">Menu Flow</CardTitle>
-					<CardDescription>
-						Visual representation of your IVR menu structure
-					</CardDescription>
+					<CardDescription>Visual representation of your IVR menu structure</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
@@ -294,7 +273,7 @@ export function IVRMenuBuilder() {
 										<Badge className="font-mono" variant="secondary">
 											Press {option.key}
 										</Badge>
-										<ArrowRight className="size-4 text-muted-foreground" />
+										<ArrowRight className="text-muted-foreground size-4" />
 										<div className="flex-1">
 											<div className="font-medium">{option.label}</div>
 											<div className="text-muted-foreground text-sm">
@@ -322,7 +301,7 @@ export function IVRMenuBuilder() {
 										<Clock className="size-3" />
 										{menu.rootNode.timeout}s timeout
 									</Badge>
-									<ArrowRight className="size-4 text-muted-foreground" />
+									<ArrowRight className="text-muted-foreground size-4" />
 									<div className="text-muted-foreground text-sm">
 										{getActionLabel(menu.rootNode.timeoutAction || "repeat")}
 									</div>
@@ -337,21 +316,19 @@ export function IVRMenuBuilder() {
 			<div className="grid gap-4 sm:grid-cols-3">
 				<Card>
 					<CardContent className="pt-6">
-						<div className="font-bold text-2xl">
-							{menu.rootNode.keypressOptions.length}
-						</div>
+						<div className="text-2xl font-bold">{menu.rootNode.keypressOptions.length}</div>
 						<div className="text-muted-foreground text-sm">Menu Options</div>
 					</CardContent>
 				</Card>
 				<Card>
 					<CardContent className="pt-6">
-						<div className="font-bold text-2xl">{menu.rootNode.timeout}s</div>
+						<div className="text-2xl font-bold">{menu.rootNode.timeout}s</div>
 						<div className="text-muted-foreground text-sm">Timeout</div>
 					</CardContent>
 				</Card>
 				<Card>
 					<CardContent className="pt-6">
-						<div className="font-bold text-2xl">{menu.rootNode.maxRetries}</div>
+						<div className="text-2xl font-bold">{menu.rootNode.maxRetries}</div>
 						<div className="text-muted-foreground text-sm">Max Retries</div>
 					</CardContent>
 				</Card>
@@ -401,15 +378,11 @@ function IVRNodeCard({
 			<CardHeader className="pb-3">
 				<div className="flex items-start justify-between">
 					<div className="flex items-center gap-3">
-						<div className="rounded-lg border bg-muted p-2">
-							{getNodeIcon()}
-						</div>
+						<div className="bg-muted rounded-lg border p-2">{getNodeIcon()}</div>
 						<div>
 							<CardTitle className="text-base">{node.name}</CardTitle>
 							{node.description && (
-								<CardDescription className="text-xs">
-									{node.description}
-								</CardDescription>
+								<CardDescription className="text-xs">{node.description}</CardDescription>
 							)}
 						</div>
 					</div>
@@ -420,12 +393,10 @@ function IVRNodeCard({
 			</CardHeader>
 			<CardContent>
 				{node.greeting && (
-					<div className="rounded-lg bg-muted/50 p-3 text-sm">
-						<div className="mb-1 flex items-center gap-2 text-muted-foreground text-xs">
+					<div className="bg-muted/50 rounded-lg p-3 text-sm">
+						<div className="text-muted-foreground mb-1 flex items-center gap-2 text-xs">
 							<Volume2 className="size-3" />
-							{node.greeting.type === "text-to-speech"
-								? "Text-to-Speech"
-								: "Audio File"}
+							{node.greeting.type === "text-to-speech" ? "Text-to-Speech" : "Audio File"}
 						</div>
 						<div className="line-clamp-2">{node.greeting.content}</div>
 					</div>
@@ -474,9 +445,7 @@ function NodeEditorDialog({
 							<Label htmlFor="node-name">Node Name</Label>
 							<Input
 								id="node-name"
-								onChange={(e) =>
-									setEditedNode({ ...editedNode, name: e.target.value })
-								}
+								onChange={(e) => setEditedNode({ ...editedNode, name: e.target.value })}
 								value={editedNode.name}
 							/>
 						</div>
@@ -485,9 +454,7 @@ function NodeEditorDialog({
 							<Label htmlFor="node-description">Description (Optional)</Label>
 							<Input
 								id="node-description"
-								onChange={(e) =>
-									setEditedNode({ ...editedNode, description: e.target.value })
-								}
+								onChange={(e) => setEditedNode({ ...editedNode, description: e.target.value })}
 								value={editedNode.description || ""}
 							/>
 						</div>
@@ -594,24 +561,13 @@ function NodeEditorDialog({
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
-															{[
-																"0",
-																"1",
-																"2",
-																"3",
-																"4",
-																"5",
-																"6",
-																"7",
-																"8",
-																"9",
-																"*",
-																"#",
-															].map((key) => (
-																<SelectItem key={key} value={key}>
-																	{key}
-																</SelectItem>
-															))}
+															{["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*", "#"].map(
+																(key) => (
+																	<SelectItem key={key} value={key}>
+																		{key}
+																	</SelectItem>
+																)
+															)}
 														</SelectContent>
 													</Select>
 												</div>
@@ -653,30 +609,19 @@ function NodeEditorDialog({
 															<SelectValue />
 														</SelectTrigger>
 														<SelectContent>
-															<SelectItem value="transfer">
-																Transfer to Number
-															</SelectItem>
-															<SelectItem value="voicemail">
-																Send to Voicemail
-															</SelectItem>
-															<SelectItem value="submenu">
-																Go to Submenu
-															</SelectItem>
-															<SelectItem value="repeat">
-																Repeat Menu
-															</SelectItem>
+															<SelectItem value="transfer">Transfer to Number</SelectItem>
+															<SelectItem value="voicemail">Send to Voicemail</SelectItem>
+															<SelectItem value="submenu">Go to Submenu</SelectItem>
+															<SelectItem value="repeat">Repeat Menu</SelectItem>
 															<SelectItem value="hangup">Hang Up</SelectItem>
 														</SelectContent>
 													</Select>
 												</div>
 
-												{(option.action === "transfer" ||
-													option.action === "submenu") && (
+												{(option.action === "transfer" || option.action === "submenu") && (
 													<div className="space-y-2">
 														<Label>
-															{option.action === "transfer"
-																? "Phone Number"
-																: "Submenu"}
+															{option.action === "transfer" ? "Phone Number" : "Submenu"}
 														</Label>
 														<Input
 															onChange={(e) => {
@@ -795,20 +740,7 @@ function NodeEditorDialog({
 
 function getNextAvailableKey(options: KeypressOption[]): string {
 	const usedKeys = new Set(options.map((opt) => opt.key));
-	const availableKeys = [
-		"1",
-		"2",
-		"3",
-		"4",
-		"5",
-		"6",
-		"7",
-		"8",
-		"9",
-		"0",
-		"*",
-		"#",
-	];
+	const availableKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "*", "#"];
 	return availableKeys.find((key) => !usedKeys.has(key)) || "1";
 }
 

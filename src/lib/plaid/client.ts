@@ -25,7 +25,7 @@ function initializePlaidClient() {
 
 	if (!secret) {
 		throw new Error(
-			`PLAID_SECRET_${environmentRaw.toUpperCase()} is not defined in environment variables`,
+			`PLAID_SECRET_${environmentRaw.toUpperCase()} is not defined in environment variables`
 		);
 	}
 
@@ -66,11 +66,8 @@ export const plaidClient = new Proxy({} as PlaidApi, {
 	},
 });
 
-export const plaidEnvironment = new Proxy(
-	{} as keyof typeof PlaidEnvironments,
-	{
-		get() {
-			return getPlaidEnvironment();
-		},
+export const plaidEnvironment = new Proxy({} as keyof typeof PlaidEnvironments, {
+	get() {
+		return getPlaidEnvironment();
 	},
-);
+});

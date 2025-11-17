@@ -88,31 +88,22 @@ export function AttachmentsSection({
 					<div className="space-y-2">
 						{attachments.map((attachment: any) => (
 							<div
-								className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/50"
+								className="hover:bg-muted/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
 								key={attachment.id}
 							>
 								<div className="flex min-w-0 flex-1 items-center gap-3">
-									<FileText className="size-4 flex-shrink-0 text-muted-foreground" />
+									<FileText className="text-muted-foreground size-4 flex-shrink-0" />
 									<div className="min-w-0 flex-1">
-										<p className="truncate font-medium text-sm">
-											{attachment.original_file_name ||
-												attachment.file_name ||
-												"Untitled"}
+										<p className="truncate text-sm font-medium">
+											{attachment.original_file_name || attachment.file_name || "Untitled"}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											{attachment.file_size
-												? `${(attachment.file_size / 1024).toFixed(1)} KB`
-												: ""}
+											{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : ""}
 											{attachment.category && ` • ${attachment.category}`}
 										</p>
 									</div>
 								</div>
-								<Button
-									asChild
-									className="flex-shrink-0"
-									size="sm"
-									variant="ghost"
-								>
+								<Button asChild className="flex-shrink-0" size="sm" variant="ghost">
 									<a
 										download
 										href={attachment.storage_url || attachment.url}
@@ -128,10 +119,8 @@ export function AttachmentsSection({
 				) : (
 					<div className="flex h-32 items-center justify-center">
 						<div className="text-center">
-							<Paperclip className="mx-auto size-8 text-muted-foreground/50" />
-							<p className="mt-2 text-muted-foreground text-sm">
-								No attachments yet
-							</p>
+							<Paperclip className="text-muted-foreground/50 mx-auto size-8" />
+							<p className="text-muted-foreground mt-2 text-sm">No attachments yet</p>
 						</div>
 					</div>
 				)}

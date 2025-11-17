@@ -11,10 +11,7 @@ export async function POST() {
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		// Get authenticated user
@@ -39,7 +36,7 @@ export async function POST() {
 					hint: "Please complete onboarding first at /dashboard/welcome",
 					userId: user.id,
 				},
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -56,7 +53,7 @@ export async function POST() {
 		if (propertiesError) {
 			return NextResponse.json(
 				{ error: "Failed to fetch properties", details: propertiesError },
-				{ status: 500 },
+				{ status: 500 }
 			);
 		}
 
@@ -82,7 +79,7 @@ export async function POST() {
 		if (updateError) {
 			return NextResponse.json(
 				{ error: "Failed to update properties", details: updateError },
-				{ status: 500 },
+				{ status: 500 }
 			);
 		}
 
@@ -100,7 +97,7 @@ export async function POST() {
 	} catch (error: any) {
 		return NextResponse.json(
 			{ error: "Internal server error", details: error.message },
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

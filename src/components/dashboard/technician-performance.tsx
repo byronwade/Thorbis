@@ -9,13 +9,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { ChartConfig } from "@/components/ui/chart";
 
 type TechnicianStatus = "on-job" | "traveling" | "available";
@@ -89,10 +83,7 @@ const statusLabels: Record<TechnicianStatus, string> = {
 
 export function TechnicianPerformance() {
 	const totalJobs = technicianData.reduce((sum, tech) => sum + tech.jobs, 0);
-	const totalRevenue = technicianData.reduce(
-		(sum, tech) => sum + tech.revenue,
-		0,
-	);
+	const totalRevenue = technicianData.reduce((sum, tech) => sum + tech.revenue, 0);
 
 	return (
 		<Card className="gap-0 py-0">
@@ -110,13 +101,13 @@ export function TechnicianPerformance() {
 							key={tech.name}
 						>
 							<div className="flex-1">
-								<p className="font-semibold text-sm">{tech.name}</p>
+								<p className="text-sm font-semibold">{tech.name}</p>
 								<p className="text-muted-foreground text-xs">
 									{tech.jobs} jobs • ${(tech.revenue / 1000).toFixed(1)}k
 								</p>
 							</div>
 							<Badge
-								className={`${statusColors[tech.status]} text-white text-xs`}
+								className={`${statusColors[tech.status]} text-xs text-white`}
 								variant="secondary"
 							>
 								{statusLabels[tech.status]}

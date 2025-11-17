@@ -11,31 +11,12 @@
  * - Support for date ranges and multi-day holidays
  */
 
-import {
-	Calendar,
-	Edit,
-	Loader2,
-	Plus,
-	Repeat,
-	Save,
-	Trash2,
-} from "lucide-react";
+import { Calendar, Edit, Loader2, Plus, Repeat, Save, Trash2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
-import {
-	createHoliday,
-	deleteHoliday,
-	getCompanyHolidays,
-	updateHoliday,
-} from "@/actions/voip";
+import { createHoliday, deleteHoliday, getCompanyHolidays, updateHoliday } from "@/actions/voip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -158,9 +139,7 @@ export function HolidayScheduleManager() {
 			}
 
 			if (result.success) {
-				toast.success(
-					`Holiday ${isCreating ? "created" : "updated"} successfully`,
-				);
+				toast.success(`Holiday ${isCreating ? "created" : "updated"} successfully`);
 				setIsEditDialogOpen(false);
 				loadHolidays();
 			} else {
@@ -195,14 +174,13 @@ export function HolidayScheduleManager() {
 	}
 
 	const sortedHolidays = [...holidays].sort(
-		(a, b) =>
-			new Date(a.holiday_date).getTime() - new Date(b.holiday_date).getTime(),
+		(a, b) => new Date(a.holiday_date).getTime() - new Date(b.holiday_date).getTime()
 	);
 
 	if (isLoading) {
 		return (
 			<div className="flex h-[50vh] items-center justify-center">
-				<Loader2 className="size-8 animate-spin text-muted-foreground" />
+				<Loader2 className="text-muted-foreground size-8 animate-spin" />
 			</div>
 		);
 	}
@@ -214,9 +192,7 @@ export function HolidayScheduleManager() {
 					<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 						<div>
 							<CardTitle>Company Holidays</CardTitle>
-							<CardDescription>
-								Manage holidays and configure special call routing
-							</CardDescription>
+							<CardDescription>Manage holidays and configure special call routing</CardDescription>
 						</div>
 						<Button onClick={openCreateDialog}>
 							<Plus className="mr-2 size-4" />
@@ -240,8 +216,7 @@ export function HolidayScheduleManager() {
 								{sortedHolidays.length === 0 ? (
 									<TableRow>
 										<TableCell className="h-24 text-center" colSpan={5}>
-											No holidays configured. Add your first holiday to get
-											started.
+											No holidays configured. Add your first holiday to get started.
 										</TableCell>
 									</TableRow>
 								) : (
@@ -259,10 +234,8 @@ export function HolidayScheduleManager() {
 											</TableCell>
 											<TableCell>
 												<div className="flex items-center gap-2">
-													<Calendar className="size-4 text-muted-foreground" />
-													<span className="text-sm">
-														{formatDate(holiday.holiday_date)}
-													</span>
+													<Calendar className="text-muted-foreground size-4" />
+													<span className="text-sm">{formatDate(holiday.holiday_date)}</span>
 												</div>
 											</TableCell>
 											<TableCell>
@@ -314,16 +287,15 @@ export function HolidayScheduleManager() {
 
 			<Card className="border-primary/50 bg-primary/5">
 				<CardContent className="flex items-start gap-3 pt-6">
-					<Calendar className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+					<Calendar className="text-primary mt-0.5 h-5 w-5 shrink-0" />
 					<div className="space-y-1">
-						<p className="font-medium text-primary text-sm dark:text-primary">
+						<p className="text-primary dark:text-primary text-sm font-medium">
 							Holiday Routing Tips
 						</p>
 						<p className="text-muted-foreground text-sm">
-							Set up recurring holidays to automatically apply special routing
-							every year. Configure special greeting messages to inform callers
-							about holiday hours. Consider creating a dedicated routing rule
-							for holidays with voicemail or emergency contact options.
+							Set up recurring holidays to automatically apply special routing every year. Configure
+							special greeting messages to inform callers about holiday hours. Consider creating a
+							dedicated routing rule for holidays with voicemail or emergency contact options.
 						</p>
 					</div>
 				</CardContent>
@@ -333,9 +305,7 @@ export function HolidayScheduleManager() {
 			<Dialog onOpenChange={setIsEditDialogOpen} open={isEditDialogOpen}>
 				<DialogContent className="max-w-2xl">
 					<DialogHeader>
-						<DialogTitle>
-							{isCreating ? "Add Holiday" : "Edit Holiday"}
-						</DialogTitle>
+						<DialogTitle>{isCreating ? "Add Holiday" : "Edit Holiday"}</DialogTitle>
 						<DialogDescription>
 							Configure holiday details and special call routing
 						</DialogDescription>
@@ -346,9 +316,7 @@ export function HolidayScheduleManager() {
 							<Label htmlFor="holidayName">Holiday Name *</Label>
 							<Input
 								id="holidayName"
-								onChange={(e) =>
-									setHolidayForm({ ...holidayForm, name: e.target.value })
-								}
+								onChange={(e) => setHolidayForm({ ...holidayForm, name: e.target.value })}
 								placeholder="New Year's Day"
 								value={holidayForm.name}
 							/>
@@ -373,9 +341,7 @@ export function HolidayScheduleManager() {
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Recurring Holiday</Label>
-								<p className="text-muted-foreground text-xs">
-									Automatically repeat this holiday
-								</p>
+								<p className="text-muted-foreground text-xs">Automatically repeat this holiday</p>
 							</div>
 							<Switch
 								checked={holidayForm.is_recurring}
@@ -398,27 +364,17 @@ export function HolidayScheduleManager() {
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
-										<SelectItem value="yearly">
-											Yearly - Same date every year
-										</SelectItem>
-										<SelectItem value="monthly">
-											Monthly - Same day each month
-										</SelectItem>
-										<SelectItem value="weekly">
-											Weekly - Same day each week
-										</SelectItem>
-										<SelectItem value="custom">
-											Custom - Define your own pattern
-										</SelectItem>
+										<SelectItem value="yearly">Yearly - Same date every year</SelectItem>
+										<SelectItem value="monthly">Monthly - Same day each month</SelectItem>
+										<SelectItem value="weekly">Weekly - Same day each week</SelectItem>
+										<SelectItem value="custom">Custom - Define your own pattern</SelectItem>
 									</SelectContent>
 								</Select>
 							</div>
 						)}
 
 						<div>
-							<Label htmlFor="greetingMessage">
-								Special Greeting Message (Optional)
-							</Label>
+							<Label htmlFor="greetingMessage">Special Greeting Message (Optional)</Label>
 							<Textarea
 								className="mt-2"
 								id="greetingMessage"
@@ -432,7 +388,7 @@ export function HolidayScheduleManager() {
 								rows={4}
 								value={holidayForm.special_greeting_message}
 							/>
-							<p className="mt-1 text-muted-foreground text-xs">
+							<p className="text-muted-foreground mt-1 text-xs">
 								This message will be played to callers on this holiday
 							</p>
 						</div>
@@ -440,15 +396,11 @@ export function HolidayScheduleManager() {
 						<div className="flex items-center justify-between">
 							<div>
 								<Label>Holiday Enabled</Label>
-								<p className="text-muted-foreground text-xs">
-									Enable or disable this holiday
-								</p>
+								<p className="text-muted-foreground text-xs">Enable or disable this holiday</p>
 							</div>
 							<Switch
 								checked={holidayForm.enabled}
-								onCheckedChange={(checked) =>
-									setHolidayForm({ ...holidayForm, enabled: checked })
-								}
+								onCheckedChange={(checked) => setHolidayForm({ ...holidayForm, enabled: checked })}
 							/>
 						</div>
 					</div>

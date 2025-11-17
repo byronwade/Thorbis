@@ -107,17 +107,11 @@ function getPropertyBadge(type?: string) {
 	const variants: Record<string, string> = {
 		residential: "bg-success text-success dark:bg-success dark:text-success",
 		commercial: "bg-primary text-primary dark:bg-primary dark:text-primary",
-		industrial:
-			"bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+		industrial: "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
 	};
 
 	return (
-		<Badge
-			className={cn(
-				"text-xs",
-				variants[type || "residential"] || variants.residential,
-			)}
-		>
+		<Badge className={cn("text-xs", variants[type || "residential"] || variants.residential)}>
 			{type ? type.charAt(0).toUpperCase() + type.slice(1) : "Residential"}
 		</Badge>
 	);
@@ -146,9 +140,7 @@ export function PropertiesTable({
 	const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
-		new Set(),
-	);
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
 
 	const handleMouseEnter = (property: Property, event: React.MouseEvent) => {
 		setHoveredProperty(property);
@@ -180,9 +172,7 @@ export function PropertiesTable({
 			variant: "ghost",
 			onClick: async (selectedIds) => {
 				// TODO: Implement move dialog
-				alert(
-					`Move ${selectedIds.size} properties to another customer (coming soon)`,
-				);
+				alert(`Move ${selectedIds.size} properties to another customer (coming soon)`);
 			},
 		},
 	];
@@ -202,12 +192,12 @@ export function PropertiesTable({
 						onMouseLeave={handleMouseLeave}
 						onMouseMove={handleMouseMove}
 					>
-						<Icon className="size-4 shrink-0 text-muted-foreground" />
+						<Icon className="text-muted-foreground size-4 shrink-0" />
 						<div className="min-w-0">
-							<p className="truncate font-medium leading-tight">
+							<p className="truncate leading-tight font-medium">
 								{property.name || property.address}
 							</p>
-							<p className="truncate text-muted-foreground text-xs leading-tight">
+							<p className="text-muted-foreground truncate text-xs leading-tight">
 								{property.city}, {property.state} {property.zip_code}
 							</p>
 						</div>
@@ -231,9 +221,7 @@ export function PropertiesTable({
 			sortable: true,
 			align: "right",
 			render: (property) => {
-				const sqFt =
-					property.square_footage ||
-					property.enrichment?.details?.squareFootage;
+				const sqFt = property.square_footage || property.enrichment?.details?.squareFootage;
 				const beds = property.enrichment?.details?.bedrooms;
 				const baths = property.enrichment?.details?.bathrooms;
 
@@ -246,9 +234,7 @@ export function PropertiesTable({
 							</p>
 						)}
 						{!sqFt && property.year_built && (
-							<p className="text-muted-foreground text-xs">
-								Built {property.year_built}
-							</p>
+							<p className="text-muted-foreground text-xs">Built {property.year_built}</p>
 						)}
 					</div>
 				);
@@ -273,14 +259,10 @@ export function PropertiesTable({
 					<div className="text-sm">
 						{displayValue ? (
 							<>
-								<p className="font-semibold text-success dark:text-success">
+								<p className="text-success dark:text-success font-semibold">
 									{formatCurrency(displayValue)}
 								</p>
-								{tax && (
-									<p className="text-muted-foreground text-xs">
-										Tax: {formatCurrency(tax)}
-									</p>
-								)}
+								{tax && <p className="text-muted-foreground text-xs">Tax: {formatCurrency(tax)}</p>}
 							</>
 						) : (
 							<span className="text-muted-foreground text-xs">No data</span>
@@ -314,7 +296,7 @@ export function PropertiesTable({
 							<SheetContent className="w-full overflow-y-auto sm:max-w-2xl">
 								<SheetHeader>
 									<SheetTitle className="flex items-center gap-2">
-										<Sparkles className="size-5 text-primary" />
+										<Sparkles className="text-primary size-5" />
 										Operational Intelligence
 									</SheetTitle>
 									<SheetDescription>
@@ -322,9 +304,7 @@ export function PropertiesTable({
 									</SheetDescription>
 								</SheetHeader>
 								<div className="mt-6">
-									<JobEnrichmentPanel
-										enrichmentData={property.operationalIntelligence}
-									/>
+									<JobEnrichmentPanel enrichmentData={property.operationalIntelligence} />
 								</div>
 							</SheetContent>
 						</Sheet>
@@ -332,7 +312,7 @@ export function PropertiesTable({
 
 					{/* View Link */}
 					<Link
-						className="inline-flex items-center gap-1 text-primary text-xs hover:underline"
+						className="text-primary inline-flex items-center gap-1 text-xs hover:underline"
 						href={`/dashboard/customers/${property.customer_id}#property-${property.id}`}
 						onClick={(e) => e.stopPropagation()}
 					>
@@ -374,14 +354,12 @@ export function PropertiesTable({
 						Add Property
 					</Button>
 				}
-				emptyIcon={<Building2 className="h-8 w-8 text-muted-foreground" />}
+				emptyIcon={<Building2 className="text-muted-foreground h-8 w-8" />}
 				emptyMessage="No properties found"
 				enableSelection={true}
 				entity="properties"
 				getItemId={(property) => property.id}
-				isArchived={(property) =>
-					Boolean(property.archived_at || property.deleted_at)
-				}
+				isArchived={(property) => Boolean(property.archived_at || property.deleted_at)}
 				itemsPerPage={itemsPerPage}
 				searchFilter={searchFilter}
 				searchPlaceholder="Search properties..."
@@ -392,7 +370,7 @@ export function PropertiesTable({
 			{/* Floating Map on Hover */}
 			{hoveredProperty && (
 				<div
-					className="pointer-events-none fixed z-50 overflow-hidden rounded-lg border-2 border-primary bg-background shadow-2xl"
+					className="border-primary bg-background pointer-events-none fixed z-50 overflow-hidden rounded-lg border-2 shadow-2xl"
 					style={{
 						left: mousePosition.x + 20,
 						top: mousePosition.y - 150,
@@ -411,17 +389,15 @@ export function PropertiesTable({
 								", " +
 								hoveredProperty.state +
 								" " +
-								hoveredProperty.zip_code,
+								hoveredProperty.zip_code
 						)}&zoom=14`}
 						style={{ border: 0 }}
 						title={`Map of ${hoveredProperty.address}`}
 						width="100%"
 					/>
-					<div className="absolute right-0 bottom-0 left-0 border-t bg-background/95 p-2 backdrop-blur">
-						<p className="truncate font-medium text-xs">
-							{hoveredProperty.address}
-						</p>
-						<p className="truncate text-muted-foreground text-xs">
+					<div className="bg-background/95 absolute right-0 bottom-0 left-0 border-t p-2 backdrop-blur">
+						<p className="truncate text-xs font-medium">{hoveredProperty.address}</p>
+						<p className="text-muted-foreground truncate text-xs">
 							{hoveredProperty.city}, {hoveredProperty.state}
 						</p>
 					</div>
@@ -437,9 +413,8 @@ export function PropertiesTable({
 							{selectedItemIds.size === 1 ? "Property" : "Properties"}?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size}{" "}
-							{selectedItemIds.size === 1 ? "property" : "properties"} will be
-							archived and can be restored within 90 days.
+							{selectedItemIds.size} {selectedItemIds.size === 1 ? "property" : "properties"} will
+							be archived and can be restored within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

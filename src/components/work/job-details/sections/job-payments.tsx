@@ -62,8 +62,8 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 	if (payments.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<DollarSign className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Payments</h3>
+				<DollarSign className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Payments</h3>
 				<p className="text-muted-foreground text-sm">
 					No payments have been recorded for this job yet.
 				</p>
@@ -87,29 +87,19 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 					<TableBody>
 						{payments.map((payment) => (
 							<TableRow key={payment.id}>
-								<TableCell>
-									{formatDate(payment.payment_date || payment.created_at)}
-								</TableCell>
-								<TableCell className="font-medium">
-									{formatCurrency(payment.amount)}
-								</TableCell>
+								<TableCell>{formatDate(payment.payment_date || payment.created_at)}</TableCell>
+								<TableCell className="font-medium">{formatCurrency(payment.amount)}</TableCell>
 								<TableCell>
 									<div className="flex items-center gap-2">
-										<CreditCard className="size-4 text-muted-foreground" />
-										{getPaymentMethodLabel(
-											payment.payment_method || payment.method,
-										)}
+										<CreditCard className="text-muted-foreground size-4" />
+										{getPaymentMethodLabel(payment.payment_method || payment.method)}
 									</div>
 								</TableCell>
 								<TableCell className="font-mono text-xs">
 									{payment.reference_number || payment.transaction_id || "—"}
 								</TableCell>
 								<TableCell>
-									<Badge
-										variant={
-											payment.status === "completed" ? "default" : "secondary"
-										}
-									>
+									<Badge variant={payment.status === "completed" ? "default" : "secondary"}>
 										{payment.status || "completed"}
 									</Badge>
 								</TableCell>
@@ -120,22 +110,17 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
+			<div className="bg-muted/50 rounded-md p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="font-medium text-sm">Total Payments</p>
+						<p className="text-sm font-medium">Total Payments</p>
 						<p className="text-muted-foreground text-xs">
 							{payments.length} payment{payments.length !== 1 ? "s" : ""}
 						</p>
 					</div>
 					<div className="text-right">
-						<p className="font-bold text-2xl">
-							{formatCurrency(
-								payments.reduce(
-									(sum, payment) => sum + (payment.amount || 0),
-									0,
-								),
-							)}
+						<p className="text-2xl font-bold">
+							{formatCurrency(payments.reduce((sum, payment) => sum + (payment.amount || 0), 0))}
 						</p>
 					</div>
 				</div>

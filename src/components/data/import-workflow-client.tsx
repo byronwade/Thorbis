@@ -6,25 +6,11 @@
  * Manages multi-step import process with state management
  */
 
-import {
-	AlertCircle,
-	Check,
-	CheckCircle,
-	Eye,
-	FileSpreadsheet,
-	Play,
-	Upload,
-} from "lucide-react";
+import { AlertCircle, Check, CheckCircle, Eye, FileSpreadsheet, Play, Upload } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 type ImportStep =
@@ -61,8 +47,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 		{ id: "confirm", label: "Confirm", icon: <Check className="size-4" /> },
 	];
 
-	const getStepIndex = (step: ImportStep) =>
-		steps.findIndex((s) => s.id === step);
+	const getStepIndex = (step: ImportStep) => steps.findIndex((s) => s.id === step);
 	const currentStepIndex = getStepIndex(currentStep);
 
 	const formatDataType = (type: string) =>
@@ -75,10 +60,8 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 		<div className="container mx-auto max-w-5xl space-y-6 py-8">
 			{/* Header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">
-					Import {formatDataType(dataType)}
-				</h1>
-				<p className="mt-2 text-muted-foreground">
+				<h1 className="text-3xl font-bold tracking-tight">Import {formatDataType(dataType)}</h1>
+				<p className="text-muted-foreground mt-2">
 					Follow the steps below to import your data safely
 				</p>
 			</div>
@@ -97,16 +80,12 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 												: "border-muted bg-muted text-muted-foreground"
 										}`}
 									>
-										{index < currentStepIndex ? (
-											<CheckCircle className="size-5" />
-										) : (
-											step.icon
-										)}
+										{index < currentStepIndex ? <CheckCircle className="size-5" /> : step.icon}
 									</div>
 									<span
 										className={`mt-2 text-xs ${
 											index <= currentStepIndex
-												? "font-medium text-foreground"
+												? "text-foreground font-medium"
 												: "text-muted-foreground"
 										}`}
 									>
@@ -129,35 +108,30 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Upload File</CardTitle>
-						<CardDescription>
-							Upload an Excel (.xlsx, .xls) or CSV file to import
-						</CardDescription>
+						<CardDescription>Upload an Excel (.xlsx, .xls) or CSV file to import</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-center rounded-lg border-2 border-dashed p-12">
 							<div className="text-center">
-								<Upload className="mx-auto size-12 text-muted-foreground" />
-								<h3 className="mt-4 font-medium text-lg">Upload your file</h3>
-								<p className="mt-2 text-muted-foreground text-sm">
+								<Upload className="text-muted-foreground mx-auto size-12" />
+								<h3 className="mt-4 text-lg font-medium">Upload your file</h3>
+								<p className="text-muted-foreground mt-2 text-sm">
 									Drag and drop or click to browse
 								</p>
-								<p className="mt-1 text-muted-foreground text-xs">
-									Maximum file size: 10MB
-								</p>
+								<p className="text-muted-foreground mt-1 text-xs">Maximum file size: 10MB</p>
 								<Button className="mt-4" variant="default">
 									Choose File
 								</Button>
 							</div>
 						</div>
 
-						<div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
+						<div className="border-primary/50 bg-primary/5 rounded-lg border p-4">
 							<div className="flex items-start gap-3">
-								<FileSpreadsheet className="mt-0.5 size-5 shrink-0 text-primary" />
+								<FileSpreadsheet className="text-primary mt-0.5 size-5 shrink-0" />
 								<div>
-									<p className="font-medium text-sm">Don't have a template?</p>
-									<p className="mt-1 text-muted-foreground text-sm">
-										Download our Excel template with the correct format and
-										example data
+									<p className="text-sm font-medium">Don't have a template?</p>
+									<p className="text-muted-foreground mt-1 text-sm">
+										Download our Excel template with the correct format and example data
 									</p>
 									<Button className="mt-2" size="sm" variant="outline">
 										<FileSpreadsheet className="mr-2 size-4" />
@@ -168,10 +142,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-end gap-2">
-							<Button
-								onClick={() => setCurrentStep("mapping")}
-								variant="default"
-							>
+							<Button onClick={() => setCurrentStep("mapping")} variant="default">
 								Next: Column Mapping
 							</Button>
 						</div>
@@ -183,9 +154,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Column Mapping</CardTitle>
-						<CardDescription>
-							Map your spreadsheet columns to the correct fields
-						</CardDescription>
+						<CardDescription>Map your spreadsheet columns to the correct fields</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="rounded-lg border p-4">
@@ -195,16 +164,10 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button
-								onClick={() => setCurrentStep("upload")}
-								variant="outline"
-							>
+							<Button onClick={() => setCurrentStep("upload")} variant="outline">
 								Back
 							</Button>
-							<Button
-								onClick={() => setCurrentStep("preview")}
-								variant="default"
-							>
+							<Button onClick={() => setCurrentStep("preview")} variant="default">
 								Next: Preview Data
 							</Button>
 						</div>
@@ -216,18 +179,14 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Preview & Validate</CardTitle>
-						<CardDescription>
-							Review your data and fix any validation errors
-						</CardDescription>
+						<CardDescription>Review your data and fix any validation errors</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="font-medium text-sm">Validation Summary</p>
-									<p className="text-muted-foreground text-xs">
-										1,247 total rows detected
-									</p>
+									<p className="text-sm font-medium">Validation Summary</p>
+									<p className="text-muted-foreground text-xs">1,247 total rows detected</p>
 								</div>
 								<div className="flex gap-2">
 									<Badge className="bg-success">1,200 Valid</Badge>
@@ -243,15 +202,14 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 							</p>
 						</div>
 
-						<div className="rounded-lg border border-warning/50 bg-warning/5 p-4">
+						<div className="border-warning/50 bg-warning/5 rounded-lg border p-4">
 							<div className="flex items-start gap-3">
-								<AlertCircle className="mt-0.5 size-5 shrink-0 text-warning" />
+								<AlertCircle className="text-warning mt-0.5 size-5 shrink-0" />
 								<div>
-									<p className="font-medium text-sm">Validation Errors Found</p>
-									<p className="mt-1 text-muted-foreground text-sm">
-										15 rows have errors that must be fixed before import. You
-										can either fix them in the preview or download an error
-										report.
+									<p className="text-sm font-medium">Validation Errors Found</p>
+									<p className="text-muted-foreground mt-1 text-sm">
+										15 rows have errors that must be fixed before import. You can either fix them in
+										the preview or download an error report.
 									</p>
 									<Button className="mt-2" size="sm" variant="outline">
 										Download Error Report
@@ -261,16 +219,10 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button
-								onClick={() => setCurrentStep("mapping")}
-								variant="outline"
-							>
+							<Button onClick={() => setCurrentStep("mapping")} variant="outline">
 								Back
 							</Button>
-							<Button
-								onClick={() => setCurrentStep("dry-run")}
-								variant="default"
-							>
+							<Button onClick={() => setCurrentStep("dry-run")} variant="default">
 								Next: Dry Run
 							</Button>
 						</div>
@@ -282,9 +234,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Dry Run Simulation</CardTitle>
-						<CardDescription>
-							See what will happen without making any changes
-						</CardDescription>
+						<CardDescription>See what will happen without making any changes</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-3">
@@ -293,7 +243,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Will Create</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl">1,150</p>
+									<p className="text-2xl font-bold">1,150</p>
 									<p className="text-muted-foreground text-xs">new records</p>
 								</CardContent>
 							</Card>
@@ -302,10 +252,8 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Will Update</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl">50</p>
-									<p className="text-muted-foreground text-xs">
-										existing records
-									</p>
+									<p className="text-2xl font-bold">50</p>
+									<p className="text-muted-foreground text-xs">existing records</p>
 								</CardContent>
 							</Card>
 							<Card>
@@ -313,18 +261,18 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Will Skip</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl">47</p>
+									<p className="text-2xl font-bold">47</p>
 									<p className="text-muted-foreground text-xs">duplicates</p>
 								</CardContent>
 							</Card>
 						</div>
 
-						<div className="rounded-lg border border-primary/50 bg-primary/5 p-4">
+						<div className="border-primary/50 bg-primary/5 rounded-lg border p-4">
 							<div className="flex items-start gap-3">
-								<CheckCircle className="mt-0.5 size-5 shrink-0 text-primary" />
+								<CheckCircle className="text-primary mt-0.5 size-5 shrink-0" />
 								<div>
-									<p className="font-medium text-sm">Dry Run Successful</p>
-									<p className="mt-1 text-muted-foreground text-sm">
+									<p className="text-sm font-medium">Dry Run Successful</p>
+									<p className="text-muted-foreground mt-1 text-sm">
 										No errors detected. Your data is ready to import.
 									</p>
 								</div>
@@ -332,16 +280,10 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button
-								onClick={() => setCurrentStep("preview")}
-								variant="outline"
-							>
+							<Button onClick={() => setCurrentStep("preview")} variant="outline">
 								Back
 							</Button>
-							<Button
-								onClick={() => setCurrentStep("confirm")}
-								variant="default"
-							>
+							<Button onClick={() => setCurrentStep("confirm")} variant="default">
 								Next: Confirm Import
 							</Button>
 						</div>
@@ -353,35 +295,29 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Confirm Import</CardTitle>
-						<CardDescription>
-							Review and confirm your import settings
-						</CardDescription>
+						<CardDescription>Review and confirm your import settings</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-3">
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
-									<p className="font-medium text-sm">Total Records</p>
-									<p className="text-muted-foreground text-xs">
-										1,200 records will be imported
-									</p>
+									<p className="text-sm font-medium">Total Records</p>
+									<p className="text-muted-foreground text-xs">1,200 records will be imported</p>
 								</div>
 								<Badge>1,200</Badge>
 							</div>
 
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
-									<p className="font-medium text-sm">Import Method</p>
-									<p className="text-muted-foreground text-xs">
-										Create new & update existing
-									</p>
+									<p className="text-sm font-medium">Import Method</p>
+									<p className="text-muted-foreground text-xs">Create new & update existing</p>
 								</div>
 								<Badge>Upsert</Badge>
 							</div>
 
 							<div className="flex items-center justify-between rounded-lg border p-3">
 								<div>
-									<p className="font-medium text-sm">Backup</p>
+									<p className="text-sm font-medium">Backup</p>
 									<p className="text-muted-foreground text-xs">
 										Current data will be backed up for 24 hours
 									</p>
@@ -390,25 +326,21 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 							</div>
 						</div>
 
-						<div className="rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+						<div className="border-destructive/50 bg-destructive/5 rounded-lg border p-4">
 							<div className="flex items-start gap-3">
-								<AlertCircle className="mt-0.5 size-5 shrink-0 text-destructive" />
+								<AlertCircle className="text-destructive mt-0.5 size-5 shrink-0" />
 								<div>
-									<p className="font-medium text-sm">Large Import Detected</p>
-									<p className="mt-1 text-muted-foreground text-sm">
-										This import contains more than 100 records and requires
-										admin approval. An admin will be notified to review and
-										approve this import.
+									<p className="text-sm font-medium">Large Import Detected</p>
+									<p className="text-muted-foreground mt-1 text-sm">
+										This import contains more than 100 records and requires admin approval. An admin
+										will be notified to review and approve this import.
 									</p>
 								</div>
 							</div>
 						</div>
 
 						<div className="flex justify-between gap-2">
-							<Button
-								onClick={() => setCurrentStep("dry-run")}
-								variant="outline"
-							>
+							<Button onClick={() => setCurrentStep("dry-run")} variant="outline">
 								Back
 							</Button>
 							<Button
@@ -438,18 +370,16 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Importing Data...</CardTitle>
-						<CardDescription>
-							Please wait while your data is being imported
-						</CardDescription>
+						<CardDescription>Please wait while your data is being imported</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<p className="text-sm">Progress</p>
-								<p className="font-medium text-sm">{importProgress}%</p>
+								<p className="text-sm font-medium">{importProgress}%</p>
 							</div>
 							<Progress value={importProgress} />
-							<p className="text-center text-muted-foreground text-xs">
+							<p className="text-muted-foreground text-center text-xs">
 								Importing batch {Math.floor(importProgress / 10)} of 10...
 							</p>
 						</div>
@@ -461,7 +391,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<CheckCircle className="size-6 text-success" />
+							<CheckCircle className="text-success size-6" />
 							Import Completed Successfully
 						</CardTitle>
 						<CardDescription>Your data has been imported</CardDescription>
@@ -473,7 +403,7 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Created</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl text-success">1,150</p>
+									<p className="text-success text-2xl font-bold">1,150</p>
 									<p className="text-muted-foreground text-xs">new records</p>
 								</CardContent>
 							</Card>
@@ -482,10 +412,8 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Updated</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl text-primary">50</p>
-									<p className="text-muted-foreground text-xs">
-										existing records
-									</p>
+									<p className="text-primary text-2xl font-bold">50</p>
+									<p className="text-muted-foreground text-xs">existing records</p>
 								</CardContent>
 							</Card>
 							<Card>
@@ -493,21 +421,20 @@ export function ImportWorkflowClient({ dataType }: ImportWorkflowClientProps) {
 									<CardTitle className="text-sm">Skipped</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="font-bold text-2xl text-warning">47</p>
+									<p className="text-warning text-2xl font-bold">47</p>
 									<p className="text-muted-foreground text-xs">duplicates</p>
 								</CardContent>
 							</Card>
 						</div>
 
-						<div className="rounded-lg border border-success/50 bg-success/5 p-4">
+						<div className="border-success/50 bg-success/5 rounded-lg border p-4">
 							<div className="flex items-start gap-3">
-								<CheckCircle className="mt-0.5 size-5 shrink-0 text-success" />
+								<CheckCircle className="text-success mt-0.5 size-5 shrink-0" />
 								<div>
-									<p className="font-medium text-sm">Backup Created</p>
-									<p className="mt-1 text-muted-foreground text-sm">
-										A backup has been created and will be available for 24
-										hours. You can undo this import from the import history
-										page.
+									<p className="text-sm font-medium">Backup Created</p>
+									<p className="text-muted-foreground mt-1 text-sm">
+										A backup has been created and will be available for 24 hours. You can undo this
+										import from the import history page.
 									</p>
 								</div>
 							</div>

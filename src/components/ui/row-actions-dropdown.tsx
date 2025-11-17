@@ -84,11 +84,7 @@ export function RowActionsDropdown({
 							</DropdownMenuItem>
 						) : (
 							<DropdownMenuItem
-								className={
-									action.variant === "destructive"
-										? "text-destructive"
-										: undefined
-								}
+								className={action.variant === "destructive" ? "text-destructive" : undefined}
 								key={index}
 								onClick={action.onClick}
 							>
@@ -98,9 +94,7 @@ export function RowActionsDropdown({
 
 						return (
 							<div key={index}>
-								{action.separatorBefore && index > 0 && (
-									<DropdownMenuSeparator />
-								)}
+								{action.separatorBefore && index > 0 && <DropdownMenuSeparator />}
 								{menuItem}
 							</div>
 						);

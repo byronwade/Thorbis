@@ -24,9 +24,7 @@ import { z } from "zod";
 export const customerInsertSchema = z.object({
 	company_id: z.string().uuid(),
 	user_id: z.string().uuid().optional().nullable(),
-	type: z
-		.enum(["residential", "commercial", "industrial"])
-		.default("residential"),
+	type: z.enum(["residential", "commercial", "industrial"]).default("residential"),
 	first_name: z.string().min(1, "First name is required").max(100),
 	last_name: z.string().min(1, "Last name is required").max(100),
 	company_name: z.string().max(200).optional().nullable(),
@@ -61,17 +59,12 @@ export const customerInsertSchema = z.object({
 	billing_zip: z.string().max(10).optional().nullable(),
 	tax_exempt: z.boolean().default(false),
 	tax_id: z.string().max(50).optional().nullable(),
-	preferred_contact_method: z
-		.enum(["email", "phone", "sms", "any"])
-		.optional()
-		.nullable(),
+	preferred_contact_method: z.enum(["email", "phone", "sms", "any"]).optional().nullable(),
 	do_not_disturb: z.boolean().default(false),
 	marketing_opt_in: z.boolean().default(true),
 });
 
-export const customerUpdateSchema = customerInsertSchema
-	.partial()
-	.omit({ company_id: true });
+export const customerUpdateSchema = customerInsertSchema.partial().omit({ company_id: true });
 
 export const customerSelectSchema = customerInsertSchema.extend({
 	id: z.string().uuid(),
@@ -171,10 +164,7 @@ export const paymentInsertSchema = z.object({
 			"cancelled",
 		])
 		.default("pending"),
-	card_brand: z
-		.enum(["visa", "mastercard", "amex", "discover"])
-		.optional()
-		.nullable(),
+	card_brand: z.enum(["visa", "mastercard", "amex", "discover"]).optional().nullable(),
 	card_last4: z.string().length(4).optional().nullable(),
 	card_exp_month: z.number().int().min(1).max(12).optional().nullable(),
 	card_exp_year: z.number().int().min(2024).optional().nullable(),
@@ -239,13 +229,8 @@ export const equipmentInsertSchema = z.object({
 	warranty_notes: z.string().optional().nullable(),
 	purchase_price: z.number().int().optional().nullable(),
 	current_value: z.number().int().optional().nullable(),
-	status: z
-		.enum(["active", "inactive", "retired", "warranty", "needs_service"])
-		.default("active"),
-	condition: z
-		.enum(["excellent", "good", "fair", "poor"])
-		.optional()
-		.nullable(),
+	status: z.enum(["active", "inactive", "retired", "warranty", "needs_service"]).default("active"),
+	condition: z.enum(["excellent", "good", "fair", "poor"]).optional().nullable(),
 	last_service_date: z.date().optional().nullable(),
 	next_service_due: z.date().optional().nullable(),
 	service_interval_months: z.number().int().optional().nullable(),
@@ -276,9 +261,7 @@ export const scheduleInsertSchema = z.object({
 	customer_id: z.string().uuid().optional().nullable(),
 	job_id: z.string().uuid().optional().nullable(),
 	assigned_to: z.string().uuid().optional().nullable(),
-	type: z
-		.enum(["appointment", "task", "event", "block", "callback"])
-		.default("appointment"),
+	type: z.enum(["appointment", "task", "event", "block", "callback"]).default("appointment"),
 	title: z.string().min(1, "Title is required").max(200),
 	description: z.string().optional().nullable(),
 	start_time: z.date(),
@@ -286,14 +269,7 @@ export const scheduleInsertSchema = z.object({
 	duration: z.number().int().min(15), // In minutes
 	all_day: z.boolean().default(false),
 	status: z
-		.enum([
-			"scheduled",
-			"confirmed",
-			"in_progress",
-			"completed",
-			"cancelled",
-			"no_show",
-		])
+		.enum(["scheduled", "confirmed", "in_progress", "completed", "cancelled", "no_show"])
 		.default("scheduled"),
 	priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
 	location: z.string().max(500).optional().nullable(),
@@ -316,9 +292,7 @@ export const scheduleInsertSchema = z.object({
 	actual_duration: z.number().int().optional().nullable(),
 });
 
-export const scheduleUpdateSchema = scheduleInsertSchema
-	.partial()
-	.omit({ company_id: true });
+export const scheduleUpdateSchema = scheduleInsertSchema.partial().omit({ company_id: true });
 
 export const scheduleSelectSchema = scheduleInsertSchema.extend({
 	id: z.string().uuid(),
@@ -352,9 +326,7 @@ export const tagInsertSchema = z.object({
 	is_active: z.boolean().default(true),
 });
 
-export const tagUpdateSchema = tagInsertSchema
-	.partial()
-	.omit({ company_id: true, slug: true });
+export const tagUpdateSchema = tagInsertSchema.partial().omit({ company_id: true, slug: true });
 
 export const tagSelectSchema = tagInsertSchema.extend({
 	id: z.string().uuid(),
@@ -503,15 +475,7 @@ export const jobPhotoInsertSchema = z.object({
 	file_name: z.string().min(1, "File name is required").max(255),
 	file_size: z.number().int().min(1).max(52_428_800), // 50MB max
 	mime_type: z.string().optional().nullable(),
-	category: z.enum([
-		"before",
-		"during",
-		"after",
-		"issue",
-		"equipment",
-		"completion",
-		"other",
-	]),
+	category: z.enum(["before", "during", "after", "issue", "equipment", "completion", "other"]),
 	subcategory: z.string().max(100).optional().nullable(),
 	title: z.string().max(200).optional().nullable(),
 	description: z.string().optional().nullable(),
@@ -578,13 +542,11 @@ export const jobWorkflowStageUpdateSchema = jobWorkflowStageInsertSchema
 	.partial()
 	.omit({ company_id: true });
 
-export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
-	{
-		id: z.string().uuid(),
-		created_at: z.date(),
-		updated_at: z.date(),
-	},
-);
+export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend({
+	id: z.string().uuid(),
+	created_at: z.date(),
+	updated_at: z.date(),
+});
 
 // ============================================================================
 // JOB SIGNATURES
@@ -593,13 +555,7 @@ export const jobWorkflowStageSelectSchema = jobWorkflowStageInsertSchema.extend(
 export const jobSignatureInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
-	signature_type: z.enum([
-		"customer",
-		"technician",
-		"inspector",
-		"supervisor",
-		"other",
-	]),
+	signature_type: z.enum(["customer", "technician", "inspector", "supervisor", "other"]),
 	signer_name: z.string().min(1, "Signer name is required").max(200),
 	signer_email: z.string().email().optional().nullable(),
 	signer_phone: z.string().max(20).optional().nullable(),
@@ -675,15 +631,7 @@ export const jobInsertSchema = z.object({
 
 	// Classification
 	status: z
-		.enum([
-			"quoted",
-			"scheduled",
-			"in_progress",
-			"on_hold",
-			"completed",
-			"cancelled",
-			"archived",
-		])
+		.enum(["quoted", "scheduled", "in_progress", "on_hold", "completed", "cancelled", "archived"])
 		.default("quoted"),
 	priority: z.enum(["low", "medium", "high", "urgent"]).default("medium"),
 	job_type: z.string().max(100).optional().nullable(),
@@ -703,9 +651,7 @@ export const jobInsertSchema = z.object({
 	metadata: z.any().optional().nullable(),
 });
 
-export const jobUpdateSchema = jobInsertSchema
-	.partial()
-	.omit({ company_id: true });
+export const jobUpdateSchema = jobInsertSchema.partial().omit({ company_id: true });
 
 export const jobSelectSchema = jobInsertSchema.extend({
 	id: z.string().uuid(),
@@ -728,15 +674,9 @@ export type JobPhotoInsert = z.infer<typeof jobPhotoInsertSchema>;
 export type JobPhotoUpdate = z.infer<typeof jobPhotoUpdateSchema>;
 export type JobPhotoSelect = z.infer<typeof jobPhotoSelectSchema>;
 
-export type JobWorkflowStageInsert = z.infer<
-	typeof jobWorkflowStageInsertSchema
->;
-export type JobWorkflowStageUpdate = z.infer<
-	typeof jobWorkflowStageUpdateSchema
->;
-export type JobWorkflowStageSelect = z.infer<
-	typeof jobWorkflowStageSelectSchema
->;
+export type JobWorkflowStageInsert = z.infer<typeof jobWorkflowStageInsertSchema>;
+export type JobWorkflowStageUpdate = z.infer<typeof jobWorkflowStageUpdateSchema>;
+export type JobWorkflowStageSelect = z.infer<typeof jobWorkflowStageSelectSchema>;
 
 export type JobSignatureInsert = z.infer<typeof jobSignatureInsertSchema>;
 export type JobSignatureUpdate = z.infer<typeof jobSignatureUpdateSchema>;
@@ -770,18 +710,9 @@ export const vendorInsertSchema = z.object({
 		.enum(["net_15", "net_30", "net_60", "due_on_receipt", "custom"])
 		.default("net_30"),
 	credit_limit: z.number().int().min(0).default(0), // In cents
-	preferred_payment_method: z
-		.enum(["check", "ach", "credit_card", "wire"])
-		.optional()
-		.nullable(),
+	preferred_payment_method: z.enum(["check", "ach", "credit_card", "wire"]).optional().nullable(),
 	category: z
-		.enum([
-			"supplier",
-			"distributor",
-			"manufacturer",
-			"service_provider",
-			"other",
-		])
+		.enum(["supplier", "distributor", "manufacturer", "service_provider", "other"])
 		.optional()
 		.nullable(),
 	tags: z.array(z.string()).optional().nullable(),
@@ -791,9 +722,7 @@ export const vendorInsertSchema = z.object({
 	custom_fields: z.record(z.string(), z.any()).optional().nullable(),
 });
 
-export const vendorUpdateSchema = vendorInsertSchema
-	.partial()
-	.omit({ company_id: true });
+export const vendorUpdateSchema = vendorInsertSchema.partial().omit({ company_id: true });
 
 export const vendorSelectSchema = vendorInsertSchema.extend({
 	id: z.string().uuid(),
@@ -841,9 +770,7 @@ export const purchaseOrderInsertSchema = z.object({
 		])
 		.default("draft"),
 	priority: z.enum(["low", "normal", "high", "urgent"]).default("normal"),
-	line_items: z
-		.array(purchaseOrderLineItemSchema)
-		.min(1, "At least one line item is required"),
+	line_items: z.array(purchaseOrderLineItemSchema).min(1, "At least one line item is required"),
 	subtotal: z.number().int().nonnegative().default(0), // In cents
 	tax_amount: z.number().int().nonnegative().default(0), // In cents
 	shipping_amount: z.number().int().nonnegative().default(0), // In cents

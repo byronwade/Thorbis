@@ -26,10 +26,8 @@ export default function InventoryDashboardPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-semibold text-2xl">Inventory Dashboard</h1>
-				<p className="text-muted-foreground">
-					Manage inventory, parts, and equipment
-				</p>
+				<h1 className="text-2xl font-semibold">Inventory Dashboard</h1>
+				<p className="text-muted-foreground">Manage inventory, parts, and equipment</p>
 			</div>
 
 			{/* Stats - Streams in first */}

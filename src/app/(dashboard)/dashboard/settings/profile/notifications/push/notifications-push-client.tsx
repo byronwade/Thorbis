@@ -15,20 +15,11 @@ import {
 	VolumeX,
 } from "lucide-react";
 import Link from "next/link";
-import {
-	getNotificationPreferences,
-	updateNotificationPreferences,
-} from "@/actions/settings";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
@@ -74,19 +65,14 @@ const connectedDevices: ConnectedDevice[] = [
 	},
 ];
 
-type PushNotificationSettings = Pick<
-	NotificationPreferencesState,
-	"pushNewJobs" | "pushMessages"
->;
+type PushNotificationSettings = Pick<NotificationPreferencesState, "pushNewJobs" | "pushMessages">;
 
 const DEFAULT_PUSH_SETTINGS: PushNotificationSettings = {
 	pushNewJobs: true,
 	pushMessages: true,
 };
 
-const pickPushSettings = (
-	prefs: NotificationPreferencesState,
-): PushNotificationSettings => ({
+const pickPushSettings = (prefs: NotificationPreferencesState): PushNotificationSettings => ({
 	pushNewJobs: prefs.pushNewJobs,
 	pushMessages: prefs.pushMessages,
 });
@@ -98,47 +84,38 @@ type NotificationsPushClientProps = {
 export default function NotificationsPushClient({
 	initialPreferences,
 }: NotificationsPushClientProps) {
-	const {
-		settings,
-		isLoading,
-		isPending,
-		hasUnsavedChanges,
-		updateSetting,
-		saveSettings,
-		reload,
-	} = useSettings<PushNotificationSettings>({
-		getter: getNotificationPreferences,
-		setter: updateNotificationPreferences,
-		initialState: DEFAULT_PUSH_SETTINGS,
-		settingsName: "push notifications",
-		prefetchedData: pickPushSettings(initialPreferences),
-		transformLoad: (data) =>
-			pickPushSettings(
-				mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES,
-			),
-		transformSave: (s) => {
-			const fd = new FormData();
-			fd.append("pushNewJobs", s.pushNewJobs.toString());
-			fd.append("pushMessages", s.pushMessages.toString());
-			fd.append("pushJobUpdates", "true");
-			fd.append("pushMentions", "true");
-			fd.append("emailNewJobs", "true");
-			fd.append("emailJobUpdates", "true");
-			fd.append("emailMentions", "true");
-			fd.append("emailMessages", "true");
-			fd.append("smsUrgentJobs", "false");
-			fd.append("smsScheduleChanges", "false");
-			fd.append("inAppAll", "true");
-			fd.append("digestEnabled", "false");
-			fd.append("digestFrequency", "daily");
-			return fd;
-		},
-	});
+	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
+		useSettings<PushNotificationSettings>({
+			getter: getNotificationPreferences,
+			setter: updateNotificationPreferences,
+			initialState: DEFAULT_PUSH_SETTINGS,
+			settingsName: "push notifications",
+			prefetchedData: pickPushSettings(initialPreferences),
+			transformLoad: (data) =>
+				pickPushSettings(mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES),
+			transformSave: (s) => {
+				const fd = new FormData();
+				fd.append("pushNewJobs", s.pushNewJobs.toString());
+				fd.append("pushMessages", s.pushMessages.toString());
+				fd.append("pushJobUpdates", "true");
+				fd.append("pushMentions", "true");
+				fd.append("emailNewJobs", "true");
+				fd.append("emailJobUpdates", "true");
+				fd.append("emailMentions", "true");
+				fd.append("emailMessages", "true");
+				fd.append("smsUrgentJobs", "false");
+				fd.append("smsScheduleChanges", "false");
+				fd.append("inAppAll", "true");
+				fd.append("digestEnabled", "false");
+				fd.append("digestFrequency", "daily");
+				return fd;
+			},
+		});
 
 	if (isLoading) {
 		return (
 			<div className="flex h-[50vh] items-center justify-center">
-				<Loader2 className="size-8 animate-spin text-muted-foreground" />
+				<Loader2 className="text-muted-foreground size-8 animate-spin" />
 			</div>
 		);
 	}
@@ -162,7 +139,7 @@ export default function NotificationsPushClient({
 			saveButtonText="Save push preferences"
 			title="Push Notifications"
 		>
-			<div className="flex items-center gap-3 text-muted-foreground text-sm">
+			<div className="text-muted-foreground flex items-center gap-3 text-sm">
 				<Button asChild size="icon" variant="outline">
 					<Link href="/dashboard/settings/profile/notifications">
 						<ArrowLeft className="size-4" />
@@ -177,9 +154,7 @@ export default function NotificationsPushClient({
 						<Smartphone className="h-5 w-5" />
 						Connected Devices
 					</CardTitle>
-					<CardDescription>
-						Manage push notifications per device and browser.
-					</CardDescription>
+					<CardDescription>Manage push notifications per device and browser.</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-3">
@@ -191,25 +166,19 @@ export default function NotificationsPushClient({
 									key={device.id}
 								>
 									<div className="flex items-center gap-3">
-										<div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-											<Icon className="h-5 w-5 text-primary" />
+										<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+											<Icon className="text-primary h-5 w-5" />
 										</div>
 										<div>
 											<div className="font-medium">{device.name}</div>
-											<div className="text-muted-foreground text-sm">
-												{device.subtitle}
-											</div>
-											<div className="text-muted-foreground text-xs">
-												{device.lastActive}
-											</div>
+											<div className="text-muted-foreground text-sm">{device.subtitle}</div>
+											<div className="text-muted-foreground text-xs">{device.lastActive}</div>
 										</div>
 									</div>
 									<div className="flex items-center gap-3">
 										<div className="flex items-center gap-2">
 											<Switch defaultChecked={device.enabled} />
-											<span className="text-sm">
-												{device.enabled ? "Enabled" : "Disabled"}
-											</span>
+											<span className="text-sm">{device.enabled ? "Enabled" : "Disabled"}</span>
 										</div>
 										<Button size="sm" variant="outline">
 											<Trash2 className="size-4" />
@@ -243,16 +212,14 @@ export default function NotificationsPushClient({
 						<Bell className="h-5 w-5" />
 						Notification Types
 					</CardTitle>
-					<CardDescription>
-						Choose which push alerts you want to receive.
-					</CardDescription>
+					<CardDescription>Choose which push alerts you want to receive.</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-3">
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-destructive/15">
-									<Volume2 className="h-4 w-4 text-destructive" />
+								<div className="bg-destructive/15 flex h-8 w-8 items-center justify-center rounded-full">
+									<Volume2 className="text-destructive h-4 w-4" />
 								</div>
 								<div>
 									<div className="font-medium">Critical Alerts</div>
@@ -269,8 +236,8 @@ export default function NotificationsPushClient({
 
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15">
-									<MapPin className="h-4 w-4 text-primary" />
+								<div className="bg-primary/15 flex h-8 w-8 items-center justify-center rounded-full">
+									<MapPin className="text-primary h-4 w-4" />
 								</div>
 								<div>
 									<div className="font-medium">Job Updates</div>
@@ -282,9 +249,7 @@ export default function NotificationsPushClient({
 							<div className="flex items-center gap-2">
 								<Switch
 									checked={settings.pushNewJobs}
-									onCheckedChange={(checked) =>
-										updateSetting("pushNewJobs", checked)
-									}
+									onCheckedChange={(checked) => updateSetting("pushNewJobs", checked)}
 								/>
 								<Badge variant="secondary">High</Badge>
 							</div>
@@ -292,8 +257,8 @@ export default function NotificationsPushClient({
 
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-success/15">
-									<Volume2 className="h-4 w-4 text-success" />
+								<div className="bg-success/15 flex h-8 w-8 items-center justify-center rounded-full">
+									<Volume2 className="text-success h-4 w-4" />
 								</div>
 								<div>
 									<div className="font-medium">Customer Messages</div>
@@ -305,9 +270,7 @@ export default function NotificationsPushClient({
 							<div className="flex items-center gap-2">
 								<Switch
 									checked={settings.pushMessages}
-									onCheckedChange={(checked) =>
-										updateSetting("pushMessages", checked)
-									}
+									onCheckedChange={(checked) => updateSetting("pushMessages", checked)}
 								/>
 								<Badge variant="secondary">High</Badge>
 							</div>
@@ -315,8 +278,8 @@ export default function NotificationsPushClient({
 
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-warning/15">
-									<Clock className="h-4 w-4 text-warning" />
+								<div className="bg-warning/15 flex h-8 w-8 items-center justify-center rounded-full">
+									<Clock className="text-warning h-4 w-4" />
 								</div>
 								<div>
 									<div className="font-medium">Schedule Reminders</div>
@@ -333,8 +296,8 @@ export default function NotificationsPushClient({
 
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div className="flex items-center gap-3">
-								<div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/15">
-									<VolumeX className="h-4 w-4 text-accent-foreground" />
+								<div className="bg-accent/15 flex h-8 w-8 items-center justify-center rounded-full">
+									<VolumeX className="text-accent-foreground h-4 w-4" />
 								</div>
 								<div>
 									<div className="font-medium">System Updates</div>
@@ -355,9 +318,7 @@ export default function NotificationsPushClient({
 			<Card>
 				<CardHeader>
 					<CardTitle>Sound & Appearance</CardTitle>
-					<CardDescription>
-						Customize the look and sound of push notifications.
-					</CardDescription>
+					<CardDescription>Customize the look and sound of push notifications.</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{[
@@ -379,16 +340,13 @@ export default function NotificationsPushClient({
 						},
 						{
 							label: "Auto-Hide",
-							description:
-								"Automatically dismiss notifications after 5 seconds",
+							description: "Automatically dismiss notifications after 5 seconds",
 						},
 					].map((item) => (
 						<div className="flex items-center justify-between" key={item.label}>
 							<div className="space-y-0.5">
 								<div className="font-medium">{item.label}</div>
-								<div className="text-muted-foreground text-sm">
-									{item.description}
-								</div>
+								<div className="text-muted-foreground text-sm">{item.description}</div>
 							</div>
 							<Switch defaultChecked />
 						</div>
@@ -419,17 +377,17 @@ export default function NotificationsPushClient({
 
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">
-							<label className="font-medium text-sm">Start Time</label>
+							<label className="text-sm font-medium">Start Time</label>
 							<input
-								className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+								className="border-input bg-background focus-visible:ring-primary flex h-10 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
 								defaultValue="21:00"
 								type="time"
 							/>
 						</div>
 						<div className="space-y-2">
-							<label className="font-medium text-sm">End Time</label>
+							<label className="text-sm font-medium">End Time</label>
 							<input
-								className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
+								className="border-input bg-background focus-visible:ring-primary flex h-10 w-full rounded-md border px-3 text-sm shadow-sm outline-none focus-visible:ring-2"
 								defaultValue="06:00"
 								type="time"
 							/>
@@ -437,7 +395,7 @@ export default function NotificationsPushClient({
 					</div>
 
 					<div className="space-y-2">
-						<label className="font-medium text-sm">Days</label>
+						<label className="text-sm font-medium">Days</label>
 						<div className="flex flex-wrap gap-2">
 							{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
 								<Button key={day} size="sm" variant="outline">

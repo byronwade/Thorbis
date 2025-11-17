@@ -18,11 +18,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type SettingsComingSoonProps = {
 	/** Icon to display in the coming soon card */
@@ -58,12 +54,12 @@ export function SettingsComingSoon({
 			<div className="space-y-3">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
-						<h1 className="font-bold text-4xl tracking-tight">{title}</h1>
+						<h1 className="text-4xl font-bold tracking-tight">{title}</h1>
 						{helpText && (
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<button className="flex-shrink-0" type="button">
-										<HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+										<HelpCircle className="text-muted-foreground h-3.5 w-3.5" />
 									</button>
 								</TooltipTrigger>
 								<TooltipContent className="max-w-xs">
@@ -73,7 +69,7 @@ export function SettingsComingSoon({
 						)}
 					</div>
 				</div>
-				<p className="text-lg text-muted-foreground">{description}</p>
+				<p className="text-muted-foreground text-lg">{description}</p>
 			</div>
 
 			{/* CONTENT - space-y-6 for sections (matches standard) */}
@@ -83,25 +79,23 @@ export function SettingsComingSoon({
 					<CardContent className="flex flex-col items-center justify-center py-16 text-center">
 						{/* Icon */}
 						<div className="relative mb-6">
-							<div className="absolute inset-0 animate-pulse rounded-full bg-primary/20 blur-xl" />
-							<div className="relative flex size-20 items-center justify-center rounded-full border border-primary/20 bg-primary/5">
+							<div className="bg-primary/20 absolute inset-0 animate-pulse rounded-full blur-xl" />
+							<div className="border-primary/20 bg-primary/5 relative flex size-20 items-center justify-center rounded-full border">
 								{icon}
 							</div>
 						</div>
 
 						{/* Coming Soon Badge */}
-						<div className="mb-4 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm">
+						<div className="border-primary/20 bg-primary/5 mb-4 inline-flex items-center rounded-full border px-4 py-2 text-sm">
 							<Clock className="mr-2 size-4" />
 							<span className="font-medium">Coming Soon</span>
 						</div>
 
 						{/* Message */}
-						<h2 className="mb-2 font-semibold text-2xl">
-							This Feature is Under Development
-						</h2>
-						<p className="mb-8 max-w-md text-muted-foreground">
-							We're working hard to bring you powerful {title.toLowerCase()}{" "}
-							capabilities. Check back soon for updates!
+						<h2 className="mb-2 text-2xl font-semibold">This Feature is Under Development</h2>
+						<p className="text-muted-foreground mb-8 max-w-md">
+							We're working hard to bring you powerful {title.toLowerCase()} capabilities. Check
+							back soon for updates!
 						</p>
 
 						{/* Back Button */}
@@ -117,15 +111,14 @@ export function SettingsComingSoon({
 				{/* Standard Info Banner (matches other settings pages) */}
 				<Card className="border-primary/50 bg-primary/5">
 					<CardContent className="flex items-start gap-3 pt-6">
-						<Clock className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+						<Clock className="text-primary mt-0.5 h-5 w-5 shrink-0" />
 						<div className="space-y-1">
-							<p className="font-medium text-primary text-sm dark:text-primary">
+							<p className="text-primary dark:text-primary text-sm font-medium">
 								Want to be notified when this feature launches?
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Contact support to get added to our early access list for{" "}
-								{title.toLowerCase()}. We'll notify you as soon as it's
-								available.
+								Contact support to get added to our early access list for {title.toLowerCase()}.
+								We'll notify you as soon as it's available.
 							</p>
 						</div>
 					</CardContent>

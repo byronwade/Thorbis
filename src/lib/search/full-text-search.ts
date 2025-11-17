@@ -55,7 +55,7 @@ export async function searchCustomersFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
 	const {
 		limit = 50,
@@ -92,7 +92,7 @@ export async function searchCustomersFullText(
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
 		.or(
-			`display_name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%,company_name.ilike.%${query}%,address.ilike.%${query}%,city.ilike.%${query}%`,
+			`display_name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%,company_name.ilike.%${query}%,address.ilike.%${query}%,city.ilike.%${query}%`
 		)
 		.order("display_name", { ascending: true })
 		.limit(limit)
@@ -111,7 +111,7 @@ export async function searchJobsFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
 	const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
@@ -142,7 +142,7 @@ export async function searchJobsFullText(
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
 		.or(
-			`job_number.ilike.%${query}%,title.ilike.%${query}%,description.ilike.%${query}%,notes.ilike.%${query}%`,
+			`job_number.ilike.%${query}%,title.ilike.%${query}%,description.ilike.%${query}%,notes.ilike.%${query}%`
 		)
 		.order("created_at", { ascending: false })
 		.limit(limit)
@@ -161,7 +161,7 @@ export async function searchPropertiesFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
 	const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
@@ -191,7 +191,7 @@ export async function searchPropertiesFullText(
 		.select("*")
 		.eq("company_id", companyId)
 		.or(
-			`name.ilike.%${query}%,address.ilike.%${query}%,city.ilike.%${query}%,state.ilike.%${query}%,zip_code.ilike.%${query}%`,
+			`name.ilike.%${query}%,address.ilike.%${query}%,city.ilike.%${query}%,state.ilike.%${query}%,zip_code.ilike.%${query}%`
 		)
 		.order("address", { ascending: true })
 		.limit(limit)
@@ -210,7 +210,7 @@ export async function searchPriceBookItemsFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
 	const { limit = 100, offset = 0, useFullTextSearch = true } = options;
 
@@ -222,15 +222,12 @@ export async function searchPriceBookItemsFullText(
 
 	// Use full-text search with ranking
 	if (useFullTextSearch) {
-		const { data, error } = await supabase.rpc(
-			"search_price_book_items_ranked",
-			{
-				company_id_param: companyId,
-				search_query: query,
-				result_limit: limit,
-				result_offset: offset,
-			},
-		);
+		const { data, error } = await supabase.rpc("search_price_book_items_ranked", {
+			company_id_param: companyId,
+			search_query: query,
+			result_limit: limit,
+			result_offset: offset,
+		});
 
 		if (!error && data) {
 			return data;
@@ -243,7 +240,7 @@ export async function searchPriceBookItemsFullText(
 		.select("*")
 		.eq("company_id", companyId)
 		.or(
-			`name.ilike.%${query}%,sku.ilike.%${query}%,supplier_sku.ilike.%${query}%,description.ilike.%${query}%,category.ilike.%${query}%`,
+			`name.ilike.%${query}%,sku.ilike.%${query}%,supplier_sku.ilike.%${query}%,description.ilike.%${query}%,category.ilike.%${query}%`
 		)
 		.order("name", { ascending: true })
 		.limit(limit)
@@ -262,7 +259,7 @@ export async function searchEquipmentFullText(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<SearchResult<any>[]> {
 	const { limit = 50, offset = 0, useFullTextSearch = true } = options;
 
@@ -293,7 +290,7 @@ export async function searchEquipmentFullText(
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
 		.or(
-			`equipment_number.ilike.%${query}%,name.ilike.%${query}%,type.ilike.%${query}%,manufacturer.ilike.%${query}%,model.ilike.%${query}%,serial_number.ilike.%${query}%`,
+			`equipment_number.ilike.%${query}%,name.ilike.%${query}%,type.ilike.%${query}%,manufacturer.ilike.%${query}%,model.ilike.%${query}%,serial_number.ilike.%${query}%`
 		)
 		.order("name", { ascending: true })
 		.limit(limit)
@@ -312,7 +309,7 @@ export async function searchAllEntities(
 	supabase: SupabaseClient,
 	companyId: string,
 	searchTerm: string,
-	options: SearchOptions = {},
+	options: SearchOptions = {}
 ): Promise<{
 	customers: SearchResult<any>[];
 	jobs: SearchResult<any>[];
@@ -322,29 +319,28 @@ export async function searchAllEntities(
 }> {
 	const defaultLimit = options.limit || 10; // Limit per entity
 
-	const [customers, jobs, properties, equipment, priceBookItems] =
-		await Promise.all([
-			searchCustomersFullText(supabase, companyId, searchTerm, {
-				...options,
-				limit: defaultLimit,
-			}),
-			searchJobsFullText(supabase, companyId, searchTerm, {
-				...options,
-				limit: defaultLimit,
-			}),
-			searchPropertiesFullText(supabase, companyId, searchTerm, {
-				...options,
-				limit: defaultLimit,
-			}),
-			searchEquipmentFullText(supabase, companyId, searchTerm, {
-				...options,
-				limit: defaultLimit,
-			}),
-			searchPriceBookItemsFullText(supabase, companyId, searchTerm, {
-				...options,
-				limit: defaultLimit,
-			}),
-		]);
+	const [customers, jobs, properties, equipment, priceBookItems] = await Promise.all([
+		searchCustomersFullText(supabase, companyId, searchTerm, {
+			...options,
+			limit: defaultLimit,
+		}),
+		searchJobsFullText(supabase, companyId, searchTerm, {
+			...options,
+			limit: defaultLimit,
+		}),
+		searchPropertiesFullText(supabase, companyId, searchTerm, {
+			...options,
+			limit: defaultLimit,
+		}),
+		searchEquipmentFullText(supabase, companyId, searchTerm, {
+			...options,
+			limit: defaultLimit,
+		}),
+		searchPriceBookItemsFullText(supabase, companyId, searchTerm, {
+			...options,
+			limit: defaultLimit,
+		}),
+	]);
 
 	return {
 		customers,

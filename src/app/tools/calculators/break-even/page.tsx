@@ -11,13 +11,7 @@
 
 import { AlertCircle, DollarSign, Target, TrendingUp } from "lucide-react";
 import { useState } from "react";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -34,11 +28,9 @@ export default function BreakEvenCalculator() {
 	const targetNum = Number.parseFloat(targetProfit) || 0;
 
 	const contributionMargin = priceNum - variableNum;
-	const contributionMarginRatio =
-		priceNum > 0 ? (contributionMargin / priceNum) * 100 : 0;
+	const contributionMarginRatio = priceNum > 0 ? (contributionMargin / priceNum) * 100 : 0;
 
-	const breakEvenUnits =
-		contributionMargin > 0 ? fixedNum / contributionMargin : 0;
+	const breakEvenUnits = contributionMargin > 0 ? fixedNum / contributionMargin : 0;
 	const breakEvenRevenue = breakEvenUnits * priceNum;
 
 	const unitsForTargetProfit =
@@ -50,14 +42,12 @@ export default function BreakEvenCalculator() {
 			{/* Header */}
 			<div className="space-y-4">
 				<div className="flex items-center gap-3">
-					<div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5">
-						<Target className="size-6 text-primary" />
+					<div className="from-primary/15 to-primary/5 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br">
+						<Target className="text-primary size-6" />
 					</div>
 					<div>
-						<h1 className="font-bold text-3xl tracking-tight">
-							Break-Even Calculator
-						</h1>
-						<p className="mt-1 text-muted-foreground">
+						<h1 className="text-3xl font-bold tracking-tight">Break-Even Calculator</h1>
+						<p className="text-muted-foreground mt-1">
 							Find out how much revenue you need to cover your costs
 						</p>
 					</div>
@@ -76,20 +66,17 @@ export default function BreakEvenCalculator() {
 					<p>Break-even analysis shows you:</p>
 					<ul className="ml-4 list-disc space-y-1">
 						<li>
-							<strong>Break-Even Point:</strong> Minimum sales needed to cover
-							all costs
+							<strong>Break-Even Point:</strong> Minimum sales needed to cover all costs
 						</li>
 						<li>
-							<strong>Fixed Costs:</strong> Expenses that don't change (rent,
-							insurance, salaries)
+							<strong>Fixed Costs:</strong> Expenses that don't change (rent, insurance, salaries)
 						</li>
 						<li>
-							<strong>Variable Costs:</strong> Expenses that change with sales
-							(materials, labor)
+							<strong>Variable Costs:</strong> Expenses that change with sales (materials, labor)
 						</li>
 						<li>
-							<strong>Contribution Margin:</strong> Revenue minus variable costs
-							(covers fixed costs)
+							<strong>Contribution Margin:</strong> Revenue minus variable costs (covers fixed
+							costs)
 						</li>
 					</ul>
 				</CardContent>
@@ -117,8 +104,8 @@ export default function BreakEvenCalculator() {
 									value={fixedCosts}
 								/>
 								<p className="text-muted-foreground text-xs">
-									Rent, insurance, salaries, utilities - costs that stay the
-									same regardless of sales
+									Rent, insurance, salaries, utilities - costs that stay the same regardless of
+									sales
 								</p>
 							</div>
 
@@ -132,8 +119,7 @@ export default function BreakEvenCalculator() {
 									value={variableCostPerUnit}
 								/>
 								<p className="text-muted-foreground text-xs">
-									Materials, direct labor, supplies - costs that increase with
-									each job
+									Materials, direct labor, supplies - costs that increase with each job
 								</p>
 							</div>
 
@@ -159,9 +145,7 @@ export default function BreakEvenCalculator() {
 								<TrendingUp className="size-5" />
 								Profit Target (Optional)
 							</CardTitle>
-							<CardDescription>
-								Calculate sales needed for target profit
-							</CardDescription>
+							<CardDescription>Calculate sales needed for target profit</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-2">
@@ -198,31 +182,21 @@ export default function BreakEvenCalculator() {
 
 				{/* Results */}
 				<div className="space-y-4">
-					<Card className="border-primary/20 bg-gradient-to-br from-primary/10 to-transparent">
+					<Card className="border-primary/20 from-primary/10 bg-gradient-to-br to-transparent">
 						<CardHeader>
 							<CardTitle>Break-Even Point</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
 								<div>
-									<p className="text-muted-foreground text-sm">
-										Jobs Needed to Break Even
-									</p>
-									<p className="font-bold text-5xl">
-										{Math.ceil(breakEvenUnits).toLocaleString()}
-									</p>
-									<p className="mt-1 text-muted-foreground text-sm">
-										jobs per year
-									</p>
+									<p className="text-muted-foreground text-sm">Jobs Needed to Break Even</p>
+									<p className="text-5xl font-bold">{Math.ceil(breakEvenUnits).toLocaleString()}</p>
+									<p className="text-muted-foreground mt-1 text-sm">jobs per year</p>
 								</div>
 								<div className="border-t pt-4">
-									<p className="text-muted-foreground text-sm">
-										Revenue Needed to Break Even
-									</p>
-									<p className="font-bold text-3xl">
-										${breakEvenRevenue.toLocaleString()}
-									</p>
-									<p className="mt-1 text-muted-foreground text-sm">per year</p>
+									<p className="text-muted-foreground text-sm">Revenue Needed to Break Even</p>
+									<p className="text-3xl font-bold">${breakEvenRevenue.toLocaleString()}</p>
+									<p className="text-muted-foreground mt-1 text-sm">per year</p>
 								</div>
 							</div>
 						</CardContent>
@@ -234,39 +208,23 @@ export default function BreakEvenCalculator() {
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<div className="flex justify-between border-b pb-2">
-								<span className="text-muted-foreground text-sm">
-									Contribution Margin per Job
-								</span>
-								<span className="font-semibold">
-									${contributionMargin.toFixed(2)}
-								</span>
+								<span className="text-muted-foreground text-sm">Contribution Margin per Job</span>
+								<span className="font-semibold">${contributionMargin.toFixed(2)}</span>
 							</div>
 							<div className="flex justify-between border-b pb-2">
-								<span className="text-muted-foreground text-sm">
-									Contribution Margin Ratio
-								</span>
-								<span className="font-semibold">
-									{contributionMarginRatio.toFixed(1)}%
-								</span>
+								<span className="text-muted-foreground text-sm">Contribution Margin Ratio</span>
+								<span className="font-semibold">{contributionMarginRatio.toFixed(1)}%</span>
 							</div>
 							<div className="flex justify-between border-b pb-2">
-								<span className="text-muted-foreground text-sm">
-									Fixed Costs
-								</span>
-								<span className="font-semibold">
-									${fixedNum.toLocaleString()}
-								</span>
+								<span className="text-muted-foreground text-sm">Fixed Costs</span>
+								<span className="font-semibold">${fixedNum.toLocaleString()}</span>
 							</div>
 							<div className="flex justify-between border-b pb-2">
-								<span className="text-muted-foreground text-sm">
-									Variable Cost per Job
-								</span>
+								<span className="text-muted-foreground text-sm">Variable Cost per Job</span>
 								<span className="font-semibold">${variableNum.toFixed(2)}</span>
 							</div>
 							<div className="flex justify-between">
-								<span className="text-muted-foreground text-sm">
-									Price per Job
-								</span>
+								<span className="text-muted-foreground text-sm">Price per Job</span>
 								<span className="font-semibold">${priceNum.toFixed(2)}</span>
 							</div>
 						</CardContent>
@@ -275,29 +233,21 @@ export default function BreakEvenCalculator() {
 					{targetNum > 0 && (
 						<Card className="border-success/20 bg-gradient-to-br from-green-500/10 to-transparent">
 							<CardHeader>
-								<CardTitle className="text-lg">
-									To Achieve Target Profit
-								</CardTitle>
+								<CardTitle className="text-lg">To Achieve Target Profit</CardTitle>
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-4">
 									<div>
 										<p className="text-muted-foreground text-sm">Jobs Needed</p>
-										<p className="font-bold text-4xl">
+										<p className="text-4xl font-bold">
 											{Math.ceil(unitsForTargetProfit).toLocaleString()}
 										</p>
-										<p className="mt-1 text-muted-foreground text-sm">
-											jobs per year
-										</p>
+										<p className="text-muted-foreground mt-1 text-sm">jobs per year</p>
 									</div>
 									<div className="border-t pt-4">
-										<p className="text-muted-foreground text-sm">
-											Revenue Needed
-										</p>
-										<p className="font-bold text-2xl">
-											${revenueForTargetProfit.toLocaleString()}
-										</p>
-										<p className="mt-1 text-muted-foreground text-sm">
+										<p className="text-muted-foreground text-sm">Revenue Needed</p>
+										<p className="text-2xl font-bold">${revenueForTargetProfit.toLocaleString()}</p>
+										<p className="text-muted-foreground mt-1 text-sm">
 											to make ${targetNum.toLocaleString()} profit
 										</p>
 									</div>
@@ -305,12 +255,10 @@ export default function BreakEvenCalculator() {
 										<p className="text-muted-foreground text-sm">
 											Additional Jobs Beyond Break-Even
 										</p>
-										<p className="font-bold text-xl">
-											{Math.ceil(
-												unitsForTargetProfit - breakEvenUnits,
-											).toLocaleString()}
+										<p className="text-xl font-bold">
+											{Math.ceil(unitsForTargetProfit - breakEvenUnits).toLocaleString()}
 										</p>
-										<p className="mt-1 text-muted-foreground text-sm">
+										<p className="text-muted-foreground mt-1 text-sm">
 											jobs needed for profit goal
 										</p>
 									</div>
@@ -325,25 +273,17 @@ export default function BreakEvenCalculator() {
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<div className="flex justify-between text-sm">
-								<span className="text-muted-foreground">
-									Monthly Revenue Needed
-								</span>
-								<span className="font-semibold">
-									${(breakEvenRevenue / 12).toLocaleString()}
-								</span>
+								<span className="text-muted-foreground">Monthly Revenue Needed</span>
+								<span className="font-semibold">${(breakEvenRevenue / 12).toLocaleString()}</span>
 							</div>
 							<div className="flex justify-between text-sm">
-								<span className="text-muted-foreground">
-									Monthly Jobs Needed
-								</span>
+								<span className="text-muted-foreground">Monthly Jobs Needed</span>
 								<span className="font-semibold">
 									{Math.ceil(breakEvenUnits / 12).toLocaleString()}
 								</span>
 							</div>
 							<div className="flex justify-between text-sm">
-								<span className="text-muted-foreground">
-									Weekly Jobs Needed
-								</span>
+								<span className="text-muted-foreground">Weekly Jobs Needed</span>
 								<span className="font-semibold">
 									{Math.ceil(breakEvenUnits / 52).toLocaleString()}
 								</span>
@@ -354,7 +294,7 @@ export default function BreakEvenCalculator() {
 									{Math.ceil(breakEvenUnits / 260).toLocaleString()}
 								</span>
 							</div>
-							<p className="pt-2 text-muted-foreground text-xs">
+							<p className="text-muted-foreground pt-2 text-xs">
 								Based on 260 working days per year (52 weeks × 5 days)
 							</p>
 						</CardContent>
@@ -369,20 +309,16 @@ export default function BreakEvenCalculator() {
 						</CardHeader>
 						<CardContent className="space-y-2 text-sm">
 							<p>
-								<strong>Reduce fixed costs:</strong> Renegotiate rent, shop
-								insurance rates
+								<strong>Reduce fixed costs:</strong> Renegotiate rent, shop insurance rates
 							</p>
 							<p>
-								<strong>Reduce variable costs:</strong> Better supplier pricing,
-								efficient labor
+								<strong>Reduce variable costs:</strong> Better supplier pricing, efficient labor
 							</p>
 							<p>
-								<strong>Increase prices:</strong> Add value to justify higher
-								rates
+								<strong>Increase prices:</strong> Add value to justify higher rates
 							</p>
 							<p>
-								<strong>Increase volume:</strong> More marketing, better
-								conversion rates
+								<strong>Increase volume:</strong> More marketing, better conversion rates
 							</p>
 						</CardContent>
 					</Card>

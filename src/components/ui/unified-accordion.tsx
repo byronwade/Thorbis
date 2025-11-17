@@ -118,11 +118,11 @@ function SortableSection({
 			<button
 				{...attributes}
 				{...listeners}
-				className="-left-10 absolute top-0 z-20 flex h-12 cursor-grab items-center justify-center rounded-md bg-muted/40 px-2 opacity-0 shadow-sm transition-all hover:bg-muted hover:opacity-100 active:cursor-grabbing group-hover:opacity-100"
+				className="bg-muted/40 hover:bg-muted absolute top-0 -left-10 z-20 flex h-12 cursor-grab items-center justify-center rounded-md px-2 opacity-0 shadow-sm transition-all group-hover:opacity-100 hover:opacity-100 active:cursor-grabbing"
 				title="Drag to reorder"
 				type="button"
 			>
-				<GripVertical className="size-4 text-muted-foreground" />
+				<GripVertical className="text-muted-foreground size-4" />
 			</button>
 
 			{/* Section Container */}
@@ -131,18 +131,16 @@ function SortableSection({
 					className={cn(
 						"flex items-center transition-colors",
 						!isLast && "border-border/60 border-b",
-						isOpen
-							? "bg-muted/60"
-							: "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
+						isOpen ? "bg-muted/60" : "bg-background/80 hover:bg-muted/40 dark:bg-muted/30",
 						isLast && !isOpen && "rounded-b-md",
-						isSortableDragging && "shadow-lg ring-2 ring-primary",
+						isSortableDragging && "ring-primary shadow-lg ring-2"
 					)}
 				>
 					{/* Section Button */}
 					<button
 						className={cn(
-							"flex h-12 w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-							section.actions && "pr-2",
+							"focus-visible:ring-ring flex h-12 w-full flex-1 items-center gap-2 bg-transparent px-4 text-left transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
+							section.actions && "pr-2"
 						)}
 						data-radix-collection-item=""
 						onClick={onToggle}
@@ -151,24 +149,22 @@ function SortableSection({
 						<ChevronRight
 							className={cn(
 								"size-4 flex-shrink-0 transition-transform duration-200 ease-[ease]",
-								isOpen && "rotate-90",
+								isOpen && "rotate-90"
 							)}
 						/>
 						{section.icon && (
-							<span className="flex flex-shrink-0 items-center text-muted-foreground">
+							<span className="text-muted-foreground flex flex-shrink-0 items-center">
 								{section.icon}
 							</span>
 						)}
 						<span className="flex flex-1 items-center gap-2">
-							<span className="font-medium text-sm">{section.title}</span>
+							<span className="text-sm font-medium">{section.title}</span>
 							{section.count !== undefined && (
-								<span className="text-muted-foreground text-xs">
-									{section.count}
-								</span>
+								<span className="text-muted-foreground text-xs">{section.count}</span>
 							)}
 							{showShortcut && (
 								<span
-									className="ml-auto hidden rounded border border-border/60 bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground transition-opacity group-hover:opacity-100 sm:inline-block sm:opacity-60"
+									className="border-border/60 bg-muted/50 text-muted-foreground ml-auto hidden rounded border px-1.5 py-0.5 font-mono text-[10px] transition-opacity group-hover:opacity-100 sm:inline-block sm:opacity-60"
 									title={`Press Ctrl+${shortcutKey} to toggle this section`}
 								>
 									Ctrl+{shortcutKey}
@@ -190,7 +186,7 @@ function SortableSection({
 					className={cn(
 						"overflow-hidden will-change-[height]",
 						!isLast && "border-border border-b",
-						isLast && "rounded-b-md",
+						isLast && "rounded-b-md"
 					)}
 					data-state={isOpen ? "open" : "closed"}
 					hidden={!isOpen}
@@ -240,7 +236,7 @@ export function UnifiedAccordion({
 	});
 
 	const [openSection, setOpenSection] = useState<string | null>(
-		defaultOpenSection ?? sections.find((s) => s.defaultOpen)?.id ?? null,
+		defaultOpenSection ?? sections.find((s) => s.defaultOpen)?.id ?? null
 	);
 
 	const [isDragging, setIsDragging] = useState(false);
@@ -261,7 +257,7 @@ export function UnifiedAccordion({
 		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		}),
+		})
 	);
 
 	// Handle drag end
@@ -279,7 +275,7 @@ export function UnifiedAccordion({
 				if (storageKey) {
 					saveSectionOrder(
 						storageKey,
-						newOrder.map((s) => s.id),
+						newOrder.map((s) => s.id)
 					);
 				}
 
@@ -315,9 +311,7 @@ export function UnifiedAccordion({
 			// Toggle the section
 			const targetSection = sections[sectionIndex];
 			if (targetSection) {
-				setOpenSection((prev) =>
-					prev === targetSection.id ? null : targetSection.id,
-				);
+				setOpenSection((prev) => (prev === targetSection.id ? null : targetSection.id));
 			}
 		};
 
@@ -328,18 +322,12 @@ export function UnifiedAccordion({
 	if (!enableReordering) {
 		// Render without drag-and-drop if disabled
 		return (
-			<div
-				className={cn(
-					"overflow-visible rounded-md bg-muted/50 shadow-sm",
-					className,
-				)}
-			>
+			<div className={cn("bg-muted/50 overflow-visible rounded-md shadow-sm", className)}>
 				<div className="overflow-visible rounded-b" data-orientation="vertical">
 					{sections.map((section, index) => {
 						const isOpen = openSection === section.id;
 						const isLast = index === sections.length - 1;
-						const shortcutKey =
-							index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
+						const shortcutKey = index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
 						const showShortcut = shortcutKey !== null;
 
 						return (
@@ -369,25 +357,13 @@ export function UnifiedAccordion({
 			onDragStart={() => setIsDragging(true)}
 			sensors={sensors}
 		>
-			<div
-				className={cn(
-					"overflow-visible rounded-md bg-muted/50 shadow-sm",
-					className,
-				)}
-			>
-				<SortableContext
-					items={sections.map((s) => s.id)}
-					strategy={verticalListSortingStrategy}
-				>
-					<div
-						className="overflow-visible rounded-b"
-						data-orientation="vertical"
-					>
+			<div className={cn("bg-muted/50 overflow-visible rounded-md shadow-sm", className)}>
+				<SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+					<div className="overflow-visible rounded-b" data-orientation="vertical">
 						{sections.map((section, index) => {
 							const isOpen = openSection === section.id;
 							const isLast = index === sections.length - 1;
-							const shortcutKey =
-								index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
+							const shortcutKey = index < 9 ? (index + 1).toString() : index === 9 ? "0" : null;
 							const showShortcut = shortcutKey !== null;
 
 							return (

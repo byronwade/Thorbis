@@ -44,7 +44,7 @@ export async function MaterialsStats() {
       cost_per_unit,
       total_cost_value,
       status
-    `,
+    `
 		)
 		.eq("company_id", activeCompanyId)
 		.is("deleted_at", null);
@@ -57,20 +57,14 @@ export async function MaterialsStats() {
 		status: row.status || "in-stock",
 		totalValue:
 			Number(row.total_cost_value ?? 0) ||
-			Number(row.cost_per_unit ?? 0) *
-				Number(row.quantity_on_hand ?? row.quantity_available ?? 0),
+			Number(row.cost_per_unit ?? 0) * Number(row.quantity_on_hand ?? row.quantity_available ?? 0),
 	}));
 
 	const totalItems = materials.length;
 	const inStock = materials.filter((m) => m.status === "in-stock").length;
 	const lowStock = materials.filter((m) => m.status === "low-stock").length;
-	const outOfStock = materials.filter(
-		(m) => m.status === "out-of-stock",
-	).length;
-	const totalValue = materials.reduce(
-		(sum, material) => sum + (material.totalValue || 0),
-		0,
-	);
+	const outOfStock = materials.filter((m) => m.status === "out-of-stock").length;
+	const totalValue = materials.reduce((sum, material) => sum + (material.totalValue || 0), 0);
 
 	const materialStats: StatCard[] = [
 		{
@@ -88,8 +82,7 @@ export async function MaterialsStats() {
 		{
 			label: "Low Stock",
 			value: lowStock,
-			change:
-				lowStock > 0 ? LOW_STOCK_CHANGE_NEGATIVE : LOW_STOCK_CHANGE_POSITIVE,
+			change: lowStock > 0 ? LOW_STOCK_CHANGE_NEGATIVE : LOW_STOCK_CHANGE_POSITIVE,
 			changeLabel: `${outOfStock} out of stock`,
 		},
 		{

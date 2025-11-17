@@ -105,7 +105,7 @@ export function WebRTCHealthMonitor() {
 	const getHealthStatus = () => {
 		if (isLoading) {
 			return (
-				<div className="flex items-center gap-2 text-sm text-muted-foreground">
+				<div className="text-muted-foreground flex items-center gap-2 text-sm">
 					<Loader2 className="size-4 animate-spin" />
 					<span>Checking health...</span>
 				</div>
@@ -165,10 +165,12 @@ export function WebRTCHealthMonitor() {
 
 				{status === "error" && (
 					<div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm dark:border-amber-900/30 dark:bg-amber-900/20">
-						<p className="font-medium text-amber-900 dark:text-amber-400">Graceful Degradation Active</p>
-						<p className="mt-1 text-amber-800 text-xs dark:text-amber-500">
-							Telephony features are currently unavailable, but all other application features continue to
-							work normally. The service will automatically attempt to restart.
+						<p className="font-medium text-amber-900 dark:text-amber-400">
+							Graceful Degradation Active
+						</p>
+						<p className="mt-1 text-xs text-amber-800 dark:text-amber-500">
+							Telephony features are currently unavailable, but all other application features
+							continue to work normally. The service will automatically attempt to restart.
 						</p>
 					</div>
 				)}

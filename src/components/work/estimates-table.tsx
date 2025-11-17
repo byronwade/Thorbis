@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	Archive,
-	Download,
-	FileText,
-	MoreHorizontal,
-	Send,
-} from "lucide-react";
+import { Archive, Download, FileText, MoreHorizontal, Send } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
@@ -34,11 +28,7 @@ import {
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
 import { EstimateStatusBadge } from "@/components/ui/status-badge";
-import {
-	ClearFiltersButton,
-	type FilterGroup,
-	TableFilters,
-} from "@/components/ui/table-filters";
+import { ClearFiltersButton, type FilterGroup, TableFilters } from "@/components/ui/table-filters";
 import { formatCurrency } from "@/lib/formatters";
 
 export type Estimate = {
@@ -70,12 +60,8 @@ export function EstimatesTable({
 	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
 	const [isBulkSendDialogOpen, setIsBulkSendDialogOpen] = useState(false);
-	const [estimateToArchive, setEstimateToArchive] = useState<string | null>(
-		null,
-	);
-	const [selectedEstimateIds, setSelectedEstimateIds] = useState<Set<string>>(
-		new Set(),
-	);
+	const [estimateToArchive, setEstimateToArchive] = useState<string | null>(null);
+	const [selectedEstimateIds, setSelectedEstimateIds] = useState<Set<string>>(new Set());
 	const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(new Set());
 
 	// Count estimates by status
@@ -188,8 +174,7 @@ export function EstimatesTable({
 
 	// Count active filters (excluding defaults)
 	const activeFilterCount =
-		(activeFilters.Status !== "all" ? 1 : 0) +
-		(activeFilters.Archive !== "active" ? 1 : 0);
+		(activeFilters.Status !== "all" ? 1 : 0) + (activeFilters.Archive !== "active" ? 1 : 0);
 
 	const columns: ColumnDef<Estimate>[] = [
 		{
@@ -202,7 +187,7 @@ export function EstimatesTable({
 			sortFn: (a, b) => a.estimateNumber.localeCompare(b.estimateNumber),
 			render: (estimate) => (
 				<Link
-					className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/estimates/${estimate.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -219,9 +204,7 @@ export function EstimatesTable({
 			hideable: false, // CRITICAL: Always show customer for quick identification
 			sortFn: (a, b) => a.customer.localeCompare(b.customer),
 			render: (estimate) => (
-				<span className="font-medium text-foreground text-sm">
-					{estimate.customer}
-				</span>
+				<span className="text-foreground text-sm font-medium">{estimate.customer}</span>
 			),
 		},
 		{
@@ -237,7 +220,7 @@ export function EstimatesTable({
 					href={`/dashboard/work/estimates/${estimate.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<span className="font-medium text-foreground text-sm leading-tight hover:underline">
+					<span className="text-foreground text-sm leading-tight font-medium hover:underline">
 						{estimate.project}
 					</span>
 				</Link>
@@ -253,9 +236,7 @@ export function EstimatesTable({
 			hideable: true,
 			sortFn: (a, b) => a.date.localeCompare(b.date),
 			render: (estimate) => (
-				<span className="text-muted-foreground text-sm tabular-nums">
-					{estimate.date}
-				</span>
+				<span className="text-muted-foreground text-sm tabular-nums">{estimate.date}</span>
 			),
 		},
 		{
@@ -268,9 +249,7 @@ export function EstimatesTable({
 			hideable: true,
 			sortFn: (a, b) => a.validUntil.localeCompare(b.validUntil),
 			render: (estimate) => (
-				<span className="text-muted-foreground text-sm tabular-nums">
-					{estimate.validUntil}
-				</span>
+				<span className="text-muted-foreground text-sm tabular-nums">{estimate.validUntil}</span>
 			),
 		},
 		{
@@ -352,9 +331,7 @@ export function EstimatesTable({
 					return;
 				}
 
-				const estimatesToSend = filteredEstimates.filter((est) =>
-					selectedIds.has(est.id),
-				);
+				const estimatesToSend = filteredEstimates.filter((est) => selectedIds.has(est.id));
 
 				if (estimatesToSend.length === 0) {
 					const { toast } = await import("sonner");
@@ -394,9 +371,7 @@ export function EstimatesTable({
 				bulkActions={bulkActions}
 				columns={columns}
 				data={filteredEstimates}
-				emptyIcon={
-					<FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-				}
+				emptyIcon={<FileText className="text-muted-foreground mx-auto h-12 w-12" />}
 				emptyMessage="No estimates found"
 				enableSelection={true}
 				entity="estimates"
@@ -420,25 +395,19 @@ export function EstimatesTable({
 							filters={filterGroups}
 							onFilterChange={handleFilterChange}
 						/>
-						<ClearFiltersButton
-							count={activeFilterCount}
-							onClear={handleClearFilters}
-						/>
+						<ClearFiltersButton count={activeFilterCount} onClear={handleClearFilters} />
 					</>
 				}
 			/>
 
 			{/* Single Estimate Archive Dialog */}
-			<AlertDialog
-				onOpenChange={setIsSingleArchiveOpen}
-				open={isSingleArchiveOpen}
-			>
+			<AlertDialog onOpenChange={setIsSingleArchiveOpen} open={isSingleArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Estimate?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This estimate will be archived and can be restored within 90 days.
-							After 90 days, it will be permanently deleted.
+							This estimate will be archived and can be restored within 90 days. After 90 days, it
+							will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -447,9 +416,7 @@ export function EstimatesTable({
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
 								if (estimateToArchive) {
-									const { archiveEstimate } = await import(
-										"@/actions/estimates"
-									);
+									const { archiveEstimate } = await import("@/actions/estimates");
 									await archiveEstimate(estimateToArchive);
 									window.location.reload();
 								}
@@ -465,12 +432,10 @@ export function EstimatesTable({
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Archive {selectedEstimateIds.size} Estimate(s)?
-						</AlertDialogTitle>
+						<AlertDialogTitle>Archive {selectedEstimateIds.size} Estimate(s)?</AlertDialogTitle>
 						<AlertDialogDescription>
-							These estimates will be archived and can be restored within 90
-							days. After 90 days, they will be permanently deleted.
+							These estimates will be archived and can be restored within 90 days. After 90 days,
+							they will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -492,23 +457,16 @@ export function EstimatesTable({
 			</AlertDialog>
 
 			{/* Bulk Send Confirmation Dialog */}
-			<AlertDialog
-				onOpenChange={setIsBulkSendDialogOpen}
-				open={isBulkSendDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsBulkSendDialogOpen} open={isBulkSendDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Send {pendingSendIds.size} Estimate(s)?
-						</AlertDialogTitle>
+						<AlertDialogTitle>Send {pendingSendIds.size} Estimate(s)?</AlertDialogTitle>
 						<AlertDialogDescription>
 							This will send {pendingSendIds.size} estimate
-							{pendingSendIds.size !== 1 ? "s" : ""} via email to your
-							customers.
+							{pendingSendIds.size !== 1 ? "s" : ""} via email to your customers.
 							<br />
 							<br />
-							<strong>Estimated time:</strong>{" "}
-							{Math.ceil(pendingSendIds.size * 0.5)} second
+							<strong>Estimated time:</strong> {Math.ceil(pendingSendIds.size * 0.5)} second
 							{Math.ceil(pendingSendIds.size * 0.5) !== 1 ? "s" : ""}
 							<br />
 							<br />
@@ -523,11 +481,8 @@ export function EstimatesTable({
 								setIsBulkSending(true);
 
 								// Import sync store
-								const { useSyncStore } = await import(
-									"@/lib/stores/sync-store"
-								);
-								const { startOperation, completeOperation } =
-									useSyncStore.getState();
+								const { useSyncStore } = await import("@/lib/stores/sync-store");
+								const { startOperation, completeOperation } = useSyncStore.getState();
 
 								const { toast } = await import("sonner");
 								const estimateIds = Array.from(pendingSendIds);
@@ -543,9 +498,7 @@ export function EstimatesTable({
 								});
 
 								try {
-									const { bulkSendEstimates } = await import(
-										"@/actions/bulk-communications"
-									);
+									const { bulkSendEstimates } = await import("@/actions/bulk-communications");
 
 									// Send estimates
 									const result = await bulkSendEstimates(estimateIds, {
@@ -561,7 +514,7 @@ export function EstimatesTable({
 										completeOperation(
 											operationId,
 											false,
-											result.error || "Failed to send estimates",
+											result.error || "Failed to send estimates"
 										);
 										toast.error(result.error || "Failed to send estimates");
 									}
@@ -574,15 +527,9 @@ export function EstimatesTable({
 									completeOperation(
 										operationId,
 										false,
-										error instanceof Error
-											? error.message
-											: "Failed to send estimates",
+										error instanceof Error ? error.message : "Failed to send estimates"
 									);
-									toast.error(
-										error instanceof Error
-											? error.message
-											: "Failed to send estimates",
-									);
+									toast.error(error instanceof Error ? error.message : "Failed to send estimates");
 								} finally {
 									setIsBulkSending(false);
 									setPendingSendIds(new Set());

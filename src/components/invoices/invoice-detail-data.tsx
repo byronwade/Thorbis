@@ -25,10 +25,7 @@
 import { notFound, redirect } from "next/navigation";
 import { InvoicePageContent } from "@/components/invoices/invoice-page-content";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
-import {
-	getActiveCompanyId,
-	isActiveCompanyOnboardingComplete,
-} from "@/lib/auth/company-context";
+import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
 import { generateInvoiceStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -100,18 +97,10 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
 		{ data: attachments },
 	] = await Promise.all([
 		// Fetch customer with full details
-		supabase
-			.from("customers")
-			.select("*")
-			.eq("id", invoice.customer_id)
-			.single(),
+		supabase.from("customers").select("*").eq("id", invoice.customer_id).single(),
 
 		// Fetch company
-		supabase
-			.from("companies")
-			.select("*")
-			.eq("id", activeCompanyId)
-			.single(),
+		supabase.from("companies").select("*").eq("id", activeCompanyId).single(),
 
 		// Fetch job (if linked)
 		invoice.job_id
@@ -131,11 +120,7 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
 					.single()
 					.then(async ({ data: jobData }) => {
 						if (jobData?.property_id) {
-							return supabase
-								.from("properties")
-								.select("*")
-								.eq("id", jobData.property_id)
-								.single();
+							return supabase.from("properties").select("*").eq("id", jobData.property_id).single();
 						}
 						return { data: null, error: null };
 					})
@@ -193,7 +178,7 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
           completed_at,
           notes
         )
-      `,
+      `
 			)
 			.eq("invoice_id", invoiceId)
 			.order("applied_at", { ascending: false }),
@@ -210,7 +195,7 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
           first_name,
           last_name
         )
-      `,
+      `
 			)
 			.eq("entity_type", "invoice")
 			.eq("entity_id", invoiceId)
@@ -249,7 +234,7 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
 			`
         *,
         customer:customers!customer_id(id, first_name, last_name)
-      `,
+      `
 		)
 		.eq("company_id", activeCompanyId)
 		.order("created_at", { ascending: false })
@@ -257,13 +242,10 @@ export async function InvoiceDetailData({ invoiceId }: InvoiceDetailDataProps) {
 
 	if (invoiceCommunicationFilters.length > 1) {
 		invoiceCommunicationsQuery = invoiceCommunicationsQuery.or(
-			invoiceCommunicationFilters.join(","),
+			invoiceCommunicationFilters.join(",")
 		);
 	} else {
-		invoiceCommunicationsQuery = invoiceCommunicationsQuery.eq(
-			"invoice_id",
-			invoiceId,
-		);
+		invoiceCommunicationsQuery = invoiceCommunicationsQuery.eq("invoice_id", invoiceId);
 	}
 
 	const { data: invoiceCommunications, error: invoiceCommunicationsError } =

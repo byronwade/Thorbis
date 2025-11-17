@@ -9,23 +9,11 @@
  * - Markup and margin calculations
  */
 
-import {
-	AlertCircle,
-	Calculator,
-	DollarSign,
-	Plus,
-	Trash2,
-} from "lucide-react";
+import { AlertCircle, Calculator, DollarSign, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -65,9 +53,7 @@ export default function JobPricingCalculator() {
 	};
 
 	const updateMaterial = (id: string, field: keyof LineItem, value: string) => {
-		setMaterials(
-			materials.map((m) => (m.id === id ? { ...m, [field]: value } : m)),
-		);
+		setMaterials(materials.map((m) => (m.id === id ? { ...m, [field]: value } : m)));
 	};
 
 	// Calculations
@@ -77,17 +63,14 @@ export default function JobPricingCalculator() {
 		return sum + qty * cost;
 	}, 0);
 
-	const laborCost =
-		(Number.parseFloat(laborHours) || 0) * (Number.parseFloat(laborRate) || 0);
+	const laborCost = (Number.parseFloat(laborHours) || 0) * (Number.parseFloat(laborRate) || 0);
 	const equipmentNum = Number.parseFloat(equipmentCost) || 0;
 	const directCosts = materialsCost + laborCost + equipmentNum;
 
-	const overheadAmount =
-		directCosts * ((Number.parseFloat(overheadPercent) || 0) / 100);
+	const overheadAmount = directCosts * ((Number.parseFloat(overheadPercent) || 0) / 100);
 	const totalCosts = directCosts + overheadAmount;
 
-	const profitAmount =
-		totalCosts * ((Number.parseFloat(profitPercent) || 0) / 100);
+	const profitAmount = totalCosts * ((Number.parseFloat(profitPercent) || 0) / 100);
 	const totalPrice = totalCosts + profitAmount;
 
 	const profitMargin = totalPrice > 0 ? (profitAmount / totalPrice) * 100 : 0;
@@ -97,17 +80,15 @@ export default function JobPricingCalculator() {
 			{/* Header */}
 			<div className="space-y-4">
 				<div className="flex items-center gap-3">
-					<div className="flex size-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-primary/5">
-						<Calculator className="size-6 text-primary" />
+					<div className="from-primary/15 to-primary/5 flex size-12 items-center justify-center rounded-xl bg-gradient-to-br">
+						<Calculator className="text-primary size-6" />
 					</div>
 					<div>
 						<div className="flex items-center gap-2">
-							<h1 className="font-bold text-3xl tracking-tight">
-								Job Pricing Calculator
-							</h1>
+							<h1 className="text-3xl font-bold tracking-tight">Job Pricing Calculator</h1>
 							<Badge variant="secondary">Essential</Badge>
 						</div>
-						<p className="mt-1 text-muted-foreground">
+						<p className="text-muted-foreground mt-1">
 							Price jobs accurately with material, labor, and overhead costs
 						</p>
 					</div>
@@ -132,16 +113,13 @@ export default function JobPricingCalculator() {
 							<strong>Labor:</strong> Total hours × your hourly rate
 						</li>
 						<li>
-							<strong>Equipment:</strong> Tools, vehicle costs, specialized
-							equipment
+							<strong>Equipment:</strong> Tools, vehicle costs, specialized equipment
 						</li>
 						<li>
-							<strong>Overhead:</strong> Insurance, office, admin (typically
-							10-20%)
+							<strong>Overhead:</strong> Insurance, office, admin (typically 10-20%)
 						</li>
 						<li>
-							<strong>Profit:</strong> Your desired profit margin (typically
-							15-30%)
+							<strong>Profit:</strong> Your desired profit margin (typically 15-30%)
 						</li>
 					</ul>
 				</CardContent>
@@ -162,32 +140,21 @@ export default function JobPricingCalculator() {
 									Add Item
 								</Button>
 							</CardTitle>
-							<CardDescription>
-								List all materials needed for the job
-							</CardDescription>
+							<CardDescription>List all materials needed for the job</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{materials.map((material, index) => (
-								<div
-									className="space-y-2 rounded-lg border p-3"
-									key={material.id}
-								>
+								<div className="space-y-2 rounded-lg border p-3" key={material.id}>
 									<div className="flex items-center justify-between">
 										<Label className="text-sm">Item {index + 1}</Label>
 										{materials.length > 1 && (
-											<Button
-												onClick={() => removeMaterial(material.id)}
-												size="sm"
-												variant="ghost"
-											>
-												<Trash2 className="size-4 text-destructive" />
+											<Button onClick={() => removeMaterial(material.id)} size="sm" variant="ghost">
+												<Trash2 className="text-destructive size-4" />
 											</Button>
 										)}
 									</div>
 									<Input
-										onChange={(e) =>
-											updateMaterial(material.id, "description", e.target.value)
-										}
+										onChange={(e) => updateMaterial(material.id, "description", e.target.value)}
 										placeholder="Material description"
 										value={material.description}
 									/>
@@ -195,13 +162,7 @@ export default function JobPricingCalculator() {
 										<div>
 											<Label className="text-xs">Quantity</Label>
 											<Input
-												onChange={(e) =>
-													updateMaterial(
-														material.id,
-														"quantity",
-														e.target.value,
-													)
-												}
+												onChange={(e) => updateMaterial(material.id, "quantity", e.target.value)}
 												type="number"
 												value={material.quantity}
 											/>
@@ -209,13 +170,7 @@ export default function JobPricingCalculator() {
 										<div>
 											<Label className="text-xs">Unit Cost ($)</Label>
 											<Input
-												onChange={(e) =>
-													updateMaterial(
-														material.id,
-														"unitCost",
-														e.target.value,
-													)
-												}
+												onChange={(e) => updateMaterial(material.id, "unitCost", e.target.value)}
 												type="number"
 												value={material.unitCost}
 											/>
@@ -235,9 +190,7 @@ export default function JobPricingCalculator() {
 							))}
 							<div className="flex justify-between border-t pt-3">
 								<span className="font-semibold">Total Materials:</span>
-								<span className="font-bold text-lg">
-									${materialsCost.toFixed(2)}
-								</span>
+								<span className="text-lg font-bold">${materialsCost.toFixed(2)}</span>
 							</div>
 						</CardContent>
 					</Card>
@@ -316,7 +269,7 @@ export default function JobPricingCalculator() {
 
 				{/* Results */}
 				<div className="space-y-4">
-					<Card className="border-primary/20 bg-gradient-to-br from-primary/10 to-transparent">
+					<Card className="border-primary/20 from-primary/10 bg-gradient-to-br to-transparent">
 						<CardHeader>
 							<CardTitle>Job Quote Price</CardTitle>
 						</CardHeader>
@@ -324,20 +277,16 @@ export default function JobPricingCalculator() {
 							<div className="space-y-4">
 								<div>
 									<p className="text-muted-foreground text-sm">Total Quote</p>
-									<p className="font-bold text-5xl">${totalPrice.toFixed(2)}</p>
+									<p className="text-5xl font-bold">${totalPrice.toFixed(2)}</p>
 								</div>
 								<div className="grid grid-cols-2 gap-4 text-sm">
 									<div>
 										<p className="text-muted-foreground">Profit Amount</p>
-										<p className="font-semibold text-lg">
-											${profitAmount.toFixed(2)}
-										</p>
+										<p className="text-lg font-semibold">${profitAmount.toFixed(2)}</p>
 									</div>
 									<div>
 										<p className="text-muted-foreground">Profit Margin</p>
-										<p className="font-semibold text-lg">
-											{profitMargin.toFixed(1)}%
-										</p>
+										<p className="text-lg font-semibold">{profitMargin.toFixed(1)}%</p>
 									</div>
 								</div>
 							</div>
@@ -352,9 +301,7 @@ export default function JobPricingCalculator() {
 							<div className="space-y-2">
 								<div className="flex justify-between text-sm">
 									<span className="text-muted-foreground">Materials</span>
-									<span className="font-semibold">
-										${materialsCost.toFixed(2)}
-									</span>
+									<span className="font-semibold">${materialsCost.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between text-sm">
 									<span className="text-muted-foreground">Labor</span>
@@ -362,41 +309,27 @@ export default function JobPricingCalculator() {
 								</div>
 								<div className="flex justify-between text-sm">
 									<span className="text-muted-foreground">Equipment</span>
-									<span className="font-semibold">
-										${equipmentNum.toFixed(2)}
-									</span>
+									<span className="font-semibold">${equipmentNum.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between border-t pt-2 text-sm">
 									<span className="font-medium">Direct Costs</span>
-									<span className="font-semibold">
-										${directCosts.toFixed(2)}
-									</span>
+									<span className="font-semibold">${directCosts.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between text-sm">
-									<span className="text-muted-foreground">
-										Overhead ({overheadPercent}%)
-									</span>
-									<span className="font-semibold">
-										${overheadAmount.toFixed(2)}
-									</span>
+									<span className="text-muted-foreground">Overhead ({overheadPercent}%)</span>
+									<span className="font-semibold">${overheadAmount.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between border-t pt-2">
 									<span className="font-medium">Total Costs</span>
 									<span className="font-bold">${totalCosts.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between text-sm">
-									<span className="text-muted-foreground">
-										Profit ({profitPercent}%)
-									</span>
-									<span className="font-semibold text-success">
-										${profitAmount.toFixed(2)}
-									</span>
+									<span className="text-muted-foreground">Profit ({profitPercent}%)</span>
+									<span className="text-success font-semibold">${profitAmount.toFixed(2)}</span>
 								</div>
 								<div className="flex justify-between border-t-2 pt-2">
 									<span className="font-bold">Total Quote</span>
-									<span className="font-bold text-xl">
-										${totalPrice.toFixed(2)}
-									</span>
+									<span className="text-xl font-bold">${totalPrice.toFixed(2)}</span>
 								</div>
 							</div>
 						</CardContent>

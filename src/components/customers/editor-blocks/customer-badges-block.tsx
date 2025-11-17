@@ -21,7 +21,7 @@ const CustomerBadges = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-16 w-full" />,
-	},
+	}
 );
 
 // React component that renders the block
@@ -62,11 +62,7 @@ export const CustomerBadgesBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return [
-			"div",
-			mergeAttributes(HTMLAttributes, { "data-type": "customer-badges-block" }),
-			0,
-		];
+		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "customer-badges-block" }), 0];
 	},
 
 	addNodeView() {

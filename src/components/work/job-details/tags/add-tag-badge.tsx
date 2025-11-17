@@ -9,19 +9,11 @@ import { Check, Plus, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-	type TagWithColor,
-	updateCustomerTags,
-	updateJobTags,
-} from "@/actions/job-tags";
+import { type TagWithColor, updateCustomerTags, updateJobTags } from "@/actions/job-tags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -122,9 +114,7 @@ export function AddTagBadge({
 	const [isOpen, setIsOpen] = useState(false);
 	const [tagLabel, setTagLabel] = useState("");
 	const [tagColor, setTagColor] = useState("blue");
-	const [tagType, setTagType] = useState<"customer" | "job">(
-		customerId ? "customer" : "job",
-	);
+	const [tagType, setTagType] = useState<"customer" | "job">(customerId ? "customer" : "job");
 	const [isSaving, setIsSaving] = useState(false);
 
 	const handleSave = async () => {
@@ -177,7 +167,7 @@ export function AddTagBadge({
 	return (
 		<Popover onOpenChange={setIsOpen} open={isOpen}>
 			<PopoverTrigger asChild>
-				<button className="inline-flex items-center gap-1.5 rounded-full border border-border/60 border-dashed bg-background px-3 py-1.5 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
+				<button className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-1.5 rounded-full border border-dashed px-3 py-1.5 text-sm font-medium transition-colors">
 					<Plus className="size-3" />
 					<span>Add Tag</span>
 				</button>
@@ -185,7 +175,7 @@ export function AddTagBadge({
 			<PopoverContent align="start" className="w-80" side="bottom">
 				<div className="space-y-4">
 					<div>
-						<h4 className="font-semibold text-sm">Create Custom Tag</h4>
+						<h4 className="text-sm font-semibold">Create Custom Tag</h4>
 						<p className="text-muted-foreground text-xs">
 							Add a custom tag with your choice of color
 						</p>
@@ -215,9 +205,7 @@ export function AddTagBadge({
 								<SelectValue>
 									{selectedColor && (
 										<div className="flex items-center gap-2">
-											<div
-												className={`h-4 w-4 rounded-full ${selectedColor.class}`}
-											/>
+											<div className={`h-4 w-4 rounded-full ${selectedColor.class}`} />
 											<span>{selectedColor.name}</span>
 										</div>
 									)}
@@ -241,9 +229,7 @@ export function AddTagBadge({
 						<div className="space-y-2">
 							<Label htmlFor="tag-type">Apply To</Label>
 							<Select
-								onValueChange={(value) =>
-									setTagType(value as "customer" | "job")
-								}
+								onValueChange={(value) => setTagType(value as "customer" | "job")}
 								value={tagType}
 							>
 								<SelectTrigger id="tag-type">
@@ -262,7 +248,7 @@ export function AddTagBadge({
 						<div className="space-y-2">
 							<Label>Preview</Label>
 							<div
-								className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium text-sm ${selectedColor?.class}`}
+								className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium ${selectedColor?.class}`}
 							>
 								<Tag className="size-3" />
 								<span>{tagLabel}</span>
@@ -272,18 +258,10 @@ export function AddTagBadge({
 
 					{/* Action Buttons */}
 					<div className="flex gap-2">
-						<Button
-							className="flex-1"
-							onClick={() => setIsOpen(false)}
-							variant="outline"
-						>
+						<Button className="flex-1" onClick={() => setIsOpen(false)} variant="outline">
 							Cancel
 						</Button>
-						<Button
-							className="flex-1"
-							disabled={isSaving || !tagLabel.trim()}
-							onClick={handleSave}
-						>
+						<Button className="flex-1" disabled={isSaving || !tagLabel.trim()} onClick={handleSave}>
 							{isSaving ? (
 								<>
 									<Check className="mr-2 size-4" />

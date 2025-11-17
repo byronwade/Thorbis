@@ -26,7 +26,7 @@ export default function PriceBookDashboardPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-semibold text-2xl">Price Book Dashboard</h1>
+				<h1 className="text-2xl font-semibold">Price Book Dashboard</h1>
 				<p className="text-muted-foreground">
 					Manage service pricing, parts costs, and standardized rates
 				</p>

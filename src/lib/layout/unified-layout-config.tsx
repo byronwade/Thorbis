@@ -105,19 +105,15 @@ export const ROUTE_PATTERNS = {
 	WORK_PROPERTIES_DETAIL: /^\/dashboard\/work\/properties\/(?!new$)[^/]+$/,
 	WORK_PROPERTIES_EDIT: /^\/dashboard\/work\/properties\/[^/]+\/edit$/,
 	WORK_ESTIMATES_DETAIL: /^\/dashboard\/work\/estimates\/[^/]+$/,
-	WORK_MAINTENANCE_PLANS_DETAIL:
-		/^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
-	WORK_SERVICE_AGREEMENTS_DETAIL:
-		/^\/dashboard\/work\/service-agreements\/[^/]+$/,
+	WORK_MAINTENANCE_PLANS_DETAIL: /^\/dashboard\/work\/maintenance-plans\/[^/]+$/,
+	WORK_SERVICE_AGREEMENTS_DETAIL: /^\/dashboard\/work\/service-agreements\/[^/]+$/,
 	WORK_EQUIPMENT_DETAIL: /^\/dashboard\/work\/equipment\/[^/]+$/,
 	WORK_CONTRACTS_LIST: /^\/dashboard\/work\/contracts$/,
-	WORK_CONTRACTS_DETAIL:
-		/^\/dashboard\/work\/contracts\/(?!templates|new)[^/]+$/,
+	WORK_CONTRACTS_DETAIL: /^\/dashboard\/work\/contracts\/(?!templates|new)[^/]+$/,
 	WORK_CONTRACTS_TEMPLATES: /^\/dashboard\/work\/contracts\/templates$/,
 	WORK_PURCHASE_ORDERS_LIST: /^\/dashboard\/work\/purchase-orders$/,
 	WORK_TEAM_LIST: /^\/dashboard\/work\/team$/,
-	WORK_TEAM_MEMBER_DETAIL:
-		/^\/dashboard\/work\/team\/(?!roles|departments|invite)[^/]+$/,
+	WORK_TEAM_MEMBER_DETAIL: /^\/dashboard\/work\/team\/(?!roles|departments|invite)[^/]+$/,
 	WORK_TEAM_INVITE: /^\/dashboard\/work\/team\/invite$/,
 	WORK_TEAM_DEPARTMENTS: /^\/dashboard\/work\/team\/departments$/,
 	WORK_TEAM_ROLES: /^\/dashboard\/work\/team\/roles$/,
@@ -256,28 +252,13 @@ export type RightSidebarConfig = {
  */
 export type PageStructureVariant = "default" | "detail";
 
-export type PageStructureBackground =
-	| "default"
-	| "muted"
-	| "subtle"
-	| "transparent";
+export type PageStructureBackground = "default" | "muted" | "subtle" | "transparent";
 
 export type PageStructureInsetPadding = "none" | "sm" | "md" | "lg";
 
 export type PageStructureConfig = {
 	/** Max width constraint */
-	maxWidth?:
-		| "full"
-		| "7xl"
-		| "6xl"
-		| "5xl"
-		| "4xl"
-		| "3xl"
-		| "2xl"
-		| "xl"
-		| "lg"
-		| "md"
-		| "sm";
+	maxWidth?: "full" | "7xl" | "6xl" | "5xl" | "4xl" | "3xl" | "2xl" | "xl" | "lg" | "md" | "sm";
 	/** Padding on all sides */
 	padding?: "none" | "sm" | "md" | "lg";
 	/** Padding on X axis (overrides padding) */
@@ -507,8 +488,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 85,
-		description:
-			"Settings hub uses centered content with global toolbar + navigation",
+		description: "Settings hub uses centered content with global toolbar + navigation",
 	},
 
 	// ========================================
@@ -557,16 +537,13 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/customers" label="Customers" />
-				),
+				back: <DetailBackButton href="/dashboard/customers" label="Customers" />,
 				actions: <CustomerDetailToolbar />,
 			},
 			sidebar: { show: false },
 		},
 		priority: 98,
-		description:
-			"Customer detail page with inline editing - full width no sidebars",
+		description: "Customer detail page with inline editing - full width no sidebars",
 	},
 
 	{
@@ -848,12 +825,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/pricebook"
-						label="Price Book"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/pricebook" label="Price Book" />,
 				title: "Supplier",
 				subtitle: "View and manage supplier details",
 			},
@@ -872,12 +844,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/pricebook"
-						label="Price Book"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/pricebook" label="Price Book" />,
 				title: "Item",
 				subtitle: "View and manage price book item",
 				actions: <ItemDetailToolbarWrapper />,
@@ -902,9 +869,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/invoices" label="Invoices" />
-				),
+				back: <DetailBackButton href="/dashboard/work/invoices" label="Invoices" />,
 				actions: <InvoiceToolbarActions />,
 			},
 			sidebar: { show: false },
@@ -970,12 +935,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/purchase-orders"
-						label="Purchase Orders"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/purchase-orders" label="Purchase Orders" />,
 				actions: <PurchaseOrderDetailToolbarActions />,
 			},
 			sidebar: {
@@ -983,8 +943,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 57,
-		description:
-			"Purchase order details page - full width with toolbar and back button",
+		description: "Purchase order details page - full width with toolbar and back button",
 	},
 
 	// Job details pages
@@ -1014,12 +973,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/appointments"
-						label="Appointments"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/appointments" label="Appointments" />,
 				actions: <AppointmentDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1027,8 +981,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Appointment detail page - full width with toolbar and back button",
+		description: "Appointment detail page - full width with toolbar and back button",
 	},
 
 	// Properties detail page
@@ -1039,12 +992,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/properties"
-						label="Properties"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/properties" label="Properties" />,
 				actions: <PropertyDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1052,8 +1000,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Property detail page - full width with toolbar and back button",
+		description: "Property detail page - full width with toolbar and back button",
 	},
 
 	// Payments detail page
@@ -1064,9 +1011,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/payments" label="Payments" />
-				),
+				back: <DetailBackButton href="/dashboard/work/payments" label="Payments" />,
 				actions: <PaymentDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1074,8 +1019,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Payment detail page - full width with toolbar and back button",
+		description: "Payment detail page - full width with toolbar and back button",
 	},
 
 	// Estimates detail page
@@ -1086,12 +1030,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/estimates"
-						label="Estimates"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/estimates" label="Estimates" />,
 				actions: <EstimateDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1106,8 +1045,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Estimate detail page - full width with toolbar and back button",
+		description: "Estimate detail page - full width with toolbar and back button",
 	},
 
 	// Maintenance Plans detail page
@@ -1119,10 +1057,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			toolbar: {
 				show: true,
 				back: (
-					<DetailBackButton
-						href="/dashboard/work/maintenance-plans"
-						label="Maintenance Plans"
-					/>
+					<DetailBackButton href="/dashboard/work/maintenance-plans" label="Maintenance Plans" />
 				),
 				actions: <MaintenancePlanDetailToolbarActions />,
 			},
@@ -1131,8 +1066,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Maintenance plan detail page - full width with toolbar and back button",
+		description: "Maintenance plan detail page - full width with toolbar and back button",
 	},
 
 	// Service Agreements detail page
@@ -1144,10 +1078,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			toolbar: {
 				show: true,
 				back: (
-					<DetailBackButton
-						href="/dashboard/work/service-agreements"
-						label="Service Agreements"
-					/>
+					<DetailBackButton href="/dashboard/work/service-agreements" label="Service Agreements" />
 				),
 				actions: <ServiceAgreementDetailToolbarActions />,
 			},
@@ -1156,8 +1087,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Service agreement detail page - full width with toolbar and back button",
+		description: "Service agreement detail page - full width with toolbar and back button",
 	},
 
 	// Equipment detail page
@@ -1168,12 +1098,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/equipment"
-						label="Equipment"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/equipment" label="Equipment" />,
 				actions: <EquipmentDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1181,8 +1106,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Equipment detail page - full width with toolbar and back button",
+		description: "Equipment detail page - full width with toolbar and back button",
 	},
 
 	// Contracts detail page
@@ -1193,12 +1117,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/contracts"
-						label="Contracts"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/contracts" label="Contracts" />,
 				actions: <ContractDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1206,8 +1125,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Contract detail page - full width with toolbar and back button",
+		description: "Contract detail page - full width with toolbar and back button",
 	},
 
 	// Invoices list page (specific config with toolbar actions)
@@ -1326,12 +1244,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/contracts"
-						label="Contracts"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/contracts" label="Contracts" />,
 				title: "Contract Templates",
 				subtitle: "Manage reusable contract templates",
 			},
@@ -1402,9 +1315,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
-				),
+				back: <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />,
 				actions: <VendorDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1423,9 +1334,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
-				),
+				back: <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />,
 				title: "New Vendor",
 			},
 			sidebar: {
@@ -1444,9 +1353,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/vendors" label="Vendors" />
-				),
+				back: <DetailBackButton href="/dashboard/work/vendors" label="Vendors" />,
 				title: "Edit Vendor",
 			},
 			sidebar: {
@@ -1483,12 +1390,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/properties"
-						label="Properties"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/properties" label="Properties" />,
 				title: "Edit Property",
 			},
 			sidebar: {
@@ -1525,12 +1427,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/work/materials"
-						label="Materials"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/work/materials" label="Materials" />,
 				actions: <MaterialDetailToolbarActions />,
 			},
 			sidebar: {
@@ -1538,8 +1435,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 56,
-		description:
-			"Material detail page - full width with toolbar and back button",
+		description: "Material detail page - full width with toolbar and back button",
 	},
 
 	// Equipment list page
@@ -1604,9 +1500,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/team" label="Team Members" />
-				),
+				back: <DetailBackButton href="/dashboard/work/team" label="Team Members" />,
 				actions: <TeamMemberDetailToolbar />,
 			},
 			sidebar: {
@@ -1614,8 +1508,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			},
 		},
 		priority: 57,
-		description:
-			"Team member detail page - full width with toolbar, no sidebar",
+		description: "Team member detail page - full width with toolbar, no sidebar",
 	},
 
 	// Team invite page
@@ -1626,9 +1519,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/team" label="Team Members" />
-				),
+				back: <DetailBackButton href="/dashboard/work/team" label="Team Members" />,
 				title: "Invite Team Member",
 			},
 			sidebar: {
@@ -1647,9 +1538,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/team" label="Team Members" />
-				),
+				back: <DetailBackButton href="/dashboard/work/team" label="Team Members" />,
 				title: "Departments",
 				subtitle: "Manage organizational departments",
 			},
@@ -1667,9 +1556,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/team" label="Team Members" />
-				),
+				back: <DetailBackButton href="/dashboard/work/team" label="Team Members" />,
 				title: "Roles & Permissions",
 				subtitle: "Manage team roles and access levels",
 			},
@@ -1687,9 +1574,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton href="/dashboard/work/team/roles" label="Roles" />
-				),
+				back: <DetailBackButton href="/dashboard/work/team/roles" label="Roles" />,
 				title: "Edit Role",
 			},
 			sidebar: {
@@ -1724,12 +1609,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 			header: DEFAULT_HEADER,
 			toolbar: {
 				show: true,
-				back: (
-					<DetailBackButton
-						href="/dashboard/communication"
-						label="Communications"
-					/>
-				),
+				back: <DetailBackButton href="/dashboard/communication" label="Communications" />,
 				actions: <CommunicationToolbarActions />,
 			},
 			sidebar: {
@@ -1928,9 +1808,7 @@ export const UNIFIED_LAYOUT_RULES: LayoutRule[] = [
 	},
 ];
 
-const SORTED_LAYOUT_RULES = [...UNIFIED_LAYOUT_RULES].sort(
-	(a, b) => b.priority - a.priority,
-);
+const SORTED_LAYOUT_RULES = [...UNIFIED_LAYOUT_RULES].sort((a, b) => b.priority - a.priority);
 
 const ENABLE_LAYOUT_CACHE = process.env.NODE_ENV === "production";
 
@@ -2028,9 +1906,7 @@ export function getUnifiedLayoutConfig(pathname: string): UnifiedLayoutConfig {
 // HELPER FUNCTIONS (from old layout-config.ts)
 // ============================================================================
 
-export function getMaxWidthClass(
-	maxWidth: PageStructureConfig["maxWidth"],
-): string {
+export function getMaxWidthClass(maxWidth: PageStructureConfig["maxWidth"]): string {
 	switch (maxWidth) {
 		case "full":
 			return "w-full max-w-none";
@@ -2062,7 +1938,7 @@ export function getMaxWidthClass(
 export function getPaddingClass(
 	padding: PageStructureConfig["padding"],
 	paddingX?: PageStructureConfig["paddingX"],
-	paddingY?: PageStructureConfig["paddingY"],
+	paddingY?: PageStructureConfig["paddingY"]
 ): string {
 	if (paddingX !== undefined || paddingY !== undefined) {
 		const px = getPaddingXClass(paddingX ?? padding);
@@ -2085,7 +1961,7 @@ export function getPaddingClass(
 }
 
 function getPaddingXClass(
-	padding: PageStructureConfig["paddingX"] | PageStructureConfig["padding"],
+	padding: PageStructureConfig["paddingX"] | PageStructureConfig["padding"]
 ): string {
 	switch (padding) {
 		case "none":
@@ -2102,7 +1978,7 @@ function getPaddingXClass(
 }
 
 function getPaddingYClass(
-	padding: PageStructureConfig["paddingY"] | PageStructureConfig["padding"],
+	padding: PageStructureConfig["paddingY"] | PageStructureConfig["padding"]
 ): string {
 	switch (padding) {
 		case "none":
@@ -2133,9 +2009,7 @@ export function getGapClass(gap: PageStructureConfig["gap"]): string {
 	}
 }
 
-export function getBackgroundClass(
-	background: PageStructureConfig["background"],
-): string {
+export function getBackgroundClass(background: PageStructureConfig["background"]): string {
 	switch (background) {
 		case "muted":
 			return "bg-muted";
@@ -2148,9 +2022,7 @@ export function getBackgroundClass(
 	}
 }
 
-export function getInsetPaddingClass(
-	insetPadding: PageStructureConfig["insetPadding"],
-): string {
+export function getInsetPaddingClass(insetPadding: PageStructureConfig["insetPadding"]): string {
 	switch (insetPadding) {
 		case "sm":
 			return "px-4 py-4";

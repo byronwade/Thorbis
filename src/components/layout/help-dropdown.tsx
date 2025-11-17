@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	BookOpen,
-	ExternalLink,
-	HelpCircle,
-	LifeBuoy,
-	MessageCircle,
-	Video,
-} from "lucide-react";
+import { BookOpen, ExternalLink, HelpCircle, LifeBuoy, MessageCircle, Video } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -58,10 +51,7 @@ export function HelpDropdown() {
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node)
-			) {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
 				setIsOpen(false);
 			}
 		};
@@ -78,7 +68,7 @@ export function HelpDropdown() {
 	return (
 		<div className="relative" ref={dropdownRef}>
 			<button
-				className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+				className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 				onClick={() => setIsOpen(!isOpen)}
 				title="Help"
 				type="button"
@@ -88,50 +78,41 @@ export function HelpDropdown() {
 			</button>
 
 			{isOpen && (
-				<div className="absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border bg-popover p-2 text-popover-foreground shadow-lg">
+				<div className="bg-popover text-popover-foreground absolute top-full right-0 z-50 mt-2 w-80 rounded-lg border p-2 shadow-lg">
 					<div className="mb-2 border-b px-3 py-2">
-						<h3 className="font-semibold text-sm">Help &amp; Support</h3>
-						<p className="text-muted-foreground text-xs">
-							Find answers and get assistance
-						</p>
+						<h3 className="text-sm font-semibold">Help &amp; Support</h3>
+						<p className="text-muted-foreground text-xs">Find answers and get assistance</p>
 					</div>
 					<div className="space-y-1">
 						{helpItems.map((item) => {
 							const Icon = item.icon;
 							return (
 								<Link
-									className="flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-accent"
+									className="hover:bg-accent flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors"
 									href={item.href}
 									key={item.label}
 									onClick={() => setIsOpen(false)}
 									rel={item.external ? "noopener noreferrer" : undefined}
 									target={item.external ? "_blank" : undefined}
 								>
-									<Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+									<Icon className="text-muted-foreground mt-0.5 size-4 shrink-0" />
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
-											<p className="font-medium text-sm">{item.label}</p>
-											{item.external && (
-												<ExternalLink className="size-3 text-muted-foreground" />
-											)}
+											<p className="text-sm font-medium">{item.label}</p>
+											{item.external && <ExternalLink className="text-muted-foreground size-3" />}
 										</div>
-										<p className="text-muted-foreground text-xs">
-											{item.description}
-										</p>
+										<p className="text-muted-foreground text-xs">{item.description}</p>
 									</div>
 								</Link>
 							);
 						})}
 					</div>
 					<div className="mt-2 border-t pt-2">
-						<div className="rounded-md bg-accent/50 px-3 py-2">
-							<p className="font-medium text-xs">Need more help?</p>
+						<div className="bg-accent/50 rounded-md px-3 py-2">
+							<p className="text-xs font-medium">Need more help?</p>
 							<p className="text-muted-foreground text-xs">
 								Email us at{" "}
-								<a
-									className="text-primary hover:underline"
-									href="mailto:support@thorbis.com"
-								>
+								<a className="text-primary hover:underline" href="mailto:support@thorbis.com">
 									support@thorbis.com
 								</a>
 							</p>

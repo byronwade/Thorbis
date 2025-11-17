@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type {
-	KanbanItemBase,
-	KanbanMoveEvent,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 
 type PaymentStatus =
@@ -60,9 +57,7 @@ const PAYMENT_STATUS_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#6B7280" },
 ];
 
-const COLUMN_LABEL = new Map(
-	PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]),
-);
+const COLUMN_LABEL = new Map(PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
 const DEFAULT_STATUS: PaymentStatus = "pending";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -127,27 +122,25 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
 					<Link
-						className="block font-semibold text-muted-foreground text-xs uppercase tracking-wide hover:text-primary"
+						className="text-muted-foreground hover:text-primary block text-xs font-semibold tracking-wide uppercase"
 						href={`/dashboard/work/payments/${payment.id}`}
 					>
 						{payment.payment_number}
 					</Link>
-					<h3 className="font-semibold text-foreground text-sm leading-snug">
+					<h3 className="text-foreground text-sm leading-snug font-semibold">
 						{formatCurrency(payment.amount)}
 					</h3>
 				</div>
 			</div>
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<User className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{getCustomerName(payment)}
-					</span>
+					<User className="text-primary size-4" />
+					<span className="text-foreground font-medium">{getCustomerName(payment)}</span>
 				</div>
 
 				<div className="flex items-center gap-2">
-					<CreditCard className="size-4 text-primary" />
+					<CreditCard className="text-primary size-4" />
 					<span>{getPaymentMethodLabel(payment.payment_method)}</span>
 				</div>
 
@@ -158,10 +151,9 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 				)}
 			</div>
 
-			<div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-[11px] tracking-wide">
 				<span>
-					{payment.processed_at &&
-						fullDateFormatter.format(new Date(payment.processed_at))}
+					{payment.processed_at && fullDateFormatter.format(new Date(payment.processed_at))}
 				</span>
 				<span className="uppercase">
 					{columnId ? (COLUMN_LABEL.get(columnId) ?? columnId) : "—"}
@@ -169,12 +161,7 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button
-					asChild
-					className="gap-1 text-primary text-xs"
-					size="sm"
-					variant="ghost"
-				>
+				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
 					<Link href={`/dashboard/work/payments/${payment.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
@@ -211,9 +198,7 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 				//   return;
 				// }
 
-				toast.success(
-					`Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`,
-				);
+				toast.success(`Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`);
 			})();
 		});
 	};
@@ -222,10 +207,7 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 		<EntityKanban<Payment, PaymentStatus>
 			calculateColumnMeta={(columnId, items) => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce(
-					(sum, item) => sum + (item.entity.amount ?? 0),
-					0,
-				);
+				const total = columnItems.reduce((sum, item) => sum + (item.entity.amount ?? 0), 0);
 				return { count: columnItems.length, total };
 			}}
 			columns={PAYMENT_STATUS_COLUMNS}
@@ -238,11 +220,9 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 				entity: payment,
 			})}
 			onItemMove={handleItemMove}
-			renderCard={(item) => (
-				<PaymentCardContent item={item as PaymentsKanbanItem} />
-			)}
+			renderCard={(item) => <PaymentCardContent item={item as PaymentsKanbanItem} />}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-md border p-3 shadow-lg">
 					<PaymentCardContent item={item as PaymentsKanbanItem} />
 				</div>
 			)}

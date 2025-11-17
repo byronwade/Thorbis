@@ -12,13 +12,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { verifyEmail } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function VerifyEmailContent({ token }: { token: string }) {
 	// Verify the email token
@@ -29,14 +23,12 @@ async function VerifyEmailContent({ token }: { token: string }) {
 			<Card className="mx-auto w-full max-w-md">
 				<CardHeader>
 					<CardTitle>Verification Failed</CardTitle>
-					<CardDescription>
-						{result.error || "Unable to verify your email address"}
-					</CardDescription>
+					<CardDescription>{result.error || "Unable to verify your email address"}</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<p className="text-muted-foreground text-sm">
-						Your verification link may have expired or already been used. You
-						can request a new verification email from the login page.
+						Your verification link may have expired or already been used. You can request a new
+						verification email from the login page.
 					</p>
 					<div className="flex gap-2">
 						<Button asChild className="w-full">
@@ -55,23 +47,18 @@ async function VerifyEmailContent({ token }: { token: string }) {
 		typeof result.data?.message === "string"
 			? result.data.message
 			: "Your account is now active. You can sign in to get started!";
-	const verifiedEmail =
-		typeof result.data?.email === "string" ? result.data.email : undefined;
+	const verifiedEmail = typeof result.data?.email === "string" ? result.data.email : undefined;
 
 	// Success - show success message and redirect to login
 	return (
 		<Card className="mx-auto w-full max-w-md">
 			<CardHeader>
 				<CardTitle>Email Verified! ✓</CardTitle>
-				<CardDescription>
-					Your email has been successfully verified
-				</CardDescription>
+				<CardDescription>Your email has been successfully verified</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="rounded-lg bg-success p-4 dark:bg-success/20">
-					<p className="text-sm text-success dark:text-success">
-						{successMessage}
-					</p>
+				<div className="bg-success dark:bg-success/20 rounded-lg p-4">
+					<p className="text-success dark:text-success text-sm">{successMessage}</p>
 				</div>
 
 				<p className="text-muted-foreground text-sm">
@@ -104,13 +91,11 @@ export default async function VerifyEmailPage({
 					<Card className="mx-auto w-full max-w-md">
 						<CardHeader>
 							<CardTitle>Verifying Email...</CardTitle>
-							<CardDescription>
-								Please wait while we verify your email address
-							</CardDescription>
+							<CardDescription>Please wait while we verify your email address</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="flex justify-center py-8">
-								<div className="size-8 animate-spin rounded-full border-primary border-b-2" />
+								<div className="border-primary size-8 animate-spin rounded-full border-b-2" />
 							</div>
 						</CardContent>
 					</Card>

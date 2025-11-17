@@ -80,7 +80,7 @@ export async function UteamData() {
 				"invited_name",
 				"role",
 				"department",
-			].join(", "),
+			].join(", ")
 		)
 		.eq("company_id", activeCompanyId)
 		.order("created_at", { ascending: false });
@@ -92,11 +92,8 @@ export async function UteamData() {
 	// Transform data for components
 	const teamMembers = (teamMembersRaw || []).map((member: any) => {
 		const nameFromEmail =
-			member.email?.split("@")[0] ||
-			member.invited_email?.split("@")[0] ||
-			undefined;
-		const name =
-			member.invited_name || nameFromEmail || member.email || "Unknown";
+			member.email?.split("@")[0] || member.invited_email?.split("@")[0] || undefined;
+		const name = member.invited_name || nameFromEmail || member.email || "Unknown";
 
 		const email = member.email || member.invited_email || "";
 

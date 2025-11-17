@@ -20,12 +20,7 @@ import { Phone, PhoneOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 type CallIndicatorBadgeProps = {
@@ -100,10 +95,7 @@ export function CallIndicatorBadge({
 
 	return (
 		<div
-			className={cn(
-				"fixed z-50 transition-all duration-200",
-				positionClasses[position],
-			)}
+			className={cn("fixed z-50 transition-all duration-200", positionClasses[position])}
 			onContextMenu={handleContextMenu}
 		>
 			<TooltipProvider>
@@ -112,32 +104,28 @@ export function CallIndicatorBadge({
 						<Card
 							className={cn(
 								"group relative cursor-pointer overflow-hidden",
-								"rounded-2xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5",
-								"shadow-lg shadow-primary/20 backdrop-blur-sm",
-								"transition-all duration-300 hover:scale-105 hover:border-primary/50 hover:shadow-primary/30 hover:shadow-xl",
-								"animate-pulse-slow",
+								"border-primary/30 from-primary/10 to-primary/5 rounded-2xl border-2 bg-gradient-to-br",
+								"shadow-primary/20 shadow-lg backdrop-blur-sm",
+								"hover:border-primary/50 hover:shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl",
+								"animate-pulse-slow"
 							)}
 							onClick={onFocusPopOut}
 						>
 							{/* Status indicator pulse */}
-							<div className="absolute inset-0 animate-ping rounded-2xl bg-primary/20 opacity-75" />
+							<div className="bg-primary/20 absolute inset-0 animate-ping rounded-2xl opacity-75" />
 
 							{/* Content */}
 							<div className="relative flex items-center gap-3 p-4">
 								{/* Phone icon */}
-								<div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+								<div className="bg-primary text-primary-foreground flex h-12 w-12 items-center justify-center rounded-full shadow-md">
 									<Phone className="h-6 w-6 animate-pulse" />
 								</div>
 
 								{/* Call info */}
 								<div className="flex flex-col gap-1">
-									<div className="font-semibold text-foreground text-sm">
-										{customerName}
-									</div>
-									<div className="text-muted-foreground text-xs">
-										{customerPhone}
-									</div>
-									<div className="font-bold font-mono text-primary text-xs">
+									<div className="text-foreground text-sm font-semibold">{customerName}</div>
+									<div className="text-muted-foreground text-xs">{customerPhone}</div>
+									<div className="text-primary font-mono text-xs font-bold">
 										{formatDuration(displayDuration)}
 									</div>
 								</div>
@@ -160,9 +148,7 @@ export function CallIndicatorBadge({
 					<TooltipContent className="max-w-xs" side="left">
 						<div className="space-y-2">
 							<p className="font-semibold">Active Call (Pop-out Window)</p>
-							<p className="text-muted-foreground text-xs">
-								Click to bring window to front
-							</p>
+							<p className="text-muted-foreground text-xs">Click to bring window to front</p>
 							<p className="text-muted-foreground text-xs">
 								Right-click or click X to return to main window
 							</p>
@@ -173,7 +159,7 @@ export function CallIndicatorBadge({
 
 			{/* Context menu */}
 			{showContextMenu && (
-				<div className="absolute right-0 bottom-full mb-2 rounded-lg border border-border bg-background p-2 shadow-lg">
+				<div className="border-border bg-background absolute right-0 bottom-full mb-2 rounded-lg border p-2 shadow-lg">
 					<Button
 						className="w-full justify-start gap-2 text-sm"
 						onClick={(e) => {

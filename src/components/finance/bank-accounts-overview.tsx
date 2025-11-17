@@ -11,13 +11,7 @@
 import { Wallet } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 type BankAccount = {
 	id: string;
@@ -57,21 +51,11 @@ const accounts: BankAccount[] = [
 ];
 
 export function BankAccountsOverview() {
-	const checkingAccounts = accounts.filter(
-		(acc) => acc.accountType === "checking",
-	);
-	const savingsAccounts = accounts.filter(
-		(acc) => acc.accountType === "savings",
-	);
+	const checkingAccounts = accounts.filter((acc) => acc.accountType === "checking");
+	const savingsAccounts = accounts.filter((acc) => acc.accountType === "savings");
 
-	const totalChecking = checkingAccounts.reduce(
-		(sum, acc) => sum + acc.balance,
-		0,
-	);
-	const totalSavings = savingsAccounts.reduce(
-		(sum, acc) => sum + acc.balance,
-		0,
-	);
+	const totalChecking = checkingAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+	const totalSavings = savingsAccounts.reduce((sum, acc) => sum + acc.balance, 0);
 
 	return (
 		<div className="grid gap-6 md:grid-cols-2">
@@ -81,25 +65,21 @@ export function BankAccountsOverview() {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle className="flex items-center gap-2">
-								<Wallet className="h-5 w-5 text-primary" />
+								<Wallet className="text-primary h-5 w-5" />
 								Checking
 							</CardTitle>
 							<CardDescription>Business operating accounts</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="ghost">
-							<Link href="/dashboard/settings/finance/bank-accounts">
-								Manage
-							</Link>
+							<Link href="/dashboard/settings/finance/bank-accounts">Manage</Link>
 						</Button>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{/* Total Checking */}
-					<div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4">
+					<div className="border-primary/20 bg-primary/5 rounded-lg border-2 p-4">
 						<p className="text-muted-foreground text-sm">Total Checking</p>
-						<p className="font-bold text-3xl">
-							${totalChecking.toLocaleString()}
-						</p>
+						<p className="text-3xl font-bold">${totalChecking.toLocaleString()}</p>
 						<p className="text-muted-foreground text-xs">
 							{checkingAccounts.length} account
 							{checkingAccounts.length !== 1 ? "s" : ""}
@@ -114,14 +94,12 @@ export function BankAccountsOverview() {
 								key={account.id}
 							>
 								<div>
-									<p className="font-medium text-sm">{account.accountName}</p>
+									<p className="text-sm font-medium">{account.accountName}</p>
 									<p className="text-muted-foreground text-xs">
 										{account.bankName} •••• {account.lastFour}
 									</p>
 								</div>
-								<p className="font-semibold text-sm">
-									${account.balance.toLocaleString()}
-								</p>
+								<p className="text-sm font-semibold">${account.balance.toLocaleString()}</p>
 							</div>
 						))}
 					</div>
@@ -134,25 +112,21 @@ export function BankAccountsOverview() {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle className="flex items-center gap-2">
-								<Wallet className="h-5 w-5 text-success" />
+								<Wallet className="text-success h-5 w-5" />
 								Savings
 							</CardTitle>
 							<CardDescription>Business savings accounts</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="ghost">
-							<Link href="/dashboard/settings/finance/bank-accounts">
-								Manage
-							</Link>
+							<Link href="/dashboard/settings/finance/bank-accounts">Manage</Link>
 						</Button>
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{/* Total Savings */}
-					<div className="rounded-lg border-2 border-success/20 bg-success/5 p-4">
+					<div className="border-success/20 bg-success/5 rounded-lg border-2 p-4">
 						<p className="text-muted-foreground text-sm">Total Savings</p>
-						<p className="font-bold text-3xl">
-							${totalSavings.toLocaleString()}
-						</p>
+						<p className="text-3xl font-bold">${totalSavings.toLocaleString()}</p>
 						<p className="text-muted-foreground text-xs">
 							{savingsAccounts.length} account
 							{savingsAccounts.length !== 1 ? "s" : ""}
@@ -167,14 +141,12 @@ export function BankAccountsOverview() {
 								key={account.id}
 							>
 								<div>
-									<p className="font-medium text-sm">{account.accountName}</p>
+									<p className="text-sm font-medium">{account.accountName}</p>
 									<p className="text-muted-foreground text-xs">
 										{account.bankName} •••• {account.lastFour}
 									</p>
 								</div>
-								<p className="font-semibold text-sm">
-									${account.balance.toLocaleString()}
-								</p>
+								<p className="text-sm font-semibold">${account.balance.toLocaleString()}</p>
 							</div>
 						))}
 					</div>

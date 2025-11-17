@@ -125,7 +125,7 @@ const TableRowInner = function TableRow<T>({
 		(_checked: boolean) => {
 			onSelectItem(itemId);
 		},
-		[itemId, onSelectItem],
+		[itemId, onSelectItem]
 	);
 
 	const handleClick = useCallback(() => {
@@ -136,7 +136,7 @@ const TableRowInner = function TableRow<T>({
 
 	return (
 		<tr
-			className={`border-border/60 border-b transition-colors hover:bg-secondary/30 dark:hover:bg-secondary/20 ${
+			className={`border-border/60 hover:bg-secondary/30 dark:hover:bg-secondary/20 border-b transition-colors ${
 				isHighlighted ? highlightClass : ""
 			} ${rowClassName || ""} ${onRowClick ? "cursor-pointer" : ""}`}
 			onClick={handleClick}
@@ -149,11 +149,7 @@ const TableRowInner = function TableRow<T>({
 			{columns.map((column) => (
 				<td
 					className={`px-4 py-3 ${column.hideOnMobile ? "hidden md:table-cell" : ""} ${
-						column.align === "right"
-							? "text-right"
-							: column.align === "center"
-								? "text-center"
-								: ""
+						column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : ""
 					}`}
 					key={column.key}
 					style={{ width: column.width }}
@@ -206,7 +202,7 @@ export function ServerDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[data, getItemId],
+		[data, getItemId]
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -224,7 +220,7 @@ export function ServerDataTable<T>({
 	// Sort icon helper
 	const getSortIcon = (columnKey: string) => {
 		if (sorting.sortBy !== columnKey) {
-			return <ChevronsUpDown className="ml-2 size-3.5 text-muted-foreground" />;
+			return <ChevronsUpDown className="text-muted-foreground ml-2 size-3.5" />;
 		}
 		if (sorting.sortDirection === "asc") {
 			return <ChevronUp className="ml-2 size-3.5" />;
@@ -232,8 +228,7 @@ export function ServerDataTable<T>({
 		return <ChevronDown className="ml-2 size-3.5" />;
 	};
 
-	const allSelected =
-		data.length > 0 && data.every((item) => selectedIds.has(getItemId(item)));
+	const allSelected = data.length > 0 && data.every((item) => selectedIds.has(getItemId(item)));
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -241,7 +236,7 @@ export function ServerDataTable<T>({
 			<div className="flex items-center gap-2">
 				{/* Search */}
 				<div className="relative max-w-sm flex-1">
-					<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+					<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 					<Input
 						className="pl-9"
 						onChange={(e) => search.setQuery(e.target.value)}
@@ -250,7 +245,7 @@ export function ServerDataTable<T>({
 					/>
 					{search.query && (
 						<Button
-							className="-translate-y-1/2 absolute top-1/2 right-1 size-7"
+							className="absolute top-1/2 right-1 size-7 -translate-y-1/2"
 							onClick={search.clearQuery}
 							size="icon"
 							variant="ghost"
@@ -261,15 +256,8 @@ export function ServerDataTable<T>({
 				</div>
 
 				{/* Refresh */}
-				<Button
-					disabled={isLoading}
-					onClick={refetch}
-					size="sm"
-					variant="outline"
-				>
-					<RefreshCw
-						className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
-					/>
+				<Button disabled={isLoading} onClick={refetch} size="sm" variant="outline">
+					<RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
 					Refresh
 				</Button>
 
@@ -279,7 +267,7 @@ export function ServerDataTable<T>({
 
 			{/* Bulk Actions Bar */}
 			{selectedIds.size > 0 && bulkActions.length > 0 && (
-				<div className="flex items-center gap-2 rounded-lg bg-primary p-4 text-primary-foreground">
+				<div className="bg-primary text-primary-foreground flex items-center gap-2 rounded-lg p-4">
 					<span className="text-sm">{selectedIds.size} selected</span>
 					<div className="ml-auto flex gap-2">
 						{bulkActions.map((action, index) => (
@@ -299,17 +287,17 @@ export function ServerDataTable<T>({
 
 			{/* Error State */}
 			{error && (
-				<div className="rounded-lg border border-destructive bg-destructive/10 p-4 text-destructive">
+				<div className="border-destructive bg-destructive/10 text-destructive rounded-lg border p-4">
 					<p className="font-medium">Error loading data</p>
 					<p className="text-sm">{error.message}</p>
 				</div>
 			)}
 
 			{/* Table */}
-			<div className="overflow-hidden rounded-lg border border-border">
+			<div className="border-border overflow-hidden rounded-lg border">
 				<div className="overflow-x-auto">
-					<table className="w-full bg-card">
-						<thead className="border-border border-b bg-muted/60">
+					<table className="bg-card w-full">
+						<thead className="border-border bg-muted/60 border-b">
 							<tr>
 								{enableSelection && (
 									<th className="w-12 px-4 py-3">
@@ -323,7 +311,7 @@ export function ServerDataTable<T>({
 								)}
 								{columns.map((column) => (
 									<th
-										className={`px-4 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider ${
+										className={`text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase ${
 											column.hideOnMobile ? "hidden md:table-cell" : ""
 										}`}
 										key={column.key}
@@ -331,7 +319,7 @@ export function ServerDataTable<T>({
 									>
 										{column.sortable ? (
 											<button
-												className="flex items-center font-medium transition-colors hover:text-foreground"
+												className="hover:text-foreground flex items-center font-medium transition-colors"
 												disabled={isLoading}
 												onClick={() => sorting.setSort(column.key)}
 												type="button"
@@ -346,7 +334,7 @@ export function ServerDataTable<T>({
 								))}
 							</tr>
 						</thead>
-						<tbody className="divide-y divide-border/60">
+						<tbody className="divide-border/60 divide-y">
 							{isLoading ? (
 								<tr>
 									<td
@@ -354,7 +342,7 @@ export function ServerDataTable<T>({
 										colSpan={columns.length + (enableSelection ? 1 : 0)}
 									>
 										<div className="flex flex-col items-center gap-4">
-											<Loader2 className="size-8 animate-spin text-muted-foreground" />
+											<Loader2 className="text-muted-foreground size-8 animate-spin" />
 											<p className="text-muted-foreground">Loading...</p>
 										</div>
 									</td>
@@ -402,26 +390,16 @@ export function ServerDataTable<T>({
 				<div className="flex items-center gap-4">
 					<div className="text-muted-foreground text-sm">
 						Showing{" "}
-						{data.length === 0
-							? 0
-							: (paginationState.page - 1) * paginationState.pageSize + 1}{" "}
-						to{" "}
-						{Math.min(
-							paginationState.page * paginationState.pageSize,
-							pagination.totalCount,
-						)}{" "}
-						of {pagination.totalCount.toLocaleString()} results
+						{data.length === 0 ? 0 : (paginationState.page - 1) * paginationState.pageSize + 1} to{" "}
+						{Math.min(paginationState.page * paginationState.pageSize, pagination.totalCount)} of{" "}
+						{pagination.totalCount.toLocaleString()} results
 					</div>
 
 					{showPageSizeSelector && (
 						<div className="flex items-center gap-2">
-							<span className="text-muted-foreground text-sm">
-								Rows per page:
-							</span>
+							<span className="text-muted-foreground text-sm">Rows per page:</span>
 							<Select
-								onValueChange={(value) =>
-									paginationState.setPageSize(Number(value))
-								}
+								onValueChange={(value) => paginationState.setPageSize(Number(value))}
 								value={paginationState.pageSize.toString()}
 							>
 								<SelectTrigger className="w-20">
@@ -453,9 +431,7 @@ export function ServerDataTable<T>({
 						Page {paginationState.page} of {paginationState.totalPages}
 					</span>
 					<Button
-						disabled={
-							paginationState.page === paginationState.totalPages || isLoading
-						}
+						disabled={paginationState.page === paginationState.totalPages || isLoading}
 						onClick={paginationState.nextPage}
 						size="sm"
 						variant="outline"
@@ -470,6 +446,4 @@ export function ServerDataTable<T>({
 }
 
 // Export memoized version
-export const MemoizedServerDataTable = memo(
-	ServerDataTable,
-) as typeof ServerDataTable;
+export const MemoizedServerDataTable = memo(ServerDataTable) as typeof ServerDataTable;

@@ -22,6 +22,4 @@ export async function createServiceSupabaseClient() {
 	});
 }
 
-export type ServiceSupabaseClient = Awaited<
-	ReturnType<typeof createServiceSupabaseClient>
->;
+export type ServiceSupabaseClient = Awaited<ReturnType<typeof createServiceSupabaseClient>>;

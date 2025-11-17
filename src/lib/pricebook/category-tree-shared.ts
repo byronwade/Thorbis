@@ -22,14 +22,9 @@ export type DatabaseCategory = {
 /**
  * Build hierarchical category tree from flat list
  */
-export function buildCategoryTree(
-	categories: DatabaseCategory[],
-): CategoryNode[] {
+export function buildCategoryTree(categories: DatabaseCategory[]): CategoryNode[] {
 	// Create a map for quick lookup
-	const categoryMap = new Map<
-		string,
-		CategoryNode & { parent_id: string | null }
-	>();
+	const categoryMap = new Map<string, CategoryNode & { parent_id: string | null }>();
 
 	// First pass: Create all nodes
 	categories.forEach((cat) => {
@@ -67,10 +62,7 @@ export function buildCategoryTree(
  * Get categories at a specific path level
  * Example: ["HVAC", "Heating"] returns children of HVAC > Heating
  */
-export function getCategoriesAtPath(
-	tree: CategoryNode[],
-	path: string[],
-): CategoryNode[] {
+export function getCategoriesAtPath(tree: CategoryNode[], path: string[]): CategoryNode[] {
 	let current = tree;
 
 	for (const segment of path) {

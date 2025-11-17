@@ -40,8 +40,7 @@ const GET_STARTED_STEPS = [
 const ONBOARDING_RESOURCES = [
 	{
 		title: "Migration checklist",
-		description:
-			"Step-by-step guide covering exports, data cleanup, and go-live validation.",
+		description: "Step-by-step guide covering exports, data cleanup, and go-live validation.",
 		href: "/templates?tag=migration",
 		cta: "Download checklist",
 	},
@@ -70,7 +69,7 @@ export default function DemoPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Get Started", url: `${siteUrl}/demo` },
-						]),
+						])
 					),
 				}}
 				id="demo-breadcrumb-ld"
@@ -78,17 +77,16 @@ export default function DemoPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="mx-auto max-w-3xl space-y-6 text-center">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Self-serve signup
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						Spin up your Thorbis account today
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Choose your plan, invite your team, and start automating operations
-						without waiting for a sales call. Thorbis costs $100/month for the
-						base platform with pay-as-you-go usage—unlimited users, no
-						contracts, no lock-in.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Choose your plan, invite your team, and start automating operations without waiting for
+						a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go
+						usage—unlimited users, no contracts, no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -101,9 +99,7 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center font-semibold text-2xl">
-						Three simple steps
-					</h2>
+					<h2 className="text-center text-2xl font-semibold">Three simple steps</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{GET_STARTED_STEPS.map((step) => (
 							<Card className="bg-muted/40" key={step.title}>
@@ -121,16 +117,14 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center font-semibold text-2xl">
-						Resources to guide your rollout
-					</h2>
+					<h2 className="text-center text-2xl font-semibold">Resources to guide your rollout</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{ONBOARDING_RESOURCES.map((resource) => (
 							<Card key={resource.title}>
 								<CardHeader>
 									<CardTitle className="text-lg">{resource.title}</CardTitle>
 								</CardHeader>
-								<CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
+								<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
 									<p>{resource.description}</p>
 									<Button asChild variant="outline">
 										<Link href={resource.href}>{resource.cta}</Link>
@@ -141,10 +135,10 @@ export default function DemoPage() {
 					</div>
 				</section>
 
-				<section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
-					<p className="text-lg text-muted-foreground">
-						Already a customer? Visit the Help Center for training resources,
-						live webinars, and office hours with our success team.
+				<section className="bg-primary/10 mt-16 rounded-3xl border p-10 text-center">
+					<p className="text-muted-foreground text-lg">
+						Already a customer? Visit the Help Center for training resources, live webinars, and
+						office hours with our success team.
 					</p>
 					<Button asChild className="mt-6" variant="secondary">
 						<Link href="/help">Visit the Help Center</Link>

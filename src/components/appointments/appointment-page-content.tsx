@@ -18,18 +18,7 @@
 
 "use client";
 
-import {
-	Calendar,
-	Clock,
-	Mail,
-	MapPin,
-	Phone,
-	Save,
-	User,
-	Users,
-	Wrench,
-	X,
-} from "lucide-react";
+import { Calendar, Clock, Mail, MapPin, Phone, Save, User, Users, Wrench, X } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -66,9 +55,7 @@ export type AppointmentPageContentProps = {
 	metrics: any;
 };
 
-export function AppointmentPageContent({
-	entityData,
-}: AppointmentPageContentProps) {
+export function AppointmentPageContent({ entityData }: AppointmentPageContentProps) {
 	const [hasChanges, setHasChanges] = useState(false);
 	const [isSaving, _setIsSaving] = useState(false);
 
@@ -86,9 +73,7 @@ export function AppointmentPageContent({
 	const appointmentEnd = new Date(appointment.end_time);
 	const durationMinutes = Math.max(
 		0,
-		Math.floor(
-			(appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60),
-		),
+		Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
 	);
 
 	const statusBadgeVariant =
@@ -114,15 +99,13 @@ export function AppointmentPageContent({
 
 	const customHeader = (
 		<div className="px-2 sm:px-0">
-			<div className="rounded-md bg-muted/50 shadow-sm">
+			<div className="bg-muted/50 rounded-md shadow-sm">
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">
-								{headerBadges}
-							</div>
+							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="font-semibold text-2xl sm:text-3xl">
+								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{appointmentStart.toLocaleDateString("en-US", {
 										weekday: "long",
 										year: "numeric",
@@ -146,11 +129,7 @@ export function AppointmentPageContent({
 
 						{hasChanges && (
 							<div className="flex flex-wrap gap-2">
-								<Button
-									onClick={() => setHasChanges(false)}
-									size="sm"
-									variant="ghost"
-								>
+								<Button onClick={() => setHasChanges(false)} size="sm" variant="ghost">
 									<X className="mr-2 size-4" />
 									Cancel
 								</Button>
@@ -165,7 +144,7 @@ export function AppointmentPageContent({
 					{customer && (
 						<div className="flex flex-wrap items-center gap-3">
 							<Link
-								className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+								className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 								href={`/dashboard/customers/${customer.id}`}
 							>
 								<User className="size-4" />
@@ -174,7 +153,7 @@ export function AppointmentPageContent({
 
 							{customer.email && (
 								<a
-									className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+									className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 									href={`mailto:${customer.email}`}
 								>
 									<Mail className="size-4" />
@@ -184,7 +163,7 @@ export function AppointmentPageContent({
 
 							{customer.phone && (
 								<a
-									className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+									className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 									href={`tel:${customer.phone}`}
 								>
 									<Phone className="size-4" />
@@ -195,14 +174,14 @@ export function AppointmentPageContent({
 					)}
 
 					<div className="flex flex-wrap items-center gap-3">
-						<div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
-							<Clock className="size-4 text-muted-foreground" />
+						<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+							<Clock className="text-muted-foreground size-4" />
 							<span className="font-medium">{durationMinutes} minutes</span>
 						</div>
 
 						{teamAssignments.length > 0 && (
-							<div className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm">
-								<Users className="size-4 text-muted-foreground" />
+							<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
+								<Users className="text-muted-foreground size-4" />
 								<span className="font-medium">
 									{teamAssignments.length} team member
 									{teamAssignments.length === 1 ? "" : "s"}
@@ -212,10 +191,10 @@ export function AppointmentPageContent({
 
 						{job && (
 							<Link
-								className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-sm transition-colors hover:bg-muted/80"
+								className="bg-muted hover:bg-muted/80 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm transition-colors"
 								href={`/dashboard/work/${job.id}`}
 							>
-								<Wrench className="size-4 text-muted-foreground" />
+								<Wrench className="text-muted-foreground size-4" />
 								<span className="font-medium">Job #{job.job_number}</span>
 							</Link>
 						)}
@@ -240,9 +219,7 @@ export function AppointmentPageContent({
 								<Input
 									readOnly
 									type="datetime-local"
-									value={new Date(appointment.start_time)
-										.toISOString()
-										.slice(0, 16)}
+									value={new Date(appointment.start_time).toISOString().slice(0, 16)}
 								/>
 							</div>
 							<div>
@@ -250,9 +227,7 @@ export function AppointmentPageContent({
 								<Input
 									readOnly
 									type="datetime-local"
-									value={new Date(appointment.end_time)
-										.toISOString()
-										.slice(0, 16)}
+									value={new Date(appointment.end_time).toISOString().slice(0, 16)}
 								/>
 							</div>
 							<div>
@@ -272,10 +247,7 @@ export function AppointmentPageContent({
 							</div>
 							<div>
 								<Label>Type</Label>
-								<Input
-									readOnly
-									value={appointment.appointment_type || "Service"}
-								/>
+								<Input readOnly value={appointment.appointment_type || "Service"} />
 							</div>
 						</div>
 					</UnifiedAccordionContent>
@@ -312,9 +284,7 @@ export function AppointmentPageContent({
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>
-									View Full Profile
-								</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -343,7 +313,7 @@ export function AppointmentPageContent({
 							<Button asChild size="sm" variant="outline">
 								<a
 									href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-										`${property.address}, ${property.city}, ${property.state}`,
+										`${property.address}, ${property.city}, ${property.state}`
 									)}`}
 									rel="noopener noreferrer"
 									target="_blank"
@@ -368,10 +338,7 @@ export function AppointmentPageContent({
 					<div className="space-y-3">
 						{teamAssignments.length > 0 ? (
 							teamAssignments.map((assignment: any) => (
-								<div
-									className="flex items-center gap-4 rounded-lg border p-4"
-									key={assignment.id}
-								>
+								<div className="flex items-center gap-4 rounded-lg border p-4" key={assignment.id}>
 									<Avatar>
 										<AvatarImage src={assignment.user?.avatar} />
 										<AvatarFallback>
@@ -383,22 +350,16 @@ export function AppointmentPageContent({
 										</AvatarFallback>
 									</Avatar>
 									<div className="flex-1">
-										<p className="font-medium">
-											{assignment.user?.name || "Unknown"}
-										</p>
+										<p className="font-medium">{assignment.user?.name || "Unknown"}</p>
 										<p className="text-muted-foreground text-sm">
 											{assignment.role || "Technician"}
 										</p>
 									</div>
-									<Badge variant="outline">
-										{assignment.status || "assigned"}
-									</Badge>
+									<Badge variant="outline">{assignment.status || "assigned"}</Badge>
 								</div>
 							))
 						) : (
-							<p className="text-center text-muted-foreground text-sm">
-								No team members assigned
-							</p>
+							<p className="text-muted-foreground text-center text-sm">No team members assigned</p>
 						)}
 					</div>
 				</UnifiedAccordionContent>
@@ -473,9 +434,7 @@ export function AppointmentPageContent({
 				title: job.title || `Job #${job.job_number}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status
-					? { label: job.status, variant: "outline" as const }
-					: undefined,
+				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
 			});
 		}
 

@@ -19,7 +19,7 @@ const FALLBACK_SHOP_ADDRESS = {
 function validateDestination(
 	destinationAddress: string | null,
 	destinationLat: string | null,
-	destinationLon: string | null,
+	destinationLon: string | null
 ): { valid: boolean; error?: string } {
 	const hasAddress = Boolean(destinationAddress);
 	const hasCoordinates = Boolean(destinationLat) && Boolean(destinationLon);
@@ -37,7 +37,7 @@ function validateDestination(
 
 async function getCompanySettings(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	companyId: string,
+	companyId: string
 ) {
 	if (!supabase) {
 		return null;
@@ -52,7 +52,7 @@ async function getCompanySettings(
 }
 
 async function getAuthenticatedUser(
-	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
+	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>
 ) {
 	const {
 		data: { user },
@@ -63,7 +63,7 @@ async function getAuthenticatedUser(
 
 async function getUserCompany(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string,
+	userId: string
 ) {
 	const { data: teamMember } = await supabase
 		.from("team_members")
@@ -77,7 +77,7 @@ async function getUserCompany(
 
 async function resolveOriginAddress(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string,
+	userId: string
 ) {
 	const teamMember = await getUserCompany(supabase, userId);
 
@@ -85,10 +85,7 @@ async function resolveOriginAddress(
 		return buildOriginAddress(FALLBACK_SHOP_ADDRESS);
 	}
 
-	const companySettings = await getCompanySettings(
-		supabase,
-		teamMember.company_id,
-	);
+	const companySettings = await getCompanySettings(supabase, teamMember.company_id);
 	const hasShopAddress =
 		companySettings?.address && companySettings?.city && companySettings?.state;
 
@@ -117,7 +114,7 @@ type DistanceMatrixResponse = {
 function processDistanceMatrixResponse(
 	data: DistanceMatrixResponse,
 	originAddress: string,
-	destAddress: string,
+	destAddress: string
 ) {
 	const element = data.rows[0].elements[0];
 
@@ -128,8 +125,7 @@ function processDistanceMatrixResponse(
 		};
 	}
 
-	const durationInSeconds =
-		element.duration_in_traffic?.value || element.duration.value;
+	const durationInSeconds = element.duration_in_traffic?.value || element.duration.value;
 	const distanceInMeters = element.distance.value;
 	const distanceInMiles = distanceInMeters * METERS_TO_MILES;
 
@@ -151,20 +147,12 @@ function buildOriginAddress(companySettings: {
 	state: string;
 	zip_code?: string | null;
 }) {
-	const zipPart = companySettings.zip_code
-		? ` ${companySettings.zip_code}`
-		: "";
+	const zipPart = companySettings.zip_code ? ` ${companySettings.zip_code}` : "";
 	return `${companySettings.address}, ${companySettings.city}, ${companySettings.state}${zipPart}`.trim();
 }
 
-async function fetchDistanceMatrix(
-	originAddress: string,
-	destAddress: string,
-	apiKey: string,
-) {
-	const distanceMatrixUrl = new URL(
-		"https://maps.googleapis.com/maps/api/distancematrix/json",
-	);
+async function fetchDistanceMatrix(originAddress: string, destAddress: string, apiKey: string) {
+	const distanceMatrixUrl = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
 	distanceMatrixUrl.searchParams.set("origins", originAddress);
 	distanceMatrixUrl.searchParams.set("destinations", destAddress);
 	distanceMatrixUrl.searchParams.set("units", "imperial");
@@ -182,11 +170,7 @@ export async function GET(request: NextRequest) {
 		const destinationLat = searchParams.get("destinationLat");
 		const destinationLon = searchParams.get("destinationLon");
 
-		const validation = validateDestination(
-			destinationAddress,
-			destinationLat,
-			destinationLon,
-		);
+		const validation = validateDestination(destinationAddress, destinationLat, destinationLon);
 		if (!validation.valid) {
 			return NextResponse.json({ error: validation.error }, { status: 400 });
 		}
@@ -194,10 +178,7 @@ export async function GET(request: NextRequest) {
 		// Get authenticated user and company
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		const user = await getAuthenticatedUser(supabase);
@@ -206,11 +187,9 @@ export async function GET(request: NextRequest) {
 		}
 
 		const originAddress = await resolveOriginAddress(supabase, user.id);
-		const destAddress =
-			destinationAddress || `${destinationLat},${destinationLon}`;
+		const destAddress = destinationAddress || `${destinationLat},${destinationLon}`;
 		const apiKey =
-			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-			process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
 
 		if (!apiKey) {
 			return NextResponse.json(
@@ -219,19 +198,15 @@ export async function GET(request: NextRequest) {
 					message:
 						"Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.",
 				},
-				{ status: 503 },
+				{ status: 503 }
 			);
 		}
 
-		const response = await fetchDistanceMatrix(
-			originAddress,
-			destAddress,
-			apiKey,
-		);
+		const response = await fetchDistanceMatrix(originAddress, destAddress, apiKey);
 		if (!response.ok) {
 			return NextResponse.json(
 				{ error: "Failed to fetch travel time" },
-				{ status: response.status },
+				{ status: response.status }
 			);
 		}
 
@@ -241,20 +216,13 @@ export async function GET(request: NextRequest) {
 		if (!hasValidData) {
 			return NextResponse.json(
 				{ error: data.error_message || "Failed to calculate travel time" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
-		const result = processDistanceMatrixResponse(
-			data,
-			originAddress,
-			destAddress,
-		);
+		const result = processDistanceMatrixResponse(data, originAddress, destAddress);
 		if (result.error) {
-			return NextResponse.json(
-				{ error: result.error },
-				{ status: result.status },
-			);
+			return NextResponse.json({ error: result.error }, { status: result.status });
 		}
 
 		return NextResponse.json(result.data);
@@ -262,10 +230,9 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json(
 			{
 				error: "Failed to calculate travel time",
-				message:
-					error instanceof Error ? error.message : "Internal server error",
+				message: error instanceof Error ? error.message : "Internal server error",
 			},
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

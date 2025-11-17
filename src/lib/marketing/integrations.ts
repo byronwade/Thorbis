@@ -83,8 +83,7 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			{
 				label: "Posting accuracy",
 				value: "99.8%",
-				description:
-					"accuracy rate across invoices and payments after go-live.",
+				description: "accuracy rate across invoices and payments after go-live.",
 			},
 		],
 		requirements: [
@@ -192,8 +191,7 @@ const INTEGRATIONS: MarketingIntegrationContent[] = [
 			{
 				label: "Days sales outstanding",
 				value: "-9 days",
-				description:
-					"average reduction once customers can pay immediately with Stripe in Thorbis.",
+				description: "average reduction once customers can pay immediately with Stripe in Thorbis.",
 			},
 		],
 		requirements: [
@@ -336,16 +334,11 @@ export function getAllIntegrations(): MarketingIntegrationContent[] {
 	return INTEGRATIONS;
 }
 
-export function getIntegrationBySlug(
-	slug: string,
-): MarketingIntegrationContent | undefined {
+export function getIntegrationBySlug(slug: string): MarketingIntegrationContent | undefined {
 	return INTEGRATIONS.find((integration) => integration.slug === slug);
 }
 
-export function getRelatedIntegrations(
-	slug: string,
-	limit = 3,
-): MarketingIntegrationContent[] {
+export function getRelatedIntegrations(slug: string, limit = 3): MarketingIntegrationContent[] {
 	const current = getIntegrationBySlug(slug);
 	if (!current) {
 		return [];
@@ -354,27 +347,23 @@ export function getRelatedIntegrations(
 	const related =
 		current.related
 			?.map((relatedSlug) => getIntegrationBySlug(relatedSlug))
-			.filter((integration): integration is MarketingIntegrationContent =>
-				Boolean(integration),
-			) ?? [];
+			.filter((integration): integration is MarketingIntegrationContent => Boolean(integration)) ??
+		[];
 
 	if (related.length >= limit) {
 		return related.slice(0, limit);
 	}
 
-	const others = INTEGRATIONS.filter(
-		(integration) => integration.slug !== slug,
-	).slice(0, limit - related.length);
+	const others = INTEGRATIONS.filter((integration) => integration.slug !== slug).slice(
+		0,
+		limit - related.length
+	);
 
 	return [...related, ...others];
 }
 
-export function getFeaturedIntegrations(
-	slugs: string[],
-): MarketingIntegrationContent[] {
+export function getFeaturedIntegrations(slugs: string[]): MarketingIntegrationContent[] {
 	return slugs
 		.map((slug) => getIntegrationBySlug(slug))
-		.filter((integration): integration is MarketingIntegrationContent =>
-			Boolean(integration),
-		);
+		.filter((integration): integration is MarketingIntegrationContent => Boolean(integration));
 }

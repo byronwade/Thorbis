@@ -25,19 +25,19 @@ export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
 	return (
 		<div className="space-y-3">
 			<div className="flex items-start gap-2">
-				<User className="mt-0.5 size-4 text-muted-foreground" />
+				<User className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Name</div>
-					<div className="font-medium text-sm">{customer.name}</div>
+					<div className="text-sm font-medium">{customer.name}</div>
 				</div>
 			</div>
 
 			{customer.company ? (
 				<div className="flex items-start gap-2">
-					<Building2 className="mt-0.5 size-4 text-muted-foreground" />
+					<Building2 className="text-muted-foreground mt-0.5 size-4" />
 					<div className="flex-1">
 						<div className="text-muted-foreground text-xs">Company</div>
-						<div className="font-medium text-sm">{customer.company}</div>
+						<div className="text-sm font-medium">{customer.company}</div>
 					</div>
 				</div>
 			) : null}
@@ -45,26 +45,20 @@ export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
 			<Separator />
 
 			<div className="flex items-start gap-2">
-				<Mail className="mt-0.5 size-4 text-muted-foreground" />
+				<Mail className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Email</div>
-					<Link
-						className="text-sm hover:underline"
-						href={`mailto:${customer.email}`}
-					>
+					<Link className="text-sm hover:underline" href={`mailto:${customer.email}`}>
 						{customer.email}
 					</Link>
 				</div>
 			</div>
 
 			<div className="flex items-start gap-2">
-				<Phone className="mt-0.5 size-4 text-muted-foreground" />
+				<Phone className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Phone</div>
-					<Link
-						className="text-sm hover:underline"
-						href={`tel:${customer.phone}`}
-					>
+					<Link className="text-sm hover:underline" href={`tel:${customer.phone}`}>
 						{customer.phone}
 					</Link>
 				</div>
@@ -73,7 +67,7 @@ export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
 			<Separator />
 
 			<div>
-				<div className="mb-1 text-muted-foreground text-xs">Address</div>
+				<div className="text-muted-foreground mb-1 text-xs">Address</div>
 				<div className="text-sm">
 					{customer.address}
 					<br />

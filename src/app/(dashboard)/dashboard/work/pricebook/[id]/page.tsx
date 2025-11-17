@@ -15,11 +15,7 @@ import { PriceBookItemDetailData } from "@/components/work/pricebook/pricebook-i
 import { PriceBookItemDetailShell } from "@/components/work/pricebook/pricebook-item-detail-shell";
 import { PriceBookItemDetailSkeleton } from "@/components/work/pricebook/pricebook-item-detail-skeleton";
 
-export default async function PriceBookItemPage({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export default async function PriceBookItemPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: itemId } = await params;
 
 	return (

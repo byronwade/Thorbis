@@ -21,13 +21,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * Call state types
  */
-export type CallState =
-	| "idle"
-	| "connecting"
-	| "ringing"
-	| "active"
-	| "held"
-	| "ended";
+export type CallState = "idle" | "connecting" | "ringing" | "active" | "held" | "ended";
 
 /**
  * Call direction
@@ -99,9 +93,7 @@ export type UseTelnyxWebRTCReturn = {
  *
  * Manages WebRTC connection and call state
  */
-export function useTelnyxWebRTC(
-	options: UseTelnyxWebRTCOptions,
-): UseTelnyxWebRTCReturn {
+export function useTelnyxWebRTC(options: UseTelnyxWebRTCOptions): UseTelnyxWebRTCReturn {
 	// Connection state
 	const [isConnected, setIsConnected] = useState(false);
 	const [isConnecting, setIsConnecting] = useState(false);
@@ -133,8 +125,7 @@ export function useTelnyxWebRTC(
 		}
 
 		const currentOptions = optionsRef.current;
-		const hasCredentials =
-			Boolean(currentOptions.username) && Boolean(currentOptions.password);
+		const hasCredentials = Boolean(currentOptions.username) && Boolean(currentOptions.password);
 
 		if (!hasCredentials) {
 			// Don't initialize if credentials are missing
@@ -159,10 +150,7 @@ export function useTelnyxWebRTC(
 		// Handle error event
 		client.on("telnyx.error", (error: any) => {
 			const errorMessage =
-				error?.error?.message ||
-				error?.message ||
-				error?.description ||
-				"Connection error";
+				error?.error?.message || error?.message || error?.description || "Connection error";
 			setConnectionError(errorMessage);
 			setIsConnecting(false);
 		});
@@ -198,8 +186,7 @@ export function useTelnyxWebRTC(
 				id: call.id || "unknown",
 				state: callState,
 				direction: call.direction === "inbound" ? "inbound" : "outbound",
-				remoteNumber:
-					(call as any).remoteNumber || (call as any).to || "Unknown",
+				remoteNumber: (call as any).remoteNumber || (call as any).to || "Unknown",
 				remoteName: (call as any).remoteName,
 				localNumber: ((call as any).localNumber as string) || "",
 				startTime: callState === "active" ? new Date() : undefined,
@@ -247,9 +234,7 @@ export function useTelnyxWebRTC(
 
 			await client.connect();
 		} catch (error) {
-			setConnectionError(
-				error instanceof Error ? error.message : "Connection failed",
-			);
+			setConnectionError(error instanceof Error ? error.message : "Connection failed");
 			setIsConnecting(false);
 		}
 	}, [initializeClient]);
@@ -298,7 +283,7 @@ export function useTelnyxWebRTC(
 
 			return call;
 		},
-		[isConnected],
+		[isConnected]
 	);
 
 	/**
@@ -402,9 +387,7 @@ export function useTelnyxWebRTC(
 
 		try {
 			const devices = await navigator.mediaDevices.enumerateDevices();
-			const audioOutputDevices = devices.filter(
-				(d) => d.kind === "audiooutput",
-			);
+			const audioOutputDevices = devices.filter((d) => d.kind === "audiooutput");
 			setAudioDevices(audioOutputDevices);
 		} catch {
 			// Ignore audio device loading errors
@@ -434,17 +417,11 @@ export function useTelnyxWebRTC(
 		const deviceChangeHandler = () => {
 			loadAudioDevices();
 		};
-		navigator.mediaDevices.addEventListener(
-			"devicechange",
-			deviceChangeHandler,
-		);
+		navigator.mediaDevices.addEventListener("devicechange", deviceChangeHandler);
 
 		return () => {
 			if (navigator.mediaDevices) {
-				navigator.mediaDevices.removeEventListener(
-					"devicechange",
-					deviceChangeHandler,
-				);
+				navigator.mediaDevices.removeEventListener("devicechange", deviceChangeHandler);
 			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps

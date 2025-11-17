@@ -29,10 +29,9 @@ export default function LargeDataTablesPage() {
 	return (
 		<div className="container py-8">
 			<div className="mb-8">
-				<h1 className="mb-2 font-bold text-3xl">Large Data Table Examples</h1>
+				<h1 className="mb-2 text-3xl font-bold">Large Data Table Examples</h1>
 				<p className="text-muted-foreground">
-					Three optimization strategies for handling datasets from 1,000 to
-					100,000+ rows
+					Three optimization strategies for handling datasets from 1,000 to 100,000+ rows
 				</p>
 			</div>
 
@@ -40,21 +39,15 @@ export default function LargeDataTablesPage() {
 				<TabsList className="grid w-full grid-cols-3">
 					<TabsTrigger value="optimized">
 						Optimized
-						<span className="ml-2 text-muted-foreground text-xs">
-							(1K-5K rows)
-						</span>
+						<span className="text-muted-foreground ml-2 text-xs">(1K-5K rows)</span>
 					</TabsTrigger>
 					<TabsTrigger value="virtualized">
 						Virtualized
-						<span className="ml-2 text-muted-foreground text-xs">
-							(5K-50K rows)
-						</span>
+						<span className="text-muted-foreground ml-2 text-xs">(5K-50K rows)</span>
 					</TabsTrigger>
 					<TabsTrigger value="server-side">
 						Server-Side
-						<span className="ml-2 text-muted-foreground text-xs">
-							(50K+ rows)
-						</span>
+						<span className="text-muted-foreground ml-2 text-xs">(50K+ rows)</span>
 					</TabsTrigger>
 				</TabsList>
 

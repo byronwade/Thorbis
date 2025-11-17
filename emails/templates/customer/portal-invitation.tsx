@@ -41,17 +41,16 @@ export default function PortalInvitationEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				Great news! You now have access to your {companyName} customer portal -
-				a convenient online hub where you can manage your services, view
-				invoices, and communicate with us anytime.
+				Great news! You now have access to your {companyName} customer portal - a convenient online
+				hub where you can manage your services, view invoices, and communicate with us anytime.
 			</Text>
 
 			<Card style={invitationCard}>
 				<div style={invitationIcon}>🎉</div>
 				<Text style={invitationTitle}>Your Portal is Ready!</Text>
 				<Text style={invitationText}>
-					Click the button below to set up your account and access all your
-					service information in one place.
+					Click the button below to set up your account and access all your service information in
+					one place.
 				</Text>
 			</Card>
 
@@ -61,9 +60,8 @@ export default function PortalInvitationEmail({
 
 			<Card style={expiryCard}>
 				<Text style={expiryText}>
-					⏰ This invitation link will expire in{" "}
-					<strong>{expiresInHours} hours</strong>. Please complete your account
-					setup soon.
+					⏰ This invitation link will expire in <strong>{expiresInHours} hours</strong>. Please
+					complete your account setup soon.
 				</Text>
 			</Card>
 
@@ -71,28 +69,24 @@ export default function PortalInvitationEmail({
 				<Heading level={3}>What you can do in your portal:</Heading>
 				<ul style={featuresList}>
 					<li style={featureItem}>
-						<strong>📅 View & Schedule Services:</strong> Book appointments and
-						track upcoming service visits
+						<strong>📅 View & Schedule Services:</strong> Book appointments and track upcoming
+						service visits
 					</li>
 					<li style={featureItem}>
-						<strong>📄 Manage Invoices:</strong> View billing history and pay
-						invoices online securely
+						<strong>📄 Manage Invoices:</strong> View billing history and pay invoices online
+						securely
 					</li>
 					<li style={featureItem}>
-						<strong>📊 Service History:</strong> Access complete records of all
-						your past services
+						<strong>📊 Service History:</strong> Access complete records of all your past services
 					</li>
 					<li style={featureItem}>
-						<strong>🏠 Property Details:</strong> Manage multiple properties and
-						service locations
+						<strong>🏠 Property Details:</strong> Manage multiple properties and service locations
 					</li>
 					<li style={featureItem}>
-						<strong>💬 Direct Communication:</strong> Message our team and get
-						real-time updates
+						<strong>💬 Direct Communication:</strong> Message our team and get real-time updates
 					</li>
 					<li style={featureItem}>
-						<strong>📱 Mobile Access:</strong> Access your account from any
-						device, anywhere
+						<strong>📱 Mobile Access:</strong> Access your account from any device, anywhere
 					</li>
 				</ul>
 			</Card>
@@ -100,9 +94,8 @@ export default function PortalInvitationEmail({
 			<Card style={securityCard}>
 				<Heading level={3}>Secure & Private</Heading>
 				<Text style={securityText}>
-					Your portal is protected with industry-standard security. Only you can
-					access your account information, and all data is encrypted for your
-					protection.
+					Your portal is protected with industry-standard security. Only you can access your account
+					information, and all data is encrypted for your protection.
 				</Text>
 			</Card>
 
@@ -111,21 +104,15 @@ export default function PortalInvitationEmail({
 				<div style={stepGrid}>
 					<div style={step}>
 						<div style={stepNumber}>1</div>
-						<Text style={stepText}>
-							Click the "Set Up My Account" button above
-						</Text>
+						<Text style={stepText}>Click the "Set Up My Account" button above</Text>
 					</div>
 					<div style={step}>
 						<div style={stepNumber}>2</div>
-						<Text style={stepText}>
-							Create a secure password for your account
-						</Text>
+						<Text style={stepText}>Create a secure password for your account</Text>
 					</div>
 					<div style={step}>
 						<div style={stepNumber}>3</div>
-						<Text style={stepText}>
-							Explore your portal and manage your services!
-						</Text>
+						<Text style={stepText}>Explore your portal and manage your services!</Text>
 					</div>
 				</div>
 			</Card>
@@ -133,8 +120,8 @@ export default function PortalInvitationEmail({
 			<Card style={helpCard}>
 				<Heading level={3}>Need Help?</Heading>
 				<Text style={helpText}>
-					If you have any questions about setting up your portal or need
-					assistance, our support team is here to help.
+					If you have any questions about setting up your portal or need assistance, our support
+					team is here to help.
 				</Text>
 				<div style={contactGrid}>
 					<div style={contactMethod}>
@@ -153,8 +140,8 @@ export default function PortalInvitationEmail({
 			</Card>
 
 			<Text style={footerNote}>
-				<strong>Note:</strong> If you didn't request portal access or believe
-				you received this email in error, please contact us at{" "}
+				<strong>Note:</strong> If you didn't request portal access or believe you received this
+				email in error, please contact us at{" "}
 				<a href={`mailto:${supportEmail}`} style={inlineLink}>
 					{supportEmail}
 				</a>
@@ -173,8 +160,7 @@ const paragraph = {
 };
 
 const invitationCard = {
-	background:
-		"linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
+	background: "linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
 	borderRadius: "12px",
 	padding: "40px",
 	margin: "24px 0",

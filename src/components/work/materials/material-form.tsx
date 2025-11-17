@@ -6,13 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createInventory, reserveStock } from "@/actions/inventory";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -47,16 +41,12 @@ type MaterialFormProps = {
 	defaultPriceBookItemId?: string;
 };
 
-export function MaterialForm({
-	priceBookItems,
-	jobs,
-	defaultPriceBookItemId,
-}: MaterialFormProps) {
+export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: MaterialFormProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [selectedItemId, setSelectedItemId] = useState(
-		defaultPriceBookItemId || priceBookItems[0]?.id || "",
+		defaultPriceBookItemId || priceBookItems[0]?.id || ""
 	);
 	const [quantityOnHand, setQuantityOnHand] = useState("1");
 	const [minimumQuantity, setMinimumQuantity] = useState("0");
@@ -74,7 +64,7 @@ export function MaterialForm({
 
 	const selectedItem = useMemo(
 		() => priceBookItems.find((item) => item.id === selectedItemId),
-		[priceBookItems, selectedItemId],
+		[priceBookItems, selectedItemId]
 	);
 
 	useEffect(() => {
@@ -93,8 +83,7 @@ export function MaterialForm({
 		return () => window.removeEventListener("keydown", handler);
 	}, [router]);
 
-	const toCents = (value: string) =>
-		Math.round((Number.parseFloat(value || "0") || 0) * 100);
+	const toCents = (value: string) => Math.round((Number.parseFloat(value || "0") || 0) * 100);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -145,26 +134,21 @@ export function MaterialForm({
 			router.push("/dashboard/work/materials");
 		} catch (err) {
 			setError(
-				err instanceof Error
-					? err.message
-					: "Something went wrong while creating inventory.",
+				err instanceof Error ? err.message : "Something went wrong while creating inventory."
 			);
 			setIsSubmitting(false);
 		}
 	};
 
 	const totalValue =
-		(Number.parseFloat(quantityOnHand || "0") || 0) *
-		(Number.parseFloat(costPerUnit || "0") || 0);
+		(Number.parseFloat(quantityOnHand || "0") || 0) * (Number.parseFloat(costPerUnit || "0") || 0);
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
-			<div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+			<div className="bg-muted/30 flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
-					<p className="font-semibold text-sm">Keyboard Shortcuts</p>
-					<p className="text-muted-foreground text-xs">
-						⌘/Ctrl + S to save • Esc to cancel
-					</p>
+					<p className="text-sm font-semibold">Keyboard Shortcuts</p>
+					<p className="text-muted-foreground text-xs">⌘/Ctrl + S to save • Esc to cancel</p>
 				</div>
 				<Button asChild size="sm" variant="ghost">
 					<Link href="/dashboard/work/materials">Back to Materials</Link>
@@ -172,7 +156,7 @@ export function MaterialForm({
 			</div>
 
 			{error && (
-				<div className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-destructive text-sm">
+				<div className="border-destructive/40 bg-destructive/10 text-destructive rounded-lg border p-4 text-sm">
 					{error}
 				</div>
 			)}
@@ -196,7 +180,7 @@ export function MaterialForm({
 									{priceBookItems.map((item) => (
 										<SelectItem key={item.id} value={item.id}>
 											<div className="flex flex-col">
-												<span className="font-medium text-sm">{item.name}</span>
+												<span className="text-sm font-medium">{item.name}</span>
 												<span className="text-muted-foreground text-xs">
 													{item.sku} • {item.itemType}
 												</span>
@@ -219,7 +203,7 @@ export function MaterialForm({
 					</div>
 
 					{selectedItem && (
-						<div className="rounded-lg border bg-muted/20 p-4 text-sm">
+						<div className="bg-muted/20 rounded-lg border p-4 text-sm">
 							<p className="font-semibold">{selectedItem.name}</p>
 							<p className="text-muted-foreground">
 								SKU {selectedItem.sku} • {selectedItem.itemType} • Unit:{" "}
@@ -308,9 +292,7 @@ export function MaterialForm({
 			<Card>
 				<CardHeader>
 					<CardTitle>Location & Notes</CardTitle>
-					<CardDescription>
-						Where the item lives and any internal documentation
-					</CardDescription>
+					<CardDescription>Where the item lives and any internal documentation</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -364,13 +346,11 @@ export function MaterialForm({
 									{jobs.map((job) => (
 										<SelectItem key={job.id} value={job.id}>
 											<div className="flex flex-col">
-												<span className="font-medium text-sm">
+												<span className="text-sm font-medium">
 													{job.jobNumber} • {job.title}
 												</span>
 												{job.customer && (
-													<span className="text-muted-foreground text-xs">
-														{job.customer}
-													</span>
+													<span className="text-muted-foreground text-xs">{job.customer}</span>
 												)}
 											</div>
 										</SelectItem>

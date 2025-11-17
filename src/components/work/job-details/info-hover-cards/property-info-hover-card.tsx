@@ -22,11 +22,7 @@ import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TravelTimeData = {
@@ -57,9 +53,7 @@ type PropertyInfoHoverCardProps = {
 	};
 };
 
-export function PropertyInfoHoverCard({
-	property,
-}: PropertyInfoHoverCardProps) {
+export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
@@ -94,12 +88,7 @@ export function PropertyInfoHoverCard({
 					params.set("destinationLat", property.lat.toString());
 					params.set("destinationLon", property.lon.toString());
 				} else {
-					const destination = [
-						property.address,
-						property.city,
-						property.state,
-						property.zip_code,
-					]
+					const destination = [property.address, property.city, property.state, property.zip_code]
 						.filter(Boolean)
 						.join(", ");
 					params.set("destination", destination);
@@ -128,19 +117,12 @@ export function PropertyInfoHoverCard({
 
 	const displayName = property.name || property.address || "Service Location";
 
-	const fullAddress = [
-		property.address,
-		property.city,
-		property.state,
-		property.zip_code,
-	]
+	const fullAddress = [property.address, property.city, property.state, property.zip_code]
 		.filter(Boolean)
 		.join(", ");
 
 	const coordinates =
-		property.lat && property.lon
-			? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}`
-			: null;
+		property.lat && property.lon ? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}` : null;
 
 	// Format duration for display
 	const formatDuration = (seconds: number): string => {
@@ -157,7 +139,7 @@ export function PropertyInfoHoverCard({
 		<HoverCard openDelay={200}>
 			<HoverCardTrigger asChild>
 				<Link
-					className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+					className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors"
 					href={`/dashboard/work/properties/${property.id}`}
 				>
 					<MapPin className="size-4" />
@@ -169,9 +151,9 @@ export function PropertyInfoHoverCard({
 					{/* Header */}
 					<div className="flex items-start justify-between">
 						<div className="flex items-center gap-2">
-							<Building2 className="size-4 text-muted-foreground" />
+							<Building2 className="text-muted-foreground size-4" />
 							<div>
-								<h4 className="font-semibold text-sm">{displayName}</h4>
+								<h4 className="text-sm font-semibold">{displayName}</h4>
 								{property.property_type && (
 									<p className="text-muted-foreground text-xs capitalize">
 										{property.property_type}
@@ -188,7 +170,7 @@ export function PropertyInfoHoverCard({
 						{fullAddress && (
 							<div className="group flex items-start justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-start gap-2">
-									<Home className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
+									<Home className="text-muted-foreground mt-0.5 size-3.5 shrink-0" />
 									<p className="text-sm">{fullAddress}</p>
 								</div>
 								<Button
@@ -212,7 +194,7 @@ export function PropertyInfoHoverCard({
 						{coordinates && (
 							<div className="group flex items-center justify-between gap-2">
 								<div className="flex min-w-0 flex-1 items-center gap-2">
-									<Navigation className="size-3.5 shrink-0 text-muted-foreground" />
+									<Navigation className="text-muted-foreground size-3.5 shrink-0" />
 									<p className="font-mono text-sm">{coordinates}</p>
 								</div>
 								<Button
@@ -256,32 +238,28 @@ export function PropertyInfoHoverCard({
 						<>
 							<Separator />
 							<div className="space-y-2">
-								<div className="flex items-center gap-2 text-muted-foreground text-xs">
+								<div className="text-muted-foreground flex items-center gap-2 text-xs">
 									<Route className="size-3.5" />
 									<span className="font-medium">Distance from HQ</span>
 								</div>
 								{isLoadingTravel && (
-									<div className="flex items-center gap-2 rounded-md bg-muted/50 p-2">
-										<Loader2 className="size-4 animate-spin text-muted-foreground" />
-										<span className="text-muted-foreground text-sm">
-											Calculating...
-										</span>
+									<div className="bg-muted/50 flex items-center gap-2 rounded-md p-2">
+										<Loader2 className="text-muted-foreground size-4 animate-spin" />
+										<span className="text-muted-foreground text-sm">Calculating...</span>
 									</div>
 								)}
 								{travelTime && !isLoadingTravel && (
-									<div className="flex items-center gap-3 rounded-md bg-muted/50 p-2">
+									<div className="bg-muted/50 flex items-center gap-3 rounded-md p-2">
 										<div className="flex items-center gap-1.5">
-											<Clock className="size-4 text-muted-foreground" />
+											<Clock className="text-muted-foreground size-4" />
 											<span className="font-semibold tabular-nums">
 												{formatDuration(travelTime.duration)}
 											</span>
-											<span className="text-muted-foreground text-xs">
-												drive
-											</span>
+											<span className="text-muted-foreground text-xs">drive</span>
 										</div>
 										<Separator className="h-4" orientation="vertical" />
 										<div className="flex items-center gap-1.5">
-											<Route className="size-4 text-muted-foreground" />
+											<Route className="text-muted-foreground size-4" />
 											<span className="font-semibold tabular-nums">
 												{travelTime.distance.toFixed(1)} mi
 											</span>
@@ -295,15 +273,13 @@ export function PropertyInfoHoverCard({
 					{/* Property Tags */}
 					<Separator />
 					<div className="space-y-2">
-						<div className="flex items-center gap-2 text-muted-foreground text-xs">
+						<div className="text-muted-foreground flex items-center gap-2 text-xs">
 							<span className="font-medium">Tags</span>
 						</div>
 						<EntityTags
 							entityId={property.id}
 							entityType="property"
-							onUpdateTags={(id, tags) =>
-								updateEntityTags("property", id, tags)
-							}
+							onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
 							tags={property.metadata?.tags || []}
 						/>
 					</div>

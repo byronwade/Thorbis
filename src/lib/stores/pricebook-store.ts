@@ -15,20 +15,9 @@ import { devtools, persist } from "zustand/middleware";
 // Types
 // ============================================================================
 
-export type SupplierName =
-	| "ferguson"
-	| "fastenal"
-	| "grainger"
-	| "hdsupply"
-	| "pace"
-	| "winsupply";
+export type SupplierName = "ferguson" | "fastenal" | "grainger" | "hdsupply" | "pace" | "winsupply";
 
-export type SyncStatus =
-	| "connected"
-	| "syncing"
-	| "error"
-	| "disconnected"
-	| "warning";
+export type SyncStatus = "connected" | "syncing" | "error" | "disconnected" | "warning";
 
 export type SupplierStatus = {
 	name: SupplierName;
@@ -114,19 +103,13 @@ type PriceBookStore = {
 
 	// Actions - Drill-down Filters (legacy - keeping for compatibility)
 	setItemTypeFilter: (type: ItemTypeFilter) => void;
-	setCategoryFilter: (
-		category: string | null,
-		subcategory?: string | null,
-	) => void;
+	setCategoryFilter: (category: string | null, subcategory?: string | null) => void;
 	clearAllFilters: () => void;
 	hasActiveFilters: () => boolean;
 	getFilterSummary: () => string;
 
 	// Actions - Suppliers
-	updateSupplierStatus: (
-		name: SupplierName,
-		updates: Partial<SupplierStatus>,
-	) => void;
+	updateSupplierStatus: (name: SupplierName, updates: Partial<SupplierStatus>) => void;
 	syncSupplier: (name: SupplierName) => Promise<void>;
 
 	// Actions - Sidebar
@@ -261,9 +244,7 @@ export const usePriceBookStore = create<PriceBookStore>()(
 
 				getCurrentLevel: () => {
 					const state = get();
-					return state.navigationPath.length > 0
-						? state.navigationPath.at(-1)
-						: null;
+					return state.navigationPath.length > 0 ? state.navigationPath.at(-1) : null;
 				},
 
 				isAtRoot: () => get().navigationPath.length === 0,
@@ -337,9 +318,7 @@ export const usePriceBookStore = create<PriceBookStore>()(
 					}
 
 					if (state.categoryFilter.subcategory) {
-						filters.push(
-							`${state.categoryFilter.category} › ${state.categoryFilter.subcategory}`,
-						);
+						filters.push(`${state.categoryFilter.category} › ${state.categoryFilter.subcategory}`);
 					} else if (state.categoryFilter.category) {
 						filters.push(state.categoryFilter.category);
 					}
@@ -355,7 +334,7 @@ export const usePriceBookStore = create<PriceBookStore>()(
 				updateSupplierStatus: (name, updates) =>
 					set((state) => ({
 						suppliers: state.suppliers.map((supplier) =>
-							supplier.name === name ? { ...supplier, ...updates } : supplier,
+							supplier.name === name ? { ...supplier, ...updates } : supplier
 						),
 					})),
 
@@ -380,15 +359,13 @@ export const usePriceBookStore = create<PriceBookStore>()(
 						// Update error status
 						get().updateSupplierStatus(name, {
 							status: "error",
-							errorMessage:
-								error instanceof Error ? error.message : "Sync failed",
+							errorMessage: error instanceof Error ? error.message : "Sync failed",
 						});
 					}
 				},
 
 				// Sidebar Actions
-				toggleSidebar: () =>
-					set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+				toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
 				setActiveSection: (section) => set({ activeSection: section }),
 
@@ -406,8 +383,8 @@ export const usePriceBookStore = create<PriceBookStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			},
+			}
 		),
-		{ name: "PriceBookStore" },
-	),
+		{ name: "PriceBookStore" }
+	)
 );

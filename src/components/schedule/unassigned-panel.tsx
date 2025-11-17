@@ -1,46 +1,23 @@
 "use client";
 
 import { DragOverlay, useDroppable } from "@dnd-kit/core";
-import {
-	SortableContext,
-	useSortable,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { format } from "date-fns";
-import {
-	AlertCircle,
-	ChevronLeft,
-	ChevronRight,
-	Clock,
-	MapPin,
-} from "lucide-react";
+import { AlertCircle, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
 
-function UnassignedJobCard({
-	job,
-	isDragOverlay = false,
-}: {
-	job: Job;
-	isDragOverlay?: boolean;
-}) {
+function UnassignedJobCard({ job, isDragOverlay = false }: { job: Job; isDragOverlay?: boolean }) {
 	const sortable = useSortable({
 		id: job.id,
 		data: { job },
 	});
 
-	const {
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-		isDragging,
-	} = sortable;
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = sortable;
 
 	const style = isDragOverlay
 		? undefined
@@ -49,13 +26,9 @@ function UnassignedJobCard({
 				transition,
 			};
 
-	const startTime =
-		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-	const endTime =
-		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
-	const duration = Math.round(
-		(endTime.getTime() - startTime.getTime()) / (1000 * 60),
-	);
+	const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+	const endTime = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+	const duration = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60));
 
 	return (
 		<div
@@ -64,10 +37,9 @@ function UnassignedJobCard({
 			{...(isDragOverlay ? {} : attributes)}
 			{...(isDragOverlay ? {} : listeners)}
 			className={cn(
-				"group relative cursor-grab rounded-lg border-2 border-red-200 border-dashed bg-card p-3 shadow-sm transition-all hover:border-red-300 hover:shadow-md active:cursor-grabbing dark:border-red-900/50",
+				"group bg-card relative cursor-grab rounded-lg border-2 border-dashed border-red-200 p-3 shadow-sm transition-all hover:border-red-300 hover:shadow-md active:cursor-grabbing dark:border-red-900/50",
 				isDragging && !isDragOverlay && "opacity-30",
-				isDragOverlay &&
-					"scale-105 cursor-grabbing shadow-2xl ring-2 ring-red-500",
+				isDragOverlay && "scale-105 cursor-grabbing shadow-2xl ring-2 ring-red-500"
 			)}
 		>
 			{/* Drag indicator */}
@@ -80,7 +52,7 @@ function UnassignedJobCard({
 			<div className="space-y-2">
 				{/* Title */}
 				<div className="pr-6">
-					<p className="font-semibold text-foreground text-sm">{job.title}</p>
+					<p className="text-foreground text-sm font-semibold">{job.title}</p>
 					{job.customer?.name && (
 						<p className="text-muted-foreground text-xs">{job.customer.name}</p>
 					)}
@@ -88,11 +60,9 @@ function UnassignedJobCard({
 
 				{/* Time */}
 				<div className="flex items-center gap-4 text-xs">
-					<div className="flex items-center gap-1.5 text-muted-foreground">
+					<div className="text-muted-foreground flex items-center gap-1.5">
 						<Clock className="size-3.5" />
-						<span className="font-medium font-mono">
-							{format(startTime, "h:mm a")}
-						</span>
+						<span className="font-mono font-medium">{format(startTime, "h:mm a")}</span>
 					</div>
 					<Badge className="text-[10px]" variant="secondary">
 						{duration} min
@@ -101,7 +71,7 @@ function UnassignedJobCard({
 
 				{/* Location */}
 				{job.location?.address?.street && (
-					<div className="flex items-start gap-1.5 text-muted-foreground text-xs">
+					<div className="text-muted-foreground flex items-start gap-1.5 text-xs">
 						<MapPin className="mt-0.5 size-3.5 shrink-0" />
 						<span className="line-clamp-1">{job.location.address.street}</span>
 					</div>
@@ -143,9 +113,8 @@ export function UnassignedPanel({
 			<Collapsible className="h-full" onOpenChange={onToggle} open={isOpen}>
 				<div
 					className={cn(
-						"flex h-full flex-col border-r bg-card transition-colors duration-200",
-						isOver &&
-							"bg-red-50/80 ring-2 ring-red-500 ring-inset dark:bg-red-950/50",
+						"bg-card flex h-full flex-col border-r transition-colors duration-200",
+						isOver && "bg-red-50/80 ring-2 ring-red-500 ring-inset dark:bg-red-950/50"
 					)}
 					ref={setNodeRef}
 				>
@@ -154,14 +123,14 @@ export function UnassignedPanel({
 						<>
 							<CollapsibleTrigger asChild>
 								<Button
-									className="h-auto w-full shrink-0 justify-between px-4 py-3 hover:bg-muted"
+									className="hover:bg-muted h-auto w-full shrink-0 justify-between px-4 py-3"
 									variant="ghost"
 								>
 									<div className="flex items-center gap-2">
 										<AlertCircle className="size-4 text-red-500" />
-										<span className="font-semibold text-sm">Unscheduled</span>
+										<span className="text-sm font-semibold">Unscheduled</span>
 										<Badge
-											className="bg-red-100 px-2 py-0.5 font-semibold text-red-700 text-xs dark:bg-red-950/50 dark:text-red-400"
+											className="bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-950/50 dark:text-red-400"
 											variant="secondary"
 										>
 											{jobs.length}
@@ -171,16 +140,11 @@ export function UnassignedPanel({
 								</Button>
 							</CollapsibleTrigger>
 
-							<div
-								className="flex-1 overflow-y-auto overflow-x-hidden"
-								style={{ minHeight: 0 }}
-							>
+							<div className="flex-1 overflow-x-hidden overflow-y-auto" style={{ minHeight: 0 }}>
 								<div className="space-y-2 p-3">
 									{jobs.length === 0 ? (
 										<div className="rounded-lg border border-dashed p-6 text-center">
-											<p className="text-muted-foreground text-xs">
-												All jobs scheduled
-											</p>
+											<p className="text-muted-foreground text-xs">All jobs scheduled</p>
 										</div>
 									) : (
 										<SortableContext
@@ -202,11 +166,11 @@ export function UnassignedPanel({
 							onClick={onToggle}
 						>
 							<div className="flex rotate-180 items-center gap-3 [writing-mode:vertical-rl]">
-								<span className="font-bold text-red-700 text-sm tracking-wider dark:text-red-400">
+								<span className="text-sm font-bold tracking-wider text-red-700 dark:text-red-400">
 									UNSCHEDULED
 								</span>
 								<Badge
-									className="bg-red-600 px-2.5 py-0.5 font-semibold text-white text-xs dark:bg-red-700"
+									className="bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white dark:bg-red-700"
 									variant="secondary"
 								>
 									{jobs.length}

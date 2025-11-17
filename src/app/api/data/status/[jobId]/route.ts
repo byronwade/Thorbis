@@ -25,10 +25,7 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database not configured" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
 		}
 
 		const { jobId } = context.params;
@@ -60,9 +57,6 @@ export async function GET(_request: NextRequest, context: RouteContext) {
 			completedAt: job.completed_at,
 		});
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

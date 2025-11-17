@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function PurchaseOrderDetailToolbarActions() {
@@ -102,15 +97,8 @@ export function PurchaseOrderDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
-								<a
-									href={`/dashboard/work/purchase-orders/new?cloneFrom=${poId}`}
-								>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
+								<a href={`/dashboard/work/purchase-orders/new?cloneFrom=${poId}`}>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -130,7 +118,7 @@ export function PurchaseOrderDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -151,8 +139,8 @@ export function PurchaseOrderDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Purchase Order</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this purchase order? Archived
-							records can be restored within 90 days.
+							Are you sure you want to archive this purchase order? Archived records can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -163,11 +151,7 @@ export function PurchaseOrderDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive PO"}
 						</Button>
 					</DialogFooter>

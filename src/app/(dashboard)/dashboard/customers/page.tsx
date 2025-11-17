@@ -26,9 +26,7 @@ export default function CustomersPage() {
 	return (
 		<>
 			{/* Statistics - Streams in first */}
-			<Suspense
-				fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-			>
+			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
 				<CustomersStats />
 			</Suspense>
 

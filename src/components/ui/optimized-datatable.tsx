@@ -87,7 +87,7 @@ const TableRowInner = function TableRow<T>({
 		(_checked: boolean) => {
 			onSelectItem((item as any).id || "");
 		},
-		[item, onSelectItem],
+		[item, onSelectItem]
 	);
 
 	const handleClick = useCallback(() => {
@@ -98,7 +98,7 @@ const TableRowInner = function TableRow<T>({
 
 	return (
 		<tr
-			className={`border-border/60 border-b transition-colors hover:bg-secondary/30 dark:hover:bg-secondary/20 ${
+			className={`border-border/60 hover:bg-secondary/30 dark:hover:bg-secondary/20 border-b transition-colors ${
 				isHighlighted ? highlightClass : ""
 			} ${rowClassName || ""} ${onRowClick ? "cursor-pointer" : ""}`}
 			onClick={handleClick}
@@ -111,11 +111,7 @@ const TableRowInner = function TableRow<T>({
 			{columns.map((column) => (
 				<td
 					className={`px-4 py-3 ${column.hideOnMobile ? "hidden md:table-cell" : ""} ${
-						column.align === "right"
-							? "text-right"
-							: column.align === "center"
-								? "text-center"
-								: ""
+						column.align === "right" ? "text-right" : column.align === "center" ? "text-center" : ""
 					}`}
 					key={column.key}
 					style={{ width: column.width }}
@@ -183,7 +179,7 @@ export function OptimizedDataTable<T>({
 				setSelectedIds(new Set());
 			}
 		},
-		[paginatedData, getItemId],
+		[paginatedData, getItemId]
 	);
 
 	const handleSelectItem = useCallback((id: string) => {
@@ -210,11 +206,8 @@ export function OptimizedDataTable<T>({
 	}, []);
 
 	const allSelected =
-		paginatedData.length > 0 &&
-		paginatedData.every((item) => selectedIds.has(getItemId(item)));
-	const _someSelected = paginatedData.some((item) =>
-		selectedIds.has(getItemId(item)),
-	);
+		paginatedData.length > 0 && paginatedData.every((item) => selectedIds.has(getItemId(item)));
+	const _someSelected = paginatedData.some((item) => selectedIds.has(getItemId(item)));
 
 	return (
 		<div className="flex flex-col gap-4">
@@ -223,7 +216,7 @@ export function OptimizedDataTable<T>({
 				{/* Search */}
 				{searchFilter && (
 					<div className="relative max-w-sm flex-1">
-						<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+						<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 						<Input
 							className="pl-9"
 							onChange={(e) => handleSearch(e.target.value)}
@@ -247,7 +240,7 @@ export function OptimizedDataTable<T>({
 
 			{/* Bulk Actions Bar */}
 			{selectedIds.size > 0 && bulkActions.length > 0 && (
-				<div className="flex items-center gap-2 rounded-lg bg-primary p-4 text-primary-foreground">
+				<div className="bg-primary text-primary-foreground flex items-center gap-2 rounded-lg p-4">
 					<span className="text-sm">{selectedIds.size} selected</span>
 					<div className="ml-auto flex gap-2">
 						{bulkActions.map((action, index) => (
@@ -266,10 +259,10 @@ export function OptimizedDataTable<T>({
 			)}
 
 			{/* Table */}
-			<div className="overflow-hidden rounded-lg border border-border">
+			<div className="border-border overflow-hidden rounded-lg border">
 				<div className="overflow-x-auto">
-					<table className="w-full bg-card">
-						<thead className="border-border border-b bg-muted/60">
+					<table className="bg-card w-full">
+						<thead className="border-border bg-muted/60 border-b">
 							<tr>
 								{enableSelection && (
 									<th className="w-12 px-4 py-3">
@@ -282,7 +275,7 @@ export function OptimizedDataTable<T>({
 								)}
 								{columns.map((column) => (
 									<th
-										className={`px-4 py-3 text-left font-medium text-muted-foreground text-xs uppercase tracking-wider ${
+										className={`text-muted-foreground px-4 py-3 text-left text-xs font-medium tracking-wider uppercase ${
 											column.hideOnMobile ? "hidden md:table-cell" : ""
 										}`}
 										key={column.key}
@@ -293,7 +286,7 @@ export function OptimizedDataTable<T>({
 								))}
 							</tr>
 						</thead>
-						<tbody className="divide-y divide-border/60">
+						<tbody className="divide-border/60 divide-y">
 							{paginatedData.length === 0 ? (
 								<tr>
 									<td
@@ -336,8 +329,8 @@ export function OptimizedDataTable<T>({
 				<div className="flex items-center justify-between">
 					<div className="text-muted-foreground text-sm">
 						Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-						{Math.min(currentPage * itemsPerPage, filteredData.length)} of{" "}
-						{filteredData.length} results
+						{Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length}{" "}
+						results
 					</div>
 					<div className="flex items-center gap-2">
 						<Button
@@ -369,6 +362,4 @@ export function OptimizedDataTable<T>({
 }
 
 // Export memoized version for when parent props don't change often
-export const MemoizedOptimizedDataTable = memo(
-	OptimizedDataTable,
-) as typeof OptimizedDataTable;
+export const MemoizedOptimizedDataTable = memo(OptimizedDataTable) as typeof OptimizedDataTable;

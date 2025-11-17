@@ -64,7 +64,7 @@ type CommunicationStore = {
 	resolvePendingMessage: (
 		conversationId: string,
 		messageId: string,
-		replacement?: PendingMessage,
+		replacement?: PendingMessage
 	) => void;
 	resetPendingMessages: (conversationId: string) => void;
 };
@@ -119,9 +119,7 @@ export const useCommunicationStore = create<CommunicationStore>((set) => ({
 							[conversationId]: filtered,
 						}
 					: Object.fromEntries(
-							Object.entries(state.pendingMessages).filter(
-								([key]) => key !== conversationId,
-							),
+							Object.entries(state.pendingMessages).filter(([key]) => key !== conversationId)
 						);
 			return {
 				pendingMessages: nextPending,
@@ -133,7 +131,7 @@ export const useCommunicationStore = create<CommunicationStore>((set) => ({
 				return { pendingMessages: state.pendingMessages };
 			}
 			const nextEntries = Object.entries(state.pendingMessages).filter(
-				([key]) => key !== conversationId,
+				([key]) => key !== conversationId
 			);
 			return {
 				pendingMessages: Object.fromEntries(nextEntries),

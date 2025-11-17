@@ -5,13 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { signContract } from "@/actions/contracts";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,10 +23,7 @@ type ContractSigningFormProps = {
 	defaultEmail?: string;
 };
 
-export function ContractSigningForm({
-	contractId,
-	defaultEmail,
-}: ContractSigningFormProps) {
+export function ContractSigningForm({ contractId, defaultEmail }: ContractSigningFormProps) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -81,20 +72,13 @@ export function ContractSigningForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Your Information</CardTitle>
-						<CardDescription>
-							Please provide your details to complete the signature
-						</CardDescription>
+						<CardDescription>Please provide your details to complete the signature</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="signerName">Full Name *</Label>
-								<Input
-									id="signerName"
-									name="signerName"
-									placeholder="John Doe"
-									required
-								/>
+								<Input id="signerName" name="signerName" placeholder="John Doe" required />
 							</div>
 
 							<div className="space-y-2">
@@ -113,20 +97,12 @@ export function ContractSigningForm({
 						<div className="grid gap-4 md:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="signerTitle">Job Title (Optional)</Label>
-								<Input
-									id="signerTitle"
-									name="signerTitle"
-									placeholder="e.g., CEO, Manager"
-								/>
+								<Input id="signerTitle" name="signerTitle" placeholder="e.g., CEO, Manager" />
 							</div>
 
 							<div className="space-y-2">
 								<Label htmlFor="signerCompany">Company (Optional)</Label>
-								<Input
-									id="signerCompany"
-									name="signerCompany"
-									placeholder="Company name"
-								/>
+								<Input id="signerCompany" name="signerCompany" placeholder="Company name" />
 							</div>
 						</div>
 					</CardContent>
@@ -146,14 +122,10 @@ export function ContractSigningForm({
 								onCheckedChange={(checked) => setAgreed(checked === true)}
 							/>
 							<div className="space-y-1">
-								<Label
-									className="cursor-pointer font-normal leading-relaxed"
-									htmlFor="agree"
-								>
-									I have read and agree to the terms and conditions outlined in
-									this contract. I understand that my electronic signature is
-									legally binding and has the same effect as a handwritten
-									signature.
+								<Label className="cursor-pointer leading-relaxed font-normal" htmlFor="agree">
+									I have read and agree to the terms and conditions outlined in this contract. I
+									understand that my electronic signature is legally binding and has the same effect
+									as a handwritten signature.
 								</Label>
 							</div>
 						</div>
@@ -162,8 +134,8 @@ export function ContractSigningForm({
 
 				{/* Error Message */}
 				{error && (
-					<div className="rounded-lg border border-destructive bg-destructive/10 p-4">
-						<p className="font-medium text-destructive text-sm">{error}</p>
+					<div className="border-destructive bg-destructive/10 rounded-lg border p-4">
+						<p className="text-destructive text-sm font-medium">{error}</p>
 					</div>
 				)}
 
@@ -187,9 +159,9 @@ export function ContractSigningForm({
 					)}
 				</Button>
 
-				<p className="text-center text-muted-foreground text-xs">
-					Your signature will be recorded along with the date, time, and your IP
-					address for legal compliance.
+				<p className="text-muted-foreground text-center text-xs">
+					Your signature will be recorded along with the date, time, and your IP address for legal
+					compliance.
 				</p>
 			</div>
 		</form>

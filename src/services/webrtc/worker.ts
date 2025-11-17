@@ -122,7 +122,10 @@ async function generateCredential(username: string, ttl = 86400): Promise<void> 
 			],
 			turn_servers: data.data?.ice_servers?.turn || [
 				{
-					urls: ["turn:turn.telnyx.com:3478?transport=udp", "turn:turn.telnyx.com:3478?transport=tcp"],
+					urls: [
+						"turn:turn.telnyx.com:3478?transport=udp",
+						"turn:turn.telnyx.com:3478?transport=tcp",
+					],
 					username: data.data?.user_name || credentialName,
 					credential: data.data?.password || password,
 				},

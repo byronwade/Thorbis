@@ -4,13 +4,7 @@ import { Building2, MapPin, Plus, Star, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -65,11 +59,8 @@ export function MultiPropertySelector({
 	initialSelected = [],
 	onChange,
 }: MultiPropertySelectorProps) {
-	const [selectedProperties, setSelectedProperties] =
-		useState<SelectedProperty[]>(initialSelected);
-	const [showAddProperty, setShowAddProperty] = useState(
-		initialSelected.length === 0,
-	);
+	const [selectedProperties, setSelectedProperties] = useState<SelectedProperty[]>(initialSelected);
+	const [showAddProperty, setShowAddProperty] = useState(initialSelected.length === 0);
 
 	// Filter properties by customer if provided
 	const filteredProperties = customerId
@@ -124,13 +115,8 @@ export function MultiPropertySelector({
 		onChange?.(updated);
 	};
 
-	const updatePropertyRole = (
-		propertyId: string,
-		role: SelectedProperty["role"],
-	) => {
-		const updated = selectedProperties.map((sp) =>
-			sp.id === propertyId ? { ...sp, role } : sp,
-		);
+	const updatePropertyRole = (propertyId: string, role: SelectedProperty["role"]) => {
+		const updated = selectedProperties.map((sp) => (sp.id === propertyId ? { ...sp, role } : sp));
 
 		setSelectedProperties(updated);
 		onChange?.(updated);
@@ -138,7 +124,7 @@ export function MultiPropertySelector({
 
 	const updateWorkDescription = (propertyId: string, description: string) => {
 		const updated = selectedProperties.map((sp) =>
-			sp.id === propertyId ? { ...sp, workDescription: description } : sp,
+			sp.id === propertyId ? { ...sp, workDescription: description } : sp
 		);
 
 		setSelectedProperties(updated);
@@ -147,7 +133,7 @@ export function MultiPropertySelector({
 
 	const updateEstimatedHours = (propertyId: string, hours: number) => {
 		const updated = selectedProperties.map((sp) =>
-			sp.id === propertyId ? { ...sp, estimatedHours: hours } : sp,
+			sp.id === propertyId ? { ...sp, estimatedHours: hours } : sp
 		);
 
 		setSelectedProperties(updated);
@@ -159,7 +145,7 @@ export function MultiPropertySelector({
 			<CardHeader>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<Building2 className="size-5 text-primary" />
+						<Building2 className="text-primary size-5" />
 						<CardTitle>Service Locations</CardTitle>
 					</div>
 					<Badge variant="secondary">
@@ -167,14 +153,12 @@ export function MultiPropertySelector({
 						{selectedProperties.length !== 1 ? "s" : ""}
 					</Badge>
 				</div>
-				<CardDescription>
-					Add multiple properties if job spans multiple locations
-				</CardDescription>
+				<CardDescription>Add multiple properties if job spans multiple locations</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{/* Selected Properties */}
 				{selectedProperties.map((selected) => (
-					<div className="rounded-lg border bg-muted/50 p-4" key={selected.id}>
+					<div className="bg-muted/50 rounded-lg border p-4" key={selected.id}>
 						<div className="space-y-3">
 							{/* Property Header */}
 							<div className="flex items-start justify-between gap-3">
@@ -196,7 +180,7 @@ export function MultiPropertySelector({
 											)}
 										</div>
 
-										<p className="mt-1 text-muted-foreground text-sm">
+										<p className="text-muted-foreground mt-1 text-sm">
 											{selected.property.address}, {selected.property.city},{" "}
 											{selected.property.state}
 										</p>
@@ -218,7 +202,7 @@ export function MultiPropertySelector({
 									)}
 									{selectedProperties.length > 1 && (
 										<Button
-											className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+											className="text-destructive hover:text-destructive h-8 w-8 p-0"
 											onClick={() => removeProperty(selected.id)}
 											size="sm"
 											type="button"
@@ -233,29 +217,19 @@ export function MultiPropertySelector({
 							{/* Property Details */}
 							<div className="grid gap-3 md:grid-cols-2">
 								<div className="space-y-1.5">
-									<Label
-										className="text-xs"
-										htmlFor={`property-role-${selected.id}`}
-									>
+									<Label className="text-xs" htmlFor={`property-role-${selected.id}`}>
 										Property Role
 									</Label>
 									<Select
-										onValueChange={(value: any) =>
-											updatePropertyRole(selected.id, value)
-										}
+										onValueChange={(value: any) => updatePropertyRole(selected.id, value)}
 										value={selected.role}
 									>
-										<SelectTrigger
-											className="h-9"
-											id={`property-role-${selected.id}`}
-										>
+										<SelectTrigger className="h-9" id={`property-role-${selected.id}`}>
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value="primary">Primary Location</SelectItem>
-											<SelectItem value="secondary">
-												Secondary Location
-											</SelectItem>
+											<SelectItem value="secondary">Secondary Location</SelectItem>
 											<SelectItem value="related">Related Property</SelectItem>
 										</SelectContent>
 									</Select>
@@ -270,10 +244,7 @@ export function MultiPropertySelector({
 										id={`hours-${selected.id}`}
 										min="0"
 										onChange={(e) =>
-											updateEstimatedHours(
-												selected.id,
-												Number.parseFloat(e.target.value),
-											)
+											updateEstimatedHours(selected.id, Number.parseFloat(e.target.value))
 										}
 										placeholder="0"
 										step="0.5"
@@ -290,9 +261,7 @@ export function MultiPropertySelector({
 								<Textarea
 									className="text-sm"
 									id={`work-${selected.id}`}
-									onChange={(e) =>
-										updateWorkDescription(selected.id, e.target.value)
-									}
+									onChange={(e) => updateWorkDescription(selected.id, e.target.value)}
 									placeholder="Describe work to be performed at this property..."
 									rows={2}
 									value={selected.workDescription || ""}
@@ -301,11 +270,7 @@ export function MultiPropertySelector({
 						</div>
 
 						{/* Hidden inputs for form submission */}
-						<input
-							name={`property_${selected.id}_role`}
-							type="hidden"
-							value={selected.role}
-						/>
+						<input name={`property_${selected.id}_role`} type="hidden" value={selected.role} />
 						<input
 							name={`property_${selected.id}_isPrimary`}
 							type="hidden"
@@ -346,13 +311,10 @@ export function MultiPropertySelector({
 							</SelectTrigger>
 							<SelectContent>
 								{filteredProperties
-									.filter(
-										(p) => !selectedProperties.some((sp) => sp.id === p.id),
-									)
+									.filter((p) => !selectedProperties.some((sp) => sp.id === p.id))
 									.map((property) => (
 										<SelectItem key={property.id} value={property.id}>
-											{property.name || property.address} - {property.city},{" "}
-											{property.state}
+											{property.name || property.address} - {property.city}, {property.state}
 										</SelectItem>
 									))}
 							</SelectContent>
@@ -373,9 +335,7 @@ export function MultiPropertySelector({
 				)}
 
 				{!customerId && (
-					<p className="text-muted-foreground text-xs">
-						Select a customer first to add properties
-					</p>
+					<p className="text-muted-foreground text-xs">Select a customer first to add properties</p>
 				)}
 
 				{/* Hidden inputs for property IDs */}

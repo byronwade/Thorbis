@@ -69,9 +69,7 @@ export function NavGrouped({
 
 				return (
 					<SidebarGroup key={`${group.label || "group"}-${groupIndex}`}>
-						{group.label && (
-							<SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-						)}
+						{group.label && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
 						<SidebarMenu>
 							{group.items.map((item) => {
 								// Check if current path matches this item or its detail pages
@@ -81,12 +79,9 @@ export function NavGrouped({
 								let isDetailPage = safePathname.startsWith(`${item.url}/`);
 								if (item.url === "/dashboard/work" && isDetailPage) {
 									// Check if pathname matches any known work subpath
-									const pathAfterWork = safePathname.replace(
-										"/dashboard/work",
-										"",
-									);
+									const pathAfterWork = safePathname.replace("/dashboard/work", "");
 									const isKnownSubpath = workSubpaths.some((subpath) =>
-										pathAfterWork.startsWith(subpath),
+										pathAfterWork.startsWith(subpath)
 									);
 									if (isKnownSubpath) {
 										isDetailPage = false; // Don't mark Jobs as active for known subpaths
@@ -94,10 +89,9 @@ export function NavGrouped({
 								}
 
 								const hasActiveSubItem = item.items?.some(
-									(subItem) => safePathname === subItem.url,
+									(subItem) => safePathname === subItem.url
 								);
-								const isActive =
-									isExactMatch || isDetailPage || hasActiveSubItem;
+								const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
 
 								// If item has sub-items, render parent + children (always open, no chevron)
 								if (item.items && item.items.length > 0) {
@@ -120,10 +114,7 @@ export function NavGrouped({
 														safePathname.startsWith(`${subItem.url}/`);
 													return (
 														<SidebarMenuSubItem key={subItem.title}>
-															<SidebarMenuSubButton
-																asChild
-																isActive={isSubActive}
-															>
+															<SidebarMenuSubButton asChild isActive={isSubActive}>
 																<Link href={subItem.url}>
 																	<span>{subItem.title}</span>
 																</Link>

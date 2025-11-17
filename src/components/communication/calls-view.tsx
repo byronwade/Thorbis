@@ -18,10 +18,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -48,19 +45,11 @@ type CallsViewProps = {
 	onViewRecording?: (recordingUrl: string) => void;
 };
 
-export function CallsView({
-	messages,
-	onResumeCall,
-	onViewRecording,
-}: CallsViewProps) {
+export function CallsView({ messages, onResumeCall, onViewRecording }: CallsViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore(
-		(state) => state.setSelectedMessageId,
-	);
-	const setIsDetailView = useCommunicationStore(
-		(state) => state.setIsDetailView,
-	);
+	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
 
 	const handleOpenMessage = (message: CallMessage) => {
 		setSelectedMessageId(message.id);
@@ -71,13 +60,13 @@ export function CallsView({
 	const getCallIcon = (callType?: CallType) => {
 		switch (callType) {
 			case "incoming":
-				return <PhoneIncoming className="size-4 text-success" />;
+				return <PhoneIncoming className="text-success size-4" />;
 			case "outgoing":
-				return <PhoneOutgoing className="size-4 text-primary" />;
+				return <PhoneOutgoing className="text-primary size-4" />;
 			case "missed":
-				return <PhoneMissed className="size-4 text-destructive" />;
+				return <PhoneMissed className="text-destructive size-4" />;
 			case "voicemail":
-				return <Voicemail className="size-4 text-accent-foreground" />;
+				return <Voicemail className="text-accent-foreground size-4" />;
 			default:
 				return <Phone className="size-4" />;
 		}
@@ -141,13 +130,13 @@ export function CallsView({
 			width: "w-72",
 			render: (message) => (
 				<div className="flex items-center gap-3">
-					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+					<div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
 						{getCallIcon(message.callType)}
 					</div>
 					<div className="flex flex-col">
 						<div className="flex items-center gap-2">
 							<span
-								className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+								className={`text-sm font-medium ${message.status === "unread" ? "font-semibold" : ""}`}
 							>
 								{message.from}
 							</span>
@@ -156,9 +145,7 @@ export function CallsView({
 							</Badge>
 						</div>
 						{message.fromPhone && (
-							<span className="text-muted-foreground text-xs">
-								{message.fromPhone}
-							</span>
+							<span className="text-muted-foreground text-xs">{message.fromPhone}</span>
 						)}
 					</div>
 				</div>
@@ -170,9 +157,7 @@ export function CallsView({
 			width: "flex-1",
 			render: (message) =>
 				message.callType === "voicemail" ? (
-					<p className="line-clamp-1 text-muted-foreground text-xs">
-						{message.preview}
-					</p>
+					<p className="text-muted-foreground line-clamp-1 text-xs">{message.preview}</p>
 				) : (
 					<span className="text-muted-foreground text-xs">—</span>
 				),
@@ -183,9 +168,7 @@ export function CallsView({
 			width: "w-24",
 			align: "center",
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">
-					{formatDuration(message.duration)}
-				</span>
+				<span className="text-muted-foreground text-xs">{formatDuration(message.duration)}</span>
 			),
 		},
 		{
@@ -195,9 +178,7 @@ export function CallsView({
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">
-					{formatTimestamp(message.timestamp)}
-				</span>
+				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
 			),
 		},
 		{
@@ -254,7 +235,7 @@ export function CallsView({
 			const noun = selectedIds.size === 1 ? "call" : "calls";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast],
+		[toast]
 	);
 
 	const bulkActions = [
@@ -280,7 +261,7 @@ export function CallsView({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={messages}
-			emptyIcon={<PhoneCall className="size-10 text-muted-foreground" />}
+			emptyIcon={<PhoneCall className="text-muted-foreground size-10" />}
 			emptyMessage="No call history"
 			enableSelection
 			entity="communications-calls"

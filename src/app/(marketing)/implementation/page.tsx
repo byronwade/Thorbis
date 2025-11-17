@@ -152,8 +152,7 @@ const serviceLd = generateServiceStructuredData({
 		{
 			price: "Custom",
 			currency: "USD",
-			description:
-				"Growth Accelerator and Enterprise Elite tailored to your roadmap.",
+			description: "Growth Accelerator and Enterprise Elite tailored to your roadmap.",
 		},
 	],
 });
@@ -184,18 +183,17 @@ export default function ImplementationPage() {
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Implementation & Success
 					</Badge>
-					<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 						Launch Thorbis in 45 days with migration experts by your side
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Dedicated migration engineers, AI strategists, and customer success
-						coaches guide your team from day-one planning to long-term
-						optimization. Implementation is included in the $100/month base
-						subscription with pay-as-you-go usage—no surprise onboarding fees
-						and no lock-in.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Dedicated migration engineers, AI strategists, and customer success coaches guide your
+						team from day-one planning to long-term optimization. Implementation is included in the
+						$100/month base subscription with pay-as-you-go usage—no surprise onboarding fees and no
+						lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -210,25 +208,19 @@ export default function ImplementationPage() {
 				<main className="mt-16 space-y-20">
 					<section className="space-y-8">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
-								Three-phase onboarding blueprint
-							</h2>
+							<h2 className="text-3xl font-semibold">Three-phase onboarding blueprint</h2>
 							<p className="text-muted-foreground">
-								A proven implementation methodology honed with hundreds of
-								contractors moving from ServiceTitan, Housecall Pro, Jobber, and
-								custom tools.
+								A proven implementation methodology honed with hundreds of contractors moving from
+								ServiceTitan, Housecall Pro, Jobber, and custom tools.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
 							{PHASES.map((phase) => {
 								const Icon = getMarketingIcon(phase.icon);
 								return (
-									<Card
-										className="border-primary/30 bg-primary/5"
-										key={phase.title}
-									>
+									<Card className="border-primary/30 bg-primary/5" key={phase.title}>
 										<CardHeader className="space-y-3">
-											<span className="inline-flex size-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+											<span className="bg-primary text-primary-foreground inline-flex size-12 items-center justify-center rounded-full">
 												<Icon aria-hidden="true" className="size-6" />
 											</span>
 											<CardTitle className="text-xl">{phase.title}</CardTitle>
@@ -237,7 +229,7 @@ export default function ImplementationPage() {
 											</p>
 										</CardHeader>
 										<CardContent>
-											<ul className="space-y-2 text-muted-foreground text-sm">
+											<ul className="text-muted-foreground space-y-2 text-sm">
 												{phase.bullets.map((bullet) => (
 													<li className="leading-relaxed" key={bullet}>
 														• {bullet}
@@ -253,13 +245,10 @@ export default function ImplementationPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
-								Enablement resources for every role
-							</h2>
+							<h2 className="text-3xl font-semibold">Enablement resources for every role</h2>
 							<p className="text-muted-foreground">
-								Technicians, dispatchers, finance, and leadership receive
-								tailored instruction through live sessions and on-demand
-								content.
+								Technicians, dispatchers, finance, and leadership receive tailored instruction
+								through live sessions and on-demand content.
 							</p>
 						</div>
 
@@ -274,8 +263,7 @@ export default function ImplementationPage() {
 								},
 								{
 									title: "Thorbis University",
-									description:
-										"Role-based training paths with quizzes and certifications.",
+									description: "Role-based training paths with quizzes and certifications.",
 									href: "/templates?tag=training",
 									icon: "graduation-cap",
 								},
@@ -288,8 +276,7 @@ export default function ImplementationPage() {
 								},
 								{
 									title: "Community Forum",
-									description:
-										"Share playbooks, ask peers, and access customer-only templates.",
+									description: "Share playbooks, ask peers, and access customer-only templates.",
 									href: "/community",
 									icon: "users",
 								},
@@ -298,17 +285,12 @@ export default function ImplementationPage() {
 								return (
 									<Card key={resource.title}>
 										<CardHeader className="space-y-3">
-											<span className="inline-flex size-12 items-center justify-center rounded-full bg-muted">
-												<Icon
-													aria-hidden="true"
-													className="size-6 text-primary"
-												/>
+											<span className="bg-muted inline-flex size-12 items-center justify-center rounded-full">
+												<Icon aria-hidden="true" className="text-primary size-6" />
 											</span>
-											<CardTitle className="text-lg">
-												{resource.title}
-											</CardTitle>
+											<CardTitle className="text-lg">{resource.title}</CardTitle>
 										</CardHeader>
-										<CardContent className="space-y-4 text-muted-foreground text-sm leading-relaxed">
+										<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
 											<p>{resource.description}</p>
 											<Button asChild variant="outline">
 												<Link href={resource.href}>Explore</Link>
@@ -322,12 +304,12 @@ export default function ImplementationPage() {
 
 					<section className="space-y-8">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="font-semibold text-3xl">
+							<h2 className="text-3xl font-semibold">
 								Success packages designed for every growth stage
 							</h2>
 							<p className="text-muted-foreground">
-								Choose the support level that matches your expansion plans. All
-								packages include proactive guidance and metrics reviews.
+								Choose the support level that matches your expansion plans. All packages include
+								proactive guidance and metrics reviews.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
@@ -343,7 +325,7 @@ export default function ImplementationPage() {
 										<p className="text-muted-foreground text-sm leading-relaxed">
 											{pkg.description}
 										</p>
-										<ul className="space-y-2 text-muted-foreground text-sm">
+										<ul className="text-muted-foreground space-y-2 text-sm">
 											{pkg.features.map((feature) => (
 												<li key={feature}>✔️ {feature}</li>
 											))}
@@ -360,39 +342,31 @@ export default function ImplementationPage() {
 					<section className="grid gap-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
 						<Card className="bg-primary/5">
 							<CardContent className="flex h-full flex-col justify-center space-y-4 p-8">
-								<p className="font-semibold text-lg text-primary uppercase tracking-wide">
+								<p className="text-primary text-lg font-semibold tracking-wide uppercase">
 									Customer spotlight
 								</p>
-								<p className="font-semibold text-2xl">
-									“Thorbis migrated our multi-branch ServiceTitan deployment in
-									42 days. Dispatchers were live day one, and AI booking added
-									11% more jobs in the first month.”
+								<p className="text-2xl font-semibold">
+									“Thorbis migrated our multi-branch ServiceTitan deployment in 42 days. Dispatchers
+									were live day one, and AI booking added 11% more jobs in the first month.”
 								</p>
-								<p className="text-muted-foreground">
-									— Leslie Warren, COO, Elevate Mechanical
-								</p>
+								<p className="text-muted-foreground">— Leslie Warren, COO, Elevate Mechanical</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-xl">
-									Implementation KPI targets
-								</CardTitle>
+								<CardTitle className="text-xl">Implementation KPI targets</CardTitle>
 							</CardHeader>
-							<CardContent className="space-y-3 text-muted-foreground text-sm">
+							<CardContent className="text-muted-foreground space-y-3 text-sm">
 								<p>✔️ Go-live readiness checklist completed within 30 days</p>
 								<p>✔️ Dispatch adoption {">"} 90% within first week</p>
 								<p>✔️ AI assistant handling 40% of incoming calls by week six</p>
-								<p>
-									✔️ Customer portal activation rate surpassing 60% after
-									training campaign
-								</p>
+								<p>✔️ Customer portal activation rate surpassing 60% after training campaign</p>
 							</CardContent>
 						</Card>
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-6 text-center">
-						<h2 className="font-semibold text-3xl">Implementation FAQ</h2>
+						<h2 className="text-3xl font-semibold">Implementation FAQ</h2>
 						<div className="grid gap-4 md:grid-cols-2">
 							{FAQS.map((faq) => (
 								<Card key={faq.question}>

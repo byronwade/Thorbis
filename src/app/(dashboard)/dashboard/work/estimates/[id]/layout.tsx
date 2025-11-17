@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function EstimatesDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function EstimatesDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -31,9 +27,7 @@ export default function EstimatesDetailLayout({
 		},
 		toolbar: {
 			show: true,
-			back: (
-				<DetailBackButton href="/dashboard/work/estimates" label="Estimates" />
-			),
+			back: <DetailBackButton href="/dashboard/work/estimates" label="Estimates" />,
 			// TODO: Create EstimateDetailToolbar component
 			// actions: <EstimateDetailToolbar />,
 		},

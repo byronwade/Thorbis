@@ -54,16 +54,12 @@ export function DetailPageShell({
 			{statsBar}
 			{customHeader ?? (header ? <Header section={header} /> : null)}
 
-			{resolvedMetadata.length > 0 ? (
-				<MetadataGrid items={resolvedMetadata} />
-			) : null}
+			{resolvedMetadata.length > 0 ? <MetadataGrid items={resolvedMetadata} /> : null}
 
 			{beforeContent}
 
 			{children ? (
-				<div className={cn("flex flex-col gap-4", contentGapClassName)}>
-					{children}
-				</div>
+				<div className={cn("flex flex-col gap-4", contentGapClassName)}>{children}</div>
 			) : null}
 
 			{afterContent}
@@ -103,14 +99,8 @@ export function DetailPageSurface({
 	variant = "default",
 }: DetailPageSurfaceProps) {
 	return (
-		<section
-			className={cn("rounded-xl", SURFACE_VARIANT_CLASSES[variant], className)}
-		>
-			<div
-				className={cn("flex flex-col gap-4", SURFACE_PADDING_CLASSES[padding])}
-			>
-				{children}
-			</div>
+		<section className={cn("rounded-xl", SURFACE_VARIANT_CLASSES[variant], className)}>
+			<div className={cn("flex flex-col gap-4", SURFACE_PADDING_CLASSES[padding])}>{children}</div>
 		</section>
 	);
 }
@@ -129,9 +119,7 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
 
 	return (
 		<header className="flex flex-col gap-4 lg:gap-6">
-			{breadcrumbs ? (
-				<div className="text-muted-foreground text-sm">{breadcrumbs}</div>
-			) : null}
+			{breadcrumbs ? <div className="text-muted-foreground text-sm">{breadcrumbs}</div> : null}
 
 			<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
 				<div className="flex flex-col gap-3">
@@ -139,23 +127,19 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
 								{leadingVisual ? (
-									<div className="flex items-center justify-center">
-										{leadingVisual}
-									</div>
+									<div className="flex items-center justify-center">{leadingVisual}</div>
 								) : null}
 								<div className="flex flex-col gap-2">
 									{renderTitle(title)}
 									{subtitle ? (
-										<div className="max-w-3xl text-muted-foreground text-sm md:text-base">
+										<div className="text-muted-foreground max-w-3xl text-sm md:text-base">
 											{subtitle}
 										</div>
 									) : null}
 								</div>
 							</div>
 							{description ? (
-								<div className="max-w-3xl text-muted-foreground text-sm">
-									{description}
-								</div>
+								<div className="text-muted-foreground max-w-3xl text-sm">{description}</div>
 							) : null}
 						</div>
 					</div>
@@ -209,23 +193,19 @@ function Header({ section }: { section: DetailPageHeaderConfig }) {
 
 function MetadataGrid({ items }: { items: DetailPageMetadataItem[] }) {
 	return (
-		<section className="grid @xl-page:grid-cols-4 grid-cols-1 gap-4 md:grid-cols-2">
+		<section className="@xl-page:grid-cols-4 grid grid-cols-1 gap-4 md:grid-cols-2">
 			{items.map((item, index) => (
 				<div
-					className="flex flex-col gap-1 rounded-lg border border-border/50 bg-card/60 px-4 py-3 shadow-sm"
+					className="border-border/50 bg-card/60 flex flex-col gap-1 rounded-lg border px-4 py-3 shadow-sm"
 					key={index}
 				>
-					<span className="flex items-center gap-2 font-medium text-muted-foreground text-xs uppercase tracking-wide">
+					<span className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wide uppercase">
 						{item.icon}
 						{item.label}
 					</span>
-					<div className="font-semibold text-foreground text-sm">
-						{item.value}
-					</div>
+					<div className="text-foreground text-sm font-semibold">{item.value}</div>
 					{item.helperText ? (
-						<span className="text-muted-foreground text-xs">
-							{item.helperText}
-						</span>
+						<span className="text-muted-foreground text-xs">{item.helperText}</span>
 					) : null}
 				</div>
 			))}
@@ -233,13 +213,9 @@ function MetadataGrid({ items }: { items: DetailPageMetadataItem[] }) {
 	);
 }
 
-function hasAnyActions(
-	actions?: ReactNode[] | null,
-	secondaryActions?: ReactNode[] | null,
-) {
+function hasAnyActions(actions?: ReactNode[] | null, secondaryActions?: ReactNode[] | null) {
 	return Boolean(
-		(actions && actions.length > 0) ||
-			(secondaryActions && secondaryActions.length > 0),
+		(actions && actions.length > 0) || (secondaryActions && secondaryActions.length > 0)
 	);
 }
 
@@ -249,16 +225,8 @@ function renderTitle(title?: ReactNode) {
 	}
 
 	if (typeof title === "string") {
-		return (
-			<h1 className="font-semibold text-2xl tracking-tight md:text-3xl">
-				{title}
-			</h1>
-		);
+		return <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</h1>;
 	}
 
-	return (
-		<div className="font-semibold text-2xl tracking-tight md:text-3xl">
-			{title}
-		</div>
-	);
+	return <div className="text-2xl font-semibold tracking-tight md:text-3xl">{title}</div>;
 }

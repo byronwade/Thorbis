@@ -30,11 +30,7 @@ type EntityType =
 	| "vendor"
 	| "material";
 
-export function useEntityAttachments(
-	entityType: EntityType,
-	entityId: string,
-	enabled = true,
-) {
+export function useEntityAttachments(entityType: EntityType, entityId: string, enabled = true) {
 	return useQuery({
 		queryKey: ["entity-attachments", entityType, entityId],
 		queryFn: async () => {
@@ -45,7 +41,7 @@ export function useEntityAttachments(
 				.select("*")
 				.eq("entity_type", entityType)
 				.eq("entity_id", entityId)
-				.order("created_at", { ascending: false});
+				.order("created_at", { ascending: false });
 
 			if (error) throw error;
 			return data;

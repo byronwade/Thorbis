@@ -19,14 +19,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-	type ArchivableEntity,
-	useArchiveStore,
-} from "@/lib/stores/archive-store";
-import {
-	ARCHIVE_FILTER_OPTIONS,
-	type ArchiveFilter,
-} from "@/lib/utils/archive";
+import { type ArchivableEntity, useArchiveStore } from "@/lib/stores/archive-store";
+import { ARCHIVE_FILTER_OPTIONS, type ArchiveFilter } from "@/lib/utils/archive";
 
 type ArchiveFilterSelectProps = {
 	entity: ArchivableEntity;
@@ -48,9 +42,7 @@ export function ArchiveFilterSelect({
 		setFilter(entity, newFilter);
 	};
 
-	const getCountForFilter = (
-		filterValue: ArchiveFilter,
-	): number | undefined => {
+	const getCountForFilter = (filterValue: ArchiveFilter): number | undefined => {
 		switch (filterValue) {
 			case "active":
 				return activeCount;
@@ -64,8 +56,7 @@ export function ArchiveFilterSelect({
 	};
 
 	const currentLabel =
-		ARCHIVE_FILTER_OPTIONS.find((opt) => opt.value === filter)?.label ||
-		"Active Only";
+		ARCHIVE_FILTER_OPTIONS.find((opt) => opt.value === filter)?.label || "Active Only";
 
 	return (
 		<DropdownMenu>
@@ -90,9 +81,7 @@ export function ArchiveFilterSelect({
 						>
 							<div className="flex items-center gap-2">
 								{isSelected && <Check className="size-4" />}
-								<span className={isSelected ? "font-medium" : ""}>
-									{option.label}
-								</span>
+								<span className={isSelected ? "font-medium" : ""}>{option.label}</span>
 							</div>
 							{count !== undefined && (
 								<span className="text-muted-foreground text-xs">{count}</span>

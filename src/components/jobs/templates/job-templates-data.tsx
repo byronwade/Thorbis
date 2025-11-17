@@ -5,13 +5,7 @@
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export async function JobTemplatesData() {
 	// Future: Fetch real job templates
@@ -70,19 +64,14 @@ export async function JobTemplatesData() {
 			<Card className="col-span-4">
 				<CardHeader>
 					<CardTitle>Job Templates</CardTitle>
-					<CardDescription>
-						Available job templates and service packages
-					</CardDescription>
+					<CardDescription>Available job templates and service packages</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						{sampleTemplates.map((template, index) => (
-							<div
-								className="flex items-center gap-4 rounded-lg border p-4"
-								key={index}
-							>
-								<div className="flex size-12 items-center justify-center rounded-full bg-accent">
-									<span className="font-medium text-sm">
+							<div className="flex items-center gap-4 rounded-lg border p-4" key={index}>
+								<div className="bg-accent flex size-12 items-center justify-center rounded-full">
+									<span className="text-sm font-medium">
 										{template.name
 											.split(" ")
 											.map((n) => n[0])
@@ -91,11 +80,9 @@ export async function JobTemplatesData() {
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center gap-2">
-										<p className="font-medium text-sm leading-none">
-											{template.name}
-										</p>
+										<p className="text-sm leading-none font-medium">{template.name}</p>
 										<span
-											className={`inline-flex items-center rounded-full px-2 py-1 font-medium text-xs ${
+											className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
 												template.status === "Active"
 													? "bg-green-100 text-green-800"
 													: template.status === "Draft"
@@ -114,7 +101,7 @@ export async function JobTemplatesData() {
 									</p>
 								</div>
 								<div className="text-right">
-									<p className="font-medium text-sm">{template.usage}</p>
+									<p className="text-sm font-medium">{template.usage}</p>
 									<p className="text-muted-foreground text-xs">times used</p>
 								</div>
 							</div>
@@ -126,68 +113,58 @@ export async function JobTemplatesData() {
 			<Card className="col-span-3">
 				<CardHeader>
 					<CardTitle>Template Analytics</CardTitle>
-					<CardDescription>
-						Template usage and performance metrics
-					</CardDescription>
+					<CardDescription>Template usage and performance metrics</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Most Popular</p>
-								<p className="text-muted-foreground text-xs">
-									HVAC Maintenance
-								</p>
+								<p className="text-sm font-medium">Most Popular</p>
+								<p className="text-muted-foreground text-xs">HVAC Maintenance</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">45</p>
+								<p className="text-sm font-bold">45</p>
 								<p className="text-muted-foreground text-xs">uses this month</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Average Duration</p>
+								<p className="text-sm font-medium">Average Duration</p>
 								<p className="text-muted-foreground text-xs">Per template</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">2.8h</p>
-								<p className="text-muted-foreground text-xs">
-									across all templates
-								</p>
+								<p className="text-sm font-bold">2.8h</p>
+								<p className="text-muted-foreground text-xs">across all templates</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Template Efficiency</p>
+								<p className="text-sm font-medium">Template Efficiency</p>
 								<p className="text-muted-foreground text-xs">Time saved</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">78%</p>
+								<p className="text-sm font-bold">78%</p>
 								<p className="text-muted-foreground text-xs">faster setup</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">New Templates</p>
+								<p className="text-sm font-medium">New Templates</p>
 								<p className="text-muted-foreground text-xs">This month</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">3</p>
-								<p className="text-muted-foreground text-xs">
-									+1 from last month
-								</p>
+								<p className="text-sm font-bold">3</p>
+								<p className="text-muted-foreground text-xs">+1 from last month</p>
 							</div>
 						</div>
-						<div className="flex items-center justify-between rounded-lg bg-accent p-3">
+						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
-								<p className="font-medium text-sm">Template Accuracy</p>
+								<p className="text-sm font-medium">Template Accuracy</p>
 								<p className="text-muted-foreground text-xs">Success rate</p>
 							</div>
 							<div className="text-right">
-								<p className="font-bold text-sm">96%</p>
-								<p className="text-muted-foreground text-xs">
-									+2% from last month
-								</p>
+								<p className="text-sm font-bold">96%</p>
+								<p className="text-muted-foreground text-xs">+2% from last month</p>
 							</div>
 						</div>
 					</div>

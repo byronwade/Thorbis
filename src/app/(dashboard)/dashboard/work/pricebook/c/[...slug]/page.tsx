@@ -20,20 +20,14 @@ import { getCategoryTree } from "@/lib/pricebook/category-tree-server";
 import { getCategoriesAtPath } from "@/lib/pricebook/category-tree-shared";
 import { createClient } from "@/lib/supabase/server";
 
-export default async function CategoryPage({
-	params,
-}: {
-	params: Promise<{ slug: string[] }>;
-}) {
+export default async function CategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
 	const { slug } = await params;
 
 	return (
 		<Suspense
 			fallback={
 				<div className="flex h-full items-center justify-center p-4">
-					<div className="text-muted-foreground text-sm">
-						Loading price book category...
-					</div>
+					<div className="text-muted-foreground text-sm">Loading price book category...</div>
 				</div>
 			}
 		>
@@ -54,7 +48,7 @@ async function CategoryPageContent({ slug }: { slug: string[] }) {
 		segment
 			.split("-")
 			.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-			.join(" "),
+			.join(" ")
 	);
 
 	// Build the category path string (e.g., "HVAC > Heating > Furnaces")
@@ -94,11 +88,7 @@ async function CategoryPageContent({ slug }: { slug: string[] }) {
 			<CategoryNavigationSync categoryPath={categoryPath} />
 
 			{/* Server component renders content with subcategories */}
-			<DrillDownView
-				categories={subcategories}
-				items={items || []}
-				itemsPerPage={50}
-			/>
+			<DrillDownView categories={subcategories} items={items || []} itemsPerPage={50} />
 		</>
 	);
 }

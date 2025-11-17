@@ -143,7 +143,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 	// For beta and coming-soon, show badge
 	if (status === "beta") {
 		return (
-			<span className="-top-1.5 absolute right-0 rounded bg-blue-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
+			<span className="absolute -top-1.5 right-0 rounded bg-blue-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white uppercase shadow-sm">
 				Beta
 			</span>
 		);
@@ -151,7 +151,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 
 	if (status === "coming-soon") {
 		return (
-			<span className="-top-1.5 absolute right-0 whitespace-nowrap rounded bg-purple-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
+			<span className="absolute -top-1.5 right-0 rounded bg-purple-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide whitespace-nowrap text-white uppercase shadow-sm">
 				Soon
 			</span>
 		);
@@ -160,7 +160,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 	// Badge for "new" and "updated"
 	if (status === "new") {
 		return (
-			<span className="-top-1.5 absolute right-0 rounded bg-green-500 px-1 py-0.5 font-semibold text-[0.5rem] text-white uppercase leading-none tracking-wide shadow-sm">
+			<span className="absolute -top-1.5 right-0 rounded bg-green-500 px-1 py-0.5 text-[0.5rem] leading-none font-semibold tracking-wide text-white uppercase shadow-sm">
 				New
 			</span>
 		);
@@ -168,7 +168,7 @@ function StatusIndicator({ status }: { status?: NavItemStatus }) {
 
 	return (
 		<span
-			className="-top-1 absolute right-0 size-2 rounded-full bg-blue-500 shadow-sm"
+			className="absolute -top-1 right-0 size-2 rounded-full bg-blue-500 shadow-sm"
 			title="Updated"
 		/>
 	);
@@ -195,7 +195,7 @@ function MobileStatusBadge({ status }: { status?: NavItemStatus }) {
 
 	return (
 		<span
-			className={`inline-flex items-center rounded-full px-2 py-0.5 font-semibold text-[0.65rem] uppercase tracking-wide ${styles[status]}`}
+			className={`inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide uppercase ${styles[status]}`}
 		>
 			{labels[status]}
 		</span>
@@ -232,10 +232,7 @@ export function AppHeaderClient({
 	// Close mobile menu when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				mobileMenuRef.current &&
-				!mobileMenuRef.current.contains(event.target as Node)
-			) {
+			if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
 				closeMobileMenu();
 			}
 		};
@@ -255,35 +252,25 @@ export function AppHeaderClient({
 	}
 
 	return (
-		<header className="safe-top sticky top-0 z-50 w-full bg-header-bg">
+		<header className="safe-top bg-header-bg sticky top-0 z-50 w-full">
 			<div className="flex h-14 items-center gap-2 px-4 md:px-6">
 				{/* Mobile menu button */}
 				<button
-					className="touch-target no-select native-transition hover-gradient flex items-center justify-center rounded-md border border-transparent outline-none hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
+					className="touch-target no-select native-transition hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex items-center justify-center rounded-md border border-transparent outline-none focus-visible:ring-2 active:scale-95 disabled:pointer-events-none disabled:opacity-50 lg:hidden"
 					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 					type="button"
 				>
-					{isMobileMenuOpen ? (
-						<X className="size-4" />
-					) : (
-						<Menu className="size-4" />
-					)}
+					{isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
 					<span className="sr-only">Toggle Menu</span>
 				</button>
 
 				{/* Logo */}
 				<Link
-					className="hidden size-8 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 lg:flex dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0"
+					className="hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:hover:bg-accent/50 hidden size-8 shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 lg:flex [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
 					data-slot="button"
 					href="/"
 				>
-					<Image
-						alt="Thorbis"
-						className="size-5"
-						height={20}
-						src="/ThorbisLogo.webp"
-						width={20}
-					/>
+					<Image alt="Thorbis" className="size-5" height={20} src="/ThorbisLogo.webp" width={20} />
 					<span className="sr-only">Thorbis</span>
 				</Link>
 
@@ -299,9 +286,9 @@ export function AppHeaderClient({
 							return (
 								<div className="relative" key={item.href}>
 									<Link
-										className={`relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${
+										className={`focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 ${
 											isActive
-												? "bg-primary/15 text-primary shadow-sm dark:bg-primary/25"
+												? "bg-primary/15 text-primary dark:bg-primary/25 shadow-sm"
 												: "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 										}`}
 										data-slot="button"
@@ -317,9 +304,9 @@ export function AppHeaderClient({
 						return (
 							<div className="relative" key={item.href}>
 								<Link
-									className={`relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-sm outline-none transition-all duration-150 focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 ${
+									className={`focus-visible:ring-ring/50 relative inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-md px-3 text-sm font-medium whitespace-nowrap transition-all duration-150 outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 ${
 										isActive
-											? "bg-primary/15 text-primary shadow-sm dark:bg-primary/25"
+											? "bg-primary/15 text-primary dark:bg-primary/25 shadow-sm"
 											: "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
 									}`}
 									data-slot="button"
@@ -339,7 +326,7 @@ export function AppHeaderClient({
 						{/* Overlay */}
 						<button
 							aria-label="Close mobile menu"
-							className={`fixed inset-0 z-40 bg-foreground/60 backdrop-blur-sm duration-300 lg:hidden dark:bg-background/80 ${
+							className={`bg-foreground/60 dark:bg-background/80 fixed inset-0 z-40 backdrop-blur-sm duration-300 lg:hidden ${
 								isClosing ? "fade-out animate-out" : "fade-in animate-in"
 							}`}
 							onClick={closeMobileMenu}
@@ -348,18 +335,16 @@ export function AppHeaderClient({
 
 						{/* Sidebar Sheet */}
 						<div
-							className={`safe-top safe-bottom safe-left fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] bg-background shadow-2xl duration-300 lg:hidden ${
-								isClosing
-									? "slide-out-to-left animate-out"
-									: "slide-in-from-left animate-in"
+							className={`safe-top safe-bottom safe-left bg-background fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] shadow-2xl duration-300 lg:hidden ${
+								isClosing ? "slide-out-to-left animate-out" : "slide-in-from-left animate-in"
 							}`}
 							ref={mobileMenuRef}
 						>
 							{/* Header with close button */}
 							<div className="flex items-center justify-between border-b p-4">
-								<h2 className="font-semibold text-lg">Navigation</h2>
+								<h2 className="text-lg font-semibold">Navigation</h2>
 								<button
-									className="touch-target no-select native-transition flex items-center justify-center rounded-md hover:bg-accent active:scale-95"
+									className="touch-target no-select native-transition hover:bg-accent flex items-center justify-center rounded-md active:scale-95"
 									onClick={closeMobileMenu}
 									type="button"
 								>
@@ -372,7 +357,7 @@ export function AppHeaderClient({
 								<div className="flex flex-col space-y-1 p-4">
 									{/* AI Section */}
 									<div className="mb-4">
-										<h3 className="mb-2 px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+										<h3 className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
 											AI Assistant
 										</h3>
 										{navigationItems
@@ -384,7 +369,7 @@ export function AppHeaderClient({
 														: pathname?.startsWith(item.href);
 												return (
 													<Link
-														className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${
+														className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
 															isActive
 																? "bg-primary/15 text-primary shadow-sm"
 																: "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
@@ -397,9 +382,7 @@ export function AppHeaderClient({
 															<div
 																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
 															>
-																<span
-																	className={`font-bold text-xs ${item.mobileIconColor}`}
-																>
+																<span className={`text-xs font-bold ${item.mobileIconColor}`}>
 																	{item.mobileIcon}
 																</span>
 															</div>
@@ -413,7 +396,7 @@ export function AppHeaderClient({
 
 									{/* Main Navigation */}
 									<div className="mb-4">
-										<h3 className="mb-2 px-2 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+										<h3 className="text-muted-foreground mb-2 px-2 text-xs font-semibold tracking-wider uppercase">
 											Main Navigation
 										</h3>
 										{navigationItems
@@ -425,7 +408,7 @@ export function AppHeaderClient({
 														: pathname?.startsWith(item.href);
 												return (
 													<Link
-														className={`group flex items-center justify-between rounded-lg px-4 py-3 font-medium text-sm transition-all duration-200 ${
+														className={`group flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
 															isActive
 																? "bg-primary/15 text-primary shadow-sm"
 																: "text-foreground hover:bg-muted/70 hover:text-foreground hover:shadow-sm"
@@ -438,9 +421,7 @@ export function AppHeaderClient({
 															<div
 																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
 															>
-																<span
-																	className={`font-bold text-xs ${item.mobileIconColor}`}
-																>
+																<span className={`text-xs font-bold ${item.mobileIconColor}`}>
 																	{item.mobileIcon}
 																</span>
 															</div>
@@ -463,15 +444,12 @@ export function AppHeaderClient({
 					<QuickAddDropdown />
 
 					{/* Phone/Calls */}
-					<PhoneDropdown
-						companyId={activeCompanyId || ""}
-						companyPhones={companyPhones}
-					/>
+					<PhoneDropdown companyId={activeCompanyId || ""} companyPhones={companyPhones} />
 
 					{/* TV Display */}
 					<Link href="/dashboard/tv" title="TV Display">
 						<button
-							className="hover-gradient flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+							className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 							type="button"
 						>
 							<Tv className="size-4" />
@@ -501,8 +479,8 @@ export function AppHeaderClient({
 										onboardingComplete: company.onboardingComplete,
 										hasPayment: company.hasPayment,
 									},
-								]),
-							).values(),
+								])
+							).values()
 						)}
 						user={{
 							name: userProfile.name,

@@ -1,32 +1,18 @@
 "use client";
 
-import {
-	ArrowUpRight,
-	BriefcaseBusiness,
-	CalendarDays,
-	MapPin,
-} from "lucide-react";
+import { ArrowUpRight, BriefcaseBusiness, CalendarDays, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type {
-	KanbanItemBase,
-	KanbanMoveEvent,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency, formatDate, formatDateRange } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-type JobStatus =
-	| "quoted"
-	| "scheduled"
-	| "in_progress"
-	| "on_hold"
-	| "completed"
-	| "cancelled";
+type JobStatus = "quoted" | "scheduled" | "in_progress" | "on_hold" | "completed" | "cancelled";
 
 type RelatedCustomer = {
 	first_name?: string | null;
@@ -66,9 +52,7 @@ const JOB_STATUS_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#EF4444" },
 ];
 
-const COLUMN_LABEL = new Map(
-	JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]),
-);
+const COLUMN_LABEL = new Map(JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]));
 const DEFAULT_STATUS: JobStatus = "quoted";
 
 function resolveStatus(status: Job["status"] | null | undefined): JobStatus {
@@ -122,10 +106,7 @@ function getPropertySummary(job: ExtendedJob) {
 }
 
 function PriorityBadge({ priority }: { priority: Job["priority"] }) {
-	const config: Record<
-		NonNullable<Job["priority"]>,
-		{ label: string; className: string }
-	> = {
+	const config: Record<NonNullable<Job["priority"]>, { label: string; className: string }> = {
 		low: {
 			label: "Low",
 			className:
@@ -152,7 +133,7 @@ function PriorityBadge({ priority }: { priority: Job["priority"] }) {
 	const { label, className } = config[key];
 
 	return (
-		<Badge className={cn("font-medium text-xs", className)} variant="outline">
+		<Badge className={cn("text-xs font-medium", className)} variant="outline">
 			{label}
 		</Badge>
 	);
@@ -169,12 +150,12 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
 					<Link
-						className="block font-semibold text-muted-foreground text-xs uppercase tracking-wide hover:text-primary"
+						className="text-muted-foreground hover:text-primary block text-xs font-semibold tracking-wide uppercase"
 						href={`/dashboard/work/${job.id}`}
 					>
 						{String(job.jobNumber ?? "—")}
 					</Link>
-					<h3 className="font-semibold text-foreground text-sm leading-snug">
+					<h3 className="text-foreground text-sm leading-snug font-semibold">
 						{job.title ?? "Untitled Job"}
 					</h3>
 					<div className="flex flex-wrap items-center gap-2">
@@ -186,7 +167,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 						<PriorityBadge priority={(job.priority ?? "medium") as string} />
 						{typeof job.aiPriorityScore === "number" && (
 							<Badge
-								className="border-primary/40 border-dashed bg-primary/5 text-primary"
+								className="border-primary/40 bg-primary/5 text-primary border-dashed"
 								variant="outline"
 							>
 								AI Score {job.aiPriorityScore}
@@ -194,41 +175,37 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 						)}
 					</div>
 				</div>
-				<span className="font-semibold text-foreground text-sm">
+				<span className="text-foreground text-sm font-semibold">
 					{formatCurrency(job.totalAmount)}
 				</span>
 			</div>
 
 			{job.description && (
-				<p className="line-clamp-3 text-muted-foreground text-xs">
-					{job.description}
-				</p>
+				<p className="text-muted-foreground line-clamp-3 text-xs">{job.description}</p>
 			)}
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<BriefcaseBusiness className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{getCustomerName(job)}
-					</span>
+					<BriefcaseBusiness className="text-primary size-4" />
+					<span className="text-foreground font-medium">{getCustomerName(job)}</span>
 				</div>
 
 				{propertySummary && (
 					<div className="flex items-center gap-2">
-						<MapPin className="size-4 text-primary" />
+						<MapPin className="text-primary size-4" />
 						<span>{propertySummary}</span>
 					</div>
 				)}
 
 				{scheduledRange && (
 					<div className="flex items-center gap-2">
-						<CalendarDays className="size-4 text-primary" />
+						<CalendarDays className="text-primary size-4" />
 						<span>{scheduledRange}</span>
 					</div>
 				)}
 			</div>
 
-			<div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-[11px] tracking-wide">
 				<span>Updated {formatDate(job.updatedAt, { preset: "short" })}</span>
 				<span className="uppercase">
 					{columnId ? (COLUMN_LABEL.get(columnId) ?? columnId) : "—"}
@@ -236,12 +213,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button
-					asChild
-					className="gap-1 text-primary text-xs"
-					size="sm"
-					variant="ghost"
-				>
+				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
 					<Link href={`/dashboard/work/${job.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
@@ -278,7 +250,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 				}
 
 				toast.success(
-					`Job ${item.entity.jobNumber} moved to ${COLUMN_LABEL.get(toColumnId as JobStatus)}`,
+					`Job ${item.entity.jobNumber} moved to ${COLUMN_LABEL.get(toColumnId as JobStatus)}`
 				);
 			})();
 		});
@@ -288,10 +260,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 		<EntityKanban<ExtendedJob, JobStatus>
 			calculateColumnMeta={(columnId, items) => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce(
-					(sum, item) => sum + (item.entity.totalAmount ?? 0),
-					0,
-				);
+				const total = columnItems.reduce((sum, item) => sum + (item.entity.totalAmount ?? 0), 0);
 				return { count: columnItems.length, total };
 			}}
 			columns={JOB_STATUS_COLUMNS}
@@ -306,7 +275,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 			onItemMove={handleItemMove}
 			renderCard={(item) => <JobCardContent item={item as JobsKanbanItem} />}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-md border p-3 shadow-lg">
 					<JobCardContent item={item as JobsKanbanItem} />
 				</div>
 			)}

@@ -66,9 +66,7 @@ export function JobsTable({
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
-		new Set(),
-	);
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
 
 	// Filter jobs based on archive status
 	const filteredJobs = jobs.filter((job) => {
@@ -91,7 +89,7 @@ export function JobsTable({
 			shrink: true,
 			render: (job) => (
 				<Link
-					className="font-medium text-foreground text-sm transition-colors hover:text-primary hover:underline"
+					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/${job.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
@@ -109,11 +107,11 @@ export function JobsTable({
 					href={`/dashboard/work/${job.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate font-medium text-sm leading-tight hover:underline">
+					<div className="truncate text-sm leading-tight font-medium hover:underline">
 						{job.title ?? "Untitled Job"}
 					</div>
 					{job.description ? (
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+						<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
 							{job.description}
 						</div>
 					) : null}
@@ -126,9 +124,7 @@ export function JobsTable({
 			width: "w-32",
 			shrink: true,
 			hideable: false, // CRITICAL: Status essential for workflow management
-			render: (job) => (
-				<JobStatusBadge status={(job.status ?? "quoted") as string} />
-			),
+			render: (job) => <JobStatusBadge status={(job.status ?? "quoted") as string} />,
 		},
 		{
 			key: "priority",
@@ -137,9 +133,7 @@ export function JobsTable({
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (job) => (
-				<PriorityBadge priority={(job.priority ?? "medium") as string} />
-			),
+			render: (job) => <PriorityBadge priority={(job.priority ?? "medium") as string} />,
 		},
 		{
 			key: "scheduledStart",
@@ -245,9 +239,7 @@ export function JobsTable({
 			(job.description?.toLowerCase() || "").includes(searchStr) ||
 			(job.aiServiceType?.toLowerCase() || "").includes(searchStr) ||
 			aiTags.some((tag: string) => tag.toLowerCase().includes(searchStr)) ||
-			aiCategories.some((cat: string) =>
-				cat.toLowerCase().includes(searchStr),
-			) ||
+			aiCategories.some((cat: string) => cat.toLowerCase().includes(searchStr)) ||
 			aiEquipment.some((eq: string) => eq.toLowerCase().includes(searchStr))
 		);
 	};
@@ -282,7 +274,7 @@ export function JobsTable({
 						Add Job
 					</Button>
 				}
-				emptyIcon={<Briefcase className="h-8 w-8 text-muted-foreground" />}
+				emptyIcon={<Briefcase className="text-muted-foreground h-8 w-8" />}
 				emptyMessage="No jobs found"
 				enableSelection={true}
 				entity="jobs"
@@ -301,10 +293,7 @@ export function JobsTable({
 			/>
 
 			{/* Archive Single Job Dialog */}
-			<AlertDialog
-				onOpenChange={setIsArchiveDialogOpen}
-				open={isArchiveDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Job?</AlertDialogTitle>
@@ -336,12 +325,9 @@ export function JobsTable({
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>
-							Archive {selectedItemIds.size} Job(s)?
-						</AlertDialogTitle>
+						<AlertDialogTitle>Archive {selectedItemIds.size} Job(s)?</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} job(s) will be archived and can be restored
-							within 90 days.
+							{selectedItemIds.size} job(s) will be archived and can be restored within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

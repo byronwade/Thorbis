@@ -68,9 +68,7 @@ export function SMSDialog({
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [message, setMessage] = useState("");
-	const [selectedPhone, setSelectedPhone] = useState(
-		companyPhones[0]?.number || "",
-	);
+	const [selectedPhone, setSelectedPhone] = useState(companyPhones[0]?.number || "");
 
 	const charCount = message.length;
 	const maxChars = 1600; // SMS max length (multiple segments)
@@ -120,16 +118,14 @@ export function SMSDialog({
 						<MessageSquare className="size-5" />
 						Send Text Message
 					</DialogTitle>
-					<DialogDescription>
-						Send an SMS message to {customerName}
-					</DialogDescription>
+					<DialogDescription>Send an SMS message to {customerName}</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
 					{/* Recipient Info */}
-					<div className="rounded-lg border bg-muted/50 p-3">
+					<div className="bg-muted/50 rounded-lg border p-3">
 						<div className="flex items-center gap-3">
-							<div className="flex size-10 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-sm">
+							<div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full text-sm font-semibold">
 								{customerName
 									.split(" ")
 									.map((n) => n[0])
@@ -137,10 +133,8 @@ export function SMSDialog({
 									.toUpperCase()}
 							</div>
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-sm">{customerName}</div>
-								<div className="text-muted-foreground text-xs">
-									{customerPhone}
-								</div>
+								<div className="text-sm font-medium">{customerName}</div>
+								<div className="text-muted-foreground text-xs">{customerPhone}</div>
 							</div>
 						</div>
 					</div>
@@ -163,11 +157,11 @@ export function SMSDialog({
 							</Select>
 						</div>
 					) : (
-						<div className="rounded-lg border border-warning bg-warning p-4 text-center dark:border-warning dark:bg-warning">
-							<p className="text-sm text-warning dark:text-warning">
+						<div className="border-warning bg-warning dark:border-warning dark:bg-warning rounded-lg border p-4 text-center">
+							<p className="text-warning dark:text-warning text-sm">
 								No company phone numbers configured.
 							</p>
-							<p className="mt-1 text-warning text-xs dark:text-warning">
+							<p className="text-warning dark:text-warning mt-1 text-xs">
 								Purchase or port a phone number from Settings → Phone Numbers
 							</p>
 						</div>
@@ -183,7 +177,7 @@ export function SMSDialog({
 							placeholder="Type your message here..."
 							value={message}
 						/>
-						<div className="flex items-center justify-between text-muted-foreground text-xs">
+						<div className="text-muted-foreground flex items-center justify-between text-xs">
 							<span>
 								{charCount} / {maxChars} characters
 							</span>
@@ -196,20 +190,11 @@ export function SMSDialog({
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-2">
-					<Button
-						disabled={isPending}
-						onClick={() => onOpenChange(false)}
-						variant="outline"
-					>
+					<Button disabled={isPending} onClick={() => onOpenChange(false)} variant="outline">
 						Cancel
 					</Button>
 					<Button
-						disabled={
-							isPending ||
-							!message.trim() ||
-							!selectedPhone ||
-							companyPhones.length === 0
-						}
+						disabled={isPending || !message.trim() || !selectedPhone || companyPhones.length === 0}
 						onClick={handleSend}
 					>
 						<Send className="mr-2 size-4" />

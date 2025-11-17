@@ -3,13 +3,7 @@
 import { MessageSquare, Phone, Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -55,9 +49,7 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Voicemail</Label>
-							<p className="text-muted-foreground text-sm">
-								Enable voicemail for missed calls
-							</p>
+							<p className="text-muted-foreground text-sm">Enable voicemail for missed calls</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -76,9 +68,7 @@ export function TwilioSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Enable SMS</Label>
-							<p className="text-muted-foreground text-sm">
-								Send and receive text messages
-							</p>
+							<p className="text-muted-foreground text-sm">Send and receive text messages</p>
 						</div>
 						<Switch defaultChecked />
 					</div>

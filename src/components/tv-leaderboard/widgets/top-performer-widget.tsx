@@ -59,7 +59,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 				<ShowAt stage="full">
 					<div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-2.5 overflow-hidden text-center">
 						{/* Avatar */}
-						<div className="flex size-14 shrink-0 items-center justify-center rounded-full border-3 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-lg text-warning">
+						<div className="border-warning/30 text-warning flex size-14 shrink-0 items-center justify-center rounded-full border-3 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 text-lg font-bold">
 							{data.avatar}
 						</div>
 
@@ -68,10 +68,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							<ResponsiveText className="truncate font-bold" variant="title">
 								{data.name}
 							</ResponsiveText>
-							<ResponsiveText
-								className="text-muted-foreground"
-								variant="caption"
-							>
+							<ResponsiveText className="text-muted-foreground" variant="caption">
 								Rank #1
 							</ResponsiveText>
 						</div>
@@ -79,11 +76,8 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						{/* Metrics grid - more compact */}
 						<div className="grid w-full grid-cols-3 gap-1.5 overflow-hidden">
 							{/* Revenue */}
-							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									Revenue
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -99,11 +93,8 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							</div>
 
 							{/* Jobs */}
-							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									Jobs
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -112,11 +103,8 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							</div>
 
 							{/* Rating */}
-							<div className="min-h-0 overflow-hidden rounded-lg bg-background/50 p-1.5">
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									Rating
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -132,17 +120,14 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 					<div className="flex min-h-0 flex-1 flex-col justify-center gap-2 overflow-hidden">
 						{/* Avatar + Name */}
 						<div className="flex items-center gap-2 overflow-hidden">
-							<div className="flex size-10 shrink-0 items-center justify-center rounded-full border-2 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-sm text-warning">
+							<div className="border-warning/30 text-warning flex size-10 shrink-0 items-center justify-center rounded-full border-2 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 text-sm font-bold">
 								{data.avatar}
 							</div>
 							<div className="min-w-0 flex-1 overflow-hidden">
 								<ResponsiveText className="truncate font-bold" variant="body">
 									{data.name}
 								</ResponsiveText>
-								<ResponsiveText
-									className="text-muted-foreground"
-									variant="caption"
-								>
+								<ResponsiveText className="text-muted-foreground" variant="caption">
 									#1
 								</ResponsiveText>
 							</div>
@@ -152,7 +137,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						<div className="space-y-1 overflow-hidden">
 							<div className="flex items-center justify-between gap-2 overflow-hidden">
 								<div className="flex items-center gap-1">
-									<TrendingUp className="size-3 shrink-0 text-success" />
+									<TrendingUp className="text-success size-3 shrink-0" />
 									<ResponsiveText className="truncate" variant="caption">
 										Revenue
 									</ResponsiveText>
@@ -163,7 +148,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							</div>
 							<div className="flex items-center justify-between gap-2 overflow-hidden">
 								<div className="flex items-center gap-1">
-									<Briefcase className="size-3 shrink-0 text-primary" />
+									<Briefcase className="text-primary size-3 shrink-0" />
 									<ResponsiveText className="truncate" variant="caption">
 										Jobs
 									</ResponsiveText>
@@ -179,13 +164,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 				{/* COMPACT Stage: Avatar + Revenue only */}
 				<ShowAt stage="compact">
 					<div className="flex flex-col items-center justify-center gap-2">
-						<div className="flex size-8 items-center justify-center rounded-full border-2 border-warning/30 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 font-bold text-warning text-xs">
+						<div className="border-warning/30 text-warning flex size-8 items-center justify-center rounded-full border-2 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 text-xs font-bold">
 							{data.avatar}
 						</div>
-						<ResponsiveText
-							className="font-bold text-warning"
-							variant="display"
-						>
+						<ResponsiveText className="text-warning font-bold" variant="display">
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -194,10 +176,7 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 				{/* TINY Stage: Just the revenue number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText
-							className="font-bold text-warning"
-							variant="display"
-						>
+						<ResponsiveText className="text-warning font-bold" variant="display">
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

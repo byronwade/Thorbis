@@ -10,10 +10,7 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -36,12 +33,8 @@ type SMSViewProps = {
 export function SMSView({ messages }: SMSViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore(
-		(state) => state.setSelectedMessageId,
-	);
-	const setIsDetailView = useCommunicationStore(
-		(state) => state.setIsDetailView,
-	);
+	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
 	const openComposer = useCommunicationStore((state) => state.openComposer);
 
 	const handleOpenMessage = (message: SMSMessage) => {
@@ -96,20 +89,18 @@ export function SMSView({ messages }: SMSViewProps) {
 			width: "w-64",
 			render: (message) => (
 				<div className="flex items-center gap-2">
-					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-						<MessageCircle className="size-4 text-muted-foreground" />
+					<div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+						<MessageCircle className="text-muted-foreground size-4" />
 					</div>
 					<div className="flex flex-col">
 						<span
-							className={`font-medium text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+							className={`text-sm font-medium ${message.status === "unread" ? "font-semibold" : ""}`}
 						>
 							{message.from}
 						</span>
 						{(message.fromPhone || message.toPhone) && (
 							<span className="text-muted-foreground text-xs">
-								{message.direction === "inbound"
-									? message.fromPhone
-									: message.toPhone}
+								{message.direction === "inbound" ? message.fromPhone : message.toPhone}
 							</span>
 						)}
 					</div>
@@ -121,9 +112,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			header: "Message",
 			width: "flex-1",
 			render: (message) => (
-				<p className="line-clamp-1 text-muted-foreground text-xs">
-					{message.preview}
-				</p>
+				<p className="text-muted-foreground line-clamp-1 text-xs">{message.preview}</p>
 			),
 		},
 		{
@@ -144,9 +133,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			header: "Status",
 			width: "w-24",
 			render: (message) => (
-				<span className="text-muted-foreground text-xs capitalize">
-					{message.status}
-				</span>
+				<span className="text-muted-foreground text-xs capitalize">{message.status}</span>
 			),
 		},
 		{
@@ -156,9 +143,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">
-					{formatTimestamp(message.timestamp)}
-				</span>
+				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
 			),
 		},
 		{
@@ -188,7 +173,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			const noun = selectedIds.size === 1 ? "conversation" : "conversations";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast],
+		[toast]
 	);
 
 	const bulkActions = [
@@ -215,9 +200,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			bulkActions={bulkActions}
 			columns={columns}
 			data={messages}
-			emptyIcon={
-				<MessageSquareText className="size-10 text-muted-foreground" />
-			}
+			emptyIcon={<MessageSquareText className="text-muted-foreground size-10" />}
 			emptyMessage="No text messages"
 			enableSelection
 			entity="communications-sms"

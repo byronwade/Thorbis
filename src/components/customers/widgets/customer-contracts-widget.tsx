@@ -30,24 +30,22 @@ export function CustomerContractsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: contracts, isLoading, error } = useCustomerContracts(
-					customerId,
-					companyId,
-					isVisible,
-				);
+				const {
+					data: contracts,
+					isLoading,
+					error,
+				} = useCustomerContracts(customerId, companyId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load contracts
 						</div>
 					);
 				if (!contracts || contracts.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No contracts found
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No contracts found</div>
 					);
 
 				return (
@@ -56,11 +54,11 @@ export function CustomerContractsWidget({
 							<Link
 								key={contract.id}
 								href={`/dashboard/work/contracts/${contract.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<span className="font-medium text-sm">
+										<span className="text-sm font-medium">
 											{contract.contract_number || `Contract #${contract.id.slice(0, 8)}`}
 										</span>
 										<Badge variant="outline" className="text-xs">
@@ -68,13 +66,9 @@ export function CustomerContractsWidget({
 										</Badge>
 									</div>
 									{contract.job && (
-										<p className="text-muted-foreground text-xs">
-											Job: {contract.job.job_number}
-										</p>
+										<p className="text-muted-foreground text-xs">Job: {contract.job.job_number}</p>
 									)}
-									<p className="text-muted-foreground text-xs">
-										{formatDate(contract.created_at)}
-									</p>
+									<p className="text-muted-foreground text-xs">{formatDate(contract.created_at)}</p>
 								</div>
 							</Link>
 						))}

@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function EquipmentDetailToolbarActions() {
@@ -89,9 +84,7 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a
-									href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}
-								>
+								<a href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}>
 									<ClipboardList />
 									<span className="hidden lg:inline">Maintenance</span>
 								</a>
@@ -105,9 +98,7 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a
-									href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}
-								>
+								<a href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -127,7 +118,7 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -148,8 +139,8 @@ export function EquipmentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Equipment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this equipment? Archived records
-							can be restored within 90 days.
+							Are you sure you want to archive this equipment? Archived records can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -160,11 +151,7 @@ export function EquipmentDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Equipment"}
 						</Button>
 					</DialogFooter>

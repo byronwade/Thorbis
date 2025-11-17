@@ -23,10 +23,7 @@ export async function GET(request: Request) {
 	const cronSecret = process.env.CRON_SECRET;
 
 	if (!cronSecret) {
-		return NextResponse.json(
-			{ error: "Cron secret not configured" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Cron secret not configured" }, { status: 500 });
 	}
 
 	if (authHeader !== `Bearer ${cronSecret}`) {
@@ -36,10 +33,7 @@ export async function GET(request: Request) {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Failed to initialize Supabase client" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Failed to initialize Supabase client" }, { status: 500 });
 		}
 
 		// Get all companies with auto-sync enabled bank accounts
@@ -53,7 +47,7 @@ export async function GET(request: Request) {
 		if (error) {
 			return NextResponse.json(
 				{ error: "Failed to fetch accounts", details: error.message },
-				{ status: 500 },
+				{ status: 500 }
 			);
 		}
 
@@ -87,9 +81,7 @@ export async function GET(request: Request) {
 					results.push({
 						companyId,
 						success: false,
-						error: result.success
-							? "Unknown error"
-							: result.error || "Unknown error",
+						error: result.success ? "Unknown error" : result.error || "Unknown error",
 					});
 				}
 			} catch (error: any) {
@@ -113,7 +105,7 @@ export async function GET(request: Request) {
 				error: "Sync failed",
 				details: error.message,
 			},
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

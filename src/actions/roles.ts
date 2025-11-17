@@ -27,14 +27,7 @@ import { createClient } from "@/lib/supabase/server";
 
 const updateRoleSchema = z.object({
 	teamMemberId: z.string().uuid(),
-	newRole: z.enum([
-		"owner",
-		"admin",
-		"manager",
-		"dispatcher",
-		"technician",
-		"csr",
-	]),
+	newRole: z.enum(["owner", "admin", "manager", "dispatcher", "technician", "csr"]),
 	reason: z.string().optional(),
 });
 
@@ -118,12 +111,7 @@ export async function checkPermission(permission: Permission) {
 			throw new Error("No active company");
 		}
 
-		const hasPerm = await hasPermission(
-			supabase,
-			user.id,
-			permission,
-			companyId,
-		);
+		const hasPerm = await hasPermission(supabase, user.id, permission, companyId);
 
 		return hasPerm;
 	});
@@ -218,9 +206,7 @@ export async function checkIsOwner() {
  * });
  * ```
  */
-export async function updateTeamMemberRole(
-	input: z.infer<typeof updateRoleSchema>,
-) {
+export async function updateTeamMemberRole(input: z.infer<typeof updateRoleSchema>) {
 	return withErrorHandling(async () => {
 		// Validate input
 		const validated = updateRoleSchema.parse(input);
@@ -310,9 +296,7 @@ export async function updateTeamMemberRole(
  * });
  * ```
  */
-export async function updateTeamMemberPermissions(
-	input: z.infer<typeof updatePermissionsSchema>,
-) {
+export async function updateTeamMemberPermissions(input: z.infer<typeof updatePermissionsSchema>) {
 	return withErrorHandling(async () => {
 		// Validate input
 		const validated = updatePermissionsSchema.parse(input);
@@ -391,7 +375,7 @@ export async function getTeamMembersWithRoles() {
           email,
           avatar
         )
-      `,
+      `
 			)
 			.eq("company_id", companyId)
 			.order("created_at", { ascending: false });
@@ -466,17 +450,14 @@ export async function transferOwnership(input: {
 		}
 
 		// Call database function to transfer ownership
-		const { data: transferId, error } = await supabase.rpc(
-			"transfer_company_ownership",
-			{
-				p_company_id: companyId,
-				p_current_owner_id: user.id,
-				p_new_owner_id: input.newOwnerId,
-				p_reason: input.reason,
-				p_ip_address: input.ipAddress,
-				p_user_agent: input.userAgent,
-			},
-		);
+		const { data: transferId, error } = await supabase.rpc("transfer_company_ownership", {
+			p_company_id: companyId,
+			p_current_owner_id: user.id,
+			p_new_owner_id: input.newOwnerId,
+			p_reason: input.reason,
+			p_ip_address: input.ipAddress,
+			p_user_agent: input.userAgent,
+		});
 
 		if (error) {
 			throw new Error(error.message || "Failed to transfer ownership");
@@ -532,7 +513,7 @@ export async function getOwnershipTransferHistory() {
         previous_owner:users!ownership_transfers_previous_owner_id_fkey(id, name, email),
         new_owner:users!ownership_transfers_new_owner_id_fkey(id, name, email),
         initiated_by_user:users!ownership_transfers_initiated_by_fkey(id, name, email)
-      `,
+      `
 			)
 			.eq("company_id", companyId)
 			.order("created_at", { ascending: false });

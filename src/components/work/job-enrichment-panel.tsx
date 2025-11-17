@@ -29,12 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ServiceLocationMap } from "@/components/work/job-details/service-location-map";
 
 type EnrichmentData = {
@@ -205,21 +200,17 @@ const URL_KEY_LENGTH = 30;
 // Data source tooltips
 const getSourceTooltip = (source: string): string => {
 	const tooltips: Record<string, string> = {
-		nominatim:
-			"OpenStreetMap Nominatim - Free geocoding service for address lookup",
+		nominatim: "OpenStreetMap Nominatim - Free geocoding service for address lookup",
 		none: "No data sources available - check API configurations",
 		nws: "National Weather Service - Free weather forecasts and alerts",
 		fcc: "FCC Census Block API - Free location and county information",
 		fema: "FEMA NFHL - Free flood zone and risk data",
 		overpass: "OpenStreetMap Overpass API - Free nearby points of interest",
 		"usgs-elevation": "USGS Elevation API - Free terrain elevation data",
-		"osm-walkability":
-			"OpenStreetMap - Calculated walkability score based on amenities",
+		"osm-walkability": "OpenStreetMap - Calculated walkability score based on amenities",
 		"osm-schools": "OpenStreetMap - Nearby schools and education facilities",
-		"google-places":
-			"Google Places API - Business info with reviews and ratings",
-		"google-streetview":
-			"Google Street View - Property photos from street level",
+		"google-places": "Google Places API - Business info with reviews and ratings",
+		"google-streetview": "Google Street View - Property photos from street level",
 		"google-timezone": "Google Time Zone API - Automatic timezone detection",
 		census: "US Census Bureau - Demographics and population statistics",
 		airnow: "AirNow EPA - Air quality index and pollutant data",
@@ -228,22 +219,16 @@ const getSourceTooltip = (source: string): string => {
 		rentcast: "RentCast API - Property details, taxes, and market data",
 		attom: "Attom Data - Comprehensive property information",
 	};
-	return (
-		tooltips[source.toLowerCase()] || `${source} - Data enrichment service`
-	);
+	return tooltips[source.toLowerCase()] || `${source} - Data enrichment service`;
 };
 
 // biome-ignore lint: Display component with many conditional sections
-export function JobEnrichmentPanel({
-	enrichmentData,
-}: JobEnrichmentPanelProps) {
+export function JobEnrichmentPanel({ enrichmentData }: JobEnrichmentPanelProps) {
 	if (!enrichmentData) {
 		return (
 			<Card>
 				<CardContent className="flex items-center justify-center py-8">
-					<p className="text-muted-foreground text-sm">
-						No operational intelligence available
-					</p>
+					<p className="text-muted-foreground text-sm">No operational intelligence available</p>
 				</CardContent>
 			</Card>
 		);
@@ -323,11 +308,7 @@ export function JobEnrichmentPanel({
 					address={{
 						street: enrichmentData.location.address?.split(",")[0] || "",
 						city: enrichmentData.location.address?.split(",")[1]?.trim() || "",
-						state:
-							enrichmentData.location.address
-								?.split(",")[2]
-								?.trim()
-								.split(" ")[0] || "",
+						state: enrichmentData.location.address?.split(",")[2]?.trim().split(" ")[0] || "",
 						zipCode:
 							enrichmentData.location.address
 								?.split(",")[2]
@@ -349,14 +330,14 @@ export function JobEnrichmentPanel({
 				{weather?.forecast?.periods?.[0] && (
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 font-medium text-sm">
-								<Thermometer className="h-4 w-4 text-muted-foreground" />
+							<CardTitle className="flex items-center gap-2 text-sm font-medium">
+								<Thermometer className="text-muted-foreground h-4 w-4" />
 								Weather
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-3">
 							<div className="flex items-baseline gap-2">
-								<span className="font-semibold text-3xl">
+								<span className="text-3xl font-semibold">
 									{weather.forecast.periods[0].temperature}°
 								</span>
 								<span className="text-muted-foreground text-sm">
@@ -378,8 +359,8 @@ export function JobEnrichmentPanel({
 						propertyData.market?.lastSoldPrice) && (
 						<Card>
 							<CardHeader className="pb-3">
-								<CardTitle className="flex items-center gap-2 font-medium text-sm">
-									<Building2 className="h-4 w-4 text-muted-foreground" />
+								<CardTitle className="flex items-center gap-2 text-sm font-medium">
+									<Building2 className="text-muted-foreground h-4 w-4" />
 									Property
 								</CardTitle>
 							</CardHeader>
@@ -388,27 +369,21 @@ export function JobEnrichmentPanel({
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Size</span>
 										<span className="font-medium">
-											{propertyData.characteristics.squareFeet.toLocaleString()}{" "}
-											sq ft
+											{propertyData.characteristics.squareFeet.toLocaleString()} sq ft
 										</span>
 									</div>
 								)}
 								{propertyData.characteristics?.yearBuilt && (
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Built</span>
-										<span className="font-medium">
-											{propertyData.characteristics.yearBuilt}
-										</span>
+										<span className="font-medium">{propertyData.characteristics.yearBuilt}</span>
 									</div>
 								)}
 								{propertyData.assessment?.assessedValue && (
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Assessed</span>
 										<span className="font-medium">
-											$
-											{(
-												propertyData.assessment.assessedValue / CENTS_TO_DOLLARS
-											).toLocaleString()}
+											${(propertyData.assessment.assessedValue / CENTS_TO_DOLLARS).toLocaleString()}
 										</span>
 									</div>
 								)}
@@ -416,10 +391,7 @@ export function JobEnrichmentPanel({
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Last Sold</span>
 										<span className="font-medium">
-											$
-											{(
-												propertyData.market.lastSoldPrice / CENTS_TO_DOLLARS
-											).toLocaleString()}
+											${(propertyData.market.lastSoldPrice / CENTS_TO_DOLLARS).toLocaleString()}
 										</span>
 									</div>
 								)}
@@ -435,8 +407,8 @@ export function JobEnrichmentPanel({
 						buildingData.buildingType) && (
 						<Card>
 							<CardHeader className="pb-3">
-								<CardTitle className="flex items-center gap-2 font-medium text-sm">
-									<Building2 className="h-4 w-4 text-muted-foreground" />
+								<CardTitle className="flex items-center gap-2 text-sm font-medium">
+									<Building2 className="text-muted-foreground h-4 w-4" />
 									Building
 								</CardTitle>
 							</CardHeader>
@@ -444,19 +416,15 @@ export function JobEnrichmentPanel({
 								{buildingData.buildingType && (
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Type</span>
-										<span className="font-medium">
-											{buildingData.buildingType}
-										</span>
+										<span className="font-medium">{buildingData.buildingType}</span>
 									</div>
 								)}
 								{buildingData.footprint?.area && (
 									<div className="flex justify-between text-sm">
 										<span className="text-muted-foreground">Footprint</span>
 										<span className="font-medium">
-											{Math.round(
-												buildingData.footprint.area * SQ_M_TO_SQ_FT,
-											).toLocaleString()}{" "}
-											sq ft
+											{Math.round(buildingData.footprint.area * SQ_M_TO_SQ_FT).toLocaleString()} sq
+											ft
 										</span>
 									</div>
 								)}
@@ -482,8 +450,8 @@ export function JobEnrichmentPanel({
 				{waterQuality && (
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 font-medium text-sm">
-								<Droplets className="h-4 w-4 text-muted-foreground" />
+							<CardTitle className="flex items-center gap-2 text-sm font-medium">
+								<Droplets className="text-muted-foreground h-4 w-4" />
 								Water Quality
 							</CardTitle>
 						</CardHeader>
@@ -505,17 +473,15 @@ export function JobEnrichmentPanel({
 				{locationIntelligence?.county?.countyName && (
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 font-medium text-sm">
-								<MapPin className="h-4 w-4 text-muted-foreground" />
+							<CardTitle className="flex items-center gap-2 text-sm font-medium">
+								<MapPin className="text-muted-foreground h-4 w-4" />
 								Location
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-2">
 							<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">County</span>
-								<span className="font-medium">
-									{locationIntelligence.county.countyName}
-								</span>
+								<span className="font-medium">{locationIntelligence.county.countyName}</span>
 							</div>
 							{locationIntelligence.floodZone && (
 								<div className="flex justify-between text-sm">
@@ -539,8 +505,8 @@ export function JobEnrichmentPanel({
 				{timeZone && (
 					<Card>
 						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 font-medium text-sm">
-								<Clock className="h-4 w-4 text-muted-foreground" />
+							<CardTitle className="flex items-center gap-2 text-sm font-medium">
+								<Clock className="text-muted-foreground h-4 w-4" />
 								Time Zone
 							</CardTitle>
 						</CardHeader>
@@ -571,8 +537,8 @@ export function JobEnrichmentPanel({
 				{!googlePlaces && nearbySuppliers && nearbySuppliers.length > 0 && (
 					<Card className="sm:col-span-2">
 						<CardHeader className="pb-3">
-							<CardTitle className="flex items-center gap-2 font-medium text-sm">
-								<Store className="h-4 w-4 text-muted-foreground" />
+							<CardTitle className="flex items-center gap-2 text-sm font-medium">
+								<Store className="text-muted-foreground h-4 w-4" />
 								Nearby Suppliers
 							</CardTitle>
 						</CardHeader>
@@ -584,13 +550,9 @@ export function JobEnrichmentPanel({
 										key={`${supplier.name}-${supplier.lat}-${supplier.lon}`}
 									>
 										<div className="min-w-0 flex-1">
-											<p className="truncate font-medium text-sm">
-												{supplier.name}
-											</p>
+											<p className="truncate text-sm font-medium">{supplier.name}</p>
 											<p className="text-muted-foreground text-xs">
-												{supplier.distance
-													? `${(supplier.distance / M_TO_KM).toFixed(1)} km`
-													: "—"}
+												{supplier.distance ? `${(supplier.distance / M_TO_KM).toFixed(1)} km` : "—"}
 											</p>
 										</div>
 										<Button asChild size="sm" variant="ghost">
@@ -617,7 +579,7 @@ export function JobEnrichmentPanel({
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2 text-base">
-								<Camera className="h-5 w-5 text-primary" />
+								<Camera className="text-primary h-5 w-5" />
 								Property Street View
 							</CardTitle>
 						</CardHeader>
@@ -637,28 +599,27 @@ export function JobEnrichmentPanel({
 							</div>
 
 							{/* Alternate Views */}
-							{streetView.alternateViews &&
-								streetView.alternateViews.length > 0 && (
-									<div className="grid grid-cols-3 gap-2">
-										{streetView.alternateViews.map((view) => (
-											<div
-												className="overflow-hidden rounded-md border"
-												key={`view-${view.substring(0, URL_KEY_LENGTH)}`}
-											>
-												{/* biome-ignore lint/a11y/useAltText: Google Street View external API image */}
-												{/* biome-ignore lint/a11y/noSvgWithoutTitle: External API image */}
-												<img
-													alt="Property from alternate angle"
-													className="h-auto w-full"
-													height="400"
-													loading="lazy"
-													src={view}
-													width="600"
-												/>
-											</div>
-										))}
-									</div>
-								)}
+							{streetView.alternateViews && streetView.alternateViews.length > 0 && (
+								<div className="grid grid-cols-3 gap-2">
+									{streetView.alternateViews.map((view) => (
+										<div
+											className="overflow-hidden rounded-md border"
+											key={`view-${view.substring(0, URL_KEY_LENGTH)}`}
+										>
+											{/* biome-ignore lint/a11y/useAltText: Google Street View external API image */}
+											{/* biome-ignore lint/a11y/noSvgWithoutTitle: External API image */}
+											<img
+												alt="Property from alternate angle"
+												className="h-auto w-full"
+												height="400"
+												loading="lazy"
+												src={view}
+												width="600"
+											/>
+										</div>
+									))}
+								</div>
+							)}
 
 							<p className="text-muted-foreground text-xs">
 								Street view images provided by Google Maps
@@ -676,21 +637,16 @@ export function JobEnrichmentPanel({
 						<CardHeader>
 							<CardTitle className="flex items-center justify-between text-base">
 								<span className="flex items-center gap-2">
-									<Store className="h-5 w-5 text-primary" />
+									<Store className="text-primary h-5 w-5" />
 									Nearby Suppliers
 								</span>
-								<Badge variant="secondary">
-									{googlePlaces.totalResults} found
-								</Badge>
+								<Badge variant="secondary">{googlePlaces.totalResults} found</Badge>
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
 								{googlePlaces.places.slice(0, MAX_SUPPLIERS).map((place) => (
-									<div
-										className="flex gap-4 rounded-lg border p-4"
-										key={place.placeId}
-									>
+									<div className="flex gap-4 rounded-lg border p-4" key={place.placeId}>
 										{/* Photo */}
 										{place.photoUrl && (
 											<div className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
@@ -711,17 +667,10 @@ export function JobEnrichmentPanel({
 										<div className="min-w-0 flex-1 space-y-2">
 											<div className="flex items-start justify-between gap-2">
 												<div className="min-w-0 flex-1">
-													<h4 className="truncate font-semibold text-sm">
-														{place.name}
-													</h4>
-													<p className="truncate text-muted-foreground text-xs">
-														{place.vicinity}
-													</p>
+													<h4 className="truncate text-sm font-semibold">{place.name}</h4>
+													<p className="text-muted-foreground truncate text-xs">{place.vicinity}</p>
 												</div>
-												<Badge
-													className="flex-shrink-0 text-xs"
-													variant="outline"
-												>
+												<Badge className="flex-shrink-0 text-xs" variant="outline">
 													{(place.distance / M_TO_KM).toFixed(1)} km
 												</Badge>
 											</div>
@@ -730,15 +679,12 @@ export function JobEnrichmentPanel({
 											{place.rating && (
 												<div className="flex items-center gap-2">
 													<div className="flex items-center gap-1">
-														<Star className="h-3 w-3 fill-yellow-400 text-warning" />
-														<span className="font-medium text-sm">
-															{place.rating.toFixed(1)}
-														</span>
+														<Star className="text-warning h-3 w-3 fill-yellow-400" />
+														<span className="text-sm font-medium">{place.rating.toFixed(1)}</span>
 													</div>
 													{place.userRatingsTotal && (
 														<span className="text-muted-foreground text-xs">
-															({place.userRatingsTotal.toLocaleString()}{" "}
-															reviews)
+															({place.userRatingsTotal.toLocaleString()} reviews)
 														</span>
 													)}
 													{place.openNow !== undefined && (
@@ -774,11 +720,7 @@ export function JobEnrichmentPanel({
 												)}
 												{place.website && (
 													<Button asChild size="sm" variant="outline">
-														<a
-															href={place.website}
-															rel="noopener noreferrer"
-															target="_blank"
-														>
+														<a href={place.website} rel="noopener noreferrer" target="_blank">
 															<Globe className="mr-1 h-3 w-3" />
 															Website
 														</a>
@@ -810,9 +752,7 @@ export function JobEnrichmentPanel({
 					<Separator />
 					<TooltipProvider>
 						<div className="flex flex-wrap items-center gap-2">
-							<span className="text-muted-foreground text-xs">
-								Data sources:
-							</span>
+							<span className="text-muted-foreground text-xs">Data sources:</span>
 							{enrichmentData.sources.map((source) => (
 								<Tooltip key={source}>
 									<TooltipTrigger asChild>
@@ -821,42 +761,36 @@ export function JobEnrichmentPanel({
 										</Badge>
 									</TooltipTrigger>
 									<TooltipContent>
-										<p className="max-w-xs text-xs">
-											{getSourceTooltip(source)}
-										</p>
+										<p className="max-w-xs text-xs">{getSourceTooltip(source)}</p>
 									</TooltipContent>
 								</Tooltip>
 							))}
 						</div>
 					</TooltipProvider>
 					{/* RentCast Reminder - Only show if API key is truly not configured */}
-					{enrichmentData.sources.includes("none") &&
-						!enrichmentData.propertyData && (
-							<Alert>
-								<Info className="h-4 w-4" />
-								<AlertDescription className="text-sm">
-									<strong>Tip:</strong> Add a RentCast API key for property
-									details (50 free requests/month)
-								</AlertDescription>
-							</Alert>
-						)}
+					{enrichmentData.sources.includes("none") && !enrichmentData.propertyData && (
+						<Alert>
+							<Info className="h-4 w-4" />
+							<AlertDescription className="text-sm">
+								<strong>Tip:</strong> Add a RentCast API key for property details (50 free
+								requests/month)
+							</AlertDescription>
+						</Alert>
+					)}
 					{/* Property data not available for this location */}
-					{enrichmentData.sources.includes("none") &&
-						enrichmentData.propertyData && (
-							<Alert variant="default">
-								<Info className="h-4 w-4" />
-								<AlertDescription className="text-sm">
-									<strong>Note:</strong> Property data not available for this
-									rural location in RentCast database
-								</AlertDescription>
-							</Alert>
-						)}
+					{enrichmentData.sources.includes("none") && enrichmentData.propertyData && (
+						<Alert variant="default">
+							<Info className="h-4 w-4" />
+							<AlertDescription className="text-sm">
+								<strong>Note:</strong> Property data not available for this rural location in
+								RentCast database
+							</AlertDescription>
+						</Alert>
+					)}
 
 					{/* Google Services Info */}
 					{enrichmentData.sources.some((s) =>
-						["google-streetview", "google-places", "google-timezone"].includes(
-							s,
-						),
+						["google-streetview", "google-places", "google-timezone"].includes(s)
 					) &&
 						(() => {
 							const googleFeatures = [];
@@ -876,10 +810,10 @@ export function JobEnrichmentPanel({
 
 							return (
 								<Alert className="border-success bg-success dark:border-success dark:bg-success">
-									<Camera className="h-4 w-4 text-success dark:text-success" />
+									<Camera className="text-success dark:text-success h-4 w-4" />
 									<AlertDescription className="text-sm">
-										<strong>Google Maps:</strong> {googleFeatures.join(", ")}{" "}
-										available (100% FREE - 25k+ requests/month)
+										<strong>Google Maps:</strong> {googleFeatures.join(", ")} available (100% FREE -
+										25k+ requests/month)
 									</AlertDescription>
 								</Alert>
 							);

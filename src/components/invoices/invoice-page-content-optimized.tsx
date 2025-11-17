@@ -81,12 +81,8 @@ export function InvoicePageContentOptimized({
 				<div className="flex items-start justify-between">
 					<div className="space-y-2">
 						<div className="flex items-center gap-3">
-							<h1 className="font-bold text-2xl">
-								Invoice #{localInvoice.invoice_number}
-							</h1>
-							<Badge className={getStatusColor(localInvoice.status)}>
-								{localInvoice.status}
-							</Badge>
+							<h1 className="text-2xl font-bold">Invoice #{localInvoice.invoice_number}</h1>
+							<Badge className={getStatusColor(localInvoice.status)}>{localInvoice.status}</Badge>
 						</div>
 						{customer && (
 							<p className="text-muted-foreground">
@@ -102,11 +98,11 @@ export function InvoicePageContentOptimized({
 
 					<div className="text-right">
 						<div className="text-muted-foreground text-sm">Total Amount</div>
-						<div className="font-bold text-2xl">
+						<div className="text-2xl font-bold">
 							{formatCurrency(localInvoice.total_amount || 0)}
 						</div>
 						{localInvoice.balance_amount > 0 && (
-							<div className="mt-1 text-red-600 text-sm">
+							<div className="mt-1 text-sm text-red-600">
 								Balance: {formatCurrency(localInvoice.balance_amount)}
 							</div>
 						)}
@@ -126,9 +122,7 @@ export function InvoicePageContentOptimized({
 					<div>
 						<div className="text-muted-foreground text-sm">Due Date</div>
 						<div className="font-medium">
-							{localInvoice.due_date
-								? formatDate(localInvoice.due_date)
-								: "Not set"}
+							{localInvoice.due_date ? formatDate(localInvoice.due_date) : "Not set"}
 						</div>
 					</div>
 					<div>
@@ -139,9 +133,7 @@ export function InvoicePageContentOptimized({
 					</div>
 					<div>
 						<div className="text-muted-foreground text-sm">Payment Terms</div>
-						<div className="font-medium">
-							{localInvoice.payment_terms || "Net 30"}
-						</div>
+						<div className="font-medium">{localInvoice.payment_terms || "Net 30"}</div>
 					</div>
 				</div>
 
@@ -149,19 +141,14 @@ export function InvoicePageContentOptimized({
 
 				{/* Progressive Widgets - Invoice Details */}
 				<div>
-					<h2 className="mb-4 font-semibold text-xl">Invoice Details</h2>
+					<h2 className="mb-4 text-xl font-semibold">Invoice Details</h2>
 
 					{/* Grid of progressive widgets - each loads data on-demand */}
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{/* Row 1 - Most Important (Load first when visible) */}
-						<InvoiceJobWidget
-							jobId={localInvoice.job_id}
-							loadImmediately={true}
-						/>
+						<InvoiceJobWidget jobId={localInvoice.job_id} loadImmediately={true} />
 						<InvoicePropertyWidget
-							propertyId={
-								localInvoice.job?.property_id || localInvoice.property_id
-							}
+							propertyId={localInvoice.job?.property_id || localInvoice.property_id}
 						/>
 						<InvoiceWorkflowWidget
 							estimateId={localInvoice.converted_from_estimate_id}
@@ -186,41 +173,33 @@ export function InvoicePageContentOptimized({
 					<>
 						<Separator />
 						<div>
-							<h2 className="mb-4 font-semibold text-xl">Line Items</h2>
+							<h2 className="mb-4 text-xl font-semibold">Line Items</h2>
 							<div className="rounded-lg border">
 								<table className="w-full">
-									<thead className="border-b bg-muted/50">
+									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="p-3 text-left font-medium text-sm">Item</th>
-											<th className="p-3 text-right font-medium text-sm">Qty</th>
-											<th className="p-3 text-right font-medium text-sm">Rate</th>
-											<th className="p-3 text-right font-medium text-sm">
-												Amount
-											</th>
+											<th className="p-3 text-left text-sm font-medium">Item</th>
+											<th className="p-3 text-right text-sm font-medium">Qty</th>
+											<th className="p-3 text-right text-sm font-medium">Rate</th>
+											<th className="p-3 text-right text-sm font-medium">Amount</th>
 										</tr>
 									</thead>
 									<tbody>
-										{localInvoice.line_items.map(
-											(item: any, index: number) => (
-												<tr key={index} className="border-b last:border-0">
-													<td className="p-3">
-														<div className="font-medium">{item.description}</div>
-														{item.notes && (
-															<div className="text-muted-foreground text-sm">
-																{item.notes}
-															</div>
-														)}
-													</td>
-													<td className="p-3 text-right">{item.quantity}</td>
-													<td className="p-3 text-right">
-														{formatCurrency(item.rate || 0)}
-													</td>
-													<td className="p-3 text-right font-medium">
-														{formatCurrency(item.amount || 0)}
-													</td>
-												</tr>
-											),
-										)}
+										{localInvoice.line_items.map((item: any, index: number) => (
+											<tr key={index} className="border-b last:border-0">
+												<td className="p-3">
+													<div className="font-medium">{item.description}</div>
+													{item.notes && (
+														<div className="text-muted-foreground text-sm">{item.notes}</div>
+													)}
+												</td>
+												<td className="p-3 text-right">{item.quantity}</td>
+												<td className="p-3 text-right">{formatCurrency(item.rate || 0)}</td>
+												<td className="p-3 text-right font-medium">
+													{formatCurrency(item.amount || 0)}
+												</td>
+											</tr>
+										))}
 									</tbody>
 								</table>
 							</div>
@@ -233,10 +212,8 @@ export function InvoicePageContentOptimized({
 					<>
 						<Separator />
 						<div>
-							<h2 className="mb-2 font-semibold text-lg">Notes</h2>
-							<p className="text-muted-foreground text-sm">
-								{localInvoice.notes}
-							</p>
+							<h2 className="mb-2 text-lg font-semibold">Notes</h2>
+							<p className="text-muted-foreground text-sm">{localInvoice.notes}</p>
 						</div>
 					</>
 				)}

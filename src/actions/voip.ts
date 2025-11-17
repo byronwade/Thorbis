@@ -120,7 +120,8 @@ export async function getTeamExtensions() {
 
 		const { data, error } = await supabase
 			.from("team_members")
-			.select(`
+			.select(
+				`
         id,
         full_name,
         email,
@@ -142,7 +143,8 @@ export async function getTeamExtensions() {
           vacation_message,
           do_not_disturb_until
         )
-      `)
+      `
+			)
 			.eq("company_id", companyResult.companyId)
 			.order("full_name");
 
@@ -154,8 +156,7 @@ export async function getTeamExtensions() {
 		const transformedData = data.map((member: any) => ({
 			...member,
 			availability:
-				Array.isArray(member.team_availability) &&
-				member.team_availability.length > 0
+				Array.isArray(member.team_availability) && member.team_availability.length > 0
 					? member.team_availability[0]
 					: null,
 			team_availability: undefined,
@@ -169,7 +170,7 @@ export async function getTeamExtensions() {
 
 export async function updateTeamMemberExtension(
 	teamMemberId: string,
-	extensionData: z.infer<typeof extensionSchema>,
+	extensionData: z.infer<typeof extensionSchema>
 ) {
 	try {
 		const validated = extensionSchema.parse(extensionData);
@@ -227,7 +228,7 @@ export async function updateTeamMemberExtension(
 
 export async function setVacationMode(
 	teamMemberId: string,
-	vacationData: z.infer<typeof vacationModeSchema>,
+	vacationData: z.infer<typeof vacationModeSchema>
 ) {
 	try {
 		const validated = vacationModeSchema.parse(vacationData);
@@ -325,9 +326,7 @@ export async function getCallRoutingRules() {
 	}
 }
 
-export async function createRoutingRule(
-	ruleData: z.infer<typeof routingRuleSchema>,
-) {
+export async function createRoutingRule(ruleData: z.infer<typeof routingRuleSchema>) {
 	try {
 		const validated = routingRuleSchema.parse(ruleData);
 		const companyResult = await getCompanyId();
@@ -379,7 +378,7 @@ export async function createRoutingRule(
 
 export async function updateRoutingRule(
 	ruleId: string,
-	ruleData: z.infer<typeof routingRuleSchema>,
+	ruleData: z.infer<typeof routingRuleSchema>
 ) {
 	try {
 		const validated = routingRuleSchema.parse(ruleData);
@@ -451,10 +450,7 @@ export async function deleteRoutingRule(ruleId: string) {
 	}
 }
 
-export async function updateRulePriority(
-	ruleId: string,
-	direction: "up" | "down",
-) {
+export async function updateRulePriority(ruleId: string, direction: "up" | "down") {
 	try {
 		const companyResult = await getCompanyId();
 		if (!companyResult.success) {
@@ -482,8 +478,7 @@ export async function updateRulePriority(
 		}
 
 		const currentPriority = currentRule.priority;
-		const newPriority =
-			direction === "up" ? currentPriority - 1 : currentPriority + 1;
+		const newPriority = direction === "up" ? currentPriority - 1 : currentPriority + 1;
 
 		// Swap priorities
 		await supabase
@@ -492,10 +487,7 @@ export async function updateRulePriority(
 			.eq("priority", newPriority)
 			.eq("company_id", companyResult.companyId);
 
-		await supabase
-			.from("call_routing_rules")
-			.update({ priority: newPriority })
-			.eq("id", ruleId);
+		await supabase.from("call_routing_rules").update({ priority: newPriority }).eq("id", ruleId);
 
 		await supabase
 			.from("call_routing_rules")
@@ -545,9 +537,7 @@ export async function getCompanyHolidays() {
 	}
 }
 
-export async function createHoliday(
-	holidayData: z.infer<typeof holidaySchema>,
-) {
+export async function createHoliday(holidayData: z.infer<typeof holidaySchema>) {
 	try {
 		const validated = holidaySchema.parse(holidayData);
 		const companyResult = await getCompanyId();
@@ -585,10 +575,7 @@ export async function createHoliday(
 	}
 }
 
-export async function updateHoliday(
-	holidayId: string,
-	holidayData: z.infer<typeof holidaySchema>,
-) {
+export async function updateHoliday(holidayId: string, holidayData: z.infer<typeof holidaySchema>) {
 	try {
 		const validated = holidaySchema.parse(holidayData);
 		const companyResult = await getCompanyId();

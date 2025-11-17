@@ -23,10 +23,8 @@ export default function BusinessIntelligencePage() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h1 className="font-semibold text-2xl">Business Intelligence</h1>
-				<p className="text-muted-foreground">
-					Comprehensive business reporting and analytics
-				</p>
+				<h1 className="text-2xl font-semibold">Business Intelligence</h1>
+				<p className="text-muted-foreground">Comprehensive business reporting and analytics</p>
 			</div>
 
 			<Suspense fallback={<StatsCardsSkeleton count={4} />}>

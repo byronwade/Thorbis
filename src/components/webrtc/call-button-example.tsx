@@ -91,7 +91,7 @@ function CallButtonInner({ phoneNumber, displayName }: CallButtonProps) {
 	 */
 	if (!isAvailable) {
 		return (
-			<div className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-amber-900 text-sm dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400">
+			<div className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-1.5 text-sm text-amber-900 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400">
 				<AlertCircle className="size-4" />
 				<span>Calls unavailable</span>
 			</div>
@@ -151,7 +151,7 @@ export function CallButtonExample(props: CallButtonProps) {
 	return (
 		<WebRTCErrorBoundary
 			fallback={
-				<div className="inline-flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-red-900 text-sm dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+				<div className="inline-flex items-center gap-2 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm text-red-900 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
 					<AlertCircle className="size-4" />
 					<span>Call feature unavailable</span>
 				</div>

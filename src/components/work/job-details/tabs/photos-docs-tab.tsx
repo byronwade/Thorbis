@@ -55,7 +55,7 @@ export function PhotosDocsTab({
 				<CardHeader>
 					<div className="flex w-full items-center justify-between">
 						<div className="flex items-center gap-2">
-							<Camera className="h-5 w-5 text-muted-foreground" />
+							<Camera className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Photos</CardTitle>
 							<Badge variant="secondary">{photos.length}</Badge>
 						</div>
@@ -69,16 +69,12 @@ export function PhotosDocsTab({
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 md:grid-cols-4">
-						{Object.entries(photosByCategory).map(
-							([category, categoryPhotos]) => (
-								<div className="rounded-lg border p-4" key={category}>
-									<p className="mb-2 font-medium text-sm capitalize">
-										{category}
-									</p>
-									<p className="font-bold text-2xl">{categoryPhotos.length}</p>
-								</div>
-							),
-						)}
+						{Object.entries(photosByCategory).map(([category, categoryPhotos]) => (
+							<div className="rounded-lg border p-4" key={category}>
+								<p className="mb-2 text-sm font-medium capitalize">{category}</p>
+								<p className="text-2xl font-bold">{categoryPhotos.length}</p>
+							</div>
+						))}
 					</div>
 				</CardContent>
 			</Card>
@@ -88,16 +84,12 @@ export function PhotosDocsTab({
 				<CardHeader>
 					<div className="flex w-full items-center justify-between">
 						<div className="flex items-center gap-2">
-							<FileText className="h-5 w-5 text-muted-foreground" />
+							<FileText className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Documents</CardTitle>
 							<Badge variant="secondary">{documents.length}</Badge>
 						</div>
 						{isEditMode && !showUploader && (
-							<Button
-								onClick={() => setShowUploader(true)}
-								size="sm"
-								variant="outline"
-							>
+							<Button onClick={() => setShowUploader(true)} size="sm" variant="outline">
 								<Plus className="mr-2 h-4 w-4" />
 								Upload
 							</Button>
@@ -120,9 +112,7 @@ export function PhotosDocsTab({
 							))}
 						</div>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
-							No documents uploaded
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No documents uploaded</div>
 					)}
 				</CardContent>
 			</Card>
@@ -131,14 +121,14 @@ export function PhotosDocsTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<Pen className="h-5 w-5 text-muted-foreground" />
+						<Pen className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Signatures</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="rounded-lg border p-4">
-							<p className="mb-2 font-medium text-sm">Customer Signature</p>
+							<p className="mb-2 text-sm font-medium">Customer Signature</p>
 							{customerSignature ? (
 								<Badge variant="default">Signed</Badge>
 							) : (
@@ -146,7 +136,7 @@ export function PhotosDocsTab({
 							)}
 						</div>
 						<div className="rounded-lg border p-4">
-							<p className="mb-2 font-medium text-sm">Technician Signature</p>
+							<p className="mb-2 text-sm font-medium">Technician Signature</p>
 							{technicianSignature ? (
 								<Badge variant="default">Signed</Badge>
 							) : (

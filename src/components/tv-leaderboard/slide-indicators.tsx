@@ -32,11 +32,11 @@ export function SlideIndicators({
 	return (
 		<motion.div
 			animate={{ opacity: 1, y: 0 }}
-			className={cn("-translate-x-1/2 fixed bottom-6 left-1/2 z-40", className)}
+			className={cn("fixed bottom-6 left-1/2 z-40 -translate-x-1/2", className)}
 			initial={{ opacity: 0, y: 20 }}
 			transition={{ duration: 0.3 }}
 		>
-			<div className="flex items-center gap-2 rounded-full border bg-background px-4 py-2 shadow-sm">
+			<div className="bg-background flex items-center gap-2 rounded-full border px-4 py-2 shadow-sm">
 				{Array.from({ length: slideCount }).map((_, index) => {
 					const isActive = index === currentSlide;
 					return (
@@ -47,7 +47,7 @@ export function SlideIndicators({
 									? "hsl(var(--primary))"
 									: "hsl(var(--muted-foreground) / 0.4)",
 							}}
-							className="h-2 rounded-full transition-colors hover:bg-primary/60"
+							className="hover:bg-primary/60 h-2 rounded-full transition-colors"
 							key={index}
 							onClick={(e) => {
 								e.stopPropagation();

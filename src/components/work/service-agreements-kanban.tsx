@@ -26,27 +26,21 @@ const AGREEMENT_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#6B7280" },
 ];
 
-const columnLabel = new Map(
-	AGREEMENT_COLUMNS.map((column) => [column.id, column.name]),
-);
+const columnLabel = new Map(AGREEMENT_COLUMNS.map((column) => [column.id, column.name]));
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",
 });
 
-export function ServiceAgreementsKanban({
-	agreements,
-}: {
-	agreements: ServiceAgreement[];
-}) {
+export function ServiceAgreementsKanban({ agreements }: { agreements: ServiceAgreement[] }) {
 	return (
 		<EntityKanban<ServiceAgreement, AgreementStatus>
 			calculateColumnMeta={(columnId, items): ColumnMeta => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
 				const total = columnItems.reduce(
 					(sum, item) => sum + (item.entity as ServiceAgreement).value,
-					0,
+					0
 				);
 				return { count: columnItems.length, total };
 			}}
@@ -62,17 +56,13 @@ export function ServiceAgreementsKanban({
 			})}
 			renderCard={(item) => (
 				<ServiceAgreementCard
-					item={
-						{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem
-					}
+					item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem}
 				/>
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-xl border border-border/70 bg-background/95 p-4 shadow-lg">
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
 					<ServiceAgreementCard
-						item={
-							{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem
-						}
+						item={{ ...item, agreement: item.entity } as ServiceAgreementKanbanItem}
 					/>
 				</div>
 			)}
@@ -92,19 +82,17 @@ function ServiceAgreementCard({ item }: { item: ServiceAgreementKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+					<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 						{agreement.agreementNumber}
 					</p>
-					<h3 className="font-semibold text-foreground text-sm">
-						{agreement.customer}
-					</h3>
+					<h3 className="text-foreground text-sm font-semibold">{agreement.customer}</h3>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
 								(columnId === "expired" || columnId === "cancelled") &&
 									"bg-destructive/10 text-destructive",
-								columnId === "active" && "bg-primary/10 text-primary",
+								columnId === "active" && "bg-primary/10 text-primary"
 							)}
 							variant={
 								columnId === "active"
@@ -126,22 +114,22 @@ function ServiceAgreementCard({ item }: { item: ServiceAgreementKanbanItem }) {
 				</div>
 			</div>
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<CalendarDays className="size-4 text-primary" />
+					<CalendarDays className="text-primary size-4" />
 					<span>
 						{agreement.startDate} → {agreement.endDate}
 					</span>
 				</div>
 				<div className="flex items-center gap-2">
-					<FileText className="size-4 text-primary" />
+					<FileText className="text-primary size-4" />
 					<span>{agreement.type}</span>
 				</div>
 			</div>
 
 			<Button
 				asChild
-				className="w-full justify-between text-primary text-xs"
+				className="text-primary w-full justify-between text-xs"
 				size="sm"
 				variant="ghost"
 			>

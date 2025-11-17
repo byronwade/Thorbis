@@ -33,9 +33,7 @@ export default function InvoiceSentEmail({
 
 			<Text style={paragraph}>Hi {customerName},</Text>
 
-			<Text style={paragraph}>
-				Thank you for your business! Your invoice is now available.
-			</Text>
+			<Text style={paragraph}>Thank you for your business! Your invoice is now available.</Text>
 
 			<Card style={invoiceCard}>
 				<div style={invoiceHeader}>
@@ -85,8 +83,8 @@ export default function InvoiceSentEmail({
 			<Card style={paymentInfoCard}>
 				<Heading level={3}>Payment Methods Accepted</Heading>
 				<Text style={paymentText}>
-					We accept credit cards, debit cards, ACH transfers, and checks. Choose
-					your preferred payment method when you click "Pay Now" above.
+					We accept credit cards, debit cards, ACH transfers, and checks. Choose your preferred
+					payment method when you click "Pay Now" above.
 				</Text>
 			</Card>
 

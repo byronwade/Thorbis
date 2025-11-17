@@ -3,13 +3,7 @@
 import { Bell, CreditCard, Save, Shield } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,17 +37,13 @@ export function StripeSettings() {
 						<CreditCard className="size-5" />
 						Payment Settings
 					</CardTitle>
-					<CardDescription>
-						Configure payment processing options
-					</CardDescription>
+					<CardDescription>Configure payment processing options</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Accept Credit Cards</Label>
-							<p className="text-muted-foreground text-sm">
-								Enable credit card payments
-							</p>
+							<p className="text-muted-foreground text-sm">Enable credit card payments</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -63,9 +53,7 @@ export function StripeSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Accept ACH/Bank Transfers</Label>
-							<p className="text-muted-foreground text-sm">
-								Enable direct bank transfers
-							</p>
+							<p className="text-muted-foreground text-sm">Enable direct bank transfers</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -108,9 +96,7 @@ export function StripeSettings() {
 						<Shield className="size-5" />
 						Security & Fraud Prevention
 					</CardTitle>
-					<CardDescription>
-						Configure security and fraud prevention settings
-					</CardDescription>
+					<CardDescription>Configure security and fraud prevention settings</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
@@ -156,12 +142,8 @@ export function StripeSettings() {
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="low">
-									Low - Block suspicious payments
-								</SelectItem>
-								<SelectItem value="normal">
-									Normal - Review suspicious
-								</SelectItem>
+								<SelectItem value="low">Low - Block suspicious payments</SelectItem>
+								<SelectItem value="normal">Normal - Review suspicious</SelectItem>
 								<SelectItem value="high">High - Allow most payments</SelectItem>
 							</SelectContent>
 						</Select>
@@ -176,9 +158,7 @@ export function StripeSettings() {
 						<Bell className="size-5" />
 						Notifications
 					</CardTitle>
-					<CardDescription>
-						Configure payment notifications and receipts
-					</CardDescription>
+					<CardDescription>Configure payment notifications and receipts</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
@@ -196,9 +176,7 @@ export function StripeSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Failed Payment Notifications</Label>
-							<p className="text-muted-foreground text-sm">
-								Notify when payments fail
-							</p>
+							<p className="text-muted-foreground text-sm">Notify when payments fail</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -233,9 +211,7 @@ export function StripeSettings() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Webhook Configuration</CardTitle>
-					<CardDescription>
-						Stripe webhook endpoint for real-time events
-					</CardDescription>
+					<CardDescription>Stripe webhook endpoint for real-time events</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
@@ -250,11 +226,7 @@ export function StripeSettings() {
 
 					<div className="space-y-2">
 						<Label htmlFor="webhook-secret">Webhook Signing Secret</Label>
-						<Input
-							defaultValue="whsec_••••••••••••••••••••"
-							id="webhook-secret"
-							type="password"
-						/>
+						<Input defaultValue="whsec_••••••••••••••••••••" id="webhook-secret" type="password" />
 					</div>
 				</CardContent>
 			</Card>

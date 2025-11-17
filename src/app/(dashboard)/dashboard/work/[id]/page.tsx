@@ -24,11 +24,7 @@ function JobDetailsSkeleton() {
 	);
 }
 
-export async function generateMetadata({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
 	const { id: _id } = await params;
 	return {
 		title: "Job Details",
@@ -45,16 +41,10 @@ async function JobData({ jobId }: { jobId: string }) {
 	const jobData = { job: result.data };
 	const metrics = {}; // TODO: Calculate metrics
 
-	return (
-		<JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />
-	);
+	return <JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />;
 }
 
-export default async function JobDetailsPage({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export default async function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: jobId } = await params;
 
 	return (

@@ -32,8 +32,7 @@ export default function PaymentReceivedEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				This confirms that we've received your payment. Thank you for your
-				prompt payment!
+				This confirms that we've received your payment. Thank you for your prompt payment!
 			</Text>
 
 			<Card style={confirmationCard}>
@@ -68,8 +67,8 @@ export default function PaymentReceivedEmail({
 				<Text style={thankYouIcon}>🙏</Text>
 				<Heading level={3}>We appreciate your business!</Heading>
 				<Text style={thankYouText}>
-					Your trust in our services means everything to us. We look forward to
-					serving you again in the future.
+					Your trust in our services means everything to us. We look forward to serving you again in
+					the future.
 				</Text>
 			</Card>
 

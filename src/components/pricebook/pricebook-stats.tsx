@@ -28,36 +28,28 @@ export async function PricebookStats() {
 
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Total Services
-				</h3>
-				<p className="mt-2 font-bold text-2xl">{stats.totalServices}</p>
-				<p className="mt-1 text-muted-foreground text-xs">Service offerings</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Total Services</h3>
+				<p className="mt-2 text-2xl font-bold">{stats.totalServices}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Service offerings</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Parts Catalog
-				</h3>
-				<p className="mt-2 font-bold text-2xl">{stats.partsCatalog}</p>
-				<p className="mt-1 text-muted-foreground text-xs">Parts available</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Parts Catalog</h3>
+				<p className="mt-2 text-2xl font-bold">{stats.partsCatalog}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Parts available</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Labor Rates
-				</h3>
-				<p className="mt-2 font-bold text-2xl">{stats.laborRates}</p>
-				<p className="mt-1 text-muted-foreground text-xs">Rate tiers</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Labor Rates</h3>
+				<p className="mt-2 text-2xl font-bold">{stats.laborRates}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Rate tiers</p>
 			</div>
 
-			<div className="rounded-lg border bg-card p-6">
-				<h3 className="font-medium text-muted-foreground text-sm">
-					Service Packages
-				</h3>
-				<p className="mt-2 font-bold text-2xl">{stats.servicePackages}</p>
-				<p className="mt-1 text-muted-foreground text-xs">Package deals</p>
+			<div className="bg-card rounded-lg border p-6">
+				<h3 className="text-muted-foreground text-sm font-medium">Service Packages</h3>
+				<p className="mt-2 text-2xl font-bold">{stats.servicePackages}</p>
+				<p className="text-muted-foreground mt-1 text-xs">Package deals</p>
 			</div>
 		</div>
 	);

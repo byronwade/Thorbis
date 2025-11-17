@@ -21,11 +21,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { Archive, FileText, Lock, Pin, User } from "lucide-react";
 import { useEffect, useState } from "react";
-import {
-	createCustomerNote,
-	deleteCustomerNote,
-	getCustomerNotes,
-} from "@/actions/customer-notes";
+import { createCustomerNote, deleteCustomerNote, getCustomerNotes } from "@/actions/customer-notes";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -62,22 +58,15 @@ type CustomerNotesTableProps = {
 	triggerAdd?: number; // Trigger to show add note form from external button
 };
 
-export function CustomerNotesTable({
-	customerId,
-	triggerAdd,
-}: CustomerNotesTableProps) {
+export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTableProps) {
 	const queryClient = useQueryClient();
 
 	// Local UI state (not data state)
-	const [filterType, setFilterType] = useState<"all" | "customer" | "internal">(
-		"all",
-	);
+	const [filterType, setFilterType] = useState<"all" | "customer" | "internal">("all");
 	const [page, setPage] = useState(0);
 	const [showAddNote, setShowAddNote] = useState(false);
 	const [newNoteContent, setNewNoteContent] = useState("");
-	const [newNoteType, setNewNoteType] = useState<"customer" | "internal">(
-		"customer",
-	);
+	const [newNoteType, setNewNoteType] = useState<"customer" | "internal">("customer");
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
@@ -111,10 +100,7 @@ export function CustomerNotesTable({
 
 	// React Query: Add note mutation with optimistic update
 	const addNoteMutation = useMutation({
-		mutationFn: async (data: {
-			content: string;
-			noteType: "customer" | "internal";
-		}) => {
+		mutationFn: async (data: { content: string; noteType: "customer" | "internal" }) => {
 			const result = await createCustomerNote({
 				customerId,
 				content: data.content,
@@ -166,12 +152,10 @@ export function CustomerNotesTable({
 					old
 						? {
 								...old,
-								notes: old.notes.filter(
-									(note: CustomerNote) => note.id !== noteId,
-								),
+								notes: old.notes.filter((note: CustomerNote) => note.id !== noteId),
 								count: old.count - 1,
 							}
-						: old,
+						: old
 			);
 
 			return { previousNotes };
@@ -181,7 +165,7 @@ export function CustomerNotesTable({
 			if (context?.previousNotes) {
 				queryClient.setQueryData(
 					["customer-notes", customerId, filterType, page, pageSize],
-					context.previousNotes,
+					context.previousNotes
 				);
 			}
 		},
@@ -237,11 +221,9 @@ export function CustomerNotesTable({
 	// Error state
 	if (error) {
 		return (
-			<div className="flex min-h-[400px] items-center justify-center rounded-lg border border-destructive/50 bg-destructive/10 p-8">
+			<div className="border-destructive/50 bg-destructive/10 flex min-h-[400px] items-center justify-center rounded-lg border p-8">
 				<div className="text-center">
-					<p className="mb-2 font-semibold text-destructive">
-						Failed to load notes
-					</p>
+					<p className="text-destructive mb-2 font-semibold">Failed to load notes</p>
 					<p className="text-muted-foreground text-sm">{error.message}</p>
 				</div>
 			</div>
@@ -253,10 +235,7 @@ export function CustomerNotesTable({
 			{/* Toolbar */}
 			<div className="flex items-center justify-between gap-4 p-4">
 				<div className="flex items-center gap-2">
-					<Select
-						onValueChange={(v: any) => setFilterType(v)}
-						value={filterType}
-					>
+					<Select onValueChange={(v: any) => setFilterType(v)} value={filterType}>
 						<SelectTrigger className="w-[180px]">
 							<SelectValue />
 						</SelectTrigger>
@@ -271,12 +250,9 @@ export function CustomerNotesTable({
 
 			{/* Add Note Form */}
 			{showAddNote && (
-				<div className="mx-4 space-y-3 rounded-lg border bg-muted/30 p-4">
+				<div className="bg-muted/30 mx-4 space-y-3 rounded-lg border p-4">
 					<div className="flex items-center gap-2">
-						<Select
-							onValueChange={(v: any) => setNewNoteType(v)}
-							value={newNoteType}
-						>
+						<Select onValueChange={(v: any) => setNewNoteType(v)} value={newNoteType}>
 							<SelectTrigger className="w-[180px]">
 								<SelectValue />
 							</SelectTrigger>
@@ -313,11 +289,7 @@ export function CustomerNotesTable({
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={addNoteMutation.isPending}
-							onClick={handleAddNote}
-							size="sm"
-						>
+						<Button disabled={addNoteMutation.isPending} onClick={handleAddNote} size="sm">
 							{addNoteMutation.isPending ? "Saving..." : "Save Note"}
 						</Button>
 					</div>
@@ -341,10 +313,8 @@ export function CustomerNotesTable({
 							<TableRow>
 								<TableCell className="h-24 text-center" colSpan={5}>
 									<div className="flex flex-col items-center gap-2">
-										<FileText className="size-8 text-muted-foreground/50" />
-										<p className="text-muted-foreground text-sm">
-											No notes found
-										</p>
+										<FileText className="text-muted-foreground/50 size-8" />
+										<p className="text-muted-foreground text-sm">No notes found</p>
 									</div>
 								</TableCell>
 							</TableRow>
@@ -367,24 +337,17 @@ export function CustomerNotesTable({
 									<TableCell className="max-w-md">
 										<div className="flex items-start gap-2">
 											{note.is_pinned && (
-												<Pin
-													className="mt-1 size-4 text-primary"
-													fill="currentColor"
-												/>
+												<Pin className="text-primary mt-1 size-4" fill="currentColor" />
 											)}
 											<p className="text-sm">{note.content}</p>
 										</div>
 									</TableCell>
 									<TableCell>
 										<div className="flex items-center gap-2">
-											<User className="size-4 text-muted-foreground" />
+											<User className="text-muted-foreground size-4" />
 											<div className="text-sm">
-												<p className="font-medium">
-													{note.user?.name || "Unknown"}
-												</p>
-												<p className="text-muted-foreground text-xs">
-													{note.user?.email}
-												</p>
+												<p className="font-medium">{note.user?.name || "Unknown"}</p>
+												<p className="text-muted-foreground text-xs">{note.user?.email}</p>
 											</div>
 										</div>
 									</TableCell>
@@ -407,7 +370,7 @@ export function CustomerNotesTable({
 											title="Archive note"
 											variant="ghost"
 										>
-											<Archive className="size-4 text-destructive" />
+											<Archive className="text-destructive size-4" />
 										</Button>
 									</TableCell>
 								</TableRow>
@@ -421,8 +384,8 @@ export function CustomerNotesTable({
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between">
 					<p className="text-muted-foreground text-sm">
-						Showing {page * pageSize + 1}-
-						{Math.min((page + 1) * pageSize, totalCount)} of {totalCount}
+						Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalCount)} of{" "}
+						{totalCount}
 					</p>
 					<div className="flex gap-2">
 						<Button
@@ -446,16 +409,12 @@ export function CustomerNotesTable({
 			)}
 
 			{/* Archive Note Dialog */}
-			<AlertDialog
-				onOpenChange={setIsArchiveDialogOpen}
-				open={isArchiveDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Note?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This note will be archived and can be restored within 90 days from
-							the archive page.
+							This note will be archived and can be restored within 90 days from the archive page.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

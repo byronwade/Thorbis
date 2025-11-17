@@ -109,7 +109,7 @@ function NotificationBadge({ count }: { count: number }) {
 		return null;
 	}
 	return (
-		<span className="-right-1 -top-1 absolute flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1.5 font-bold text-[0.625rem] text-white leading-none">
+		<span className="bg-destructive absolute -top-1 -right-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1.5 text-[0.625rem] leading-none font-bold text-white">
 			{formatBadgeCount(count)}
 		</span>
 	);
@@ -118,10 +118,8 @@ function NotificationBadge({ count }: { count: number }) {
 function EmptyState() {
 	return (
 		<div className="flex flex-col items-center justify-center py-12 text-center">
-			<Bell className="mb-3 size-12 text-muted-foreground/30" />
-			<p className="font-medium text-muted-foreground text-sm">
-				All caught up!
-			</p>
+			<Bell className="text-muted-foreground/30 mb-3 size-12" />
+			<p className="text-muted-foreground text-sm font-medium">All caught up!</p>
 			<p className="text-muted-foreground text-xs">No new notifications</p>
 		</div>
 	);
@@ -135,18 +133,10 @@ export function NotificationsDropdown() {
 	// Get notifications from Zustand store
 	const notifications = useNotificationsStore((state) => state.notifications);
 	const unreadCount = useNotificationsStore((state) => state.unreadCount);
-	const setNotifications = useNotificationsStore(
-		(state) => state.setNotifications,
-	);
-	const optimisticMarkAsRead = useNotificationsStore(
-		(state) => state.optimisticMarkAsRead,
-	);
-	const optimisticMarkAllAsRead = useNotificationsStore(
-		(state) => state.optimisticMarkAllAsRead,
-	);
-	const optimisticDelete = useNotificationsStore(
-		(state) => state.optimisticDelete,
-	);
+	const setNotifications = useNotificationsStore((state) => state.setNotifications);
+	const optimisticMarkAsRead = useNotificationsStore((state) => state.optimisticMarkAsRead);
+	const optimisticMarkAllAsRead = useNotificationsStore((state) => state.optimisticMarkAllAsRead);
+	const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
 	const subscribe = useNotificationsStore((state) => state.subscribe);
 	const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -156,15 +146,12 @@ export function NotificationsDropdown() {
 	const clearCompleted = useSyncStore((state) => state.clearCompleted);
 
 	// Filter for active operations
-	const activeOperations = operations.filter(
-		(op) => op.status === "in_progress",
-	);
+	const activeOperations = operations.filter((op) => op.status === "in_progress");
 	const recentOperations = operations.filter(
-		(op) => op.status === "completed" || op.status === "failed",
+		(op) => op.status === "completed" || op.status === "failed"
 	);
 
-	const hasSyncActivity =
-		activeOperations.length > 0 || offlineQueue.length > 0;
+	const hasSyncActivity = activeOperations.length > 0 || offlineQueue.length > 0;
 	const syncBadgeCount = activeOperations.length + offlineQueue.length;
 	const totalBadgeCount = unreadCount + syncBadgeCount;
 
@@ -213,10 +200,7 @@ export function NotificationsDropdown() {
 	// Handle click outside to close dropdown
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				dropdownRef.current &&
-				!dropdownRef.current.contains(event.target as Node)
-			) {
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
 				setIsOpen(false);
 			}
 		};
@@ -269,17 +253,15 @@ export function NotificationsDropdown() {
 	return (
 		<div className="relative overflow-visible" ref={dropdownRef}>
 			<button
-				className="hover-gradient relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent outline-none transition-all hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50"
+				className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 				onClick={() => setIsOpen(!isOpen)}
-				title={
-					hasSyncActivity ? "Notifications & Sync Status" : "Notifications"
-				}
+				title={hasSyncActivity ? "Notifications & Sync Status" : "Notifications"}
 				type="button"
 			>
 				<div className="relative">
 					<Bell className="size-4" />
 					{hasSyncActivity && (
-						<Loader2 className="-right-1 -top-1 absolute size-2.5 animate-spin text-primary" />
+						<Loader2 className="text-primary absolute -top-1 -right-1 size-2.5 animate-spin" />
 					)}
 				</div>
 				<NotificationBadge count={totalBadgeCount} />
@@ -290,11 +272,11 @@ export function NotificationsDropdown() {
 			</button>
 
 			{isOpen && (
-				<div className="absolute top-full right-0 z-50 mt-2 flex w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border bg-popover text-popover-foreground shadow-lg">
+				<div className="bg-popover text-popover-foreground absolute top-full right-0 z-50 mt-2 flex w-[380px] max-w-[calc(100vw-2rem)] flex-col rounded-lg border shadow-lg">
 					{/* Header */}
 					<div className="flex items-center justify-between border-b px-4 py-2.5">
 						<div>
-							<h3 className="font-semibold text-sm">
+							<h3 className="text-sm font-semibold">
 								{hasSyncActivity ? "Sync & Notifications" : "Notifications"}
 							</h3>
 							{(unreadCount > 0 || hasSyncActivity) && (
@@ -308,7 +290,7 @@ export function NotificationsDropdown() {
 						<div className="flex items-center gap-1">
 							{unreadCount > 0 && (
 								<button
-									className="flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-accent"
+									className="hover:bg-accent flex h-7 w-7 items-center justify-center rounded-md transition-colors"
 									onClick={markAllAsRead}
 									title="Mark all as read"
 									type="button"
@@ -317,7 +299,7 @@ export function NotificationsDropdown() {
 								</button>
 							)}
 							<button
-								className="flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-accent"
+								className="hover:bg-accent flex h-7 w-7 items-center justify-center rounded-md transition-colors"
 								onClick={() => setIsOpen(false)}
 								type="button"
 							>
@@ -334,35 +316,28 @@ export function NotificationsDropdown() {
 							{/* Active Operations */}
 							{activeOperations.length > 0 && (
 								<div className="space-y-1 px-4 py-3">
-									<p className="mb-2 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+									<p className="text-muted-foreground mb-2 text-xs font-medium tracking-wider uppercase">
 										Active
 									</p>
 									{activeOperations.map((op) => (
-										<div
-											className="flex items-start gap-2 rounded-md bg-primary/5 p-2"
-											key={op.id}
-										>
-											<Loader2 className="mt-0.5 size-3.5 shrink-0 animate-spin text-primary" />
+										<div className="bg-primary/5 flex items-start gap-2 rounded-md p-2" key={op.id}>
+											<Loader2 className="text-primary mt-0.5 size-3.5 shrink-0 animate-spin" />
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">
-													{op.title}
-												</p>
+												<p className="text-sm leading-tight font-medium">{op.title}</p>
 												{op.description && (
-													<p className="text-muted-foreground text-xs">
-														{op.description}
-													</p>
+													<p className="text-muted-foreground text-xs">{op.description}</p>
 												)}
 												{op.total && op.total > 0 && (
 													<div className="mt-1 space-y-0.5">
-														<div className="h-1 overflow-hidden rounded-full bg-muted">
+														<div className="bg-muted h-1 overflow-hidden rounded-full">
 															<div
-																className="h-full bg-primary transition-all"
+																className="bg-primary h-full transition-all"
 																style={{
 																	width: `${((op.current ?? 0) / op.total) * 100}%`,
 																}}
 															/>
 														</div>
-														<p className="text-[0.625rem] text-muted-foreground">
+														<p className="text-muted-foreground text-[0.625rem]">
 															{op.current ?? 0} / {op.total}
 														</p>
 													</div>
@@ -376,7 +351,7 @@ export function NotificationsDropdown() {
 							{/* Offline Queue */}
 							{offlineQueue.length > 0 && (
 								<div className="space-y-1 px-4 py-3">
-									<p className="mb-2 flex items-center gap-1.5 font-medium text-muted-foreground text-xs uppercase tracking-wider">
+									<p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wider uppercase">
 										<span className="size-1.5 animate-pulse rounded-full bg-orange-500" />
 										Queued (Offline)
 									</p>
@@ -387,9 +362,7 @@ export function NotificationsDropdown() {
 										>
 											<Clock className="mt-0.5 size-3.5 shrink-0 text-orange-500" />
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">
-													{op.action}
-												</p>
+												<p className="text-sm leading-tight font-medium">{op.action}</p>
 												<p className="mt-0.5 text-[0.625rem] text-orange-600 dark:text-orange-400">
 													Will sync when online
 												</p>
@@ -403,11 +376,11 @@ export function NotificationsDropdown() {
 							{recentOperations.length > 0 && (
 								<div className="space-y-1 px-4 py-3">
 									<div className="mb-2 flex items-center justify-between">
-										<p className="font-medium text-muted-foreground text-xs uppercase tracking-wider">
+										<p className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
 											Recent
 										</p>
 										<button
-											className="text-muted-foreground text-xs hover:text-foreground"
+											className="text-muted-foreground hover:text-foreground text-xs"
 											onClick={clearCompleted}
 											type="button"
 										>
@@ -429,13 +402,9 @@ export function NotificationsDropdown() {
 												<XCircle className="mt-0.5 size-3.5 shrink-0 text-red-600 dark:text-red-400" />
 											)}
 											<div className="min-w-0 flex-1">
-												<p className="font-medium text-sm leading-tight">
-													{op.title}
-												</p>
+												<p className="text-sm leading-tight font-medium">{op.title}</p>
 												{op.error && (
-													<p className="text-red-600 text-xs dark:text-red-400">
-														{op.error}
-													</p>
+													<p className="text-xs text-red-600 dark:text-red-400">{op.error}</p>
 												)}
 											</div>
 										</div>
@@ -455,47 +424,41 @@ export function NotificationsDropdown() {
 									const Icon = notificationIcons[notification.type];
 									return (
 										<div
-											className={`group relative px-4 py-3 transition-colors hover:bg-accent/50 ${
+											className={`group hover:bg-accent/50 relative px-4 py-3 transition-colors ${
 												notification.read ? "" : "bg-primary/5"
 											}`}
 											key={notification.id}
 										>
 											{/* Unread indicator */}
 											{!notification.read && (
-												<div className="absolute top-0 left-0 h-full w-0.5 bg-primary" />
+												<div className="bg-primary absolute top-0 left-0 h-full w-0.5" />
 											)}
 
 											<div className="flex gap-3">
 												{/* Icon */}
-												<div
-													className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}
-												>
+												<div className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}>
 													<Icon className="size-4" />
 												</div>
 
 												{/* Content */}
 												<div className="min-w-0 flex-1 space-y-1">
-													<p className="font-medium text-sm leading-snug">
-														{notification.title}
-													</p>
+													<p className="text-sm leading-snug font-medium">{notification.title}</p>
 													<p className="text-muted-foreground text-xs leading-relaxed">
 														{notification.message}
 													</p>
 
 													{/* Footer */}
 													<div className="flex items-center justify-between gap-2 pt-1">
-														<div className="flex items-center gap-1 text-muted-foreground text-xs">
+														<div className="text-muted-foreground flex items-center gap-1 text-xs">
 															<Clock className="size-3" />
-															{formatTimestamp(
-																new Date(notification.created_at),
-															)}
+															{formatTimestamp(new Date(notification.created_at))}
 														</div>
 
 														{/* Actions */}
 														<div className="flex items-center gap-1">
 															{notification.action_url && (
 																<Link
-																	className="rounded px-2 py-1 font-medium text-primary text-xs transition-colors hover:bg-primary/10"
+																	className="text-primary hover:bg-primary/10 rounded px-2 py-1 text-xs font-medium transition-colors"
 																	href={notification.action_url}
 																	onClick={() => {
 																		markAsRead(notification.id);
@@ -507,7 +470,7 @@ export function NotificationsDropdown() {
 															)}
 															{!notification.read && (
 																<button
-																	className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-accent"
+																	className="hover:bg-accent flex h-6 w-6 items-center justify-center rounded transition-colors"
 																	onClick={() => markAsRead(notification.id)}
 																	title="Mark as read"
 																	type="button"
@@ -516,10 +479,8 @@ export function NotificationsDropdown() {
 																</button>
 															)}
 															<button
-																className="flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-destructive/10 hover:text-destructive"
-																onClick={() =>
-																	deleteNotification(notification.id)
-																}
+																className="hover:bg-destructive/10 hover:text-destructive flex h-6 w-6 items-center justify-center rounded transition-colors"
+																onClick={() => deleteNotification(notification.id)}
 																title="Delete"
 																type="button"
 															>
@@ -540,7 +501,7 @@ export function NotificationsDropdown() {
 					{notifications.length > 0 && (
 						<div className="border-t px-4 py-2">
 							<Link
-								className="flex items-center justify-center rounded-md py-1.5 font-medium text-primary text-xs transition-colors hover:bg-accent"
+								className="text-primary hover:bg-accent flex items-center justify-center rounded-md py-1.5 text-xs font-medium transition-colors"
 								href="/dashboard/notifications"
 								onClick={() => setIsOpen(false)}
 							>

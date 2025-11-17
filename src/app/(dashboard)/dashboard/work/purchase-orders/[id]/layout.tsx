@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function PurchaseOrdersDetailLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function PurchaseOrdersDetailLayout({ children }: { children: ReactNode }) {
 	const config: UnifiedLayoutConfig = {
 		structure: {
 			maxWidth: "7xl",
@@ -31,12 +27,7 @@ export default function PurchaseOrdersDetailLayout({
 		},
 		toolbar: {
 			show: true,
-			back: (
-				<DetailBackButton
-					href="/dashboard/work/purchase-orders"
-					label="Purchase Orders"
-				/>
-			),
+			back: <DetailBackButton href="/dashboard/work/purchase-orders" label="Purchase Orders" />,
 			// TODO: Create PurchaseOrderDetailToolbar component
 			// actions: <PurchaseOrderDetailToolbar />,
 		},
@@ -46,10 +37,7 @@ export default function PurchaseOrdersDetailLayout({
 	};
 
 	return (
-		<SectionLayout
-			config={config}
-			pathname="/dashboard/work/purchase-orders/[id]"
-		>
+		<SectionLayout config={config} pathname="/dashboard/work/purchase-orders/[id]">
 			{children}
 		</SectionLayout>
 	);

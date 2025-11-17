@@ -75,7 +75,7 @@ export function SearchInput({
 
 	return (
 		<div className={`relative ${className}`}>
-			<Search className="-translate-y-1/2 absolute top-1/2 left-3 size-4 text-muted-foreground" />
+			<Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
 			<Input
 				className="pr-9 pl-9"
 				id="search-input"
@@ -86,7 +86,7 @@ export function SearchInput({
 			/>
 			{searchTerm && (
 				<Button
-					className="-translate-y-1/2 absolute top-1/2 right-1 h-7 w-7 p-0"
+					className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2 p-0"
 					onClick={clearSearch}
 					size="sm"
 					variant="ghost"
@@ -94,7 +94,7 @@ export function SearchInput({
 					<X className="size-4" />
 				</Button>
 			)}
-			<kbd className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 hidden select-none gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] opacity-100 sm:flex">
+			<kbd className="bg-muted pointer-events-none absolute top-1/2 right-3 hidden -translate-y-1/2 gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none sm:flex">
 				<span className="text-xs">⌘</span>K
 			</kbd>
 		</div>

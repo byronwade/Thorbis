@@ -16,65 +16,61 @@ export async function PerformanceReportsData() {
 		>
 			<div className="mx-auto max-w-5xl space-y-8">
 				<div className="grid gap-6 md:grid-cols-2">
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Target className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Target className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">KPI Tracking</h3>
+						<h3 className="text-lg font-semibold">KPI Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor key performance indicators and measure progress toward
-							strategic goals
+							Monitor key performance indicators and measure progress toward strategic goals
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Award className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Award className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Team Performance</h3>
+						<h3 className="text-lg font-semibold">Team Performance</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Evaluate technician performance, identify top performers, and
-							areas for improvement
+							Evaluate technician performance, identify top performers, and areas for improvement
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<TrendingUp className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<TrendingUp className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Growth Metrics</h3>
+						<h3 className="text-lg font-semibold">Growth Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track revenue growth, customer acquisition, and market share
-							expansion
+							Track revenue growth, customer acquisition, and market share expansion
 						</p>
 					</div>
 
-					<div className="space-y-3 rounded-lg border border-primary/10 bg-card/50 p-6 backdrop-blur-sm">
-						<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-							<Zap className="size-6 text-primary" />
+					<div className="border-primary/10 bg-card/50 space-y-3 rounded-lg border p-6 backdrop-blur-sm">
+						<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+							<Zap className="text-primary size-6" />
 						</div>
-						<h3 className="font-semibold text-lg">Efficiency Metrics</h3>
+						<h3 className="text-lg font-semibold">Efficiency Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Measure operational efficiency, resource utilization, and
-							productivity trends
+							Measure operational efficiency, resource utilization, and productivity trends
 						</p>
 					</div>
 				</div>
 
-				<div className="rounded-lg border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-8 text-center">
-					<h3 className="mb-3 font-semibold text-xl">Measure What Matters</h3>
-					<p className="mb-6 text-muted-foreground">
+				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
+					<h3 className="mb-3 text-xl font-semibold">Measure What Matters</h3>
+					<p className="text-muted-foreground mb-6">
 						Data-driven insights to achieve your business goals
 					</p>
 					<div className="flex justify-center gap-4">
 						<button
-							className="rounded-lg border border-primary/20 bg-background px-6 py-2 font-medium transition-colors hover:bg-primary/5"
+							className="border-primary/20 bg-background hover:bg-primary/5 rounded-lg border px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Learn More
 						</button>
 						<button
-							className="rounded-lg bg-primary px-6 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg px-6 py-2 font-medium transition-colors"
 							type="button"
 						>
 							Request Access

@@ -11,7 +11,7 @@ type WeatherProps = {
 
 export function Weather({ data }: WeatherProps) {
 	return (
-		<div className="not-prose rounded-xl border bg-secondary p-4 dark:bg-foreground">
+		<div className="not-prose bg-secondary dark:bg-foreground rounded-xl border p-4">
 			<div className="mb-2 font-medium">Weather in {data.location}</div>
 			<div className="grid gap-2 text-sm">
 				<div className="flex justify-between">

@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function PaymentDetailToolbarActions() {
@@ -117,7 +112,7 @@ export function PaymentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -138,8 +133,8 @@ export function PaymentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Payment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this payment? Archived payments
-							can be restored within 90 days.
+							Are you sure you want to archive this payment? Archived payments can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -150,11 +145,7 @@ export function PaymentDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Payment"}
 						</Button>
 					</DialogFooter>

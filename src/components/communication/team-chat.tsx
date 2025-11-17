@@ -74,13 +74,11 @@ export function TeamChat({
 			<div className="border-b p-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<Hash className="h-5 w-5 text-muted-foreground" />
+						<Hash className="text-muted-foreground h-5 w-5" />
 						<div>
-							<h2 className="font-semibold text-lg">{channelName}</h2>
+							<h2 className="text-lg font-semibold">{channelName}</h2>
 							{channelDescription && (
-								<p className="text-muted-foreground text-sm">
-									{channelDescription}
-								</p>
+								<p className="text-muted-foreground text-sm">{channelDescription}</p>
 							)}
 						</div>
 					</div>
@@ -95,10 +93,10 @@ export function TeamChat({
 				<div className="space-y-4">
 					{messages.length === 0 ? (
 						<div className="flex h-full flex-col items-center justify-center p-8 text-center">
-							<div className="mb-4 rounded-full bg-muted p-4">
-								<Hash className="h-8 w-8 text-muted-foreground" />
+							<div className="bg-muted mb-4 rounded-full p-4">
+								<Hash className="text-muted-foreground h-8 w-8" />
 							</div>
-							<h3 className="mb-2 font-semibold text-lg">No messages yet</h3>
+							<h3 className="mb-2 text-lg font-semibold">No messages yet</h3>
 							<p className="text-muted-foreground text-sm">
 								Be the first to start the conversation in #{channelName}
 							</p>
@@ -108,15 +106,10 @@ export function TeamChat({
 							const showAvatar =
 								index === 0 ||
 								messages[index - 1]?.userId !== msg.userId ||
-								msg.timestamp.getTime() -
-									messages[index - 1]?.timestamp.getTime() >
-									300_000;
+								msg.timestamp.getTime() - messages[index - 1]?.timestamp.getTime() > 300_000;
 
 							return (
-								<div
-									className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`}
-									key={msg.id}
-								>
+								<div className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`} key={msg.id}>
 									{showAvatar ? (
 										<Avatar className="h-8 w-8">
 											<AvatarFallback className="text-xs">
@@ -133,9 +126,7 @@ export function TeamChat({
 									<div className="min-w-0 flex-1">
 										{showAvatar && (
 											<div className="mb-1 flex items-center gap-2">
-												<span className="font-semibold text-sm">
-													{msg.userName}
-												</span>
+												<span className="text-sm font-semibold">{msg.userName}</span>
 												<span className="text-muted-foreground text-xs">
 													{formatTimestamp(msg.timestamp)}
 												</span>
@@ -147,7 +138,7 @@ export function TeamChat({
 												<div className="mt-1 flex gap-1">
 													{msg.reactions.map((reaction, idx) => (
 														<button
-															className="flex items-center gap-1 rounded-full border bg-muted/50 px-2 py-0.5 text-xs transition-colors hover:bg-muted"
+															className="bg-muted/50 hover:bg-muted flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs transition-colors"
 															key={idx}
 															type="button"
 														>

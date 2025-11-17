@@ -33,9 +33,7 @@ type WidgetRendererProps = {
 export function WidgetRenderer({ widget, data }: WidgetRendererProps) {
 	switch (widget.type) {
 		case "leaderboard":
-			return (
-				<LeaderboardWidget data={{ technicians: data.technicians as never }} />
-			);
+			return <LeaderboardWidget data={{ technicians: data.technicians as never }} />;
 		case "company-goals":
 			return <CompanyGoalsWidget data={data.companyGoals as never} />;
 		case "top-performer":
@@ -59,15 +57,11 @@ export function WidgetRenderer({ widget, data }: WidgetRendererProps) {
 		case "bonus-tracker":
 			return <BonusTrackerWidget data={data.bonusTracker as never} />;
 		case "prize-wheel":
-			return (
-				<PrizeWheelWidget currentPrize={(data.prizeOptions as never)?.[0]} />
-			);
+			return <PrizeWheelWidget currentPrize={(data.prizeOptions as never)?.[0]} />;
 		case "performance-scale":
 			return <PerformanceScaleWidget data={data.performanceScale as never} />;
 		case "company-randomizer":
-			return (
-				<CompanyRandomizerWidget selected={data.randomizerCategory as never} />
-			);
+			return <CompanyRandomizerWidget selected={data.randomizerCategory as never} />;
 		default:
 			return null;
 	}

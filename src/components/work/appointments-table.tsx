@@ -12,14 +12,7 @@
  * - Click to view appointment details
  */
 
-import {
-	Archive,
-	Calendar,
-	Edit,
-	Eye,
-	MoreHorizontal,
-	Plus,
-} from "lucide-react";
+import { Archive, Calendar, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -129,8 +122,7 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		cancelled: {
-			className:
-				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Cancelled",
 		},
 		no_show: {
@@ -145,10 +137,7 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge
-			className={cn("font-medium text-xs", config.className)}
-			variant="outline"
-		>
+		<Badge className={cn("text-xs font-medium", config.className)} variant="outline">
 			{config.label}
 		</Badge>
 	);
@@ -177,15 +166,9 @@ export function AppointmentsTable({
 	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
 	const [_isPermanentDeleteOpen, _setIsPermanentDeleteOpen] = useState(false);
-	const [appointmentToArchive, setAppointmentToArchive] = useState<
-		string | null
-	>(null);
-	const [_appointmentToDelete, _setAppointmentToDelete] = useState<
-		string | null
-	>(null);
-	const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
-		Set<string>
-	>(new Set());
+	const [appointmentToArchive, setAppointmentToArchive] = useState<string | null>(null);
+	const [_appointmentToDelete, _setAppointmentToDelete] = useState<string | null>(null);
+	const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<Set<string>>(new Set());
 
 	// Filter appointments based on archive status
 	const filteredAppointments = appointments.filter((apt) => {
@@ -210,11 +193,11 @@ export function AppointmentsTable({
 					href={`/dashboard/work/appointments/${appointment.id}`}
 					onClick={(e) => e.stopPropagation()}
 				>
-					<div className="truncate font-medium text-sm leading-tight hover:underline">
+					<div className="truncate text-sm leading-tight font-medium hover:underline">
 						{appointment.title}
 					</div>
 					{appointment.description && (
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+						<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
 							{appointment.description}
 						</div>
 					)}
@@ -229,9 +212,7 @@ export function AppointmentsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (appointment) => (
-				<span className="text-muted-foreground text-sm">
-					{getCustomerName(appointment)}
-				</span>
+				<span className="text-muted-foreground text-sm">{getCustomerName(appointment)}</span>
 			),
 		},
 		{
@@ -242,12 +223,9 @@ export function AppointmentsTable({
 			hideable: false, // CRITICAL: Date/time essential for scheduling
 			render: (appointment) => (
 				<div className="text-muted-foreground text-xs tabular-nums">
-					<div className="leading-tight">
-						{formatDate(appointment.start_time)}
-					</div>
+					<div className="leading-tight">{formatDate(appointment.start_time)}</div>
 					<div className="text-xs leading-tight">
-						{formatTime(appointment.start_time)} -{" "}
-						{formatTime(appointment.end_time)}
+						{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
 					</div>
 				</div>
 			),
@@ -297,9 +275,7 @@ export function AppointmentsTable({
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
-								<Link
-									href={`/dashboard/work/appointments/${appointment.id}/edit`}
-								>
+								<Link href={`/dashboard/work/appointments/${appointment.id}/edit`}>
 									<Edit className="mr-2 size-4" />
 									Edit Appointment
 								</Link>
@@ -376,7 +352,7 @@ export function AppointmentsTable({
 						Add Appointment
 					</Button>
 				}
-				emptyIcon={<Calendar className="h-8 w-8 text-muted-foreground" />}
+				emptyIcon={<Calendar className="text-muted-foreground h-8 w-8" />}
 				emptyMessage="No appointments found"
 				enableSelection={true}
 				entity="appointments"
@@ -392,16 +368,13 @@ export function AppointmentsTable({
 			/>
 
 			{/* Single Appointment Archive Dialog */}
-			<AlertDialog
-				onOpenChange={setIsSingleArchiveOpen}
-				open={isSingleArchiveOpen}
-			>
+			<AlertDialog onOpenChange={setIsSingleArchiveOpen} open={isSingleArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Appointment?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This appointment will be archived and can be restored within 90
-							days. After 90 days, it will be permanently deleted.
+							This appointment will be archived and can be restored within 90 days. After 90 days,
+							it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -410,9 +383,7 @@ export function AppointmentsTable({
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
 								if (appointmentToArchive) {
-									const { archiveAppointment } = await import(
-										"@/actions/appointments"
-									);
+									const { archiveAppointment } = await import("@/actions/appointments");
 									await archiveAppointment(appointmentToArchive);
 									window.location.reload();
 								}
@@ -432,8 +403,8 @@ export function AppointmentsTable({
 							Archive {selectedAppointmentIds.size} Appointment(s)?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							These appointments will be archived and can be restored within 90
-							days. After 90 days, they will be permanently deleted.
+							These appointments will be archived and can be restored within 90 days. After 90 days,
+							they will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -441,9 +412,7 @@ export function AppointmentsTable({
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
-								const { archiveAppointment } = await import(
-									"@/actions/appointments"
-								);
+								const { archiveAppointment } = await import("@/actions/appointments");
 								for (const appointmentId of selectedAppointmentIds) {
 									await archiveAppointment(appointmentId);
 								}

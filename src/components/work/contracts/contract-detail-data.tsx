@@ -32,10 +32,7 @@ function formatStatusLabel(status: string | null | undefined): string {
 		.join(" ");
 }
 
-function formatStatDate(
-	value: string | null | undefined,
-	fallback: string,
-): string {
+function formatStatDate(value: string | null | undefined, fallback: string): string {
 	if (!value) {
 		return fallback;
 	}
@@ -44,10 +41,7 @@ function formatStatDate(
 	return formatted === "—" ? fallback : formatted;
 }
 
-function resolveCustomerName(
-	customer: CustomerRecord | null,
-	fallback: string,
-): string {
+function resolveCustomerName(customer: CustomerRecord | null, fallback: string): string {
 	if (!customer) {
 		return fallback;
 	}
@@ -56,8 +50,7 @@ function resolveCustomerName(
 		return customer.display_name;
 	}
 
-	const fullName =
-		`${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+	const fullName = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
 
 	if (fullName) {
 		return fullName;
@@ -76,9 +69,7 @@ function resolveCustomerName(
  *
  * Streams in after shell renders (100-300ms).
  */
-export async function ContractDetailData({
-	contractId,
-}: ContractDetailDataProps) {
+export async function ContractDetailData({ contractId }: ContractDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -112,7 +103,8 @@ export async function ContractDetailData({
 	// Fetch contract with all related data
 	const { data: contractRaw, error: contractError } = await supabase
 		.from("contracts")
-		.select(`
+		.select(
+			`
       *,
       estimate:estimates!estimate_id(
         id,
@@ -135,7 +127,8 @@ export async function ContractDetailData({
         customer_id,
         customer:customers!customer_id(*)
       )
-    `)
+    `
+		)
 		.eq("id", contractId)
 		.eq("company_id", activeCompanyId)
 		.is("deleted_at", null)
@@ -149,12 +142,8 @@ export async function ContractDetailData({
 	const estimate = Array.isArray(contractRaw.estimate)
 		? contractRaw.estimate[0]
 		: contractRaw.estimate;
-	const invoice = Array.isArray(contractRaw.invoice)
-		? contractRaw.invoice[0]
-		: contractRaw.invoice;
-	const job = Array.isArray(contractRaw.job)
-		? contractRaw.job[0]
-		: contractRaw.job;
+	const invoice = Array.isArray(contractRaw.invoice) ? contractRaw.invoice[0] : contractRaw.invoice;
+	const job = Array.isArray(contractRaw.job) ? contractRaw.job[0] : contractRaw.job;
 
 	const customer = estimate?.customer
 		? Array.isArray(estimate.customer)
@@ -170,8 +159,7 @@ export async function ContractDetailData({
 					: job.customer
 				: null;
 
-	const customerId =
-		estimate?.customer_id || invoice?.customer_id || job?.customer_id;
+	const customerId = estimate?.customer_id || invoice?.customer_id || job?.customer_id;
 
 	// Fetch property (via job) and appointments for contract context
 	const [{ data: property }, { data: appointments }] = await Promise.all([
@@ -253,11 +241,9 @@ export async function ContractDetailData({
 		appointments: normalizedAppointments,
 	};
 
-	const linkedRecordsCount = [
-		normalizedEstimate,
-		normalizedInvoice,
-		normalizedJob,
-	].filter(Boolean).length;
+	const linkedRecordsCount = [normalizedEstimate, normalizedInvoice, normalizedJob].filter(
+		Boolean
+	).length;
 
 	const stats: StatCard[] = [
 		{

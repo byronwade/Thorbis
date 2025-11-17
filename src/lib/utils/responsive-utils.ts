@@ -10,7 +10,7 @@
  */
 export function formatNumber(
 	value: number,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): string {
 	if (stage === "tiny" || stage === "compact") {
 		// Ultra-compact: use K/M abbreviations
@@ -43,7 +43,7 @@ export function formatNumber(
  */
 export function formatCurrency(
 	value: number,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): string {
 	const formatted = formatNumber(value, stage);
 
@@ -60,7 +60,7 @@ export function formatCurrency(
  */
 export function formatPercentage(
 	value: number,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): string {
 	if (stage === "tiny" || stage === "compact") {
 		return `${Math.round(value)}%`;
@@ -74,7 +74,7 @@ export function formatPercentage(
  */
 export function truncateText(
 	text: string,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): string {
 	const maxLengths = {
 		full: 100,
@@ -97,7 +97,7 @@ export function truncateText(
  */
 export function getAdaptiveCount(
 	totalItems: number,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): number {
 	const counts = {
 		full: Math.min(totalItems, 8),
@@ -113,10 +113,7 @@ export function getAdaptiveCount(
  * Priority sort helper
  * Returns items sorted by priority (top performers, highest values, etc.)
  */
-export function prioritySort<T>(
-	items: T[],
-	getValue: (item: T) => number,
-): T[] {
+export function prioritySort<T>(items: T[], getValue: (item: T) => number): T[] {
 	return [...items].sort((a, b) => getValue(b) - getValue(a));
 }
 
@@ -126,7 +123,7 @@ export function prioritySort<T>(
  */
 export function detectStage(
 	width: number,
-	height: number,
+	height: number
 ): "full" | "comfortable" | "compact" | "tiny" {
 	// Height is priority
 	if (height >= 400 && width >= 300) {
@@ -153,7 +150,7 @@ export function getTrendClass(value: number): string {
  */
 export function formatRank(
 	rank: number,
-	stage: "full" | "comfortable" | "compact" | "tiny",
+	stage: "full" | "comfortable" | "compact" | "tiny"
 ): string {
 	if (stage === "tiny") {
 		return `#${rank}`;

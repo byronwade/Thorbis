@@ -59,20 +59,14 @@ export type BuildingData = z.infer<typeof BuildingDataSchema>;
 // ============================================================================
 
 export class BuildingDataService {
-	private readonly cache: Map<
-		string,
-		{ data: BuildingData; timestamp: number }
-	> = new Map();
+	private readonly cache: Map<string, { data: BuildingData; timestamp: number }> = new Map();
 	// biome-ignore lint: Cache TTL calculation with standard time units
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 30; // 30 days
 
 	/**
 	 * Get building data from OpenStreetMap for a specific location
 	 */
-	async getBuildingData(
-		lat: number,
-		lon: number,
-	): Promise<BuildingData | null> {
+	async getBuildingData(lat: number, lon: number): Promise<BuildingData | null> {
 		const cacheKey = `building:${lat.toFixed(6)},${lon.toFixed(6)}`;
 		const cached = this.cache.get(cacheKey);
 
@@ -120,9 +114,7 @@ export class BuildingDataService {
 			const buildingData: BuildingData = {
 				buildingType: this.normalizeBuildingType(tags.building),
 				height: tags.height ? Number.parseFloat(tags.height) : undefined,
-				levels: tags["building:levels"]
-					? Number.parseInt(tags["building:levels"], 10)
-					: undefined,
+				levels: tags["building:levels"] ? Number.parseInt(tags["building:levels"], 10) : undefined,
 				roofShape: tags["roof:shape"],
 				roofMaterial: tags["roof:material"],
 				wallMaterial: tags["wall:material"] || tags["building:material"],
@@ -142,10 +134,7 @@ export class BuildingDataService {
 
 			// Calculate footprint if geometry is available
 			if (building.geometry && building.geometry.length > 0) {
-				const coords = building.geometry.map((point: any) => [
-					point.lon,
-					point.lat,
-				]);
+				const coords = building.geometry.map((point: any) => [point.lon, point.lat]);
 				const area = this.calculatePolygonArea(coords);
 				const perimeter = this.calculatePolygonPerimeter(coords);
 
@@ -170,9 +159,7 @@ export class BuildingDataService {
 	/**
 	 * Normalize building type from OSM tags
 	 */
-	private normalizeBuildingType(
-		buildingTag: string | undefined,
-	): string | undefined {
+	private normalizeBuildingType(buildingTag: string | undefined): string | undefined {
 		if (!buildingTag || buildingTag === "yes") {
 			return;
 		}

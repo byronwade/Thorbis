@@ -95,7 +95,7 @@ export const PropertyEnrichmentSchema = z.object({
 			status: z.enum(["issued", "completed", "expired", "cancelled"]),
 			contractor: z.string().optional(),
 			value: z.number().optional(), // in cents
-		}),
+		})
 	),
 
 	// Utilities and services
@@ -199,7 +199,7 @@ export class PropertyEnrichmentService {
 		address: string,
 		city: string,
 		state: string,
-		zipCode: string,
+		zipCode: string
 	): Promise<PropertyEnrichment | null> {
 		const cacheKey = `${address}-${city}-${state}-${zipCode}`.toLowerCase();
 
@@ -222,13 +222,7 @@ export class PropertyEnrichmentService {
 			}
 
 			try {
-				const enrichment = await this.fetchFromProvider(
-					provider,
-					address,
-					city,
-					state,
-					zipCode,
-				);
+				const enrichment = await this.fetchFromProvider(provider, address, city, state, zipCode);
 
 				if (enrichment) {
 					// Cache the result
@@ -251,7 +245,7 @@ export class PropertyEnrichmentService {
 		address: string,
 		city: string,
 		state: string,
-		zipCode: string,
+		zipCode: string
 	): Promise<PropertyEnrichment | null> {
 		// This is a placeholder implementation
 		// In production, you would implement actual API calls to each provider
@@ -272,7 +266,7 @@ export class PropertyEnrichmentService {
 		address: string,
 		city: string,
 		state: string,
-		zipCode: string,
+		zipCode: string
 	): Promise<PropertyEnrichment | null> {
 		// Example Attom API call
 		// Note: This is a simplified example - actual implementation would be more complex
@@ -306,9 +300,7 @@ export class PropertyEnrichmentService {
 				longitude: data.property?.address?.longitude,
 			},
 			details: {
-				propertyType:
-					this.mapPropertyType(data.property?.summary?.proptype) ||
-					"single_family",
+				propertyType: this.mapPropertyType(data.property?.summary?.proptype) || "single_family",
 				squareFootage: data.building?.size?.bldgsize,
 				lotSizeSquareFeet: data.lot?.lotsize1,
 				yearBuilt: data.building?.summary?.yearbuilt,
@@ -324,9 +316,7 @@ export class PropertyEnrichmentService {
 			ownership: {
 				ownerName: data.owner?.owner1?.lastname1,
 				lastSaleDate: data.sale?.saleTransDate,
-				lastSalePrice: data.sale?.amount?.saleamt
-					? data.sale.amount.saleamt * 100
-					: undefined,
+				lastSalePrice: data.sale?.amount?.saleamt ? data.sale.amount.saleamt * 100 : undefined,
 				assessedValue: data.assessment?.assessed?.assdttlvalue
 					? data.assessment.assessed.assdttlvalue * 100
 					: undefined,
@@ -335,9 +325,7 @@ export class PropertyEnrichmentService {
 					: undefined,
 			},
 			taxes: {
-				annualAmount: data.assessment?.tax?.taxamt
-					? data.assessment.tax.taxamt * 100
-					: undefined,
+				annualAmount: data.assessment?.tax?.taxamt ? data.assessment.tax.taxamt * 100 : undefined,
 				taxYear: data.assessment?.tax?.taxyear,
 			},
 			permits: [], // Permits would require a separate API call
@@ -353,16 +341,13 @@ export class PropertyEnrichmentService {
 	 * Map provider-specific property types to our enum
 	 */
 	private mapPropertyType(
-		providerType: string | undefined,
+		providerType: string | undefined
 	): PropertyEnrichment["details"]["propertyType"] | undefined {
 		if (!providerType) {
 			return;
 		}
 
-		const typeMap: Record<
-			string,
-			PropertyEnrichment["details"]["propertyType"]
-		> = {
+		const typeMap: Record<string, PropertyEnrichment["details"]["propertyType"]> = {
 			SFR: "single_family",
 			MFR: "multi_family",
 			CONDO: "condo",
@@ -382,7 +367,7 @@ export class PropertyEnrichmentService {
 		_address: string,
 		_city: string,
 		_state: string,
-		_zipCode: string,
+		_zipCode: string
 	): Promise<PropertyEnrichment["permits"]> {
 		// This would integrate with local permit systems or aggregators
 		// Implementation depends on availability of permit data APIs

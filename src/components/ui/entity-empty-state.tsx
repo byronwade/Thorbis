@@ -53,7 +53,7 @@ export function EntityEmptyState({
 		<Empty className={className}>
 			<EmptyHeader>
 				<EmptyMedia variant="icon">
-					<Icon className="size-8 text-muted-foreground" />
+					<Icon className="text-muted-foreground size-8" />
 				</EmptyMedia>
 				<EmptyTitle>{title}</EmptyTitle>
 				{description && <EmptyDescription>{description}</EmptyDescription>}

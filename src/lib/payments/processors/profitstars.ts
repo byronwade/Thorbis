@@ -42,9 +42,7 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 		return ["ach", "check"];
 	}
 
-	async processPayment(
-		request: ProcessPaymentRequest,
-	): Promise<ProcessPaymentResponse> {
+	async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
 		try {
 			if (!request.paymentMethodId) {
 				return {
@@ -105,15 +103,12 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 			return {
 				success: false,
 				status: "failed",
-				error:
-					error instanceof Error ? error.message : "Payment processing failed",
+				error: error instanceof Error ? error.message : "Payment processing failed",
 			};
 		}
 	}
 
-	async refundPayment(
-		request: RefundPaymentRequest,
-	): Promise<RefundPaymentResponse> {
+	async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
 		try {
 			const refundRequest = {
 				merchant_id: this.config.merchantId,
@@ -162,16 +157,13 @@ export class ProfitStarsProcessor implements PaymentProcessor {
 		amount: number;
 		metadata?: Record<string, unknown>;
 	}> {
-		const response = await fetch(
-			`${this.apiUrl}/v1/payments/${transactionId}`,
-			{
-				method: "GET",
-				headers: {
-					Authorization: `Bearer ${this.config.apiKey}`,
-					"X-Merchant-ID": this.config.merchantId,
-				},
+		const response = await fetch(`${this.apiUrl}/v1/payments/${transactionId}`, {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${this.config.apiKey}`,
+				"X-Merchant-ID": this.config.merchantId,
 			},
-		);
+		});
 
 		const data = await response.json();
 

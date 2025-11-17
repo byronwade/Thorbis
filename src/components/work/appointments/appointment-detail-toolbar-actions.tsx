@@ -28,12 +28,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function AppointmentDetailToolbarActions() {
@@ -103,15 +98,8 @@ export function AppointmentDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
-								<a
-									href={`/dashboard/work/appointments/new?cloneFrom=${appointmentId}`}
-								>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
+								<a href={`/dashboard/work/appointments/new?cloneFrom=${appointmentId}`}>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -129,7 +117,7 @@ export function AppointmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -155,8 +143,8 @@ export function AppointmentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Appointment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this appointment? Archived
-							appointments can be restored within 90 days.
+							Are you sure you want to archive this appointment? Archived appointments can be
+							restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -167,11 +155,7 @@ export function AppointmentDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Appointment"}
 						</Button>
 					</DialogFooter>

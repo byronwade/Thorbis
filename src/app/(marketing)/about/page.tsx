@@ -4,13 +4,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateOrganizationStructuredData,
@@ -122,7 +116,7 @@ export default function AboutPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "About", url: `${siteUrl}/about` },
-						]),
+						])
 					),
 				}}
 				id="about-breadcrumb-ld"
@@ -134,7 +128,7 @@ export default function AboutPage() {
 						generateOrganizationStructuredData({
 							name: "Thorbis",
 							contactEmail: "press@thorbis.com",
-						}),
+						})
 					),
 				}}
 				id="about-organization-ld"
@@ -143,19 +137,18 @@ export default function AboutPage() {
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
 					<div className="space-y-6">
-						<Badge className="uppercase tracking-wide" variant="secondary">
+						<Badge className="tracking-wide uppercase" variant="secondary">
 							Our mission
 						</Badge>
-						<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+						<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 							Powering the world’s most trusted service companies
 						</h1>
-						<p className="text-lg text-muted-foreground leading-relaxed">
-							Thorbis builds software that helps home service and commercial
-							trades deliver elite customer experiences. From the first phone
-							call to final invoice, we use AI and automation to remove friction
-							and let people focus on what matters— delighting customers.
-							Pricing stays transparent: $100/month base subscription with
-							pay-as-you-go usage, unlimited users, and zero lock-in.
+						<p className="text-muted-foreground text-lg leading-relaxed">
+							Thorbis builds software that helps home service and commercial trades deliver elite
+							customer experiences. From the first phone call to final invoice, we use AI and
+							automation to remove friction and let people focus on what matters— delighting
+							customers. Pricing stays transparent: $100/month base subscription with pay-as-you-go
+							usage, unlimited users, and zero lock-in.
 						</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild>
@@ -179,7 +172,7 @@ export default function AboutPage() {
 				</section>
 
 				<section className="mt-16 space-y-8">
-					<h2 className="font-semibold text-2xl">What we believe</h2>
+					<h2 className="text-2xl font-semibold">What we believe</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{VALUES.map((value) => (
 							<Card key={value.title}>
@@ -187,9 +180,7 @@ export default function AboutPage() {
 									<CardTitle>{value.title}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<CardDescription className="leading-relaxed">
-										{value.description}
-									</CardDescription>
+									<CardDescription className="leading-relaxed">{value.description}</CardDescription>
 								</CardContent>
 							</Card>
 						))}
@@ -197,27 +188,20 @@ export default function AboutPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Our story</h2>
+					<h2 className="text-2xl font-semibold">Our story</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{HISTORY.map((entry) => (
-							<div
-								className="rounded-2xl border bg-muted/10 p-6"
-								key={entry.year}
-							>
-								<p className="font-semibold text-primary text-sm uppercase">
-									{entry.year}
-								</p>
-								<h3 className="font-semibold text-lg">{entry.milestone}</h3>
-								<p className="mt-2 text-muted-foreground text-sm leading-relaxed">
-									{entry.detail}
-								</p>
+							<div className="bg-muted/10 rounded-2xl border p-6" key={entry.year}>
+								<p className="text-primary text-sm font-semibold uppercase">{entry.year}</p>
+								<h3 className="text-lg font-semibold">{entry.milestone}</h3>
+								<p className="text-muted-foreground mt-2 text-sm leading-relaxed">{entry.detail}</p>
 							</div>
 						))}
 					</div>
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Leadership</h2>
+					<h2 className="text-2xl font-semibold">Leadership</h2>
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 						{LEADERSHIP.map((leader) => (
 							<Card className="overflow-hidden text-center" key={leader.name}>
@@ -235,21 +219,18 @@ export default function AboutPage() {
 									<CardDescription>{leader.role}</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">
-										{leader.bio}
-									</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">{leader.bio}</p>
 								</CardContent>
 							</Card>
 						))}
 					</div>
 				</section>
 
-				<section className="mt-16 rounded-3xl border bg-secondary/10 p-10 text-center">
-					<p className="text-lg text-muted-foreground">
-						Thorbis operates as a distributed-first company with teammates
-						across North America. We host quarterly onsites focused on customer
-						empathy, product discovery, and celebrating wins. Interested in
-						joining us?
+				<section className="bg-secondary/10 mt-16 rounded-3xl border p-10 text-center">
+					<p className="text-muted-foreground text-lg">
+						Thorbis operates as a distributed-first company with teammates across North America. We
+						host quarterly onsites focused on customer empathy, product discovery, and celebrating
+						wins. Interested in joining us?
 					</p>
 					<Button asChild className="mt-6">
 						<a href="/careers">Explore opportunities</a>

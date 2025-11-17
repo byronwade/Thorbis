@@ -7,13 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -26,11 +20,7 @@ export const metadata = generateSEOMetadata({
 		"Learn how Thorbis protects customer data. Review encryption, compliance, infrastructure, and incident response policies.",
 	path: "/security",
 	section: "Company",
-	keywords: [
-		"thorbis security",
-		"field service security",
-		"thorbis compliance",
-	],
+	keywords: ["thorbis security", "field service security", "thorbis compliance"],
 });
 
 const PILLARS = [
@@ -83,7 +73,7 @@ export default function SecurityPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Security", url: `${siteUrl}/security` },
-						]),
+						])
 					),
 				}}
 				id="security-breadcrumb-ld"
@@ -91,22 +81,19 @@ export default function SecurityPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="max-w-3xl space-y-6">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Security & trust
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						Protecting your business is our highest priority
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Thorbis was designed with security at its core. From encrypted data
-						storage to rigorous compliance programs, we protect sensitive
-						information for contractors of every size.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Thorbis was designed with security at its core. From encrypted data storage to rigorous
+						compliance programs, we protect sensitive information for contractors of every size.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild variant="outline">
-							<a href="mailto:security@thorbis.com">
-								Request our security packet
-							</a>
+							<a href="mailto:security@thorbis.com">Request our security packet</a>
 						</Button>
 						<Button asChild>
 							<a href="https://status.thorbis.com" rel="noopener">
@@ -117,7 +104,7 @@ export default function SecurityPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Security pillars</h2>
+					<h2 className="text-2xl font-semibold">Security pillars</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{PILLARS.map((pillar) => (
 							<Card key={pillar.title}>
@@ -134,33 +121,22 @@ export default function SecurityPage() {
 					</div>
 				</section>
 
-				<section className="mt-16 rounded-3xl border bg-muted/20 p-10">
-					<h2 className="font-semibold text-2xl">Certifications & policies</h2>
-					<ul className="mt-4 space-y-2 text-muted-foreground text-sm">
+				<section className="bg-muted/20 mt-16 rounded-3xl border p-10">
+					<h2 className="text-2xl font-semibold">Certifications & policies</h2>
+					<ul className="text-muted-foreground mt-4 space-y-2 text-sm">
 						<li>• SOC 2 Type II (audit underway, report available Q4 2025).</li>
 						<li>• GDPR compliant with EU Standard Contractual Clauses.</li>
-						<li>
-							• Annual third-party penetration testing and continuous bug bounty
-							program.
-						</li>
-						<li>
-							• Role-based access controls, SSO, and MFA required for all
-							employees.
-						</li>
+						<li>• Annual third-party penetration testing and continuous bug bounty program.</li>
+						<li>• Role-based access controls, SSO, and MFA required for all employees.</li>
 					</ul>
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+					<h2 className="text-2xl font-semibold">Frequently asked questions</h2>
 					<Accordion collapsible type="single">
 						{FAQ.map((item, index) => (
-							<AccordionItem
-								key={item.question}
-								value={`security-faq-${index}`}
-							>
-								<AccordionTrigger className="text-left">
-									{item.question}
-								</AccordionTrigger>
+							<AccordionItem key={item.question} value={`security-faq-${index}`}>
+								<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
 								<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 									{item.answer}
 								</AccordionContent>

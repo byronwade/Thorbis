@@ -1,8 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-type UserPreferencesRow =
-	| Database["public"]["Tables"]["user_preferences"]["Row"]
-	| null;
+type UserPreferencesRow = Database["public"]["Tables"]["user_preferences"]["Row"] | null;
 
 export type ThemeOption = "light" | "dark" | "system";
 
@@ -34,18 +32,13 @@ export const DEFAULT_PREFERENCE_SETTINGS: PreferenceSettings = {
 	tableView: "default",
 };
 
-export function mapPreferencesFromDb(
-	data: UserPreferencesRow,
-): PreferenceSettings {
+export function mapPreferencesFromDb(data: UserPreferencesRow): PreferenceSettings {
 	return {
 		...DEFAULT_PREFERENCE_SETTINGS,
 		theme:
-			(data?.theme === "light" ||
-			data?.theme === "dark" ||
-			data?.theme === "system"
+			(data?.theme === "light" || data?.theme === "dark" || data?.theme === "system"
 				? data.theme
-				: DEFAULT_PREFERENCE_SETTINGS.theme) ??
-			DEFAULT_PREFERENCE_SETTINGS.theme,
+				: DEFAULT_PREFERENCE_SETTINGS.theme) ?? DEFAULT_PREFERENCE_SETTINGS.theme,
 		language: data?.language ?? DEFAULT_PREFERENCE_SETTINGS.language,
 		timezone: data?.timezone ?? DEFAULT_PREFERENCE_SETTINGS.timezone,
 		dateFormat: data?.date_format ?? DEFAULT_PREFERENCE_SETTINGS.dateFormat,
@@ -55,9 +48,6 @@ export function mapPreferencesFromDb(
 				: data?.time_format === "12h"
 					? "12h"
 					: DEFAULT_PREFERENCE_SETTINGS.timeFormat,
-		tableView:
-			data?.default_page_size === 10
-				? "compact"
-				: DEFAULT_PREFERENCE_SETTINGS.tableView,
+		tableView: data?.default_page_size === 10 ? "compact" : DEFAULT_PREFERENCE_SETTINGS.tableView,
 	};
 }

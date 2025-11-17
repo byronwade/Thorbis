@@ -16,10 +16,7 @@ import { createClient } from "@/lib/supabase/server";
  * GET /api/documents/[id]/download
  * Get signed download URL for document
  */
-export async function GET(
-	_request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
 		const attachmentId = id;
@@ -27,10 +24,7 @@ export async function GET(
 		// Verify authentication
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Server configuration error" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
 		}
 		const {
 			data: { user },
@@ -50,10 +44,7 @@ export async function GET(
 			.single();
 
 		if (fetchError || !attachment) {
-			return NextResponse.json(
-				{ error: "Document not found" },
-				{ status: 404 },
-			);
+			return NextResponse.json({ error: "Document not found" }, { status: 404 });
 		}
 
 		// Verify user has access to company
@@ -73,17 +64,14 @@ export async function GET(
 		if (attachment.virus_scan_status === "infected") {
 			return NextResponse.json(
 				{ error: "File failed security scan and cannot be downloaded" },
-				{ status: 403 },
+				{ status: 403 }
 			);
 		}
 
-		if (
-			attachment.virus_scan_status === "pending" ||
-			attachment.virus_scan_status === "scanning"
-		) {
+		if (attachment.virus_scan_status === "pending" || attachment.virus_scan_status === "scanning") {
 			return NextResponse.json(
 				{ error: "File is still being scanned. Please try again shortly." },
-				{ status: 202 }, // Accepted but not ready
+				{ status: 202 } // Accepted but not ready
 			);
 		}
 
@@ -111,7 +99,7 @@ export async function GET(
 				error: "Failed to generate download URL",
 				details: error instanceof Error ? error.message : "Unknown error",
 			},
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }
@@ -120,10 +108,7 @@ export async function GET(
  * HEAD /api/documents/[id]/download
  * Get document metadata without downloading
  */
-export async function HEAD(
-	_request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> },
-) {
+export async function HEAD(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
 		const attachmentId = id;

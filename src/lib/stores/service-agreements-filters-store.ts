@@ -31,22 +31,21 @@ type ServiceAgreementsFiltersStore = {
 	resetFilters: () => void;
 };
 
-export const useServiceAgreementsFiltersStore =
-	create<ServiceAgreementsFiltersStore>()(
-		persist(
-			(set) => ({
-				filters: DEFAULT_FILTERS,
+export const useServiceAgreementsFiltersStore = create<ServiceAgreementsFiltersStore>()(
+	persist(
+		(set) => ({
+			filters: DEFAULT_FILTERS,
 
-				setFilters: (newFilters) =>
-					set((state) => ({
-						filters: { ...state.filters, ...newFilters },
-					})),
+			setFilters: (newFilters) =>
+				set((state) => ({
+					filters: { ...state.filters, ...newFilters },
+				})),
 
-				resetFilters: () => set({ filters: DEFAULT_FILTERS }),
-			}),
-			{
-				name: "service-agreements-filters",
-				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-			},
-		),
-	);
+			resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+		}),
+		{
+			name: "service-agreements-filters",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+		}
+	)
+);

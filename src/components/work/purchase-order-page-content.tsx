@@ -38,10 +38,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
-import {
-	archivePurchaseOrder,
-	updatePurchaseOrderVendor,
-} from "@/actions/purchase-orders";
+import { archivePurchaseOrder, updatePurchaseOrderVendor } from "@/actions/purchase-orders";
 import { VendorSelect } from "@/components/inventory/vendor-select";
 import { ActivityLogSection } from "@/components/layout/standard-sections/activity-log-section";
 import { AttachmentsSection } from "@/components/layout/standard-sections/attachments-section";
@@ -71,10 +68,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import {
-	UnifiedAccordion,
-	UnifiedAccordionContent,
-} from "@/components/ui/unified-accordion";
+import { UnifiedAccordion, UnifiedAccordionContent } from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 
 export type PurchaseOrderData = {
@@ -96,10 +90,7 @@ export type PurchaseOrderPageContentProps = {
 
 const _defaultAccordionSections = ["line-items"];
 
-export function PurchaseOrderPageContent({
-	entityData,
-	metrics,
-}: PurchaseOrderPageContentProps) {
+export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [_hasChanges, _setHasChanges] = useState(false);
@@ -120,15 +111,11 @@ export function PurchaseOrderPageContent({
 	} = entityData;
 
 	const [statusUpdateDialogOpen, setStatusUpdateDialogOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState<string>(
-		po.status || "draft",
-	);
+	const [selectedStatus, setSelectedStatus] = useState<string>(po.status || "draft");
 	const [statusUpdateNotes, setStatusUpdateNotes] = useState("");
 	const [isUpdatingStatus, _setIsUpdatingStatus] = useState(false);
 	const [isEditingVendor, setIsEditingVendor] = useState(false);
-	const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(
-		po.vendor_id,
-	);
+	const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(po.vendor_id);
 	const [selectedVendor, setSelectedVendor] = useState<any>(null);
 	const [isUpdatingVendor, setIsUpdatingVendor] = useState(false);
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -165,22 +152,16 @@ export function PurchaseOrderPageContent({
 					{lineItems.length > 0 ? (
 						<div className="-mx-4 overflow-x-auto sm:mx-0">
 							<Table>
-								<TableHeader className="sticky top-0 bg-background">
+								<TableHeader className="bg-background sticky top-0">
 									<TableRow>
 										<TableHead className="min-w-[200px]">Description</TableHead>
 										<TableHead className="w-24 text-right">Ordered</TableHead>
 										{(po.status === "partially_received" ||
 											po.status === "received" ||
-											lineItems.some(
-												(item: any) => item.received_quantity > 0,
-											)) && (
-											<TableHead className="w-24 text-right">
-												Received
-											</TableHead>
+											lineItems.some((item: any) => item.received_quantity > 0)) && (
+											<TableHead className="w-24 text-right">Received</TableHead>
 										)}
-										<TableHead className="w-32 text-right">
-											Unit Price
-										</TableHead>
+										<TableHead className="w-32 text-right">Unit Price</TableHead>
 										<TableHead className="w-32 text-right">Total</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -189,8 +170,7 @@ export function PurchaseOrderPageContent({
 										const receivedQty = item.received_quantity || 0;
 										const orderedQty = item.quantity || 0;
 										const isFullyReceived = receivedQty >= orderedQty;
-										const isPartiallyReceived =
-											receivedQty > 0 && receivedQty < orderedQty;
+										const isPartiallyReceived = receivedQty > 0 && receivedQty < orderedQty;
 
 										return (
 											<TableRow key={item.id}>
@@ -200,20 +180,18 @@ export function PurchaseOrderPageContent({
 														{isFullyReceived && (
 															<CheckCircle2
 																aria-label="Fully received"
-																className="size-4 text-success"
+																className="text-success size-4"
 															/>
 														)}
 														{isPartiallyReceived && (
 															<Clock
 																aria-label="Partially received"
-																className="size-4 text-warning"
+																className="text-warning size-4"
 															/>
 														)}
 													</div>
 												</TableCell>
-												<TableCell className="text-right">
-													{orderedQty}
-												</TableCell>
+												<TableCell className="text-right">{orderedQty}</TableCell>
 												{(po.status === "partially_received" ||
 													po.status === "received" ||
 													receivedQty > 0) && (
@@ -221,7 +199,7 @@ export function PurchaseOrderPageContent({
 														<span
 															className={
 																isFullyReceived
-																	? "font-semibold text-success"
+																	? "text-success font-semibold"
 																	: isPartiallyReceived
 																		? "text-warning"
 																		: ""
@@ -230,7 +208,7 @@ export function PurchaseOrderPageContent({
 															{receivedQty}
 														</span>
 														{isPartiallyReceived && (
-															<span className="ml-1 text-muted-foreground text-xs">
+															<span className="text-muted-foreground ml-1 text-xs">
 																({orderedQty - receivedQty} remaining)
 															</span>
 														)}
@@ -246,30 +224,26 @@ export function PurchaseOrderPageContent({
 													{new Intl.NumberFormat("en-US", {
 														style: "currency",
 														currency: "USD",
-													}).format(
-														(orderedQty * (item.unit_price || 0)) / 100,
-													)}
+													}).format((orderedQty * (item.unit_price || 0)) / 100)}
 												</TableCell>
 											</TableRow>
 										);
 									})}
 									{/* Total Row */}
-									<TableRow className="border-t-2 bg-muted/50">
+									<TableRow className="bg-muted/50 border-t-2">
 										<TableCell
 											className="text-right font-semibold"
 											colSpan={
 												po.status === "partially_received" ||
 												po.status === "received" ||
-												lineItems.some(
-													(item: any) => item.received_quantity > 0,
-												)
+												lineItems.some((item: any) => item.received_quantity > 0)
 													? 4
 													: 3
 											}
 										>
 											Total
 										</TableCell>
-										<TableCell className="text-right font-bold text-lg">
+										<TableCell className="text-right text-lg font-bold">
 											{new Intl.NumberFormat("en-US", {
 												style: "currency",
 												currency: "USD",
@@ -277,8 +251,8 @@ export function PurchaseOrderPageContent({
 												lineItems.reduce(
 													(sum: number, item: any) =>
 														sum + (item.quantity || 0) * (item.unit_price || 0),
-													0,
-												) / 100,
+													0
+												) / 100
 											)}
 										</TableCell>
 									</TableRow>
@@ -288,13 +262,9 @@ export function PurchaseOrderPageContent({
 					) : (
 						<div className="flex h-64 items-center justify-center">
 							<div className="text-center">
-								<FileText className="mx-auto size-12 text-muted-foreground/50" />
-								<p className="mt-4 text-muted-foreground text-sm">
-									No line items yet
-								</p>
-								<p className="text-muted-foreground text-xs">
-									Add items to this purchase order
-								</p>
+								<FileText className="text-muted-foreground/50 mx-auto size-12" />
+								<p className="text-muted-foreground mt-4 text-sm">No line items yet</p>
+								<p className="text-muted-foreground text-xs">Add items to this purchase order</p>
 							</div>
 						</div>
 					)}
@@ -315,7 +285,7 @@ export function PurchaseOrderPageContent({
 						<div>
 							<Label className="text-xs">Job Number</Label>
 							<Link
-								className="block font-medium text-primary text-sm hover:underline"
+								className="text-primary block text-sm font-medium hover:underline"
 								href={`/dashboard/work/${job.id}`}
 							>
 								#{job.job_number}
@@ -347,7 +317,7 @@ export function PurchaseOrderPageContent({
 						<div>
 							<Label className="text-xs">Estimate Number</Label>
 							<Link
-								className="block font-medium text-primary text-sm hover:underline"
+								className="text-primary block text-sm font-medium hover:underline"
 								href={`/dashboard/work/estimates/${estimate.id}`}
 							>
 								#{estimate.estimate_number || estimate.id.slice(0, 8)}
@@ -359,7 +329,7 @@ export function PurchaseOrderPageContent({
 						</div>
 						<div>
 							<Label className="text-xs">Total Amount</Label>
-							<p className="font-medium text-sm">
+							<p className="text-sm font-medium">
 								{new Intl.NumberFormat("en-US", {
 									style: "currency",
 									currency: "USD",
@@ -388,7 +358,7 @@ export function PurchaseOrderPageContent({
 						<div>
 							<Label className="text-xs">Invoice Number</Label>
 							<Link
-								className="block font-medium text-primary text-sm hover:underline"
+								className="text-primary block text-sm font-medium hover:underline"
 								href={`/dashboard/work/invoices/${invoice.id}`}
 							>
 								#{invoice.invoice_number || invoice.id.slice(0, 8)}
@@ -400,7 +370,7 @@ export function PurchaseOrderPageContent({
 						</div>
 						<div>
 							<Label className="text-xs">Total Amount</Label>
-							<p className="font-medium text-sm">
+							<p className="text-sm font-medium">
 								{new Intl.NumberFormat("en-US", {
 									style: "currency",
 									currency: "USD",
@@ -409,9 +379,7 @@ export function PurchaseOrderPageContent({
 						</div>
 						<div>
 							<Label className="text-xs">Status</Label>
-							<Badge
-								variant={invoice.status === "paid" ? "default" : "outline"}
-							>
+							<Badge variant={invoice.status === "paid" ? "default" : "outline"}>
 								{invoice.status}
 							</Badge>
 						</div>
@@ -433,9 +401,7 @@ export function PurchaseOrderPageContent({
 						{po.delivery_address && (
 							<div>
 								<Label className="text-xs">Delivery Address</Label>
-								<p className="whitespace-pre-line text-sm">
-									{po.delivery_address}
-								</p>
+								<p className="text-sm whitespace-pre-line">{po.delivery_address}</p>
 							</div>
 						)}
 						{po.tracking_number && (
@@ -443,12 +409,7 @@ export function PurchaseOrderPageContent({
 								<Label className="text-xs">Tracking Number</Label>
 								<div className="flex items-center gap-2">
 									<p className="font-mono text-sm">{po.tracking_number}</p>
-									<Button
-										asChild
-										className="h-6 px-2"
-										size="sm"
-										variant="ghost"
-									>
+									<Button asChild className="h-6 px-2" size="sm" variant="ghost">
 										<a
 											href={`https://www.google.com/search?q=${encodeURIComponent(po.tracking_number)}`}
 											rel="noopener noreferrer"
@@ -482,25 +443,19 @@ export function PurchaseOrderPageContent({
 								key={attachment.id}
 							>
 								<div className="flex items-center gap-2">
-									<FileText className="size-4 text-muted-foreground" />
+									<FileText className="text-muted-foreground size-4" />
 									<div>
-										<p className="font-medium text-sm">
+										<p className="text-sm font-medium">
 											{attachment.original_file_name || attachment.file_name}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											{attachment.file_size
-												? `${(attachment.file_size / 1024).toFixed(1)} KB`
-												: ""}
+											{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : ""}
 											{attachment.category && ` • ${attachment.category}`}
 										</p>
 									</div>
 								</div>
 								<Button asChild size="sm" variant="ghost">
-									<a
-										href={attachment.storage_url}
-										rel="noopener noreferrer"
-										target="_blank"
-									>
+									<a href={attachment.storage_url} rel="noopener noreferrer" target="_blank">
 										<Download className="size-4" />
 									</a>
 								</Button>
@@ -508,9 +463,7 @@ export function PurchaseOrderPageContent({
 						))}
 					</div>
 				) : (
-					<p className="text-center text-muted-foreground text-sm">
-						No attachments yet
-					</p>
+					<p className="text-muted-foreground text-center text-sm">No attachments yet</p>
 				)}
 			</UnifiedAccordionContent>
 		),
@@ -528,13 +481,13 @@ export function PurchaseOrderPageContent({
 						{po.notes && (
 							<div>
 								<Label className="text-xs">Public Notes</Label>
-								<p className="mt-1 whitespace-pre-wrap text-sm">{po.notes}</p>
+								<p className="mt-1 text-sm whitespace-pre-wrap">{po.notes}</p>
 							</div>
 						)}
 						{po.internal_notes && (
 							<div>
 								<Label className="text-xs">Internal Notes</Label>
-								<p className="mt-1 whitespace-pre-wrap text-muted-foreground text-sm">
+								<p className="text-muted-foreground mt-1 text-sm whitespace-pre-wrap">
 									{po.internal_notes}
 								</p>
 							</div>
@@ -570,15 +523,11 @@ export function PurchaseOrderPageContent({
 					{/* Desktop Title and Actions */}
 					<div className="hidden flex-row items-center justify-between lg:flex">
 						<div className="flex flex-row items-center gap-2">
-							<h1 className="font-semibold text-2xl">{po.title}</h1>
+							<h1 className="text-2xl font-semibold">{po.title}</h1>
 						</div>
 						<div className="flex h-min gap-2">
 							{/* Print PO */}
-							<Button
-								onClick={() => window.print()}
-								size="sm"
-								variant="outline"
-							>
+							<Button onClick={() => window.print()} size="sm" variant="outline">
 								<Printer className="mr-2 size-4" />
 								Print
 							</Button>
@@ -652,9 +601,7 @@ export function PurchaseOrderPageContent({
 									>
 										Cancel PO
 									</DropdownMenuItem>
-									<DropdownMenuItem
-										onClick={() => setIsArchiveDialogOpen(true)}
-									>
+									<DropdownMenuItem onClick={() => setIsArchiveDialogOpen(true)}>
 										<Archive className="mr-2 size-4" />
 										Archive
 									</DropdownMenuItem>
@@ -664,29 +611,27 @@ export function PurchaseOrderPageContent({
 					</div>
 
 					{/* Main Card Container */}
-					<div className="rounded-md bg-muted/50 shadow-sm">
+					<div className="bg-muted/50 rounded-md shadow-sm">
 						<div className="flex flex-col gap-4 overflow-hidden p-4 sm:p-6 md:flex-row">
 							{/* Left Side - Status Preview */}
 							<div className="flex flex-col gap-3">
 								<div className="aspect-[16/10] w-full md:w-[320px] lg:w-[400px]">
-									<div className="flex size-full w-full flex-none justify-center overflow-hidden rounded-lg border border-border border-solid p-0">
+									<div className="border-border flex size-full w-full flex-none justify-center overflow-hidden rounded-lg border border-solid p-0">
 										<div className="w-full">
 											{/* Status Header */}
-											<div className="w-full border-border border-b border-solid p-3">
+											<div className="border-border w-full border-b border-solid p-3">
 												<div className="flex items-center gap-2">
 													{po.status === "received" ? (
-														<CheckCircle2 className="size-4 text-success" />
+														<CheckCircle2 className="text-success size-4" />
 													) : po.status === "cancelled" ? (
-														<AlertCircle className="size-4 text-destructive" />
+														<AlertCircle className="text-destructive size-4" />
 													) : (
-														<Clock className="size-4 text-warning" />
+														<Clock className="text-warning size-4" />
 													)}
-													<h3 className="font-medium text-sm">
+													<h3 className="text-sm font-medium">
 														{po.status
 															?.replace("_", " ")
-															.replace(/\b\w/g, (l: string) =>
-																l.toUpperCase(),
-															) || "Draft"}
+															.replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft"}
 													</h3>
 												</div>
 											</div>
@@ -694,19 +639,13 @@ export function PurchaseOrderPageContent({
 											<div className="flex h-[calc(100%-45px)] flex-col p-3">
 												<div className="space-y-3">
 													<div>
-														<p className="text-muted-foreground text-xs">
-															PO Number
-														</p>
-														<p className="font-medium text-sm">
-															{po.po_number || po.poNumber}
-														</p>
+														<p className="text-muted-foreground text-xs">PO Number</p>
+														<p className="text-sm font-medium">{po.po_number || po.poNumber}</p>
 													</div>
 													{po.vendor && (
 														<div>
-															<p className="text-muted-foreground text-xs">
-																Vendor
-															</p>
-															<p className="font-medium text-sm">{po.vendor}</p>
+															<p className="text-muted-foreground text-xs">Vendor</p>
+															<p className="text-sm font-medium">{po.vendor}</p>
 														</div>
 													)}
 												</div>
@@ -730,12 +669,7 @@ export function PurchaseOrderPageContent({
 
 									{/* Email Vendor */}
 									{po.vendor_email && (
-										<Button
-											asChild
-											className="min-w-[96px] flex-1"
-											size="sm"
-											variant="outline"
-										>
+										<Button asChild className="min-w-[96px] flex-1" size="sm" variant="outline">
 											<a
 												href={`mailto:${po.vendor_email}?subject=Purchase Order ${po.po_number || po.poNumber}`}
 											>
@@ -802,9 +736,7 @@ export function PurchaseOrderPageContent({
 											>
 												Cancel PO
 											</DropdownMenuItem>
-											<DropdownMenuItem
-												onClick={() => setIsArchiveDialogOpen(true)}
-											>
+											<DropdownMenuItem onClick={() => setIsArchiveDialogOpen(true)}>
 												<Archive className="mr-2 size-4" />
 												Archive
 											</DropdownMenuItem>
@@ -818,17 +750,13 @@ export function PurchaseOrderPageContent({
 								<div className="grid grid-cols-2 gap-4 md:grid-cols-4 [&>div]:flex-[0_1_auto]">
 									{/* Created Date */}
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">
-											Created
-										</span>
-										<div className="flex h-5 items-center gap-2 whitespace-nowrap text-sm [&>*]:text-ellipsis">
-											<User className="size-4 flex-none text-muted-foreground" />
+										<span className="text-muted-foreground text-xs">Created</span>
+										<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
+											<User className="text-muted-foreground size-4 flex-none" />
 											<span className="-ml-px shrink truncate text-sm">
-												{requestedByUser?.name ||
-													requestedByUser?.email ||
-													"Unknown"}
+												{requestedByUser?.name || requestedByUser?.email || "Unknown"}
 											</span>
-											<span className="flex-none text-muted-foreground text-xs tabular-nums">
+											<span className="text-muted-foreground flex-none text-xs tabular-nums">
 												{new Date(po.created_at).toLocaleDateString()}
 											</span>
 										</div>
@@ -836,10 +764,8 @@ export function PurchaseOrderPageContent({
 
 									{/* Status */}
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">
-											Status
-										</span>
-										<div className="-ml-[3px] flex h-5 items-center gap-1 whitespace-nowrap text-sm [&>*]:text-ellipsis">
+										<span className="text-muted-foreground text-xs">Status</span>
+										<div className="-ml-[3px] flex h-5 items-center gap-1 text-sm whitespace-nowrap [&>*]:text-ellipsis">
 											<span className="flex size-4 items-center justify-center">
 												<span
 													className={`size-2.5 flex-none rounded-full ${
@@ -854,8 +780,7 @@ export function PurchaseOrderPageContent({
 											<span className="text-sm">
 												{po.status
 													?.replace("_", " ")
-													.replace(/\b\w/g, (l: string) => l.toUpperCase()) ||
-													"Draft"}
+													.replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft"}
 											</span>
 											{po.priority && (
 												<Badge className="ml-1" variant="outline">
@@ -868,12 +793,10 @@ export function PurchaseOrderPageContent({
 									{/* Expected Delivery */}
 									{po.expected_delivery && (
 										<div className="flex flex-col gap-1">
-											<span className="text-muted-foreground text-xs">
-												Expected Delivery
-											</span>
-											<div className="flex h-5 items-center gap-2 whitespace-nowrap text-sm tabular-nums [&>*]:text-ellipsis">
-												<Clock className="size-4 flex-none text-muted-foreground" />
-												<span className="font-medium text-sm">
+											<span className="text-muted-foreground text-xs">Expected Delivery</span>
+											<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap tabular-nums [&>*]:text-ellipsis">
+												<Clock className="text-muted-foreground size-4 flex-none" />
+												<span className="text-sm font-medium">
 													{new Date(po.expected_delivery).toLocaleDateString()}
 												</span>
 												{po.actual_delivery && (
@@ -888,9 +811,9 @@ export function PurchaseOrderPageContent({
 									{/* Total Amount */}
 									<div className="flex flex-col gap-1">
 										<span className="text-muted-foreground text-xs">Total</span>
-										<div className="flex h-5 items-center gap-2 whitespace-nowrap text-sm [&>*]:text-ellipsis">
-											<DollarSign className="size-4 flex-none text-muted-foreground" />
-											<span className="font-medium text-sm">
+										<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
+											<DollarSign className="text-muted-foreground size-4 flex-none" />
+											<span className="text-sm font-medium">
 												{new Intl.NumberFormat("en-US", {
 													style: "currency",
 													currency: "USD",
@@ -903,15 +826,13 @@ export function PurchaseOrderPageContent({
 								{/* Vendor Section */}
 								<div className="flex flex-col gap-1">
 									<span className="text-muted-foreground text-xs">Vendor</span>
-									<div className="flex h-5 items-center gap-2 whitespace-nowrap text-sm [&>*]:text-ellipsis">
+									<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
 										{!isEditingVendor && (
 											<>
-												<User className="size-4 flex-none text-muted-foreground" />
+												<User className="text-muted-foreground size-4 flex-none" />
 												{po.vendor ? (
 													<>
-														<span className="font-medium text-sm">
-															{po.vendor}
-														</span>
+														<span className="text-sm font-medium">{po.vendor}</span>
 														<Button
 															className="h-6 px-2"
 															onClick={() => setIsEditingVendor(true)}
@@ -957,38 +878,28 @@ export function PurchaseOrderPageContent({
 														setIsUpdatingVendor(true);
 														try {
 															const vendorName =
-																selectedVendor?.display_name ||
-																selectedVendor?.name ||
-																po.vendor;
-															const vendorEmail =
-																selectedVendor?.email || po.vendor_email;
-															const vendorPhone =
-																selectedVendor?.phone || po.vendor_phone;
+																selectedVendor?.display_name || selectedVendor?.name || po.vendor;
+															const vendorEmail = selectedVendor?.email || po.vendor_email;
+															const vendorPhone = selectedVendor?.phone || po.vendor_phone;
 
 															const result = await updatePurchaseOrderVendor(
 																po.id,
 																selectedVendorId,
 																vendorName,
 																vendorEmail,
-																vendorPhone,
+																vendorPhone
 															);
 
 															if (result.success) {
-																toast.success(
-																	`Vendor changed to ${vendorName}`,
-																);
+																toast.success(`Vendor changed to ${vendorName}`);
 																setIsEditingVendor(false);
 																// Server Action handles revalidation automatically
 															} else {
-																throw new Error(
-																	result.error || "Failed to update vendor",
-																);
+																throw new Error(result.error || "Failed to update vendor");
 															}
 														} catch (error) {
 															toast.error(
-																error instanceof Error
-																	? error.message
-																	: "Failed to update vendor",
+																error instanceof Error ? error.message : "Failed to update vendor"
 															);
 														} finally {
 															setIsUpdatingVendor(false);
@@ -1019,14 +930,10 @@ export function PurchaseOrderPageContent({
 								{/* Job Reference */}
 								{po.job_id && (
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">
-											Related Job
-										</span>
-										<div className="flex h-5 items-center gap-2 whitespace-nowrap text-sm [&>*]:text-ellipsis">
-											<FileCheck className="size-4 flex-none text-muted-foreground" />
-											<span className="font-medium text-sm">
-												Job #{po.job_id}
-											</span>
+										<span className="text-muted-foreground text-xs">Related Job</span>
+										<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
+											<FileCheck className="text-muted-foreground size-4 flex-none" />
+											<span className="text-sm font-medium">Job #{po.job_id}</span>
 										</div>
 									</div>
 								)}
@@ -1035,12 +942,9 @@ export function PurchaseOrderPageContent({
 
 						{/* Collapsible Footer - Outside columns */}
 						<div className="rounded-b" data-orientation="vertical">
-							<div
-								data-orientation="vertical"
-								data-state={isDetailsOpen ? "open" : "closed"}
-							>
+							<div data-orientation="vertical" data-state={isDetailsOpen ? "open" : "closed"}>
 								<button
-									className="ease flex h-12 w-full cursor-pointer items-center justify-between border-0 border-border border-t bg-transparent px-4 transition-all duration-200 hover:bg-muted/50 disabled:text-muted-foreground"
+									className="ease border-border hover:bg-muted/50 disabled:text-muted-foreground flex h-12 w-full cursor-pointer items-center justify-between border-0 border-t bg-transparent px-4 transition-all duration-200"
 									data-radix-collection-item=""
 									onClick={() => setIsDetailsOpen(!isDetailsOpen)}
 									type="button"
@@ -1052,14 +956,12 @@ export function PurchaseOrderPageContent({
 											}`}
 										/>
 										<span className="flex w-full items-center gap-2">
-											<span className="font-medium text-sm">
-												Purchase Order Details
-											</span>
+											<span className="text-sm font-medium">Purchase Order Details</span>
 										</span>
 									</span>
 								</button>
 								<div
-									className="slide-in-from-top-2 animate-in overflow-hidden duration-200 will-change-[height] data-[state=closed]:animate-content-close data-[state=closed]:animate-out data-[state=open]:animate-content-open"
+									className="slide-in-from-top-2 animate-in data-[state=closed]:animate-content-close data-[state=closed]:animate-out data-[state=open]:animate-content-open overflow-hidden duration-200 will-change-[height]"
 									data-state={isDetailsOpen ? "open" : "closed"}
 									hidden={!isDetailsOpen}
 									role="region"
@@ -1067,42 +969,25 @@ export function PurchaseOrderPageContent({
 									<div className="space-y-4 border-t p-4 sm:p-6">
 										{/* PO Number */}
 										<div>
-											<Label className="text-muted-foreground text-xs">
-												PO Number
-											</Label>
-											<p className="mt-1 font-medium text-sm">
-												{po.po_number || po.poNumber}
-											</p>
+											<Label className="text-muted-foreground text-xs">PO Number</Label>
+											<p className="mt-1 text-sm font-medium">{po.po_number || po.poNumber}</p>
 										</div>
 
 										{/* Delivery Address */}
 										{po.delivery_address && (
 											<div>
-												<Label className="text-muted-foreground text-xs">
-													Delivery Address
-												</Label>
-												<p className="mt-1 whitespace-pre-line text-sm">
-													{po.delivery_address}
-												</p>
+												<Label className="text-muted-foreground text-xs">Delivery Address</Label>
+												<p className="mt-1 text-sm whitespace-pre-line">{po.delivery_address}</p>
 											</div>
 										)}
 
 										{/* Tracking Number */}
 										{po.tracking_number && (
 											<div>
-												<Label className="text-muted-foreground text-xs">
-													Tracking Number
-												</Label>
+												<Label className="text-muted-foreground text-xs">Tracking Number</Label>
 												<div className="mt-1 flex items-center gap-2">
-													<p className="font-mono text-sm">
-														{po.tracking_number}
-													</p>
-													<Button
-														asChild
-														className="h-6 px-2"
-														size="sm"
-														variant="ghost"
-													>
+													<p className="font-mono text-sm">{po.tracking_number}</p>
+													<Button asChild className="h-6 px-2" size="sm" variant="ghost">
 														<a
 															href={`https://www.google.com/search?q=${encodeURIComponent(po.tracking_number)}`}
 															rel="noopener noreferrer"
@@ -1118,22 +1003,16 @@ export function PurchaseOrderPageContent({
 										{/* Notes */}
 										{po.notes && (
 											<div>
-												<Label className="text-muted-foreground text-xs">
-													Public Notes
-												</Label>
-												<p className="mt-1 whitespace-pre-wrap text-sm">
-													{po.notes}
-												</p>
+												<Label className="text-muted-foreground text-xs">Public Notes</Label>
+												<p className="mt-1 text-sm whitespace-pre-wrap">{po.notes}</p>
 											</div>
 										)}
 
 										{/* Internal Notes */}
 										{po.internal_notes && (
 											<div>
-												<Label className="text-muted-foreground text-xs">
-													Internal Notes
-												</Label>
-												<p className="mt-1 whitespace-pre-wrap text-muted-foreground text-sm">
+												<Label className="text-muted-foreground text-xs">Internal Notes</Label>
+												<p className="text-muted-foreground mt-1 text-sm whitespace-pre-wrap">
 													{po.internal_notes}
 												</p>
 											</div>
@@ -1145,24 +1024,17 @@ export function PurchaseOrderPageContent({
 					</div>
 
 					{/* Unified Accordion Section */}
-					<UnifiedAccordion
-						defaultOpenSection="line-items"
-						sections={accordionSections}
-					/>
+					<UnifiedAccordion defaultOpenSection="line-items" sections={accordionSections} />
 				</div>
 			</div>
 
 			{/* Status Update Dialog */}
-			<Dialog
-				onOpenChange={setStatusUpdateDialogOpen}
-				open={statusUpdateDialogOpen}
-			>
+			<Dialog onOpenChange={setStatusUpdateDialogOpen} open={statusUpdateDialogOpen}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Update Purchase Order Status</DialogTitle>
 						<DialogDescription>
-							Update the status of this purchase order to{" "}
-							{selectedStatus.replace("_", " ")}.
+							Update the status of this purchase order to {selectedStatus.replace("_", " ")}.
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
@@ -1203,9 +1075,7 @@ export function PurchaseOrderPageContent({
 							disabled={isUpdatingStatus}
 							onClick={async () => {
 								// TODO: Implement status update logic
-								toast.success(
-									`Status changed to ${selectedStatus.replace("_", " ")}`,
-								);
+								toast.success(`Status changed to ${selectedStatus.replace("_", " ")}`);
 								setStatusUpdateDialogOpen(false);
 								setStatusUpdateNotes("");
 							}}
@@ -1222,8 +1092,8 @@ export function PurchaseOrderPageContent({
 					<DialogHeader>
 						<DialogTitle>Archive Purchase Order?</DialogTitle>
 						<DialogDescription>
-							This will archive the purchase order. You can restore it from the
-							archive within 90 days.
+							This will archive the purchase order. You can restore it from the archive within 90
+							days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>

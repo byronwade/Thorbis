@@ -58,14 +58,8 @@ export function FinancialsTab({
 	isEditMode,
 }: FinancialsTabProps) {
 	// Calculate totals
-	const totalInvoiced = invoices.reduce(
-		(sum, inv) => sum + (inv.total_amount || 0),
-		0,
-	);
-	const totalPaid = invoices.reduce(
-		(sum, inv) => sum + (inv.paid_amount || 0),
-		0,
-	);
+	const totalInvoiced = invoices.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
+	const totalPaid = invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0);
 	const totalOutstanding = totalInvoiced - totalPaid;
 
 	// Get invoice status badge color
@@ -93,13 +87,13 @@ export function FinancialsTab({
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Job Value</p>
-								<p className="font-bold text-2xl">
+								<p className="text-2xl font-bold">
 									{formatCurrency(job.financial?.total_amount || 0, {
 										decimals: 2,
 									})}
 								</p>
 							</div>
-							<DollarSign className="h-8 w-8 text-muted-foreground" />
+							<DollarSign className="text-muted-foreground h-8 w-8" />
 						</div>
 					</CardContent>
 				</Card>
@@ -109,11 +103,11 @@ export function FinancialsTab({
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Paid</p>
-								<p className="font-bold text-2xl text-success">
+								<p className="text-success text-2xl font-bold">
 									{formatCurrency(totalPaid, { decimals: 2 })}
 								</p>
 							</div>
-							<CreditCard className="h-8 w-8 text-success" />
+							<CreditCard className="text-success h-8 w-8" />
 						</div>
 					</CardContent>
 				</Card>
@@ -123,11 +117,11 @@ export function FinancialsTab({
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Outstanding</p>
-								<p className="font-bold text-2xl text-warning">
+								<p className="text-warning text-2xl font-bold">
 									{formatCurrency(totalOutstanding, { decimals: 2 })}
 								</p>
 							</div>
-							<Receipt className="h-8 w-8 text-warning" />
+							<Receipt className="text-warning h-8 w-8" />
 						</div>
 					</CardContent>
 				</Card>
@@ -137,7 +131,7 @@ export function FinancialsTab({
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-muted-foreground text-xs">Profit</p>
-								<p className="font-bold text-2xl text-primary">
+								<p className="text-primary text-2xl font-bold">
 									{formatCurrency(metrics.totalAmount - metrics.materialsCost, {
 										decimals: 2,
 									})}
@@ -146,7 +140,7 @@ export function FinancialsTab({
 									{metrics.profitMargin.toFixed(2)}% margin
 								</p>
 							</div>
-							<TrendingUp className="h-8 w-8 text-primary" />
+							<TrendingUp className="text-primary h-8 w-8" />
 						</div>
 					</CardContent>
 				</Card>
@@ -157,7 +151,7 @@ export function FinancialsTab({
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
-							<FileText className="h-5 w-5 text-muted-foreground" />
+							<FileText className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Invoices</CardTitle>
 							<Badge variant="secondary">{invoices.length}</Badge>
 						</div>
@@ -186,9 +180,7 @@ export function FinancialsTab({
 							<TableBody>
 								{invoices.map((invoice) => (
 									<TableRow key={invoice.id}>
-										<TableCell className="font-medium">
-											{invoice.invoice_number}
-										</TableCell>
+										<TableCell className="font-medium">{invoice.invoice_number}</TableCell>
 										<TableCell className="text-sm">
 											{formatDate(invoice.created_at, "short")}
 										</TableCell>
@@ -205,18 +197,14 @@ export function FinancialsTab({
 										<TableCell
 											className={cn(
 												"font-medium",
-												(invoice.total_amount || 0) -
-													(invoice.paid_amount || 0) >
-													0
+												(invoice.total_amount || 0) - (invoice.paid_amount || 0) > 0
 													? "text-warning"
-													: "text-success",
+													: "text-success"
 											)}
 										>
-											{formatCurrency(
-												(invoice.total_amount || 0) -
-													(invoice.paid_amount || 0),
-												{ decimals: 2 },
-											)}
+											{formatCurrency((invoice.total_amount || 0) - (invoice.paid_amount || 0), {
+												decimals: 2,
+											})}
 										</TableCell>
 										<TableCell>
 											<Badge variant={getStatusColor(invoice.status)}>
@@ -241,7 +229,7 @@ export function FinancialsTab({
 							</TableBody>
 						</Table>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No invoices created yet
 							{isEditMode && (
 								<Button className="mt-2 ml-2" size="sm" variant="outline">
@@ -258,7 +246,7 @@ export function FinancialsTab({
 				<CardHeader>
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
-							<Receipt className="h-5 w-5 text-muted-foreground" />
+							<Receipt className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Estimates</CardTitle>
 							<Badge variant="secondary">{estimates.length}</Badge>
 						</div>
@@ -286,9 +274,7 @@ export function FinancialsTab({
 							<TableBody>
 								{estimates.map((estimate) => (
 									<TableRow key={estimate.id}>
-										<TableCell className="font-medium">
-											{estimate.estimate_number}
-										</TableCell>
+										<TableCell className="font-medium">{estimate.estimate_number}</TableCell>
 										<TableCell className="text-sm">
 											{formatDate(estimate.created_at, "short")}
 										</TableCell>
@@ -298,9 +284,7 @@ export function FinancialsTab({
 											})}
 										</TableCell>
 										<TableCell className="text-sm">
-											{estimate.valid_until
-												? formatDate(estimate.valid_until, "short")
-												: "N/A"}
+											{estimate.valid_until ? formatDate(estimate.valid_until, "short") : "N/A"}
 										</TableCell>
 										<TableCell>
 											<Badge variant={getStatusColor(estimate.status)}>
@@ -327,7 +311,7 @@ export function FinancialsTab({
 							</TableBody>
 						</Table>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No estimates created
 							{isEditMode && (
 								<Button className="mt-2 ml-2" size="sm" variant="outline">
@@ -343,7 +327,7 @@ export function FinancialsTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<PieChart className="h-5 w-5 text-muted-foreground" />
+						<PieChart className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Profitability Analysis</CardTitle>
 					</div>
 				</CardHeader>
@@ -352,63 +336,47 @@ export function FinancialsTab({
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground text-sm">Revenue</span>
-								<span className="font-medium">
-									{formatCurrency(metrics.totalAmount)}
-								</span>
+								<span className="font-medium">{formatCurrency(metrics.totalAmount)}</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">
-									Materials Cost
-								</span>
-								<span className="font-medium">
-									{formatCurrency(metrics.materialsCost)}
-								</span>
+								<span className="text-muted-foreground text-sm">Materials Cost</span>
+								<span className="font-medium">{formatCurrency(metrics.materialsCost)}</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">
-									Labor Hours
-								</span>
-								<span className="font-medium">
-									{metrics.totalLaborHours.toFixed(2)}h
-								</span>
+								<span className="text-muted-foreground text-sm">Labor Hours</span>
+								<span className="font-medium">{metrics.totalLaborHours.toFixed(2)}h</span>
 							</div>
 
 							<Separator />
 
 							<div className="flex items-center justify-between">
-								<span className="font-semibold text-sm">Gross Profit</span>
-								<span className="font-bold text-lg text-success">
+								<span className="text-sm font-semibold">Gross Profit</span>
+								<span className="text-success text-lg font-bold">
 									{formatCurrency(metrics.totalAmount - metrics.materialsCost)}
 								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="font-semibold text-sm">Profit Margin</span>
-								<span className="font-bold text-lg text-primary">
+								<span className="text-sm font-semibold">Profit Margin</span>
+								<span className="text-primary text-lg font-bold">
 									{metrics.profitMargin.toFixed(2)}%
 								</span>
 							</div>
 						</div>
 
 						<div className="rounded-lg border p-4">
-							<h4 className="mb-3 font-semibold text-sm">Cost Breakdown</h4>
+							<h4 className="mb-3 text-sm font-semibold">Cost Breakdown</h4>
 							<div className="space-y-2">
 								<div>
 									<div className="mb-1 flex justify-between text-xs">
 										<span>Materials</span>
-										<span>
-											{(
-												(metrics.materialsCost / metrics.totalAmount) *
-												100
-											).toFixed(2)}
-											%
-										</span>
+										<span>{((metrics.materialsCost / metrics.totalAmount) * 100).toFixed(2)}%</span>
 									</div>
-									<div className="h-2 overflow-hidden rounded-full bg-muted">
+									<div className="bg-muted h-2 overflow-hidden rounded-full">
 										<div
-											className="h-full bg-warning"
+											className="bg-warning h-full"
 											style={{
 												width: `${(metrics.materialsCost / metrics.totalAmount) * 100}%`,
 											}}
@@ -421,9 +389,9 @@ export function FinancialsTab({
 										<span>Profit</span>
 										<span>{metrics.profitMargin.toFixed(2)}%</span>
 									</div>
-									<div className="h-2 overflow-hidden rounded-full bg-muted">
+									<div className="bg-muted h-2 overflow-hidden rounded-full">
 										<div
-											className="h-full bg-success"
+											className="bg-success h-full"
 											style={{ width: `${metrics.profitMargin}%` }}
 										/>
 									</div>
@@ -438,16 +406,14 @@ export function FinancialsTab({
 					<div className="grid gap-4 md:grid-cols-2">
 						{job.financial?.payment_terms && (
 							<div>
-								<p className="font-medium text-sm">Payment Terms</p>
-								<p className="text-muted-foreground text-sm">
-									{job.financial.payment_terms}
-								</p>
+								<p className="text-sm font-medium">Payment Terms</p>
+								<p className="text-muted-foreground text-sm">{job.financial.payment_terms}</p>
 							</div>
 						)}
 
 						{(job.financial?.deposit_amount ?? 0) > 0 && (
 							<div>
-								<p className="font-medium text-sm">Deposit</p>
+								<p className="text-sm font-medium">Deposit</p>
 								<div className="flex items-center gap-2">
 									<p className="text-muted-foreground text-sm">
 										{formatCurrency(job.financial.deposit_amount ?? 0)}

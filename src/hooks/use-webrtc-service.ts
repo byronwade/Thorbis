@@ -167,7 +167,7 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
 			}
 
 			setActiveCalls((prev) =>
-				prev.map((call) => (call.id === callId ? { ...call, status: "active" } : call)),
+				prev.map((call) => (call.id === callId ? { ...call, status: "active" } : call))
 			);
 		} catch (err) {
 			setError(err instanceof Error ? err : new Error("Failed to answer call"));
@@ -230,7 +230,7 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
  */
 export function useWebRTCFallback(
 	telephonyComponent: React.ReactNode,
-	fallbackComponent?: React.ReactNode,
+	fallbackComponent?: React.ReactNode
 ): React.ReactNode {
 	const { isAvailable, status } = useWebRTCService();
 

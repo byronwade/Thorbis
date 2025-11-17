@@ -24,12 +24,8 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY *
-	MINUTES_PER_HOUR *
-	SECONDS_PER_MINUTE *
-	MILLISECONDS_PER_SECOND;
-const SUBSCRIPTION_PERIOD_MS =
-	DAY_COUNT_PER_SUBSCRIPTION_PERIOD * MILLISECONDS_PER_DAY;
+	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+const SUBSCRIPTION_PERIOD_MS = DAY_COUNT_PER_SUBSCRIPTION_PERIOD * MILLISECONDS_PER_DAY;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -56,8 +52,7 @@ async function setupDefaultUserWithPayment() {
 
 	try {
 		// Get the first user from auth
-		const { data: authUsers, error: authError } =
-			await supabase.auth.admin.listUsers();
+		const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
 
 		if (authError || !authUsers?.users || authUsers.users.length === 0) {
 			console.error("❌ No users found in auth. Please create a user first.");
@@ -71,15 +66,12 @@ async function setupDefaultUserWithPayment() {
 		const { error: userError } = await supabase.from("users").upsert(
 			{
 				id: user.id,
-				name:
-					user.user_metadata?.name ||
-					user.email?.split("@")[0] ||
-					"Default User",
+				name: user.user_metadata?.name || user.email?.split("@")[0] || "Default User",
 				email: user.email,
 				email_verified: true,
 				is_active: true,
 			},
-			{ onConflict: "id" },
+			{ onConflict: "id" }
 		);
 
 		if (userError) {
@@ -135,7 +127,7 @@ async function setupDefaultUserWithPayment() {
 				user_id: user.id,
 				status: "active",
 			},
-			{ onConflict: "company_id,user_id" },
+			{ onConflict: "company_id,user_id" }
 		);
 
 		if (memberError) {
@@ -152,7 +144,7 @@ async function setupDefaultUserWithPayment() {
 				stripe_subscription_status: "active",
 				subscription_current_period_start: new Date().toISOString(),
 				subscription_current_period_end: new Date(
-					Date.now() + SUBSCRIPTION_PERIOD_MS,
+					Date.now() + SUBSCRIPTION_PERIOD_MS
 				).toISOString(), // 30 days from now
 			})
 			.eq("id", companyId);
@@ -170,7 +162,7 @@ async function setupDefaultUserWithPayment() {
 				onboarding_completed: true,
 				active_company_id: companyId,
 			},
-			{ onConflict: "id" },
+			{ onConflict: "id" }
 		);
 
 		if (profileError) {

@@ -44,12 +44,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
@@ -86,8 +81,7 @@ export function JobDetailToolbar({
 
 	// Calculate tag count
 	const customerTags = (customer?.tags as string[]) || [];
-	const jobTags =
-		((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+	const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
 	const tagCount = customerTags.length + jobTags.length;
 
 	const handleArchive = async () => {
@@ -195,7 +189,7 @@ export function JobDetailToolbar({
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -220,7 +214,7 @@ export function JobDetailToolbar({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end" className="w-56">
-						<DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+						<DropdownMenuLabel className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 							Actions
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
@@ -261,9 +255,8 @@ export function JobDetailToolbar({
 					<DialogHeader>
 						<DialogTitle>Archive Job</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this job? Archived jobs can be
-							restored within 90 days. Completed or invoiced jobs cannot be
-							archived.
+							Are you sure you want to archive this job? Archived jobs can be restored within 90
+							days. Completed or invoiced jobs cannot be archived.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -274,11 +267,7 @@ export function JobDetailToolbar({
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>

@@ -1,10 +1,7 @@
 import { cache } from "react";
 import { notFound } from "next/navigation";
 import { ContractsKanban } from "@/components/work/contracts-kanban";
-import {
-	type Contract,
-	ContractsTable,
-} from "@/components/work/contracts-table";
+import { type Contract, ContractsTable } from "@/components/work/contracts-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
@@ -24,7 +21,7 @@ const getContracts = cache(async (companyId: string) => {
 			`
 			*,
 			customer:customers(id, display_name, first_name, last_name, email)
-		`,
+		`
 		)
 		.eq("company_id", companyId)
 		.order("created_at", { ascending: false });
@@ -100,12 +97,7 @@ export async function ContractsData() {
 							year: "numeric",
 						})
 					: "",
-				status: contract.status as
-					| "signed"
-					| "sent"
-					| "draft"
-					| "viewed"
-					| "expired",
+				status: contract.status as "signed" | "sent" | "draft" | "viewed" | "expired",
 				contractType: contract.contract_type || "custom",
 				signerName: contract.signer_name || null,
 				archived_at: contract.archived_at,

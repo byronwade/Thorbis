@@ -36,31 +36,27 @@ export default function ManagerDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="font-bold text-4xl tracking-tight">
-						Operations Management
-					</h1>
+					<h1 className="text-4xl font-bold tracking-tight">Operations Management</h1>
 					<Badge className="text-success" variant="outline">
 						Manager View
 					</Badge>
 				</div>
-				<p className="text-lg text-muted-foreground">{currentDate}</p>
+				<p className="text-muted-foreground text-lg">{currentDate}</p>
 			</div>
 
 			{/* Critical Customer Issues Alert */}
 			<Card className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30">
 				<CardHeader>
-					<CardTitle className="flex items-center gap-2 text-destructive dark:text-destructive">
+					<CardTitle className="text-destructive dark:text-destructive flex items-center gap-2">
 						<AlertTriangle className="size-5" />
 						Customer Issues Requiring Attention
 					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-3">
-					<div className="flex items-start gap-3 rounded-lg border border-destructive bg-card p-3 dark:border-destructive dark:bg-destructive/50">
-						<Star className="mt-0.5 size-4 text-destructive" />
+					<div className="border-destructive bg-card dark:border-destructive dark:bg-destructive/50 flex items-start gap-3 rounded-lg border p-3">
+						<Star className="text-destructive mt-0.5 size-4" />
 						<div className="flex-1">
-							<p className="font-medium text-sm">
-								2-Star Review Posted (1 hour ago)
-							</p>
+							<p className="text-sm font-medium">2-Star Review Posted (1 hour ago)</p>
 							<p className="text-muted-foreground text-xs">
 								"Technician was rude" - Jane Smith - Needs immediate response
 							</p>
@@ -69,12 +65,10 @@ export default function ManagerDashboard() {
 							Respond
 						</Button>
 					</div>
-					<div className="flex items-start gap-3 rounded-lg border border-warning bg-card p-3 dark:border-warning dark:bg-warning/50">
-						<PhoneCall className="mt-0.5 size-4 text-warning" />
+					<div className="border-warning bg-card dark:border-warning dark:bg-warning/50 flex items-start gap-3 rounded-lg border p-3">
+						<PhoneCall className="text-warning mt-0.5 size-4" />
 						<div className="flex-1">
-							<p className="font-medium text-sm">
-								Customer Called 3 Times Today
-							</p>
+							<p className="text-sm font-medium">Customer Called 3 Times Today</p>
 							<p className="text-muted-foreground text-xs">
 								Bob Johnson - Job #4523 - Escalate to senior tech
 							</p>
@@ -83,10 +77,10 @@ export default function ManagerDashboard() {
 							Call Customer
 						</Button>
 					</div>
-					<div className="flex items-start gap-3 rounded-lg border border-warning bg-card p-3 dark:border-warning dark:bg-warning/50">
-						<AlertTriangle className="mt-0.5 size-4 text-warning" />
+					<div className="border-warning bg-card dark:border-warning dark:bg-warning/50 flex items-start gap-3 rounded-lg border p-3">
+						<AlertTriangle className="text-warning mt-0.5 size-4" />
 						<div className="flex-1">
-							<p className="font-medium text-sm">Callback: Parts Arrived</p>
+							<p className="text-sm font-medium">Callback: Parts Arrived</p>
 							<p className="text-muted-foreground text-xs">
 								5 customers waiting for parts to arrive - schedule follow-up
 							</p>
@@ -147,23 +141,18 @@ export default function ManagerDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Pending Estimates */}
-							<div className="flex items-start gap-3 rounded-lg border border-success bg-success p-3 dark:border-success dark:bg-success/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-success">
+							<div className="border-success bg-success dark:border-success dark:bg-success/30 flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-success flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<DollarSign className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center justify-between">
-										<Badge
-											className="border-success text-success"
-											variant="outline"
-										>
+										<Badge className="border-success text-success" variant="outline">
 											High Value
 										</Badge>
-										<span className="font-bold text-sm text-success">
-											$32,400 potential
-										</span>
+										<span className="text-success text-sm font-bold">$32,400 potential</span>
 									</div>
-									<p className="mt-1 font-bold text-sm">12 Pending Estimates</p>
+									<p className="mt-1 text-sm font-bold">12 Pending Estimates</p>
 									<p className="text-muted-foreground text-xs">
 										Average age: 4 days • Convert now to hit monthly target
 									</p>
@@ -174,15 +163,13 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Maintenance Renewals */}
-							<div className="flex items-start gap-3 rounded-lg border bg-card p-3">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-primary/10">
-									<Package className="size-5 text-primary" />
+							<div className="bg-card flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+									<Package className="text-primary size-5" />
 								</div>
 								<div className="flex-1">
 									<Badge variant="outline">Recurring Revenue</Badge>
-									<p className="mt-1 font-bold text-sm">
-										8 Maintenance Plans Expiring
-									</p>
+									<p className="mt-1 text-sm font-bold">8 Maintenance Plans Expiring</p>
 									<p className="text-muted-foreground text-xs">
 										Within 7 days • Auto-generate renewal calls
 									</p>
@@ -193,15 +180,13 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Parts Arrival Callbacks */}
-							<div className="flex items-start gap-3 rounded-lg border bg-card p-3">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-accent/10">
-									<PhoneCall className="size-5 text-accent-foreground" />
+							<div className="bg-card flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-accent/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+									<PhoneCall className="text-accent-foreground size-5" />
 								</div>
 								<div className="flex-1">
 									<Badge variant="outline">Pending Callbacks</Badge>
-									<p className="mt-1 font-bold text-sm">
-										5 Customers Awaiting Parts
-									</p>
+									<p className="mt-1 text-sm font-bold">5 Customers Awaiting Parts</p>
 									<p className="text-muted-foreground text-xs">
 										Parts arrived • Schedule completion visits
 									</p>
@@ -212,16 +197,14 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Quote Ready */}
-							<div className="flex items-start gap-3 rounded-lg border bg-card p-3">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-warning/10">
-									<MessageSquare className="size-5 text-warning" />
+							<div className="bg-card flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-warning/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+									<MessageSquare className="text-warning size-5" />
 								</div>
 								<div className="flex-1">
 									<Badge variant="outline">Ready to Send</Badge>
-									<p className="mt-1 font-bold text-sm">3 Quotes Finalized</p>
-									<p className="text-muted-foreground text-xs">
-										Send to customers for approval
-									</p>
+									<p className="mt-1 text-sm font-bold">3 Quotes Finalized</p>
+									<p className="text-muted-foreground text-xs">Send to customers for approval</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Send Quotes
@@ -241,21 +224,18 @@ export default function ManagerDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Negative Review - Urgent */}
-							<div className="flex items-start gap-3 rounded-lg border-2 border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-destructive">
+							<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30 flex items-start gap-3 rounded-lg border-2 p-3">
+								<div className="bg-destructive flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<Star className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
 										<Badge variant="destructive">⚠ URGENT</Badge>
-										<span className="text-muted-foreground text-xs">
-											1 hour ago
-										</span>
+										<span className="text-muted-foreground text-xs">1 hour ago</span>
 									</div>
-									<p className="mt-1 font-bold text-sm">2-Star Google Review</p>
+									<p className="mt-1 text-sm font-bold">2-Star Google Review</p>
 									<p className="text-muted-foreground text-xs">
-										Jane Smith - "Tech was rude and rushed" - Respond
-										immediately
+										Jane Smith - "Tech was rude and rushed" - Respond immediately
 									</p>
 								</div>
 								<Button size="sm" variant="destructive">
@@ -264,26 +244,20 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Neutral Review */}
-							<div className="flex items-start gap-3 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
-								<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-warning">
+							<div className="border-warning bg-warning dark:border-warning dark:bg-warning/30 flex items-start gap-3 rounded-lg border p-3">
+								<div className="bg-warning flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 									<Star className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
 									<div className="flex items-center gap-2">
-										<Badge
-											className="border-warning text-warning"
-											variant="outline"
-										>
+										<Badge className="border-warning text-warning" variant="outline">
 											Needs Response
 										</Badge>
-										<span className="text-muted-foreground text-xs">
-											2 days ago
-										</span>
+										<span className="text-muted-foreground text-xs">2 days ago</span>
 									</div>
-									<p className="mt-1 font-bold text-sm">3-Star Yelp Review</p>
+									<p className="mt-1 text-sm font-bold">3-Star Yelp Review</p>
 									<p className="text-muted-foreground text-xs">
-										Tom Wilson - "Job done but expensive" - Address pricing
-										concern
+										Tom Wilson - "Job done but expensive" - Address pricing concern
 									</p>
 								</div>
 								<Button size="sm" variant="outline">
@@ -306,29 +280,19 @@ export default function ManagerDashboard() {
 									platform: "Facebook",
 								},
 							].map((review, index) => (
-								<div
-									className="flex items-start gap-3 rounded-lg border bg-card p-3"
-									key={index}
-								>
-									<div className="flex size-10 flex-shrink-0 items-center justify-center rounded-full bg-success/10">
-										<Star className="size-5 text-success" />
+								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+									<div className="bg-success/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
+										<Star className="text-success size-5" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
-											<Badge
-												className="border-success text-success"
-												variant="outline"
-											>
+											<Badge className="border-success text-success" variant="outline">
 												⭐ {review.rating}-Star
 											</Badge>
-											<span className="text-muted-foreground text-xs">
-												{review.platform}
-											</span>
+											<span className="text-muted-foreground text-xs">{review.platform}</span>
 										</div>
-										<p className="mt-1 font-bold text-sm">{review.customer}</p>
-										<p className="text-muted-foreground text-xs">
-											"{review.comment}"
-										</p>
+										<p className="mt-1 text-sm font-bold">{review.customer}</p>
+										<p className="text-muted-foreground text-xs">"{review.comment}"</p>
 									</div>
 									<Button size="sm" variant="ghost">
 										Share
@@ -364,13 +328,11 @@ export default function ManagerDashboard() {
 					<Card>
 						<CardContent className="space-y-3 pt-6">
 							{/* Critical Low Stock */}
-							<div className="flex items-start gap-3 rounded-lg border border-destructive bg-destructive p-3 dark:border-destructive dark:bg-destructive/30">
-								<Package className="mt-0.5 size-5 text-destructive" />
+							<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/30 flex items-start gap-3 rounded-lg border p-3">
+								<Package className="text-destructive mt-0.5 size-5" />
 								<div className="flex-1">
 									<Badge variant="destructive">CRITICAL LOW</Badge>
-									<p className="mt-1 font-bold text-sm">
-										40-Gallon Water Heaters
-									</p>
+									<p className="mt-1 text-sm font-bold">40-Gallon Water Heaters</p>
 									<p className="text-muted-foreground text-xs">
 										2 units left • 3 jobs scheduled this week
 									</p>
@@ -381,19 +343,14 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Low Stock Warning */}
-							<div className="flex items-start gap-3 rounded-lg border border-warning bg-warning p-3 dark:border-warning dark:bg-warning/30">
-								<Package className="mt-0.5 size-5 text-warning" />
+							<div className="border-warning bg-warning dark:border-warning dark:bg-warning/30 flex items-start gap-3 rounded-lg border p-3">
+								<Package className="text-warning mt-0.5 size-5" />
 								<div className="flex-1">
-									<Badge
-										className="border-warning text-warning"
-										variant="outline"
-									>
+									<Badge className="border-warning text-warning" variant="outline">
 										Low Stock
 									</Badge>
-									<p className="mt-1 font-bold text-sm">PEX Fittings - 1/2"</p>
-									<p className="text-muted-foreground text-xs">
-										12 pieces left • Reorder soon
-									</p>
+									<p className="mt-1 text-sm font-bold">PEX Fittings - 1/2"</p>
+									<p className="text-muted-foreground text-xs">12 pieces left • Reorder soon</p>
 								</div>
 								<Button size="sm" variant="outline">
 									Add to Order
@@ -401,13 +358,11 @@ export default function ManagerDashboard() {
 							</div>
 
 							{/* Truck Needs Restock */}
-							<div className="flex items-start gap-3 rounded-lg border bg-card p-3">
-								<Users className="mt-0.5 size-5 text-primary" />
+							<div className="bg-card flex items-start gap-3 rounded-lg border p-3">
+								<Users className="text-primary mt-0.5 size-5" />
 								<div className="flex-1">
 									<Badge variant="outline">Truck Inventory</Badge>
-									<p className="mt-1 font-bold text-sm">
-										Mike's Truck Needs Restock
-									</p>
+									<p className="mt-1 text-sm font-bold">Mike's Truck Needs Restock</p>
 									<p className="text-muted-foreground text-xs">
 										Ran out of copper fittings - restock end of day
 									</p>
@@ -431,10 +386,8 @@ export default function ManagerDashboard() {
 						<CardContent className="space-y-4 pt-6">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">
-										First-Call Resolution
-									</p>
-									<p className="font-bold text-2xl">87%</p>
+									<p className="text-muted-foreground text-sm">First-Call Resolution</p>
+									<p className="text-2xl font-bold">87%</p>
 								</div>
 								<Badge className="text-success" variant="outline">
 									Above target (85%)
@@ -442,10 +395,8 @@ export default function ManagerDashboard() {
 							</div>
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">
-										Avg. Job Duration
-									</p>
-									<p className="font-bold text-2xl">2.4 hrs</p>
+									<p className="text-muted-foreground text-sm">Avg. Job Duration</p>
+									<p className="text-2xl font-bold">2.4 hrs</p>
 								</div>
 								<Badge className="text-primary" variant="outline">
 									On target
@@ -454,7 +405,7 @@ export default function ManagerDashboard() {
 							<div className="flex items-center justify-between">
 								<div>
 									<p className="text-muted-foreground text-sm">Parts Markup</p>
-									<p className="font-bold text-2xl">42%</p>
+									<p className="text-2xl font-bold">42%</p>
 								</div>
 								<Badge className="text-success" variant="outline">
 									Healthy margin
@@ -462,10 +413,8 @@ export default function ManagerDashboard() {
 							</div>
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-muted-foreground text-sm">
-										Overtime Hours
-									</p>
-									<p className="font-bold text-2xl">12 hrs</p>
+									<p className="text-muted-foreground text-sm">Overtime Hours</p>
+									<p className="text-2xl font-bold">12 hrs</p>
 								</div>
 								<Badge className="text-warning" variant="outline">
 									Monitor closely

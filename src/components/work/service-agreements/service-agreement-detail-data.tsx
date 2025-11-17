@@ -28,9 +28,7 @@ type ServiceAgreementDetailDataProps = {
 	agreementId: string;
 };
 
-export async function ServiceAgreementDetailData({
-	agreementId,
-}: ServiceAgreementDetailDataProps) {
+export async function ServiceAgreementDetailData({ agreementId }: ServiceAgreementDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -64,11 +62,13 @@ export async function ServiceAgreementDetailData({
 	// Fetch service agreement
 	const { data: agreement, error: agreementError } = await supabase
 		.from("service_plans")
-		.select(`
+		.select(
+			`
       *,
       customer:customers!customer_id(*),
       property:properties!property_id(*)
-    `)
+    `
+		)
 		.eq("id", agreementId)
 		.eq("type", "contract")
 		.is("deleted_at", null)
@@ -83,12 +83,8 @@ export async function ServiceAgreementDetailData({
 	}
 
 	// Get related data
-	const customer = Array.isArray(agreement.customer)
-		? agreement.customer[0]
-		: agreement.customer;
-	const property = Array.isArray(agreement.property)
-		? agreement.property[0]
-		: agreement.property;
+	const customer = Array.isArray(agreement.customer) ? agreement.customer[0] : agreement.customer;
+	const property = Array.isArray(agreement.property) ? agreement.property[0] : agreement.property;
 
 	// Fetch all related data in parallel
 	const [
@@ -105,7 +101,7 @@ export async function ServiceAgreementDetailData({
 			.select("id, invoice_number, total_amount, status, created_at")
 			.eq("company_id", activeCompanyId)
 			.or(
-				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`,
+				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`
 			)
 			.order("created_at", { ascending: false })
 			.limit(20),
@@ -115,7 +111,7 @@ export async function ServiceAgreementDetailData({
 			.select("id, job_number, title, status, completed_at")
 			.eq("company_id", activeCompanyId)
 			.or(
-				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`,
+				`metadata->>'service_agreement_id'.eq.${agreementId},metadata->>'service_plan_id'.eq.${agreementId}`
 			)
 			.order("created_at", { ascending: false })
 			.limit(20),
@@ -165,14 +161,9 @@ export async function ServiceAgreementDetailData({
 	};
 
 	// Calculate metrics
-	const totalRevenue = (invoices || []).reduce(
-		(sum, inv) => sum + (inv.total_amount || 0),
-		0,
-	);
+	const totalRevenue = (invoices || []).reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
 	const completedJobs = (jobs || []).filter((j) => j.completed_at).length;
-	const activeJobs = (jobs || []).filter(
-		(j) => j.status === "in_progress",
-	).length;
+	const activeJobs = (jobs || []).filter((j) => j.status === "in_progress").length;
 
 	const stats: StatCard[] = [
 		{

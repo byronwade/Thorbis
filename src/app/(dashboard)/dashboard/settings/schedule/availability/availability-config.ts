@@ -1,8 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-type AvailabilityRow =
-	| Database["public"]["Tables"]["schedule_availability_settings"]["Row"]
-	| null;
+type AvailabilityRow = Database["public"]["Tables"]["schedule_availability_settings"]["Row"] | null;
 
 export type DayAvailability = {
 	key: string;
@@ -52,9 +50,7 @@ export const DEFAULT_AVAILABILITY_SETTINGS: AvailabilitySettingsState = {
 	lunchBreakDurationMinutes: 60,
 };
 
-export function mapAvailabilitySettings(
-	row: AvailabilityRow,
-): Partial<AvailabilitySettingsState> {
+export function mapAvailabilitySettings(row: AvailabilityRow): Partial<AvailabilitySettingsState> {
 	if (!row) {
 		return {};
 	}
@@ -70,10 +66,7 @@ export function mapAvailabilitySettings(
 		return {
 			key: day.key,
 			label: day.label,
-			enabled:
-				record?.enabled ??
-				DEFAULT_WEEK.find((d) => d.key === day.key)?.enabled ??
-				true,
+			enabled: record?.enabled ?? DEFAULT_WEEK.find((d) => d.key === day.key)?.enabled ?? true,
 			start: record?.start ?? "08:00",
 			end: record?.end ?? "17:00",
 		};
@@ -81,8 +74,7 @@ export function mapAvailabilitySettings(
 
 	return {
 		week,
-		defaultAppointmentDurationMinutes:
-			row.default_appointment_duration_minutes ?? 60,
+		defaultAppointmentDurationMinutes: row.default_appointment_duration_minutes ?? 60,
 		bufferTimeMinutes: row.buffer_time_minutes ?? 15,
 		minBookingNoticeHours: row.min_booking_notice_hours ?? 24,
 		maxBookingAdvanceDays: row.max_booking_advance_days ?? 90,
@@ -94,15 +86,13 @@ export function mapAvailabilitySettings(
 
 export function serializeWorkHours(week: DayAvailability[]) {
 	return JSON.stringify(
-		week.reduce<
-			Record<string, { start: string; end: string; enabled: boolean }>
-		>((acc, day) => {
+		week.reduce<Record<string, { start: string; end: string; enabled: boolean }>>((acc, day) => {
 			acc[day.key] = {
 				start: day.start,
 				end: day.end,
 				enabled: day.enabled,
 			};
 			return acc;
-		}, {}),
+		}, {})
 	);
 }

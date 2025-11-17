@@ -89,9 +89,7 @@ async function findUserByEmail(email: string) {
 	return data.users.find((userRecord) => userRecord.email === email) ?? null;
 }
 
-async function fetchUserMemberships(
-	userId: string,
-): Promise<MembershipRecord[]> {
+async function fetchUserMemberships(userId: string): Promise<MembershipRecord[]> {
 	const { data, error } = await supabase
 		.from("team_members")
 		.select(
@@ -106,7 +104,7 @@ async function fetchUserMemberships(
           stripe_subscription_status,
           deleted_at
         )
-      `,
+      `
 		)
 		.eq("user_id", userId)
 		.order("created_at", { ascending: false });
@@ -150,8 +148,7 @@ function logDuplicateSummary(companyMap: Map<string, MembershipRecord[]>) {
 
 function logActiveCompanies(memberships: MembershipRecord[]) {
 	const activeMemberships = memberships.filter(
-		(membership) =>
-			membership.status === "active" && !membership.companies.deleted_at,
+		(membership) => membership.status === "active" && !membership.companies.deleted_at
 	);
 
 	console.log("\n=== Active companies (status=active, not archived) ===\n");

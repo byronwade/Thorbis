@@ -7,13 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -26,11 +20,7 @@ export const metadata = generateSEOMetadata({
 		"Join Thorbis and build software that powers modern trades. Explore open roles across engineering, product, customer experience, and go-to-market.",
 	path: "/careers",
 	section: "Company",
-	keywords: [
-		"thorbis careers",
-		"field service software jobs",
-		"thorbis hiring",
-	],
+	keywords: ["thorbis careers", "field service software jobs", "thorbis hiring"],
 });
 
 const BENEFITS = [
@@ -131,7 +121,7 @@ export default function CareersPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Careers", url: `${siteUrl}/careers` },
-						]),
+						])
 					),
 				}}
 				id="careers-breadcrumb-ld"
@@ -146,17 +136,16 @@ export default function CareersPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="max-w-3xl space-y-6">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Build the future of service operations
 					</Badge>
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						We’re assembling a team of builders obsessed with the trades
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Thorbis hires curious, mission-driven people who love solving
-						real-world problems for dispatchers, technicians, and operators. We
-						work fast, ship thoughtfully, and measure impact by the outcomes our
-						customers achieve.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Thorbis hires curious, mission-driven people who love solving real-world problems for
+						dispatchers, technicians, and operators. We work fast, ship thoughtfully, and measure
+						impact by the outcomes our customers achieve.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
@@ -169,7 +158,7 @@ export default function CareersPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="font-semibold text-2xl">Benefits & culture</h2>
+					<h2 className="text-2xl font-semibold">Benefits & culture</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{BENEFITS.map((benefit) => (
 							<Card key={benefit.title}>
@@ -188,11 +177,9 @@ export default function CareersPage() {
 
 				<section className="mt-16 space-y-6">
 					<div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-						<h2 className="font-semibold text-2xl">Open roles</h2>
+						<h2 className="text-2xl font-semibold">Open roles</h2>
 						<Button asChild variant="outline">
-							<a href="mailto:careers@thorbis.com">
-								Submit a general application
-							</a>
+							<a href="mailto:careers@thorbis.com">Submit a general application</a>
 						</Button>
 					</div>
 					<div className="grid gap-6 md:grid-cols-2">
@@ -218,13 +205,11 @@ export default function CareersPage() {
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="font-semibold text-2xl">Frequently asked questions</h2>
+					<h2 className="text-2xl font-semibold">Frequently asked questions</h2>
 					<Accordion collapsible type="single">
 						{FAQ.map((item, index) => (
 							<AccordionItem key={item.question} value={`careers-faq-${index}`}>
-								<AccordionTrigger className="text-left">
-									{item.question}
-								</AccordionTrigger>
+								<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
 								<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 									{item.answer}
 								</AccordionContent>
@@ -233,11 +218,11 @@ export default function CareersPage() {
 					</Accordion>
 				</section>
 
-				<section className="mt-16 rounded-3xl border bg-primary/10 p-10 text-center">
-					<p className="text-lg text-muted-foreground">
-						Don’t see the perfect role? We hire exceptional people across
-						product, design, engineering, customer experience, and go-to-market.
-						Tell us how you want to make an impact.
+				<section className="bg-primary/10 mt-16 rounded-3xl border p-10 text-center">
+					<p className="text-muted-foreground text-lg">
+						Don’t see the perfect role? We hire exceptional people across product, design,
+						engineering, customer experience, and go-to-market. Tell us how you want to make an
+						impact.
 					</p>
 					<Button asChild className="mt-6">
 						<a href="mailto:careers@thorbis.com">Send us your story</a>

@@ -66,12 +66,12 @@ export function MaintenancePlanForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<
-		string | undefined
-	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<
-		string | undefined
-	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
+		preselectedCustomerId || searchParams?.get("customerId") || undefined
+	);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
+		preselectedPropertyId || searchParams?.get("propertyId") || undefined
+	);
 	const [frequency, setFrequency] = useState("monthly");
 	const [showCustomFrequency, setShowCustomFrequency] = useState(false);
 	const [billingFrequency, setBillingFrequency] = useState("monthly");
@@ -131,8 +131,8 @@ export function MaintenancePlanForm({
 		<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
 			{/* Error Display */}
 			{error && (
-				<div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-					<p className="font-medium text-destructive text-sm">{error}</p>
+				<div className="border-destructive/50 bg-destructive/10 rounded-lg border p-4">
+					<p className="text-destructive text-sm font-medium">{error}</p>
 				</div>
 			)}
 
@@ -234,12 +234,7 @@ export function MaintenancePlanForm({
 						<Label htmlFor="frequency">
 							Frequency <span className="text-destructive">*</span>
 						</Label>
-						<Select
-							name="frequency"
-							onValueChange={setFrequency}
-							required
-							value={frequency}
-						>
+						<Select name="frequency" onValueChange={setFrequency} required value={frequency}>
 							<SelectTrigger id="frequency">
 								<SelectValue />
 							</SelectTrigger>
@@ -258,8 +253,7 @@ export function MaintenancePlanForm({
 					{showCustomFrequency && (
 						<div className="space-y-2">
 							<Label htmlFor="customFrequencyDays">
-								Custom Frequency (Days){" "}
-								<span className="text-destructive">*</span>
+								Custom Frequency (Days) <span className="text-destructive">*</span>
 							</Label>
 							<Input
 								id="customFrequencyDays"
@@ -283,9 +277,7 @@ export function MaintenancePlanForm({
 						<div className="space-y-2">
 							<Label htmlFor="endDate">End Date (Optional)</Label>
 							<Input id="endDate" name="endDate" type="date" />
-							<p className="text-muted-foreground text-xs">
-								Leave blank for ongoing plan
-							</p>
+							<p className="text-muted-foreground text-xs">Leave blank for ongoing plan</p>
 						</div>
 					</div>
 
@@ -364,24 +356,14 @@ export function MaintenancePlanForm({
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea
-							id="notes"
-							name="notes"
-							placeholder="Notes for internal use"
-							rows={2}
-						/>
+						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button
-					disabled={isLoading}
-					onClick={() => router.back()}
-					type="button"
-					variant="outline"
-				>
+				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

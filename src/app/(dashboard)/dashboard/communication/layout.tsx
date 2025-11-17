@@ -11,11 +11,7 @@ import type { UnifiedLayoutConfig } from "@/lib/layout/unified-layout-config";
  *
  * Performance: Pure server component, no client JS needed
  */
-export default function CommunicationLayout({
-	children,
-}: {
-	children: ReactNode;
-}) {
+export default function CommunicationLayout({ children }: { children: ReactNode }) {
 	// Communication section configuration
 	const config: UnifiedLayoutConfig = {
 		structure: {

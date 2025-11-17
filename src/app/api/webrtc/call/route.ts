@@ -38,10 +38,7 @@ export async function POST(request: NextRequest) {
 		const service = getWebRTCService();
 
 		if (!service || service.getStatus() !== "ready") {
-			return NextResponse.json(
-				{ error: "WebRTC service not available" },
-				{ status: 503 },
-			);
+			return NextResponse.json({ error: "WebRTC service not available" }, { status: 503 });
 		}
 
 		// Handle different actions
@@ -102,7 +99,7 @@ export async function POST(request: NextRequest) {
 				success: false,
 				error: error instanceof Error ? error.message : "Call operation failed",
 			},
-			{ status: 500 },
+			{ status: 500 }
 		);
 	}
 }

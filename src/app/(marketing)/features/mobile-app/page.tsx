@@ -14,13 +14,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -68,7 +62,7 @@ export default function MobileAppPage() {
 								name: "Mobile Field App",
 								url: `${siteUrl}/features/mobile-app`,
 							},
-						]),
+						])
 					),
 				}}
 				id="mobile-app-breadcrumb-ld"
@@ -83,7 +77,7 @@ export default function MobileAppPage() {
 			/>
 
 			{/* Hero Section - Mobile-First Design */}
-			<section className="relative overflow-hidden bg-gradient-to-b from-background via-primary/5 to-background py-20 sm:py-32">
+			<section className="from-background via-primary/5 to-background relative overflow-hidden bg-gradient-to-b py-20 sm:py-32">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid items-center gap-12 lg:grid-cols-2">
 						<div>
@@ -91,20 +85,15 @@ export default function MobileAppPage() {
 								<Smartphone className="size-3.5" />
 								Mobile-First
 							</Badge>
-							<h1 className="mb-6 font-bold text-5xl tracking-tight sm:text-6xl lg:text-7xl">
+							<h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
 								Your office in every technician's pocket
 							</h1>
-							<p className="mb-8 text-lg text-muted-foreground sm:text-xl">
-								Everything your field team needs to complete jobs, capture data,
-								and get paid—even without internet. Works offline, syncs
-								automatically.
+							<p className="text-muted-foreground mb-8 text-lg sm:text-xl">
+								Everything your field team needs to complete jobs, capture data, and get paid—even
+								without internet. Works offline, syncs automatically.
 							</p>
 							<div className="flex flex-wrap items-center gap-4">
-								<Button
-									asChild
-									className="shadow-lg shadow-primary/20"
-									size="lg"
-								>
+								<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
 									<Link href="/register">
 										Start 14-day Free Trial
 										<Zap className="ml-2 size-4" />
@@ -136,10 +125,10 @@ export default function MobileAppPage() {
 						<div className="relative mx-auto w-full max-w-sm lg:max-w-md">
 							<div className="relative">
 								{/* Phone Frame */}
-								<div className="relative overflow-hidden rounded-[3rem] border-8 border-foreground/10 bg-background shadow-2xl">
+								<div className="border-foreground/10 bg-background relative overflow-hidden rounded-[3rem] border-8 shadow-2xl">
 									<div className="aspect-[9/19.5]">
 										{/* Status Bar */}
-										<div className="flex items-center justify-between bg-background px-6 py-3">
+										<div className="bg-background flex items-center justify-between px-6 py-3">
 											<span className="text-xs">9:41 AM</span>
 											<div className="flex items-center gap-1">
 												<Wifi className="size-3" />
@@ -148,22 +137,17 @@ export default function MobileAppPage() {
 										</div>
 
 										{/* App Content */}
-										<div className="bg-gradient-to-b from-primary/5 to-background p-4">
+										<div className="from-primary/5 to-background bg-gradient-to-b p-4">
 											{/* Job Card */}
-											<div className="mb-4 overflow-hidden rounded-2xl border bg-background shadow-lg">
-												<div className="border-b bg-primary/5 px-4 py-3">
+											<div className="bg-background mb-4 overflow-hidden rounded-2xl border shadow-lg">
+												<div className="bg-primary/5 border-b px-4 py-3">
 													<div className="mb-1 flex items-center justify-between">
-														<span className="font-semibold text-sm">
-															AC Repair
-														</span>
-														<Badge
-															className="h-5 text-[10px]"
-															variant="secondary"
-														>
+														<span className="text-sm font-semibold">AC Repair</span>
+														<Badge className="h-5 text-[10px]" variant="secondary">
 															In Progress
 														</Badge>
 													</div>
-													<div className="flex items-center gap-1 text-muted-foreground text-xs">
+													<div className="text-muted-foreground flex items-center gap-1 text-xs">
 														<MapPin className="size-3" />
 														<span>123 Oak Street, Austin TX</span>
 													</div>
@@ -176,9 +160,7 @@ export default function MobileAppPage() {
 															<div className="flex size-5 items-center justify-center rounded-full bg-green-500">
 																<CheckCircle2 className="size-3 text-white" />
 															</div>
-															<span className="text-sm line-through opacity-60">
-																Inspect unit
-															</span>
+															<span className="text-sm line-through opacity-60">Inspect unit</span>
 														</div>
 														<div className="flex items-center gap-2">
 															<div className="flex size-5 items-center justify-center rounded-full bg-green-500">
@@ -189,37 +171,35 @@ export default function MobileAppPage() {
 															</span>
 														</div>
 														<div className="flex items-center gap-2">
-															<div className="size-5 rounded-full border-2 border-border" />
-															<span className="font-medium text-sm">
-																Replace filter
-															</span>
+															<div className="border-border size-5 rounded-full border-2" />
+															<span className="text-sm font-medium">Replace filter</span>
 														</div>
 														<div className="flex items-center gap-2">
-															<div className="size-5 rounded-full border-2 border-border" />
+															<div className="border-border size-5 rounded-full border-2" />
 															<span className="text-sm">Test system</span>
 														</div>
 													</div>
 
 													{/* Photo Grid */}
 													<div className="grid grid-cols-3 gap-2">
-														<div className="aspect-square rounded-lg bg-muted" />
-														<div className="aspect-square rounded-lg bg-muted" />
-														<div className="flex aspect-square items-center justify-center rounded-lg border-2 border-border border-dashed">
-															<Camera className="size-4 text-muted-foreground" />
+														<div className="bg-muted aspect-square rounded-lg" />
+														<div className="bg-muted aspect-square rounded-lg" />
+														<div className="border-border flex aspect-square items-center justify-center rounded-lg border-2 border-dashed">
+															<Camera className="text-muted-foreground size-4" />
 														</div>
 													</div>
 
 													{/* Action Buttons */}
 													<div className="grid grid-cols-2 gap-2 pt-2">
 														<button
-															className="rounded-lg border bg-background px-3 py-2 font-medium text-xs transition-colors hover:bg-accent"
+															className="bg-background hover:bg-accent rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
 															type="button"
 														>
 															<Camera className="mx-auto mb-1 size-4" />
 															Add Photo
 														</button>
 														<button
-															className="rounded-lg border bg-background px-3 py-2 font-medium text-xs transition-colors hover:bg-accent"
+															className="bg-background hover:bg-accent rounded-lg border px-3 py-2 text-xs font-medium transition-colors"
 															type="button"
 														>
 															<FileText className="mx-auto mb-1 size-4" />
@@ -231,7 +211,7 @@ export default function MobileAppPage() {
 
 											{/* Complete Button */}
 											<button
-												className="w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground text-sm shadow-lg"
+												className="bg-primary text-primary-foreground w-full rounded-xl px-4 py-3 text-sm font-semibold shadow-lg"
 												type="button"
 											>
 												Complete Job
@@ -241,9 +221,9 @@ export default function MobileAppPage() {
 								</div>
 
 								{/* Offline Indicator */}
-								<div className="-right-4 absolute top-20 flex items-center gap-2 rounded-full border border-orange-500/50 bg-orange-500/10 px-4 py-2 backdrop-blur-sm">
+								<div className="absolute top-20 -right-4 flex items-center gap-2 rounded-full border border-orange-500/50 bg-orange-500/10 px-4 py-2 backdrop-blur-sm">
 									<WifiOff className="size-4 text-orange-600 dark:text-orange-400" />
-									<span className="font-semibold text-orange-700 text-xs dark:text-orange-400">
+									<span className="text-xs font-semibold text-orange-700 dark:text-orange-400">
 										Offline Mode
 									</span>
 								</div>
@@ -254,32 +234,24 @@ export default function MobileAppPage() {
 			</section>
 
 			{/* Stats Section */}
-			<section className="border-y bg-muted/30 py-16">
+			<section className="bg-muted/30 border-y py-16">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">100%</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Offline Capable
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">100%</div>
+							<div className="text-muted-foreground text-sm font-medium">Offline Capable</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">45 min</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Faster Job Completion
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">45 min</div>
+							<div className="text-muted-foreground text-sm font-medium">Faster Job Completion</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">95%</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Tech Adoption Rate
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">95%</div>
+							<div className="text-muted-foreground text-sm font-medium">Tech Adoption Rate</div>
 						</div>
 						<div className="text-center">
-							<div className="mb-2 font-bold text-4xl text-primary">Zero</div>
-							<div className="font-medium text-muted-foreground text-sm">
-								Paperwork Delays
-							</div>
+							<div className="text-primary mb-2 text-4xl font-bold">Zero</div>
+							<div className="text-muted-foreground text-sm font-medium">Paperwork Delays</div>
 						</div>
 					</div>
 				</div>
@@ -289,39 +261,38 @@ export default function MobileAppPage() {
 			<section className="py-20">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-12 text-center">
-						<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+						<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 							Built for the field, not the office
 						</h2>
-						<p className="mx-auto max-w-2xl text-lg text-muted-foreground">
-							Every feature designed for technicians working in basements, on
-							rooftops, and everywhere in between
+						<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
+							Every feature designed for technicians working in basements, on rooftops, and
+							everywhere in between
 						</p>
 					</div>
 
 					<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<WifiOff className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<WifiOff className="text-primary size-6" />
 								</div>
 								<CardTitle>True Offline Mode</CardTitle>
 								<CardDescription>
-									Complete jobs, capture data, and process payments without
-									internet connectivity
+									Complete jobs, capture data, and process payments without internet connectivity
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>All job data cached locally</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Automatic sync when online</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Conflict resolution</span>
 									</li>
 								</ul>
@@ -330,27 +301,26 @@ export default function MobileAppPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Camera className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Camera className="text-primary size-6" />
 								</div>
 								<CardTitle>Photo Documentation</CardTitle>
 								<CardDescription>
-									Capture before/after photos with automatic organization and
-									cloud backup
+									Capture before/after photos with automatic organization and cloud backup
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Unlimited photo storage</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Auto-compression & upload</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Photo annotations</span>
 									</li>
 								</ul>
@@ -359,27 +329,26 @@ export default function MobileAppPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<FileText className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<FileText className="text-primary size-6" />
 								</div>
 								<CardTitle>Digital Signatures</CardTitle>
 								<CardDescription>
-									Get customer approval instantly with legally binding digital
-									signatures
+									Get customer approval instantly with legally binding digital signatures
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Touch or stylus support</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Timestamp & GPS stamping</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Instant PDF generation</span>
 									</li>
 								</ul>
@@ -388,27 +357,26 @@ export default function MobileAppPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<CheckCircle2 className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<CheckCircle2 className="text-primary size-6" />
 								</div>
 								<CardTitle>Smart Checklists</CardTitle>
 								<CardDescription>
-									Customizable checklists that ensure nothing gets missed on
-									every job
+									Customizable checklists that ensure nothing gets missed on every job
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Job-type specific templates</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Required vs. optional items</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Conditional logic</span>
 									</li>
 								</ul>
@@ -417,8 +385,8 @@ export default function MobileAppPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<MapPin className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<MapPin className="text-primary size-6" />
 								</div>
 								<CardTitle>GPS Navigation</CardTitle>
 								<CardDescription>
@@ -428,15 +396,15 @@ export default function MobileAppPage() {
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Google Maps integration</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Turn-by-turn directions</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Arrival notifications</span>
 									</li>
 								</ul>
@@ -445,27 +413,26 @@ export default function MobileAppPage() {
 
 						<Card>
 							<CardHeader>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<Smartphone className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<Smartphone className="text-primary size-6" />
 								</div>
 								<CardTitle>Mobile Payments</CardTitle>
 								<CardDescription>
-									Accept credit cards, checks, and cash right from the mobile
-									app
+									Accept credit cards, checks, and cash right from the mobile app
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Tap-to-pay support</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Digital receipts</span>
 									</li>
 									<li className="flex items-start gap-2">
-										<CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+										<CheckCircle2 className="text-primary mt-0.5 size-4 shrink-0" />
 										<span>Split payments</span>
 									</li>
 								</ul>
@@ -476,19 +443,19 @@ export default function MobileAppPage() {
 			</section>
 
 			{/* CTA Section */}
-			<section className="bg-gradient-to-br from-primary via-primary to-primary/90 py-20 text-primary-foreground">
+			<section className="from-primary via-primary to-primary/90 text-primary-foreground bg-gradient-to-br py-20">
 				<div className="container mx-auto px-4 text-center sm:px-6 lg:px-8">
-					<h2 className="mb-4 font-bold text-3xl tracking-tight sm:text-4xl">
+					<h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl">
 						Empower your field team today
 					</h2>
-					<p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/90">
-						Give your technicians the tools they need to work faster, smarter,
-						and more professionally.
+					<p className="text-primary-foreground/90 mx-auto mb-8 max-w-2xl text-lg">
+						Give your technicians the tools they need to work faster, smarter, and more
+						professionally.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Button
 							asChild
-							className="bg-background text-foreground shadow-lg hover:bg-background/90"
+							className="bg-background text-foreground hover:bg-background/90 shadow-lg"
 							size="lg"
 						>
 							<Link href="/register">

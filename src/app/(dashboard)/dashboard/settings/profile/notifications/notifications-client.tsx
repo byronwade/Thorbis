@@ -1,33 +1,13 @@
 "use client";
 
-import {
-	Bell,
-	HelpCircle,
-	Mail,
-	MessageSquare,
-	Smartphone,
-} from "lucide-react";
-import {
-	getNotificationPreferences,
-	updateNotificationPreferences,
-} from "@/actions/settings";
+import { Bell, HelpCircle, Mail, MessageSquare, Smartphone } from "lucide-react";
+import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
 import {
 	DEFAULT_NOTIFICATION_PREFERENCES,
@@ -115,42 +95,33 @@ type NotificationsClientProps = {
 	initialSettings: NotificationPreferencesState;
 };
 
-export function NotificationsClient({
-	initialSettings,
-}: NotificationsClientProps) {
-	const {
-		settings,
-		isLoading,
-		isPending,
-		hasUnsavedChanges,
-		updateSetting,
-		saveSettings,
-		reload,
-	} = useSettings<NotificationPreferencesState>({
-		getter: getNotificationPreferences,
-		setter: updateNotificationPreferences,
-		initialState: DEFAULT_NOTIFICATION_PREFERENCES,
-		settingsName: "notifications",
-		prefetchedData: initialSettings,
-		transformLoad: (data) => mapNotificationPreferences(data),
-		transformSave: (state) => {
-			const fd = new FormData();
-			fd.append("emailNewJobs", state.emailNewJobs.toString());
-			fd.append("emailJobUpdates", state.emailJobUpdates.toString());
-			fd.append("emailMentions", state.emailMentions.toString());
-			fd.append("emailMessages", state.emailMessages.toString());
-			fd.append("pushNewJobs", state.pushNewJobs.toString());
-			fd.append("pushJobUpdates", state.pushJobUpdates.toString());
-			fd.append("pushMentions", state.pushMentions.toString());
-			fd.append("pushMessages", state.pushMessages.toString());
-			fd.append("smsUrgentJobs", state.smsUrgentJobs.toString());
-			fd.append("smsScheduleChanges", state.smsScheduleChanges.toString());
-			fd.append("inAppAll", state.inAppAll.toString());
-			fd.append("digestEnabled", "false");
-			fd.append("digestFrequency", "daily");
-			return fd;
-		},
-	});
+export function NotificationsClient({ initialSettings }: NotificationsClientProps) {
+	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
+		useSettings<NotificationPreferencesState>({
+			getter: getNotificationPreferences,
+			setter: updateNotificationPreferences,
+			initialState: DEFAULT_NOTIFICATION_PREFERENCES,
+			settingsName: "notifications",
+			prefetchedData: initialSettings,
+			transformLoad: (data) => mapNotificationPreferences(data),
+			transformSave: (state) => {
+				const fd = new FormData();
+				fd.append("emailNewJobs", state.emailNewJobs.toString());
+				fd.append("emailJobUpdates", state.emailJobUpdates.toString());
+				fd.append("emailMentions", state.emailMentions.toString());
+				fd.append("emailMessages", state.emailMessages.toString());
+				fd.append("pushNewJobs", state.pushNewJobs.toString());
+				fd.append("pushJobUpdates", state.pushJobUpdates.toString());
+				fd.append("pushMentions", state.pushMentions.toString());
+				fd.append("pushMessages", state.pushMessages.toString());
+				fd.append("smsUrgentJobs", state.smsUrgentJobs.toString());
+				fd.append("smsScheduleChanges", state.smsScheduleChanges.toString());
+				fd.append("inAppAll", state.inAppAll.toString());
+				fd.append("digestEnabled", "false");
+				fd.append("digestFrequency", "daily");
+				return fd;
+			},
+		});
 
 	return (
 		<TooltipProvider>
@@ -174,21 +145,19 @@ export function NotificationsClient({
 								<Mail className="size-4" />
 								Email Notifications
 							</CardTitle>
-							<CardDescription>
-								Choose which events should send you an email.
-							</CardDescription>
+							<CardDescription>Choose which events should send you an email.</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{emailToggleConfig.map((option, index) => (
 								<div key={option.key}>
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
-											<Label className="flex items-center gap-2 font-medium text-sm">
+											<Label className="flex items-center gap-2 text-sm font-medium">
 												{option.label}
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<button type="button">
-															<HelpCircle className="h-3 w-3 text-muted-foreground" />
+															<HelpCircle className="text-muted-foreground h-3 w-3" />
 														</button>
 													</TooltipTrigger>
 													<TooltipContent>
@@ -196,20 +165,14 @@ export function NotificationsClient({
 													</TooltipContent>
 												</Tooltip>
 											</Label>
-											<p className="text-muted-foreground text-xs">
-												{option.description}
-											</p>
+											<p className="text-muted-foreground text-xs">{option.description}</p>
 										</div>
 										<Switch
 											checked={settings[option.key]}
-											onCheckedChange={(checked) =>
-												updateSetting(option.key, checked)
-											}
+											onCheckedChange={(checked) => updateSetting(option.key, checked)}
 										/>
 									</div>
-									{index < emailToggleConfig.length - 1 && (
-										<Separator className="my-4" />
-									)}
+									{index < emailToggleConfig.length - 1 && <Separator className="my-4" />}
 								</div>
 							))}
 						</CardContent>
@@ -221,21 +184,19 @@ export function NotificationsClient({
 								<Smartphone className="size-4" />
 								Push Notifications
 							</CardTitle>
-							<CardDescription>
-								Real-time alerts delivered to your devices.
-							</CardDescription>
+							<CardDescription>Real-time alerts delivered to your devices.</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{pushToggleConfig.map((option, index) => (
 								<div key={option.key}>
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
-											<Label className="flex items-center gap-2 font-medium text-sm">
+											<Label className="flex items-center gap-2 text-sm font-medium">
 												{option.label}
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<button type="button">
-															<HelpCircle className="h-3 w-3 text-muted-foreground" />
+															<HelpCircle className="text-muted-foreground h-3 w-3" />
 														</button>
 													</TooltipTrigger>
 													<TooltipContent>
@@ -243,20 +204,14 @@ export function NotificationsClient({
 													</TooltipContent>
 												</Tooltip>
 											</Label>
-											<p className="text-muted-foreground text-xs">
-												{option.description}
-											</p>
+											<p className="text-muted-foreground text-xs">{option.description}</p>
 										</div>
 										<Switch
 											checked={settings[option.key]}
-											onCheckedChange={(checked) =>
-												updateSetting(option.key, checked)
-											}
+											onCheckedChange={(checked) => updateSetting(option.key, checked)}
 										/>
 									</div>
-									{index < pushToggleConfig.length - 1 && (
-										<Separator className="my-4" />
-									)}
+									{index < pushToggleConfig.length - 1 && <Separator className="my-4" />}
 								</div>
 							))}
 						</CardContent>
@@ -267,21 +222,19 @@ export function NotificationsClient({
 								<MessageSquare className="size-4" />
 								SMS Notifications
 							</CardTitle>
-							<CardDescription>
-								Only the most urgent alerts via text.
-							</CardDescription>
+							<CardDescription>Only the most urgent alerts via text.</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							{smsToggleConfig.map((option, index) => (
 								<div key={option.key}>
 									<div className="flex items-center justify-between">
 										<div className="flex-1">
-											<Label className="flex items-center gap-2 font-medium text-sm">
+											<Label className="flex items-center gap-2 text-sm font-medium">
 												{option.label}
 												<Tooltip>
 													<TooltipTrigger asChild>
 														<button type="button">
-															<HelpCircle className="h-3 w-3 text-muted-foreground" />
+															<HelpCircle className="text-muted-foreground h-3 w-3" />
 														</button>
 													</TooltipTrigger>
 													<TooltipContent>
@@ -289,20 +242,14 @@ export function NotificationsClient({
 													</TooltipContent>
 												</Tooltip>
 											</Label>
-											<p className="text-muted-foreground text-xs">
-												{option.description}
-											</p>
+											<p className="text-muted-foreground text-xs">{option.description}</p>
 										</div>
 										<Switch
 											checked={settings[option.key]}
-											onCheckedChange={(checked) =>
-												updateSetting(option.key, checked)
-											}
+											onCheckedChange={(checked) => updateSetting(option.key, checked)}
 										/>
 									</div>
-									{index < smsToggleConfig.length - 1 && (
-										<Separator className="my-4" />
-									)}
+									{index < smsToggleConfig.length - 1 && <Separator className="my-4" />}
 								</div>
 							))}
 						</CardContent>
@@ -321,12 +268,12 @@ export function NotificationsClient({
 						<CardContent>
 							<div className="flex items-center justify-between">
 								<div className="flex-1">
-									<Label className="flex items-center gap-2 font-medium text-sm">
+									<Label className="flex items-center gap-2 text-sm font-medium">
 										Everything in-app
 										<Tooltip>
 											<TooltipTrigger asChild>
 												<button type="button">
-													<HelpCircle className="h-3 w-3 text-muted-foreground" />
+													<HelpCircle className="text-muted-foreground h-3 w-3" />
 												</button>
 											</TooltipTrigger>
 											<TooltipContent>
@@ -342,9 +289,7 @@ export function NotificationsClient({
 								</div>
 								<Switch
 									checked={settings.inAppAll}
-									onCheckedChange={(checked) =>
-										updateSetting("inAppAll", checked)
-									}
+									onCheckedChange={(checked) => updateSetting("inAppAll", checked)}
 								/>
 							</div>
 						</CardContent>

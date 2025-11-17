@@ -13,14 +13,7 @@
  * - Professional PDF output
  */
 
-import {
-	Document,
-	Page,
-	Image as PDFImage,
-	StyleSheet,
-	Text,
-	View,
-} from "@react-pdf/renderer";
+import { Document, Page, Image as PDFImage, StyleSheet, Text, View } from "@react-pdf/renderer";
 
 type InvoicePDFProps = {
 	content: any; // TipTap JSON
@@ -165,10 +158,7 @@ const createStyles = (customization?: any) => {
 		notesSection: {
 			marginBottom: 24,
 			padding: 12,
-			backgroundColor:
-				colors.notesBg ||
-				colors.notesBackground ||
-				DEFAULT_COLORS.notesBackground,
+			backgroundColor: colors.notesBg || colors.notesBackground || DEFAULT_COLORS.notesBackground,
 			borderRadius: 4,
 		},
 		footer: {
@@ -192,30 +182,20 @@ const createStyles = (customization?: any) => {
 /**
  * PDF Document Component
  */
-export function InvoicePDFDocument({
-	content,
-	customization,
-}: InvoicePDFProps) {
+export function InvoicePDFDocument({ content, customization }: InvoicePDFProps) {
 	const styles = createStyles(customization);
 
 	// Parse TipTap JSON content
 	const blocks = content?.content || [];
 
 	// Extract data from blocks
-	const headerBlock =
-		blocks.find((b: any) => b.type === "invoiceHeaderBlock")?.attrs || {};
-	const billingBlock =
-		blocks.find((b: any) => b.type === "customerBillingBlock")?.attrs || {};
-	const lineItemsBlock =
-		blocks.find((b: any) => b.type === "lineItemsTableBlock")?.attrs || {};
-	const totalsBlock =
-		blocks.find((b: any) => b.type === "invoiceTotalsBlock")?.attrs || {};
-	const paymentBlock =
-		blocks.find((b: any) => b.type === "paymentInfoBlock")?.attrs || {};
-	const notesBlock =
-		blocks.find((b: any) => b.type === "invoiceNotesBlock")?.attrs || {};
-	const footerBlock =
-		blocks.find((b: any) => b.type === "invoiceFooterBlock")?.attrs || {};
+	const headerBlock = blocks.find((b: any) => b.type === "invoiceHeaderBlock")?.attrs || {};
+	const billingBlock = blocks.find((b: any) => b.type === "customerBillingBlock")?.attrs || {};
+	const lineItemsBlock = blocks.find((b: any) => b.type === "lineItemsTableBlock")?.attrs || {};
+	const totalsBlock = blocks.find((b: any) => b.type === "invoiceTotalsBlock")?.attrs || {};
+	const paymentBlock = blocks.find((b: any) => b.type === "paymentInfoBlock")?.attrs || {};
+	const notesBlock = blocks.find((b: any) => b.type === "invoiceNotesBlock")?.attrs || {};
+	const footerBlock = blocks.find((b: any) => b.type === "invoiceFooterBlock")?.attrs || {};
 
 	const lineItems = lineItemsBlock.lineItems || [];
 
@@ -239,12 +219,9 @@ export function InvoicePDFDocument({
 							/>
 						)}
 						<Text style={styles.companyName}>{headerBlock.companyName}</Text>
+						<Text style={{ fontSize: 9, marginBottom: 2 }}>{headerBlock.companyAddress}</Text>
 						<Text style={{ fontSize: 9, marginBottom: 2 }}>
-							{headerBlock.companyAddress}
-						</Text>
-						<Text style={{ fontSize: 9, marginBottom: 2 }}>
-							{headerBlock.companyCity}, {headerBlock.companyState}{" "}
-							{headerBlock.companyZip}
+							{headerBlock.companyCity}, {headerBlock.companyState} {headerBlock.companyZip}
 						</Text>
 						<Text style={{ fontSize: 9 }}>{headerBlock.companyPhone}</Text>
 						<Text style={{ fontSize: 9 }}>{headerBlock.companyEmail}</Text>
@@ -254,9 +231,7 @@ export function InvoicePDFDocument({
 						<Text style={styles.invoiceTitle}>INVOICE</Text>
 						<View style={{ marginBottom: 8 }}>
 							<Text style={styles.label}>Invoice Number</Text>
-							<Text style={styles.invoiceMetadata}>
-								{headerBlock.invoiceNumber}
-							</Text>
+							<Text style={styles.invoiceMetadata}>{headerBlock.invoiceNumber}</Text>
 						</View>
 						<View style={{ marginBottom: 8 }}>
 							<Text style={styles.label}>Invoice Date</Text>
@@ -277,15 +252,10 @@ export function InvoicePDFDocument({
 				<View style={styles.billingSection}>
 					<View style={styles.billToBox}>
 						<Text style={styles.sectionTitle}>Bill To</Text>
-						<Text style={{ fontWeight: "bold", marginBottom: 4 }}>
-							{billingBlock.customerName}
-						</Text>
-						<Text style={{ fontSize: 9, marginBottom: 2 }}>
-							{billingBlock.billingAddress}
-						</Text>
+						<Text style={{ fontWeight: "bold", marginBottom: 4 }}>{billingBlock.customerName}</Text>
+						<Text style={{ fontSize: 9, marginBottom: 2 }}>{billingBlock.billingAddress}</Text>
 						<Text style={{ fontSize: 9, marginBottom: 4 }}>
-							{billingBlock.billingCity}, {billingBlock.billingState}{" "}
-							{billingBlock.billingZip}
+							{billingBlock.billingCity}, {billingBlock.billingState} {billingBlock.billingZip}
 						</Text>
 						<Text style={{ fontSize: 9 }}>{billingBlock.customerEmail}</Text>
 						<Text style={{ fontSize: 9 }}>{billingBlock.customerPhone}</Text>
@@ -294,15 +264,10 @@ export function InvoicePDFDocument({
 					{billingBlock.showShipTo && (
 						<View style={styles.billToBox}>
 							<Text style={styles.sectionTitle}>Ship To</Text>
-							<Text style={{ fontWeight: "bold", marginBottom: 4 }}>
-								{billingBlock.shipToName}
-							</Text>
-							<Text style={{ fontSize: 9, marginBottom: 2 }}>
-								{billingBlock.shipToAddress}
-							</Text>
+							<Text style={{ fontWeight: "bold", marginBottom: 4 }}>{billingBlock.shipToName}</Text>
+							<Text style={{ fontSize: 9, marginBottom: 2 }}>{billingBlock.shipToAddress}</Text>
 							<Text style={{ fontSize: 9 }}>
-								{billingBlock.shipToCity}, {billingBlock.shipToState}{" "}
-								{billingBlock.shipToZip}
+								{billingBlock.shipToCity}, {billingBlock.shipToState} {billingBlock.shipToZip}
 							</Text>
 						</View>
 					)}
@@ -318,16 +283,10 @@ export function InvoicePDFDocument({
 					</View>
 					{lineItems.map((item: any, index: number) => (
 						<View key={item.id || index} style={styles.tableRow}>
-							<Text style={styles.tableCellDescription}>
-								{item.description}
-							</Text>
+							<Text style={styles.tableCellDescription}>{item.description}</Text>
 							<Text style={styles.tableCell}>{item.quantity}</Text>
-							<Text style={styles.tableCellRight}>
-								{formatCurrency(item.unitPrice)}
-							</Text>
-							<Text style={styles.tableCellRight}>
-								{formatCurrency(item.amount)}
-							</Text>
+							<Text style={styles.tableCellRight}>{formatCurrency(item.unitPrice)}</Text>
+							<Text style={styles.tableCellRight}>{formatCurrency(item.amount)}</Text>
 						</View>
 					))}
 				</View>
@@ -360,11 +319,8 @@ export function InvoicePDFDocument({
 						<Text>
 							{formatCurrency(
 								totalsBlock.subtotal +
-									(totalsBlock.taxTiers?.reduce(
-										(sum: number, t: any) => sum + t.amount,
-										0,
-									) || 0) -
-									(totalsBlock.discountAmount || 0),
+									(totalsBlock.taxTiers?.reduce((sum: number, t: any) => sum + t.amount, 0) || 0) -
+									(totalsBlock.discountAmount || 0)
 							)}
 						</Text>
 					</View>
@@ -385,8 +341,7 @@ export function InvoicePDFDocument({
 						</View>
 					)}
 
-					{(totalsBlock.depositAmount > 0 ||
-						totalsBlock.paymentsReceived > 0) && (
+					{(totalsBlock.depositAmount > 0 || totalsBlock.paymentsReceived > 0) && (
 						<View
 							style={[
 								styles.grandTotalRow,
@@ -396,18 +351,14 @@ export function InvoicePDFDocument({
 							]}
 						>
 							<Text>Amount Due</Text>
-							<Text
-								style={{ color: customization?.colors?.primary || "#000000" }}
-							>
+							<Text style={{ color: customization?.colors?.primary || "#000000" }}>
 								{formatCurrency(
 									totalsBlock.subtotal +
-										(totalsBlock.taxTiers?.reduce(
-											(sum: number, t: any) => sum + t.amount,
-											0,
-										) || 0) -
+										(totalsBlock.taxTiers?.reduce((sum: number, t: any) => sum + t.amount, 0) ||
+											0) -
 										(totalsBlock.discountAmount || 0) -
 										(totalsBlock.depositAmount || 0) -
-										(totalsBlock.paymentsReceived || 0),
+										(totalsBlock.paymentsReceived || 0)
 								)}
 							</Text>
 						</View>
@@ -428,9 +379,7 @@ export function InvoicePDFDocument({
 						<Text style={[styles.sectionTitle, { marginBottom: 8 }]}>
 							{notesBlock.label || "Notes"}
 						</Text>
-						<Text style={{ fontSize: 9, lineHeight: 1.5 }}>
-							{notesBlock.notes}
-						</Text>
+						<Text style={{ fontSize: 9, lineHeight: 1.5 }}>{notesBlock.notes}</Text>
 					</View>
 				)}
 
@@ -439,9 +388,7 @@ export function InvoicePDFDocument({
 					<View style={styles.footer}>
 						<Text>{footerBlock.footerText}</Text>
 						{footerBlock.disclaimer && (
-							<Text style={{ fontSize: 7, marginTop: 8 }}>
-								{footerBlock.disclaimer}
-							</Text>
+							<Text style={{ fontSize: 7, marginTop: 8 }}>{footerBlock.disclaimer}</Text>
 						)}
 					</View>
 				)}
@@ -450,9 +397,7 @@ export function InvoicePDFDocument({
 				{footerBlock.showPageNumbers && (
 					<Text
 						fixed
-						render={({ pageNumber, totalPages }) =>
-							`Page ${pageNumber} of ${totalPages}`
-						}
+						render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
 						style={styles.pageNumber}
 					/>
 				)}

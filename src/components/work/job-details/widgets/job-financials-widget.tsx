@@ -27,11 +27,11 @@ export function JobFinancialsWidget({ job }: JobFinancialsWidgetProps) {
 		<div className="space-y-4">
 			{/* Total Amount */}
 			<div>
-				<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+				<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 					<CircleDollarSign className="size-3.5" />
 					Total Amount
 				</div>
-				<div className="font-bold text-2xl">{formatCurrency(totalAmount)}</div>
+				<div className="text-2xl font-bold">{formatCurrency(totalAmount)}</div>
 			</div>
 
 			<Separator />
@@ -40,22 +40,18 @@ export function JobFinancialsWidget({ job }: JobFinancialsWidgetProps) {
 			<div className="space-y-2 text-sm">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground">Paid</span>
-					<span className="font-medium text-success">
-						{formatCurrency(paidAmount)}
-					</span>
+					<span className="text-success font-medium">{formatCurrency(paidAmount)}</span>
 				</div>
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground">Remaining</span>
-					<span className="font-medium text-warning">
-						{formatCurrency(remainingAmount)}
-					</span>
+					<span className="text-warning font-medium">{formatCurrency(remainingAmount)}</span>
 				</div>
 			</div>
 
 			{/* Progress Bar */}
 			<div className="space-y-1">
 				<Progress className="h-2" value={percentagePaid} />
-				<div className="text-center text-muted-foreground text-xs">
+				<div className="text-muted-foreground text-center text-xs">
 					{Math.round(percentagePaid)}% paid
 				</div>
 			</div>

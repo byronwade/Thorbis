@@ -3,13 +3,7 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAllCompetitors } from "@/lib/marketing/competitors";
 import {
 	generateBreadcrumbStructuredData,
@@ -91,9 +85,7 @@ const faqLd = generateFAQStructuredData(FAQS);
 
 export default function SwitchToThorbisPage() {
 	const competitorComparisons = getAllCompetitors()
-		.filter((competitor) =>
-			["servicetitan", "housecall-pro", "jobber"].includes(competitor.slug),
-		)
+		.filter((competitor) => ["servicetitan", "housecall-pro", "jobber"].includes(competitor.slug))
 		.slice(0, 3);
 
 	return (
@@ -116,17 +108,16 @@ export default function SwitchToThorbisPage() {
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<section className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						Migration Program
 					</Badge>
-					<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 						Switch to Thorbis with a guided 45-day migration program
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						We migrate data, re-engineer workflows, and train your team while
-						you stay focused on customers. Compare migration paths from
-						ServiceTitan, Housecall Pro, Jobber, and more knowing pricing is
-						just $100/month base with pay-as-you-go usage, unlimited users, and
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						We migrate data, re-engineer workflows, and train your team while you stay focused on
+						customers. Compare migration paths from ServiceTitan, Housecall Pro, Jobber, and more
+						knowing pricing is just $100/month base with pay-as-you-go usage, unlimited users, and
 						no lock-in.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
@@ -170,30 +161,24 @@ export default function SwitchToThorbisPage() {
 
 				<section className="mt-20 space-y-6">
 					<div className="mx-auto max-w-3xl text-center">
-						<h2 className="font-semibold text-3xl">
-							Choose your starting point
-						</h2>
-						<p className="mt-3 text-muted-foreground">
-							Explore detailed comparison guides for the platforms contractors
-							most often replace with Thorbis.
+						<h2 className="text-3xl font-semibold">Choose your starting point</h2>
+						<p className="text-muted-foreground mt-3">
+							Explore detailed comparison guides for the platforms contractors most often replace
+							with Thorbis.
 						</p>
 					</div>
 					<div className="grid gap-6 md:grid-cols-3">
 						{competitorComparisons.map((comparison) => (
 							<Card className="h-full" key={comparison.slug}>
 								<CardHeader>
-									<CardTitle className="text-xl">
-										Thorbis vs {comparison.competitorName}
-									</CardTitle>
+									<CardTitle className="text-xl">Thorbis vs {comparison.competitorName}</CardTitle>
 									<CardDescription>{comparison.summary}</CardDescription>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-3">
-									<ul className="space-y-2 text-muted-foreground text-sm">
+									<ul className="text-muted-foreground space-y-2 text-sm">
 										{comparison.thorbisAdvantages.slice(0, 3).map((value) => (
 											<li className="leading-relaxed" key={value.title}>
-												<span className="font-semibold text-foreground">
-													{value.title}:
-												</span>{" "}
+												<span className="text-foreground font-semibold">{value.title}:</span>{" "}
 												{value.description}
 											</li>
 										))}
@@ -214,35 +199,28 @@ export default function SwitchToThorbisPage() {
 						<CardHeader>
 							<CardTitle>Your 45-day migration timeline</CardTitle>
 							<CardDescription>
-								A guided playbook designed to minimize downtime and accelerate
-								ROI.
+								A guided playbook designed to minimize downtime and accelerate ROI.
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<ol className="space-y-4 text-left text-muted-foreground text-sm leading-relaxed">
+							<ol className="text-muted-foreground space-y-4 text-left text-sm leading-relaxed">
 								<li>
-									<span className="font-semibold text-foreground">
-										Week 1-2:
-									</span>{" "}
-									Kickoff, data exports, and configuration workshops. Thorbis
-									builds your environment while reconciling data.
+									<span className="text-foreground font-semibold">Week 1-2:</span> Kickoff, data
+									exports, and configuration workshops. Thorbis builds your environment while
+									reconciling data.
 								</li>
 								<li>
-									<span className="font-semibold text-foreground">Week 3:</span>{" "}
-									Workflow testing in a staging environment, plus dispatcher and
-									technician training with live feedback.
+									<span className="text-foreground font-semibold">Week 3:</span> Workflow testing in
+									a staging environment, plus dispatcher and technician training with live feedback.
 								</li>
 								<li>
-									<span className="font-semibold text-foreground">Week 4:</span>{" "}
-									Final data sync, go-live planning, and customer
-									communications.
+									<span className="text-foreground font-semibold">Week 4:</span> Final data sync,
+									go-live planning, and customer communications.
 								</li>
 								<li>
-									<span className="font-semibold text-foreground">
-										Week 5-6:
-									</span>{" "}
-									Cutover weekend, daily huddles, KPI tracking, and optimization
-									sessions with Thorbis success coaches.
+									<span className="text-foreground font-semibold">Week 5-6:</span> Cutover weekend,
+									daily huddles, KPI tracking, and optimization sessions with Thorbis success
+									coaches.
 								</li>
 							</ol>
 						</CardContent>
@@ -255,12 +233,10 @@ export default function SwitchToThorbisPage() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<ul className="space-y-2 text-muted-foreground text-sm leading-relaxed">
+							<ul className="text-muted-foreground space-y-2 text-sm leading-relaxed">
 								<li>✔️ Dedicated migration engineer & success manager</li>
 								<li>✔️ Data cleanup and validation reports</li>
-								<li>
-									✔️ Configuration of automations, AI assistant, and portal
-								</li>
+								<li>✔️ Configuration of automations, AI assistant, and portal</li>
 								<li>✔️ Role-based training decks & recorded sessions</li>
 								<li>✔️ Post-launch KPI dashboard & optimization plan</li>
 							</ul>
@@ -270,10 +246,10 @@ export default function SwitchToThorbisPage() {
 
 				<section className="mt-20">
 					<div className="mx-auto max-w-3xl space-y-4 text-center">
-						<h2 className="font-semibold text-3xl">Migration FAQ</h2>
+						<h2 className="text-3xl font-semibold">Migration FAQ</h2>
 						<p className="text-muted-foreground">
-							Answers to the most common questions contractors ask when planning
-							their move to Thorbis.
+							Answers to the most common questions contractors ask when planning their move to
+							Thorbis.
 						</p>
 					</div>
 					<div className="mx-auto mt-8 max-w-3xl space-y-4 text-left">
@@ -293,9 +269,7 @@ export default function SwitchToThorbisPage() {
 							<Link href="/register">Get started now</Link>
 						</Button>
 						<Button asChild variant="outline">
-							<Link href="/templates?tag=migration">
-								Get migration checklist
-							</Link>
+							<Link href="/templates?tag=migration">Get migration checklist</Link>
 						</Button>
 					</div>
 				</section>

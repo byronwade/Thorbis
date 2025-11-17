@@ -16,12 +16,7 @@ type NotesSectionProps = {
 	onAddNote?: (content: string) => Promise<void>;
 };
 
-export function NotesSection({
-	notes,
-	entityType,
-	entityId,
-	onAddNote,
-}: NotesSectionProps) {
+export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSectionProps) {
 	const { toast } = useToast();
 	const [isAdding, setIsAdding] = useState(false);
 	const [newNote, setNewNote] = useState("");
@@ -97,26 +92,24 @@ export function NotesSection({
 					<div className="space-y-3">
 						{notes.map((note: any) => (
 							<div
-								className="rounded-lg border p-3 transition-colors hover:bg-muted/50"
+								className="hover:bg-muted/50 rounded-lg border p-3 transition-colors"
 								key={note.id}
 							>
 								<div className="flex gap-3">
 									<Avatar className="size-8 flex-shrink-0">
 										<AvatarImage src={note.user?.avatar} />
-										<AvatarFallback>
-											{note.user?.name?.charAt(0) || "?"}
-										</AvatarFallback>
+										<AvatarFallback>{note.user?.name?.charAt(0) || "?"}</AvatarFallback>
 									</Avatar>
 									<div className="min-w-0 flex-1">
 										<div className="flex items-center justify-between gap-2">
-											<p className="font-medium text-xs">{note.user?.name}</p>
+											<p className="text-xs font-medium">{note.user?.name}</p>
 											<p className="text-muted-foreground text-xs">
 												{formatDistance(new Date(note.created_at), new Date(), {
 													addSuffix: true,
 												})}
 											</p>
 										</div>
-										<p className="mt-1 whitespace-pre-wrap break-words text-sm">
+										<p className="mt-1 text-sm break-words whitespace-pre-wrap">
 											{note.content || note.note}
 										</p>
 									</div>
@@ -127,8 +120,8 @@ export function NotesSection({
 				) : (
 					<div className="flex h-32 items-center justify-center">
 						<div className="text-center">
-							<FileText className="mx-auto size-8 text-muted-foreground/50" />
-							<p className="mt-2 text-muted-foreground text-sm">No notes yet</p>
+							<FileText className="text-muted-foreground/50 mx-auto size-8" />
+							<p className="text-muted-foreground mt-2 text-sm">No notes yet</p>
 						</div>
 					</div>
 				)}

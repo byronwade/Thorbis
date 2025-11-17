@@ -41,11 +41,7 @@ type InlineCustomerFormProps = {
 	className?: string;
 };
 
-export function InlineCustomerForm({
-	onSuccess,
-	onCancel,
-	className,
-}: InlineCustomerFormProps) {
+export function InlineCustomerForm({ onSuccess, onCancel, className }: InlineCustomerFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 	const [formData, setFormData] = useState<CustomerFormData>({
@@ -129,21 +125,18 @@ export function InlineCustomerForm({
 
 	return (
 		<form
-			className={cn(
-				"space-y-4 rounded-lg border border-primary/20 bg-primary/5 p-4",
-				className,
-			)}
+			className={cn("border-primary/20 bg-primary/5 space-y-4 rounded-lg border p-4", className)}
 			onSubmit={handleSubmit}
 		>
 			<div className="flex items-center justify-between">
-				<h3 className="font-semibold text-sm">Create New Customer</h3>
+				<h3 className="text-sm font-semibold">Create New Customer</h3>
 				<Button onClick={onCancel} size="sm" type="button" variant="ghost">
 					<X className="size-4" />
 				</Button>
 			</div>
 
 			{errors.submit && (
-				<div className="rounded-md bg-destructive/10 p-3">
+				<div className="bg-destructive/10 rounded-md p-3">
 					<p className="text-destructive text-sm">{errors.submit}</p>
 				</div>
 			)}
@@ -159,9 +152,7 @@ export function InlineCustomerForm({
 						placeholder="John"
 						value={formData.firstName}
 					/>
-					{errors.firstName && (
-						<p className="text-destructive text-xs">{errors.firstName}</p>
-					)}
+					{errors.firstName && <p className="text-destructive text-xs">{errors.firstName}</p>}
 				</div>
 
 				<div className="space-y-2">
@@ -174,9 +165,7 @@ export function InlineCustomerForm({
 						placeholder="Smith"
 						value={formData.lastName}
 					/>
-					{errors.lastName && (
-						<p className="text-destructive text-xs">{errors.lastName}</p>
-					)}
+					{errors.lastName && <p className="text-destructive text-xs">{errors.lastName}</p>}
 				</div>
 			</div>
 
@@ -191,9 +180,7 @@ export function InlineCustomerForm({
 					type="email"
 					value={formData.email}
 				/>
-				{errors.email && (
-					<p className="text-destructive text-xs">{errors.email}</p>
-				)}
+				{errors.email && <p className="text-destructive text-xs">{errors.email}</p>}
 			</div>
 
 			<div className="space-y-2">
@@ -207,9 +194,7 @@ export function InlineCustomerForm({
 					type="tel"
 					value={formData.phone}
 				/>
-				{errors.phone && (
-					<p className="text-destructive text-xs">{errors.phone}</p>
-				)}
+				{errors.phone && <p className="text-destructive text-xs">{errors.phone}</p>}
 			</div>
 
 			<div className="space-y-2">
@@ -227,9 +212,7 @@ export function InlineCustomerForm({
 					Customer Type <span className="text-destructive">*</span>
 				</Label>
 				<Select
-					onValueChange={(value) =>
-						updateField("type", value as CustomerFormData["type"])
-					}
+					onValueChange={(value) => updateField("type", value as CustomerFormData["type"])}
 					value={formData.type}
 				>
 					<SelectTrigger id="inline-type">
@@ -244,13 +227,7 @@ export function InlineCustomerForm({
 			</div>
 
 			<div className="flex justify-end gap-2 pt-2">
-				<Button
-					disabled={isLoading}
-					onClick={onCancel}
-					size="sm"
-					type="button"
-					variant="outline"
-				>
+				<Button disabled={isLoading} onClick={onCancel} size="sm" type="button" variant="outline">
 					Cancel
 				</Button>
 				<Button disabled={isLoading} size="sm" type="submit">

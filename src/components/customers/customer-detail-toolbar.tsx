@@ -30,12 +30,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function CustomerDetailToolbar() {
 	const pathname = usePathname();
@@ -100,9 +95,7 @@ export function CustomerDetailToolbar() {
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<Button asChild size="sm" variant="outline">
-									<a
-										href={`/dashboard/work/invoices/new?customerId=${customerId}`}
-									>
+									<a href={`/dashboard/work/invoices/new?customerId=${customerId}`}>
 										<FileText />
 										<span className="hidden lg:inline">Invoice</span>
 									</a>
@@ -126,7 +119,7 @@ export function CustomerDetailToolbar() {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end" className="w-56">
-					<DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+					<DropdownMenuLabel className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 						Actions
 					</DropdownMenuLabel>
 					<DropdownMenuSeparator />

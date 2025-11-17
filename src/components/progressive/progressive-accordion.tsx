@@ -53,9 +53,7 @@ export function ProgressiveAccordion({
 	defaultValue,
 	className,
 }: ProgressiveAccordionProps) {
-	const [openItems, setOpenItems] = useState<string | string[] | undefined>(
-		defaultValue,
-	);
+	const [openItems, setOpenItems] = useState<string | string[] | undefined>(defaultValue);
 
 	return (
 		<Accordion
@@ -64,9 +62,7 @@ export function ProgressiveAccordion({
 			onValueChange={setOpenItems}
 			className={className}
 		>
-			{typeof children === "function"
-				? children({ openItems })
-				: children}
+			{typeof children === "function" ? children({ openItems }) : children}
 		</Accordion>
 	);
 }
@@ -86,17 +82,11 @@ export function ProgressiveAccordionItem({
 				<div className="flex items-center gap-2">
 					{icon}
 					<span>{title}</span>
-					{badge && (
-						<span className="rounded-full bg-muted px-2 py-0.5 text-xs">
-							{badge}
-						</span>
-					)}
+					{badge && <span className="bg-muted rounded-full px-2 py-0.5 text-xs">{badge}</span>}
 				</div>
 			</AccordionTrigger>
 			<AccordionContent>
-				{typeof children === "function"
-					? children({ isOpen })
-					: children}
+				{typeof children === "function" ? children({ isOpen }) : children}
 			</AccordionContent>
 		</AccordionItem>
 	);

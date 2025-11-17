@@ -52,9 +52,7 @@ export function TeamMemberEditDialog({
 	onSave,
 }: TeamMemberEditDialogProps) {
 	const [editedMember, setEditedMember] = useState<TeamMember>(member);
-	const [photoPreview, setPhotoPreview] = useState<string | null>(
-		member.photoPreview || null,
-	);
+	const [photoPreview, setPhotoPreview] = useState<string | null>(member.photoPreview || null);
 
 	const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -83,9 +81,7 @@ export function TeamMemberEditDialog({
 			<DialogContent className="max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>Edit Team Member</DialogTitle>
-					<DialogDescription>
-						Update the team member's information
-					</DialogDescription>
+					<DialogDescription>Update the team member's information</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -99,7 +95,7 @@ export function TeamMemberEditDialog({
 									src={photoPreview}
 								/>
 								<Button
-									className="-right-1 -top-1 absolute size-6 rounded-full p-0"
+									className="absolute -top-1 -right-1 size-6 rounded-full p-0"
 									onClick={() => {
 										setEditedMember({ ...editedMember, photo: null });
 										setPhotoPreview(null);
@@ -113,7 +109,7 @@ export function TeamMemberEditDialog({
 							</div>
 						) : (
 							<div className="flex size-20 items-center justify-center rounded-full border border-dashed">
-								<User className="size-8 text-muted-foreground" />
+								<User className="text-muted-foreground size-8" />
 							</div>
 						)}
 						<div className="flex-1">
@@ -123,7 +119,7 @@ export function TeamMemberEditDialog({
 								onChange={handlePhotoChange}
 								type="file"
 							/>
-							<p className="mt-1 text-muted-foreground text-xs">
+							<p className="text-muted-foreground mt-1 text-xs">
 								Profile photo (optional, max 5MB)
 							</p>
 						</div>
@@ -149,9 +145,7 @@ export function TeamMemberEditDialog({
 							<Label htmlFor="lastName">Last Name *</Label>
 							<Input
 								id="lastName"
-								onChange={(e) =>
-									setEditedMember({ ...editedMember, lastName: e.target.value })
-								}
+								onChange={(e) => setEditedMember({ ...editedMember, lastName: e.target.value })}
 								placeholder="Doe"
 								value={editedMember.lastName}
 							/>
@@ -165,26 +159,20 @@ export function TeamMemberEditDialog({
 							<Input
 								disabled={editedMember.isCurrentUser}
 								id="email"
-								onChange={(e) =>
-									setEditedMember({ ...editedMember, email: e.target.value })
-								}
+								onChange={(e) => setEditedMember({ ...editedMember, email: e.target.value })}
 								placeholder="john@example.com"
 								type="email"
 								value={editedMember.email}
 							/>
 							{editedMember.isCurrentUser && (
-								<p className="text-muted-foreground text-xs">
-									Your email cannot be changed here
-								</p>
+								<p className="text-muted-foreground text-xs">Your email cannot be changed here</p>
 							)}
 						</div>
 						<div className="space-y-2">
 							<Label htmlFor="phone">Phone (Optional)</Label>
 							<Input
 								id="phone"
-								onChange={(e) =>
-									setEditedMember({ ...editedMember, phone: e.target.value })
-								}
+								onChange={(e) => setEditedMember({ ...editedMember, phone: e.target.value })}
 								placeholder="+1 (555) 123-4567"
 								type="tel"
 								value={editedMember.phone || ""}
@@ -208,18 +196,10 @@ export function TeamMemberEditDialog({
 								<SelectValue placeholder="Select role" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="owner">
-									Owner - Full access to everything
-								</SelectItem>
-								<SelectItem value="admin">
-									Admin - Full access except billing
-								</SelectItem>
-								<SelectItem value="manager">
-									Manager - Manage jobs and team
-								</SelectItem>
-								<SelectItem value="dispatcher">
-									Dispatcher - Schedule and assign jobs
-								</SelectItem>
+								<SelectItem value="owner">Owner - Full access to everything</SelectItem>
+								<SelectItem value="admin">Admin - Full access except billing</SelectItem>
+								<SelectItem value="manager">Manager - Manage jobs and team</SelectItem>
+								<SelectItem value="dispatcher">Dispatcher - Schedule and assign jobs</SelectItem>
 								<SelectItem value="technician">
 									Technician - View and complete assigned jobs
 								</SelectItem>

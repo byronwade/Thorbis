@@ -2,10 +2,7 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 
 import { CompetitorPage } from "@/components/marketing/competitor-page";
-import {
-	getAllCompetitors,
-	getCompetitorBySlug,
-} from "@/lib/marketing/competitors";
+import { getAllCompetitors, getCompetitorBySlug } from "@/lib/marketing/competitors";
 import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
@@ -39,9 +36,7 @@ export async function generateMetadata({ params }: CompetitorPageProps) {
 	});
 }
 
-export default async function CompetitorDetailPage({
-	params,
-}: CompetitorPageProps) {
+export default async function CompetitorDetailPage({ params }: CompetitorPageProps) {
 	const { slug } = await params;
 	const competitor = getCompetitorBySlug(slug);
 
@@ -57,8 +52,7 @@ export default async function CompetitorDetailPage({
 			{
 				price: "Custom",
 				currency: "USD",
-				description:
-					"AI-powered field management platform tailored to your team.",
+				description: "AI-powered field management platform tailored to your team.",
 			},
 		],
 	});
@@ -75,7 +69,7 @@ export default async function CompetitorDetailPage({
 								name: `Thorbis vs ${competitor.competitorName}`,
 								url: `${siteUrl}/vs/${competitor.slug}`,
 							},
-						]),
+						])
 					),
 				}}
 				id="comparison-breadcrumb-ld"

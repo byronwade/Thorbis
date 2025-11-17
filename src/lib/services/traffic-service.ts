@@ -12,14 +12,7 @@ import { z } from "zod";
 // ============================================================================
 
 export const TrafficIncidentSchema = z.object({
-	type: z.enum([
-		"crash",
-		"construction",
-		"road_closed",
-		"police",
-		"congestion",
-		"other",
-	]),
+	type: z.enum(["crash", "construction", "road_closed", "police", "congestion", "other"]),
 	severity: z.enum(["minor", "moderate", "major"]),
 	description: z.string(),
 	location: z.object({
@@ -58,7 +51,7 @@ class TrafficService {
 		lat: number,
 		lon: number,
 		shopLat?: number,
-		shopLon?: number,
+		shopLon?: number
 	): Promise<TrafficData | null> {
 		try {
 			// For now, we'll use Google Maps Directions API with traffic model
@@ -75,13 +68,7 @@ class TrafficService {
 
 			// If we have shop coordinates, check for incidents on the route
 			if (shopLat && shopLon) {
-				const routeIncidents = await this.getRouteIncidents(
-					shopLat,
-					shopLon,
-					lat,
-					lon,
-					apiKey,
-				);
+				const routeIncidents = await this.getRouteIncidents(shopLat, shopLon, lat, lon, apiKey);
 				incidents.push(...routeIncidents);
 			}
 
@@ -90,9 +77,7 @@ class TrafficService {
 			incidents.push(...nearbyIncidents);
 
 			const nearbyCount = incidents.filter((i) => i.distance <= 5).length;
-			const routeAffectingCount = incidents.filter(
-				(i) => i.affectsRoute,
-			).length;
+			const routeAffectingCount = incidents.filter((i) => i.affectsRoute).length;
 
 			const trafficData: TrafficData = {
 				incidents,
@@ -117,12 +102,10 @@ class TrafficService {
 		originLon: number,
 		destLat: number,
 		destLon: number,
-		apiKey: string,
+		apiKey: string
 	): Promise<TrafficIncident[]> {
 		try {
-			const url = new URL(
-				"https://maps.googleapis.com/maps/api/directions/json",
-			);
+			const url = new URL("https://maps.googleapis.com/maps/api/directions/json");
 			url.searchParams.set("origin", `${originLat},${originLon}`);
 			url.searchParams.set("destination", `${destLat},${destLon}`);
 			url.searchParams.set("departure_time", "now");
@@ -195,7 +178,7 @@ class TrafficService {
 	private async getNearbyIncidents(
 		_lat: number,
 		_lon: number,
-		_apiKey: string,
+		_apiKey: string
 	): Promise<TrafficIncident[]> {
 		// Note: Google Places API doesn't directly provide traffic incidents
 		// In production, you'd want to use a dedicated traffic API like:

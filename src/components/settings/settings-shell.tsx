@@ -2,10 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { SettingsOverviewSection } from "@/lib/settings/overview-data";
-import {
-	describeHealthStatus,
-	getStatusColorClasses,
-} from "@/lib/settings/status-utils";
+import { describeHealthStatus, getStatusColorClasses } from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
 type SettingsShellProps = {
@@ -20,10 +17,10 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 
 	return (
 		<div className="space-y-10">
-			<div className="rounded-2xl border bg-card/90 p-4 shadow-sm">
+			<div className="bg-card/90 rounded-2xl border p-4 shadow-sm">
 				<div className="flex items-center justify-between gap-3">
 					<div>
-						<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+						<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 							Settings clusters
 						</p>
 						<p className="text-muted-foreground text-sm">
@@ -31,25 +28,22 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 						</p>
 					</div>
 				</div>
-				<nav
-					aria-label="Settings clusters"
-					className="mt-4 flex gap-3 overflow-x-auto pb-2"
-				>
+				<nav aria-label="Settings clusters" className="mt-4 flex gap-3 overflow-x-auto pb-2">
 					{sections.map((section) => {
 						const statusColors = getStatusColorClasses(section.status);
 						return (
 							<Link
-								className="group min-w-[180px] flex-1 rounded-2xl border px-4 py-3 transition hover:border-primary/60 hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+								className="group hover:border-primary/60 hover:bg-muted/50 focus-visible:ring-primary min-w-[180px] flex-1 rounded-2xl border px-4 py-3 transition focus-visible:ring-2 focus-visible:outline-none"
 								href={`#${section.slug}`}
 								key={section.slug}
 							>
 								<div className="flex items-center justify-between gap-3">
 									<div className="flex items-center gap-2">
-										<div className="rounded-lg border bg-muted p-1">
-											<section.icon className="size-4 text-primary" />
+										<div className="bg-muted rounded-lg border p-1">
+											<section.icon className="text-primary size-4" />
 										</div>
 										<div>
-											<p className="font-medium text-sm">{section.title}</p>
+											<p className="text-sm font-medium">{section.title}</p>
 											<p className="text-muted-foreground text-xs">
 												{describeHealthStatus(section.status)}
 											</p>
@@ -57,10 +51,10 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 									</div>
 									<Badge
 										className={cn(
-											"font-semibold text-xs",
+											"text-xs font-semibold",
 											statusColors.text,
 											statusColors.background,
-											statusColors.border,
+											statusColors.border
 										)}
 										variant="outline"
 									>

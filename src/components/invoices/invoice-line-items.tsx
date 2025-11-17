@@ -38,14 +38,11 @@ type InvoiceLineItemsProps = {
 	onUpdate: (items: LineItem[]) => void;
 };
 
-export function InvoiceLineItems({
-	lineItems: initialItems,
-	onUpdate,
-}: InvoiceLineItemsProps) {
+export function InvoiceLineItems({ lineItems: initialItems, onUpdate }: InvoiceLineItemsProps) {
 	const [items, setItems] = useState<LineItem[]>(
 		initialItems.length > 0
 			? initialItems
-			: [{ description: "", quantity: 1, unitPrice: 0, total: 0 }],
+			: [{ description: "", quantity: 1, unitPrice: 0, total: 0 }]
 	);
 
 	// Update item field
@@ -55,8 +52,7 @@ export function InvoiceLineItems({
 
 		// Recalculate total for this item
 		if (field === "quantity" || field === "unitPrice") {
-			newItems[index].total =
-				newItems[index].quantity * newItems[index].unitPrice;
+			newItems[index].total = newItems[index].quantity * newItems[index].unitPrice;
 		}
 
 		setItems(newItems);
@@ -65,10 +61,7 @@ export function InvoiceLineItems({
 
 	// Add new line item
 	const addItem = () => {
-		const newItems = [
-			...items,
-			{ description: "", quantity: 1, unitPrice: 0, total: 0 },
-		];
+		const newItems = [...items, { description: "", quantity: 1, unitPrice: 0, total: 0 }];
 		setItems(newItems);
 		onUpdate(newItems);
 	};
@@ -77,9 +70,7 @@ export function InvoiceLineItems({
 	const removeItem = (index: number) => {
 		if (items.length === 1) {
 			// Keep at least one item
-			const newItems = [
-				{ description: "", quantity: 1, unitPrice: 0, total: 0 },
-			];
+			const newItems = [{ description: "", quantity: 1, unitPrice: 0, total: 0 }];
 			setItems(newItems);
 			onUpdate(newItems);
 		} else {
@@ -94,7 +85,7 @@ export function InvoiceLineItems({
 	return (
 		<Card className="mb-8 p-6">
 			<div className="mb-4 flex items-center justify-between">
-				<Label className="font-semibold text-base">Line Items</Label>
+				<Label className="text-base font-semibold">Line Items</Label>
 				<Button onClick={addItem} size="sm" variant="outline">
 					<Plus className="mr-2 h-4 w-4" />
 					Add Item
@@ -118,9 +109,7 @@ export function InvoiceLineItems({
 								<TableCell>
 									<Input
 										className="border-0 p-2 focus-visible:ring-1"
-										onChange={(e) =>
-											updateItem(index, "description", e.target.value)
-										}
+										onChange={(e) => updateItem(index, "description", e.target.value)}
 										placeholder="e.g., HVAC Unit Installation, Labor, Materials"
 										value={item.description}
 									/>
@@ -130,11 +119,7 @@ export function InvoiceLineItems({
 										className="border-0 p-2 focus-visible:ring-1"
 										min="0"
 										onChange={(e) =>
-											updateItem(
-												index,
-												"quantity",
-												Number.parseFloat(e.target.value) || 0,
-											)
+											updateItem(index, "quantity", Number.parseFloat(e.target.value) || 0)
 										}
 										step="0.01"
 										type="number"
@@ -143,16 +128,12 @@ export function InvoiceLineItems({
 								</TableCell>
 								<TableCell>
 									<div className="flex items-center">
-										<span className="mr-1 text-muted-foreground">$</span>
+										<span className="text-muted-foreground mr-1">$</span>
 										<Input
 											className="border-0 p-2 focus-visible:ring-1"
 											min="0"
 											onChange={(e) =>
-												updateItem(
-													index,
-													"unitPrice",
-													Number.parseFloat(e.target.value) || 0,
-												)
+												updateItem(index, "unitPrice", Number.parseFloat(e.target.value) || 0)
 											}
 											step="0.01"
 											type="number"
@@ -170,7 +151,7 @@ export function InvoiceLineItems({
 										size="icon"
 										variant="ghost"
 									>
-										<Trash2 className="h-4 w-4 text-muted-foreground" />
+										<Trash2 className="text-muted-foreground h-4 w-4" />
 									</Button>
 								</TableCell>
 							</TableRow>
@@ -180,10 +161,10 @@ export function InvoiceLineItems({
 			</div>
 
 			{/* Helper text */}
-			<div className="mt-4 text-muted-foreground text-sm">
+			<div className="text-muted-foreground mt-4 text-sm">
 				<p>
-					Add line items for labor, materials, equipment, or services. Totals
-					are calculated automatically.
+					Add line items for labor, materials, equipment, or services. Totals are calculated
+					automatically.
 				</p>
 			</div>
 		</Card>

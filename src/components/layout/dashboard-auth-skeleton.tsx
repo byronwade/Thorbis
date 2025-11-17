@@ -9,7 +9,7 @@ export function DashboardAuthSkeleton() {
 		<div className="flex h-screen w-full items-center justify-center">
 			<div className="flex flex-col items-center gap-4">
 				{/* Animated logo/spinner */}
-				<div className="size-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+				<div className="border-primary/20 border-t-primary size-12 animate-spin rounded-full border-4" />
 
 				{/* Loading text */}
 				<p className="text-muted-foreground text-sm">Loading dashboard...</p>

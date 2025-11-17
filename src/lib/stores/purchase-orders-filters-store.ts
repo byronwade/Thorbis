@@ -31,22 +31,21 @@ type PurchaseOrdersFiltersStore = {
 	resetFilters: () => void;
 };
 
-export const usePurchaseOrdersFiltersStore =
-	create<PurchaseOrdersFiltersStore>()(
-		persist(
-			(set) => ({
-				filters: DEFAULT_FILTERS,
+export const usePurchaseOrdersFiltersStore = create<PurchaseOrdersFiltersStore>()(
+	persist(
+		(set) => ({
+			filters: DEFAULT_FILTERS,
 
-				setFilters: (newFilters) =>
-					set((state) => ({
-						filters: { ...state.filters, ...newFilters },
-					})),
+			setFilters: (newFilters) =>
+				set((state) => ({
+					filters: { ...state.filters, ...newFilters },
+				})),
 
-				resetFilters: () => set({ filters: DEFAULT_FILTERS }),
-			}),
-			{
-				name: "purchase-orders-filters",
-				skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-			},
-		),
-	);
+			resetFilters: () => set({ filters: DEFAULT_FILTERS }),
+		}),
+		{
+			name: "purchase-orders-filters",
+			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
+		}
+	)
+);

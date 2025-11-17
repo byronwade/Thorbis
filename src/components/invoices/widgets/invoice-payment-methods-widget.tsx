@@ -29,20 +29,23 @@ export function InvoicePaymentMethodsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: paymentMethods, isLoading, error } =
-					useInvoicePaymentMethods(customerId, isVisible);
+				const {
+					data: paymentMethods,
+					isLoading,
+					error,
+				} = useInvoicePaymentMethods(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load payment methods
 						</div>
 					);
 				if (!paymentMethods || paymentMethods.length === 0)
 					return (
 						<div className="space-y-3">
-							<div className="text-center text-muted-foreground text-sm">
+							<div className="text-muted-foreground text-center text-sm">
 								No saved payment methods
 							</div>
 							<Button variant="outline" size="sm" className="w-full">
@@ -54,14 +57,11 @@ export function InvoicePaymentMethodsWidget({
 				return (
 					<div className="space-y-3">
 						{paymentMethods.map((method) => (
-							<div
-								key={method.id}
-								className="rounded-lg border p-3"
-							>
+							<div key={method.id} className="rounded-lg border p-3">
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="font-medium text-sm">
+											<span className="text-sm font-medium">
 												{method.type === "card" ? "Credit Card" : method.type}
 											</span>
 											{method.is_default && (
@@ -72,14 +72,10 @@ export function InvoicePaymentMethodsWidget({
 											)}
 										</div>
 										{method.last4 && (
-											<p className="text-muted-foreground text-sm">
-												•••• {method.last4}
-											</p>
+											<p className="text-muted-foreground text-sm">•••• {method.last4}</p>
 										)}
 										{method.brand && (
-											<p className="text-muted-foreground text-xs">
-												{method.brand}
-											</p>
+											<p className="text-muted-foreground text-xs">{method.brand}</p>
 										)}
 										{method.exp_month && method.exp_year && (
 											<p className="text-muted-foreground text-xs">

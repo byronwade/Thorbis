@@ -69,9 +69,7 @@ describe("CustomerEnrichmentService", () => {
 		});
 
 		it("should handle enrichment failures gracefully", async () => {
-			mockedPersonEnrichment.enrichPerson.mockRejectedValue(
-				new Error("API error"),
-			);
+			mockedPersonEnrichment.enrichPerson.mockRejectedValue(new Error("API error"));
 			mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(null);
 			mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
 			mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
@@ -101,9 +99,7 @@ describe("CustomerEnrichmentService", () => {
 			};
 
 			mockedPersonEnrichment.enrichPerson.mockResolvedValue(mockPersonData);
-			mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(
-				mockBusinessData,
-			);
+			mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(mockBusinessData);
 			mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
 			mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
@@ -136,9 +132,7 @@ describe("CustomerEnrichmentService", () => {
 			};
 
 			mockedPersonEnrichment.enrichPerson.mockResolvedValue(mockPersonData);
-			mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(
-				mockBusinessData,
-			);
+			mockedBusinessEnrichment.enrichBusiness.mockResolvedValue(mockBusinessData);
 			mockedSocialEnrichment.enrichSocial.mockResolvedValue(null);
 			mockedPropertyEnrichment.enrichProperty.mockResolvedValue(null);
 
@@ -163,9 +157,7 @@ describe("CustomerEnrichmentService", () => {
 				expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // Tomorrow
 			};
 
-			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(
-				true,
-			);
+			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(true);
 		});
 
 		it("should return false for expired enrichment", () => {
@@ -177,9 +169,7 @@ describe("CustomerEnrichmentService", () => {
 				expiresAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // Yesterday
 			};
 
-			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(
-				false,
-			);
+			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(false);
 		});
 
 		it("should return false when expiresAt is missing", () => {
@@ -190,9 +180,7 @@ describe("CustomerEnrichmentService", () => {
 				overallConfidence: 90,
 			};
 
-			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(
-				false,
-			);
+			expect(customerEnrichmentService.isEnrichmentValid(enrichment)).toBe(false);
 		});
 	});
 

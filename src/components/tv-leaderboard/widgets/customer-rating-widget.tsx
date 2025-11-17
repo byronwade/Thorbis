@@ -38,7 +38,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 					<div className="flex items-center justify-between">
 						<ResponsiveText variant="title">Customer Rating</ResponsiveText>
 						<ResponsiveIcon>
-							<Star className="fill-yellow-500 text-warning" />
+							<Star className="text-warning fill-yellow-500" />
 						</ResponsiveIcon>
 					</div>
 				</ShowAt>
@@ -46,14 +46,11 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 				{/* COMFORTABLE Stage: Short title */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText
-							className="font-medium text-muted-foreground"
-							variant="body"
-						>
+						<ResponsiveText className="text-muted-foreground font-medium" variant="body">
 							Rating
 						</ResponsiveText>
 						<ResponsiveIcon>
-							<Star className="fill-yellow-500 text-warning" />
+							<Star className="text-warning fill-yellow-500" />
 						</ResponsiveIcon>
 					</ResponsiveFlex>
 				</ShowAt>
@@ -62,13 +59,13 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 				<ShowAt stage="compact">
 					<div className="flex justify-center">
 						<ResponsiveIcon>
-							<Star className="fill-yellow-500 text-warning" />
+							<Star className="text-warning fill-yellow-500" />
 						</ResponsiveIcon>
 					</div>
 				</ShowAt>
 
 				{/* Main rating value */}
-				<div className="flex flex-col @[120px]:items-start items-center justify-center">
+				<div className="flex flex-col items-center justify-center @[120px]:items-start">
 					<ResponsiveText className="font-bold" variant="display">
 						{data.rating.toFixed(1)}
 					</ResponsiveText>
@@ -78,7 +75,7 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 						<div className="mt-1 flex gap-0.5">
 							{[...new Array(5)].map((_, i) => (
 								<Star
-									className={`size-3 ${i < Math.floor(data.rating) ? "fill-yellow-500 text-warning" : "text-muted-foreground"}`}
+									className={`size-3 ${i < Math.floor(data.rating) ? "text-warning fill-yellow-500" : "text-muted-foreground"}`}
 									key={i}
 								/>
 							))}

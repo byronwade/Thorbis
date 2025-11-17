@@ -15,12 +15,12 @@ export function MaintenancePlanDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="space-y-2">
-							<div className="h-8 w-64 animate-pulse rounded bg-muted" />
-							<div className="h-4 w-80 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-8 w-64 animate-pulse rounded" />
+							<div className="bg-muted h-4 w-80 animate-pulse rounded" />
 						</div>
 						<div className="flex gap-2">
-							<div className="h-10 w-28 animate-pulse rounded bg-muted" />
-							<div className="h-10 w-28 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-10 w-28 animate-pulse rounded" />
+							<div className="bg-muted h-10 w-28 animate-pulse rounded" />
 						</div>
 					</div>
 				</div>
@@ -29,8 +29,8 @@ export function MaintenancePlanDetailSkeleton() {
 				<div className="grid gap-4 md:grid-cols-4">
 					{[1, 2, 3, 4].map((i) => (
 						<div className="space-y-2 rounded-lg border p-4" key={i}>
-							<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-4 w-24 animate-pulse rounded" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 						</div>
 					))}
 				</div>
@@ -41,22 +41,22 @@ export function MaintenancePlanDetailSkeleton() {
 					<div className="space-y-6 lg:col-span-2">
 						{/* Customer & Property info */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-40 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-40 animate-pulse rounded" />
 							<div className="space-y-2">
-								<div className="h-4 w-full animate-pulse rounded bg-muted" />
-								<div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
-								<div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+								<div className="bg-muted h-4 w-full animate-pulse rounded" />
+								<div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
+								<div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
 							</div>
 						</div>
 
 						{/* Included services */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-40 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-40 animate-pulse rounded" />
 							<div className="space-y-3">
 								{[1, 2, 3, 4, 5].map((i) => (
 									<div className="flex items-center gap-3" key={i}>
-										<div className="size-5 animate-pulse rounded bg-muted" />
-										<div className="h-4 w-64 animate-pulse rounded bg-muted" />
+										<div className="bg-muted size-5 animate-pulse rounded" />
+										<div className="bg-muted h-4 w-64 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -64,12 +64,12 @@ export function MaintenancePlanDetailSkeleton() {
 
 						{/* Equipment */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-3">
 								{[1, 2, 3].map((i) => (
 									<div className="flex justify-between" key={i}>
-										<div className="h-4 w-48 animate-pulse rounded bg-muted" />
-										<div className="h-4 w-24 animate-pulse rounded bg-muted" />
+										<div className="bg-muted h-4 w-48 animate-pulse rounded" />
+										<div className="bg-muted h-4 w-24 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -80,30 +80,30 @@ export function MaintenancePlanDetailSkeleton() {
 					<div className="space-y-6">
 						{/* Status */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-24 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-24 animate-pulse rounded" />
 							<div className="space-y-2">
-								<div className="h-4 w-full animate-pulse rounded bg-muted" />
-								<div className="h-4 w-3/4 animate-pulse rounded bg-muted" />
+								<div className="bg-muted h-4 w-full animate-pulse rounded" />
+								<div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
 							</div>
 						</div>
 
 						{/* Schedule */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-32 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							<div className="space-y-2">
-								<div className="h-4 w-full animate-pulse rounded bg-muted" />
-								<div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+								<div className="bg-muted h-4 w-full animate-pulse rounded" />
+								<div className="bg-muted h-4 w-2/3 animate-pulse rounded" />
 							</div>
 						</div>
 
 						{/* Pricing */}
 						<div className="space-y-4 rounded-lg border p-6">
-							<div className="h-6 w-24 animate-pulse rounded bg-muted" />
+							<div className="bg-muted h-6 w-24 animate-pulse rounded" />
 							<div className="space-y-2">
 								{[1, 2, 3].map((i) => (
 									<div className="flex justify-between" key={i}>
-										<div className="h-4 w-24 animate-pulse rounded bg-muted" />
-										<div className="h-4 w-32 animate-pulse rounded bg-muted" />
+										<div className="bg-muted h-4 w-24 animate-pulse rounded" />
+										<div className="bg-muted h-4 w-32 animate-pulse rounded" />
 									</div>
 								))}
 							</div>
@@ -115,18 +115,12 @@ export function MaintenancePlanDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex gap-4 border-b">
 						{[1, 2, 3, 4].map((i) => (
-							<div
-								className="h-10 w-28 animate-pulse rounded-t bg-muted"
-								key={i}
-							/>
+							<div className="bg-muted h-10 w-28 animate-pulse rounded-t" key={i} />
 						))}
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div
-								className="h-24 w-full animate-pulse rounded bg-muted"
-								key={i}
-							/>
+							<div className="bg-muted h-24 w-full animate-pulse rounded" key={i} />
 						))}
 					</div>
 				</div>

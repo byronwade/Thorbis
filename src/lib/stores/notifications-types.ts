@@ -6,13 +6,7 @@
  * - communication-notifications-store.ts
  */
 
-export type NotificationType =
-	| "message"
-	| "alert"
-	| "payment"
-	| "job"
-	| "team"
-	| "system";
+export type NotificationType = "message" | "alert" | "payment" | "job" | "team" | "system";
 
 export type NotificationPriority = "low" | "medium" | "high" | "urgent";
 

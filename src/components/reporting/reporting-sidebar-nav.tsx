@@ -9,14 +9,7 @@
  * - More space for user's personal reports
  */
 
-import {
-	BarChart3,
-	DollarSign,
-	Plus,
-	Trash2,
-	TrendingUp,
-	Users,
-} from "lucide-react";
+import { BarChart3, DollarSign, Plus, Trash2, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -27,10 +20,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-	reportingSelectors,
-	useReportingStore,
-} from "@/lib/stores/reporting-store";
+import { reportingSelectors, useReportingStore } from "@/lib/stores/reporting-store";
 import { PresetReportsDropdown } from "./preset-reports-dropdown";
 
 // Top 4 reports every business owner needs
@@ -92,11 +82,7 @@ export function ReportingSidebarNav() {
 						const isActive = pathname === report.href;
 						return (
 							<SidebarMenuItem key={report.href}>
-								<SidebarMenuButton
-									asChild
-									isActive={isActive}
-									tooltip={report.description}
-								>
+								<SidebarMenuButton asChild isActive={isActive} tooltip={report.description}>
 									<Link href={report.href}>
 										<report.icon className="h-4 w-4" />
 										<span className="flex-1 truncate">{report.title}</span>
@@ -113,7 +99,7 @@ export function ReportingSidebarNav() {
 				<SidebarGroupLabel className="flex items-center justify-between">
 					<span>My Custom Reports</span>
 					<button
-						className="flex h-5 w-5 items-center justify-center rounded-md transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+						className="hover:bg-sidebar-accent hover:text-sidebar-accent-foreground flex h-5 w-5 items-center justify-center rounded-md transition-colors"
 						onClick={handleCreateReport}
 						title="Create new report"
 						type="button"
@@ -124,9 +110,7 @@ export function ReportingSidebarNav() {
 				<SidebarMenu>
 					{customReports.length === 0 ? (
 						<div className="px-2 py-8 text-center">
-							<p className="mb-2 text-muted-foreground text-sm">
-								No custom reports yet
-							</p>
+							<p className="text-muted-foreground mb-2 text-sm">No custom reports yet</p>
 							<button
 								className="text-primary text-xs hover:underline"
 								onClick={handleCreateReport}
@@ -142,9 +126,7 @@ export function ReportingSidebarNav() {
 								<SidebarMenuItem key={report.id}>
 									<SidebarMenuButton asChild isActive={isActive}>
 										<Link href={report.href}>
-											<span className="flex-1 truncate text-left">
-												{report.title}
-											</span>
+											<span className="flex-1 truncate text-left">{report.title}</span>
 										</Link>
 									</SidebarMenuButton>
 									<SidebarMenuAction
@@ -164,11 +146,11 @@ export function ReportingSidebarNav() {
 
 			{/* Quick Tips / Help Section */}
 			<SidebarGroup>
-				<div className="rounded-lg border border-border bg-muted/30 p-3">
-					<p className="mb-1 font-medium text-xs">💡 Pro Tip</p>
+				<div className="border-border bg-muted/30 rounded-lg border p-3">
+					<p className="mb-1 text-xs font-medium">💡 Pro Tip</p>
 					<p className="text-muted-foreground text-xs leading-relaxed">
-						Create custom reports with your own filters and metrics. Save time
-						by building reports you check frequently.
+						Create custom reports with your own filters and metrics. Save time by building reports
+						you check frequently.
 					</p>
 				</div>
 			</SidebarGroup>

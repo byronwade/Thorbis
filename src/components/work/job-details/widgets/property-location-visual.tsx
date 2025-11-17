@@ -8,23 +8,11 @@
 
 "use client";
 
-import {
-	Camera,
-	Globe,
-	MapPin,
-	Maximize2,
-	Navigation,
-	Store,
-} from "lucide-react";
+import { Camera, Globe, MapPin, Maximize2, Navigation, Store } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PropertyLocationVisualProps = {
@@ -75,9 +63,7 @@ export function PropertyLocationVisual({
 
 	// Destination for URLs (prefer coordinates, fallback to address)
 	const destination =
-		property.lat && property.lon
-			? `${property.lat},${property.lon}`
-			: encodedAddress;
+		property.lat && property.lon ? `${property.lat},${property.lon}` : encodedAddress;
 
 	// Combined Map + Directions + Supply Houses URL
 	// This shows the destination with a route from current location AND nearby places
@@ -109,22 +95,17 @@ export function PropertyLocationVisual({
 				{/* Address - Shown once at the top */}
 				<div>
 					<div className="mb-2 flex items-center justify-between">
-						<div className="font-semibold text-[10px] text-muted-foreground uppercase tracking-wider">
+						<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 							Service Location
 						</div>
-						<Button
-							asChild
-							className="h-7 gap-1.5 px-2 text-xs"
-							size="sm"
-							variant="outline"
-						>
+						<Button asChild className="h-7 gap-1.5 px-2 text-xs" size="sm" variant="outline">
 							<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 								<Navigation className="size-3" />
 								Open in Maps
 							</a>
 						</Button>
 					</div>
-					<div className="whitespace-pre-line text-foreground text-sm leading-relaxed">
+					<div className="text-foreground text-sm leading-relaxed whitespace-pre-line">
 						{fullAddress}
 					</div>
 				</div>
@@ -136,11 +117,7 @@ export function PropertyLocationVisual({
 							<Navigation className="size-3.5" />
 							Map
 						</TabsTrigger>
-						<TabsTrigger
-							className="gap-1.5 text-xs"
-							disabled={!streetViewUrl}
-							value="street"
-						>
+						<TabsTrigger className="gap-1.5 text-xs" disabled={!streetViewUrl} value="street">
 							<Camera className="size-3.5" />
 							Street
 						</TabsTrigger>
@@ -152,7 +129,7 @@ export function PropertyLocationVisual({
 
 					{/* Map View with Directions & Supply Houses */}
 					<TabsContent className="mt-3 space-y-3" value="map">
-						<div className="group relative overflow-hidden rounded-lg border bg-muted">
+						<div className="group bg-muted relative overflow-hidden rounded-lg border">
 							<div className="relative h-[200px] w-full">
 								<iframe
 									className="h-full w-full"
@@ -163,7 +140,7 @@ export function PropertyLocationVisual({
 									title="Property Map with Directions"
 								/>
 								<Button
-									className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
+									className="bg-card/90 hover:bg-card absolute top-2 right-2 h-8 w-8 shadow-md"
 									onClick={() => {
 										setActiveTab("map");
 										setIsExpanded(true);
@@ -171,14 +148,12 @@ export function PropertyLocationVisual({
 									size="icon"
 									variant="ghost"
 								>
-									<Maximize2 className="h-4 w-4 text-foreground" />
+									<Maximize2 className="text-foreground h-4 w-4" />
 								</Button>
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">
-								Shows route from your current location
-							</span>
+							<span className="text-muted-foreground">Shows route from your current location</span>
 							{nearbySuppliers.length > 0 && (
 								<Badge className="gap-1" variant="secondary">
 									<Store className="size-3" />
@@ -192,7 +167,7 @@ export function PropertyLocationVisual({
 					<TabsContent className="mt-3 space-y-3" value="street">
 						{streetViewUrl ? (
 							<>
-								<div className="group relative overflow-hidden rounded-lg border bg-muted">
+								<div className="group bg-muted relative overflow-hidden rounded-lg border">
 									<div className="relative h-[200px] w-full">
 										<iframe
 											className="h-full w-full"
@@ -203,7 +178,7 @@ export function PropertyLocationVisual({
 											title="Property Street View"
 										/>
 										<Button
-											className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
+											className="bg-card/90 hover:bg-card absolute top-2 right-2 h-8 w-8 shadow-md"
 											onClick={() => {
 												setActiveTab("street");
 												setIsExpanded(true);
@@ -211,7 +186,7 @@ export function PropertyLocationVisual({
 											size="icon"
 											variant="ghost"
 										>
-											<Maximize2 className="h-4 w-4 text-foreground" />
+											<Maximize2 className="text-foreground h-4 w-4" />
 										</Button>
 									</div>
 								</div>
@@ -220,14 +195,12 @@ export function PropertyLocationVisual({
 								</p>
 							</>
 						) : (
-							<div className="flex h-[200px] flex-col items-center justify-center rounded-lg border bg-muted/50 p-6 text-center">
-								<Camera className="mx-auto mb-3 size-10 text-muted-foreground opacity-30" />
-								<p className="mb-1 font-medium text-foreground text-sm">
-									Street View Unavailable
-								</p>
-								<p className="max-w-xs text-muted-foreground text-xs">
-									Add GPS coordinates (latitude/longitude) to the property to
-									enable street-level imagery
+							<div className="bg-muted/50 flex h-[200px] flex-col items-center justify-center rounded-lg border p-6 text-center">
+								<Camera className="text-muted-foreground mx-auto mb-3 size-10 opacity-30" />
+								<p className="text-foreground mb-1 text-sm font-medium">Street View Unavailable</p>
+								<p className="text-muted-foreground max-w-xs text-xs">
+									Add GPS coordinates (latitude/longitude) to the property to enable street-level
+									imagery
 								</p>
 							</div>
 						)}
@@ -235,7 +208,7 @@ export function PropertyLocationVisual({
 
 					{/* Google Earth Satellite View */}
 					<TabsContent className="mt-3 space-y-3" value="earth">
-						<div className="group relative overflow-hidden rounded-lg border bg-muted">
+						<div className="group bg-muted relative overflow-hidden rounded-lg border">
 							<div className="relative h-[200px] w-full">
 								<iframe
 									className="h-full w-full"
@@ -246,7 +219,7 @@ export function PropertyLocationVisual({
 									title="Satellite View"
 								/>
 								<Button
-									className="absolute top-2 right-2 h-8 w-8 bg-card/90 shadow-md hover:bg-card"
+									className="bg-card/90 hover:bg-card absolute top-2 right-2 h-8 w-8 shadow-md"
 									onClick={() => {
 										setActiveTab("earth");
 										setIsExpanded(true);
@@ -254,25 +227,14 @@ export function PropertyLocationVisual({
 									size="icon"
 									variant="ghost"
 								>
-									<Maximize2 className="h-4 w-4 text-foreground" />
+									<Maximize2 className="text-foreground h-4 w-4" />
 								</Button>
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">
-								Satellite imagery view
-							</span>
-							<Button
-								asChild
-								className="h-6 gap-1 px-2 text-xs"
-								size="sm"
-								variant="ghost"
-							>
-								<a
-									href={googleEarthWebUrl}
-									rel="noopener noreferrer"
-									target="_blank"
-								>
+							<span className="text-muted-foreground">Satellite imagery view</span>
+							<Button asChild className="h-6 gap-1 px-2 text-xs" size="sm" variant="ghost">
+								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
 									<Globe className="size-3" />
 									Open Google Earth
 								</a>
@@ -283,10 +245,10 @@ export function PropertyLocationVisual({
 
 				{/* Coordinates (if available) */}
 				{property.lat && property.lon && (
-					<div className="rounded-lg bg-muted/50 px-3 py-2">
+					<div className="bg-muted/50 rounded-lg px-3 py-2">
 						<div className="flex items-center justify-between text-xs">
 							<span className="text-muted-foreground">Coordinates:</span>
-							<span className="font-medium font-mono text-foreground">
+							<span className="text-foreground font-mono font-medium">
 								{property.lat.toFixed(4)}, {property.lon.toFixed(4)}
 							</span>
 						</div>
@@ -299,30 +261,22 @@ export function PropertyLocationVisual({
 				<DialogContent className="max-w-5xl p-0">
 					<DialogHeader className="border-b px-6 py-4">
 						<DialogTitle className="flex items-center gap-2">
-							<MapPin className="h-5 w-5 text-primary" />
+							<MapPin className="text-primary h-5 w-5" />
 							Service Location
 						</DialogTitle>
-						<div className="mt-2 whitespace-pre-line text-muted-foreground text-sm">
+						<div className="text-muted-foreground mt-2 text-sm whitespace-pre-line">
 							{fullAddress}
 						</div>
 					</DialogHeader>
 
-					<Tabs
-						className="w-full"
-						onValueChange={setActiveTab}
-						value={activeTab}
-					>
+					<Tabs className="w-full" onValueChange={setActiveTab} value={activeTab}>
 						<div className="border-b px-6">
 							<TabsList className="h-10">
 								<TabsTrigger className="gap-2" value="map">
 									<Navigation className="size-4" />
 									Map & Route
 								</TabsTrigger>
-								<TabsTrigger
-									className="gap-2"
-									disabled={!streetViewUrl}
-									value="street"
-								>
+								<TabsTrigger className="gap-2" disabled={!streetViewUrl} value="street">
 									<Camera className="size-4" />
 									Street View
 								</TabsTrigger>
@@ -359,14 +313,14 @@ export function PropertyLocationVisual({
 									/>
 								</div>
 							) : (
-								<div className="flex h-[600px] flex-col items-center justify-center bg-muted/50 p-12 text-center">
-									<Camera className="mx-auto mb-4 size-16 text-muted-foreground opacity-20" />
-									<p className="mb-2 font-semibold text-foreground text-lg">
+								<div className="bg-muted/50 flex h-[600px] flex-col items-center justify-center p-12 text-center">
+									<Camera className="text-muted-foreground mx-auto mb-4 size-16 opacity-20" />
+									<p className="text-foreground mb-2 text-lg font-semibold">
 										Street View Unavailable
 									</p>
-									<p className="max-w-md text-muted-foreground text-sm">
-										Add GPS coordinates (latitude/longitude) to the property to
-										enable street-level imagery
+									<p className="text-muted-foreground max-w-md text-sm">
+										Add GPS coordinates (latitude/longitude) to the property to enable street-level
+										imagery
 									</p>
 								</div>
 							)}
@@ -389,7 +343,7 @@ export function PropertyLocationVisual({
 					<div className="flex items-center justify-between border-t px-6 py-4">
 						<div className="flex items-center gap-4 text-sm">
 							{property.lat && property.lon && (
-								<div className="flex items-center gap-2 text-muted-foreground">
+								<div className="text-muted-foreground flex items-center gap-2">
 									<MapPin className="size-4" />
 									<span className="font-mono text-xs">
 										{property.lat.toFixed(6)}, {property.lon.toFixed(6)}
@@ -399,21 +353,13 @@ export function PropertyLocationVisual({
 						</div>
 						<div className="flex items-center gap-2">
 							<Button asChild className="gap-2" size="sm" variant="outline">
-								<a
-									href={googleEarthWebUrl}
-									rel="noopener noreferrer"
-									target="_blank"
-								>
+								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
 									<Globe className="size-4" />
 									Open in Google Earth
 								</a>
 							</Button>
 							<Button asChild className="gap-2" size="sm">
-								<a
-									href={googleMapsUrl}
-									rel="noopener noreferrer"
-									target="_blank"
-								>
+								<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 									<Navigation className="size-4" />
 									Open in Google Maps
 								</a>

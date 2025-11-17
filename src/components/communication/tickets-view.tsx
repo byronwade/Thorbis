@@ -22,10 +22,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -53,12 +50,8 @@ type TicketsViewProps = {
 export function TicketsView({ messages }: TicketsViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore(
-		(state) => state.setSelectedMessageId,
-	);
-	const setIsDetailView = useCommunicationStore(
-		(state) => state.setIsDetailView,
-	);
+	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
 
 	const handleOpenMessage = (message: TicketMessage) => {
 		setSelectedMessageId(message.id);
@@ -69,15 +62,15 @@ export function TicketsView({ messages }: TicketsViewProps) {
 	const getStatusIcon = (ticketStatus?: TicketStatus) => {
 		switch (ticketStatus) {
 			case "new":
-				return <AlertCircle className="size-4 text-primary" />;
+				return <AlertCircle className="text-primary size-4" />;
 			case "open":
-				return <MessageSquare className="size-4 text-warning" />;
+				return <MessageSquare className="text-warning size-4" />;
 			case "pending":
-				return <Clock className="size-4 text-warning" />;
+				return <Clock className="text-warning size-4" />;
 			case "resolved":
-				return <CheckCircle className="size-4 text-success" />;
+				return <CheckCircle className="text-success size-4" />;
 			case "closed":
-				return <CheckCircle className="size-4 text-muted-foreground" />;
+				return <CheckCircle className="text-muted-foreground size-4" />;
 			default:
 				return <Ticket className="size-4" />;
 		}
@@ -155,14 +148,12 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			width: "w-56",
 			render: (message) => (
 				<div className="flex items-center gap-3">
-					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+					<div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
 						{getStatusIcon(message.ticketStatus)}
 					</div>
 					<div className="flex flex-col">
-						<span className="font-semibold text-sm">#{message.id}</span>
-						<span className="text-muted-foreground text-xs">
-							{message.from}
-						</span>
+						<span className="text-sm font-semibold">#{message.id}</span>
+						<span className="text-muted-foreground text-xs">{message.from}</span>
 					</div>
 				</div>
 			),
@@ -174,27 +165,17 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			render: (message) => (
 				<div className="flex flex-col">
 					<div className="flex items-center gap-2">
-						<span
-							className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
-						>
+						<span className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
 							{message.subject || "Support Request"}
 						</span>
-						<Badge
-							className="text-xs"
-							variant={getStatusVariant(message.ticketStatus)}
-						>
+						<Badge className="text-xs" variant={getStatusVariant(message.ticketStatus)}>
 							{getStatusLabel(message.ticketStatus)}
 						</Badge>
-						<Badge
-							className="text-xs"
-							variant={getPriorityColor(message.priority)}
-						>
+						<Badge className="text-xs" variant={getPriorityColor(message.priority)}>
 							{message.priority}
 						</Badge>
 					</div>
-					<p className="line-clamp-2 text-muted-foreground text-xs">
-						{message.preview}
-					</p>
+					<p className="text-muted-foreground line-clamp-2 text-xs">{message.preview}</p>
 				</div>
 			),
 		},
@@ -203,7 +184,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			header: "Assignments",
 			width: "w-48",
 			render: (message) => (
-				<div className="flex flex-col gap-1 text-muted-foreground text-xs">
+				<div className="text-muted-foreground flex flex-col gap-1 text-xs">
 					<div className="flex items-center gap-1">
 						<User className="size-3" />
 						<span>{message.assignedTo ?? "Unassigned"}</span>
@@ -225,11 +206,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 				message.tags && message.tags.length > 0 ? (
 					<div className="flex flex-wrap gap-1">
 						{message.tags.slice(0, 2).map((tag) => (
-							<Badge
-								className="text-xs"
-								key={`${message.id}-${tag}`}
-								variant="outline"
-							>
+							<Badge className="text-xs" key={`${message.id}-${tag}`} variant="outline">
 								{tag}
 							</Badge>
 						))}
@@ -250,9 +227,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">
-					{formatTimestamp(message.timestamp)}
-				</span>
+				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
 			),
 		},
 	];
@@ -277,7 +252,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			const noun = selectedIds.size === 1 ? "ticket" : "tickets";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast],
+		[toast]
 	);
 
 	const bulkActions = [
@@ -293,7 +268,7 @@ export function TicketsView({ messages }: TicketsViewProps) {
 			bulkActions={bulkActions}
 			columns={columns}
 			data={messages}
-			emptyIcon={<Ticket className="size-10 text-muted-foreground" />}
+			emptyIcon={<Ticket className="text-muted-foreground size-10" />}
 			emptyMessage="No support tickets"
 			enableSelection
 			entity="communications-tickets"

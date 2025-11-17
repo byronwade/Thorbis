@@ -14,13 +14,7 @@ import { AlertCircle, CheckCircle2, Percent, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,8 +59,7 @@ export function MassUpdateForm() {
 		priceMax: null,
 	});
 
-	const [adjustmentType, setAdjustmentType] =
-		useState<AdjustmentType>("percentage");
+	const [adjustmentType, setAdjustmentType] = useState<AdjustmentType>("percentage");
 	const [adjustmentValue, setAdjustmentValue] = useState<string>("");
 	const [isIncrease, setIsIncrease] = useState(true);
 	const [maintainMarkup, setMaintainMarkup] = useState(true);
@@ -161,9 +154,7 @@ export function MassUpdateForm() {
 						<div className="space-y-2">
 							<Label>Item Type</Label>
 							<Select
-								onValueChange={(value: any) =>
-									setFilters({ ...filters, itemType: value })
-								}
+								onValueChange={(value: any) => setFilters({ ...filters, itemType: value })}
 								value={filters.itemType}
 							>
 								<SelectTrigger>
@@ -235,9 +226,7 @@ export function MassUpdateForm() {
 									onChange={(e) =>
 										setFilters({
 											...filters,
-											priceMin: e.target.value
-												? Number.parseFloat(e.target.value)
-												: null,
+											priceMin: e.target.value ? Number.parseFloat(e.target.value) : null,
 										})
 									}
 									placeholder="Min"
@@ -248,9 +237,7 @@ export function MassUpdateForm() {
 									onChange={(e) =>
 										setFilters({
 											...filters,
-											priceMax: e.target.value
-												? Number.parseFloat(e.target.value)
-												: null,
+											priceMax: e.target.value ? Number.parseFloat(e.target.value) : null,
 										})
 									}
 									placeholder="Max"
@@ -272,9 +259,7 @@ export function MassUpdateForm() {
 						<div className="space-y-2">
 							<Label>Adjustment Type</Label>
 							<RadioGroup
-								onValueChange={(value: AdjustmentType) =>
-									setAdjustmentType(value)
-								}
+								onValueChange={(value: AdjustmentType) => setAdjustmentType(value)}
 								value={adjustmentType}
 							>
 								<div className="flex items-center space-x-2">
@@ -316,9 +301,7 @@ export function MassUpdateForm() {
 						</div>
 
 						<div className="space-y-2">
-							<Label>
-								{adjustmentType === "percentage" ? "Percentage" : "Amount"}
-							</Label>
+							<Label>{adjustmentType === "percentage" ? "Percentage" : "Amount"}</Label>
 							<div className="relative">
 								<Input
 									onChange={(e) => setAdjustmentValue(e.target.value)}
@@ -327,7 +310,7 @@ export function MassUpdateForm() {
 									value={adjustmentValue}
 								/>
 								{adjustmentType === "percentage" && (
-									<Percent className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-4 w-4 text-muted-foreground" />
+									<Percent className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
 								)}
 							</div>
 						</div>
@@ -338,20 +321,14 @@ export function MassUpdateForm() {
 							<Checkbox
 								checked={maintainMarkup}
 								id="maintain-markup"
-								onCheckedChange={(checked) =>
-									setMaintainMarkup(checked as boolean)
-								}
+								onCheckedChange={(checked) => setMaintainMarkup(checked as boolean)}
 							/>
 							<Label className="font-normal" htmlFor="maintain-markup">
 								Maintain markup ratios
 							</Label>
 						</div>
 
-						<Button
-							className="w-full"
-							disabled={!adjustmentValue}
-							onClick={generatePreview}
-						>
+						<Button className="w-full" disabled={!adjustmentValue} onClick={generatePreview}>
 							Generate Preview
 						</Button>
 					</CardContent>
@@ -373,18 +350,14 @@ export function MassUpdateForm() {
 						{showPreview ? (
 							<div className="space-y-4">
 								{/* Summary Stats */}
-								<div className="grid grid-cols-2 gap-3 rounded-lg border bg-muted/30 p-3">
+								<div className="bg-muted/30 grid grid-cols-2 gap-3 rounded-lg border p-3">
 									<div>
-										<p className="text-muted-foreground text-xs">
-											Items Affected
-										</p>
-										<p className="font-semibold text-lg">
-											{previewItems.length}
-										</p>
+										<p className="text-muted-foreground text-xs">Items Affected</p>
+										<p className="text-lg font-semibold">{previewItems.length}</p>
 									</div>
 									<div>
 										<p className="text-muted-foreground text-xs">Avg. Change</p>
-										<p className="font-semibold text-lg">
+										<p className="text-lg font-semibold">
 											{isIncrease ? "+" : "-"}
 											{adjustmentType === "percentage"
 												? `${adjustmentValue}%`
@@ -396,10 +369,7 @@ export function MassUpdateForm() {
 								{/* Preview Items */}
 								<div className="space-y-2">
 									{previewItems.map((item) => (
-										<div
-											className="rounded-lg border bg-card p-3 text-sm"
-											key={item.id}
-										>
+										<div className="bg-card rounded-lg border p-3 text-sm" key={item.id}>
 											<div className="mb-2 flex items-start justify-between">
 												<p className="font-medium">{item.name}</p>
 												<Badge
@@ -413,10 +383,9 @@ export function MassUpdateForm() {
 													{item.change > 0 ? "+" : ""}${item.change.toFixed(2)}
 												</Badge>
 											</div>
-											<div className="flex items-center justify-between text-muted-foreground text-xs">
+											<div className="text-muted-foreground flex items-center justify-between text-xs">
 												<span>
-													${item.currentPrice.toFixed(2)} → $
-													{item.newPrice.toFixed(2)}
+													${item.currentPrice.toFixed(2)} → ${item.newPrice.toFixed(2)}
 												</span>
 												<span>
 													{item.changePercent > 0 ? "+" : ""}
@@ -429,24 +398,17 @@ export function MassUpdateForm() {
 
 								{/* Apply Button */}
 								<div className="space-y-3 pt-4">
-									<div className="flex items-start gap-2 rounded-lg border border-warning bg-warning p-3 dark:border-warning/50 dark:bg-warning/30">
-										<AlertCircle className="mt-0.5 h-4 w-4 text-warning dark:text-warning" />
+									<div className="border-warning bg-warning dark:border-warning/50 dark:bg-warning/30 flex items-start gap-2 rounded-lg border p-3">
+										<AlertCircle className="text-warning dark:text-warning mt-0.5 h-4 w-4" />
 										<div className="flex-1">
-											<p className="font-medium text-sm text-warning dark:text-warning">
-												Warning
-											</p>
-											<p className="text-warning text-xs dark:text-warning">
-												This action will update {previewItems.length} items.
-												This cannot be undone.
+											<p className="text-warning dark:text-warning text-sm font-medium">Warning</p>
+											<p className="text-warning dark:text-warning text-xs">
+												This action will update {previewItems.length} items. This cannot be undone.
 											</p>
 										</div>
 									</div>
 
-									<Button
-										className="w-full"
-										disabled={isApplying}
-										onClick={handleApply}
-									>
+									<Button className="w-full" disabled={isApplying} onClick={handleApply}>
 										{isApplying ? (
 											<>Applying Changes...</>
 										) : (
@@ -461,13 +423,9 @@ export function MassUpdateForm() {
 						) : (
 							<div className="flex min-h-[400px] items-center justify-center rounded-lg border border-dashed">
 								<div className="text-center">
-									<AlertCircle className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
-									<p className="text-muted-foreground text-sm">
-										No preview available
-									</p>
-									<p className="text-muted-foreground text-xs">
-										Generate a preview to see changes
-									</p>
+									<AlertCircle className="text-muted-foreground mx-auto mb-3 h-12 w-12" />
+									<p className="text-muted-foreground text-sm">No preview available</p>
+									<p className="text-muted-foreground text-xs">Generate a preview to see changes</p>
 								</div>
 							</div>
 						)}

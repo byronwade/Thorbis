@@ -1,8 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-type CalendarRow =
-	| Database["public"]["Tables"]["schedule_calendar_settings"]["Row"]
-	| null;
+type CalendarRow = Database["public"]["Tables"]["schedule_calendar_settings"]["Row"] | null;
 
 export type CalendarSettingsState = {
 	defaultView: "day" | "week" | "month";
@@ -30,16 +28,13 @@ export const DEFAULT_CALENDAR_SETTINGS: CalendarSettingsState = {
 	syncWithOutlook: false,
 };
 
-export function mapCalendarSettings(
-	row: CalendarRow,
-): Partial<CalendarSettingsState> {
+export function mapCalendarSettings(row: CalendarRow): Partial<CalendarSettingsState> {
 	if (!row) {
 		return {};
 	}
 
 	return {
-		defaultView:
-			(row.default_view as CalendarSettingsState["defaultView"]) ?? "week",
+		defaultView: (row.default_view as CalendarSettingsState["defaultView"]) ?? "week",
 		startDayOfWeek: (row.start_day_of_week ?? 1) === 0 ? "sunday" : "monday",
 		timeSlotDurationMinutes: row.time_slot_duration_minutes ?? 30,
 		showTechnicianColors: row.show_technician_colors ?? true,

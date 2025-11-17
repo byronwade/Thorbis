@@ -34,8 +34,7 @@ export default function EstimateSentEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				Thank you for your interest in our services! We've prepared a detailed
-				estimate for you.
+				Thank you for your interest in our services! We've prepared a detailed estimate for you.
 			</Text>
 
 			<Card style={estimateCard}>
@@ -83,16 +82,11 @@ export default function EstimateSentEmail({
 				<Heading level={3}>What happens next?</Heading>
 				<ul style={list}>
 					<li style={listItem}>
-						Review the estimate and click "Accept Estimate" if you're ready to
-						proceed
+						Review the estimate and click "Accept Estimate" if you're ready to proceed
 					</li>
-					<li style={listItem}>
-						We'll schedule your service at a time that works for you
-					</li>
+					<li style={listItem}>We'll schedule your service at a time that works for you</li>
 					<li style={listItem}>Our team will complete the work as described</li>
-					<li style={listItem}>
-						Final invoice may vary based on actual work performed
-					</li>
+					<li style={listItem}>Final invoice may vary based on actual work performed</li>
 				</ul>
 			</Card>
 

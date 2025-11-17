@@ -35,8 +35,8 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 	if (materials.length === 0) {
 		return (
 			<div className="flex flex-col items-center justify-center py-12 text-center">
-				<Package className="mb-4 size-12 text-muted-foreground" />
-				<h3 className="mb-2 font-semibold text-lg">No Materials</h3>
+				<Package className="text-muted-foreground mb-4 size-12" />
+				<h3 className="mb-2 text-lg font-semibold">No Materials</h3>
 				<p className="text-muted-foreground text-sm">
 					No materials have been added to this job yet.
 				</p>
@@ -66,16 +66,12 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 								</TableCell>
 								<TableCell>{material.quantity || 0}</TableCell>
 								<TableCell>{material.unit || "ea"}</TableCell>
-								<TableCell>
-									{formatCurrency(material.unit_cost || material.cost)}
-								</TableCell>
+								<TableCell>{formatCurrency(material.unit_cost || material.cost)}</TableCell>
 								<TableCell className="max-w-[240px] align-top">
 									<EntityTags
 										entityId={material.id}
 										entityType="material"
-										onUpdateTags={(id, tags) =>
-											updateEntityTags("material", id, tags)
-										}
+										onUpdateTags={(id, tags) => updateEntityTags("material", id, tags)}
 										tags={
 											Array.isArray(material?.metadata?.tags)
 												? (material.metadata.tags as any[])
@@ -85,8 +81,7 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 								</TableCell>
 								<TableCell className="text-right font-medium">
 									{formatCurrency(
-										(material.quantity || 0) *
-											(material.unit_cost || material.cost || 0),
+										(material.quantity || 0) * (material.unit_cost || material.cost || 0)
 									)}
 								</TableCell>
 							</TableRow>
@@ -96,22 +91,21 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 			</div>
 
 			{/* Summary */}
-			<div className="rounded-md bg-muted/50 p-4">
+			<div className="bg-muted/50 rounded-md p-4">
 				<div className="flex items-center justify-between">
 					<div>
-						<p className="font-medium text-sm">Total Materials</p>
+						<p className="text-sm font-medium">Total Materials</p>
 						<p className="text-muted-foreground text-xs">
 							{materials.length} item{materials.length !== 1 ? "s" : ""}
 						</p>
 					</div>
 					<div className="text-right">
-						<p className="font-bold text-2xl">
+						<p className="text-2xl font-bold">
 							{formatCurrency(
 								materials.reduce(
-									(sum, m) =>
-										sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0),
-									0,
-								),
+									(sum, m) => sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0),
+									0
+								)
 							)}
 						</p>
 						<p className="text-muted-foreground text-xs">Total Cost</p>

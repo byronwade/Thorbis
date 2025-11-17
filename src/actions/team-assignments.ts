@@ -9,10 +9,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import {
-	type ActionResult,
-	withErrorHandling,
-} from "@/lib/errors/with-error-handling";
+import { type ActionResult, withErrorHandling } from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 
 // ============================================================================
@@ -72,7 +69,7 @@ export type TeamMemberAssignment = {
  * Get team assignments for a job
  */
 export async function getJobTeamAssignments(
-	jobId: string,
+	jobId: string
 ): Promise<ActionResult<TeamMemberAssignment[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
@@ -136,7 +133,7 @@ export async function getJobTeamAssignments(
             phone
           )
         )
-      `,
+      `
 			)
 			.eq("job_id", jobId)
 			.is("removed_at", null)
@@ -237,7 +234,7 @@ export async function getAvailableTeamMembers(): Promise<
           avatar_url,
           phone
         )
-      `,
+      `
 			)
 			.eq("company_id", teamMember.company_id)
 			.eq("status", "active")
@@ -271,7 +268,7 @@ export async function getAvailableTeamMembers(): Promise<
  * Assign a team member to a job
  */
 export async function assignTeamMemberToJob(
-	input: z.infer<typeof assignTeamMemberSchema>,
+	input: z.infer<typeof assignTeamMemberSchema>
 ): Promise<ActionResult<{ id: string }>> {
 	return withErrorHandling(async () => {
 		const validated = assignTeamMemberSchema.parse(input);
@@ -347,7 +344,7 @@ export async function assignTeamMemberToJob(
 				},
 				{
 					onConflict: "job_id,team_member_id",
-				},
+				}
 			)
 			.select("id")
 			.single();
@@ -368,7 +365,7 @@ export async function assignTeamMemberToJob(
  * Remove a team member from a job (soft delete)
  */
 export async function removeTeamMemberFromJob(
-	input: z.infer<typeof removeTeamMemberSchema>,
+	input: z.infer<typeof removeTeamMemberSchema>
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const validated = removeTeamMemberSchema.parse(input);
@@ -421,7 +418,7 @@ export async function removeTeamMemberFromJob(
  * Bulk assign team members to a job
  */
 export async function bulkAssignTeamMembers(
-	input: z.infer<typeof bulkAssignTeamMembersSchema>,
+	input: z.infer<typeof bulkAssignTeamMembersSchema>
 ): Promise<ActionResult<{ assigned: number }>> {
 	return withErrorHandling(async () => {
 		const validated = bulkAssignTeamMembersSchema.parse(input);
@@ -469,11 +466,9 @@ export async function bulkAssignTeamMembers(
 			assigned_by: user.id,
 		}));
 
-		const { error, count } = await supabase
-			.from("job_team_assignments")
-			.upsert(assignments, {
-				onConflict: "job_id,team_member_id",
-			});
+		const { error, count } = await supabase.from("job_team_assignments").upsert(assignments, {
+			onConflict: "job_id,team_member_id",
+		});
 
 		if (error) {
 			throw error;
@@ -493,7 +488,7 @@ export async function bulkAssignTeamMembers(
 export async function updateTeamMemberRole(
 	jobId: string,
 	teamMemberId: string,
-	newRole: "primary" | "assistant" | "crew" | "supervisor",
+	newRole: "primary" | "assistant" | "crew" | "supervisor"
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();

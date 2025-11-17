@@ -18,16 +18,8 @@ import { GripVertical, Maximize2, Minimize2, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-	type JobWidget,
-	useJobDetailsLayoutStore,
-} from "@/lib/stores/job-details-layout-store";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { type JobWidget, useJobDetailsLayoutStore } from "@/lib/stores/job-details-layout-store";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -99,11 +91,10 @@ export function WidgetContainer({
 	return (
 		<div
 			className={cn(
-				"flex h-full flex-col rounded-lg border bg-card transition-all duration-200",
-				isEditMode && "ring-2 ring-primary/20 hover:ring-primary/40",
+				"bg-card flex h-full flex-col rounded-lg border transition-all duration-200",
+				isEditMode && "ring-primary/20 hover:ring-primary/40 ring-2",
 				isDragging && "shadow-2xl",
-				isSortableDragging &&
-					"scale-95 opacity-30 ring-2 ring-dashed ring-primary/50",
+				isSortableDragging && "ring-dashed ring-primary/50 scale-95 opacity-30 ring-2"
 			)}
 			ref={setNodeRef}
 			style={style}
@@ -121,7 +112,7 @@ export function WidgetContainer({
 							<TooltipProvider>
 								<Tooltip>
 									<TooltipTrigger asChild>
-										<GripVertical className="size-4 text-muted-foreground" />
+										<GripVertical className="text-muted-foreground size-4" />
 									</TooltipTrigger>
 									<TooltipContent>
 										<p>Drag to reposition</p>
@@ -133,18 +124,13 @@ export function WidgetContainer({
 
 					<div className="flex min-w-0 flex-1 items-center gap-2">
 						<div className="min-w-0 flex-1">
-							<h3 className="truncate font-semibold text-sm">{widget.title}</h3>
+							<h3 className="truncate text-sm font-semibold">{widget.title}</h3>
 							{widget.description ? (
-								<p className="truncate text-muted-foreground text-xs">
-									{widget.description}
-								</p>
+								<p className="text-muted-foreground truncate text-xs">{widget.description}</p>
 							) : null}
 						</div>
 						{isEditMode ? (
-							<Badge
-								className="shrink-0 text-xs"
-								variant={isFullWidth ? "default" : "secondary"}
-							>
+							<Badge className="shrink-0 text-xs" variant={isFullWidth ? "default" : "secondary"}>
 								{isFullWidth ? "Full" : "Half"}
 							</Badge>
 						) : null}
@@ -159,7 +145,7 @@ export function WidgetContainer({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button
-										className="size-7 p-0 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+										className="text-muted-foreground hover:bg-primary/10 hover:text-primary size-7 p-0"
 										onClick={handleResize}
 										size="sm"
 										variant="ghost"
@@ -172,11 +158,7 @@ export function WidgetContainer({
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent>
-									<p>
-										{isFullWidth
-											? "Resize to half width"
-											: "Resize to full width"}
-									</p>
+									<p>{isFullWidth ? "Resize to half width" : "Resize to full width"}</p>
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
@@ -186,7 +168,7 @@ export function WidgetContainer({
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button
-										className="size-7 p-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+										className="text-destructive hover:bg-destructive/10 hover:text-destructive size-7 p-0"
 										onClick={handleRemove}
 										size="sm"
 										variant="ghost"

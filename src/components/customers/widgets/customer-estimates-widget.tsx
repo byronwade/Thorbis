@@ -28,23 +28,18 @@ export function CustomerEstimatesWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: estimates, isLoading, error } = useCustomerEstimates(
-					customerId,
-					isVisible,
-				);
+				const { data: estimates, isLoading, error } = useCustomerEstimates(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load estimates
 						</div>
 					);
 				if (!estimates || estimates.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No estimates found
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No estimates found</div>
 					);
 
 				return (
@@ -53,19 +48,17 @@ export function CustomerEstimatesWidget({
 							<Link
 								key={estimate.id}
 								href={`/dashboard/work/estimates/${estimate.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="font-medium text-sm">
-												{estimate.estimate_number}
-											</span>
+											<span className="text-sm font-medium">{estimate.estimate_number}</span>
 											<Badge variant="outline" className="text-xs">
 												{estimate.status}
 											</Badge>
 										</div>
-										<p className="font-semibold text-sm">
+										<p className="text-sm font-semibold">
 											{formatCurrencyFromDollars(estimate.total_amount || 0)}
 										</p>
 										<p className="text-muted-foreground text-xs">

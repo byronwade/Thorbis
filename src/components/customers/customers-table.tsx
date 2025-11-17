@@ -99,10 +99,10 @@ export function CustomersTable({
 						</AvatarFallback>
 					</Avatar>
 					<div className="min-w-0">
-						<div className="truncate font-medium text-foreground text-sm leading-tight hover:underline">
+						<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
 							{customer.name}
 						</div>
-						<div className="mt-0.5 truncate text-muted-foreground text-xs leading-tight">
+						<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
 							{customer.contact}
 						</div>
 					</div>
@@ -119,12 +119,12 @@ export function CustomersTable({
 			hideable: true,
 			render: (customer) => (
 				<div className="space-y-1">
-					<div className="flex items-center gap-1.5 text-foreground text-sm">
-						<Mail className="h-3 w-3 text-muted-foreground" />
+					<div className="text-foreground flex items-center gap-1.5 text-sm">
+						<Mail className="text-muted-foreground h-3 w-3" />
 						<span className="truncate">{customer.email}</span>
 					</div>
-					<div className="flex items-center gap-1.5 text-foreground text-sm">
-						<Phone className="h-3 w-3 text-muted-foreground" />
+					<div className="text-foreground flex items-center gap-1.5 text-sm">
+						<Phone className="text-muted-foreground h-3 w-3" />
 						<span className="tabular-nums">{customer.phone}</span>
 					</div>
 				</div>
@@ -139,24 +139,16 @@ export function CustomersTable({
 			hideable: true,
 			render: (customer) => {
 				if (!(customer.address || customer.city || customer.state)) {
-					return (
-						<span className="text-muted-foreground text-sm italic">
-							No address
-						</span>
-					);
+					return <span className="text-muted-foreground text-sm italic">No address</span>;
 				}
 				return (
 					<div className="space-y-1">
 						{customer.address && (
-							<div className="truncate text-foreground text-sm">
-								{customer.address}
-							</div>
+							<div className="text-foreground truncate text-sm">{customer.address}</div>
 						)}
 						{(customer.city || customer.state || customer.zipCode) && (
-							<div className="truncate text-muted-foreground text-xs">
-								{[customer.city, customer.state, customer.zipCode]
-									.filter(Boolean)
-									.join(", ")}
+							<div className="text-muted-foreground truncate text-xs">
+								{[customer.city, customer.state, customer.zipCode].filter(Boolean).join(", ")}
 							</div>
 						)}
 					</div>
@@ -183,16 +175,10 @@ export function CustomersTable({
 			render: (customer) => (
 				<div className="space-y-1">
 					<div className="text-foreground text-sm">
-						Last:{" "}
-						<span className="text-muted-foreground">
-							{customer.lastService}
-						</span>
+						Last: <span className="text-muted-foreground">{customer.lastService}</span>
 					</div>
 					<div className="text-foreground text-sm">
-						Next:{" "}
-						<span className="text-muted-foreground">
-							{customer.nextService}
-						</span>
+						Next: <span className="text-muted-foreground">{customer.nextService}</span>
 					</div>
 				</div>
 			),
@@ -296,22 +282,17 @@ export function CustomersTable({
 			columns={columns}
 			data={filteredCustomers}
 			emptyAction={
-				<Button
-					onClick={() => (window.location.href = "/dashboard/customers/new")}
-					size="sm"
-				>
+				<Button onClick={() => (window.location.href = "/dashboard/customers/new")} size="sm">
 					<Users className="mr-2 size-4" />
 					Add Customer
 				</Button>
 			}
-			emptyIcon={<Users className="h-8 w-8 text-muted-foreground" />}
+			emptyIcon={<Users className="text-muted-foreground h-8 w-8" />}
 			emptyMessage="No customers found"
 			enableSelection={true}
 			entity="customers"
 			getItemId={(customer) => customer.id}
-			isArchived={(customer) =>
-				Boolean(customer.archived_at || customer.deleted_at)
-			}
+			isArchived={(customer) => Boolean(customer.archived_at || customer.deleted_at)}
 			itemsPerPage={itemsPerPage}
 			onRefresh={() => window.location.reload()}
 			onRowClick={handleRowClick}

@@ -111,7 +111,7 @@ export function VendorPageContent({
 	const [isLinkingPO, setIsLinkingPO] = useState(false);
 
 	const [tags, setTags] = useState<EntityTag[]>(
-		Array.isArray(initialVendor.tags) ? initialVendor.tags : [],
+		Array.isArray(initialVendor.tags) ? initialVendor.tags : []
 	);
 
 	const handleTagsUpdate = async (entityId: string, newTags: EntityTag[]) => {
@@ -133,10 +133,7 @@ export function VendorPageContent({
 	const handleLinkPurchaseOrder = async (purchaseOrderId: string) => {
 		setIsLinkingPO(true);
 		try {
-			const result = await linkPurchaseOrderToVendor(
-				purchaseOrderId,
-				vendor.id,
-			);
+			const result = await linkPurchaseOrderToVendor(purchaseOrderId, vendor.id);
 
 			if (result.success) {
 				toast.success("Purchase order linked successfully");
@@ -206,10 +203,7 @@ export function VendorPageContent({
 				formData.append("credit_limit", (vendor.credit_limit / 100).toString());
 			}
 			if (vendor.preferred_payment_method) {
-				formData.append(
-					"preferred_payment_method",
-					vendor.preferred_payment_method,
-				);
+				formData.append("preferred_payment_method", vendor.preferred_payment_method);
 			}
 			if (vendor.category) {
 				formData.append("category", vendor.category);
@@ -271,10 +265,7 @@ export function VendorPageContent({
 			title: "Vendor Information",
 			icon: <Building2 className="size-4" />,
 			actions: hasChanges ? (
-				<Badge
-					className="bg-amber-100 text-amber-900 dark:bg-amber-500/20"
-					variant="outline"
-				>
+				<Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/20" variant="outline">
 					<Save className="mr-1 size-3" />
 					Unsaved
 				</Badge>
@@ -296,18 +287,14 @@ export function VendorPageContent({
 								<Label htmlFor="display_name">Display Name</Label>
 								<Input
 									id="display_name"
-									onChange={(e) =>
-										handleFieldChange("display_name", e.target.value)
-									}
+									onChange={(e) => handleFieldChange("display_name", e.target.value)}
 									value={vendor.display_name || ""}
 								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="category">Category</Label>
 								<Select
-									onValueChange={(value) =>
-										handleFieldChange("category", value)
-									}
+									onValueChange={(value) => handleFieldChange("category", value)}
 									value={vendor.category || ""}
 								>
 									<SelectTrigger id="category">
@@ -317,9 +304,7 @@ export function VendorPageContent({
 										<SelectItem value="supplier">Supplier</SelectItem>
 										<SelectItem value="distributor">Distributor</SelectItem>
 										<SelectItem value="manufacturer">Manufacturer</SelectItem>
-										<SelectItem value="service_provider">
-											Service Provider
-										</SelectItem>
+										<SelectItem value="service_provider">Service Provider</SelectItem>
 										<SelectItem value="other">Other</SelectItem>
 									</SelectContent>
 								</Select>
@@ -365,9 +350,7 @@ export function VendorPageContent({
 								<Label htmlFor="secondary_phone">Secondary Phone</Label>
 								<Input
 									id="secondary_phone"
-									onChange={(e) =>
-										handleFieldChange("secondary_phone", e.target.value)
-									}
+									onChange={(e) => handleFieldChange("secondary_phone", e.target.value)}
 									type="tel"
 									value={vendor.secondary_phone || ""}
 								/>
@@ -400,9 +383,7 @@ export function VendorPageContent({
 								<Label htmlFor="address2">Address Line 2</Label>
 								<Input
 									id="address2"
-									onChange={(e) =>
-										handleFieldChange("address2", e.target.value)
-									}
+									onChange={(e) => handleFieldChange("address2", e.target.value)}
 									value={vendor.address2 || ""}
 								/>
 							</div>
@@ -426,9 +407,7 @@ export function VendorPageContent({
 								<Label htmlFor="zip_code">ZIP Code</Label>
 								<Input
 									id="zip_code"
-									onChange={(e) =>
-										handleFieldChange("zip_code", e.target.value)
-									}
+									onChange={(e) => handleFieldChange("zip_code", e.target.value)}
 									value={vendor.zip_code || ""}
 								/>
 							</div>
@@ -458,9 +437,7 @@ export function VendorPageContent({
 							<div className="space-y-2">
 								<Label htmlFor="payment_terms">Payment Terms</Label>
 								<Select
-									onValueChange={(value) =>
-										handleFieldChange("payment_terms", value)
-									}
+									onValueChange={(value) => handleFieldChange("payment_terms", value)}
 									value={vendor.payment_terms || "net_30"}
 								>
 									<SelectTrigger id="payment_terms">
@@ -470,9 +447,7 @@ export function VendorPageContent({
 										<SelectItem value="net_15">Net 15</SelectItem>
 										<SelectItem value="net_30">Net 30</SelectItem>
 										<SelectItem value="net_60">Net 60</SelectItem>
-										<SelectItem value="due_on_receipt">
-											Due on Receipt
-										</SelectItem>
+										<SelectItem value="due_on_receipt">Due on Receipt</SelectItem>
 										<SelectItem value="custom">Custom</SelectItem>
 									</SelectContent>
 								</Select>
@@ -485,9 +460,7 @@ export function VendorPageContent({
 									onChange={(e) =>
 										handleFieldChange(
 											"credit_limit",
-											Math.round(
-												Number.parseFloat(e.target.value || "0") * 100,
-											),
+											Math.round(Number.parseFloat(e.target.value || "0") * 100)
 										)
 									}
 									step="0.01"
@@ -496,13 +469,9 @@ export function VendorPageContent({
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="preferred_payment_method">
-									Preferred Payment Method
-								</Label>
+								<Label htmlFor="preferred_payment_method">Preferred Payment Method</Label>
 								<Select
-									onValueChange={(value) =>
-										handleFieldChange("preferred_payment_method", value)
-									}
+									onValueChange={(value) => handleFieldChange("preferred_payment_method", value)}
 									value={vendor.preferred_payment_method || ""}
 								>
 									<SelectTrigger id="preferred_payment_method">
@@ -535,9 +504,7 @@ export function VendorPageContent({
 							<Label htmlFor="internal_notes">Internal Notes</Label>
 							<Textarea
 								id="internal_notes"
-								onChange={(e) =>
-									handleFieldChange("internal_notes", e.target.value)
-								}
+								onChange={(e) => handleFieldChange("internal_notes", e.target.value)}
 								placeholder="Private team notes..."
 								rows={3}
 								value={vendor.internal_notes || ""}
@@ -574,11 +541,7 @@ export function VendorPageContent({
 			icon: <Receipt className="size-4" />,
 			count: purchaseOrders.length,
 			actions: (
-				<Button
-					onClick={() => setIsPOSearchOpen(true)}
-					size="sm"
-					variant="outline"
-				>
+				<Button onClick={() => setIsPOSearchOpen(true)} size="sm" variant="outline">
 					<Plus className="mr-2 size-3.5" />
 					Link PO
 				</Button>
@@ -587,14 +550,10 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{purchaseOrders.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<Receipt className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">
-								No purchase orders yet
-							</p>
+							<Receipt className="text-muted-foreground mb-4 size-12" />
+							<p className="text-muted-foreground text-sm">No purchase orders yet</p>
 							<Button asChild className="mt-4" size="sm" variant="outline">
-								<Link
-									href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}
-								>
+								<Link href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}>
 									Create Purchase Order
 								</Link>
 							</Button>
@@ -603,7 +562,7 @@ export function VendorPageContent({
 						<div className="space-y-3">
 							{purchaseOrders.map((po: any) => (
 								<Link
-									className="block rounded-lg border p-4 transition-colors hover:bg-muted/50"
+									className="hover:bg-muted/50 block rounded-lg border p-4 transition-colors"
 									href={`/dashboard/work/purchase-orders/${po.id}`}
 									key={po.id}
 								>
@@ -613,9 +572,7 @@ export function VendorPageContent({
 												<p className="font-medium">{po.po_number}</p>
 												<Badge variant="outline">{po.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">
-												{po.title}
-											</p>
+											<p className="text-muted-foreground text-sm">{po.title}</p>
 											{po.expected_delivery && (
 												<p className="text-muted-foreground text-xs">
 													Expected: {formatDate(po.expected_delivery)}
@@ -623,12 +580,8 @@ export function VendorPageContent({
 											)}
 										</div>
 										<div className="text-right">
-											<p className="font-medium">
-												{formatCurrency(po.total_amount)}
-											</p>
-											<p className="text-muted-foreground text-xs">
-												{formatDate(po.created_at)}
-											</p>
+											<p className="font-medium">{formatCurrency(po.total_amount)}</p>
+											<p className="text-muted-foreground text-xs">{formatDate(po.created_at)}</p>
 										</div>
 									</div>
 								</Link>
@@ -651,7 +604,7 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Total Spend</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">{formatCurrency(totalSpend)}</p>
+							<p className="text-2xl font-bold">{formatCurrency(totalSpend)}</p>
 							<p className="text-muted-foreground text-xs">All-time</p>
 						</CardContent>
 					</Card>
@@ -660,10 +613,8 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Open POs</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">{openPOCount}</p>
-							<p className="text-muted-foreground text-xs">
-								{formatCurrency(openPOValue)} value
-							</p>
+							<p className="text-2xl font-bold">{openPOCount}</p>
+							<p className="text-muted-foreground text-xs">{formatCurrency(openPOValue)} value</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -671,12 +622,8 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Avg Order Value</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">
-								{formatCurrency(averageOrderValue)}
-							</p>
-							<p className="text-muted-foreground text-xs">
-								Per purchase order
-							</p>
+							<p className="text-2xl font-bold">{formatCurrency(averageOrderValue)}</p>
+							<p className="text-muted-foreground text-xs">Per purchase order</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -684,7 +631,7 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Last Order</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">
+							<p className="text-2xl font-bold">
 								{metrics.lastOrderDate
 									? formatDate(metrics.lastOrderDate, { preset: "short" })
 									: "Never"}
@@ -697,10 +644,8 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">On-Time Delivery</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">{onTimeDeliveryRate}%</p>
-							<p className="text-muted-foreground text-xs">
-								Delivery performance
-							</p>
+							<p className="text-2xl font-bold">{onTimeDeliveryRate}%</p>
+							<p className="text-muted-foreground text-xs">Delivery performance</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -708,7 +653,7 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Orders (12mo)</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="font-bold text-2xl">{purchaseOrders.length}</p>
+							<p className="text-2xl font-bold">{purchaseOrders.length}</p>
 							<p className="text-muted-foreground text-xs">Last 12 months</p>
 						</CardContent>
 					</Card>
@@ -726,16 +671,14 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{relatedJobs.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<ShoppingCart className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">
-								No jobs linked to this vendor yet
-							</p>
+							<ShoppingCart className="text-muted-foreground mb-4 size-12" />
+							<p className="text-muted-foreground text-sm">No jobs linked to this vendor yet</p>
 						</div>
 					) : (
 						<div className="space-y-3">
 							{relatedJobs.map((job: any) => (
 								<Link
-									className="block rounded-lg border p-4 transition-colors hover:bg-muted/50"
+									className="hover:bg-muted/50 block rounded-lg border p-4 transition-colors"
 									href={`/dashboard/work/${job.id}`}
 									key={job.id}
 								>
@@ -745,13 +688,9 @@ export function VendorPageContent({
 												<p className="font-medium">{job.job_number}</p>
 												<Badge variant="outline">{job.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">
-												{job.title}
-											</p>
+											<p className="text-muted-foreground text-sm">{job.title}</p>
 										</div>
-										<p className="text-muted-foreground text-xs">
-											{formatDate(job.created_at)}
-										</p>
+										<p className="text-muted-foreground text-xs">{formatDate(job.created_at)}</p>
 									</div>
 								</Link>
 							))}
@@ -768,11 +707,7 @@ export function VendorPageContent({
 			icon: <User className="size-4" />,
 			count: contacts.length,
 			actions: (
-				<Button
-					onClick={() => setIsContactSearchOpen(true)}
-					size="sm"
-					variant="outline"
-				>
+				<Button onClick={() => setIsContactSearchOpen(true)} size="sm" variant="outline">
 					<Plus className="mr-2 size-3.5" />
 					Link Contact
 				</Button>
@@ -781,10 +716,8 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{contacts.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<User className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">
-								No contacts added yet
-							</p>
+							<User className="text-muted-foreground mb-4 size-12" />
+							<p className="text-muted-foreground text-sm">No contacts added yet</p>
 							<Button className="mt-4" size="sm" variant="outline">
 								Add Contact
 							</Button>
@@ -798,15 +731,13 @@ export function VendorPageContent({
 											{contact.first_name} {contact.last_name}
 										</CardTitle>
 										{contact.title && (
-											<p className="text-muted-foreground text-sm">
-												{contact.title}
-											</p>
+											<p className="text-muted-foreground text-sm">{contact.title}</p>
 										)}
 									</CardHeader>
 									<CardContent className="space-y-2">
 										{contact.email && (
 											<a
-												className="flex items-center gap-2 text-primary text-sm hover:underline"
+												className="text-primary flex items-center gap-2 text-sm hover:underline"
 												href={`mailto:${contact.email}`}
 											>
 												<Mail className="size-3" />
@@ -815,7 +746,7 @@ export function VendorPageContent({
 										)}
 										{contact.phone && (
 											<a
-												className="flex items-center gap-2 text-primary text-sm hover:underline"
+												className="text-primary flex items-center gap-2 text-sm hover:underline"
 												href={`tel:${contact.phone}`}
 											>
 												<Phone className="size-3" />
@@ -840,11 +771,7 @@ export function VendorPageContent({
 			icon: <FileText className="size-4" />,
 			count: notes.length,
 			actions: (
-				<Button
-					onClick={() => setIsNoteDialogOpen(true)}
-					size="sm"
-					variant="outline"
-				>
+				<Button onClick={() => setIsNoteDialogOpen(true)} size="sm" variant="outline">
 					<Plus className="mr-2 size-3.5" />
 					Add Note
 				</Button>
@@ -853,7 +780,7 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{notes.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<FileText className="mb-4 size-12 text-muted-foreground" />
+							<FileText className="text-muted-foreground mb-4 size-12" />
 							<p className="text-muted-foreground text-sm">No notes yet</p>
 						</div>
 					) : (
@@ -861,7 +788,7 @@ export function VendorPageContent({
 							{notes.map((note: any) => (
 								<div className="rounded-lg border p-4" key={note.id}>
 									<p className="text-sm">{note.content}</p>
-									<p className="mt-2 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-2 text-xs">
 										{formatDate(note.created_at)}
 									</p>
 								</div>
@@ -877,11 +804,7 @@ export function VendorPageContent({
 			icon: <Paperclip className="size-4" />,
 			count: attachments.length,
 			actions: (
-				<Button
-					onClick={() => setIsAttachmentDialogOpen(true)}
-					size="sm"
-					variant="outline"
-				>
+				<Button onClick={() => setIsAttachmentDialogOpen(true)} size="sm" variant="outline">
 					<Plus className="mr-2 size-3.5" />
 					Upload
 				</Button>
@@ -890,16 +813,14 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{attachments.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<Paperclip className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">
-								No attachments yet
-							</p>
+							<Paperclip className="text-muted-foreground mb-4 size-12" />
+							<p className="text-muted-foreground text-sm">No attachments yet</p>
 						</div>
 					) : (
 						<div className="space-y-3">
 							{attachments.map((attachment: any) => (
 								<div className="rounded-lg border p-4" key={attachment.id}>
-									<p className="font-medium text-sm">{attachment.filename}</p>
+									<p className="text-sm font-medium">{attachment.filename}</p>
 									<p className="text-muted-foreground text-xs">
 										{formatDate(attachment.created_at)}
 									</p>
@@ -919,7 +840,7 @@ export function VendorPageContent({
 				<div className="space-y-4 p-6">
 					{activities.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<Activity className="mb-4 size-12 text-muted-foreground" />
+							<Activity className="text-muted-foreground mb-4 size-12" />
 							<p className="text-muted-foreground text-sm">No activity yet</p>
 						</div>
 					) : (
@@ -927,9 +848,7 @@ export function VendorPageContent({
 							{activities.map((activity: any) => (
 								<div className="rounded-lg border p-4" key={activity.id}>
 									<p className="text-sm">{activity.action}</p>
-									<p className="text-muted-foreground text-xs">
-										{formatDate(activity.created_at)}
-									</p>
+									<p className="text-muted-foreground text-xs">{formatDate(activity.created_at)}</p>
 								</div>
 							))}
 						</div>
@@ -950,12 +869,10 @@ export function VendorPageContent({
 						{/* Title and Status */}
 						<div className="space-y-4">
 							<div className="flex items-center gap-3">
-								<h1 className="font-bold text-3xl tracking-tight">
+								<h1 className="text-3xl font-bold tracking-tight">
 									{vendor.display_name || vendor.name}
 								</h1>
-								<Badge
-									variant={vendor.status === "active" ? "default" : "secondary"}
-								>
+								<Badge variant={vendor.status === "active" ? "default" : "secondary"}>
 									{vendor.status}
 								</Badge>
 							</div>
@@ -994,9 +911,9 @@ export function VendorPageContent({
 				<CommandList>
 					<CommandEmpty>
 						<div className="flex flex-col items-center gap-3 py-6">
-							<Receipt className="size-12 text-muted-foreground" />
+							<Receipt className="text-muted-foreground size-12" />
 							<div className="text-center">
-								<p className="font-medium text-sm">No purchase orders found</p>
+								<p className="text-sm font-medium">No purchase orders found</p>
 								<p className="text-muted-foreground text-xs">
 									Try a different search or create a new one
 								</p>
@@ -1014,14 +931,14 @@ export function VendorPageContent({
 								href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}
 								onClick={() => setIsPOSearchOpen(false)}
 							>
-								<div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 shadow-emerald-500/40 shadow-lg">
+								<div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500 shadow-lg shadow-emerald-500/40">
 									<Plus className="size-4 text-white" />
 								</div>
 								<div className="flex flex-col">
-									<span className="font-semibold text-emerald-100 text-sm">
+									<span className="text-sm font-semibold text-emerald-100">
 										Create New Purchase Order
 									</span>
-									<span className="text-emerald-100/70 text-xs">
+									<span className="text-xs text-emerald-100/70">
 										Start a new PO for this vendor
 									</span>
 								</div>
@@ -1037,12 +954,8 @@ export function VendorPageContent({
 									availablePurchaseOrders.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number
-												?.toLowerCase()
-												.includes(poSearchQuery.toLowerCase()) ||
-											po.title
-												?.toLowerCase()
-												.includes(poSearchQuery.toLowerCase()),
+											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
+											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
 									).length
 								})`}
 							>
@@ -1050,24 +963,18 @@ export function VendorPageContent({
 									.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number
-												?.toLowerCase()
-												.includes(poSearchQuery.toLowerCase()) ||
-											po.title
-												?.toLowerCase()
-												.includes(poSearchQuery.toLowerCase()),
+											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
+											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
 									)
 									.slice(0, 8)
 									.map((po: any) => {
 										const statusColors: Record<string, string> = {
-											draft:
-												"bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+											draft: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
 											pending_approval:
 												"bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
 											approved:
 												"bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-											ordered:
-												"bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+											ordered: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 											partially_received:
 												"bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
 										};
@@ -1085,18 +992,18 @@ export function VendorPageContent({
 													</div>
 													<div className="flex min-w-0 flex-1 flex-col gap-1.5">
 														<div className="flex items-center gap-2">
-															<span className="truncate font-semibold text-sm leading-none">
+															<span className="truncate text-sm leading-none font-semibold">
 																{po.po_number || po.title || "Untitled"}
 															</span>
 															<Badge
-																className={`shrink-0 px-2 py-0.5 font-medium text-[10px] leading-none ${statusColors[po.status] || statusColors.draft}`}
+																className={`shrink-0 px-2 py-0.5 text-[10px] leading-none font-medium ${statusColors[po.status] || statusColors.draft}`}
 																variant="outline"
 															>
 																{po.status?.replace(/_/g, " ")}
 															</Badge>
 														</div>
 														<div className="flex items-center gap-2">
-															<span className="font-semibold text-foreground text-sm tabular-nums">
+															<span className="text-foreground text-sm font-semibold tabular-nums">
 																{formatCurrency(po.total_amount || 0)}
 															</span>
 															<span className="text-muted-foreground">•</span>
@@ -1105,7 +1012,7 @@ export function VendorPageContent({
 															</span>
 														</div>
 													</div>
-													<div className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+													<div className="text-muted-foreground flex shrink-0 items-center gap-1.5">
 														<Link2 className="size-4" />
 													</div>
 												</div>
@@ -1119,10 +1026,7 @@ export function VendorPageContent({
 			</CommandDialog>
 
 			{/* Contact Search Dialog */}
-			<CommandDialog
-				onOpenChange={setIsContactSearchOpen}
-				open={isContactSearchOpen}
-			>
+			<CommandDialog onOpenChange={setIsContactSearchOpen} open={isContactSearchOpen}>
 				<CommandInput
 					onValueChange={setContactSearchQuery}
 					placeholder="Search contacts by name, email, or company..."
@@ -1131,9 +1035,9 @@ export function VendorPageContent({
 				<CommandList>
 					<CommandEmpty>
 						<div className="flex flex-col items-center gap-3 py-6">
-							<User className="size-12 text-muted-foreground" />
+							<User className="text-muted-foreground size-12" />
 							<div className="text-center">
-								<p className="font-medium text-sm">No contacts found</p>
+								<p className="text-sm font-medium">No contacts found</p>
 								<p className="text-muted-foreground text-xs">
 									Try a different search or create a new contact
 								</p>
@@ -1150,14 +1054,12 @@ export function VendorPageContent({
 							}}
 						>
 							<div className="flex w-full cursor-pointer items-center gap-3 rounded-2xl border border-blue-500/30 bg-blue-500/12 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-blue-500/40 transition-all hover:border-blue-500/60 hover:bg-blue-500/18">
-								<div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 shadow-blue-500/40 shadow-lg">
+								<div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-500 shadow-lg shadow-blue-500/40">
 									<Plus className="size-4 text-white" />
 								</div>
 								<div className="flex flex-col">
-									<span className="font-semibold text-blue-100 text-sm">
-										Create New Contact
-									</span>
-									<span className="text-blue-100/70 text-xs">
+									<span className="text-sm font-semibold text-blue-100">Create New Contact</span>
+									<span className="text-xs text-blue-100/70">
 										Add a new contact for this vendor
 									</span>
 								</div>
@@ -1173,15 +1075,9 @@ export function VendorPageContent({
 									availableContacts.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()) ||
-											contact.email
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()),
+											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
+											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
 									).length
 								})`}
 							>
@@ -1189,15 +1085,9 @@ export function VendorPageContent({
 									.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()) ||
-											contact.email
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name
-												?.toLowerCase()
-												.includes(contactSearchQuery.toLowerCase()),
+											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
+											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
 									)
 									.slice(0, 8)
 									.map((contact: any) => (
@@ -1214,42 +1104,34 @@ export function VendorPageContent({
 													<User className="size-5 text-blue-600 dark:text-blue-400" />
 												</div>
 												<div className="flex min-w-0 flex-1 flex-col gap-1.5">
-													<span className="truncate font-semibold text-sm leading-none">
+													<span className="truncate text-sm leading-none font-semibold">
 														{contact.name}
 													</span>
 													{(contact.title || contact.company_name) && (
-														<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+														<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 															{contact.title && (
-																<span className="font-medium">
-																	{contact.title}
-																</span>
+																<span className="font-medium">{contact.title}</span>
 															)}
-															{contact.title && contact.company_name && (
-																<span>•</span>
-															)}
-															{contact.company_name && (
-																<span>{contact.company_name}</span>
-															)}
+															{contact.title && contact.company_name && <span>•</span>}
+															{contact.company_name && <span>{contact.company_name}</span>}
 														</div>
 													)}
 													{contact.email && (
 														<div className="flex items-center gap-1.5">
-															<Mail className="size-3 text-muted-foreground" />
-															<span className="truncate text-muted-foreground text-xs">
+															<Mail className="text-muted-foreground size-3" />
+															<span className="text-muted-foreground truncate text-xs">
 																{contact.email}
 															</span>
 														</div>
 													)}
 													{contact.phone && (
 														<div className="flex items-center gap-1.5">
-															<Phone className="size-3 text-muted-foreground" />
-															<span className="text-muted-foreground text-xs">
-																{contact.phone}
-															</span>
+															<Phone className="text-muted-foreground size-3" />
+															<span className="text-muted-foreground text-xs">{contact.phone}</span>
 														</div>
 													)}
 												</div>
-												<div className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+												<div className="text-muted-foreground flex shrink-0 items-center gap-1.5">
 													<Link2 className="size-4" />
 												</div>
 											</div>
@@ -1266,18 +1148,13 @@ export function VendorPageContent({
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Add Note</DialogTitle>
-						<DialogDescription>
-							Add a note about this vendor for your team.
-						</DialogDescription>
+						<DialogDescription>Add a note about this vendor for your team.</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
 						<Textarea placeholder="Enter note content..." rows={4} />
 					</div>
 					<DialogFooter>
-						<Button
-							onClick={() => setIsNoteDialogOpen(false)}
-							variant="outline"
-						>
+						<Button onClick={() => setIsNoteDialogOpen(false)} variant="outline">
 							Cancel
 						</Button>
 						<Button
@@ -1294,10 +1171,7 @@ export function VendorPageContent({
 			</Dialog>
 
 			{/* Upload Attachment Dialog */}
-			<Dialog
-				onOpenChange={setIsAttachmentDialogOpen}
-				open={isAttachmentDialogOpen}
-			>
+			<Dialog onOpenChange={setIsAttachmentDialogOpen} open={isAttachmentDialogOpen}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Upload Attachment</DialogTitle>
@@ -1306,18 +1180,13 @@ export function VendorPageContent({
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
-						<div className="rounded-2xl border border-white/15 border-dashed bg-zinc-900/70 p-10 text-center shadow-black/40 shadow-inner transition-colors hover:border-white/25 hover:bg-zinc-900/80">
+						<div className="rounded-2xl border border-dashed border-white/15 bg-zinc-900/70 p-10 text-center shadow-inner shadow-black/40 transition-colors hover:border-white/25 hover:bg-zinc-900/80">
 							<Paperclip className="mx-auto mb-4 size-12 text-zinc-400" />
-							<p className="text-sm text-zinc-300">
-								Drag and drop files here or click to browse
-							</p>
+							<p className="text-sm text-zinc-300">Drag and drop files here or click to browse</p>
 						</div>
 					</div>
 					<DialogFooter>
-						<Button
-							onClick={() => setIsAttachmentDialogOpen(false)}
-							variant="outline"
-						>
+						<Button onClick={() => setIsAttachmentDialogOpen(false)} variant="outline">
 							Cancel
 						</Button>
 						<Button

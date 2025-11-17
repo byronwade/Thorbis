@@ -12,16 +12,10 @@ function generateSampleData(count: number) {
 		id: `job-${i + 1}`,
 		title: `Job ${i + 1}`,
 		customer: `Customer ${Math.floor(Math.random() * 100)}`,
-		status: ["pending", "active", "completed"][
-			Math.floor(Math.random() * 3)
-		] as string,
-		priority: ["low", "medium", "high"][
-			Math.floor(Math.random() * 3)
-		] as string,
+		status: ["pending", "active", "completed"][Math.floor(Math.random() * 3)] as string,
+		priority: ["low", "medium", "high"][Math.floor(Math.random() * 3)] as string,
 		amount: Math.floor(Math.random() * 10_000),
-		created: new Date(
-			Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
-		).toLocaleDateString(),
+		created: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toLocaleDateString(),
 	}));
 }
 
@@ -94,9 +88,7 @@ export function OptimizedExample() {
 		{
 			key: "created",
 			header: "Created",
-			render: (item) => (
-				<span className="text-muted-foreground text-sm">{item.created}</span>
-			),
+			render: (item) => <span className="text-muted-foreground text-sm">{item.created}</span>,
 			width: "120px",
 		},
 	];
@@ -113,13 +105,11 @@ export function OptimizedExample() {
 	return (
 		<div className="space-y-6">
 			{/* Info Card */}
-			<div className="rounded-lg border bg-card p-6">
-				<h2 className="mb-2 font-semibold text-lg">
-					Optimized Client-Side Table
-				</h2>
-				<p className="mb-4 text-muted-foreground text-sm">
-					Uses React.memo, useMemo, and useCallback for efficient rendering.
-					Best for 1,000-5,000 rows with client-side pagination.
+			<div className="bg-card rounded-lg border p-6">
+				<h2 className="mb-2 text-lg font-semibold">Optimized Client-Side Table</h2>
+				<p className="text-muted-foreground mb-4 text-sm">
+					Uses React.memo, useMemo, and useCallback for efficient rendering. Best for 1,000-5,000
+					rows with client-side pagination.
 				</p>
 
 				<div className="space-y-2 text-sm">
@@ -128,25 +118,13 @@ export function OptimizedExample() {
 						<span>{rowCount.toLocaleString()}</span>
 					</div>
 					<div className="flex gap-2">
-						<Button
-							onClick={() => handleChangeRowCount(1000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(1000)} size="sm" variant="outline">
 							1,000 rows
 						</Button>
-						<Button
-							onClick={() => handleChangeRowCount(2500)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(2500)} size="sm" variant="outline">
 							2,500 rows
 						</Button>
-						<Button
-							onClick={() => handleChangeRowCount(5000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(5000)} size="sm" variant="outline">
 							5,000 rows
 						</Button>
 					</div>
@@ -155,30 +133,20 @@ export function OptimizedExample() {
 
 			{/* Performance Metrics */}
 			<div className="grid gap-4 md:grid-cols-3">
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Memory Usage</div>
-					<div className="mt-1 font-bold text-2xl">
-						~{Math.round(rowCount * 0.002)}MB
-					</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						All data in memory
-					</div>
+					<div className="mt-1 text-2xl font-bold">~{Math.round(rowCount * 0.002)}MB</div>
+					<div className="text-muted-foreground mt-1 text-xs">All data in memory</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Initial Render</div>
-					<div className="mt-1 font-bold text-2xl">
-						~{Math.round(rowCount * 0.05)}ms
-					</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						With pagination
-					</div>
+					<div className="mt-1 text-2xl font-bold">~{Math.round(rowCount * 0.05)}ms</div>
+					<div className="text-muted-foreground mt-1 text-xs">With pagination</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Re-renders</div>
-					<div className="mt-1 font-bold text-2xl">50-70%</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Reduction vs unoptimized
-					</div>
+					<div className="mt-1 text-2xl font-bold">50-70%</div>
+					<div className="text-muted-foreground mt-1 text-xs">Reduction vs unoptimized</div>
 				</div>
 			</div>
 

@@ -37,15 +37,13 @@ export function CustomerServiceAgreementsWidget({
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							Failed to load service agreements
 						</div>
 					);
 				if (!agreements || agreements.length === 0)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No service agreements
-						</div>
+						<div className="text-muted-foreground text-center text-sm">No service agreements</div>
 					);
 
 				return (
@@ -54,11 +52,11 @@ export function CustomerServiceAgreementsWidget({
 							<Link
 								key={agreement.id}
 								href={`/dashboard/work/service-agreements/${agreement.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<span className="font-medium text-sm">
+										<span className="text-sm font-medium">
 											{agreement.name || "Unnamed Agreement"}
 										</span>
 										<Badge variant="outline" className="text-xs">
@@ -74,9 +72,7 @@ export function CustomerServiceAgreementsWidget({
 
 						{agreements.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link
-									href={`/dashboard/work/service-agreements?customer=${customerId}`}
-								>
+								<Link href={`/dashboard/work/service-agreements?customer=${customerId}`}>
 									View All Agreements
 								</Link>
 							</Button>

@@ -121,6 +121,6 @@ export const useActivityTimelineStore = create<ActivityTimelineStore>()(
 			partialize: (state) => ({
 				density: state.density,
 			}),
-		},
-	),
+		}
+	)
 );

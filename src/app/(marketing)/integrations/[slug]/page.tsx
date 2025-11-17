@@ -43,9 +43,7 @@ export async function generateMetadata({ params }: IntegrationPageProps) {
 	});
 }
 
-export default async function IntegrationDetailPage({
-	params,
-}: IntegrationPageProps) {
+export default async function IntegrationDetailPage({ params }: IntegrationPageProps) {
 	const { slug } = await params;
 	const integration = getIntegrationBySlug(slug);
 

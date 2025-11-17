@@ -14,13 +14,7 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -93,7 +87,7 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 	const updateInvite = <K extends keyof InviteRow>(
 		index: number,
 		field: K,
-		value: InviteRow[K],
+		value: InviteRow[K]
 	) => {
 		setInvites((prev) => {
 			const next = [...prev];
@@ -151,15 +145,11 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 			}
 
 			if (successCount) {
-				toast.success(
-					`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`,
-				);
+				toast.success(`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`);
 				resetInvites();
 			}
 			if (failureCount) {
-				toast.error(
-					`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`,
-				);
+				toast.error(`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`);
 			}
 		});
 	};
@@ -187,9 +177,7 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/team">
-										Team & Permissions
-									</Link>
+									<Link href="/dashboard/settings/team">Team & Permissions</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -209,17 +197,14 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 				<Card className="border-primary/40 bg-primary/5">
 					<CardHeader>
 						<div className="flex items-center gap-3">
-							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-								<Mail className="h-5 w-5 text-primary" />
+							<div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
+								<Mail className="text-primary h-5 w-5" />
 							</div>
 							<div>
-								<CardTitle className="text-base">
-									How invitations work
-								</CardTitle>
+								<CardTitle className="text-base">How invitations work</CardTitle>
 								<CardDescription className="text-xs">
-									Each teammate receives an email with a secure link to create
-									their account. They start with the role and department you
-									assign here.
+									Each teammate receives an email with a secure link to create their account. They
+									start with the role and department you assign here.
 								</CardDescription>
 							</div>
 						</div>
@@ -233,8 +218,7 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							Team member details
 						</CardTitle>
 						<CardDescription>
-							Add one or more teammates. Roles are required; departments are
-							optional.
+							Add one or more teammates. Roles are required; departments are optional.
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-8">
@@ -242,7 +226,7 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							<div key={`invite-${index}`}>
 								{index > 0 && <Separator className="my-6" />}
 								<div className="flex items-center justify-between">
-									<p className="font-medium text-sm">Member {index + 1}</p>
+									<p className="text-sm font-medium">Member {index + 1}</p>
 									{invites.length > 1 && (
 										<Button
 											onClick={() => removeInviteRow(index)}
@@ -257,60 +241,50 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 								</div>
 								<div className="grid gap-4 md:grid-cols-2">
 									<div className="space-y-2">
-										<p className="font-medium text-sm">
+										<p className="text-sm font-medium">
 											Email address <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) =>
-												updateInvite(index, "email", event.target.value)
-											}
+											onChange={(event) => updateInvite(index, "email", event.target.value)}
 											placeholder="teammate@company.com"
 											type="email"
 											value={invite.email}
 										/>
 									</div>
 									<div className="space-y-2">
-										<p className="font-medium text-sm">Job title (optional)</p>
+										<p className="text-sm font-medium">Job title (optional)</p>
 										<Input
-											onChange={(event) =>
-												updateInvite(index, "jobTitle", event.target.value)
-											}
+											onChange={(event) => updateInvite(index, "jobTitle", event.target.value)}
 											placeholder="e.g., Senior Technician"
 											value={invite.jobTitle}
 										/>
 									</div>
 									<div className="space-y-2">
-										<p className="font-medium text-sm">
+										<p className="text-sm font-medium">
 											First name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) =>
-												updateInvite(index, "firstName", event.target.value)
-											}
+											onChange={(event) => updateInvite(index, "firstName", event.target.value)}
 											placeholder="First name"
 											value={invite.firstName}
 										/>
 									</div>
 									<div className="space-y-2">
-										<p className="font-medium text-sm">
+										<p className="text-sm font-medium">
 											Last name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) =>
-												updateInvite(index, "lastName", event.target.value)
-											}
+											onChange={(event) => updateInvite(index, "lastName", event.target.value)}
 											placeholder="Last name"
 											value={invite.lastName}
 										/>
 									</div>
 									<div className="space-y-2">
-										<p className="font-medium text-sm">
+										<p className="text-sm font-medium">
 											Role <span className="text-destructive">*</span>
 										</p>
 										<Select
-											onValueChange={(value) =>
-												updateInvite(index, "roleName", value)
-											}
+											onValueChange={(value) => updateInvite(index, "roleName", value)}
 											value={invite.roleName}
 										>
 											<SelectTrigger>
@@ -326,11 +300,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 										</Select>
 									</div>
 									<div className="space-y-2">
-										<p className="font-medium text-sm">Department (optional)</p>
+										<p className="text-sm font-medium">Department (optional)</p>
 										<Select
-											onValueChange={(value) =>
-												updateInvite(index, "departmentId", value)
-											}
+											onValueChange={(value) => updateInvite(index, "departmentId", value)}
 											value={invite.departmentId}
 										>
 											<SelectTrigger>

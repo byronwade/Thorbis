@@ -12,23 +12,12 @@
 
 "use client";
 
-import {
-	Check,
-	ChevronDown,
-	ChevronRight,
-	Clock,
-	DollarSign,
-	Plus,
-	Trash2,
-} from "lucide-react";
+import { Check, ChevronDown, ChevronRight, Clock, DollarSign, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	type ColumnDef,
-	FullWidthDataTable,
-} from "@/components/ui/full-width-datatable";
+import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
 
 type ProgressPayment = {
 	id: string;
@@ -45,9 +34,7 @@ type InvoiceProgressPaymentsProps = {
 	};
 };
 
-export function InvoiceProgressPayments({
-	invoice,
-}: InvoiceProgressPaymentsProps) {
+export function InvoiceProgressPayments({ invoice }: InvoiceProgressPaymentsProps) {
 	const [isOpen, setIsOpen] = useState(true);
 
 	// Load state from localStorage
@@ -95,18 +82,14 @@ export function InvoiceProgressPayments({
 		{
 			key: "description",
 			header: "Description",
-			render: (payment) => (
-				<div className="font-medium">{payment.description}</div>
-			),
+			render: (payment) => <div className="font-medium">{payment.description}</div>,
 			width: "flex-1",
 		},
 		{
 			key: "amount",
 			header: "Amount",
 			render: (payment) => (
-				<div className="font-medium tabular-nums">
-					{formatCurrency(payment.amount)}
-				</div>
+				<div className="font-medium tabular-nums">{formatCurrency(payment.amount)}</div>
 			),
 			width: "w-40",
 			align: "right",
@@ -177,33 +160,31 @@ export function InvoiceProgressPayments({
 			: `${progressPayments.length} payments pending`;
 
 	return (
-		<div className="not-prose my-6 rounded-lg border bg-card">
+		<div className="not-prose bg-card my-6 rounded-lg border">
 			{/* Header - Clickable to toggle */}
 			<div className="flex w-full items-center justify-between gap-4 p-4">
 				<button
-					className="flex flex-1 items-center gap-2 text-left transition-colors hover:bg-muted/50"
+					className="hover:bg-muted/50 flex flex-1 items-center gap-2 text-left transition-colors"
 					onClick={toggleOpen}
 					type="button"
 				>
 					{/* Collapse/Expand Chevron */}
 					{isOpen ? (
-						<ChevronDown className="size-5 text-muted-foreground transition-transform" />
+						<ChevronDown className="text-muted-foreground size-5 transition-transform" />
 					) : (
-						<ChevronRight className="size-5 text-muted-foreground transition-transform" />
+						<ChevronRight className="text-muted-foreground size-5 transition-transform" />
 					)}
 
 					{/* Icon and Title */}
-					<DollarSign className="size-5 text-primary" />
+					<DollarSign className="text-primary size-5" />
 					<div className="flex-1">
 						<div className="flex items-center gap-2">
-							<h3 className="font-semibold text-lg">Progress Payments</h3>
+							<h3 className="text-lg font-semibold">Progress Payments</h3>
 							<Badge className="text-xs" variant="secondary">
 								{paidCount}/{progressPayments.length} paid
 							</Badge>
 						</div>
-						{!isOpen && (
-							<p className="mt-0.5 text-muted-foreground text-sm">{summary}</p>
-						)}
+						{!isOpen && <p className="text-muted-foreground mt-0.5 text-sm">{summary}</p>}
 					</div>
 				</button>
 

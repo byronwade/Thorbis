@@ -101,17 +101,16 @@ export default function RoiPage() {
 
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto max-w-4xl space-y-6 text-center">
-					<Badge className="uppercase tracking-wide" variant="secondary">
+					<Badge className="tracking-wide uppercase" variant="secondary">
 						ROI Calculator
 					</Badge>
-					<h1 className="text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 						Quantify the ROI of switching to Thorbis
 					</h1>
-					<p className="text-lg text-muted-foreground leading-relaxed">
-						Use your real numbers to project labor savings, net-new revenue, and
-						net ROI after Thorbis replaces your legacy field service stack.
-						Thorbis pricing starts at $100/month with pay-as-you-go usage—no
-						per-user fees and absolutely no lock-in.
+					<p className="text-muted-foreground text-lg leading-relaxed">
+						Use your real numbers to project labor savings, net-new revenue, and net ROI after
+						Thorbis replaces your legacy field service stack. Thorbis pricing starts at $100/month
+						with pay-as-you-go usage—no per-user fees and absolutely no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -158,18 +157,13 @@ export default function RoiPage() {
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="font-semibold text-3xl">
-							Share your ROI analysis with stakeholders
-						</h2>
+						<h2 className="text-3xl font-semibold">Share your ROI analysis with stakeholders</h2>
 						<p className="text-muted-foreground">
-							Export the numbers and pair them with our migration plan to prove
-							the case for change.
+							Export the numbers and pair them with our migration plan to prove the case for change.
 						</p>
 						<div className="flex flex-wrap justify-center gap-3">
 							<Button asChild>
-								<Link href="/templates?tag=migration">
-									Download migration checklist
-								</Link>
+								<Link href="/templates?tag=migration">Download migration checklist</Link>
 							</Button>
 							<Button asChild variant="outline">
 								<Link href="/vs">Compare Thorbis with your current system</Link>
@@ -178,7 +172,7 @@ export default function RoiPage() {
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-4">
-						<h2 className="text-center font-semibold text-3xl">ROI FAQ</h2>
+						<h2 className="text-center text-3xl font-semibold">ROI FAQ</h2>
 						<div className="space-y-4">
 							{FAQS.map((faq) => (
 								<Card key={faq.question}>

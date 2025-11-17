@@ -41,7 +41,7 @@ import type { PaginationParams } from "@/lib/hooks/use-server-pagination";
 export async function buildPaginatedQuery<T>(
 	query: any,
 	params: PaginationParams,
-	searchColumns?: string[],
+	searchColumns?: string[]
 ): Promise<{ data: T[]; count: number }> {
 	const { page, pageSize, sortBy, sortDirection, filters, search } = params;
 
@@ -64,9 +64,7 @@ export async function buildPaginatedQuery<T>(
 	// Apply search
 	if (search && searchColumns && searchColumns.length > 0) {
 		// Build OR condition for searching across multiple columns
-		const searchConditions = searchColumns
-			.map((col) => `${col}.ilike.%${search}%`)
-			.join(",");
+		const searchConditions = searchColumns.map((col) => `${col}.ilike.%${search}%`).join(",");
 		queryBuilder = queryBuilder.or(searchConditions);
 	}
 
@@ -133,10 +131,7 @@ export type AdvancedFilter = {
 
 export type AdvancedFilters = Record<string, AdvancedFilter>;
 
-export function applyAdvancedFilters(
-	query: any,
-	filters: AdvancedFilters,
-): any {
+export function applyAdvancedFilters(query: any, filters: AdvancedFilters): any {
 	let queryBuilder = query;
 
 	for (const [column, filter] of Object.entries(filters)) {
@@ -205,7 +200,7 @@ export async function fetchPaginatedData<T>(
 		retries?: number;
 		retryDelay?: number;
 		select?: string;
-	} = {},
+	} = {}
 ): Promise<{ data: T[]; totalCount: number }> {
 	const { retries = 0, retryDelay = 1000, select = "*" } = options;
 
@@ -262,11 +257,11 @@ export function createTableFetcher<T>(
 	options?: {
 		select?: string;
 		retries?: number;
-	},
+	}
 ) {
 	return async (
 		supabase: SupabaseClient,
-		params: PaginationParams,
+		params: PaginationParams
 	): Promise<{ data: T[]; totalCount: number }> =>
 		fetchPaginatedData<T>(supabase, tableName, params, searchColumns, options);
 }
@@ -280,7 +275,7 @@ export function createTableFetcher<T>(
 export async function getEstimatedCount(
 	supabase: SupabaseClient,
 	tableName: string,
-	filters?: Record<string, any>,
+	filters?: Record<string, any>
 ): Promise<number> {
 	let query = supabase.from(tableName).select("*", {
 		count: "estimated",

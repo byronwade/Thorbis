@@ -17,9 +17,7 @@ import { UteamStats } from "@/components/work/team/team-stats";
 export default function UteamPage() {
 	return (
 		<>
-			<Suspense
-				fallback={<div className="h-24 animate-pulse rounded bg-muted" />}
-			>
+			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
 				<UteamStats />
 			</Suspense>
 			<Suspense fallback={<TeamSkeleton />}>

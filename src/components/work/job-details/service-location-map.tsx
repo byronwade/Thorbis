@@ -4,12 +4,7 @@ import { MapPin, Maximize2, Store } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Supplier = {
@@ -50,9 +45,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 			return;
 		}
 
-		const existingScript = document.querySelector(
-			'script[src*="maps.googleapis.com"]',
-		);
+		const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
 
 		if (existingScript) {
 			isMapScriptLoading = true;
@@ -263,7 +256,7 @@ export function ServiceLocationMap({
 
 	if (error) {
 		return (
-			<div className="flex items-center gap-2 rounded-lg border border-muted p-4 text-muted-foreground text-sm">
+			<div className="border-muted text-muted-foreground flex items-center gap-2 rounded-lg border p-4 text-sm">
 				<MapPin className="h-4 w-4" />
 				<span>Map unavailable: {error}</span>
 			</div>
@@ -273,7 +266,7 @@ export function ServiceLocationMap({
 	return (
 		<>
 			{/* Compact Map Card */}
-			<div className="group relative overflow-hidden rounded-lg border bg-card">
+			<div className="group bg-card relative overflow-hidden rounded-lg border">
 				{/* Map Container */}
 				<div className="relative h-[180px] w-full">
 					<div className="h-full w-full" ref={compactMapRef} />
@@ -285,31 +278,26 @@ export function ServiceLocationMap({
 							<div className="flex-1">
 								<div className="mb-1 flex items-center gap-2">
 									<MapPin className="h-4 w-4 text-white" />
-									<span className="font-semibold text-sm text-white">
-										Service Location
-									</span>
+									<span className="text-sm font-semibold text-white">Service Location</span>
 									{nearbySuppliers.length > 0 && (
-										<Badge
-											className="h-5 bg-primary/80 text-[10px] text-white"
-											variant="secondary"
-										>
+										<Badge className="bg-primary/80 h-5 text-[10px] text-white" variant="secondary">
 											<Store className="mr-1 h-3 w-3" />
 											{nearbySuppliers.length} suppliers
 										</Badge>
 									)}
 								</div>
-								<p className="text-white/90 text-xs">{address.street}</p>
-								<p className="text-white/80 text-xs">
+								<p className="text-xs text-white/90">{address.street}</p>
+								<p className="text-xs text-white/80">
 									{address.city}, {address.state} {address.zipCode}
 								</p>
 							</div>
 							<Button
-								className="h-8 w-8 bg-card/90 hover:bg-card"
+								className="bg-card/90 hover:bg-card h-8 w-8"
 								onClick={() => setIsExpanded(true)}
 								size="icon"
 								variant="ghost"
 							>
-								<Maximize2 className="h-4 w-4 text-foreground" />
+								<Maximize2 className="text-foreground h-4 w-4" />
 							</Button>
 						</div>
 					</div>
@@ -321,11 +309,11 @@ export function ServiceLocationMap({
 				<DialogContent className="max-w-4xl p-0">
 					<DialogHeader className="border-b p-4">
 						<DialogTitle className="flex items-center gap-2">
-							<MapPin className="h-5 w-5 text-primary" />
+							<MapPin className="text-primary h-5 w-5" />
 							Service Location Map
 						</DialogTitle>
-						<div className="mt-2 text-muted-foreground text-sm">
-							<p className="font-medium text-foreground">{address.street}</p>
+						<div className="text-muted-foreground mt-2 text-sm">
+							<p className="text-foreground font-medium">{address.street}</p>
 							<p>
 								{address.city}, {address.state} {address.zipCode}
 							</p>
@@ -339,14 +327,14 @@ export function ServiceLocationMap({
 					<div className="border-t p-4">
 						<div className="flex items-center gap-6 text-sm">
 							<div className="flex items-center gap-2">
-								<div className="flex h-6 w-6 items-center justify-center rounded-full bg-destructive">
+								<div className="bg-destructive flex h-6 w-6 items-center justify-center rounded-full">
 									<MapPin className="h-4 w-4 text-white" />
 								</div>
 								<span>Service Location</span>
 							</div>
 							{nearbySuppliers.length > 0 && (
 								<div className="flex items-center gap-2">
-									<div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary">
+									<div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
 										<Store className="h-4 w-4 text-white" />
 									</div>
 									<span>Nearby Suppliers ({nearbySuppliers.length})</span>

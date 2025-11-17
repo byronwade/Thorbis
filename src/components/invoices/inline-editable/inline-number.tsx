@@ -68,12 +68,7 @@ export function InlineNumber({
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		// Only allow numbers, decimal point, and minus
-		if (
-			e.key.length === 1 &&
-			!/[0-9.-]/.test(e.key) &&
-			!e.ctrlKey &&
-			!e.metaKey
-		) {
+		if (e.key.length === 1 && !/[0-9.-]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
 			e.preventDefault();
 		}
 
@@ -87,7 +82,7 @@ export function InlineNumber({
 	return (
 		<div
 			className={cn(
-				"font-mono tabular-nums outline-none transition-all duration-150",
+				"font-mono tabular-nums transition-all duration-150 outline-none",
 				isEditable && [
 					"cursor-text",
 					"hover:bg-secondary",
@@ -99,7 +94,7 @@ export function InlineNumber({
 					"-mx-1",
 				],
 				!value && "text-muted-foreground",
-				className,
+				className
 			)}
 			contentEditable={isEditable}
 			onBlur={handleBlur}

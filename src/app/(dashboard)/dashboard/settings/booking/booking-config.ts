@@ -1,8 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-type BookingSettingsRow =
-	| Database["public"]["Tables"]["booking_settings"]["Row"]
-	| null;
+type BookingSettingsRow = Database["public"]["Tables"]["booking_settings"]["Row"] | null;
 
 export type BookingSettingsState = {
 	onlineBookingEnabled: boolean;
@@ -34,9 +32,7 @@ export const DEFAULT_BOOKING_SETTINGS: BookingSettingsState = {
 	maxBookingsPerDay: null,
 };
 
-export function mapBookingSettings(
-	row: BookingSettingsRow,
-): Partial<BookingSettingsState> {
+export function mapBookingSettings(row: BookingSettingsRow): Partial<BookingSettingsState> {
 	if (!row) {
 		return {};
 	}

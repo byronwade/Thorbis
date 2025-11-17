@@ -81,14 +81,14 @@ export function JobCommandPalette({ jobId, customer }: JobCommandPaletteProps) {
 			setActiveTab(tab);
 			setCommandPaletteOpen(false);
 		},
-		[setActiveTab, setCommandPaletteOpen],
+		[setActiveTab, setCommandPaletteOpen]
 	);
 
 	const handleQuickAction = useCallback(
 		(_action: string) => {
 			setCommandPaletteOpen(false);
 		},
-		[setCommandPaletteOpen],
+		[setCommandPaletteOpen]
 	);
 
 	return (
@@ -134,21 +134,15 @@ export function JobCommandPalette({ jobId, customer }: JobCommandPaletteProps) {
 				{/* Customer Actions */}
 				{customer && (
 					<CommandGroup heading="Customer Actions">
-						<CommandItem
-							onSelect={() => handleQuickAction(`call:${customer.phone}`)}
-						>
+						<CommandItem onSelect={() => handleQuickAction(`call:${customer.phone}`)}>
 							<Phone className="mr-2 h-4 w-4" />
 							<span>Call {customer.first_name}</span>
 						</CommandItem>
-						<CommandItem
-							onSelect={() => handleQuickAction(`email:${customer.email}`)}
-						>
+						<CommandItem onSelect={() => handleQuickAction(`email:${customer.email}`)}>
 							<Mail className="mr-2 h-4 w-4" />
 							<span>Email {customer.first_name}</span>
 						</CommandItem>
-						<CommandItem
-							onSelect={() => handleQuickAction(`sms:${customer.phone}`)}
-						>
+						<CommandItem onSelect={() => handleQuickAction(`sms:${customer.phone}`)}>
 							<MessageSquare className="mr-2 h-4 w-4" />
 							<span>Send SMS</span>
 						</CommandItem>

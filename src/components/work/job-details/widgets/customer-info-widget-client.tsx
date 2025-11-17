@@ -6,14 +6,7 @@
  * Adds interactive "Change Customer" functionality
  */
 
-import {
-	Building2,
-	ExternalLink,
-	Mail,
-	Phone,
-	RefreshCw,
-	User,
-} from "lucide-react";
+import { Building2, ExternalLink, Mail, Phone, RefreshCw, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -100,7 +93,7 @@ export function CustomerInfoWidgetClient({
 			c.id !== customer.id &&
 			(c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				c.company?.toLowerCase().includes(searchQuery.toLowerCase())),
+				c.company?.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 
 	async function handleCustomerChange(customerId: string) {
@@ -119,19 +112,19 @@ export function CustomerInfoWidgetClient({
 	return (
 		<div className="space-y-3">
 			<div className="flex items-start gap-2">
-				<User className="mt-0.5 size-4 text-muted-foreground" />
+				<User className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Name</div>
-					<div className="font-medium text-sm">{customer.name}</div>
+					<div className="text-sm font-medium">{customer.name}</div>
 				</div>
 			</div>
 
 			{customer.company ? (
 				<div className="flex items-start gap-2">
-					<Building2 className="mt-0.5 size-4 text-muted-foreground" />
+					<Building2 className="text-muted-foreground mt-0.5 size-4" />
 					<div className="flex-1">
 						<div className="text-muted-foreground text-xs">Company</div>
-						<div className="font-medium text-sm">{customer.company}</div>
+						<div className="text-sm font-medium">{customer.company}</div>
 					</div>
 				</div>
 			) : null}
@@ -139,13 +132,10 @@ export function CustomerInfoWidgetClient({
 			<Separator />
 
 			<div className="flex items-start gap-2">
-				<Mail className="mt-0.5 size-4 text-muted-foreground" />
+				<Mail className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Email</div>
-					<Link
-						className="text-sm hover:underline"
-						href={`mailto:${customer.email}`}
-					>
+					<Link className="text-sm hover:underline" href={`mailto:${customer.email}`}>
 						{customer.email}
 					</Link>
 				</div>
@@ -154,13 +144,10 @@ export function CustomerInfoWidgetClient({
 			{customer.phone ? (
 				<>
 					<div className="flex items-start gap-2">
-						<Phone className="mt-0.5 size-4 text-muted-foreground" />
+						<Phone className="text-muted-foreground mt-0.5 size-4" />
 						<div className="flex-1">
 							<div className="text-muted-foreground text-xs">Phone</div>
-							<Link
-								className="text-sm hover:underline"
-								href={`tel:${customer.phone}`}
-							>
+							<Link className="text-sm hover:underline" href={`tel:${customer.phone}`}>
 								{customer.phone}
 							</Link>
 						</div>
@@ -171,7 +158,7 @@ export function CustomerInfoWidgetClient({
 
 			{customer.address ? (
 				<div>
-					<div className="mb-1 text-muted-foreground text-xs">Address</div>
+					<div className="text-muted-foreground mb-1 text-xs">Address</div>
 					<div className="text-sm">
 						{customer.address}
 						{customer.city && customer.state && customer.zipCode ? (
@@ -221,13 +208,13 @@ export function CustomerInfoWidgetClient({
 							<ScrollArea className="h-[400px] rounded-md border p-4">
 								<div className="space-y-2">
 									{filteredCustomers.length === 0 ? (
-										<div className="py-8 text-center text-muted-foreground text-sm">
+										<div className="text-muted-foreground py-8 text-center text-sm">
 											No customers found
 										</div>
 									) : (
 										filteredCustomers.map((c) => (
 											<button
-												className="w-full rounded-lg border bg-card p-4 text-left transition-colors hover:bg-accent"
+												className="bg-card hover:bg-accent w-full rounded-lg border p-4 text-left transition-colors"
 												disabled={isChanging}
 												key={c.id}
 												onClick={() => handleCustomerChange(c.id)}
@@ -236,28 +223,22 @@ export function CustomerInfoWidgetClient({
 												<div className="flex items-start justify-between gap-4">
 													<div className="flex-1 space-y-1">
 														<div className="flex items-center gap-2">
-															<User className="size-4 text-muted-foreground" />
+															<User className="text-muted-foreground size-4" />
 															<span className="font-medium">{c.name}</span>
 														</div>
 														{c.company ? (
 															<div className="flex items-center gap-2">
-																<Building2 className="size-4 text-muted-foreground" />
-																<span className="text-muted-foreground text-sm">
-																	{c.company}
-																</span>
+																<Building2 className="text-muted-foreground size-4" />
+																<span className="text-muted-foreground text-sm">{c.company}</span>
 															</div>
 														) : null}
 														<div className="flex items-center gap-2">
-															<Mail className="size-4 text-muted-foreground" />
-															<span className="text-muted-foreground text-sm">
-																{c.email}
-															</span>
+															<Mail className="text-muted-foreground size-4" />
+															<span className="text-muted-foreground text-sm">{c.email}</span>
 														</div>
 														<div className="flex items-center gap-2">
-															<Phone className="size-4 text-muted-foreground" />
-															<span className="text-muted-foreground text-sm">
-																{c.phone}
-															</span>
+															<Phone className="text-muted-foreground size-4" />
+															<span className="text-muted-foreground text-sm">{c.phone}</span>
 														</div>
 													</div>
 													<Button disabled={isChanging} size="sm" type="button">

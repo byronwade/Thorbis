@@ -35,11 +35,11 @@ export function InvoiceWorkflowWidget({
 			{({ isVisible }) => {
 				const { data: estimate, isLoading: estimateLoading } = useInvoiceEstimate(
 					estimateId,
-					isVisible,
+					isVisible
 				);
 				const { data: contract, isLoading: contractLoading } = useInvoiceContract(
 					invoiceId,
-					isVisible,
+					isVisible
 				);
 
 				if (estimateLoading || contractLoading) {
@@ -52,14 +52,14 @@ export function InvoiceWorkflowWidget({
 						{estimate && (
 							<Link
 								href={`/dashboard/work/estimates/${estimate.id}`}
-								className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent flex items-start gap-3 rounded-lg border p-3 transition-colors"
 							>
 								<div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600">
 									<FileText className="h-3.5 w-3.5" />
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center justify-between">
-										<span className="font-medium text-sm">
+										<span className="text-sm font-medium">
 											Estimate #{estimate.estimate_number}
 										</span>
 										<Check className="h-4 w-4 text-green-600" />
@@ -67,7 +67,7 @@ export function InvoiceWorkflowWidget({
 									<p className="text-muted-foreground text-xs">
 										Created {formatDate(estimate.created_at)}
 									</p>
-									<span className="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-blue-700 text-xs">
+									<span className="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs text-blue-700">
 										{estimate.status}
 									</span>
 								</div>
@@ -78,14 +78,14 @@ export function InvoiceWorkflowWidget({
 						{contract && (
 							<Link
 								href={`/dashboard/work/contracts/${contract.id}`}
-								className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent flex items-start gap-3 rounded-lg border p-3 transition-colors"
 							>
 								<div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-purple-100 text-purple-600">
 									<FileCheck className="h-3.5 w-3.5" />
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center justify-between">
-										<span className="font-medium text-sm">
+										<span className="text-sm font-medium">
 											Contract #{contract.contract_number}
 										</span>
 										<Check className="h-4 w-4 text-green-600" />
@@ -95,7 +95,7 @@ export function InvoiceWorkflowWidget({
 											? `Signed ${formatDate(contract.signed_at)}`
 											: `Created ${formatDate(contract.created_at)}`}
 									</p>
-									<span className="inline-block rounded-full bg-purple-100 px-2 py-0.5 text-purple-700 text-xs">
+									<span className="inline-block rounded-full bg-purple-100 px-2 py-0.5 text-xs text-purple-700">
 										{contract.status}
 									</span>
 								</div>
@@ -103,12 +103,12 @@ export function InvoiceWorkflowWidget({
 						)}
 
 						{/* Current Invoice */}
-						<div className="flex items-start gap-3 rounded-lg border border-primary/50 bg-primary/5 p-3">
-							<div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground">
+						<div className="border-primary/50 bg-primary/5 flex items-start gap-3 rounded-lg border p-3">
+							<div className="bg-primary text-primary-foreground mt-0.5 flex h-6 w-6 items-center justify-center rounded-full">
 								<FileText className="h-3.5 w-3.5" />
 							</div>
 							<div className="flex-1 space-y-1">
-								<span className="font-medium text-sm">Invoice (Current)</span>
+								<span className="text-sm font-medium">Invoice (Current)</span>
 								<p className="text-muted-foreground text-xs">
 									Created {formatDate(invoiceCreatedAt)}
 								</p>
@@ -116,7 +116,7 @@ export function InvoiceWorkflowWidget({
 						</div>
 
 						{!estimate && !contract && (
-							<div className="text-center text-muted-foreground text-sm">
+							<div className="text-muted-foreground text-center text-sm">
 								No workflow history available
 							</div>
 						)}

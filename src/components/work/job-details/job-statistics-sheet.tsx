@@ -66,7 +66,8 @@ export function JobStatisticsSheet({
 			maximumFractionDigits: 0,
 		}).format(cents / CENTS_PER_DOLLAR);
 
-	const formatHours = (hours: number | undefined | null) => hours != null ? `${hours.toFixed(1)}h` : '0.0h';
+	const formatHours = (hours: number | undefined | null) =>
+		hours != null ? `${hours.toFixed(1)}h` : "0.0h";
 
 	// Calculate detailed metrics
 	const detailedMetrics = useMemo(() => {
@@ -84,38 +85,30 @@ export function JobStatisticsSheet({
 		const profit = metrics.totalAmount - totalCost;
 
 		// Profit margin
-		const profitMargin =
-			metrics.totalAmount > 0 ? (profit / metrics.totalAmount) * 100 : 0;
+		const profitMargin = metrics.totalAmount > 0 ? (profit / metrics.totalAmount) * 100 : 0;
 
 		// Labor variance
 		const laborVariance =
-			metrics.estimatedLaborHours > 0
-				? metrics.totalLaborHours - metrics.estimatedLaborHours
-				: 0;
+			metrics.estimatedLaborHours > 0 ? metrics.totalLaborHours - metrics.estimatedLaborHours : 0;
 
 		// Labor variance percentage
 		const laborVariancePercent =
-			metrics.estimatedLaborHours > 0
-				? (laborVariance / metrics.estimatedLaborHours) * 100
-				: 0;
+			metrics.estimatedLaborHours > 0 ? (laborVariance / metrics.estimatedLaborHours) * 100 : 0;
 
 		// Calculate travel time (time entries with type "travel")
-		const travelTimeEntries = timeEntries.filter(
-			(entry: any) => entry.entry_type === "travel",
-		);
+		const travelTimeEntries = timeEntries.filter((entry: any) => entry.entry_type === "travel");
 		const travelHours = travelTimeEntries.reduce(
 			(sum: number, entry: any) => sum + (entry.total_hours || 0),
-			0,
+			0
 		);
 
 		// Calculate on-site time (time entries with type "work" or "labor")
 		const onSiteTimeEntries = timeEntries.filter(
-			(entry: any) =>
-				entry.entry_type === "work" || entry.entry_type === "labor",
+			(entry: any) => entry.entry_type === "work" || entry.entry_type === "labor"
 		);
 		const onSiteHours = onSiteTimeEntries.reduce(
 			(sum: number, entry: any) => sum + (entry.total_hours || 0),
-			0,
+			0
 		);
 
 		// Team breakdown
@@ -163,8 +156,8 @@ export function JobStatisticsSheet({
 					<SheetHeader className="space-y-4">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-3">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg border bg-background">
-									<BarChart3 className="h-5 w-5 text-muted-foreground" />
+								<div className="bg-background flex h-10 w-10 items-center justify-center rounded-lg border">
+									<BarChart3 className="text-muted-foreground h-5 w-5" />
 								</div>
 								<div>
 									<SheetTitle className="text-2xl">Job Analytics</SheetTitle>
@@ -194,8 +187,8 @@ export function JobStatisticsSheet({
 					{/* FINANCIAL OVERVIEW */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
-							<DollarSign className="h-5 w-5 text-muted-foreground" />
-							<h3 className="font-semibold text-lg">Financial Overview</h3>
+							<DollarSign className="text-muted-foreground h-5 w-5" />
+							<h3 className="text-lg font-semibold">Financial Overview</h3>
 						</div>
 
 						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -203,10 +196,10 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Job Value</p>
-									<p className="mt-2 font-bold text-2xl tabular-nums">
+									<p className="mt-2 text-2xl font-bold tabular-nums">
 										{formatCurrency(metrics.totalAmount)}
 									</p>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										{invoices.length} invoice{invoices.length !== 1 ? "s" : ""}
 									</p>
 								</CardContent>
@@ -216,10 +209,10 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Paid</p>
-									<p className="mt-2 font-bold text-2xl text-success tabular-nums dark:text-success">
+									<p className="text-success dark:text-success mt-2 text-2xl font-bold tabular-nums">
 										{formatCurrency(metrics.paidAmount)}
 									</p>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										{payments.length} payment{payments.length !== 1 ? "s" : ""}
 									</p>
 								</CardContent>
@@ -229,15 +222,13 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Outstanding</p>
-									<p className="mt-2 font-bold text-2xl text-warning tabular-nums dark:text-warning">
+									<p className="text-warning dark:text-warning mt-2 text-2xl font-bold tabular-nums">
 										{formatCurrency(metrics.totalAmount - metrics.paidAmount)}
 									</p>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										{metrics.totalAmount > 0
 											? `${Math.round(
-													((metrics.totalAmount - metrics.paidAmount) /
-														metrics.totalAmount) *
-														100,
+													((metrics.totalAmount - metrics.paidAmount) / metrics.totalAmount) * 100
 												)}% remaining`
 											: "N/A"}
 									</p>
@@ -249,7 +240,7 @@ export function JobStatisticsSheet({
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Profit</p>
 									<p
-										className={`mt-2 font-bold text-2xl tabular-nums ${
+										className={`mt-2 text-2xl font-bold tabular-nums ${
 											detailedMetrics.profit >= 0
 												? "text-success dark:text-success"
 												: "text-destructive dark:text-destructive"
@@ -259,9 +250,9 @@ export function JobStatisticsSheet({
 									</p>
 									<div className="mt-1 flex items-center gap-1">
 										{detailedMetrics.profitMargin >= 0 ? (
-											<TrendingUp className="h-3 w-3 text-success dark:text-success" />
+											<TrendingUp className="text-success dark:text-success h-3 w-3" />
 										) : (
-											<TrendingDown className="h-3 w-3 text-destructive dark:text-destructive" />
+											<TrendingDown className="text-destructive dark:text-destructive h-3 w-3" />
 										)}
 										<p className="text-muted-foreground text-xs">
 											{detailedMetrics.profitMargin.toFixed(1)}% margin
@@ -275,24 +266,20 @@ export function JobStatisticsSheet({
 					{/* JOB COSTING */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
-							<Package className="h-5 w-5 text-muted-foreground" />
-							<h3 className="font-semibold text-lg">Job Costing</h3>
+							<Package className="text-muted-foreground h-5 w-5" />
+							<h3 className="text-lg font-semibold">Job Costing</h3>
 						</div>
 
 						<Card>
 							<CardContent className="space-y-4 p-6">
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Labor Cost
-									</span>
+									<span className="text-muted-foreground text-sm">Labor Cost</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(detailedMetrics.laborCost)}
 									</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">
-										Materials Cost
-									</span>
+									<span className="text-muted-foreground text-sm">Materials Cost</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(detailedMetrics.materialsCost)}
 									</span>
@@ -300,21 +287,21 @@ export function JobStatisticsSheet({
 								<Separator />
 								<div className="flex items-center justify-between">
 									<span className="font-semibold">Total Cost</span>
-									<span className="font-bold text-lg tabular-nums">
+									<span className="text-lg font-bold tabular-nums">
 										{formatCurrency(detailedMetrics.totalCost)}
 									</span>
 								</div>
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-2">
 										{detailedMetrics.profit >= 0 ? (
-											<TrendingUp className="h-4 w-4 text-success dark:text-success" />
+											<TrendingUp className="text-success dark:text-success h-4 w-4" />
 										) : (
-											<TrendingDown className="h-4 w-4 text-destructive dark:text-destructive" />
+											<TrendingDown className="text-destructive dark:text-destructive h-4 w-4" />
 										)}
 										<span className="font-semibold">Net Profit</span>
 									</div>
 									<span
-										className={`font-bold text-lg tabular-nums ${
+										className={`text-lg font-bold tabular-nums ${
 											detailedMetrics.profit >= 0
 												? "text-success dark:text-success"
 												: "text-destructive dark:text-destructive"
@@ -330,15 +317,15 @@ export function JobStatisticsSheet({
 					{/* LABOR & TIME TRACKING */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
-							<Clock className="h-5 w-5 text-muted-foreground" />
-							<h3 className="font-semibold text-lg">Labor & Time</h3>
+							<Clock className="text-muted-foreground h-5 w-5" />
+							<h3 className="text-lg font-semibold">Labor & Time</h3>
 						</div>
 
 						<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Total Hours</p>
-									<p className="mt-2 font-bold text-2xl tabular-nums">
+									<p className="mt-2 text-2xl font-bold tabular-nums">
 										{formatHours(metrics.totalLaborHours)}
 									</p>
 								</CardContent>
@@ -347,7 +334,7 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Estimated</p>
-									<p className="mt-2 font-bold text-2xl tabular-nums">
+									<p className="mt-2 text-2xl font-bold tabular-nums">
 										{metrics.estimatedLaborHours > 0
 											? formatHours(metrics.estimatedLaborHours)
 											: "N/A"}
@@ -358,7 +345,7 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">Travel Time</p>
-									<p className="mt-2 font-bold text-2xl tabular-nums">
+									<p className="mt-2 text-2xl font-bold tabular-nums">
 										{formatHours(detailedMetrics.travelHours)}
 									</p>
 								</CardContent>
@@ -367,7 +354,7 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<p className="text-muted-foreground text-sm">On-Site Time</p>
-									<p className="mt-2 font-bold text-2xl tabular-nums">
+									<p className="mt-2 text-2xl font-bold tabular-nums">
 										{formatHours(detailedMetrics.onSiteHours)}
 									</p>
 								</CardContent>
@@ -380,15 +367,15 @@ export function JobStatisticsSheet({
 									<div className="flex items-center justify-between">
 										<div className="flex items-center gap-2">
 											{detailedMetrics.laborVariance >= 0 ? (
-												<TrendingUp className="h-4 w-4 text-warning dark:text-warning" />
+												<TrendingUp className="text-warning dark:text-warning h-4 w-4" />
 											) : (
-												<TrendingDown className="h-4 w-4 text-success dark:text-success" />
+												<TrendingDown className="text-success dark:text-success h-4 w-4" />
 											)}
 											<span className="font-medium">Labor Variance</span>
 										</div>
 										<div className="text-right">
 											<span
-												className={`font-bold text-lg tabular-nums ${
+												className={`text-lg font-bold tabular-nums ${
 													detailedMetrics.laborVariance >= 0
 														? "text-warning dark:text-warning"
 														: "text-success dark:text-success"
@@ -397,10 +384,9 @@ export function JobStatisticsSheet({
 												{detailedMetrics.laborVariance >= 0 ? "+" : ""}
 												{formatHours(Math.abs(detailedMetrics.laborVariance))}
 											</span>
-											<p className="mt-0.5 text-muted-foreground text-xs">
+											<p className="text-muted-foreground mt-0.5 text-xs">
 												{detailedMetrics.laborVariancePercent >= 0 ? "+" : ""}
-												{detailedMetrics.laborVariancePercent.toFixed(1)}% vs
-												estimate
+												{detailedMetrics.laborVariancePercent.toFixed(1)}% vs estimate
 											</p>
 										</div>
 									</div>
@@ -413,62 +399,49 @@ export function JobStatisticsSheet({
 					{detailedMetrics.teamMembers.length > 0 && (
 						<div className="space-y-4">
 							<div className="flex items-center gap-2">
-								<Users className="h-5 w-5 text-muted-foreground" />
-								<h3 className="font-semibold text-lg">Team Breakdown</h3>
+								<Users className="text-muted-foreground h-5 w-5" />
+								<h3 className="text-lg font-semibold">Team Breakdown</h3>
 							</div>
 
 							<Card>
 								<CardContent className="p-6">
 									<div className="space-y-4">
-										{detailedMetrics.teamMembers.map(
-											(member: any, index: number) => (
-												<div key={member.id}>
-													<div className="flex items-center justify-between">
-														<div className="flex items-center gap-3">
-															<Avatar className="h-9 w-9">
-																<AvatarImage
-																	alt={member.name}
-																	src={member.avatar || undefined}
-																/>
-																<AvatarFallback className="text-xs">
-																	{member.name
-																		.split(" ")
-																		.map((n: string) => n[0])
-																		.join("")
-																		.toUpperCase()
-																		.slice(0, 2)}
-																</AvatarFallback>
-															</Avatar>
-															<div>
-																<p className="font-medium text-sm">
-																	{member.name}
-																</p>
-																<p className="text-muted-foreground text-xs">
-																	{member.entries}{" "}
-																	{member.entries === 1 ? "entry" : "entries"}
-																</p>
-															</div>
-														</div>
-														<div className="text-right">
-															<p className="font-semibold tabular-nums">
-																{formatHours(member.totalHours)}
-															</p>
+										{detailedMetrics.teamMembers.map((member: any, index: number) => (
+											<div key={member.id}>
+												<div className="flex items-center justify-between">
+													<div className="flex items-center gap-3">
+														<Avatar className="h-9 w-9">
+															<AvatarImage alt={member.name} src={member.avatar || undefined} />
+															<AvatarFallback className="text-xs">
+																{member.name
+																	.split(" ")
+																	.map((n: string) => n[0])
+																	.join("")
+																	.toUpperCase()
+																	.slice(0, 2)}
+															</AvatarFallback>
+														</Avatar>
+														<div>
+															<p className="text-sm font-medium">{member.name}</p>
 															<p className="text-muted-foreground text-xs">
-																{(
-																	(member.totalHours /
-																		metrics.totalLaborHours) *
-																	100
-																).toFixed(0)}
-																%
+																{member.entries} {member.entries === 1 ? "entry" : "entries"}
 															</p>
 														</div>
 													</div>
-													{index !== detailedMetrics.teamMembers.length - 1 && (
-														<Separator className="mt-4" />
-													)}
+													<div className="text-right">
+														<p className="font-semibold tabular-nums">
+															{formatHours(member.totalHours)}
+														</p>
+														<p className="text-muted-foreground text-xs">
+															{((member.totalHours / metrics.totalLaborHours) * 100).toFixed(0)}%
+														</p>
+													</div>
 												</div>
-											),
-										)}
+												{index !== detailedMetrics.teamMembers.length - 1 && (
+													<Separator className="mt-4" />
+												)}
+											</div>
+										))}
 									</div>
 								</CardContent>
 							</Card>
@@ -478,22 +451,20 @@ export function JobStatisticsSheet({
 					{/* PERFORMANCE METRICS */}
 					<div className="space-y-4">
 						<div className="flex items-center gap-2">
-							<BarChart3 className="h-5 w-5 text-muted-foreground" />
-							<h3 className="font-semibold text-lg">Performance</h3>
+							<BarChart3 className="text-muted-foreground h-5 w-5" />
+							<h3 className="text-lg font-semibold">Performance</h3>
 						</div>
 
 						<Card>
 							<CardContent className="space-y-6 p-6">
 								<div>
 									<div className="mb-3 flex items-center justify-between">
-										<p className="font-medium text-sm">Completion Progress</p>
-										<span className="font-bold tabular-nums">
-											{metrics.completionPercentage}%
-										</span>
+										<p className="text-sm font-medium">Completion Progress</p>
+										<span className="font-bold tabular-nums">{metrics.completionPercentage}%</span>
 									</div>
-									<div className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
+									<div className="bg-secondary relative h-2 w-full overflow-hidden rounded-full">
 										<div
-											className="h-full rounded-full bg-primary transition-all"
+											className="bg-primary h-full rounded-full transition-all"
 											style={{
 												width: `${metrics.completionPercentage}%`,
 											}}
@@ -506,7 +477,7 @@ export function JobStatisticsSheet({
 								<div className="grid gap-4 sm:grid-cols-2">
 									<div>
 										<p className="text-muted-foreground text-sm">Efficiency</p>
-										<p className="mt-1 font-semibold text-lg">
+										<p className="mt-1 text-lg font-semibold">
 											{metrics.estimatedLaborHours > 0
 												? `${((metrics.estimatedLaborHours / metrics.totalLaborHours) * 100).toFixed(0)}%`
 												: "N/A"}

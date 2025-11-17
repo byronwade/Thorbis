@@ -1,7 +1,6 @@
 import type { Database } from "@/types/supabase";
 
-export type ServiceAreaRecord =
-	Database["public"]["Tables"]["schedule_service_areas"]["Row"];
+export type ServiceAreaRecord = Database["public"]["Tables"]["schedule_service_areas"]["Row"];
 
 export type ServiceAreaForm = {
 	id: string;
@@ -18,9 +17,7 @@ export type ServiceAreaForm = {
 	isActive: boolean;
 };
 
-export function mapServiceAreaRows(
-	rows: ServiceAreaRecord[],
-): ServiceAreaForm[] {
+export function mapServiceAreaRows(rows: ServiceAreaRecord[]): ServiceAreaForm[] {
 	if (!rows?.length) {
 		return [];
 	}
@@ -36,9 +33,7 @@ export function mapServiceAreaRows(
 		estimatedTravelTimeMinutes: row.estimated_travel_time_minutes ?? null,
 		centerLat: row.center_lat ?? null,
 		centerLng: row.center_lng ?? null,
-		polygonCoordinates: row.polygon_coordinates
-			? JSON.stringify(row.polygon_coordinates)
-			: "",
+		polygonCoordinates: row.polygon_coordinates ? JSON.stringify(row.polygon_coordinates) : "",
 		isActive: row.is_active ?? true,
 	}));
 }
@@ -67,10 +62,7 @@ export function buildServiceAreaFormData(area: ServiceAreaForm): FormData {
 		formData.append("minimumJobAmount", area.minimumJobAmount.toString());
 	}
 	if (area.estimatedTravelTimeMinutes !== null) {
-		formData.append(
-			"estimatedTravelTimeMinutes",
-			area.estimatedTravelTimeMinutes.toString(),
-		);
+		formData.append("estimatedTravelTimeMinutes", area.estimatedTravelTimeMinutes.toString());
 	}
 	formData.append("isActive", area.isActive.toString());
 	return formData;

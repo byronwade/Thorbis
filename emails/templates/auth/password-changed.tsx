@@ -30,8 +30,7 @@ export default function PasswordChangedEmail({
 			<Text style={paragraph}>Hi {name},</Text>
 
 			<Text style={paragraph}>
-				This is a confirmation that the password for your Thorbis account was
-				changed successfully.
+				This is a confirmation that the password for your Thorbis account was changed successfully.
 			</Text>
 
 			<Card style={infoCard}>
@@ -42,8 +41,8 @@ export default function PasswordChangedEmail({
 			<Card style={securityCard}>
 				<Heading level={3}>Didn't make this change?</Heading>
 				<Text style={securityText}>
-					If you didn't change your password, someone may have unauthorized
-					access to your account. Please take the following steps immediately:
+					If you didn't change your password, someone may have unauthorized access to your account.
+					Please take the following steps immediately:
 				</Text>
 				<ul style={list}>
 					<li style={listItem}>
@@ -51,16 +50,14 @@ export default function PasswordChangedEmail({
 							Contact our security team
 						</a>
 					</li>
-					<li style={listItem}>
-						Change your password again using a secure device
-					</li>
+					<li style={listItem}>Change your password again using a secure device</li>
 					<li style={listItem}>Review your recent account activity</li>
 				</ul>
 			</Card>
 
 			<Text style={footerNote}>
-				This is an automated security notification. If you made this change, you
-				can safely ignore this email.
+				This is an automated security notification. If you made this change, you can safely ignore
+				this email.
 			</Text>
 		</BaseLayout>
 	);

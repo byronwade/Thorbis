@@ -8,12 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Sheet,
-	SheetContent,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/client";
@@ -212,11 +207,11 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 	if (!section.items || section.items.length === 0) {
 		return (
 			<Link
-				className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 font-medium text-foreground/70 text-sm transition-all hover:bg-accent/50 hover:text-foreground"
+				className="group text-foreground/70 hover:bg-accent/50 hover:text-foreground relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all"
 				href={section.href}
 			>
 				{section.label}
-				<span className="-bottom-px absolute inset-x-0 h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+				<span className="bg-primary absolute inset-x-0 -bottom-px h-0.5 scale-x-0 transition-transform group-hover:scale-x-100" />
 			</Link>
 		);
 	}
@@ -228,39 +223,36 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 			onMouseLeave={() => setIsOpen(false)}
 		>
 			<button
-				className="group relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 font-medium text-foreground/70 text-sm transition-all hover:bg-accent/50 hover:text-foreground"
+				className="group text-foreground/70 hover:bg-accent/50 hover:text-foreground relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all"
 				type="button"
 			>
 				{section.label}
 				<ChevronDown
-					className={cn(
-						"size-3.5 transition-transform duration-200",
-						isOpen && "rotate-180",
-					)}
+					className={cn("size-3.5 transition-transform duration-200", isOpen && "rotate-180")}
 				/>
-				<span className="-bottom-px absolute inset-x-0 h-0.5 scale-x-0 bg-primary transition-transform group-hover:scale-x-100" />
+				<span className="bg-primary absolute inset-x-0 -bottom-px h-0.5 scale-x-0 transition-transform group-hover:scale-x-100" />
 			</button>
 
 			{isOpen && (
 				<div className="absolute top-full left-0 z-50 pt-3">
-					<div className="fade-in-0 zoom-in-95 slide-in-from-top-2 w-[680px] animate-in overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl duration-200">
+					<div className="fade-in-0 zoom-in-95 slide-in-from-top-2 animate-in border-border/50 bg-background w-[680px] overflow-hidden rounded-2xl border shadow-2xl duration-200">
 						{section.description && (
-							<div className="border-border/50 border-b bg-gradient-to-br from-primary/5 via-primary/3 to-transparent p-5">
+							<div className="border-border/50 from-primary/5 via-primary/3 border-b bg-gradient-to-br to-transparent p-5">
 								<div className="flex items-start justify-between gap-4">
 									<div>
-										<p className="font-semibold text-primary text-xs uppercase tracking-wider">
+										<p className="text-primary text-xs font-semibold tracking-wider uppercase">
 											{section.label}
 										</p>
-										<p className="mt-1.5 max-w-md text-muted-foreground text-sm leading-relaxed">
+										<p className="text-muted-foreground mt-1.5 max-w-md text-sm leading-relaxed">
 											{section.description}
 										</p>
 									</div>
 									<Link
-										className="group inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border/60 bg-background px-3 py-1.5 font-semibold text-foreground text-xs shadow-sm transition-all hover:border-primary/50 hover:bg-primary/5 hover:text-primary"
+										className="group border-border/60 bg-background text-foreground hover:border-primary/50 hover:bg-primary/5 hover:text-primary inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold whitespace-nowrap shadow-sm transition-all"
 										href={section.href}
 									>
 										View all
-										<ChevronDown className="-rotate-90 size-3 transition-transform group-hover:translate-x-0.5" />
+										<ChevronDown className="size-3 -rotate-90 transition-transform group-hover:translate-x-0.5" />
 									</Link>
 								</div>
 							</div>
@@ -269,32 +261,32 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 						<div className="grid grid-cols-2 gap-1 p-2">
 							{section.items.map((item) => (
 								<Link
-									className="group relative overflow-hidden rounded-xl p-3.5 transition-all hover:bg-accent/60"
+									className="group hover:bg-accent/60 relative overflow-hidden rounded-xl p-3.5 transition-all"
 									href={item.href}
 									key={item.href}
 								>
 									<div className="flex items-start justify-between gap-2">
 										<div className="flex-1">
 											<div className="mb-1 flex items-center gap-2">
-												<span className="font-semibold text-foreground text-sm transition-colors group-hover:text-primary">
+												<span className="text-foreground group-hover:text-primary text-sm font-semibold transition-colors">
 													{item.label}
 												</span>
 												{item.badge && (
 													<Badge
-														className="h-5 px-1.5 font-semibold text-[10px]"
+														className="h-5 px-1.5 text-[10px] font-semibold"
 														variant="secondary"
 													>
 														{item.badge}
 													</Badge>
 												)}
 											</div>
-											<p className="line-clamp-2 text-muted-foreground text-xs leading-relaxed">
+											<p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
 												{item.description}
 											</p>
 										</div>
-										<ChevronDown className="-rotate-90 size-3.5 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
+										<ChevronDown className="text-muted-foreground/40 group-hover:text-primary size-3.5 -rotate-90 transition-all group-hover:translate-x-0.5" />
 									</div>
-									<div className="-z-10 absolute inset-0 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/5 opacity-0 transition-opacity group-hover:opacity-100" />
+									<div className="from-primary/0 via-primary/0 to-primary/5 absolute inset-0 -z-10 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100" />
 								</Link>
 							))}
 						</div>
@@ -319,9 +311,7 @@ export function MarketingHeader() {
 	const [loading, setLoading] = useState(true);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
-	const [expandedSections, setExpandedSections] = useState<Set<string>>(
-		new Set(),
-	);
+	const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 	const [userCompanies, setUserCompanies] = useState<UserCompany[]>([]);
 
 	useEffect(() => {
@@ -361,14 +351,13 @@ export function MarketingHeader() {
 					return;
 				}
 
-				const fallbackName =
-					user.user_metadata?.name || user.email?.split("@")[0] || "User";
+				const fallbackName = user.user_metadata?.name || user.email?.split("@")[0] || "User";
 				const fallbackEmail = user.email || profile?.email || "";
 				const fallbackAvatar =
 					profile?.avatar ||
 					user.user_metadata?.avatar_url ||
 					`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-						fallbackEmail || fallbackName,
+						fallbackEmail || fallbackName
 					)}&backgroundColor=0ea5e9&textColor=ffffff`;
 
 				setUserProfile({
@@ -396,7 +385,7 @@ export function MarketingHeader() {
               onboarding_completed_at,
               deleted_at
             )
-          `,
+          `
 					)
 					.eq("user_id", user.id)
 					.eq("status", "active")
@@ -409,11 +398,9 @@ export function MarketingHeader() {
 						if (!companyMap.has(companyId)) {
 							const subscriptionStatus = m.companies.stripe_subscription_status;
 							const hasPayment =
-								subscriptionStatus === "active" ||
-								subscriptionStatus === "trialing";
+								subscriptionStatus === "active" || subscriptionStatus === "trialing";
 							const onboardingProgress =
-								(m.companies.onboarding_progress as Record<string, unknown>) ||
-								null;
+								(m.companies.onboarding_progress as Record<string, unknown>) || null;
 							const onboardingComplete = isOnboardingComplete({
 								progress: onboardingProgress,
 								completedAt: m.companies.onboarding_completed_at ?? null,
@@ -421,10 +408,7 @@ export function MarketingHeader() {
 
 							let planLabel = "Active";
 							if (!(hasPayment && onboardingComplete)) {
-								planLabel =
-									subscriptionStatus === "incomplete"
-										? "Incomplete"
-										: "Setup Required";
+								planLabel = subscriptionStatus === "incomplete" ? "Incomplete" : "Setup Required";
 							}
 
 							companyMap.set(companyId, {
@@ -484,7 +468,7 @@ export function MarketingHeader() {
 				...section,
 				items: section.items ?? [],
 			})),
-		[],
+		[]
 	);
 
 	const toggleSection = (sectionLabel: string) => {
@@ -501,13 +485,13 @@ export function MarketingHeader() {
 
 	if (!mounted) {
 		return (
-			<header className="sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl">
+			<header className="border-border/40 bg-background/80 sticky top-0 z-50 border-b backdrop-blur-xl">
 				<div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
 					<Link
-						className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight"
+						className="text-foreground flex items-center gap-2.5 text-lg font-bold tracking-tight"
 						href="/"
 					>
-						<div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
+						<div className="from-foreground/10 to-foreground/5 ring-border/50 flex size-8 items-center justify-center rounded-lg bg-gradient-to-br ring-1">
 							<Image
 								alt="Thorbis"
 								className="size-5"
@@ -516,7 +500,7 @@ export function MarketingHeader() {
 								width={20}
 							/>
 						</div>
-						<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+						<span className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-transparent">
 							Thorbis
 						</span>
 					</Link>
@@ -528,17 +512,17 @@ export function MarketingHeader() {
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-50 border-border/40 border-b bg-background/80 backdrop-blur-xl transition-all duration-300 supports-[backdrop-filter]:bg-background/60",
-				scrolled && "border-border/60 shadow-black/5 shadow-lg",
+				"border-border/40 bg-background/80 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b backdrop-blur-xl transition-all duration-300",
+				scrolled && "border-border/60 shadow-lg shadow-black/5"
 			)}
 		>
 			<div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
 				{/* Logo */}
 				<Link
-					className="flex items-center gap-2.5 font-bold text-foreground text-lg tracking-tight transition-opacity hover:opacity-80"
+					className="text-foreground flex items-center gap-2.5 text-lg font-bold tracking-tight transition-opacity hover:opacity-80"
 					href="/"
 				>
-					<div className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50 transition-all hover:scale-105 hover:ring-border">
+					<div className="from-foreground/10 to-foreground/5 ring-border/50 hover:ring-border flex size-8 items-center justify-center rounded-lg bg-gradient-to-br ring-1 transition-all hover:scale-105">
 						<Image
 							alt="Thorbis"
 							className="size-5"
@@ -547,7 +531,7 @@ export function MarketingHeader() {
 							width={20}
 						/>
 					</div>
-					<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+					<span className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-transparent">
 						Thorbis
 					</span>
 				</Link>
@@ -559,11 +543,11 @@ export function MarketingHeader() {
 							<DesktopNavItem key={section.label} section={section} />
 						))}
 						<Link
-							className="group relative ml-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-3.5 py-2 font-semibold text-primary text-sm transition-all hover:bg-primary/15"
+							className="group bg-primary/10 text-primary hover:bg-primary/15 relative ml-2 inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-semibold transition-all"
 							href="/pricing"
 						>
 							Pricing
-							<Badge className="h-4 bg-primary px-1.5 font-bold text-[9px] text-primary-foreground">
+							<Badge className="bg-primary text-primary-foreground h-4 px-1.5 text-[9px] font-bold">
 								$100/mo
 							</Badge>
 						</Link>
@@ -602,10 +586,10 @@ export function MarketingHeader() {
 									Sign in
 								</Link>
 							</Button>
-							<Button asChild className="shadow-lg shadow-primary/20" size="sm">
+							<Button asChild className="shadow-primary/20 shadow-lg" size="sm">
 								<Link href={CTA_LINK.href}>
 									{CTA_LINK.label}
-									<ChevronDown className="-rotate-90 ml-1.5 size-3.5" />
+									<ChevronDown className="ml-1.5 size-3.5 -rotate-90" />
 								</Link>
 							</Button>
 						</>
@@ -615,24 +599,16 @@ export function MarketingHeader() {
 				{/* Mobile Menu */}
 				<Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
 					<SheetTrigger asChild>
-						<Button
-							aria-label="Open navigation"
-							className="lg:hidden"
-							size="icon"
-							variant="ghost"
-						>
+						<Button aria-label="Open navigation" className="lg:hidden" size="icon" variant="ghost">
 							<Menu className="size-5" />
 						</Button>
 					</SheetTrigger>
-					<SheetContent
-						className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm"
-						side="right"
-					>
+					<SheetContent className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm" side="right">
 						<SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
 						{/* Mobile Header */}
-						<div className="sticky top-0 z-10 flex items-center gap-2.5 border-border/50 border-b bg-background/95 px-5 py-4 backdrop-blur-sm">
-							<div className="flex size-7 items-center justify-center rounded-lg bg-gradient-to-br from-foreground/10 to-foreground/5 ring-1 ring-border/50">
+						<div className="border-border/50 bg-background/95 sticky top-0 z-10 flex items-center gap-2.5 border-b px-5 py-4 backdrop-blur-sm">
+							<div className="from-foreground/10 to-foreground/5 ring-border/50 flex size-7 items-center justify-center rounded-lg bg-gradient-to-br ring-1">
 								<Image
 									alt="Thorbis"
 									className="size-4"
@@ -641,7 +617,7 @@ export function MarketingHeader() {
 									width={16}
 								/>
 							</div>
-							<span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text font-bold text-base text-transparent">
+							<span className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-base font-bold text-transparent">
 								Thorbis
 							</span>
 						</div>
@@ -654,59 +630,59 @@ export function MarketingHeader() {
 
 								return (
 									<div
-										className="overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-muted/30 to-muted/10"
+										className="border-border/50 from-muted/30 to-muted/10 overflow-hidden rounded-xl border bg-gradient-to-br"
 										key={section.label}
 									>
 										<div className="flex items-stretch">
 											{hasItems && (
 												<button
-													className="flex items-center justify-center border-border/50 border-r px-3 transition-colors hover:bg-accent"
+													className="border-border/50 hover:bg-accent flex items-center justify-center border-r px-3 transition-colors"
 													onClick={() => toggleSection(section.label)}
 													type="button"
 												>
 													<ChevronDown
 														className={cn(
-															"size-4 text-muted-foreground transition-transform duration-200",
-															isExpanded && "rotate-180",
+															"text-muted-foreground size-4 transition-transform duration-200",
+															isExpanded && "rotate-180"
 														)}
 													/>
 												</button>
 											)}
 											<Link
-												className="flex flex-1 items-center justify-between px-4 py-3 transition-colors hover:bg-accent"
+												className="hover:bg-accent flex flex-1 items-center justify-between px-4 py-3 transition-colors"
 												href={section.href}
 												onClick={() => setMobileOpen(false)}
 											>
-												<span className="font-semibold text-foreground text-sm">
+												<span className="text-foreground text-sm font-semibold">
 													{section.label}
 												</span>
-												<ChevronDown className="-rotate-90 size-4 text-muted-foreground" />
+												<ChevronDown className="text-muted-foreground size-4 -rotate-90" />
 											</Link>
 										</div>
 
 										{hasItems && isExpanded && (
-											<div className="space-y-1 border-border/50 border-t bg-background/50 p-2">
+											<div className="border-border/50 bg-background/50 space-y-1 border-t p-2">
 												{section.items.map((item) => (
 													<Link
-														className="group block rounded-lg p-3 transition-all hover:bg-accent"
+														className="group hover:bg-accent block rounded-lg p-3 transition-all"
 														href={item.href}
 														key={item.href}
 														onClick={() => setMobileOpen(false)}
 													>
 														<div className="mb-1 flex items-center gap-2">
-															<span className="font-semibold text-foreground text-xs transition-colors group-hover:text-primary">
+															<span className="text-foreground group-hover:text-primary text-xs font-semibold transition-colors">
 																{item.label}
 															</span>
 															{item.badge && (
 																<Badge
-																	className="h-4 px-1.5 font-semibold text-[9px]"
+																	className="h-4 px-1.5 text-[9px] font-semibold"
 																	variant="secondary"
 																>
 																	{item.badge}
 																</Badge>
 															)}
 														</div>
-														<p className="line-clamp-2 text-[11px] text-muted-foreground leading-relaxed">
+														<p className="text-muted-foreground line-clamp-2 text-[11px] leading-relaxed">
 															{item.description}
 														</p>
 													</Link>
@@ -719,45 +695,30 @@ export function MarketingHeader() {
 
 							{/* Pricing Card */}
 							<Link
-								className="flex items-center justify-between overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10"
+								className="border-primary/30 from-primary/10 via-primary/5 hover:border-primary/50 hover:shadow-primary/10 flex items-center justify-between overflow-hidden rounded-xl border bg-gradient-to-br to-transparent p-4 transition-all hover:shadow-lg"
 								href="/pricing"
 								onClick={() => setMobileOpen(false)}
 							>
 								<div>
-									<span className="font-semibold text-foreground text-sm">
-										Pricing
-									</span>
-									<p className="text-[11px] text-muted-foreground">
-										Flat $100/mo base plus usage
-									</p>
+									<span className="text-foreground text-sm font-semibold">Pricing</span>
+									<p className="text-muted-foreground text-[11px]">Flat $100/mo base plus usage</p>
 								</div>
-								<Badge className="bg-primary px-2 py-1 font-bold text-primary-foreground text-xs">
+								<Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold">
 									$100/mo
 								</Badge>
 							</Link>
 						</div>
 
 						{/* Mobile Footer */}
-						<div className="sticky bottom-0 border-border/50 border-t bg-gradient-to-t from-background via-background to-background/95 p-4 backdrop-blur-sm">
+						<div className="border-border/50 from-background via-background to-background/95 sticky bottom-0 border-t bg-gradient-to-t p-4 backdrop-blur-sm">
 							{!loading && userProfile ? (
 								<div className="space-y-3">
-									<div className="rounded-xl border border-border/50 bg-gradient-to-br from-muted/50 to-muted/20 p-3">
-										<p className="font-semibold text-foreground text-xs">
-											{userProfile.name}
-										</p>
-										<p className="text-[11px] text-muted-foreground">
-											{userProfile.email}
-										</p>
+									<div className="border-border/50 from-muted/50 to-muted/20 rounded-xl border bg-gradient-to-br p-3">
+										<p className="text-foreground text-xs font-semibold">{userProfile.name}</p>
+										<p className="text-muted-foreground text-[11px]">{userProfile.email}</p>
 									</div>
-									<Button
-										asChild
-										className="w-full shadow-lg shadow-primary/20"
-										size="default"
-									>
-										<Link
-											href="/dashboard"
-											onClick={() => setMobileOpen(false)}
-										>
+									<Button asChild className="shadow-primary/20 w-full shadow-lg" size="default">
+										<Link href="/dashboard" onClick={() => setMobileOpen(false)}>
 											<LayoutDashboard className="mr-2 size-4" />
 											Go to Dashboard
 										</Link>
@@ -765,25 +726,13 @@ export function MarketingHeader() {
 								</div>
 							) : (
 								<div className="space-y-2">
-									<Button
-										asChild
-										className="w-full"
-										size="default"
-										variant="outline"
-									>
+									<Button asChild className="w-full" size="default" variant="outline">
 										<Link href="/login" onClick={() => setMobileOpen(false)}>
 											Sign in
 										</Link>
 									</Button>
-									<Button
-										asChild
-										className="w-full shadow-lg shadow-primary/20"
-										size="default"
-									>
-										<Link
-											href={CTA_LINK.href}
-											onClick={() => setMobileOpen(false)}
-										>
+									<Button asChild className="shadow-primary/20 w-full shadow-lg" size="default">
+										<Link href={CTA_LINK.href} onClick={() => setMobileOpen(false)}>
 											<Plus className="mr-2 size-4" />
 											{CTA_LINK.label}
 										</Link>

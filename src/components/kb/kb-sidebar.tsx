@@ -41,13 +41,9 @@ export async function KBSidebarContent({
 		getKBArticles({ featured: true, limit: 5 }),
 	]);
 
-	const categories = categoriesResult.success
-		? categoriesResult.categories || []
-		: [];
+	const categories = categoriesResult.success ? categoriesResult.categories || [] : [];
 	const popularArticles =
-		popularResult.success && popularResult.articles
-			? popularResult.articles
-			: [];
+		popularResult.success && popularResult.articles ? popularResult.articles : [];
 
 	return (
 		<SidebarContent>
@@ -73,14 +69,9 @@ export async function KBSidebarContent({
 					<SidebarMenu>
 						{categories.map((category) => (
 							<SidebarMenuItem key={category.id}>
-								<SidebarMenuButton
-									asChild
-									isActive={currentCategory === category.slug}
-								>
+								<SidebarMenuButton asChild isActive={currentCategory === category.slug}>
 									<Link href={`/kb/${category.slug}`}>
-										{category.icon && (
-											<span className="mr-2">{category.icon}</span>
-										)}
+										{category.icon && <span className="mr-2">{category.icon}</span>}
 										<span>{category.title}</span>
 									</Link>
 								</SidebarMenuButton>
@@ -105,7 +96,7 @@ export async function KBSidebarContent({
 														</Link>
 													</SidebarMenuButton>
 												</SidebarMenuItem>
-											),
+											)
 										)}
 									</SidebarMenu>
 								)}
@@ -127,12 +118,12 @@ export async function KBSidebarContent({
 									href={`/kb/${article.category.slug}/${article.slug}`}
 									key={article.id}
 								>
-									<div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-										<h4 className="line-clamp-2 font-medium text-sm leading-tight">
+									<div className="border-sidebar-border bg-sidebar hover:bg-sidebar-accent rounded-md border p-3 transition-colors">
+										<h4 className="line-clamp-2 text-sm leading-tight font-medium">
 											{article.title}
 										</h4>
 										{article.excerpt && (
-											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
+											<p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
 												{article.excerpt}
 											</p>
 										)}
@@ -156,12 +147,12 @@ export async function KBSidebarContent({
 									href={`/kb/${article.category.slug}/${article.slug}`}
 									key={article.id}
 								>
-									<div className="rounded-md border border-sidebar-border bg-sidebar p-3 transition-colors hover:bg-sidebar-accent">
-										<h4 className="line-clamp-2 font-medium text-sm leading-tight">
+									<div className="border-sidebar-border bg-sidebar hover:bg-sidebar-accent rounded-md border p-3 transition-colors">
+										<h4 className="line-clamp-2 text-sm leading-tight font-medium">
 											{article.title}
 										</h4>
 										{article.excerpt && (
-											<p className="mt-1 line-clamp-2 text-muted-foreground text-xs">
+											<p className="text-muted-foreground mt-1 line-clamp-2 text-xs">
 												{article.excerpt}
 											</p>
 										)}

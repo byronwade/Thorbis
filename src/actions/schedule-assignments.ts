@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function assignJobToTechnician(
 	_jobId: string,
 	scheduleId: string,
-	technicianId: string,
+	technicianId: string
 ) {
 	const supabase = await createClient();
 
@@ -52,11 +52,7 @@ export async function assignJobToTechnician(
 	}
 }
 
-export async function updateAppointmentTimes(
-	scheduleId: string,
-	startTime: Date,
-	endTime: Date,
-) {
+export async function updateAppointmentTimes(scheduleId: string, startTime: Date, endTime: Date) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -64,9 +60,7 @@ export async function updateAppointmentTimes(
 	}
 
 	try {
-		const duration = Math.round(
-			(endTime.getTime() - startTime.getTime()) / (1000 * 60),
-		);
+		const duration = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60));
 
 		// Format as local datetime string WITHOUT timezone conversion
 		// Get year, month, day, hour, minute from the Date object directly
@@ -143,17 +137,12 @@ export async function cancelAppointment(scheduleId: string, reason?: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to cancel appointment",
+			error: error instanceof Error ? error.message : "Failed to cancel appointment",
 		};
 	}
 }
 
-export async function cancelJobAndAppointment(
-	scheduleId: string,
-	jobId: string,
-	reason?: string,
-) {
+export async function cancelJobAndAppointment(scheduleId: string, jobId: string, reason?: string) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -208,10 +197,7 @@ export async function cancelJobAndAppointment(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to cancel job and appointment",
+			error: error instanceof Error ? error.message : "Failed to cancel job and appointment",
 		};
 	}
 }
@@ -239,10 +225,7 @@ export async function archiveAppointment(scheduleId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to archive appointment",
+			error: error instanceof Error ? error.message : "Failed to archive appointment",
 		};
 	}
 }
@@ -282,10 +265,7 @@ export async function completeAppointment(scheduleId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to complete appointment",
+			error: error instanceof Error ? error.message : "Failed to complete appointment",
 		};
 	}
 }
@@ -295,7 +275,7 @@ type DispatchStatus = "dispatched" | "arrived" | "closed";
 async function updateScheduleStatus(
 	scheduleId: string,
 	status: DispatchStatus,
-	extraUpdates: Record<string, unknown> = {},
+	extraUpdates: Record<string, unknown> = {}
 ) {
 	const supabase = await createClient();
 
@@ -324,10 +304,7 @@ async function updateScheduleStatus(
 			updates.actual_end_time = updates.actual_end_time ?? now;
 		}
 
-		const { error } = await supabase
-			.from("schedules")
-			.update(updates)
-			.eq("id", scheduleId);
+		const { error } = await supabase.from("schedules").update(updates).eq("id", scheduleId);
 
 		if (error) {
 			throw error;
@@ -338,9 +315,7 @@ async function updateScheduleStatus(
 		return {
 			success: false,
 			error:
-				error instanceof Error
-					? error.message
-					: `Failed to update appointment status to ${status}`,
+				error instanceof Error ? error.message : `Failed to update appointment status to ${status}`,
 		};
 	}
 }
@@ -387,10 +362,7 @@ export async function unassignAppointment(scheduleId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to move appointment to Unscheduled",
+			error: error instanceof Error ? error.message : "Failed to move appointment to Unscheduled",
 		};
 	}
 }

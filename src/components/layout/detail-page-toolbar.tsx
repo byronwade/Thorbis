@@ -54,12 +54,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -155,8 +150,8 @@ export function DetailPageToolbar({
 	return (
 		<div
 			className={cn(
-				"sticky top-0 z-40 flex w-full flex-col border-border/50 border-b bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90",
-				className,
+				"border-border/50 bg-background/95 supports-[backdrop-filter]:bg-background/90 sticky top-0 z-40 flex w-full flex-col border-b backdrop-blur-md",
+				className
 			)}
 		>
 			{/* Main Toolbar Row - Fixed height for consistency */}
@@ -169,7 +164,7 @@ export function DetailPageToolbar({
 							<TooltipTrigger asChild>
 								<Button
 									asChild
-									className="h-9 w-9 shrink-0 hover:bg-muted" // Fixed dimensions
+									className="hover:bg-muted h-9 w-9 shrink-0" // Fixed dimensions
 									size="icon"
 									variant="ghost"
 								>
@@ -188,13 +183,11 @@ export function DetailPageToolbar({
 					{/* Title + Status */}
 					<div className="flex min-w-0 flex-1 items-center gap-3">
 						<div className="min-w-0 flex-1">
-							<h1 className="truncate font-semibold text-base text-foreground leading-tight tracking-tight md:text-lg">
+							<h1 className="text-foreground truncate text-base leading-tight font-semibold tracking-tight md:text-lg">
 								{title}
 							</h1>
 							{subtitle && (
-								<p className="truncate text-muted-foreground text-sm leading-tight">
-									{subtitle}
-								</p>
+								<p className="text-muted-foreground truncate text-sm leading-tight">{subtitle}</p>
 							)}
 						</div>
 
@@ -233,24 +226,19 @@ export function DetailPageToolbar({
 					{/* Secondary Actions - Grouped, Hidden on Mobile */}
 					{secondaryActions.length > 0 && (
 						<>
-							<div className="hidden h-11 items-center gap-1.5 rounded-lg border bg-muted/30 p-1 md:flex">
+							<div className="bg-muted/30 hidden h-11 items-center gap-1.5 rounded-lg border p-1 md:flex">
 								{secondaryActions.map((action) => (
 									<ActionButton action={action} ghost key={action.id} />
 								))}
 							</div>
 							{contextActions.length > 0 && (
-								<Separator
-									className="hidden h-8 md:block"
-									orientation="vertical"
-								/>
+								<Separator className="hidden h-8 md:block" orientation="vertical" />
 							)}
 						</>
 					)}
 
 					{/* Context Menu (Ellipsis) */}
-					{contextActions.length > 0 && (
-						<ContextMenu actions={contextActions} />
-					)}
+					{contextActions.length > 0 && <ContextMenu actions={contextActions} />}
 
 					{/* Custom Content */}
 					{customContent}
@@ -267,13 +255,7 @@ export function DetailPageToolbar({
 /**
  * Action Button - Individual action button with tooltip
  */
-function ActionButton({
-	action,
-	ghost = false,
-}: {
-	action: DetailToolbarAction;
-	ghost?: boolean;
-}) {
+function ActionButton({ action, ghost = false }: { action: DetailToolbarAction; ghost?: boolean }) {
 	const buttonVariant = ghost
 		? "ghost"
 		: action.variant === "primary"
@@ -294,7 +276,7 @@ function ActionButton({
 		!ghost &&
 			action.variant === "success" &&
 			"border-success/20 bg-success/5 text-success hover:border-success/30 hover:bg-success/10 dark:text-success",
-		action.desktopOnly && "hidden md:flex",
+		action.desktopOnly && "hidden md:flex"
 	);
 
 	const button = (
@@ -348,7 +330,7 @@ function ContextMenu({ actions }: { actions: DetailToolbarContextAction[] }) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button
-					className="h-9 w-9 hover:bg-muted" // Fixed dimensions for consistency
+					className="hover:bg-muted h-9 w-9" // Fixed dimensions for consistency
 					size="icon"
 					variant="ghost"
 				>
@@ -357,7 +339,7 @@ function ContextMenu({ actions }: { actions: DetailToolbarContextAction[] }) {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-56">
-				<DropdownMenuLabel className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+				<DropdownMenuLabel className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 					Actions
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
@@ -367,8 +349,7 @@ function ContextMenu({ actions }: { actions: DetailToolbarContextAction[] }) {
 						<DropdownMenuItem
 							className={cn(
 								"cursor-pointer gap-2",
-								action.variant === "destructive" &&
-									"text-destructive focus:text-destructive",
+								action.variant === "destructive" && "text-destructive focus:text-destructive"
 							)}
 							disabled={action.disabled}
 							onClick={action.onClick}

@@ -19,16 +19,10 @@ function generatePageData(params: PaginationParams) {
 		id: `job-${i + 1}`,
 		title: `Job ${i + 1}`,
 		customer: `Customer ${Math.floor(Math.random() * 100)}`,
-		status: ["pending", "active", "completed"][
-			Math.floor(Math.random() * 3)
-		] as string,
-		priority: ["low", "medium", "high"][
-			Math.floor(Math.random() * 3)
-		] as string,
+		status: ["pending", "active", "completed"][Math.floor(Math.random() * 3)] as string,
+		priority: ["low", "medium", "high"][Math.floor(Math.random() * 3)] as string,
 		amount: Math.floor(Math.random() * 10_000),
-		created: new Date(
-			Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
-		).toISOString(),
+		created: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
 	}));
 
 	// Apply filters
@@ -46,7 +40,7 @@ function generatePageData(params: PaginationParams) {
 			(item) =>
 				item.title.toLowerCase().includes(query) ||
 				item.customer.toLowerCase().includes(query) ||
-				item.status.toLowerCase().includes(query),
+				item.status.toLowerCase().includes(query)
 		);
 	}
 
@@ -185,14 +179,11 @@ export function ServerSideExample() {
 	return (
 		<div className="space-y-6">
 			{/* Info Card */}
-			<div className="rounded-lg border bg-card p-6">
-				<h2 className="mb-2 font-semibold text-lg">
-					Server-Side Pagination Table
-				</h2>
-				<p className="mb-4 text-muted-foreground text-sm">
-					Fetches only current page from server. Database handles
-					sorting/filtering with indexes. Scales to millions of rows with
-					constant performance.
+			<div className="bg-card rounded-lg border p-6">
+				<h2 className="mb-2 text-lg font-semibold">Server-Side Pagination Table</h2>
+				<p className="text-muted-foreground mb-4 text-sm">
+					Fetches only current page from server. Database handles sorting/filtering with indexes.
+					Scales to millions of rows with constant performance.
 				</p>
 
 				<div className="space-y-2 text-sm">
@@ -209,35 +200,29 @@ export function ServerSideExample() {
 
 			{/* Performance Metrics */}
 			<div className="grid gap-4 md:grid-cols-3">
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Client Memory</div>
-					<div className="mt-1 font-bold text-2xl">~2MB</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Only current page
-					</div>
+					<div className="mt-1 text-2xl font-bold">~2MB</div>
+					<div className="text-muted-foreground mt-1 text-xs">Only current page</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Page Load Time</div>
-					<div className="mt-1 font-bold text-2xl">~500ms</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Network + DB query
-					</div>
+					<div className="mt-1 text-2xl font-bold">~500ms</div>
+					<div className="text-muted-foreground mt-1 text-xs">Network + DB query</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Scalability</div>
-					<div className="mt-1 font-bold text-2xl">Unlimited</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Works with millions of rows
-					</div>
+					<div className="mt-1 text-2xl font-bold">Unlimited</div>
+					<div className="text-muted-foreground mt-1 text-xs">Works with millions of rows</div>
 				</div>
 			</div>
 
 			{/* Advantages */}
-			<div className="rounded-lg border bg-muted p-6">
+			<div className="bg-muted rounded-lg border p-6">
 				<h3 className="mb-3 font-semibold">Why Server-Side Pagination?</h3>
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
-						<div className="mb-2 font-medium text-sm">Performance</div>
+						<div className="mb-2 text-sm font-medium">Performance</div>
 						<ul className="space-y-1 text-sm">
 							<li>✅ Constant page load time (50 rows vs 100K rows)</li>
 							<li>✅ Low memory usage (only current page)</li>
@@ -246,7 +231,7 @@ export function ServerSideExample() {
 						</ul>
 					</div>
 					<div>
-						<div className="mb-2 font-medium text-sm">Features</div>
+						<div className="mb-2 text-sm font-medium">Features</div>
 						<ul className="space-y-1 text-sm">
 							<li>✅ Unlimited dataset size</li>
 							<li>✅ Real-time data (always fresh)</li>
@@ -263,17 +248,11 @@ export function ServerSideExample() {
 					onClick={() =>
 						pagination.filters.setFilter(
 							"status",
-							pagination.filters.current.status === "active"
-								? undefined
-								: "active",
+							pagination.filters.current.status === "active" ? undefined : "active"
 						)
 					}
 					size="sm"
-					variant={
-						pagination.filters.current.status === "active"
-							? "default"
-							: "outline"
-					}
+					variant={pagination.filters.current.status === "active" ? "default" : "outline"}
 				>
 					Active Only
 				</Button>
@@ -281,17 +260,11 @@ export function ServerSideExample() {
 					onClick={() =>
 						pagination.filters.setFilter(
 							"status",
-							pagination.filters.current.status === "completed"
-								? undefined
-								: "completed",
+							pagination.filters.current.status === "completed" ? undefined : "completed"
 						)
 					}
 					size="sm"
-					variant={
-						pagination.filters.current.status === "completed"
-							? "default"
-							: "outline"
-					}
+					variant={pagination.filters.current.status === "completed" ? "default" : "outline"}
 				>
 					Completed Only
 				</Button>
@@ -299,26 +272,16 @@ export function ServerSideExample() {
 					onClick={() =>
 						pagination.filters.setFilter(
 							"priority",
-							pagination.filters.current.priority === "high"
-								? undefined
-								: "high",
+							pagination.filters.current.priority === "high" ? undefined : "high"
 						)
 					}
 					size="sm"
-					variant={
-						pagination.filters.current.priority === "high"
-							? "default"
-							: "outline"
-					}
+					variant={pagination.filters.current.priority === "high" ? "default" : "outline"}
 				>
 					High Priority
 				</Button>
 				{Object.keys(pagination.filters.current).length > 0 && (
-					<Button
-						onClick={pagination.filters.clearAllFilters}
-						size="sm"
-						variant="ghost"
-					>
+					<Button onClick={pagination.filters.clearAllFilters} size="sm" variant="ghost">
 						Clear Filters
 					</Button>
 				)}

@@ -52,7 +52,7 @@ export function InlineText({
 	return (
 		<Component
 			className={cn(
-				"outline-none transition-all duration-150",
+				"transition-all duration-150 outline-none",
 				isEditable && [
 					"cursor-text",
 					"hover:bg-secondary",
@@ -64,7 +64,7 @@ export function InlineText({
 					"-mx-1",
 				],
 				!value && "text-muted-foreground italic",
-				className,
+				className
 			)}
 			contentEditable={isEditable}
 			onBlur={handleBlur}

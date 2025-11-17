@@ -8,14 +8,7 @@
  * - More dropdown (duplicate, add to invoice, deactivate, delete)
  */
 
-import {
-	Archive,
-	Copy,
-	Edit,
-	MoreVertical,
-	ShoppingCart,
-	Trash2,
-} from "lucide-react";
+import { Archive, Copy, Edit, MoreVertical, ShoppingCart, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
@@ -28,12 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function PriceBookItemToolbarActions() {
 	const pathname = usePathname();
@@ -56,11 +44,7 @@ export function PriceBookItemToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<DropdownMenuTrigger asChild>
-								<Button
-									className="gap-2 hover:bg-muted"
-									size="sm"
-									variant="ghost"
-								>
+								<Button className="hover:bg-muted gap-2" size="sm" variant="ghost">
 									<MoreVertical className="size-4" />
 									<span className="hidden sm:inline">More</span>
 								</Button>
@@ -81,10 +65,7 @@ export function PriceBookItemToolbarActions() {
 						Add to Invoice
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem
-						className="text-warning dark:text-warning"
-						onClick={() => {}}
-					>
+					<DropdownMenuItem className="text-warning dark:text-warning" onClick={() => {}}>
 						<Archive className="mr-2 size-4" />
 						Deactivate
 					</DropdownMenuItem>

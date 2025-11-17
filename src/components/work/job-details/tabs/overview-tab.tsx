@@ -74,15 +74,8 @@ export function OverviewTab({
 	const { setHasUnsavedChanges, setEditorContent } = useJobEditorStore();
 
 	const [localJob, setLocalJob] = useState(job);
-	const formatDateOrFallback = (
-		value: unknown,
-		preset = "datetime",
-		fallback = "—",
-	) => {
-		const formatted = formatDate(
-			value as Date | number | string | null | undefined,
-			preset,
-		);
+	const formatDateOrFallback = (value: unknown, preset = "datetime", fallback = "—") => {
+		const formatted = formatDate(value as Date | number | string | null | undefined, preset);
 		return formatted === "—" ? fallback : formatted;
 	};
 
@@ -94,7 +87,7 @@ export function OverviewTab({
 			setHasUnsavedChanges(true);
 			setEditorContent(updated);
 		},
-		[localJob, setHasUnsavedChanges, setEditorContent],
+		[localJob, setHasUnsavedChanges, setEditorContent]
 	);
 
 	return (
@@ -104,14 +97,10 @@ export function OverviewTab({
 				<CardHeader>
 					<div className="flex items-start justify-between">
 						<div className="flex items-center gap-2">
-							<FileText className="h-5 w-5 text-muted-foreground" />
+							<FileText className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Job Information</CardTitle>
 						</div>
-						<Badge
-							variant={
-								localJob.status === "completed" ? "default" : "secondary"
-							}
-						>
+						<Badge variant={localJob.status === "completed" ? "default" : "secondary"}>
 							{localJob.status?.toUpperCase()}
 						</Badge>
 					</div>
@@ -120,11 +109,7 @@ export function OverviewTab({
 					{/* Job Number (readonly) */}
 					<div>
 						<Label>Job Number</Label>
-						<Input
-							className="bg-muted"
-							disabled
-							value={localJob.job_number || ""}
-						/>
+						<Input className="bg-muted" disabled value={localJob.job_number || ""} />
 					</div>
 
 					{/* Title */}
@@ -209,9 +194,7 @@ export function OverviewTab({
 							<Label>Service Type</Label>
 							<Input
 								disabled={!isEditMode}
-								onChange={(e) =>
-									handleFieldChange("service_type", e.target.value)
-								}
+								onChange={(e) => handleFieldChange("service_type", e.target.value)}
 								placeholder="e.g., HVAC, Plumbing, Electrical"
 								value={localJob.service_type || ""}
 							/>
@@ -221,7 +204,7 @@ export function OverviewTab({
 					{/* Team Assignments */}
 					<div>
 						<Label className="mb-3 flex items-center gap-2">
-							<Users className="h-4 w-4 text-muted-foreground" />
+							<Users className="text-muted-foreground h-4 w-4" />
 							Team Assigned
 						</Label>
 						<TeamMemberSelector isEditMode={isEditMode} jobId={job.id} />
@@ -247,7 +230,7 @@ export function OverviewTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<User className="h-5 w-5 text-muted-foreground" />
+						<User className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Customer & Contact</CardTitle>
 					</div>
 				</CardHeader>
@@ -256,13 +239,11 @@ export function OverviewTab({
 						<>
 							<div className="flex items-start justify-between">
 								<div className="space-y-1">
-									<h3 className="font-semibold text-lg">
+									<h3 className="text-lg font-semibold">
 										{customer.first_name} {customer.last_name}
 									</h3>
 									{customer.company_name && (
-										<p className="text-muted-foreground text-sm">
-											{customer.company_name}
-										</p>
+										<p className="text-muted-foreground text-sm">{customer.company_name}</p>
 									)}
 								</div>
 								{isEditMode && (
@@ -278,7 +259,7 @@ export function OverviewTab({
 							<div className="grid gap-4 md:grid-cols-2">
 								{customer.email && (
 									<div className="flex items-center gap-2">
-										<Mail className="h-4 w-4 text-muted-foreground" />
+										<Mail className="text-muted-foreground h-4 w-4" />
 										<a
 											className="text-primary text-sm hover:underline"
 											href={`mailto:${customer.email}`}
@@ -290,7 +271,7 @@ export function OverviewTab({
 
 								{customer.phone && (
 									<div className="flex items-center gap-2">
-										<Phone className="h-4 w-4 text-muted-foreground" />
+										<Phone className="text-muted-foreground h-4 w-4" />
 										<a
 											className="text-primary text-sm hover:underline"
 											href={`tel:${customer.phone}`}
@@ -304,9 +285,7 @@ export function OverviewTab({
 							{/* Customer Address */}
 							{customer.address && (
 								<div>
-									<Label className="text-muted-foreground text-xs">
-										Customer Address
-									</Label>
+									<Label className="text-muted-foreground text-xs">Customer Address</Label>
 									<p className="text-sm">
 										{customer.address}
 										{customer.city && `, ${customer.city}`}
@@ -318,7 +297,7 @@ export function OverviewTab({
 
 							{/* Multiple Customers Indicator */}
 							{customers.length > 1 && (
-								<div className="rounded-md border border-primary bg-primary p-3">
+								<div className="border-primary bg-primary rounded-md border p-3">
 									<p className="text-primary text-sm">
 										<AlertCircle className="mr-1 inline h-4 w-4" />
 										This job has {customers.length} customers assigned.
@@ -327,7 +306,7 @@ export function OverviewTab({
 							)}
 						</>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No customer assigned
 							{isEditMode && (
 								<Button className="ml-2" size="sm" variant="outline">
@@ -343,7 +322,7 @@ export function OverviewTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<MapPin className="h-5 w-5 text-muted-foreground" />
+						<MapPin className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Property & Location</CardTitle>
 					</div>
 				</CardHeader>
@@ -352,11 +331,9 @@ export function OverviewTab({
 						<>
 							<div className="flex items-start justify-between">
 								<div className="space-y-1">
-									<h3 className="font-semibold text-lg">
-										{property.name || "Service Location"}
-									</h3>
+									<h3 className="text-lg font-semibold">{property.name || "Service Location"}</h3>
 									<div className="flex items-start gap-2">
-										<Building2 className="mt-0.5 h-4 w-4 text-muted-foreground" />
+										<Building2 className="text-muted-foreground mt-0.5 h-4 w-4" />
 										<div className="text-muted-foreground text-sm">
 											<p>{property.address}</p>
 											{property.address2 && <p>{property.address2}</p>}
@@ -380,33 +357,24 @@ export function OverviewTab({
 								<div className="grid gap-4 md:grid-cols-3">
 									{propertyEnrichment.squareFootage && (
 										<div>
-											<Label className="text-muted-foreground text-xs">
-												Square Footage
-											</Label>
-											<p className="font-medium text-sm">
-												{propertyEnrichment.squareFootage.toLocaleString()} sq
-												ft
+											<Label className="text-muted-foreground text-xs">Square Footage</Label>
+											<p className="text-sm font-medium">
+												{propertyEnrichment.squareFootage.toLocaleString()} sq ft
 											</p>
 										</div>
 									)}
 
 									{propertyEnrichment.yearBuilt && (
 										<div>
-											<Label className="text-muted-foreground text-xs">
-												Year Built
-											</Label>
-											<p className="font-medium text-sm">
-												{propertyEnrichment.yearBuilt}
-											</p>
+											<Label className="text-muted-foreground text-xs">Year Built</Label>
+											<p className="text-sm font-medium">{propertyEnrichment.yearBuilt}</p>
 										</div>
 									)}
 
 									{propertyEnrichment.propertyType && (
 										<div>
-											<Label className="text-muted-foreground text-xs">
-												Property Type
-											</Label>
-											<p className="font-medium text-sm capitalize">
+											<Label className="text-muted-foreground text-xs">Property Type</Label>
+											<p className="text-sm font-medium capitalize">
 												{propertyEnrichment.propertyType}
 											</p>
 										</div>
@@ -418,15 +386,13 @@ export function OverviewTab({
 							{property.notes && (
 								<div>
 									<Label>Access Instructions</Label>
-									<p className="text-muted-foreground text-sm">
-										{property.notes}
-									</p>
+									<p className="text-muted-foreground text-sm">{property.notes}</p>
 								</div>
 							)}
 
 							{/* Multiple Properties Indicator */}
 							{properties.length > 1 && (
-								<div className="rounded-md border border-primary bg-primary p-3">
+								<div className="border-primary bg-primary rounded-md border p-3">
 									<p className="text-primary text-sm">
 										<AlertCircle className="mr-1 inline h-4 w-4" />
 										This job involves {properties.length} properties.
@@ -435,7 +401,7 @@ export function OverviewTab({
 							)}
 						</>
 					) : (
-						<div className="text-center text-muted-foreground text-sm">
+						<div className="text-muted-foreground text-center text-sm">
 							No property assigned
 							{isEditMode && (
 								<Button className="ml-2" size="sm" variant="outline">
@@ -451,7 +417,7 @@ export function OverviewTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<Calendar className="h-5 w-5 text-muted-foreground" />
+						<Calendar className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Schedule & Timeline</CardTitle>
 					</div>
 				</CardHeader>
@@ -460,13 +426,9 @@ export function OverviewTab({
 						<div>
 							<Label>Scheduled Start</Label>
 							<div className="flex items-center gap-2">
-								<Clock className="h-4 w-4 text-muted-foreground" />
+								<Clock className="text-muted-foreground h-4 w-4" />
 								<span className="text-sm">
-									{formatDateOrFallback(
-										localJob.scheduled_start,
-										"datetime",
-										"Not set",
-									)}
+									{formatDateOrFallback(localJob.scheduled_start, "datetime", "Not set")}
 								</span>
 							</div>
 						</div>
@@ -474,13 +436,9 @@ export function OverviewTab({
 						<div>
 							<Label>Scheduled End</Label>
 							<div className="flex items-center gap-2">
-								<Clock className="h-4 w-4 text-muted-foreground" />
+								<Clock className="text-muted-foreground h-4 w-4" />
 								<span className="text-sm">
-									{formatDateOrFallback(
-										localJob.scheduled_end,
-										"datetime",
-										"Not set",
-									)}
+									{formatDateOrFallback(localJob.scheduled_end, "datetime", "Not set")}
 								</span>
 							</div>
 						</div>
@@ -494,13 +452,9 @@ export function OverviewTab({
 									<div>
 										<Label>Actual Start</Label>
 										<div className="flex items-center gap-2">
-											<Clock className="h-4 w-4 text-success" />
+											<Clock className="text-success h-4 w-4" />
 											<span className="text-sm">
-												{formatDateOrFallback(
-													localJob.actual_start,
-													"datetime",
-													"Not set",
-												)}
+												{formatDateOrFallback(localJob.actual_start, "datetime", "Not set")}
 											</span>
 										</div>
 									</div>
@@ -510,13 +464,9 @@ export function OverviewTab({
 									<div>
 										<Label>Actual End</Label>
 										<div className="flex items-center gap-2">
-											<Clock className="h-4 w-4 text-success" />
+											<Clock className="text-success h-4 w-4" />
 											<span className="text-sm">
-												{formatDateOrFallback(
-													localJob.actual_end,
-													"datetime",
-													"Not set",
-												)}
+												{formatDateOrFallback(localJob.actual_end, "datetime", "Not set")}
 											</span>
 										</div>
 									</div>
@@ -531,39 +481,32 @@ export function OverviewTab({
 			<Card>
 				<CardHeader>
 					<div className="flex items-center gap-2">
-						<DollarSign className="h-5 w-5 text-muted-foreground" />
+						<DollarSign className="text-muted-foreground h-5 w-5" />
 						<CardTitle>Financial Summary</CardTitle>
 					</div>
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 md:grid-cols-3">
 						<div>
-							<Label className="text-muted-foreground text-xs">
-								Total Amount
-							</Label>
-							<p className="font-bold text-2xl">
+							<Label className="text-muted-foreground text-xs">Total Amount</Label>
+							<p className="text-2xl font-bold">
 								{formatCurrency(localJob.total_amount || 0, { decimals: 0 })}
 							</p>
 						</div>
 
 						<div>
-							<Label className="text-muted-foreground text-xs">
-								Paid Amount
-							</Label>
-							<p className="font-bold text-2xl text-success">
+							<Label className="text-muted-foreground text-xs">Paid Amount</Label>
+							<p className="text-success text-2xl font-bold">
 								{formatCurrency(localJob.paid_amount || 0, { decimals: 0 })}
 							</p>
 						</div>
 
 						<div>
-							<Label className="text-muted-foreground text-xs">
-								Outstanding
-							</Label>
-							<p className="font-bold text-2xl text-warning">
-								{formatCurrency(
-									(localJob.total_amount || 0) - (localJob.paid_amount || 0),
-									{ decimals: 0 },
-								)}
+							<Label className="text-muted-foreground text-xs">Outstanding</Label>
+							<p className="text-warning text-2xl font-bold">
+								{formatCurrency((localJob.total_amount || 0) - (localJob.paid_amount || 0), {
+									decimals: 0,
+								})}
 							</p>
 						</div>
 					</div>
@@ -581,7 +524,7 @@ export function OverviewTab({
 				<Card>
 					<CardHeader>
 						<div className="flex items-center gap-2">
-							<Shield className="h-5 w-5 text-muted-foreground" />
+							<Shield className="text-muted-foreground h-5 w-5" />
 							<CardTitle>Service Details</CardTitle>
 						</div>
 					</CardHeader>

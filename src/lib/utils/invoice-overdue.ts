@@ -32,10 +32,7 @@ export type OverdueStatus = {
 /**
  * Calculate overdue status from due date
  */
-export function getOverdueStatus(
-	dueDate: string | null,
-	balanceAmount: number,
-): OverdueStatus {
+export function getOverdueStatus(dueDate: string | null, balanceAmount: number): OverdueStatus {
 	// Not overdue if no balance or no due date
 	if (!dueDate || balanceAmount <= 0) {
 		return {
@@ -46,8 +43,7 @@ export function getOverdueStatus(
 				bg: "bg-background",
 				border: "border-border",
 				text: "text-foreground",
-				badge:
-					"bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200",
+				badge: "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200",
 			},
 			message: "Current",
 			showBanner: false,
@@ -88,8 +84,7 @@ export function getOverdueStatus(
 				bg: "bg-yellow-50 dark:bg-yellow-950/20",
 				border: "border-yellow-200 dark:border-yellow-800",
 				text: "text-yellow-900 dark:text-yellow-100",
-				badge:
-					"bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200",
+				badge: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-200",
 			},
 			message: "Payment was due yesterday",
 			showBanner: true,
@@ -107,8 +102,7 @@ export function getOverdueStatus(
 				bg: "bg-yellow-50 dark:bg-yellow-950/20",
 				border: "border-yellow-300 dark:border-yellow-700",
 				text: "text-yellow-900 dark:text-yellow-100",
-				badge:
-					"bg-yellow-200 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100",
+				badge: "bg-yellow-200 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100",
 			},
 			message: `${diffDays} days overdue`,
 			showBanner: true,
@@ -126,8 +120,7 @@ export function getOverdueStatus(
 				bg: "bg-orange-50 dark:bg-orange-950/20",
 				border: "border-orange-300 dark:border-orange-700",
 				text: "text-orange-900 dark:text-orange-100",
-				badge:
-					"bg-orange-200 text-orange-900 dark:bg-orange-900 dark:text-orange-100",
+				badge: "bg-orange-200 text-orange-900 dark:bg-orange-900 dark:text-orange-100",
 			},
 			message: `${diffDays} days overdue - Please remit payment soon`,
 			showBanner: true,
@@ -191,10 +184,7 @@ export function getOverdueStatus(
 /**
  * Format currency with emphasis for large amounts
  */
-export function formatOverdueAmount(
-	cents: number,
-	_urgency: OverdueStatus["urgency"],
-): string {
+export function formatOverdueAmount(cents: number, _urgency: OverdueStatus["urgency"]): string {
 	const formatted = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",

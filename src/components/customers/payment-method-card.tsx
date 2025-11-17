@@ -87,13 +87,11 @@ export function PaymentMethodCard({
 
 				{onRemove && (
 					<Button
-						className="h-8 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+						className="text-destructive hover:bg-destructive hover:text-destructive-foreground h-8"
 						disabled={disabled}
 						onClick={(e) => {
 							e.stopPropagation();
-							if (
-								confirm(`Remove this ${type === "card" ? "card" : "account"}?`)
-							) {
+							if (confirm(`Remove this ${type === "card" ? "card" : "account"}?`)) {
 								onRemove();
 							}
 						}}

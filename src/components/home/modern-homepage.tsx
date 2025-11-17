@@ -244,20 +244,17 @@ export function ModernHomepage() {
 		},
 		{
 			claim: "After-hours coverage",
-			thorbis:
-				"Dispatch AI books no-heat calls overnight with scripts you control.",
+			thorbis: "Dispatch AI books no-heat calls overnight with scripts you control.",
 			others: "Forwarding to voicemail and hoping for the best.",
 		},
 		{
 			claim: "Implementation",
-			thorbis:
-				"Trade operators build your board, imports, and automations in 24 hours.",
+			thorbis: "Trade operators build your board, imports, and automations in 24 hours.",
 			others: "Self-serve onboarding videos and weeks of DIY cleanup.",
 		},
 		{
 			claim: "Data ownership",
-			thorbis:
-				"Export everything anytime—customers, jobs, invoices—no penalty.",
+			thorbis: "Export everything anytime—customers, jobs, invoices—no penalty.",
 			others: "Lock-in contracts and paywalls around your own data.",
 		},
 	] as const;
@@ -265,8 +262,7 @@ export function ModernHomepage() {
 	const incumbentIntel = [
 		{
 			name: "ServiceTitan",
-			summary:
-				"Enterprise-first bundles like Marketing Pro add heavy overhead.",
+			summary: "Enterprise-first bundles like Marketing Pro add heavy overhead.",
 			takeaway:
 				"Thorbis includes lifecycle marketing, review boosts, and advanced reporting in the flat base so you are not upsold feature-by-feature.",
 			source: {
@@ -276,8 +272,7 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Housecall Pro",
-			summary:
-				"Highlights 100M+ jobs and a 35% average revenue lift after year one.",
+			summary: "Highlights 100M+ jobs and a 35% average revenue lift after year one.",
 			takeaway:
 				"Thorbis matches the growth focus but layers on 0% processing, Dispatch AI, and multi-division controls built for bigger crews.",
 			source: {
@@ -287,8 +282,7 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Status quo tools",
-			summary:
-				"Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
+			summary: "Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
 			takeaway:
 				"Thorbis unifies quoting, dispatch, cash flow, and customer comms so information moves once and mirrors the field.",
 			source: {
@@ -314,8 +308,7 @@ export function ModernHomepage() {
 		{
 			metric: "3x",
 			label: "Faster cash collection",
-			description:
-				"Instant payouts with 0% processing fees and auto reminders.",
+			description: "Instant payouts with 0% processing fees and auto reminders.",
 			icon: DollarSign,
 		},
 		{
@@ -368,8 +361,7 @@ export function ModernHomepage() {
 		},
 		{
 			title: "Explore industries",
-			description:
-				"Find HVAC, plumbing, electrical, roofing, and more playbooks.",
+			description: "Find HVAC, plumbing, electrical, roofing, and more playbooks.",
 			icon: Globe,
 			href: "/industries",
 		},
@@ -413,7 +405,7 @@ export function ModernHomepage() {
 	return (
 		<div className="relative overflow-hidden">
 			<section className="relative min-h-screen overflow-hidden">
-				<div className="-z-10 absolute inset-0">
+				<div className="absolute inset-0 -z-10">
 					<Image
 						alt="Technician calibrating HVAC unit on a rooftop"
 						className="object-cover opacity-20"
@@ -423,47 +415,44 @@ export function ModernHomepage() {
 						src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1800&q=80"
 					/>
 					<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.45),_transparent_55%)]" />
-					<div className="absolute inset-0 bg-gradient-to-br from-background via-background/80 to-background" />
-					<div className="pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full bg-primary/25 opacity-50 blur-3xl" />
-					<div className="pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full bg-primary/20 opacity-40 blur-3xl delay-1000" />
+					<div className="from-background via-background/80 to-background absolute inset-0 bg-gradient-to-br" />
+					<div className="bg-primary/25 pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full opacity-50 blur-3xl" />
+					<div className="bg-primary/20 pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full opacity-40 blur-3xl delay-1000" />
 				</div>
 
-				<div className="container relative mx-auto px-4 py-20 sm:px-6 lg:px-8">
+				<div className="relative container mx-auto px-4 py-20 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-6xl">
 						<div className="mb-8 flex justify-center">
 							<Badge
-								className="gap-2 border-primary/20 bg-primary/5 px-4 py-2 text-sm backdrop-blur-sm"
+								className="border-primary/20 bg-primary/5 gap-2 px-4 py-2 text-sm backdrop-blur-sm"
 								variant="secondary"
 							>
-								<Sparkles className="size-4 text-primary" />
+								<Sparkles className="text-primary size-4" />
 								<span className="font-medium">
-									Built with trade operators for HVAC, plumbing, electrical &
-									more
+									Built with trade operators for HVAC, plumbing, electrical & more
 								</span>
 							</Badge>
 						</div>
 
 						<div className="mb-8 text-center">
-							<h1 className="mb-6 font-extrabold text-5xl leading-tight tracking-tight md:text-6xl lg:text-7xl">
+							<h1 className="mb-6 text-5xl leading-tight font-extrabold tracking-tight md:text-6xl lg:text-7xl">
 								<span className="block">Own The Day.</span>
-								<span className="block bg-gradient-to-r from-primary via-blue-500 to-primary bg-clip-text text-transparent">
+								<span className="from-primary to-primary block bg-gradient-to-r via-blue-500 bg-clip-text text-transparent">
 									Grow Without Chaos.
 								</span>
 							</h1>
-							<p className="mx-auto mb-3 max-w-3xl text-foreground/80 text-xl leading-relaxed md:text-2xl">
-								Thorbis runs dispatch, quoting, payments, and after-hours calls
-								from one control tower, so owners who still wear the tool belt
-								can scale like a franchise.
+							<p className="text-foreground/80 mx-auto mb-3 max-w-3xl text-xl leading-relaxed md:text-2xl">
+								Thorbis runs dispatch, quoting, payments, and after-hours calls from one control
+								tower, so owners who still wear the tool belt can scale like a franchise.
 							</p>
-							<p className="mx-auto max-w-2xl text-base text-muted-foreground">
-								$100/month base plus pay-as-you-go usage. Unlimited users,
-								AI-powered office staff, and data you own. No contracts, no
-								per-seat fees.
+							<p className="text-muted-foreground mx-auto max-w-2xl text-base">
+								$100/month base plus pay-as-you-go usage. Unlimited users, AI-powered office staff,
+								and data you own. No contracts, no per-seat fees.
 							</p>
 							<div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm">
 								{tradeBadges.map((trade) => (
 									<span
-										className="rounded-full border border-border/60 bg-background/70 px-4 py-2 font-medium text-foreground/80 shadow-sm"
+										className="border-border/60 bg-background/70 text-foreground/80 rounded-full border px-4 py-2 font-medium shadow-sm"
 										key={trade}
 									>
 										{trade}
@@ -474,10 +463,10 @@ export function ModernHomepage() {
 
 						<div className="mb-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
 							<div className="flex items-center gap-2">
-								<div className="-space-x-2 flex">
+								<div className="flex -space-x-2">
 									{[1, 2, 3, 4, 5].map((i) => (
 										<div
-											className="size-10 rounded-full border-2 border-background bg-gradient-to-br from-primary/40 to-primary/20"
+											className="border-background from-primary/40 to-primary/20 size-10 rounded-full border-2 bg-gradient-to-br"
 											key={i}
 										/>
 									))}
@@ -485,16 +474,11 @@ export function ModernHomepage() {
 								<div className="ml-2">
 									<div className="flex items-center gap-1">
 										{[1, 2, 3, 4, 5].map((i) => (
-											<Star
-												className="size-4 fill-yellow-500 text-warning"
-												key={i}
-											/>
+											<Star className="text-warning size-4 fill-yellow-500" key={i} />
 										))}
 										<span className="ml-2 font-bold">4.9/5</span>
 									</div>
-									<p className="text-muted-foreground text-xs">
-										from 1,247+ trades reviews
-									</p>
+									<p className="text-muted-foreground text-xs">from 1,247+ trades reviews</p>
 								</div>
 							</div>
 						</div>
@@ -502,7 +486,7 @@ export function ModernHomepage() {
 						<div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
 							<Button
 								asChild
-								className="group h-14 px-8 text-lg shadow-lg shadow-primary/20"
+								className="group shadow-primary/20 h-14 px-8 text-lg shadow-lg"
 								size="lg"
 							>
 								<Link href="/register">
@@ -510,20 +494,15 @@ export function ModernHomepage() {
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button
-								asChild
-								className="h-14 border-2 px-8 text-lg"
-								size="lg"
-								variant="outline"
-							>
+							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
 								<Link href="/pricing">See trade pricing</Link>
 							</Button>
 						</div>
 
-						<div className="flex flex-wrap items-center justify-center gap-6 text-muted-foreground text-sm">
+						<div className="text-muted-foreground flex flex-wrap items-center justify-center gap-6 text-sm">
 							{trustSignals.map((signal) => (
 								<div className="flex items-center gap-2" key={signal}>
-									<CheckCircle2 className="size-4 text-success" />
+									<CheckCircle2 className="text-success size-4" />
 									<span>{signal}</span>
 								</div>
 							))}
@@ -533,46 +512,36 @@ export function ModernHomepage() {
 							<div className="grid gap-4 sm:grid-cols-2">
 								{heroStats.map((stat) => (
 									<div
-										className="rounded-2xl border border-border/50 bg-background/80 p-5 shadow-sm backdrop-blur"
+										className="border-border/50 bg-background/80 rounded-2xl border p-5 shadow-sm backdrop-blur"
 										key={stat.label}
 									>
-										<p className="text-muted-foreground text-xs">
-											{stat.label}
-										</p>
-										<p className="font-bold text-3xl">{stat.value}</p>
-										<p className="text-success text-xs dark:text-success">
-											{stat.change}
-										</p>
-										<p className="text-muted-foreground text-xs">
-											{stat.detail}
-										</p>
+										<p className="text-muted-foreground text-xs">{stat.label}</p>
+										<p className="text-3xl font-bold">{stat.value}</p>
+										<p className="text-success dark:text-success text-xs">{stat.change}</p>
+										<p className="text-muted-foreground text-xs">{stat.detail}</p>
 									</div>
 								))}
 							</div>
 							<div className="relative">
-								<div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-primary/40 to-primary/10 blur-3xl" />
-								<div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-background/90 shadow-2xl">
+								<div className="from-primary/40 to-primary/10 absolute inset-0 rounded-[2rem] bg-gradient-to-br blur-3xl" />
+								<div className="border-border/60 bg-background/90 relative overflow-hidden rounded-[2rem] border shadow-2xl">
 									<Image
 										alt="Thorbis dispatch board showing six HVAC routes"
-										className="h-auto w-full rounded-[inherit] border border-border/40 object-cover"
+										className="border-border/40 h-auto w-full rounded-[inherit] border object-cover"
 										height={900}
 										priority
 										src="/hero.png"
 										width={1400}
 									/>
-									<div className="absolute inset-x-6 bottom-6 grid gap-3 rounded-2xl border border-border/50 bg-background/90 p-4 shadow-lg backdrop-blur">
-										<div className="font-semibold text-primary text-xs uppercase tracking-wider">
+									<div className="border-border/50 bg-background/90 absolute inset-x-6 bottom-6 grid gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur">
+										<div className="text-primary text-xs font-semibold tracking-wider uppercase">
 											Control tower insights
 										</div>
 										<div className="grid gap-3 sm:grid-cols-2">
 											{heroCallouts.map((callout) => (
 												<div key={callout.label}>
-													<p className="text-muted-foreground text-xs">
-														{callout.label}
-													</p>
-													<p className="font-semibold text-lg">
-														{callout.value}
-													</p>
+													<p className="text-muted-foreground text-xs">{callout.label}</p>
+													<p className="text-lg font-semibold">{callout.value}</p>
 												</div>
 											))}
 										</div>
@@ -583,30 +552,26 @@ export function ModernHomepage() {
 					</div>
 				</div>
 			</section>
-			<section className="border-border/50 border-y bg-muted/20 py-24">
+			<section className="border-border/50 bg-muted/20 border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-5xl text-center">
 						<Badge className="mb-4" variant="secondary">
 							FAQ
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
-							Answers for busy owners
-						</h2>
-						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							We captured the top objections trade owners raise after evaluating
-							ServiceTitan, Housecall Pro, and generic CRMs.
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">Answers for busy owners</h2>
+						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
+							We captured the top objections trade owners raise after evaluating ServiceTitan,
+							Housecall Pro, and generic CRMs.
 						</p>
 					</div>
 					<div className="mx-auto mt-12 max-w-4xl space-y-4">
 						{faqItems.map((item) => (
 							<div
-								className="rounded-2xl border border-border/60 bg-background p-6 text-left shadow-sm"
+								className="border-border/60 bg-background rounded-2xl border p-6 text-left shadow-sm"
 								key={item.question}
 							>
-								<p className="font-semibold text-xl">{item.question}</p>
-								<p className="mt-3 text-muted-foreground text-sm leading-relaxed">
-									{item.answer}
-								</p>
+								<p className="text-xl font-semibold">{item.question}</p>
+								<p className="text-muted-foreground mt-3 text-sm leading-relaxed">{item.answer}</p>
 							</div>
 						))}
 					</div>
@@ -618,36 +583,31 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Dive deeper
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 							Everything a buying committee needs
 						</h2>
-						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							Compare pricing, study industry playbooks, or watch an on-demand
-							walkthrough without talking to sales. Each page was refreshed for
-							trade owners doing serious diligence.
+						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
+							Compare pricing, study industry playbooks, or watch an on-demand walkthrough without
+							talking to sales. Each page was refreshed for trade owners doing serious diligence.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-2">
 						{buyerDestinations.map((destination) => (
 							<Link
-								className="group flex flex-col justify-between rounded-2xl border border-border/60 bg-card p-6 text-left transition-all hover:border-primary/60 hover:shadow-lg"
+								className="group border-border/60 bg-card hover:border-primary/60 flex flex-col justify-between rounded-2xl border p-6 text-left transition-all hover:shadow-lg"
 								href={destination.href}
 								key={destination.title}
 							>
 								<div>
-									<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-										<destination.icon className="size-6 text-primary" />
+									<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
+										<destination.icon className="text-primary size-6" />
 									</div>
-									<h3 className="mb-2 font-semibold text-2xl group-hover:text-primary">
+									<h3 className="group-hover:text-primary mb-2 text-2xl font-semibold">
 										{destination.title}
 									</h3>
-									<p className="text-muted-foreground text-sm">
-										{destination.description}
-									</p>
+									<p className="text-muted-foreground text-sm">{destination.description}</p>
 								</div>
-								<p className="mt-6 font-semibold text-primary text-sm">
-									Explore &rarr;
-								</p>
+								<p className="text-primary mt-6 text-sm font-semibold">Explore &rarr;</p>
 							</Link>
 						))}
 					</div>
@@ -659,37 +619,33 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Market research
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 							We studied the incumbents so you don&apos;t have to
 						</h2>
-						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							ServiceTitan leans enterprise, Housecall Pro leans DIY websites,
-							and spreadsheets keep you stuck reacting. Thorbis blends the best
-							ideas—without the add-on upsells, per-seat fees, or DIY headache.
+						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
+							ServiceTitan leans enterprise, Housecall Pro leans DIY websites, and spreadsheets keep
+							you stuck reacting. Thorbis blends the best ideas—without the add-on upsells, per-seat
+							fees, or DIY headache.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
 						{incumbentIntel.map((intel) => (
 							<div
-								className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
+								className="border-border/60 bg-background rounded-2xl border p-6 shadow-sm"
 								key={intel.name}
 							>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 									{intel.name}
 								</p>
-								<h3 className="mt-3 mb-2 font-semibold text-xl">
-									{intel.summary}
-								</h3>
-								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">
+								<h3 className="mt-3 mb-2 text-xl font-semibold">{intel.summary}</h3>
+								<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
 									{intel.takeaway}
 								</p>
 								<Link
 									className="text-primary text-sm underline underline-offset-2"
 									href={intel.source.href}
 									rel="noopener noreferrer"
-									target={
-										intel.source.href.startsWith("http") ? "_blank" : undefined
-									}
+									target={intel.source.href.startsWith("http") ? "_blank" : undefined}
 								>
 									{intel.source.label}
 								</Link>
@@ -698,7 +654,7 @@ export function ModernHomepage() {
 					</div>
 				</div>
 			</section>
-			<section className="border-border/40 border-y bg-gradient-to-b from-background via-background/60 to-background py-24">
+			<section className="border-border/40 from-background via-background/60 to-background border-y bg-gradient-to-b py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-6xl">
 						<div className="mb-12 text-center lg:text-left">
@@ -707,45 +663,42 @@ export function ModernHomepage() {
 							</Badge>
 							<div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
 								<div>
-									<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+									<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 										Automation you can actually trust
 									</h2>
-									<p className="mb-6 text-foreground/70 text-lg">
-										Housecall Pro talks about AI teams. ServiceTitan sells
-										Marketing Pro bundles. Thorbis bakes the same capabilities
-										into the base platform so every shop, not just enterprise,
-										gets dispatch, marketing, and cash flow copilots on day one.
+									<p className="text-foreground/70 mb-6 text-lg">
+										Housecall Pro talks about AI teams. ServiceTitan sells Marketing Pro bundles.
+										Thorbis bakes the same capabilities into the base platform so every shop, not
+										just enterprise, gets dispatch, marketing, and cash flow copilots on day one.
 									</p>
-									<div className="space-y-3 text-muted-foreground text-sm">
+									<div className="text-muted-foreground space-y-3 text-sm">
 										<p className="flex items-start gap-3">
-											<Sparkles className="mt-0.5 size-4 text-primary" />
-											Dispatch AI books urgent calls in the same board your
-											humans use—no outside integrations.
+											<Sparkles className="text-primary mt-0.5 size-4" />
+											Dispatch AI books urgent calls in the same board your humans use—no outside
+											integrations.
 										</p>
 										<p className="flex items-start gap-3">
-											<ShieldCheck className="mt-0.5 size-4 text-primary" />
-											Playbooks enforce safety checklists, permit tasks, and job
-											costing guardrails automatically.
+											<ShieldCheck className="text-primary mt-0.5 size-4" />
+											Playbooks enforce safety checklists, permit tasks, and job costing guardrails
+											automatically.
 										</p>
 										<p className="flex items-start gap-3">
-											<TrendingUp className="mt-0.5 size-4 text-primary" />
-											Revenue insights flag idle crews, low conversion zones,
-											and cash delays so you can course-correct live.
+											<TrendingUp className="text-primary mt-0.5 size-4" />
+											Revenue insights flag idle crews, low conversion zones, and cash delays so you
+											can course-correct live.
 										</p>
 									</div>
 								</div>
 								<div className="grid gap-4 sm:grid-cols-2">
 									{aiHighlights.map((highlight) => (
 										<div
-											className="rounded-2xl border border-border/60 bg-card/90 p-5 shadow-sm backdrop-blur"
+											className="border-border/60 bg-card/90 rounded-2xl border p-5 shadow-sm backdrop-blur"
 											key={highlight.title}
 										>
-											<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-												<highlight.icon className="size-6 text-primary" />
+											<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
+												<highlight.icon className="text-primary size-6" />
 											</div>
-											<h3 className="mb-2 font-semibold text-xl">
-												{highlight.title}
-											</h3>
+											<h3 className="mb-2 text-xl font-semibold">{highlight.title}</h3>
 											<p className="text-muted-foreground text-sm leading-relaxed">
 												{highlight.description}
 											</p>
@@ -758,39 +711,36 @@ export function ModernHomepage() {
 				</div>
 			</section>
 
-			<section className="relative border-border/40 border-b bg-gradient-to-b from-background via-background to-muted/30 py-24">
+			<section className="border-border/40 from-background via-background to-muted/30 relative border-b bg-gradient-to-b py-24">
 				<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.15),_transparent_60%)]" />
-				<div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+				<div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-5xl text-center">
 						<Badge className="mb-4" variant="secondary">
 							Psychology-backed proof
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
-							Owners Move When Risk Is Gone
-						</h2>
-						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							We speak to the levers that matter: certainty on margins, total
-							control of the board, and trust that someone has your back if it
-							doesn&apos;t work.
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">Owners Move When Risk Is Gone</h2>
+						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
+							We speak to the levers that matter: certainty on margins, total control of the board,
+							and trust that someone has your back if it doesn&apos;t work.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
 						{persuasionDrivers.map((driver) => (
 							<div
-								className="rounded-2xl border border-border/60 bg-card/90 p-6 shadow-sm backdrop-blur transition-all hover:border-primary/60 hover:shadow-lg"
+								className="border-border/60 bg-card/90 hover:border-primary/60 rounded-2xl border p-6 shadow-sm backdrop-blur transition-all hover:shadow-lg"
 								key={driver.title}
 							>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-									<driver.icon className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
+									<driver.icon className="text-primary size-6" />
 								</div>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 									{driver.label}
 								</p>
-								<h3 className="mb-2 font-semibold text-2xl">{driver.title}</h3>
-								<p className="mb-4 text-muted-foreground text-sm leading-relaxed">
+								<h3 className="mb-2 text-2xl font-semibold">{driver.title}</h3>
+								<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
 									{driver.description}
 								</p>
-								<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+								<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 									{driver.proof}
 								</p>
 							</div>
@@ -807,35 +757,32 @@ export function ModernHomepage() {
 								<Badge className="mb-4" variant="secondary">
 									Visual proof
 								</Badge>
-								<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+								<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 									See The Platform In The Field
 								</h2>
-								<p className="mb-8 text-foreground/70 text-lg">
-									Lifestyle proof sells: let owners see crews, dispatchers, and
-									the product in action—then show how those moments tie back to
-									revenue and peace of mind.
+								<p className="text-foreground/70 mb-8 text-lg">
+									Lifestyle proof sells: let owners see crews, dispatchers, and the product in
+									action—then show how those moments tie back to revenue and peace of mind.
 								</p>
-								<div className="space-y-4 rounded-2xl border border-border/60 bg-muted/30 p-6 text-muted-foreground text-sm leading-relaxed">
+								<div className="border-border/60 bg-muted/30 text-muted-foreground space-y-4 rounded-2xl border p-6 text-sm leading-relaxed">
 									<p className="flex items-start gap-3">
-										<Crown className="mt-1 size-4 text-primary" />
+										<Crown className="text-primary mt-1 size-4" />
 										Own the narrative with high-end visuals and concrete stats.
 									</p>
 									<p className="flex items-start gap-3">
-										<LineChart className="mt-1 size-4 text-primary" />
-										Tie every scene to growth: faster calls, tighter routes, and
-										cash collected.
+										<LineChart className="text-primary mt-1 size-4" />
+										Tie every scene to growth: faster calls, tighter routes, and cash collected.
 									</p>
 									<p className="flex items-start gap-3">
-										<Handshake className="mt-1 size-4 text-primary" />
-										Back it with guarantees and concierge humans, not just
-										software.
+										<Handshake className="text-primary mt-1 size-4" />
+										Back it with guarantees and concierge humans, not just software.
 									</p>
 								</div>
 							</div>
 							<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
 								{visualStories.map((visual) => (
 									<div
-										className="group relative overflow-hidden rounded-3xl border border-border/60 bg-card shadow-lg"
+										className="group border-border/60 bg-card relative overflow-hidden rounded-3xl border shadow-lg"
 										key={visual.alt}
 									>
 										<Image
@@ -845,11 +792,9 @@ export function ModernHomepage() {
 											src={visual.src}
 											width={900}
 										/>
-										<div className="space-y-2 border-border/60 border-t bg-background/90 p-6 backdrop-blur">
+										<div className="border-border/60 bg-background/90 space-y-2 border-t p-6 backdrop-blur">
 											<Badge variant="secondary">{visual.badge}</Badge>
-											<p className="font-semibold text-foreground">
-												{visual.caption}
-											</p>
+											<p className="text-foreground font-semibold">{visual.caption}</p>
 										</div>
 									</div>
 								))}
@@ -859,37 +804,34 @@ export function ModernHomepage() {
 				</div>
 			</section>
 
-			<section className="border-border/50 border-y bg-background py-24">
+			<section className="border-border/50 bg-background border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-6xl">
 						<div className="mb-16 text-center">
 							<Badge className="mb-4" variant="secondary">
 								Trade-built workflows
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 								Crew-Ready Tools For Owners On The Go
 							</h2>
-							<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-								Replace paper, whiteboards, and stitched-together apps with one
-								system designed alongside HVAC, plumbing, electrical, and
-								specialty contractors.
+							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
+								Replace paper, whiteboards, and stitched-together apps with one system designed
+								alongside HVAC, plumbing, electrical, and specialty contractors.
 							</p>
 						</div>
 
 						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 							{tradeFeatures.map((feature) => (
 								<div
-									className="group relative overflow-hidden rounded-xl border border-border/50 bg-card p-6 transition-all hover:border-primary/50 hover:shadow-lg"
+									className="group border-border/50 bg-card hover:border-primary/50 relative overflow-hidden rounded-xl border p-6 transition-all hover:shadow-lg"
 									key={feature.title}
 								>
-									<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
+									<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
 										<feature.icon
 											className={`size-6 ${feature.color} transition-transform group-hover:scale-110`}
 										/>
 									</div>
-									<h3 className="mb-2 font-semibold text-xl">
-										{feature.title}
-									</h3>
+									<h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
 									<p className="text-muted-foreground text-sm leading-relaxed">
 										{feature.description}
 									</p>
@@ -906,36 +848,35 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Field-proven workflow
 						</Badge>
-						<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 							Every Phase Of The Job, In One Place
 						</h2>
-						<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-							Whether you&apos;re in the truck or in the office, Thorbis keeps
-							the same playbook visible to everyone so nothing slips between
-							estimate and final payment.
+						<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
+							Whether you&apos;re in the truck or in the office, Thorbis keeps the same playbook
+							visible to everyone so nothing slips between estimate and final payment.
 						</p>
 					</div>
 
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
 						{jobFlow.map((stage) => (
 							<div
-								className="rounded-2xl border border-border/60 bg-background p-6 shadow-sm"
+								className="border-border/60 bg-background rounded-2xl border p-6 shadow-sm"
 								key={stage.title}
 							>
-								<div className="mb-4 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-									<stage.icon className="size-6 text-primary" />
+								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
+									<stage.icon className="text-primary size-6" />
 								</div>
-								<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 									{stage.stage}
 								</p>
-								<h3 className="mb-4 font-semibold text-2xl">{stage.title}</h3>
+								<h3 className="mb-4 text-2xl font-semibold">{stage.title}</h3>
 								<ul className="space-y-3">
 									{stage.bullets.map((bullet) => (
 										<li
-											className="flex items-start gap-3 text-muted-foreground text-sm"
+											className="text-muted-foreground flex items-start gap-3 text-sm"
 											key={bullet}
 										>
-											<CheckCircle2 className="mt-0.5 size-4 text-success" />
+											<CheckCircle2 className="text-success mt-0.5 size-4" />
 											<span>{bullet}</span>
 										</li>
 									))}
@@ -946,46 +887,42 @@ export function ModernHomepage() {
 				</div>
 			</section>
 
-			<section className="border-border/50 border-y bg-background py-24">
+			<section className="border-border/50 bg-background border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-5xl text-center">
 						<Badge className="mb-4" variant="secondary">
 							Proof over promises
 						</Badge>
-						<h2 className="mb-6 font-bold text-4xl md:text-5xl">
+						<h2 className="mb-6 text-4xl font-bold md:text-5xl">
 							Why Trade Owners Switch From Legacy Systems
 						</h2>
-						<p className="mx-auto max-w-3xl text-foreground/70 text-lg">
-							Strip away the marketing—here&apos;s how Thorbis wins when owners
-							compare us against the usual suspects.
+						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
+							Strip away the marketing—here&apos;s how Thorbis wins when owners compare us against
+							the usual suspects.
 						</p>
 					</div>
-					<div className="mt-12 overflow-hidden rounded-3xl border border-border/60 bg-card">
+					<div className="border-border/60 bg-card mt-12 overflow-hidden rounded-3xl border">
 						<div className="grid gap-0 md:grid-cols-2">
 							{comparisonPoints.map((point) => (
 								<div
 									className="border-border/60 border-t p-6 text-sm md:border-l"
 									key={point.claim}
 								>
-									<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+									<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 										{point.claim}
 									</p>
 									<div className="mt-4 flex flex-col gap-4">
-										<div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
-											<p className="font-semibold text-primary text-xs uppercase tracking-wide">
+										<div className="border-primary/30 bg-primary/5 rounded-2xl border p-4">
+											<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 												Thorbis
 											</p>
-											<p className="text-base text-foreground">
-												{point.thorbis}
-											</p>
+											<p className="text-foreground text-base">{point.thorbis}</p>
 										</div>
-										<div className="rounded-2xl border border-border/70 bg-background/70 p-4">
-											<p className="font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+										<div className="border-border/70 bg-background/70 rounded-2xl border p-4">
+											<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 												Other tools
 											</p>
-											<p className="text-base text-muted-foreground">
-												{point.others}
-											</p>
+											<p className="text-muted-foreground text-base">{point.others}</p>
 										</div>
 									</div>
 								</div>
@@ -1002,33 +939,29 @@ export function ModernHomepage() {
 							<Badge className="mb-4" variant="secondary">
 								Owner outcomes
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 								Numbers That Make Trade Owners Smile
 							</h2>
-							<p className="mx-auto max-w-2xl text-foreground/70 text-lg">
-								See what happens when every truck, call, and invoice moves
-								through the same playbook.
+							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
+								See what happens when every truck, call, and invoice moves through the same
+								playbook.
 							</p>
 						</div>
 
 						<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
 							{ownerWins.map((win) => (
 								<div
-									className="rounded-xl border border-border/50 bg-background p-6 text-center"
+									className="border-border/50 bg-background rounded-xl border p-6 text-center"
 									key={win.label}
 								>
 									<div className="mb-4 flex justify-center">
-										<div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-											<win.icon className="size-6 text-primary" />
+										<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
+											<win.icon className="text-primary size-6" />
 										</div>
 									</div>
-									<div className="mb-2 font-bold text-4xl text-primary">
-										{win.metric}
-									</div>
-									<div className="mb-1 font-semibold text-lg">{win.label}</div>
-									<div className="text-muted-foreground text-sm">
-										{win.description}
-									</div>
+									<div className="text-primary mb-2 text-4xl font-bold">{win.metric}</div>
+									<div className="mb-1 text-lg font-semibold">{win.label}</div>
+									<div className="text-muted-foreground text-sm">{win.description}</div>
 								</div>
 							))}
 						</div>
@@ -1036,14 +969,14 @@ export function ModernHomepage() {
 				</div>
 			</section>
 
-			<section className="border-border/50 border-y bg-background py-24">
+			<section className="border-border/50 bg-background border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-6xl">
 						<div className="mb-16 text-center">
 							<Badge className="mb-4" variant="secondary">
 								Customer stories
 							</Badge>
-							<h2 className="mb-4 font-bold text-4xl md:text-5xl">
+							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
 								Crew-Tested By Real Tradespeople
 							</h2>
 						</div>
@@ -1051,18 +984,15 @@ export function ModernHomepage() {
 						<div className="grid gap-6 md:grid-cols-3">
 							{testimonialQuotes.map((testimonial) => (
 								<div
-									className="rounded-xl border border-border/50 bg-card p-6"
+									className="border-border/50 bg-card rounded-xl border p-6"
 									key={testimonial.name}
 								>
 									<div className="mb-4 flex gap-1">
 										{[...new Array(testimonial.rating)].map((_, index) => (
-											<Star
-												className="size-4 fill-yellow-500 text-warning"
-												key={index}
-											/>
+											<Star className="text-warning size-4 fill-yellow-500" key={index} />
 										))}
 									</div>
-									<p className="mb-6 text-muted-foreground leading-relaxed">
+									<p className="text-muted-foreground mb-6 leading-relaxed">
 										"{testimonial.content}"
 									</p>
 									<div>
@@ -1078,24 +1008,23 @@ export function ModernHomepage() {
 				</div>
 			</section>
 
-			<section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background py-24">
-				<div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
+			<section className="from-primary/10 via-primary/5 to-background relative overflow-hidden bg-gradient-to-br py-24">
+				<div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
 						<Badge className="mb-4" variant="secondary">
 							Risk-free switch
 						</Badge>
-						<h2 className="mb-6 font-bold text-4xl md:text-5xl lg:text-6xl">
+						<h2 className="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
 							Give Your Crews A System That Works
 						</h2>
-						<p className="mx-auto mb-10 max-w-2xl text-foreground/70 text-xl">
-							HVAC, plumbing, electrical, roofing, and specialty contractors
-							trust Thorbis to keep phones answered, trucks dispatched, and cash
-							collected without babysitting software.
+						<p className="text-foreground/70 mx-auto mb-10 max-w-2xl text-xl">
+							HVAC, plumbing, electrical, roofing, and specialty contractors trust Thorbis to keep
+							phones answered, trucks dispatched, and cash collected without babysitting software.
 						</p>
-						<div className="mb-10 space-y-3 text-left text-muted-foreground text-sm sm:text-base">
+						<div className="text-muted-foreground mb-10 space-y-3 text-left text-sm sm:text-base">
 							{guaranteeHighlights.map((highlight) => (
 								<p className="flex items-start gap-3" key={highlight}>
-									<CheckCircle2 className="mt-0.5 size-4 text-success" />
+									<CheckCircle2 className="text-success mt-0.5 size-4" />
 									<span>{highlight}</span>
 								</p>
 							))}
@@ -1103,7 +1032,7 @@ export function ModernHomepage() {
 						<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
 							<Button
 								asChild
-								className="group h-14 px-8 text-lg shadow-lg shadow-primary/20"
+								className="group shadow-primary/20 h-14 px-8 text-lg shadow-lg"
 								size="lg"
 							>
 								<Link href="/register">
@@ -1111,18 +1040,13 @@ export function ModernHomepage() {
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button
-								asChild
-								className="h-14 border-2 px-8 text-lg"
-								size="lg"
-								variant="outline"
-							>
+							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
 								<Link href="/pricing">Talk with a trade expert</Link>
 							</Button>
 						</div>
-						<p className="mt-6 text-muted-foreground text-sm">
-							Working system in 24 hours • Unlimited users • Trade-focused
-							onboarding • Cancel anytime
+						<p className="text-muted-foreground mt-6 text-sm">
+							Working system in 24 hours • Unlimited users • Trade-focused onboarding • Cancel
+							anytime
 						</p>
 					</div>
 				</div>

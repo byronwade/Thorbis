@@ -8,11 +8,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -33,11 +29,7 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError(
-			"You must be part of a company",
-			ERROR_CODES.AUTH_FORBIDDEN,
-			403,
-		);
+		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
 	}
 
 	return teamMember.company_id;
@@ -62,16 +54,11 @@ const jobSettingsSchema = z.object({
 	requireCompletionNotes: z.boolean().default(true),
 });
 
-export async function updateJobSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateJobSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -83,23 +70,17 @@ export async function updateJobSettings(
 
 		const data = jobSettingsSchema.parse({
 			jobNumberPrefix: formData.get("jobNumberPrefix") || "JOB",
-			jobNumberFormat:
-				formData.get("jobNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+			jobNumberFormat: formData.get("jobNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
 			nextJobNumber: formData.get("nextJobNumber") || "1",
 			defaultJobStatus: formData.get("defaultJobStatus") || "scheduled",
 			defaultPriority: formData.get("defaultPriority") || "normal",
-			requireCustomerSignature:
-				formData.get("requireCustomerSignature") === "true",
+			requireCustomerSignature: formData.get("requireCustomerSignature") === "true",
 			requirePhotoCompletion: formData.get("requirePhotoCompletion") === "true",
-			autoInvoiceOnCompletion:
-				formData.get("autoInvoiceOnCompletion") === "true",
-			autoSendCompletionEmail:
-				formData.get("autoSendCompletionEmail") !== "false",
+			autoInvoiceOnCompletion: formData.get("autoInvoiceOnCompletion") === "true",
+			autoSendCompletionEmail: formData.get("autoSendCompletionEmail") !== "false",
 			trackTechnicianTime: formData.get("trackTechnicianTime") !== "false",
-			requireArrivalConfirmation:
-				formData.get("requireArrivalConfirmation") === "true",
-			requireCompletionNotes:
-				formData.get("requireCompletionNotes") !== "false",
+			requireArrivalConfirmation: formData.get("requireArrivalConfirmation") === "true",
+			requireCompletionNotes: formData.get("requireCompletionNotes") !== "false",
 		});
 
 		const { error } = await supabase.from("job_settings").upsert({
@@ -121,7 +102,7 @@ export async function updateJobSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update job settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -133,10 +114,7 @@ export async function getJobSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -155,7 +133,7 @@ export async function getJobSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch job settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -186,16 +164,11 @@ const estimateSettingsSchema = z.object({
 	reminderDaysBeforeExpiry: z.coerce.number().default(7),
 });
 
-export async function updateEstimateSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateEstimateSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -208,13 +181,11 @@ export async function updateEstimateSettings(
 		const data = estimateSettingsSchema.parse({
 			estimateNumberPrefix: formData.get("estimateNumberPrefix") || "EST",
 			estimateNumberFormat:
-				formData.get("estimateNumberFormat") ||
-				"{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+				formData.get("estimateNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
 			nextEstimateNumber: formData.get("nextEstimateNumber") || "1",
 			defaultValidForDays: formData.get("defaultValidForDays") || "30",
 			showExpiryDate: formData.get("showExpiryDate") !== "false",
-			includeTermsAndConditions:
-				formData.get("includeTermsAndConditions") !== "false",
+			includeTermsAndConditions: formData.get("includeTermsAndConditions") !== "false",
 			defaultTerms: formData.get("defaultTerms") || undefined,
 			showPaymentTerms: formData.get("showPaymentTerms") !== "false",
 			allowDiscounts: formData.get("allowDiscounts") !== "false",
@@ -250,7 +221,7 @@ export async function updateEstimateSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update estimate settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -262,10 +233,7 @@ export async function getEstimateSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -284,7 +252,7 @@ export async function getEstimateSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch estimate settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -317,16 +285,11 @@ const invoiceSettingsSchema = z.object({
 	reminderSchedule: z.string().optional(), // JSON array
 });
 
-export async function updateInvoiceSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateInvoiceSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -338,8 +301,7 @@ export async function updateInvoiceSettings(
 
 		const data = invoiceSettingsSchema.parse({
 			invoiceNumberPrefix: formData.get("invoiceNumberPrefix") || "INV",
-			invoiceNumberFormat:
-				formData.get("invoiceNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
+			invoiceNumberFormat: formData.get("invoiceNumberFormat") || "{PREFIX}-{YYYY}{MM}{DD}-{XXXX}",
 			nextInvoiceNumber: formData.get("nextInvoiceNumber") || "1",
 			defaultPaymentTerms: formData.get("defaultPaymentTerms") || "30",
 			paymentTermsOptions: formData.get("paymentTermsOptions") || undefined,
@@ -347,11 +309,9 @@ export async function updateInvoiceSettings(
 			lateFeeType: formData.get("lateFeeType") || "percentage",
 			lateFeeAmount: formData.get("lateFeeAmount") || "5.0",
 			lateFeeGracePeriodDays: formData.get("lateFeeGracePeriodDays") || "7",
-			includeTermsAndConditions:
-				formData.get("includeTermsAndConditions") !== "false",
+			includeTermsAndConditions: formData.get("includeTermsAndConditions") !== "false",
 			defaultTerms: formData.get("defaultTerms") || undefined,
-			showPaymentInstructions:
-				formData.get("showPaymentInstructions") !== "false",
+			showPaymentInstructions: formData.get("showPaymentInstructions") !== "false",
 			paymentInstructions: formData.get("paymentInstructions") || undefined,
 			taxEnabled: formData.get("taxEnabled") !== "false",
 			defaultTaxRate: formData.get("defaultTaxRate") || "0",
@@ -404,7 +364,7 @@ export async function updateInvoiceSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update invoice settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -416,10 +376,7 @@ export async function getInvoiceSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -438,7 +395,7 @@ export async function getInvoiceSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch invoice settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -462,16 +419,11 @@ const servicePlanSettingsSchema = z.object({
 	reminderDays: z.coerce.number().default(3),
 });
 
-export async function updateServicePlanSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateServicePlanSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -482,17 +434,14 @@ export async function updateServicePlanSettings(
 		const companyId = await getCompanyId(supabase, user.id);
 
 		const data = servicePlanSettingsSchema.parse({
-			allowMultiplePlansPerCustomer:
-				formData.get("allowMultiplePlansPerCustomer") === "true",
-			requireContractSignature:
-				formData.get("requireContractSignature") !== "false",
+			allowMultiplePlansPerCustomer: formData.get("allowMultiplePlansPerCustomer") === "true",
+			requireContractSignature: formData.get("requireContractSignature") !== "false",
 			autoRenewEnabled: formData.get("autoRenewEnabled") !== "false",
 			renewalNoticeDays: formData.get("renewalNoticeDays") || "30",
 			autoInvoiceOnRenewal: formData.get("autoInvoiceOnRenewal") !== "false",
 			autoScheduleServices: formData.get("autoScheduleServices") !== "false",
 			scheduleAdvanceDays: formData.get("scheduleAdvanceDays") || "7",
-			sendReminderBeforeService:
-				formData.get("sendReminderBeforeService") !== "false",
+			sendReminderBeforeService: formData.get("sendReminderBeforeService") !== "false",
 			reminderDays: formData.get("reminderDays") || "3",
 		});
 
@@ -512,7 +461,7 @@ export async function updateServicePlanSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update service plan settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -524,10 +473,7 @@ export async function getServicePlanSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -546,7 +492,7 @@ export async function getServicePlanSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch service plan settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -568,16 +514,11 @@ const pricebookSettingsSchema = z.object({
 	showItemDescriptions: z.boolean().default(true),
 });
 
-export async function updatePricebookSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updatePricebookSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -589,12 +530,10 @@ export async function updatePricebookSettings(
 
 		const data = pricebookSettingsSchema.parse({
 			showCostPrices: formData.get("showCostPrices") !== "false",
-			markupDefaultPercentage:
-				formData.get("markupDefaultPercentage") || "50.0",
+			markupDefaultPercentage: formData.get("markupDefaultPercentage") || "50.0",
 			requireCategories: formData.get("requireCategories") !== "false",
 			allowCustomItems: formData.get("allowCustomItems") !== "false",
-			requireApprovalForCustom:
-				formData.get("requireApprovalForCustom") === "true",
+			requireApprovalForCustom: formData.get("requireApprovalForCustom") === "true",
 			showItemCodes: formData.get("showItemCodes") !== "false",
 			showItemDescriptions: formData.get("showItemDescriptions") !== "false",
 		});
@@ -613,7 +552,7 @@ export async function updatePricebookSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update pricebook settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -625,10 +564,7 @@ export async function getPricebookSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -647,7 +583,7 @@ export async function getPricebookSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch pricebook settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -672,16 +608,11 @@ const bookingSettingsSchema = z.object({
 	maxBookingsPerDay: z.coerce.number().optional(),
 });
 
-export async function updateBookingSettings(
-	formData: FormData,
-): Promise<ActionResult<void>> {
+export async function updateBookingSettings(formData: FormData): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -694,12 +625,10 @@ export async function updateBookingSettings(
 		const data = bookingSettingsSchema.parse({
 			onlineBookingEnabled: formData.get("onlineBookingEnabled") === "true",
 			requireAccount: formData.get("requireAccount") === "true",
-			requireServiceSelection:
-				formData.get("requireServiceSelection") !== "false",
+			requireServiceSelection: formData.get("requireServiceSelection") !== "false",
 			showPricing: formData.get("showPricing") !== "false",
 			allowTimePreferences: formData.get("allowTimePreferences") !== "false",
-			requireImmediatePayment:
-				formData.get("requireImmediatePayment") === "true",
+			requireImmediatePayment: formData.get("requireImmediatePayment") === "true",
 			sendConfirmationEmail: formData.get("sendConfirmationEmail") !== "false",
 			sendConfirmationSms: formData.get("sendConfirmationSms") === "true",
 			minBookingNoticeHours: formData.get("minBookingNoticeHours") || "24",
@@ -723,7 +652,7 @@ export async function updateBookingSettings(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update booking settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -735,10 +664,7 @@ export async function getBookingSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const {
@@ -757,7 +683,7 @@ export async function getBookingSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch booking settings"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

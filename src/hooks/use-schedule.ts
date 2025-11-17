@@ -14,9 +14,7 @@ export function useSchedule() {
 	const jobs = useScheduleStore((state) => state.jobs);
 	const technicians = useScheduleStore((state) => state.technicians);
 	const selectedJobId = useScheduleStore((state) => state.selectedJobId);
-	const selectedTechnicianId = useScheduleStore(
-		(state) => state.selectedTechnicianId,
-	);
+	const selectedTechnicianId = useScheduleStore((state) => state.selectedTechnicianId);
 	const lastFetchedRange = useScheduleStore((state) => state.lastFetchedRange);
 	const storeCompanyId = useScheduleStore((state) => state.companyId);
 
@@ -36,14 +34,10 @@ export function useSchedule() {
 	const syncWithServer = useScheduleStore((state) => state.syncWithServer);
 	const setLastSync = useScheduleStore((state) => state.setLastSync);
 	const setCompanyId = useScheduleStore((state) => state.setCompanyId);
-	const setLastFetchedRange = useScheduleStore(
-		(state) => state.setLastFetchedRange,
-	);
-	const getUnassignedJobsFromStore = useScheduleStore(
-		(state) => state.getUnassignedJobs,
-	);
+	const setLastFetchedRange = useScheduleStore((state) => state.setLastFetchedRange);
+	const getUnassignedJobsFromStore = useScheduleStore((state) => state.getUnassignedJobs);
 	const getJobsGroupedByTechnicianFromStore = useScheduleStore(
-		(state) => state.getJobsGroupedByTechnician,
+		(state) => state.getJobsGroupedByTechnician
 	);
 
 	// Get view store values with selectors to avoid re-renders
@@ -53,16 +47,11 @@ export function useSchedule() {
 	const _zoom = useViewStore((state) => state.zoom);
 
 	// Calculate visible time range once
-	const visibleTimeRange = useMemo(
-		() => useViewStore.getState().getVisibleTimeRange(),
-		[],
-	);
+	const visibleTimeRange = useMemo(() => useViewStore.getState().getVisibleTimeRange(), []);
 
 	const rangeStart = visibleTimeRange.start.getTime();
 	const rangeEnd = visibleTimeRange.end.getTime();
-	const companyIdRef = useRef<string | null>(
-		useScheduleStore.getState().companyId,
-	);
+	const companyIdRef = useRef<string | null>(useScheduleStore.getState().companyId);
 
 	useEffect(() => {
 		companyIdRef.current = storeCompanyId;
@@ -140,20 +129,17 @@ export function useSchedule() {
 				}
 
 				if (!companyId) {
-					throw new Error(
-						"Unable to resolve company context for schedule data",
-					);
+					throw new Error("Unable to resolve company context for schedule data");
 				}
 
-				const { jobs: convertedJobs, technicians: convertedTechnicians } =
-					await fetchScheduleData({
-						supabase,
-						companyId,
-						range: {
-							start: new Date(rangeStart),
-							end: new Date(rangeEnd),
-						},
-					});
+				const { jobs: convertedJobs, technicians: convertedTechnicians } = await fetchScheduleData({
+					supabase,
+					companyId,
+					range: {
+						start: new Date(rangeStart),
+						end: new Date(rangeEnd),
+					},
+				});
 
 				if (!isMounted) {
 					return;
@@ -233,9 +219,7 @@ export function useSchedule() {
 
 		// If technician filter is active, only show filtered technicians
 		if (filters.technicianIds.length > 0) {
-			return allTechnicians.filter((tech) =>
-				filters.technicianIds.includes(tech.id),
-			);
+			return allTechnicians.filter((tech) => filters.technicianIds.includes(tech.id));
 		}
 
 		return allTechnicians;
@@ -245,7 +229,7 @@ export function useSchedule() {
 	const getJobsForTechnician = useCallback(
 		(technicianId: string): Job[] =>
 			filteredJobs.filter((job) => job.technicianId === technicianId),
-		[filteredJobs],
+		[filteredJobs]
 	);
 
 	// Get jobs within visible time range - MEMOIZED
@@ -259,10 +243,7 @@ export function useSchedule() {
 	}, [filteredJobs, visibleTimeRange]);
 
 	// Get all jobs (unfiltered)
-	const getAllJobs = useCallback(
-		(): Job[] => Array.from(jobs.values()),
-		[jobs],
-	);
+	const getAllJobs = useCallback((): Job[] => Array.from(jobs.values()), [jobs]);
 
 	return {
 		// State

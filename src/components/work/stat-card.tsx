@@ -14,13 +14,11 @@ export function StatCard({ label, value, subtext, trend }: StatCardProps) {
 				: "text-muted-foreground";
 
 	return (
-		<div className="flex flex-col gap-1.5 rounded-lg border border-border/40 bg-card/30 p-4 backdrop-blur-sm transition-colors hover:bg-card/50">
-			<div className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+		<div className="border-border/40 bg-card/30 hover:bg-card/50 flex flex-col gap-1.5 rounded-lg border p-4 backdrop-blur-sm transition-colors">
+			<div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 				{label}
 			</div>
-			<div className="font-semibold text-2xl tabular-nums tracking-tight">
-				{value}
-			</div>
+			<div className="text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
 			<div className={`text-xs ${trendColor}`}>{subtext}</div>
 		</div>
 	);

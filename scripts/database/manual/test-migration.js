@@ -1,8 +1,7 @@
 const { createClient } = require("@supabase/supabase-js");
 
 const supabaseUrl =
-	process.env.NEXT_PUBLIC_SUPABASE_URL ||
-	"https://togejqdwggezkxahomeh.supabase.co";
+	process.env.NEXT_PUBLIC_SUPABASE_URL || "https://togejqdwggezkxahomeh.supabase.co";
 const supabaseKey =
 	process.env.SUPABASE_SERVICE_ROLE_KEY ||
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvZ2VqcWR3Z2dlemt4YWhvbWVoIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MTcyMDI5NSwiZXhwIjoyMDc3Mjk2Mjk1fQ.AYOqqzsx3hqzfVa9knQtW6fVnH1K7z-YlmYyBKLCO7E";
@@ -47,10 +46,7 @@ async function testMigration() {
 
 	// Test 3: Check if ownership_transfers table exists
 	console.log("\n3. Checking if ownership_transfers table exists...");
-	const { error: transferError } = await supabase
-		.from("ownership_transfers")
-		.select("id")
-		.limit(1);
+	const { error: transferError } = await supabase.from("ownership_transfers").select("id").limit(1);
 
 	if (transferError) {
 		console.log("❌ ownership_transfers table does NOT exist");

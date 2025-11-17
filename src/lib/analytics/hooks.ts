@@ -83,7 +83,7 @@ export function useFormTracking(formType: string) {
 				},
 			});
 		},
-		[formType, track],
+		[formType, track]
 	);
 
 	const trackFormAbandon = useCallback(
@@ -96,7 +96,7 @@ export function useFormTracking(formType: string) {
 				},
 			});
 		},
-		[formType, track],
+		[formType, track]
 	);
 
 	const trackFieldFocus = useCallback(
@@ -109,7 +109,7 @@ export function useFormTracking(formType: string) {
 				},
 			});
 		},
-		[formType, track],
+		[formType, track]
 	);
 
 	const trackValidationError = useCallback(
@@ -123,7 +123,7 @@ export function useFormTracking(formType: string) {
 				},
 			});
 		},
-		[formType, track],
+		[formType, track]
 	);
 
 	return {
@@ -154,7 +154,7 @@ export function useFeatureTracking() {
 			properties?: {
 				firstTime?: boolean;
 				context?: string;
-			},
+			}
 		) => {
 			track({
 				name: "feature.used",
@@ -164,14 +164,11 @@ export function useFeatureTracking() {
 				},
 			});
 		},
-		[track],
+		[track]
 	);
 
 	const trackFeatureDiscovery = useCallback(
-		(
-			featureName: string,
-			source: "tooltip" | "tour" | "notification" | "search",
-		) => {
+		(featureName: string, source: "tooltip" | "tour" | "notification" | "search") => {
 			track({
 				name: "feature.discovered",
 				properties: {
@@ -180,7 +177,7 @@ export function useFeatureTracking() {
 				},
 			});
 		},
-		[track],
+		[track]
 	);
 
 	return {
@@ -212,15 +209,11 @@ export function useUITracking() {
 				},
 			});
 		},
-		[track],
+		[track]
 	);
 
 	const trackModalClose = useCallback(
-		(
-			modalType: string,
-			action: "submit" | "cancel" | "dismiss",
-			duration?: number,
-		) => {
+		(modalType: string, action: "submit" | "cancel" | "dismiss", duration?: number) => {
 			track({
 				name: "ui.modal_closed",
 				properties: {
@@ -230,7 +223,7 @@ export function useUITracking() {
 				},
 			});
 		},
-		[track],
+		[track]
 	);
 
 	const trackTabSwitch = useCallback(
@@ -243,7 +236,7 @@ export function useUITracking() {
 				},
 			});
 		},
-		[track],
+		[track]
 	);
 
 	return {

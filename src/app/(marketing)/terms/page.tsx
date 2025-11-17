@@ -11,11 +11,7 @@ export const metadata = generateSEOMetadata({
 		"Read the Thorbis terms of service governing use of the platform, subscription commitments, and support obligations.",
 	path: "/terms",
 	section: "Legal",
-	keywords: [
-		"thorbis terms",
-		"thorbis agreement",
-		"field service software terms",
-	],
+	keywords: ["thorbis terms", "thorbis agreement", "field service software terms"],
 });
 
 const SECTIONS = [
@@ -80,7 +76,7 @@ export default function TermsPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Terms of Service", url: `${siteUrl}/terms` },
-						]),
+						])
 					),
 				}}
 				id="terms-breadcrumb-ld"
@@ -88,19 +84,19 @@ export default function TermsPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
 						Thorbis Terms of Service
 					</h1>
 					<p className="text-muted-foreground">
-						Effective date: January 1, 2025. These Terms outline customer
-						responsibilities and Thorbis obligations. Please review carefully.
+						Effective date: January 1, 2025. These Terms outline customer responsibilities and
+						Thorbis obligations. Please review carefully.
 					</p>
 				</header>
 				<article className="space-y-8">
 					{SECTIONS.map((section) => (
 						<section className="space-y-2" key={section.heading}>
-							<h2 className="font-semibold text-xl">{section.heading}</h2>
-							<p className="whitespace-pre-line text-muted-foreground leading-relaxed">
+							<h2 className="text-xl font-semibold">{section.heading}</h2>
+							<p className="text-muted-foreground leading-relaxed whitespace-pre-line">
 								{section.body}
 							</p>
 						</section>

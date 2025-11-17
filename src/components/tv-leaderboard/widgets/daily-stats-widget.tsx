@@ -50,8 +50,8 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 				<ShowAt stage="full">
 					<div className="grid flex-1 grid-cols-2 gap-2">
 						{/* Revenue */}
-						<div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
-							<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+						<div className="border-primary/10 bg-primary/5 flex flex-col justify-center rounded-lg border p-2">
+							<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 								<DollarSign className="size-3.5" />
 								Revenue
 							</div>
@@ -61,8 +61,8 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						</div>
 
 						{/* Jobs */}
-						<div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
-							<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+						<div className="border-primary/10 bg-primary/5 flex flex-col justify-center rounded-lg border p-2">
+							<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 								<Briefcase className="size-3.5" />
 								Jobs
 							</div>
@@ -72,8 +72,8 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						</div>
 
 						{/* Avg Ticket */}
-						<div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
-							<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+						<div className="border-primary/10 bg-primary/5 flex flex-col justify-center rounded-lg border p-2">
+							<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 								<DollarSign className="size-3.5" />
 								Avg Ticket
 							</div>
@@ -83,8 +83,8 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						</div>
 
 						{/* Rating */}
-						<div className="flex flex-col justify-center rounded-lg border border-primary/10 bg-primary/5 p-2">
-							<div className="flex items-center gap-1.5 text-muted-foreground text-xs">
+						<div className="border-primary/10 bg-primary/5 flex flex-col justify-center rounded-lg border p-2">
+							<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 								<Star className="size-3.5" />
 								Rating
 							</div>
@@ -101,7 +101,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						{/* Revenue */}
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-1.5">
-								<DollarSign className="size-3.5 text-success" />
+								<DollarSign className="text-success size-3.5" />
 								<ResponsiveText variant="caption">Revenue</ResponsiveText>
 							</div>
 							<ResponsiveText className="font-bold" variant="body">
@@ -112,7 +112,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						{/* Jobs */}
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-1.5">
-								<Briefcase className="size-3.5 text-primary" />
+								<Briefcase className="text-primary size-3.5" />
 								<ResponsiveText variant="caption">Jobs</ResponsiveText>
 							</div>
 							<ResponsiveText className="font-bold" variant="body">
@@ -128,10 +128,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText
-							className="font-bold text-success"
-							variant="display"
-						>
+						<ResponsiveText className="text-success font-bold" variant="display">
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -140,10 +137,7 @@ export function DailyStatsWidget({ data }: DailyStatsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText
-							className="font-bold text-success"
-							variant="display"
-						>
+						<ResponsiveText className="text-success font-bold" variant="display">
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

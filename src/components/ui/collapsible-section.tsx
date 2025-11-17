@@ -10,11 +10,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import {
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -42,21 +38,16 @@ export function CollapsibleSection({
 	className,
 }: CollapsibleSectionProps) {
 	return (
-		<AccordionItem
-			className={cn("rounded-lg border bg-card shadow-sm", className)}
-			value={value}
-		>
+		<AccordionItem className={cn("bg-card rounded-lg border shadow-sm", className)} value={value}>
 			<div className="flex items-center justify-between gap-4 px-6 py-3.5">
 				<AccordionTrigger className="flex-1 hover:no-underline">
 					<div className="flex items-center gap-3">
 						{icon && (
-							<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
-									{icon}
-								</span>
+							<div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
+								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
 							</div>
 						)}
-						<span className="font-medium text-sm">{title}</span>
+						<span className="text-sm font-medium">{title}</span>
 						{count !== undefined && (
 							<Badge className="ml-1 text-xs" variant="secondary">
 								{count}
@@ -75,14 +66,8 @@ export function CollapsibleSection({
 					</div>
 				)}
 			</div>
-			<AccordionContent
-				className={cn("px-6 pb-6", fullWidthContent && "-mx-6 -mt-6 -mb-6")}
-			>
-				{fullWidthContent ? (
-					<div>{children}</div>
-				) : (
-					<div className="space-y-4">{children}</div>
-				)}
+			<AccordionContent className={cn("px-6 pb-6", fullWidthContent && "-mx-6 -mt-6 -mb-6")}>
+				{fullWidthContent ? <div>{children}</div> : <div className="space-y-4">{children}</div>}
 			</AccordionContent>
 		</AccordionItem>
 	);

@@ -9,11 +9,7 @@
  */
 
 import { Briefcase, TrendingDown, TrendingUp } from "lucide-react";
-import {
-	formatNumber,
-	formatPercentage,
-	getTrendClass,
-} from "@/lib/utils/responsive-utils";
+import { formatNumber, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveFlex,
@@ -50,10 +46,7 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 				{/* COMFORTABLE Stage: Title + icon inline, more compact */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText
-							className="font-medium text-muted-foreground"
-							variant="body"
-						>
+						<ResponsiveText className="text-muted-foreground font-medium" variant="body">
 							Jobs
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -72,16 +65,14 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 				</ShowAt>
 
 				{/* Main data - shows on all stages */}
-				<div className="flex flex-col @[120px]:items-start @[200px]:items-start items-center justify-center">
+				<div className="flex flex-col items-center justify-center @[120px]:items-start @[200px]:items-start">
 					{/* Number - uses fluid typography */}
 					<ResponsiveText className="font-bold" variant="display">
 						{/* Show abbreviated on tiny, full on others */}
-						<span className="@[120px]:inline hidden">
+						<span className="hidden @[120px]:inline">
 							{formatNumber(data.total, "comfortable")}
 						</span>
-						<span className="@[120px]:hidden">
-							{formatNumber(data.total, "tiny")}
-						</span>
+						<span className="@[120px]:hidden">{formatNumber(data.total, "tiny")}</span>
 					</ResponsiveText>
 
 					{/* Trend - adaptive visibility and format */}

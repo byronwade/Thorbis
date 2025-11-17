@@ -64,14 +64,7 @@ export function useAutoRotation({
 			const nextSlide = (currentSlide + 1) % slideCount;
 			onSlideChange(nextSlide);
 		}, settings.rotationInterval);
-	}, [
-		settings,
-		slideCount,
-		currentSlide,
-		onSlideChange,
-		isEditMode,
-		clearTimers,
-	]);
+	}, [settings, slideCount, currentSlide, onSlideChange, isEditMode, clearTimers]);
 
 	const pauseRotation = useCallback(
 		(options?: PauseOptions) => {
@@ -90,7 +83,7 @@ export function useAutoRotation({
 				}, settings.inactivityTimeout);
 			}
 		},
-		[settings, clearTimers],
+		[settings, clearTimers]
 	);
 
 	const resumeRotation = useCallback(() => {

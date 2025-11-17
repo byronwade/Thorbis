@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database not configured" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
 		}
 
 		// Get form data
@@ -38,18 +35,12 @@ export async function POST(request: NextRequest) {
 		const dryRun = formData.get("dryRun") === "true";
 
 		if (!(file && dataType)) {
-			return NextResponse.json(
-				{ error: "File and dataType are required" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "File and dataType are required" }, { status: 400 });
 		}
 
 		// Validate file size (10MB limit)
 		if (file.size > 10 * 1024 * 1024) {
-			return NextResponse.json(
-				{ error: "File size exceeds 10MB limit" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "File size exceeds 10MB limit" }, { status: 400 });
 		}
 
 		// Validate file type
@@ -62,7 +53,7 @@ export async function POST(request: NextRequest) {
 		if (!allowedTypes.includes(file.type)) {
 			return NextResponse.json(
 				{ error: "Invalid file type. Only .xlsx, .xls, and .csv are allowed" },
-				{ status: 400 },
+				{ status: 400 }
 			);
 		}
 
@@ -71,10 +62,7 @@ export async function POST(request: NextRequest) {
 		const companyId = await getActiveCompanyId();
 
 		if (!companyId) {
-			return NextResponse.json(
-				{ error: "No active company found" },
-				{ status: 400 },
-			);
+			return NextResponse.json({ error: "No active company found" }, { status: 400 });
 		}
 
 		// Parse file (TODO: Implement actual parsing with xlsx library)
@@ -99,10 +87,7 @@ export async function POST(request: NextRequest) {
 			.single();
 
 		if (insertError) {
-			return NextResponse.json(
-				{ error: "Failed to create import job" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Failed to create import job" }, { status: 500 });
 		}
 
 		return NextResponse.json({
@@ -110,14 +95,9 @@ export async function POST(request: NextRequest) {
 			jobId: importJob.id,
 			totalRows,
 			requiresApproval,
-			message: requiresApproval
-				? "Import requires admin approval"
-				: "Import started successfully",
+			message: requiresApproval ? "Import requires admin approval" : "Import started successfully",
 		});
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

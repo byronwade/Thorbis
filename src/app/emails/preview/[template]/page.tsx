@@ -186,16 +186,16 @@ export default async function EmailPreviewPage({
 	const html = await render(TemplateComponent(data));
 
 	return (
-		<div className="min-h-screen bg-muted p-8">
+		<div className="bg-muted min-h-screen p-8">
 			<div className="mx-auto max-w-4xl space-y-4">
-				<div className="rounded-lg bg-card p-4 shadow">
-					<h1 className="font-bold text-2xl">Email Preview: {template}</h1>
+				<div className="bg-card rounded-lg p-4 shadow">
+					<h1 className="text-2xl font-bold">Email Preview: {template}</h1>
 					<p className="text-muted-foreground text-sm">
 						Development preview - This email template uses sample data
 					</p>
 				</div>
 
-				<div className="overflow-hidden rounded-lg bg-card shadow">
+				<div className="bg-card overflow-hidden rounded-lg shadow">
 					<div dangerouslySetInnerHTML={{ __html: html }} />
 				</div>
 			</div>

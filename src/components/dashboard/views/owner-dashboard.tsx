@@ -1,27 +1,13 @@
-import {
-	Activity,
-	AlertTriangle,
-	Mail,
-	Phone,
-	TrendingUp,
-	Wifi,
-} from "lucide-react";
+import { Activity, AlertTriangle, Mail, Phone, TrendingUp, Wifi } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { type StatCard, StatsCards } from "@/components/ui/stats-cards";
 import type { MissionControlData } from "@/lib/dashboard/mission-control-data";
-import {
-	formatCurrencyFromDollars,
-	formatDateTime,
-	formatTime,
-} from "@/lib/formatters";
+import { formatCurrencyFromDollars, formatDateTime, formatTime } from "@/lib/formatters";
 
-function formatRelative(
-	iso: string | null | undefined,
-	referenceTime = Date.now(),
-) {
+function formatRelative(iso: string | null | undefined, referenceTime = Date.now()) {
 	if (!iso) {
 		return "";
 	}
@@ -122,25 +108,21 @@ export default function OwnerDashboard({
 			<header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 				<div className="space-y-2">
 					<div className="flex items-center gap-3">
-						<h1 className="font-semibold text-3xl tracking-tight md:text-4xl">
-							Mission Control
-						</h1>
-						<Badge className="gap-1 text-primary" variant="outline">
+						<h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Mission Control</h1>
+						<Badge className="text-primary gap-1" variant="outline">
 							<Wifi className="size-3.5" />
 							Live Data
 						</Badge>
 					</div>
 					<p className="text-muted-foreground text-sm md:text-base">
-						Real-time snapshot of today&apos;s operations, finances, and
-						communications.
+						Real-time snapshot of today&apos;s operations, finances, and communications.
 					</p>
 				</div>
-				<div className="flex items-center gap-2 text-muted-foreground text-xs md:text-sm">
+				<div className="text-muted-foreground flex items-center gap-2 text-xs md:text-sm">
 					<span>Last updated</span>
 					<Separator className="h-4" orientation="vertical" />
 					<span>
-						{formatDateTime(data.lastUpdated)} (
-						{formatRelative(data.lastUpdated, relativeNow)})
+						{formatDateTime(data.lastUpdated)} ({formatRelative(data.lastUpdated, relativeNow)})
 					</span>
 				</div>
 			</header>
@@ -182,10 +164,7 @@ function OperationsCard({ data }: { data: MissionControlData }) {
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<section className="space-y-3">
-					<SectionHeading
-						count={data.operations.inProgress.length}
-						title="In Progress"
-					/>
+					<SectionHeading count={data.operations.inProgress.length} title="In Progress" />
 					<div className="space-y-2">
 						{data.operations.inProgress.length === 0 ? (
 							<EmptyRow message="No active jobs at the moment." />
@@ -198,10 +177,7 @@ function OperationsCard({ data }: { data: MissionControlData }) {
 				</section>
 				<Separator />
 				<section className="space-y-3">
-					<SectionHeading
-						count={data.operations.unassigned.length}
-						title="Awaiting Assignment"
-					/>
+					<SectionHeading count={data.operations.unassigned.length} title="Awaiting Assignment" />
 					<div className="space-y-2">
 						{data.operations.unassigned.length === 0 ? (
 							<EmptyRow message="All jobs are staffed. Great work!" />
@@ -250,9 +226,7 @@ function ScheduleCard({ data }: { data: MissionControlData }) {
 				{data.schedule.length === 0 ? (
 					<EmptyRow message="No appointments scheduled for the rest of the day." />
 				) : (
-					data.schedule.map((event) => (
-						<ScheduleRow item={event} key={event.id} />
-					))
+					data.schedule.map((event) => <ScheduleRow item={event} key={event.id} />)
 				)}
 			</CardContent>
 		</Card>
@@ -264,27 +238,20 @@ function FinancialCard({ data }: { data: MissionControlData }) {
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Financial Pulse</CardTitle>
-				<p className="text-muted-foreground text-sm">
-					Outstanding receivables and upcoming cash.
-				</p>
+				<p className="text-muted-foreground text-sm">Outstanding receivables and upcoming cash.</p>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="rounded-lg border bg-muted/40 p-3">
+				<div className="bg-muted/40 rounded-lg border p-3">
 					<div className="flex items-baseline justify-between">
-						<span className="text-muted-foreground text-xs uppercase">
-							Outstanding Balance
-						</span>
-						<span className="font-semibold text-lg">
-							{formatCurrencyFromDollars(
-								data.metrics.outstandingInvoicesAmount,
-								{
-									minimumFractionDigits: 0,
-									maximumFractionDigits: 0,
-								},
-							)}
+						<span className="text-muted-foreground text-xs uppercase">Outstanding Balance</span>
+						<span className="text-lg font-semibold">
+							{formatCurrencyFromDollars(data.metrics.outstandingInvoicesAmount, {
+								minimumFractionDigits: 0,
+								maximumFractionDigits: 0,
+							})}
 						</span>
 					</div>
-					<div className="mt-2 flex items-center justify-between text-muted-foreground text-xs">
+					<div className="text-muted-foreground mt-2 flex items-center justify-between text-xs">
 						<span>Overdue</span>
 						<span>{data.metrics.overdueInvoicesCount}</span>
 					</div>
@@ -295,9 +262,7 @@ function FinancialCard({ data }: { data: MissionControlData }) {
 					) : (
 						data.financial.openInvoices
 							.slice(0, 6)
-							.map((invoice) => (
-								<InvoiceRow invoice={invoice} key={invoice.id} />
-							))
+							.map((invoice) => <InvoiceRow invoice={invoice} key={invoice.id} />)
 					)}
 				</div>
 			</CardContent>
@@ -316,20 +281,14 @@ function CommunicationsCard({
 		<Card>
 			<CardHeader className="pb-4">
 				<CardTitle>Latest Communications</CardTitle>
-				<p className="text-muted-foreground text-sm">
-					Call, SMS, and email activity from today.
-				</p>
+				<p className="text-muted-foreground text-sm">Call, SMS, and email activity from today.</p>
 			</CardHeader>
 			<CardContent className="space-y-2">
 				{data.communications.length === 0 ? (
 					<EmptyRow message="No communications logged today." />
 				) : (
 					data.communications.map((item) => (
-						<CommunicationRow
-							item={item}
-							key={item.id}
-							relativeNow={relativeNow}
-						/>
+						<CommunicationRow item={item} key={item.id} relativeNow={relativeNow} />
 					))
 				)}
 			</CardContent>
@@ -337,13 +296,7 @@ function CommunicationsCard({
 	);
 }
 
-function ActivityCard({
-	data,
-	relativeNow,
-}: {
-	data: MissionControlData;
-	relativeNow: number;
-}) {
+function ActivityCard({ data, relativeNow }: { data: MissionControlData; relativeNow: number }) {
 	return (
 		<Card>
 			<CardHeader className="pb-4">
@@ -357,11 +310,7 @@ function ActivityCard({
 					<EmptyRow message="No new activity yet today." />
 				) : (
 					data.activity.map((item) => (
-						<ActivityRow
-							activity={item}
-							key={item.id}
-							relativeNow={relativeNow}
-						/>
+						<ActivityRow activity={item} key={item.id} relativeNow={relativeNow} />
 					))
 				)}
 			</CardContent>
@@ -371,7 +320,7 @@ function ActivityCard({
 
 function SectionHeading({ title, count }: { title: string; count: number }) {
 	return (
-		<div className="flex items-center justify-between font-medium text-muted-foreground text-xs uppercase">
+		<div className="text-muted-foreground flex items-center justify-between text-xs font-medium uppercase">
 			<span>{title}</span>
 			<span>{count}</span>
 		</div>
@@ -380,7 +329,7 @@ function SectionHeading({ title, count }: { title: string; count: number }) {
 
 function EmptyRow({ message }: { message: string }) {
 	return (
-		<div className="flex items-center justify-center rounded-lg border border-muted-foreground/30 border-dashed bg-muted/20 px-3 py-6 text-center text-muted-foreground text-xs md:text-sm">
+		<div className="border-muted-foreground/30 bg-muted/20 text-muted-foreground flex items-center justify-center rounded-lg border border-dashed px-3 py-6 text-center text-xs md:text-sm">
 			{message}
 		</div>
 	);
@@ -396,19 +345,14 @@ function JobRow({
 	const isUnassigned = variant === "unassigned";
 	return (
 		<Link
-			className="block rounded-lg border border-border/60 bg-card/80 px-3 py-2 transition hover:border-primary/70 hover:bg-muted/40"
+			className="border-border/60 bg-card/80 hover:border-primary/70 hover:bg-muted/40 block rounded-lg border px-3 py-2 transition"
 			href={`/dashboard/work/${job.id}`}
 		>
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
 					<div className="flex items-center gap-2">
-						<p className="font-medium text-sm">
-							{job.title || `Job ${job.jobNumber}`}
-						</p>
-						<Badge
-							className={isUnassigned ? "text-warning" : "text-primary"}
-							variant="outline"
-						>
+						<p className="text-sm font-medium">{job.title || `Job ${job.jobNumber}`}</p>
+						<Badge className={isUnassigned ? "text-warning" : "text-primary"} variant="outline">
 							{isUnassigned
 								? "Needs Dispatch"
 								: job.status
@@ -425,37 +369,29 @@ function JobRow({
 							</>
 						)}
 					</p>
-					{job.address && (
-						<p className="text-muted-foreground text-xs">{job.address}</p>
-					)}
+					{job.address && <p className="text-muted-foreground text-xs">{job.address}</p>}
 				</div>
 				<div className="flex flex-col items-end gap-1 text-right">
-					<span className="font-semibold text-sm">
+					<span className="text-sm font-semibold">
 						{formatCurrencyFromDollars(job.totalAmountCents / 100, {
 							minimumFractionDigits: 0,
 							maximumFractionDigits: 0,
 						})}
 					</span>
-					{!isUnassigned && (
-						<span className="text-muted-foreground text-xs">On-site team</span>
-					)}
+					{!isUnassigned && <span className="text-muted-foreground text-xs">On-site team</span>}
 				</div>
 			</div>
 		</Link>
 	);
 }
 
-function ScheduleRow({
-	item,
-}: {
-	item: MissionControlData["schedule"][number];
-}) {
+function ScheduleRow({ item }: { item: MissionControlData["schedule"][number] }) {
 	return (
-		<div className="rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+		<div className="border-border/50 bg-card/60 rounded-lg border px-3 py-2">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
 					<div className="flex items-center gap-2">
-						<p className="font-medium text-sm">{item.title}</p>
+						<p className="text-sm font-medium">{item.title}</p>
 						<Badge variant="outline">{item.status}</Badge>
 					</div>
 					<p className="text-muted-foreground text-xs">
@@ -471,7 +407,7 @@ function ScheduleRow({
 				</div>
 				{item.jobId && (
 					<Link
-						className="font-medium text-primary text-xs hover:underline"
+						className="text-primary text-xs font-medium hover:underline"
 						href={`/dashboard/work/${item.jobId}`}
 					>
 						View Job
@@ -487,33 +423,27 @@ function InvoiceRow({
 }: {
 	invoice: MissionControlData["financial"]["openInvoices"][number];
 }) {
-	const dueLabel = invoice.dueDate
-		? `${formatDateTime(invoice.dueDate)}`
-		: "No due date";
+	const dueLabel = invoice.dueDate ? `${formatDateTime(invoice.dueDate)}` : "No due date";
 
 	return (
 		<Link
-			className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2 transition hover:border-primary/70 hover:bg-muted/40"
+			className="border-border/50 bg-card/60 hover:border-primary/70 hover:bg-muted/40 flex items-center justify-between rounded-lg border px-3 py-2 transition"
 			href={`/dashboard/work/invoices/${invoice.id}`}
 		>
 			<div className="space-y-1">
-				<p className="font-medium text-sm">
-					Invoice {invoice.invoiceNumber || "—"}
-				</p>
+				<p className="text-sm font-medium">Invoice {invoice.invoiceNumber || "—"}</p>
 				<p className="text-muted-foreground text-xs">
 					{invoice.customerName || "Unknown customer"} · {dueLabel}
 				</p>
 			</div>
 			<div className="text-right">
-				<p className="font-semibold text-sm">
+				<p className="text-sm font-semibold">
 					{formatCurrencyFromDollars(invoice.balanceAmountCents / 100, {
 						minimumFractionDigits: 0,
 						maximumFractionDigits: 0,
 					})}
 				</p>
-				<p className="text-muted-foreground text-xs capitalize">
-					{invoice.status}
-				</p>
+				<p className="text-muted-foreground text-xs capitalize">{invoice.status}</p>
 			</div>
 		</Link>
 	);
@@ -530,29 +460,22 @@ function CommunicationRow({
 	const Icon = item.type === "phone" ? Phone : Mail;
 
 	return (
-		<div className="flex items-start justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+		<div className="border-border/50 bg-card/60 flex items-start justify-between rounded-lg border px-3 py-2">
 			<div className="flex items-start gap-3">
-				<div className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+				<div className="bg-primary/10 text-primary flex size-9 items-center justify-center rounded-full">
 					<Icon className="size-4" />
 				</div>
 				<div className="space-y-1">
 					<div className="flex items-center gap-2">
-						<p className="font-medium text-sm">
-							{item.customerName || "Unknown contact"}
-						</p>
+						<p className="text-sm font-medium">{item.customerName || "Unknown contact"}</p>
 						<Badge className="text-xs capitalize" variant="outline">
 							{item.type}
 						</Badge>
-						<Badge
-							className="text-xs capitalize"
-							variant={isInbound ? "secondary" : "outline"}
-						>
+						<Badge className="text-xs capitalize" variant={isInbound ? "secondary" : "outline"}>
 							{item.direction}
 						</Badge>
 					</div>
-					<p className="text-muted-foreground text-xs">
-						{item.subject || "No subject"}
-					</p>
+					<p className="text-muted-foreground text-xs">{item.subject || "No subject"}</p>
 				</div>
 			</div>
 			<span className="text-muted-foreground text-xs">
@@ -570,22 +493,19 @@ function ActivityRow({
 	relativeNow: number;
 }) {
 	return (
-		<div className="flex items-start justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+		<div className="border-border/50 bg-card/60 flex items-start justify-between rounded-lg border px-3 py-2">
 			<div className="space-y-1">
 				<div className="flex items-center gap-2">
 					<Badge className="text-xs capitalize" variant="outline">
 						{activity.entityType || "general"}
 					</Badge>
-					<p className="truncate font-medium text-sm">
-						{activity.action || "Activity recorded"}
-					</p>
+					<p className="truncate text-sm font-medium">{activity.action || "Activity recorded"}</p>
 				</div>
 				<p className="text-muted-foreground text-xs">
-					{activity.actorName || "System"} ·{" "}
-					{formatRelative(activity.createdAt, relativeNow)}
+					{activity.actorName || "System"} · {formatRelative(activity.createdAt, relativeNow)}
 				</p>
 			</div>
-			<Activity className="size-4 text-muted-foreground" />
+			<Activity className="text-muted-foreground size-4" />
 		</div>
 	);
 }
@@ -604,9 +524,7 @@ function AlertRow({ alert }: { alert: MissionControlData["alerts"][number] }) {
 				<AlertTriangle className="size-4" />
 				<span>{alert.title}</span>
 			</div>
-			{alert.description && (
-				<p className="text-muted-foreground text-xs">{alert.description}</p>
-			)}
+			{alert.description && <p className="text-muted-foreground text-xs">{alert.description}</p>}
 		</div>
 	);
 }

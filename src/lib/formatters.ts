@@ -52,7 +52,7 @@ export type DateFormatOptions = {
  */
 export function formatCurrency(
 	cents: number | null | undefined,
-	options: CurrencyFormatOptions = {},
+	options: CurrencyFormatOptions = {}
 ): string {
 	const {
 		minimumFractionDigits = 0,
@@ -62,10 +62,8 @@ export function formatCurrency(
 	} = options;
 
 	// Use decimals if provided, otherwise use maximumFractionDigits
-	const finalMaxFractionDigits =
-		decimals !== undefined ? decimals : maximumFractionDigits;
-	const finalMinFractionDigits =
-		decimals !== undefined ? decimals : minimumFractionDigits;
+	const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
+	const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
 
 	if (cents === null || cents === undefined) {
 		return showZero
@@ -99,7 +97,7 @@ export function formatCurrency(
  */
 export function formatCurrencyFromDollars(
 	amount: number | null | undefined,
-	options: CurrencyFormatOptions = {},
+	options: CurrencyFormatOptions = {}
 ): string {
 	const {
 		minimumFractionDigits = 0,
@@ -109,10 +107,8 @@ export function formatCurrencyFromDollars(
 	} = options;
 
 	// Use decimals if provided, otherwise use maximumFractionDigits
-	const finalMaxFractionDigits =
-		decimals !== undefined ? decimals : maximumFractionDigits;
-	const finalMinFractionDigits =
-		decimals !== undefined ? decimals : minimumFractionDigits;
+	const finalMaxFractionDigits = decimals !== undefined ? decimals : maximumFractionDigits;
+	const finalMinFractionDigits = decimals !== undefined ? decimals : minimumFractionDigits;
 
 	if (amount === null || amount === undefined || Number.isNaN(amount)) {
 		return showZero
@@ -147,16 +143,13 @@ export function formatCurrencyFromDollars(
  */
 export function formatDate(
 	date: Date | number | string | null | undefined,
-	options: DateFormatOptions | DateFormatPreset | string = {},
+	options: DateFormatOptions | DateFormatPreset | string = {}
 ): string {
 	if (!date) {
 		return "—";
 	}
 
-	const dateObj =
-		typeof date === "number" || typeof date === "string"
-			? new Date(date)
-			: date;
+	const dateObj = typeof date === "number" || typeof date === "string" ? new Date(date) : date;
 
 	if (Number.isNaN(dateObj.getTime())) {
 		return "—";
@@ -231,9 +224,7 @@ export function formatDate(
  * @example
  * formatDateTime(new Date()) // "Jan 15, 2024, 2:30 PM"
  */
-export function formatDateTime(
-	date: Date | number | string | null | undefined,
-): string {
+export function formatDateTime(date: Date | number | string | null | undefined): string {
 	return formatDate(date, { preset: "datetime" });
 }
 
@@ -246,9 +237,7 @@ export function formatDateTime(
  * @example
  * formatTime(new Date()) // "2:30 PM"
  */
-export function formatTime(
-	date: Date | number | string | null | undefined,
-): string {
+export function formatTime(date: Date | number | string | null | undefined): string {
 	return formatDate(date, { preset: "time" });
 }
 
@@ -264,16 +253,14 @@ export function formatTime(
  */
 export function formatDateRange(
 	start: Date | number | string | null | undefined,
-	end?: Date | number | string | null | undefined,
+	end?: Date | number | string | null | undefined
 ): string {
 	if (!start) {
 		return "—";
 	}
 
 	const startDate =
-		typeof start === "number" || typeof start === "string"
-			? new Date(start)
-			: start;
+		typeof start === "number" || typeof start === "string" ? new Date(start) : start;
 
 	if (Number.isNaN(startDate.getTime())) {
 		return "—";
@@ -283,8 +270,7 @@ export function formatDateRange(
 		return formatDate(startDate, { preset: "short" });
 	}
 
-	const endDate =
-		typeof end === "number" || typeof end === "string" ? new Date(end) : end;
+	const endDate = typeof end === "number" || typeof end === "string" ? new Date(end) : end;
 
 	if (Number.isNaN(endDate.getTime())) {
 		return formatDate(startDate, { preset: "short" });
@@ -326,10 +312,7 @@ export function formatDateRange(
  * formatPercentage(45.5) // "46%"
  * formatPercentage(45.5, 1) // "45.5%"
  */
-export function formatPercentage(
-	value: number | null | undefined,
-	decimals = 0,
-): string {
+export function formatPercentage(value: number | null | undefined, decimals = 0): string {
 	if (value === null || value === undefined) {
 		return "—";
 	}
@@ -373,10 +356,7 @@ export function formatHours(hours: number | null | undefined): string {
  * formatNumber(1234567) // "1,234,567"
  * formatNumber(1234.56, 2) // "1,234.56"
  */
-export function formatNumber(
-	value: number | null | undefined,
-	decimals = 0,
-): string {
+export function formatNumber(value: number | null | undefined, decimals = 0): string {
 	if (value === null || value === undefined) {
 		return "0";
 	}

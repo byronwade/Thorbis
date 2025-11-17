@@ -3,9 +3,7 @@ import path from "node:path";
 import matter from "gray-matter";
 
 const SITE_URL =
-	process.env.NEXT_PUBLIC_SITE_URL ??
-	process.env.NEXT_PUBLIC_BASE_URL ??
-	"https://thorbis.com";
+	process.env.NEXT_PUBLIC_SITE_URL ?? process.env.NEXT_PUBLIC_BASE_URL ?? "https://thorbis.com";
 
 const KB_ROOT = path.join(process.cwd(), "content/kb");
 const KB_CATEGORY_FILENAME = "_category.json";
@@ -100,9 +98,7 @@ async function createArticleEntry(entryPath, segments, slug) {
 
 	const lastmod = await getArticleLastModifiedDate(data, entryPath);
 	const featuredImage = resolveFeaturedImage(data?.featuredImage);
-	const priority = data?.featured
-		? PRIORITY_KB_ARTICLE_FEATURED
-		: PRIORITY_KB_ARTICLE_STANDARD;
+	const priority = data?.featured ? PRIORITY_KB_ARTICLE_FEATURED : PRIORITY_KB_ARTICLE_STANDARD;
 
 	return {
 		loc: `${SITE_URL}/kb/${[...segments, slug].join("/")}`,
@@ -121,8 +117,7 @@ async function createArticleEntry(entryPath, segments, slug) {
 }
 
 async function getArticleLastModifiedDate(data, entryPath) {
-	const publishedOrUpdated =
-		data?.updatedAt ?? data?.publishedAt ?? (await stat(entryPath)).mtime;
+	const publishedOrUpdated = data?.updatedAt ?? data?.publishedAt ?? (await stat(entryPath)).mtime;
 
 	return publishedOrUpdated instanceof Date
 		? publishedOrUpdated.toISOString()
@@ -134,9 +129,7 @@ function resolveFeaturedImage(featuredImage) {
 		return;
 	}
 
-	return featuredImage.startsWith("http")
-		? featuredImage
-		: `${SITE_URL}${featuredImage}`;
+	return featuredImage.startsWith("http") ? featuredImage : `${SITE_URL}${featuredImage}`;
 }
 
 const FEATURES_PATHS = [
@@ -223,7 +216,7 @@ const COMPANY_PATHS = [
 function buildMarketingEntries(
 	paths,
 	changefreq = CHANGEFREQ_WEEKLY,
-	priority = PRIORITY_MARKETING_DEFAULT,
+	priority = PRIORITY_MARKETING_DEFAULT
 ) {
 	const lastmod = new Date().toISOString();
 	return paths.map((targetPath) => ({
@@ -284,31 +277,11 @@ export default {
 				priority: PRIORITY_KB_ROOT,
 				lastmod: new Date().toISOString(),
 			},
-			...buildMarketingEntries(
-				INTEGRATION_PATHS,
-				CHANGEFREQ_WEEKLY,
-				PRIORITY_MARKETING_DEFAULT,
-			),
-			...buildMarketingEntries(
-				FEATURES_PATHS,
-				CHANGEFREQ_WEEKLY,
-				PRIORITY_MARKETING_FEATURES,
-			),
-			...buildMarketingEntries(
-				INDUSTRY_PATHS,
-				CHANGEFREQ_WEEKLY,
-				PRIORITY_MARKETING_DEFAULT,
-			),
-			...buildMarketingEntries(
-				COMPARISON_PATHS,
-				CHANGEFREQ_WEEKLY,
-				PRIORITY_MARKETING_COMPARISON,
-			),
-			...buildMarketingEntries(
-				COMPANY_PATHS,
-				CHANGEFREQ_WEEKLY,
-				PRIORITY_MARKETING_DEFAULT,
-			),
+			...buildMarketingEntries(INTEGRATION_PATHS, CHANGEFREQ_WEEKLY, PRIORITY_MARKETING_DEFAULT),
+			...buildMarketingEntries(FEATURES_PATHS, CHANGEFREQ_WEEKLY, PRIORITY_MARKETING_FEATURES),
+			...buildMarketingEntries(INDUSTRY_PATHS, CHANGEFREQ_WEEKLY, PRIORITY_MARKETING_DEFAULT),
+			...buildMarketingEntries(COMPARISON_PATHS, CHANGEFREQ_WEEKLY, PRIORITY_MARKETING_COMPARISON),
+			...buildMarketingEntries(COMPANY_PATHS, CHANGEFREQ_WEEKLY, PRIORITY_MARKETING_DEFAULT),
 			...knowledgeBaseEntries,
 		];
 	},

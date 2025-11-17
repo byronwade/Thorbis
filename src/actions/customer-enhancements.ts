@@ -12,11 +12,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import {
-	ActionError,
-	ERROR_CODES,
-	ERROR_MESSAGES,
-} from "@/lib/errors/action-error";
+import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -42,10 +38,7 @@ const ZIP_CODE_MAX_LENGTH = 20;
 const COUNTRY_MAX_LENGTH = 50;
 const GATE_CODE_MAX_LENGTH = 50;
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
 type PreferredContactMethod = "email" | "phone" | "sms";
 
@@ -75,10 +68,7 @@ const customerAddressSchema = z.object({
 	addressType: z.enum(["billing", "shipping", "service", "mailing", "other"]),
 	isDefault: z.boolean().default(false),
 	label: z.string().max(NAME_MAX_LENGTH).optional(),
-	addressLine1: z
-		.string()
-		.min(1, "Address is required")
-		.max(ADDRESS_LINE_MAX_LENGTH),
+	addressLine1: z.string().min(1, "Address is required").max(ADDRESS_LINE_MAX_LENGTH),
 	addressLine2: z.string().max(ADDRESS_LINE_MAX_LENGTH).optional(),
 	city: z.string().min(1, "City is required").max(CITY_MAX_LENGTH),
 	state: z.string().min(1, "State is required").max(STATE_MAX_LENGTH),
@@ -98,7 +88,7 @@ const customerAddressSchema = z.object({
  * Get authenticated user and company context
  */
 async function getAuthContext(
-	supabase: SupabaseServerClient,
+	supabase: SupabaseServerClient
 ): Promise<{ userId: string; companyId: string }> {
 	const {
 		data: { user },
@@ -115,7 +105,7 @@ async function getAuthContext(
 		throw new ActionError(
 			"You must be part of a company",
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS.forbidden,
+			HTTP_STATUS.forbidden
 		);
 	}
 
@@ -128,7 +118,7 @@ async function getAuthContext(
 async function verifyCustomerAccess(
 	supabase: SupabaseServerClient,
 	customerId: string,
-	companyId: string,
+	companyId: string
 ): Promise<void> {
 	const { data: customer } = await supabase
 		.from("customers")
@@ -142,7 +132,7 @@ async function verifyCustomerAccess(
 		throw new ActionError(
 			ERROR_MESSAGES.forbidden("customer"),
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS.forbidden,
+			HTTP_STATUS.forbidden
 		);
 	}
 }
@@ -150,13 +140,10 @@ async function verifyCustomerAccess(
 /**
  * Parse contact form data
  */
-function parseContactFormData(
-	formData: FormData,
-): z.infer<typeof customerContactSchema> {
+function parseContactFormData(formData: FormData): z.infer<typeof customerContactSchema> {
 	const preferredContactMethodValue = formData.get("preferredContactMethod");
 	const preferredContactMethod: PreferredContactMethod =
-		preferredContactMethodValue === "phone" ||
-		preferredContactMethodValue === "sms"
+		preferredContactMethodValue === "phone" || preferredContactMethodValue === "sms"
 			? (preferredContactMethodValue as PreferredContactMethod)
 			: "email";
 
@@ -179,16 +166,11 @@ function parseContactFormData(
 /**
  * Add contact to business customer
  */
-export async function addCustomerContact(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function addCustomerContact(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -205,10 +187,7 @@ export async function addCustomerContact(
 			.single();
 
 		if (customer && !customer.is_business) {
-			await typedSupabase
-				.from("customers")
-				.update({ is_business: true })
-				.eq("id", data.customerId);
+			await typedSupabase.from("customers").update({ is_business: true }).eq("id", data.customerId);
 		}
 
 		// If setting as primary, unset other primaries
@@ -243,7 +222,7 @@ export async function addCustomerContact(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("add customer contact"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -255,9 +234,7 @@ export async function addCustomerContact(
 /**
  * Build contact update payload from form data
  */
-function buildContactUpdatePayload(
-	formData: FormData,
-): Record<string, unknown> {
+function buildContactUpdatePayload(formData: FormData): Record<string, unknown> {
 	const updateData: Record<string, unknown> = {};
 
 	const firstName = formData.get("firstName");
@@ -301,8 +278,7 @@ function buildContactUpdatePayload(
 	}
 
 	if (formData.has("isEmergencyContact")) {
-		updateData.is_emergency_contact =
-			formData.get("isEmergencyContact") === "true";
+		updateData.is_emergency_contact = formData.get("isEmergencyContact") === "true";
 	}
 
 	return updateData;
@@ -313,15 +289,12 @@ function buildContactUpdatePayload(
  */
 export async function updateCustomerContact(
 	contactId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -340,7 +313,7 @@ export async function updateCustomerContact(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("contact"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -366,7 +339,7 @@ export async function updateCustomerContact(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update contact"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -377,16 +350,11 @@ export async function updateCustomerContact(
 /**
  * Delete customer contact
  */
-export async function deleteCustomerContact(
-	contactId: string,
-): Promise<ActionResult<void>> {
+export async function deleteCustomerContact(contactId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -405,7 +373,7 @@ export async function deleteCustomerContact(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("contact"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -418,7 +386,7 @@ export async function deleteCustomerContact(
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete contact"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -433,9 +401,7 @@ export async function deleteCustomerContact(
 /**
  * Parse address form data
  */
-function parseAddressFormData(
-	formData: FormData,
-): z.infer<typeof customerAddressSchema> {
+function parseAddressFormData(formData: FormData): z.infer<typeof customerAddressSchema> {
 	const addressTypeValue = formData.get("addressType");
 	const addressType: AddressType =
 		addressTypeValue === "billing" ||
@@ -467,16 +433,11 @@ function parseAddressFormData(
 /**
  * Add address to customer
  */
-export async function addCustomerAddress(
-	formData: FormData,
-): Promise<ActionResult<string>> {
+export async function addCustomerAddress(formData: FormData): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -496,7 +457,7 @@ export async function addCustomerAddress(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("customer"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -535,7 +496,7 @@ export async function addCustomerAddress(
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("add customer address"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -555,9 +516,7 @@ export async function addCustomerAddress(
 /**
  * Build address update payload from form data
  */
-function buildAddressUpdatePayload(
-	formData: FormData,
-): Record<string, unknown> {
+function buildAddressUpdatePayload(formData: FormData): Record<string, unknown> {
 	const updateData: Record<string, unknown> = {};
 
 	if (formData.has("label")) {
@@ -616,15 +575,12 @@ function buildAddressUpdatePayload(
  */
 export async function updateCustomerAddress(
 	addressId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -643,7 +599,7 @@ export async function updateCustomerAddress(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("address"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -670,7 +626,7 @@ export async function updateCustomerAddress(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update address"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -681,16 +637,11 @@ export async function updateCustomerAddress(
 /**
  * Delete customer address
  */
-export async function deleteCustomerAddress(
-	addressId: string,
-): Promise<ActionResult<void>> {
+export async function deleteCustomerAddress(addressId: string): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -709,7 +660,7 @@ export async function deleteCustomerAddress(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("address"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -722,7 +673,7 @@ export async function deleteCustomerAddress(
 		if (deleteError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete address"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -737,9 +688,7 @@ export async function deleteCustomerAddress(
 /**
  * Build business info update payload from form data
  */
-function buildBusinessInfoUpdatePayload(
-	formData: FormData,
-): Record<string, unknown> {
+function buildBusinessInfoUpdatePayload(formData: FormData): Record<string, unknown> {
 	const updateData: Record<string, unknown> = {};
 
 	if (formData.has("isBusiness")) {
@@ -771,15 +720,12 @@ function buildBusinessInfoUpdatePayload(
  */
 export async function updateCustomerBusinessInfo(
 	customerId: string,
-	formData: FormData,
+	formData: FormData
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -798,7 +744,7 @@ export async function updateCustomerBusinessInfo(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("customer"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden,
+				HTTP_STATUS.forbidden
 			);
 		}
 
@@ -813,7 +759,7 @@ export async function updateCustomerBusinessInfo(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update customer business info"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -827,15 +773,12 @@ type CustomerContact = Record<string, unknown>;
  * Get all contacts for a customer
  */
 export async function getCustomerContacts(
-	customerId: string,
+	customerId: string
 ): Promise<ActionResult<CustomerContact[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -853,7 +796,7 @@ export async function getCustomerContacts(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch customer contacts"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 
@@ -867,15 +810,12 @@ type CustomerAddress = Record<string, unknown>;
  * Get all addresses for a customer
  */
 export async function getCustomerAddresses(
-	customerId: string,
+	customerId: string
 ): Promise<ActionResult<CustomerAddress[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError(
-				"Database connection failed",
-				ERROR_CODES.DB_CONNECTION_ERROR,
-			);
+			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
 		}
 
 		const typedSupabase = supabase as SupabaseServerClient;
@@ -893,7 +833,7 @@ export async function getCustomerAddresses(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch customer addresses"),
-				ERROR_CODES.DB_QUERY_ERROR,
+				ERROR_CODES.DB_QUERY_ERROR
 			);
 		}
 

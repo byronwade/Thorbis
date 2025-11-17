@@ -53,12 +53,7 @@ export function TeamMemberQuickActions({
 		<div className="flex items-center gap-2">
 			{/* Quick Email Button */}
 			{canSendEmail && !isArchived && (
-				<Button
-					onClick={onEmail}
-					size="sm"
-					title="Send Email"
-					variant="outline"
-				>
+				<Button onClick={onEmail} size="sm" title="Send Email" variant="outline">
 					<Mail className="size-4" />
 				</Button>
 			)}

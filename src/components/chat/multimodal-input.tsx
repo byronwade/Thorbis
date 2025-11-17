@@ -28,8 +28,7 @@ export function MultimodalInput({
 
 	// Use controlled value if provided, otherwise use internal state
 	const input = controlledValue !== undefined ? controlledValue : internalInput;
-	const setInput =
-		controlledValue !== undefined && onChange ? onChange : setInternalInput;
+	const setInput = controlledValue !== undefined && onChange ? onChange : setInternalInput;
 
 	const handleSubmit = () => {
 		if (!input.trim() || disabled) {
@@ -62,9 +61,9 @@ export function MultimodalInput({
 	};
 
 	return (
-		<div className="sticky bottom-0 z-10 mx-auto flex w-full max-w-4xl flex-col gap-4 border-t-0 bg-background px-2 pb-3 md:px-4 md:pb-4">
+		<div className="bg-background sticky bottom-0 z-10 mx-auto flex w-full max-w-4xl flex-col gap-4 border-t-0 px-2 pb-3 md:px-4 md:pb-4">
 			<form
-				className="w-full overflow-hidden rounded-xl border border-border bg-background p-3 shadow-sm transition-all duration-200 focus-within:border-border hover:border-muted-foreground/50"
+				className="border-border bg-background focus-within:border-border hover:border-muted-foreground/50 w-full overflow-hidden rounded-xl border p-3 shadow-sm transition-all duration-200"
 				onSubmit={(e) => {
 					e.preventDefault();
 					handleSubmit();
@@ -75,9 +74,9 @@ export function MultimodalInput({
 					<textarea
 						autoFocus
 						className={cn(
-							"flex min-h-[80px] w-full resize-none rounded-none border-none bg-transparent p-2 text-sm outline-none ring-0 placeholder:text-muted-foreground",
-							"focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
-							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+							"placeholder:text-muted-foreground flex min-h-[80px] w-full resize-none rounded-none border-none bg-transparent p-2 text-sm ring-0 outline-none",
+							"focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
+							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 						)}
 						data-testid="multimodal-input"
 						disabled={disabled}
@@ -93,7 +92,7 @@ export function MultimodalInput({
 
 					{/* Context usage indicator */}
 					<button
-						className="inline-flex aspect-square h-8 select-none items-center justify-center rounded-lg bg-background text-foreground transition-colors hover:bg-accent"
+						className="bg-background text-foreground hover:bg-accent inline-flex aspect-square h-8 items-center justify-center rounded-lg transition-colors select-none"
 						title="0.0% of model context used"
 						type="button"
 					>
@@ -135,7 +134,7 @@ export function MultimodalInput({
 					<div className="flex items-center gap-0 sm:gap-0.5">
 						{/* Attachment button */}
 						<button
-							className="inline-flex aspect-square h-8 items-center justify-center rounded-lg p-1 font-medium text-sm transition-colors hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50"
+							className="hover:bg-accent hover:text-accent-foreground inline-flex aspect-square h-8 items-center justify-center rounded-lg p-1 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
 							data-testid="attachments-button"
 							disabled={disabled}
 							title="Attach files (coming soon)"
@@ -148,7 +147,7 @@ export function MultimodalInput({
 					{/* Submit/Stop button */}
 					{isLoading ? (
 						<button
-							className="inline-flex size-8 items-center justify-center gap-1.5 rounded-full bg-primary text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground inline-flex size-8 items-center justify-center gap-1.5 rounded-full transition-colors duration-200"
 							onClick={onStop}
 							type="button"
 						>
@@ -156,7 +155,7 @@ export function MultimodalInput({
 						</button>
 					) : (
 						<button
-							className="inline-flex size-8 items-center justify-center gap-1.5 rounded-full bg-primary text-primary-foreground transition-colors duration-200 hover:bg-primary/90 disabled:pointer-events-none disabled:bg-muted disabled:text-muted-foreground disabled:opacity-50"
+							className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground inline-flex size-8 items-center justify-center gap-1.5 rounded-full transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50"
 							disabled={!input.trim() || disabled}
 							type="submit"
 						>

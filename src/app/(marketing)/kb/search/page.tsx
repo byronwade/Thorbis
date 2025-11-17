@@ -9,12 +9,7 @@ import { getKBArticles, searchKBArticles } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSearch } from "@/components/kb/kb-search";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
@@ -92,9 +87,7 @@ async function SearchResultsContent({
 			<Card>
 				<CardHeader>
 					<CardTitle>No results found</CardTitle>
-					<CardDescription>
-						Try adjusting your search terms or browse by category.
-					</CardDescription>
+					<CardDescription>Try adjusting your search terms or browse by category.</CardDescription>
 				</CardHeader>
 			</Card>
 		);
@@ -103,7 +96,7 @@ async function SearchResultsContent({
 	return (
 		<div>
 			<div className="mb-6 flex items-center justify-between">
-				<h2 className="font-semibold text-2xl">
+				<h2 className="text-2xl font-semibold">
 					{total} {total === 1 ? "result" : "results"}
 					{query && ` for "${query}"`}
 				</h2>
@@ -125,7 +118,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 			<div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
 				{/* Search Header */}
 				<div className="mb-8">
-					<h1 className="mb-4 font-bold text-4xl tracking-tight">Search</h1>
+					<h1 className="mb-4 text-4xl font-bold tracking-tight">Search</h1>
 					<div className="max-w-2xl">
 						<KBSearch showButton={true} />
 					</div>

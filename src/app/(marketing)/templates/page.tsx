@@ -26,9 +26,7 @@ type TemplatesPageProps = {
 	searchParams?: { tag?: string };
 };
 
-export default async function TemplatesPage({
-	searchParams,
-}: TemplatesPageProps) {
+export default async function TemplatesPage({ searchParams }: TemplatesPageProps) {
 	const activeTag = searchParams?.tag;
 
 	const resourcesResult = await getResourceItems({
@@ -39,11 +37,7 @@ export default async function TemplatesPage({
 
 	const templates = resourcesResult.data;
 	const tags = Array.from(
-		new Map(
-			resourcesResult.data
-				.flatMap((item) => item.tags)
-				.map((tag) => [tag.id, tag]),
-		).values(),
+		new Map(resourcesResult.data.flatMap((item) => item.tags).map((tag) => [tag.id, tag])).values()
 	).sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
@@ -54,7 +48,7 @@ export default async function TemplatesPage({
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Templates", url: `${siteUrl}/templates` },
-						]),
+						])
 					),
 				}}
 				id="templates-breadcrumb-ld"
@@ -62,37 +56,27 @@ export default async function TemplatesPage({
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mx-auto mb-16 max-w-3xl text-center">
-					<span className="mb-4 inline-flex items-center rounded-full border border-border px-3 py-1 font-semibold text-primary text-xs uppercase tracking-wide">
+					<span className="border-border text-primary mb-4 inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold tracking-wide uppercase">
 						Operations Toolkit
 					</span>
-					<h1 className="mb-6 font-bold text-4xl tracking-tight sm:text-5xl">
+					<h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl">
 						Templates Built for Busy Service Leaders
 					</h1>
-					<p className="text-lg text-muted-foreground">
-						Save time with ready-to-use documents for onboarding, quoting,
-						customer follow-up, and technician enablement. Each download is
-						optimised for Thorbis workflows.
+					<p className="text-muted-foreground text-lg">
+						Save time with ready-to-use documents for onboarding, quoting, customer follow-up, and
+						technician enablement. Each download is optimised for Thorbis workflows.
 					</p>
 				</header>
 
 				{tags.length ? (
 					<div className="mb-10 flex flex-wrap items-center justify-center gap-3">
-						<Button
-							asChild
-							size="sm"
-							variant={activeTag ? "outline" : "secondary"}
-						>
+						<Button asChild size="sm" variant={activeTag ? "outline" : "secondary"}>
 							<Link href="/templates">All resources</Link>
 						</Button>
 						{tags.map((tag) => {
 							const isActive = tag.slug === activeTag;
 							return (
-								<Button
-									asChild
-									key={tag.id}
-									size="sm"
-									variant={isActive ? "secondary" : "outline"}
-								>
+								<Button asChild key={tag.id} size="sm" variant={isActive ? "secondary" : "outline"}>
 									<Link href={`/templates?tag=${tag.slug}`}>#{tag.name}</Link>
 								</Button>
 							);
@@ -107,14 +91,11 @@ export default async function TemplatesPage({
 						))}
 					</div>
 				) : (
-					<div className="rounded-xl border border-dashed bg-muted/20 p-12 text-center">
-						<h2 className="mb-3 font-semibold text-xl">
-							Templates are coming soon
-						</h2>
+					<div className="bg-muted/20 rounded-xl border border-dashed p-12 text-center">
+						<h2 className="mb-3 text-xl font-semibold">Templates are coming soon</h2>
 						<p className="text-muted-foreground">
-							We&apos;re packaging the exact checklists and SOPs our customers
-							use to run Thorbis. Add yourself to the early access list and
-							we&apos;ll deliver them to your inbox first.
+							We&apos;re packaging the exact checklists and SOPs our customers use to run Thorbis.
+							Add yourself to the early access list and we&apos;ll deliver them to your inbox first.
 						</p>
 						<div className="mt-6 flex justify-center gap-3">
 							<Button asChild>

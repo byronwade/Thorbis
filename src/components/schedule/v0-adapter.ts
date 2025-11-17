@@ -29,10 +29,7 @@ export function jobToAssignment(job: Job): Assignment {
 	return {
 		id: job.id,
 		title: job.title,
-		start:
-			job.startTime instanceof Date
-				? job.startTime.toISOString()
-				: job.startTime,
+		start: job.startTime instanceof Date ? job.startTime.toISOString() : job.startTime,
 		end: job.endTime instanceof Date ? job.endTime.toISOString() : job.endTime,
 		memberId: job.technicianId || "",
 		categoryId: job.status,

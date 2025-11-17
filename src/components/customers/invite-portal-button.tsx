@@ -52,19 +52,14 @@ export function InvitePortalButton({
 	if (isInvited) {
 		return (
 			<Button className="w-full" disabled variant="outline">
-				<Check className="mr-2 size-4 text-success" />
+				<Check className="text-success mr-2 size-4" />
 				Portal Invited
 			</Button>
 		);
 	}
 
 	return (
-		<Button
-			className="w-full"
-			disabled={isInviting}
-			onClick={handleInvite}
-			variant="outline"
-		>
+		<Button className="w-full" disabled={isInviting} onClick={handleInvite} variant="outline">
 			{isInviting ? (
 				<>
 					<Loader2 className="mr-2 size-4 animate-spin" />

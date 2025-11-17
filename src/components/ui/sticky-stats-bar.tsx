@@ -12,13 +12,7 @@
  */
 
 import type { ReactElement } from "react";
-import {
-	cloneElement,
-	isValidElement,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { cloneElement, isValidElement, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type StickyStatsBarProps = {
@@ -78,7 +72,7 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 				root: scrollContainer, // Use the scroll container as root instead of viewport
 				threshold: 0, // Trigger as soon as any part is visible/hidden
 				rootMargin: "0px", // No margin adjustment
-			},
+			}
 		);
 
 		observer.observe(sentinel);
@@ -101,9 +95,9 @@ export function StickyStatsBar({ children, className }: StickyStatsBarProps) {
 			{/* Stats bar container - no margins or padding */}
 			<div
 				className={cn(
-					"top-0 z-40 w-full bg-background transition-all duration-300 ease-in-out",
+					"bg-background top-0 z-40 w-full transition-all duration-300 ease-in-out",
 					isScrolled && "sticky shadow-md",
-					className,
+					className
 				)}
 				ref={containerRef}
 			>

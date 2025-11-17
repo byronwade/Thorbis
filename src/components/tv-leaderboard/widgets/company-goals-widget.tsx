@@ -35,7 +35,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 	const ratingProgress = (data.currentRating / data.customerRatingGoal) * 100;
 
 	return (
-		<ResponsiveWidgetWrapper className="bg-gradient-to-br from-primary/10 to-primary/5">
+		<ResponsiveWidgetWrapper className="from-primary/10 to-primary/5 bg-gradient-to-br">
 			<ResponsiveContent className="flex flex-col gap-3">
 				{/* Header - adapts across stages */}
 				<div className="flex items-center gap-2">
@@ -64,9 +64,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									{formatCurrency(data.monthlyRevenue, "comfortable")}
 								</span>
 							</div>
-							<div className="h-2 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-2 overflow-hidden rounded-full">
 								<div
-									className="h-full rounded-full bg-gradient-to-r from-primary to-primary-foreground transition-all duration-500"
+									className="from-primary to-primary-foreground h-full rounded-full bg-gradient-to-r transition-all duration-500"
 									style={{ width: `${Math.min(revenueProgress, 100)}%` }}
 								/>
 							</div>
@@ -84,7 +84,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									{formatCurrency(data.avgTicketGoal, "comfortable")}
 								</span>
 							</div>
-							<div className="h-2 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-2 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-500"
 									style={{ width: `${Math.min(ticketProgress, 100)}%` }}
@@ -103,7 +103,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									{data.currentRating} / {data.customerRatingGoal}
 								</span>
 							</div>
-							<div className="h-2 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-2 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all duration-500"
 									style={{ width: `${Math.min(ratingProgress, 100)}%` }}
@@ -127,9 +127,9 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									{formatPercentage(revenueProgress, "comfortable")}
 								</ResponsiveText>
 							</div>
-							<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-1.5 overflow-hidden rounded-full">
 								<div
-									className="h-full rounded-full bg-gradient-to-r from-primary to-primary-foreground transition-all"
+									className="from-primary to-primary-foreground h-full rounded-full bg-gradient-to-r transition-all"
 									style={{ width: `${Math.min(revenueProgress, 100)}%` }}
 								/>
 							</div>
@@ -143,7 +143,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 									{formatPercentage(ticketProgress, "comfortable")}
 								</ResponsiveText>
 							</div>
-							<div className="h-1.5 overflow-hidden rounded-full bg-muted">
+							<div className="bg-muted h-1.5 overflow-hidden rounded-full">
 								<div
 									className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all"
 									style={{ width: `${Math.min(ticketProgress, 100)}%` }}
@@ -159,10 +159,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText
-							className="font-bold text-primary"
-							variant="display"
-						>
+						<ResponsiveText className="text-primary font-bold" variant="display">
 							{formatPercentage(revenueProgress, "compact")}
 						</ResponsiveText>
 					</div>
@@ -171,10 +168,7 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText
-							className="font-bold text-primary"
-							variant="display"
-						>
+						<ResponsiveText className="text-primary font-bold" variant="display">
 							{Math.round(revenueProgress)}%
 						</ResponsiveText>
 					</div>

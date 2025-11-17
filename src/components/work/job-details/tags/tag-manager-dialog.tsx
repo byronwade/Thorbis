@@ -61,8 +61,7 @@ export function TagManagerDialog({
 	jobTags = [],
 	onUpdate,
 }: TagManagerDialogProps) {
-	const [localCustomerTags, setLocalCustomerTags] =
-		useState<string[]>(customerTags);
+	const [localCustomerTags, setLocalCustomerTags] = useState<string[]>(customerTags);
 	const [localJobTags, setLocalJobTags] = useState<string[]>(jobTags);
 	const [newCustomerTag, setNewCustomerTag] = useState("");
 	const [newJobTag, setNewJobTag] = useState("");
@@ -95,10 +94,7 @@ export function TagManagerDialog({
 		try {
 			const promises = [];
 
-			if (
-				customerId &&
-				JSON.stringify(localCustomerTags) !== JSON.stringify(customerTags)
-			) {
+			if (customerId && JSON.stringify(localCustomerTags) !== JSON.stringify(customerTags)) {
 				promises.push(updateCustomerTags(customerId, localCustomerTags));
 			}
 
@@ -139,7 +135,7 @@ export function TagManagerDialog({
 						<div className="space-y-3">
 							<div className="flex items-center gap-2">
 								<Tag className="size-4 text-blue-600" />
-								<h3 className="font-semibold text-sm">Customer Tags</h3>
+								<h3 className="text-sm font-semibold">Customer Tags</h3>
 								<span className="text-muted-foreground text-xs">
 									(Apply to all jobs for this customer)
 								</span>
@@ -164,20 +160,20 @@ export function TagManagerDialog({
 							<div className="space-y-2">
 								<Label className="text-xs">Quick Add</Label>
 								<div className="flex flex-wrap gap-2">
-									{COMMON_CUSTOMER_TAGS.filter(
-										(tag) => !localCustomerTags.includes(tag),
-									).map((tag) => (
-										<Button
-											className="h-7 gap-1 text-xs"
-											key={tag}
-											onClick={() => handleAddCustomerTag(tag)}
-											size="sm"
-											variant="outline"
-										>
-											<Plus className="size-3" />
-											{tag}
-										</Button>
-									))}
+									{COMMON_CUSTOMER_TAGS.filter((tag) => !localCustomerTags.includes(tag)).map(
+										(tag) => (
+											<Button
+												className="h-7 gap-1 text-xs"
+												key={tag}
+												onClick={() => handleAddCustomerTag(tag)}
+												size="sm"
+												variant="outline"
+											>
+												<Plus className="size-3" />
+												{tag}
+											</Button>
+										)
+									)}
 								</div>
 							</div>
 
@@ -211,10 +207,8 @@ export function TagManagerDialog({
 						<div className="space-y-3">
 							<div className="flex items-center gap-2">
 								<Tag className="size-4 text-purple-600" />
-								<h3 className="font-semibold text-sm">Job Tags</h3>
-								<span className="text-muted-foreground text-xs">
-									(Apply to this job only)
-								</span>
+								<h3 className="text-sm font-semibold">Job Tags</h3>
+								<span className="text-muted-foreground text-xs">(Apply to this job only)</span>
 							</div>
 
 							{/* Current Job Tags */}
@@ -236,9 +230,7 @@ export function TagManagerDialog({
 							<div className="space-y-2">
 								<Label className="text-xs">Quick Add</Label>
 								<div className="flex flex-wrap gap-2">
-									{COMMON_JOB_TAGS.filter(
-										(tag) => !localJobTags.includes(tag),
-									).map((tag) => (
+									{COMMON_JOB_TAGS.filter((tag) => !localJobTags.includes(tag)).map((tag) => (
 										<Button
 											className="h-7 gap-1 text-xs"
 											key={tag}
@@ -265,11 +257,7 @@ export function TagManagerDialog({
 									placeholder="Add custom job tag..."
 									value={newJobTag}
 								/>
-								<Button
-									onClick={() => handleAddJobTag(newJobTag)}
-									size="sm"
-									variant="outline"
-								>
+								<Button onClick={() => handleAddJobTag(newJobTag)} size="sm" variant="outline">
 									<Plus className="size-4" />
 								</Button>
 							</div>

@@ -26,35 +26,30 @@ export function KPICard({
 		<Card className="transition-all duration-200 hover:shadow-md">
 			<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
 				<div className="flex items-center gap-2">
-					<CardTitle className="font-medium text-muted-foreground text-sm">
-						{title}
-					</CardTitle>
+					<CardTitle className="text-muted-foreground text-sm font-medium">{title}</CardTitle>
 					{tooltip && <KPICardTooltip tooltip={tooltip} />}
 				</div>
-				<div className="flex size-9 items-center justify-center rounded-lg bg-muted/50">
-					<Icon className="size-4 text-muted-foreground" />
+				<div className="bg-muted/50 flex size-9 items-center justify-center rounded-lg">
+					<Icon className="text-muted-foreground size-4" />
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-2">
-				<div className="font-bold text-3xl tracking-tight">{value}</div>
+				<div className="text-3xl font-bold tracking-tight">{value}</div>
 				<div className="flex flex-col gap-0.5">
 					{change && (
 						<p
 							className={cn(
-								"font-medium text-xs",
+								"text-xs font-medium",
 								changeType === "positive" && "text-success dark:text-success",
-								changeType === "negative" &&
-									"text-destructive dark:text-destructive",
+								changeType === "negative" && "text-destructive dark:text-destructive",
 								changeType === "neutral" && "text-muted-foreground",
-								changeType === "warning" && "text-warning dark:text-warning",
+								changeType === "warning" && "text-warning dark:text-warning"
 							)}
 						>
 							{change}
 						</p>
 					)}
-					{description && (
-						<p className="text-muted-foreground text-xs">{description}</p>
-					)}
+					{description && <p className="text-muted-foreground text-xs">{description}</p>}
 				</div>
 			</CardContent>
 		</Card>

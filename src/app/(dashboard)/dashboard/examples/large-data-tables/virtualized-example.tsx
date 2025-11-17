@@ -12,16 +12,10 @@ function generateSampleData(count: number) {
 		id: `job-${i + 1}`,
 		title: `Job ${i + 1}`,
 		customer: `Customer ${Math.floor(Math.random() * 100)}`,
-		status: ["pending", "active", "completed"][
-			Math.floor(Math.random() * 3)
-		] as string,
-		priority: ["low", "medium", "high"][
-			Math.floor(Math.random() * 3)
-		] as string,
+		status: ["pending", "active", "completed"][Math.floor(Math.random() * 3)] as string,
+		priority: ["low", "medium", "high"][Math.floor(Math.random() * 3)] as string,
 		amount: Math.floor(Math.random() * 10_000),
-		created: new Date(
-			Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000,
-		).toLocaleDateString(),
+		created: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toLocaleDateString(),
 	}));
 }
 
@@ -94,9 +88,7 @@ export function VirtualizedExample() {
 		{
 			key: "created",
 			header: "Created",
-			render: (item) => (
-				<span className="text-muted-foreground text-sm">{item.created}</span>
-			),
+			render: (item) => <span className="text-muted-foreground text-sm">{item.created}</span>,
 			width: "120px",
 		},
 	];
@@ -113,13 +105,11 @@ export function VirtualizedExample() {
 	return (
 		<div className="space-y-6">
 			{/* Info Card */}
-			<div className="rounded-lg border bg-card p-6">
-				<h2 className="mb-2 font-semibold text-lg">
-					Virtualized Client-Side Table
-				</h2>
-				<p className="mb-4 text-muted-foreground text-sm">
-					Uses @tanstack/react-virtual to render only visible rows. Perfect for
-					5,000-50,000 rows with smooth 60fps scrolling.
+			<div className="bg-card rounded-lg border p-6">
+				<h2 className="mb-2 text-lg font-semibold">Virtualized Client-Side Table</h2>
+				<p className="text-muted-foreground mb-4 text-sm">
+					Uses @tanstack/react-virtual to render only visible rows. Perfect for 5,000-50,000 rows
+					with smooth 60fps scrolling.
 				</p>
 
 				<div className="space-y-2 text-sm">
@@ -128,32 +118,16 @@ export function VirtualizedExample() {
 						<span>{rowCount.toLocaleString()}</span>
 					</div>
 					<div className="flex gap-2">
-						<Button
-							onClick={() => handleChangeRowCount(5000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(5000)} size="sm" variant="outline">
 							5,000 rows
 						</Button>
-						<Button
-							onClick={() => handleChangeRowCount(10_000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(10_000)} size="sm" variant="outline">
 							10,000 rows
 						</Button>
-						<Button
-							onClick={() => handleChangeRowCount(25_000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(25_000)} size="sm" variant="outline">
 							25,000 rows
 						</Button>
-						<Button
-							onClick={() => handleChangeRowCount(50_000)}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => handleChangeRowCount(50_000)} size="sm" variant="outline">
 							50,000 rows
 						</Button>
 					</div>
@@ -162,39 +136,29 @@ export function VirtualizedExample() {
 
 			{/* Performance Metrics */}
 			<div className="grid gap-4 md:grid-cols-3">
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Memory Usage</div>
-					<div className="mt-1 font-bold text-2xl">
-						~{Math.round(rowCount * 0.0005)}MB
-					</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Only visible rows rendered
-					</div>
+					<div className="mt-1 text-2xl font-bold">~{Math.round(rowCount * 0.0005)}MB</div>
+					<div className="text-muted-foreground mt-1 text-xs">Only visible rows rendered</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Initial Render</div>
-					<div className="mt-1 font-bold text-2xl">~50ms</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Constant time
-					</div>
+					<div className="mt-1 text-2xl font-bold">~50ms</div>
+					<div className="text-muted-foreground mt-1 text-xs">Constant time</div>
 				</div>
-				<div className="rounded-lg border bg-card p-4">
+				<div className="bg-card rounded-lg border p-4">
 					<div className="text-muted-foreground text-sm">Scrolling FPS</div>
-					<div className="mt-1 font-bold text-2xl">60fps</div>
-					<div className="mt-1 text-muted-foreground text-xs">
-						Smooth scrolling
-					</div>
+					<div className="mt-1 text-2xl font-bold">60fps</div>
+					<div className="text-muted-foreground mt-1 text-xs">Smooth scrolling</div>
 				</div>
 			</div>
 
 			{/* Performance Comparison */}
-			<div className="rounded-lg border bg-muted p-6">
+			<div className="bg-muted rounded-lg border p-6">
 				<h3 className="mb-3 font-semibold">Performance vs Regular Table</h3>
 				<div className="grid gap-4 md:grid-cols-2">
 					<div>
-						<div className="mb-2 font-medium text-sm">
-							Regular Table (10,000 rows)
-						</div>
+						<div className="mb-2 text-sm font-medium">Regular Table (10,000 rows)</div>
 						<ul className="space-y-1 text-sm">
 							<li>❌ Initial render: ~5000ms</li>
 							<li>❌ Memory: ~200MB</li>
@@ -203,9 +167,7 @@ export function VirtualizedExample() {
 						</ul>
 					</div>
 					<div>
-						<div className="mb-2 font-medium text-sm">
-							Virtualized Table (10,000 rows)
-						</div>
+						<div className="mb-2 text-sm font-medium">Virtualized Table (10,000 rows)</div>
 						<ul className="space-y-1 text-sm">
 							<li>✅ Initial render: ~50ms</li>
 							<li>✅ Memory: ~5MB</li>

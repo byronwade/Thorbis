@@ -37,15 +37,13 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 				</Avatar>
 				<div className="flex-1">
 					<Link
-						className="font-medium text-foreground text-lg hover:text-primary"
+						className="text-foreground hover:text-primary text-lg font-medium"
 						href={`/dashboard/customers/${customer.id}`}
 					>
 						{customerName}
 					</Link>
 					{customer.company_name && (
-						<p className="text-muted-foreground text-sm">
-							{customer.company_name}
-						</p>
+						<p className="text-muted-foreground text-sm">{customer.company_name}</p>
 					)}
 				</div>
 			</div>
@@ -54,7 +52,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 
 			{/* Customer Tags */}
 			<div className="flex flex-wrap items-center gap-2">
-				<span className="font-medium text-muted-foreground text-xs">Tags:</span>
+				<span className="text-muted-foreground text-xs font-medium">Tags:</span>
 				<EntityTags
 					entityId={customer.id}
 					entityType="customer"
@@ -67,13 +65,10 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 			<div className="grid gap-4 md:grid-cols-2">
 				{customer.email && (
 					<div className="flex items-center gap-3">
-						<Mail className="size-4 text-muted-foreground" />
+						<Mail className="text-muted-foreground size-4" />
 						<div className="flex-1">
 							<Label>Email</Label>
-							<a
-								className="text-primary text-sm hover:underline"
-								href={`mailto:${customer.email}`}
-							>
+							<a className="text-primary text-sm hover:underline" href={`mailto:${customer.email}`}>
 								{customer.email}
 							</a>
 						</div>
@@ -81,13 +76,10 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 				)}
 				{customer.phone && (
 					<div className="flex items-center gap-3">
-						<Phone className="size-4 text-muted-foreground" />
+						<Phone className="text-muted-foreground size-4" />
 						<div className="flex-1">
 							<Label>Phone</Label>
-							<a
-								className="text-primary text-sm hover:underline"
-								href={`tel:${customer.phone}`}
-							>
+							<a className="text-primary text-sm hover:underline" href={`tel:${customer.phone}`}>
 								{customer.phone}
 							</a>
 						</div>
@@ -108,9 +100,7 @@ export function JobCustomer({ customer }: JobCustomerProps) {
 			{/* Actions */}
 			<div className="flex gap-2">
 				<Button asChild className="flex-1" size="sm" variant="outline">
-					<Link href={`/dashboard/customers/${customer.id}`}>
-						View Customer Profile
-					</Link>
+					<Link href={`/dashboard/customers/${customer.id}`}>View Customer Profile</Link>
 				</Button>
 			</div>
 		</div>

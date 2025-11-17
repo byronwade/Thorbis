@@ -10,19 +10,13 @@
 import { format } from "date-fns";
 import { revalidatePath } from "next/cache";
 import { loadInvoiceEmailTemplate } from "@/actions/settings/invoice-email-template";
-import type {
-	BulkEmailConfig,
-	BulkEmailResult,
-} from "@/lib/email/bulk-email-sender";
+import type { BulkEmailConfig, BulkEmailResult } from "@/lib/email/bulk-email-sender";
 import { sendBulkEmails } from "@/lib/email/bulk-email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
 import { generatePaymentToken } from "@/lib/payments/payment-tokens";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<
-	Awaited<ReturnType<typeof createClient>>,
-	null
->;
+type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
 
 const PAYMENT_TOKEN_TTL_SECONDS = 87_600;
 const PAYMENT_TOKEN_MAX_REDEMPTIONS = 999_999;
@@ -110,24 +104,20 @@ type BulkSendInvoicesResult = {
  */
 export async function bulkSendInvoices(
 	invoiceIds: string[],
-	config?: BulkEmailConfig,
+	config?: BulkEmailConfig
 ): Promise<BulkSendInvoicesResult> {
 	try {
 		const supabase = await ensureSupabaseClient();
 		const user = await requireUser(supabase);
 		const companyId = await requireCompanyId(supabase, user.id);
-		const invoices = await fetchInvoicesWithCustomers(
-			supabase,
-			invoiceIds,
-			companyId,
-		);
+		const invoices = await fetchInvoicesWithCustomers(supabase, invoiceIds, companyId);
 		const normalizedInvoices = normalizeInvoices(invoices);
 		const validInvoices = normalizedInvoices.filter(hasCustomerEmail);
 
 		if (validInvoices.length === 0) {
 			throw new BulkSendError(
 				"No valid invoices to send",
-				"None of the selected invoices have customer email addresses",
+				"None of the selected invoices have customer email addresses"
 			);
 		}
 
@@ -176,10 +166,7 @@ type EmailPayload = Parameters<typeof sendBulkEmails>[0][number];
 const ensureSupabaseClient = async (): Promise<SupabaseServerClient> => {
 	const supabase = await createClient();
 	if (!supabase) {
-		throw new BulkSendError(
-			"Database connection failed",
-			"Unable to connect to database",
-		);
+		throw new BulkSendError("Database connection failed", "Unable to connect to database");
 	}
 	return supabase as SupabaseServerClient;
 };
@@ -189,17 +176,14 @@ const requireUser = async (supabase: SupabaseServerClient) => {
 		data: { user },
 	} = await supabase.auth.getUser();
 	if (!user) {
-		throw new BulkSendError(
-			"Authentication required",
-			"You must be logged in to send invoices",
-		);
+		throw new BulkSendError("Authentication required", "You must be logged in to send invoices");
 	}
 	return user;
 };
 
 const requireCompanyId = async (
 	supabase: SupabaseServerClient,
-	userId: string,
+	userId: string
 ): Promise<string> => {
 	const { data, error } = await supabase
 		.from("team_members")
@@ -210,16 +194,13 @@ const requireCompanyId = async (
 		.single();
 
 	if (error) {
-		throw new BulkSendError(
-			"Failed to verify company membership",
-			error.message,
-		);
+		throw new BulkSendError("Failed to verify company membership", error.message);
 	}
 
 	if (!data?.company_id) {
 		throw new BulkSendError(
 			"Company association required",
-			"You must be part of a company to send invoices",
+			"You must be part of a company to send invoices"
 		);
 	}
 
@@ -229,7 +210,7 @@ const requireCompanyId = async (
 const fetchInvoicesWithCustomers = async (
 	supabase: SupabaseServerClient,
 	invoiceIds: string[],
-	companyId: string,
+	companyId: string
 ): Promise<InvoiceRow[]> => {
 	const { data, error } = await supabase
 		.from("invoices")
@@ -252,7 +233,7 @@ const fetchInvoicesWithCustomers = async (
           email,
           company_name
         )
-      `,
+      `
 		)
 		.in("id", invoiceIds)
 		.eq("company_id", companyId);
@@ -260,7 +241,7 @@ const fetchInvoicesWithCustomers = async (
 	if (error || !data) {
 		throw new BulkSendError(
 			"Failed to fetch invoices",
-			error?.message || "Unable to retrieve invoices",
+			error?.message || "Unable to retrieve invoices"
 		);
 	}
 
@@ -270,15 +251,12 @@ const fetchInvoicesWithCustomers = async (
 const normalizeInvoices = (invoices: InvoiceRow[]): NormalizedInvoice[] =>
 	invoices.map((invoice) => {
 		const rawCustomer = invoice.customer;
-		const customer = Array.isArray(rawCustomer)
-			? (rawCustomer[0] ?? null)
-			: rawCustomer;
+		const customer = Array.isArray(rawCustomer) ? (rawCustomer[0] ?? null) : rawCustomer;
 		return { ...invoice, customer };
 	});
 
-const hasCustomerEmail = (
-	invoice: NormalizedInvoice,
-): invoice is InvoiceWithEmail => Boolean(invoice.customer?.email);
+const hasCustomerEmail = (invoice: NormalizedInvoice): invoice is InvoiceWithEmail =>
+	Boolean(invoice.customer?.email);
 
 const loadInvoiceTemplateConfig = async (): Promise<InvoiceTemplateConfig> => {
 	const templateResult = await loadInvoiceEmailTemplate();
@@ -290,7 +268,7 @@ const loadInvoiceTemplateConfig = async (): Promise<InvoiceTemplateConfig> => {
 
 const fetchCompanyProfile = async (
 	supabase: SupabaseServerClient,
-	companyId: string,
+	companyId: string
 ): Promise<CompanyProfile | null> => {
 	const { data, error } = await supabase
 		.from("companies")
@@ -323,77 +301,72 @@ const buildInvoiceEmails = async ({
 	const paymentTokens = await generatePaymentTokensBatch(
 		invoices.map((inv) => inv.id),
 		PAYMENT_TOKEN_TTL_SECONDS / 3600, // Convert seconds to hours
-		PAYMENT_TOKEN_MAX_REDEMPTIONS,
+		PAYMENT_TOKEN_MAX_REDEMPTIONS
 	);
 
 	return invoices.map((invoice) => {
-		const paymentLink = paymentTokens[invoice.id]?.paymentLink || 
-			`${APP_URL}/pay/${encodeURIComponent(invoice.id)}`;
+		const paymentLink =
+			paymentTokens[invoice.id]?.paymentLink || `${APP_URL}/pay/${encodeURIComponent(invoice.id)}`;
 		const customerName = resolveCustomerName(invoice.customer);
-			const replacements = {
-				"{{customer_name}}": customerName,
-				"{{invoice_number}}": invoice.invoice_number,
-				"{{invoice_amount}}": formatInvoiceAmount(invoice.total_amount),
-				"{{due_date}}": formatInvoiceDueDate(invoice.due_date),
-				"{{payment_link}}": paymentLink,
-				"{{company_name}}": company?.name || FALLBACK_COMPANY_NAME,
-				"{{company_email}}": company?.email || "",
-				"{{company_phone}}": company?.phone || "",
-			};
+		const replacements = {
+			"{{customer_name}}": customerName,
+			"{{invoice_number}}": invoice.invoice_number,
+			"{{invoice_amount}}": formatInvoiceAmount(invoice.total_amount),
+			"{{due_date}}": formatInvoiceDueDate(invoice.due_date),
+			"{{payment_link}}": paymentLink,
+			"{{company_name}}": company?.name || FALLBACK_COMPANY_NAME,
+			"{{company_email}}": company?.email || "",
+			"{{company_phone}}": company?.phone || "",
+		};
 
-			let subject = emailTemplate.subject;
-			let body = emailTemplate.body;
-			let footer = emailTemplate.footer;
+		let subject = emailTemplate.subject;
+		let body = emailTemplate.body;
+		let footer = emailTemplate.footer;
 
-			for (const [key, value] of Object.entries(replacements)) {
-				const pattern = new RegExp(key, "g");
-				subject = subject.replace(pattern, value);
-				body = body.replace(pattern, value);
-				footer = footer.replace(pattern, value);
-			}
+		for (const [key, value] of Object.entries(replacements)) {
+			const pattern = new RegExp(key, "g");
+			subject = subject.replace(pattern, value);
+			body = body.replace(pattern, value);
+			footer = footer.replace(pattern, value);
+		}
 
-			return {
-				to: invoice.customer.email,
-				subject,
-				template: InvoiceEmail({
-					invoiceNumber: invoice.invoice_number,
-					customerName,
-					invoiceDate: invoice.created_at ?? new Date().toISOString(),
-					dueDate: invoice.due_date ?? undefined,
-					totalAmount: invoice.total_amount ?? 0,
-					notes: invoice.notes ?? undefined,
-					invoiceUrl: `${APP_URL}/dashboard/work/invoices/${invoice.id}`,
-					paymentLink,
-					customBody: body,
-					customFooter: footer,
-				}),
-				templateType: EmailTemplate.INVOICE,
-				itemId: invoice.id,
-				tags: [
-					{ name: "invoice_id", value: invoice.id },
-					{ name: "invoice_number", value: invoice.invoice_number },
-					{ name: "has_payment_link", value: "true" },
-				],
-			};
-		});
+		return {
+			to: invoice.customer.email,
+			subject,
+			template: InvoiceEmail({
+				invoiceNumber: invoice.invoice_number,
+				customerName,
+				invoiceDate: invoice.created_at ?? new Date().toISOString(),
+				dueDate: invoice.due_date ?? undefined,
+				totalAmount: invoice.total_amount ?? 0,
+				notes: invoice.notes ?? undefined,
+				invoiceUrl: `${APP_URL}/dashboard/work/invoices/${invoice.id}`,
+				paymentLink,
+				customBody: body,
+				customFooter: footer,
+			}),
+			templateType: EmailTemplate.INVOICE,
+			itemId: invoice.id,
+			tags: [
+				{ name: "invoice_id", value: invoice.id },
+				{ name: "invoice_number", value: invoice.invoice_number },
+				{ name: "has_payment_link", value: "true" },
+			],
+		};
+	});
 };
 
 const resolvePaymentLink = async (invoiceId: string): Promise<string> => {
 	const paymentToken = await generatePaymentToken(
 		invoiceId,
 		PAYMENT_TOKEN_TTL_SECONDS,
-		PAYMENT_TOKEN_MAX_REDEMPTIONS,
+		PAYMENT_TOKEN_MAX_REDEMPTIONS
 	);
 	const baseUrl = APP_URL ? APP_URL.replace(TRAILING_SLASH_REGEX, "") : "";
-	return (
-		paymentToken?.paymentLink ||
-		`${baseUrl}/pay/${encodeURIComponent(invoiceId)}`
-	);
+	return paymentToken?.paymentLink || `${baseUrl}/pay/${encodeURIComponent(invoiceId)}`;
 };
 
-const resolveCustomerName = (
-	customer: CustomerRecord & { email: string },
-): string =>
+const resolveCustomerName = (customer: CustomerRecord & { email: string }): string =>
 	customer?.company_name ||
 	`${customer?.first_name ?? ""} ${customer?.last_name ?? ""}`.trim() ||
 	VALUED_CUSTOMER_LABEL;
@@ -411,16 +384,12 @@ const getSuccessfulItemIds = (results: BulkEmailResult): string[] => {
 	const items = results.results ?? [];
 	return items
 		.filter(
-			(item): item is typeof item & { itemId: string } =>
-				Boolean(item.itemId) && item.success,
+			(item): item is typeof item & { itemId: string } => Boolean(item.itemId) && item.success
 		)
 		.map((item) => item.itemId as string);
 };
 
-const markInvoicesSent = async (
-	supabase: SupabaseServerClient,
-	invoiceIds: string[],
-) => {
+const markInvoicesSent = async (supabase: SupabaseServerClient, invoiceIds: string[]) => {
 	const { error } = await supabase
 		.from("invoices")
 		.update({
@@ -466,9 +435,7 @@ const buildInvoiceResultMessage = ({
 	return parts.join(", ");
 };
 
-const buildEstimateEmails = async (
-	estimates: InvoiceWithEmail[],
-): Promise<EmailPayload[]> => {
+const buildEstimateEmails = async (estimates: InvoiceWithEmail[]): Promise<EmailPayload[]> => {
 	const { EstimateEmail } = await import("@/lib/email/templates");
 	return estimates.map((estimate) => ({
 		to: estimate.customer.email,
@@ -523,10 +490,7 @@ const buildEstimateResultMessage = ({
 	return parts.join(", ");
 };
 
-const buildBulkSendFailure = (
-	fallbackMessage: string,
-	error: unknown,
-): BulkSendInvoicesResult => {
+const buildBulkSendFailure = (fallbackMessage: string, error: unknown): BulkSendInvoicesResult => {
 	if (error instanceof BulkSendError) {
 		return {
 			success: false,
@@ -551,24 +515,20 @@ const buildBulkSendFailure = (
  */
 export async function bulkSendEstimates(
 	estimateIds: string[],
-	config?: BulkEmailConfig,
+	config?: BulkEmailConfig
 ): Promise<BulkSendInvoicesResult> {
 	try {
 		const supabase = await ensureSupabaseClient();
 		const user = await requireUser(supabase);
 		const companyId = await requireCompanyId(supabase, user.id);
-		const estimates = await fetchInvoicesWithCustomers(
-			supabase,
-			estimateIds,
-			companyId,
-		);
+		const estimates = await fetchInvoicesWithCustomers(supabase, estimateIds, companyId);
 		const normalizedEstimates = normalizeInvoices(estimates);
 		const validEstimates = normalizedEstimates.filter(hasCustomerEmail);
 
 		if (validEstimates.length === 0) {
 			throw new BulkSendError(
 				"No valid estimates to send",
-				"None of the selected estimates have customer email addresses",
+				"None of the selected estimates have customer email addresses"
 			);
 		}
 

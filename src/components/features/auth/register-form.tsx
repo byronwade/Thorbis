@@ -1,13 +1,6 @@
 "use client";
 
-import {
-	AlertCircle,
-	CheckCircle2,
-	Eye,
-	EyeOff,
-	ImageUp,
-	Loader2,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Eye, EyeOff, ImageUp, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -40,7 +33,7 @@ export function RegisterForm() {
 				URL.revokeObjectURL(avatarPreview);
 			}
 		},
-		[avatarPreview],
+		[avatarPreview]
 	);
 
 	const passwordScore = useMemo(() => {
@@ -118,16 +111,13 @@ export function RegisterForm() {
 				setIsLoading(false);
 			}
 		} catch (caughtError) {
-			if (
-				caughtError instanceof Error &&
-				caughtError.message === "NEXT_REDIRECT"
-			) {
+			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
 				return;
 			}
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Unable to start OAuth signup right now.",
+					: "Unable to start OAuth signup right now."
 			);
 			setIsLoading(false);
 		}
@@ -173,7 +163,7 @@ export function RegisterForm() {
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Something went wrong. Please try again.",
+					: "Something went wrong. Please try again."
 			);
 			setIsLoading(false);
 		}
@@ -190,12 +180,12 @@ export function RegisterForm() {
 					src="/ThorbisLogo.webp"
 					width={34}
 				/>
-				<span className="font-semibold text-xl">Thorbis</span>
+				<span className="text-xl font-semibold">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
-				<h2 className="mb-1.5 font-semibold text-2xl">Create your account</h2>
+				<h2 className="mb-1.5 text-2xl font-semibold">Create your account</h2>
 				<p className="text-muted-foreground">
 					Join thousands of field service teams streamlining their operations
 				</p>
@@ -342,14 +332,8 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showPassword ? (
-								<EyeOff className="h-4 w-4" />
-							) : (
-								<Eye className="h-4 w-4" />
-							)}
-							<span className="sr-only">
-								{showPassword ? "Hide password" : "Show password"}
-							</span>
+							{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+							<span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
 						</Button>
 					</div>
 					<div className="flex items-center justify-between text-xs">
@@ -361,13 +345,13 @@ export function RegisterForm() {
 									? "text-green-600"
 									: passwordScore >= 60
 										? "text-amber-500"
-										: "text-red-500",
+										: "text-red-500"
 							)}
 						>
 							{passwordStrengthLabel}
 						</span>
 					</div>
-					<div className="h-1.5 rounded-full bg-muted">
+					<div className="bg-muted h-1.5 rounded-full">
 						<div
 							className={cn(
 								"h-full rounded-full transition-all",
@@ -375,7 +359,7 @@ export function RegisterForm() {
 									? "bg-green-500"
 									: passwordScore >= 60
 										? "bg-amber-500"
-										: "bg-red-500",
+										: "bg-red-500"
 							)}
 							style={{ width: `${passwordScore}%` }}
 						/>
@@ -406,11 +390,7 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showConfirmPassword ? (
-								<EyeOff className="h-4 w-4" />
-							) : (
-								<Eye className="h-4 w-4" />
-							)}
+							{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
 							<span className="sr-only">
 								{showConfirmPassword ? "Hide password" : "Show password"}
 							</span>
@@ -420,8 +400,8 @@ export function RegisterForm() {
 
 				<div className="space-y-2 md:col-span-2">
 					<Label htmlFor="avatar">Profile image (optional)</Label>
-					<div className="flex flex-col gap-4 rounded-2xl border border-border/70 border-dashed p-4 sm:flex-row sm:items-center">
-						<div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border/80">
+					<div className="border-border/70 flex flex-col gap-4 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center">
+						<div className="border-border/80 relative size-20 shrink-0 overflow-hidden rounded-full border">
 							{avatarPreview ? (
 								<Image
 									alt="Avatar preview"
@@ -432,7 +412,7 @@ export function RegisterForm() {
 									unoptimized
 								/>
 							) : (
-								<div className="flex size-full items-center justify-center bg-muted text-muted-foreground">
+								<div className="bg-muted text-muted-foreground flex size-full items-center justify-center">
 									<ImageUp className="h-6 w-6" />
 								</div>
 							)}
@@ -485,14 +465,14 @@ export function RegisterForm() {
 							"Create account"
 						)}
 					</Button>
-					<p className="text-center text-muted-foreground text-sm">
+					<p className="text-muted-foreground text-center text-sm">
 						14-day free trial • No credit card required
 					</p>
 				</div>
 			</form>
 
 			{/* Sign In Link */}
-			<p className="text-center text-muted-foreground">
+			<p className="text-muted-foreground text-center">
 				Already have an account?{" "}
 				<Link className="text-foreground hover:underline" href="/login">
 					Sign in

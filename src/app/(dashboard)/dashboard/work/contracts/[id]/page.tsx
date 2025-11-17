@@ -13,11 +13,7 @@ import { ContractDetailData } from "@/components/work/contracts/contract-detail-
 import { ContractDetailShell } from "@/components/work/contracts/contract-detail-shell";
 import { ContractDetailSkeleton } from "@/components/work/contracts/contract-detail-skeleton";
 
-export default async function ContractDetailPage({
-	params,
-}: {
-	params: Promise<{ id: string }>;
-}) {
+export default async function ContractDetailPage({ params }: { params: Promise<{ id: string }> }) {
 	const { id: contractId } = await params;
 
 	return (

@@ -6,28 +6,19 @@
  */
 
 import { type NextRequest, NextResponse } from "next/server";
-import {
-	enrichCustomerData,
-	getEnrichmentData,
-} from "@/actions/customer-enrichment";
+import { enrichCustomerData, getEnrichmentData } from "@/actions/customer-enrichment";
 import { createClient } from "@/lib/supabase/server";
 
 /**
  * GET - Retrieve cached enrichment data
  */
-export async function GET(
-	_request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		const {
@@ -43,35 +34,26 @@ export async function GET(
 		if (!result.success) {
 			return NextResponse.json(
 				{ error: result.error },
-				{ status: result.error === "Customer not found" ? 404 : 500 },
+				{ status: result.error === "Customer not found" ? 404 : 500 }
 			);
 		}
 
 		return NextResponse.json({ data: result.data });
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }
 
 /**
  * POST - Trigger new enrichment
  */
-export async function POST(
-	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		const {
@@ -101,9 +83,6 @@ export async function POST(
 
 		return NextResponse.json({ data: result.data }, { status: 201 });
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

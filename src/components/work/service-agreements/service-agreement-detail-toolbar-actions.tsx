@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function ServiceAgreementDetailToolbarActions() {
@@ -88,12 +83,7 @@ export function ServiceAgreementDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
 								<a href={`/dashboard/schedule?agreementId=${agreementId}`}>
 									<Calendar className="size-3.5" />
 									<span className="hidden lg:inline">Schedule</span>
@@ -109,15 +99,8 @@ export function ServiceAgreementDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								asChild
-								className="h-8 gap-1.5"
-								size="sm"
-								variant="outline"
-							>
-								<a
-									href={`/dashboard/work/service-agreements/new?cloneFrom=${agreementId}`}
-								>
+							<Button asChild className="h-8 gap-1.5" size="sm" variant="outline">
+								<a href={`/dashboard/work/service-agreements/new?cloneFrom=${agreementId}`}>
 									<Copy className="size-3.5" />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -137,7 +120,7 @@ export function ServiceAgreementDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -158,8 +141,8 @@ export function ServiceAgreementDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Service Agreement</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this service agreement? Archived
-							agreements can be restored within 90 days.
+							Are you sure you want to archive this service agreement? Archived agreements can be
+							restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -170,11 +153,7 @@ export function ServiceAgreementDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Agreement"}
 						</Button>
 					</DialogFooter>

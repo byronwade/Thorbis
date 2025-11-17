@@ -10,24 +10,11 @@
  * - Step 4: Import with duplicate handling
  */
 
-import {
-	AlertCircle,
-	CheckCircle2,
-	Download,
-	FileSpreadsheet,
-	Upload,
-	X,
-} from "lucide-react";
+import { AlertCircle, CheckCircle2, Download, FileSpreadsheet, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -39,12 +26,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
-type ImportStep =
-	| "upload"
-	| "mapping"
-	| "validation"
-	| "importing"
-	| "complete";
+type ImportStep = "upload" | "mapping" | "validation" | "importing" | "complete";
 
 type ColumnMapping = {
 	name: string | null;
@@ -101,12 +83,8 @@ export function BulkImportForm() {
 		supplierName: null,
 		laborHours: null,
 	});
-	const [duplicateHandling, setDuplicateHandling] = useState<
-		"skip" | "update" | "create"
-	>("skip");
-	const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>(
-		[],
-	);
+	const [duplicateHandling, setDuplicateHandling] = useState<"skip" | "update" | "create">("skip");
+	const [validationIssues, setValidationIssues] = useState<ValidationIssue[]>([]);
 	const [importProgress, setImportProgress] = useState(0);
 
 	const handleFileUpload = (uploadedFile: File) => {
@@ -206,7 +184,7 @@ export function BulkImportForm() {
 					field: "sku",
 					message: "Duplicate SKU found in existing items",
 					severity: "warning",
-				},
+				}
 			);
 		}
 
@@ -242,9 +220,7 @@ export function BulkImportForm() {
 				<CardContent className="space-y-4">
 					<div
 						className={`flex min-h-[300px] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
-							isDragging
-								? "border-primary bg-primary/5"
-								: "border-border hover:border-primary/50"
+							isDragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
 						}`}
 						onDragLeave={handleDragLeave}
 						onDragOver={handleDragOver}
@@ -257,20 +233,11 @@ export function BulkImportForm() {
 							onChange={handleFileSelect}
 							type="file"
 						/>
-						<label
-							className="flex cursor-pointer flex-col items-center"
-							htmlFor="file-upload"
-						>
-							<Upload className="mb-4 h-12 w-12 text-muted-foreground" />
-							<p className="mb-2 font-medium">
-								Drop your file here or click to browse
-							</p>
-							<p className="text-muted-foreground text-sm">
-								Supports CSV, Excel (.xlsx, .xls)
-							</p>
-							<p className="mt-2 text-muted-foreground text-xs">
-								Maximum file size: 10MB
-							</p>
+						<label className="flex cursor-pointer flex-col items-center" htmlFor="file-upload">
+							<Upload className="text-muted-foreground mb-4 h-12 w-12" />
+							<p className="mb-2 font-medium">Drop your file here or click to browse</p>
+							<p className="text-muted-foreground text-sm">Supports CSV, Excel (.xlsx, .xls)</p>
+							<p className="text-muted-foreground mt-2 text-xs">Maximum file size: 10MB</p>
 						</label>
 					</div>
 
@@ -287,9 +254,7 @@ export function BulkImportForm() {
 
 	// Step 2: Column Mapping
 	if (step === "mapping") {
-		const requiredMapped = requiredFields.every(
-			(field) => mapping[field as keyof ColumnMapping],
-		);
+		const requiredMapped = requiredFields.every((field) => mapping[field as keyof ColumnMapping]);
 
 		return (
 			<Card>
@@ -297,13 +262,11 @@ export function BulkImportForm() {
 					<div className="flex items-center justify-between">
 						<div>
 							<CardTitle>Column Mapping</CardTitle>
-							<CardDescription>
-								Match columns from your file to price book fields
-							</CardDescription>
+							<CardDescription>Match columns from your file to price book fields</CardDescription>
 						</div>
 						{file && (
 							<div className="flex items-center gap-2">
-								<FileSpreadsheet className="h-4 w-4 text-muted-foreground" />
+								<FileSpreadsheet className="text-muted-foreground h-4 w-4" />
 								<span className="text-sm">{file.name}</span>
 								<Button
 									onClick={() => {
@@ -320,11 +283,9 @@ export function BulkImportForm() {
 					</div>
 				</CardHeader>
 				<CardContent className="space-y-4">
-					<div className="rounded-lg border bg-muted/30 p-3">
-						<p className="font-medium text-sm">
-							{requiredMapped
-								? "All required fields mapped"
-								: "Some required fields are missing"}
+					<div className="bg-muted/30 rounded-lg border p-3">
+						<p className="text-sm font-medium">
+							{requiredMapped ? "All required fields mapped" : "Some required fields are missing"}
 						</p>
 						<p className="text-muted-foreground text-xs">
 							Required: Name, SKU, Item Type, Category, Cost, Price
@@ -352,18 +313,14 @@ export function BulkImportForm() {
 												[field.value]: value === "none" ? null : value,
 											})
 										}
-										value={
-											mapping[field.value as keyof ColumnMapping] || "none"
-										}
+										value={mapping[field.value as keyof ColumnMapping] || "none"}
 									>
 										<SelectTrigger>
 											<SelectValue placeholder="Select column" />
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value="none">
-												<span className="text-muted-foreground">
-													Do not import
-												</span>
+												<span className="text-muted-foreground">Do not import</span>
 											</SelectItem>
 											{fileColumns.map((col) => (
 												<SelectItem key={col} value={col}>
@@ -378,18 +335,10 @@ export function BulkImportForm() {
 					</div>
 
 					<div className="flex justify-end gap-2 pt-4">
-						<Button
-							onClick={() => setStep("upload")}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => setStep("upload")} size="sm" variant="outline">
 							Back
 						</Button>
-						<Button
-							disabled={!requiredMapped}
-							onClick={validateMapping}
-							size="sm"
-						>
+						<Button disabled={!requiredMapped} onClick={validateMapping} size="sm">
 							Continue to Validation
 						</Button>
 					</div>
@@ -400,35 +349,26 @@ export function BulkImportForm() {
 
 	// Step 3: Validation
 	if (step === "validation") {
-		const errorCount = validationIssues.filter(
-			(i) => i.severity === "error",
-		).length;
-		const warningCount = validationIssues.filter(
-			(i) => i.severity === "warning",
-		).length;
+		const errorCount = validationIssues.filter((i) => i.severity === "error").length;
+		const warningCount = validationIssues.filter((i) => i.severity === "warning").length;
 
 		return (
 			<Card>
 				<CardHeader>
 					<CardTitle>Validation Results</CardTitle>
 					<CardDescription>
-						Review issues before importing{" "}
-						{errorCount > 0 && "(errors must be fixed)"}
+						Review issues before importing {errorCount > 0 && "(errors must be fixed)"}
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid grid-cols-2 gap-3">
-						<div className="rounded-lg border bg-muted/30 p-3">
+						<div className="bg-muted/30 rounded-lg border p-3">
 							<p className="text-muted-foreground text-xs">Errors</p>
-							<p className="font-semibold text-2xl text-destructive">
-								{errorCount}
-							</p>
+							<p className="text-destructive text-2xl font-semibold">{errorCount}</p>
 						</div>
-						<div className="rounded-lg border bg-muted/30 p-3">
+						<div className="bg-muted/30 rounded-lg border p-3">
 							<p className="text-muted-foreground text-xs">Warnings</p>
-							<p className="font-semibold text-2xl text-warning">
-								{warningCount}
-							</p>
+							<p className="text-warning text-2xl font-semibold">{warningCount}</p>
 						</div>
 					</div>
 
@@ -452,7 +392,7 @@ export function BulkImportForm() {
 									/>
 									<div className="flex-1">
 										<p
-											className={`font-medium text-sm ${
+											className={`text-sm font-medium ${
 												issue.severity === "error"
 													? "text-destructive dark:text-destructive"
 													: "text-warning dark:text-warning"
@@ -503,11 +443,7 @@ export function BulkImportForm() {
 					</div>
 
 					<div className="flex justify-end gap-2 pt-4">
-						<Button
-							onClick={() => setStep("mapping")}
-							size="sm"
-							variant="outline"
-						>
+						<Button onClick={() => setStep("mapping")} size="sm" variant="outline">
 							Back
 						</Button>
 						<Button disabled={errorCount > 0} onClick={startImport} size="sm">
@@ -525,9 +461,7 @@ export function BulkImportForm() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Importing Items</CardTitle>
-					<CardDescription>
-						Please wait while we import your data
-					</CardDescription>
+					<CardDescription>Please wait while we import your data</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
@@ -540,11 +474,9 @@ export function BulkImportForm() {
 
 					<div className="flex min-h-[200px] items-center justify-center">
 						<div className="text-center">
-							<div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+							<div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
 							<p className="font-medium">Importing items...</p>
-							<p className="text-muted-foreground text-sm">
-								This may take a few moments
-							</p>
+							<p className="text-muted-foreground text-sm">This may take a few moments</p>
 						</div>
 					</div>
 				</CardContent>
@@ -557,15 +489,13 @@ export function BulkImportForm() {
 		<Card>
 			<CardHeader>
 				<CardTitle>Import Complete</CardTitle>
-				<CardDescription>
-					Your items have been successfully imported
-				</CardDescription>
+				<CardDescription>Your items have been successfully imported</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div className="flex min-h-[200px] items-center justify-center">
 					<div className="text-center">
-						<CheckCircle2 className="mx-auto mb-4 h-16 w-16 text-success" />
-						<p className="mb-2 font-medium text-lg">Import Successful</p>
+						<CheckCircle2 className="text-success mx-auto mb-4 h-16 w-16" />
+						<p className="mb-2 text-lg font-medium">Import Successful</p>
 						<p className="text-muted-foreground text-sm">
 							All items have been added to your price book
 						</p>
@@ -573,17 +503,17 @@ export function BulkImportForm() {
 				</div>
 
 				<div className="grid grid-cols-3 gap-3">
-					<div className="rounded-lg border bg-muted/30 p-3 text-center">
+					<div className="bg-muted/30 rounded-lg border p-3 text-center">
 						<p className="text-muted-foreground text-xs">Total Imported</p>
-						<p className="font-semibold text-2xl">127</p>
+						<p className="text-2xl font-semibold">127</p>
 					</div>
-					<div className="rounded-lg border bg-muted/30 p-3 text-center">
+					<div className="bg-muted/30 rounded-lg border p-3 text-center">
 						<p className="text-muted-foreground text-xs">Updated</p>
-						<p className="font-semibold text-2xl">12</p>
+						<p className="text-2xl font-semibold">12</p>
 					</div>
-					<div className="rounded-lg border bg-muted/30 p-3 text-center">
+					<div className="bg-muted/30 rounded-lg border p-3 text-center">
 						<p className="text-muted-foreground text-xs">Skipped</p>
-						<p className="font-semibold text-2xl">3</p>
+						<p className="text-2xl font-semibold">3</p>
 					</div>
 				</div>
 

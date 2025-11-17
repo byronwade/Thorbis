@@ -34,9 +34,7 @@ export class StripeProcessor implements PaymentProcessor {
 		return ["online"];
 	}
 
-	async processPayment(
-		request: ProcessPaymentRequest,
-	): Promise<ProcessPaymentResponse> {
+	async processPayment(request: ProcessPaymentRequest): Promise<ProcessPaymentResponse> {
 		if (!stripe) {
 			return {
 				success: false,
@@ -91,9 +89,7 @@ export class StripeProcessor implements PaymentProcessor {
 		}
 	}
 
-	async refundPayment(
-		request: RefundPaymentRequest,
-	): Promise<RefundPaymentResponse> {
+	async refundPayment(request: RefundPaymentRequest): Promise<RefundPaymentResponse> {
 		if (!stripe) {
 			return {
 				success: false,

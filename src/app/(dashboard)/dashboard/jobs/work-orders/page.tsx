@@ -26,7 +26,7 @@ export default function WorkOrdersPage() {
 		<div className="space-y-6">
 			{/* Page header */}
 			<div>
-				<h1 className="font-bold text-3xl tracking-tight">Work Orders</h1>
+				<h1 className="text-3xl font-bold tracking-tight">Work Orders</h1>
 				<p className="text-muted-foreground">
 					Manage work orders, service requests, and job documentation
 				</p>

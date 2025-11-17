@@ -32,9 +32,7 @@ import { createClient } from "@/lib/supabase/server";
 // NOTE: Type re-exports removed to comply with Next.js 16 "use server" restrictions
 // Import types directly from @/lib/notifications/types instead
 
-const UpdateNotificationPreferencesSchema = z.array(
-	NotificationPreferenceSchema,
-);
+const UpdateNotificationPreferencesSchema = z.array(NotificationPreferenceSchema);
 
 // =====================================================================================
 // Helper Functions
@@ -96,9 +94,7 @@ async function getAuthContext(): Promise<{
  * @param options - Filtering and pagination options
  * @returns Array of notifications and total count
  */
-export async function getNotifications(
-	options?: Partial<GetNotificationsInput>,
-) {
+export async function getNotifications(options?: Partial<GetNotificationsInput>) {
 	try {
 		// Notifications are user-specific, not company-specific
 		// So we don't need the full auth context with company
@@ -145,7 +141,7 @@ export async function getNotifications(
 		// Apply pagination
 		query = query.range(
 			validatedOptions.offset,
-			validatedOptions.offset + validatedOptions.limit - 1,
+			validatedOptions.offset + validatedOptions.limit - 1
 		);
 
 		const { data, error, count } = await query;
@@ -192,12 +188,9 @@ export async function getUnreadCount() {
 		const { userId, supabase } = await getAuthContext();
 
 		// Use the database function for optimized counting
-		const { data, error } = await supabase.rpc(
-			"get_unread_notification_count",
-			{
-				p_user_id: userId,
-			},
-		);
+		const { data, error } = await supabase.rpc("get_unread_notification_count", {
+			p_user_id: userId,
+		});
 
 		if (error) {
 			return {
@@ -473,15 +466,12 @@ export async function getNotificationPreferences() {
  * @param preferences - Array of notification preference settings
  * @returns Success status
  */
-export async function updateNotificationPreferences(
-	preferences: NotificationPreference[],
-) {
+export async function updateNotificationPreferences(preferences: NotificationPreference[]) {
 	try {
 		const { userId, companyId, supabase } = await getAuthContext();
 
 		// Validate input
-		const validatedPreferences =
-			UpdateNotificationPreferencesSchema.parse(preferences);
+		const validatedPreferences = UpdateNotificationPreferencesSchema.parse(preferences);
 
 		// Delete existing preferences
 		await supabase
@@ -499,9 +489,7 @@ export async function updateNotificationPreferences(
 			enabled: pref.enabled,
 		}));
 
-		const { error } = await supabase
-			.from("notification_preferences")
-			.insert(preferencesToInsert);
+		const { error } = await supabase.from("notification_preferences").insert(preferencesToInsert);
 
 		if (error) {
 			return {

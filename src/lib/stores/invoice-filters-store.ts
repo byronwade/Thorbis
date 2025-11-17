@@ -51,6 +51,6 @@ export const useInvoiceFiltersStore = create<InvoiceFiltersStore>()(
 		{
 			name: "invoice-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		},
-	),
+		}
+	)
 );

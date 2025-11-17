@@ -42,7 +42,7 @@ export default function ResizableDivider({
 			aria-orientation="vertical"
 			className={cn(
 				"group relative z-20 grid w-3 cursor-col-resize place-items-center",
-				"bg-transparent hover:bg-neutral-100",
+				"bg-transparent hover:bg-neutral-100"
 			)}
 			onKeyDown={(e) => {
 				if (e.key === "ArrowLeft") {

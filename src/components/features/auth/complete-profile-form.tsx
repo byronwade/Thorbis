@@ -27,9 +27,7 @@ export function CompleteProfileForm({
 	userEmail,
 }: CompleteProfileFormProps) {
 	const router = useRouter();
-	const [avatarPreview, setAvatarPreview] = useState<string | null>(
-		existingAvatar,
-	);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(existingAvatar);
 	const [hasChangedAvatar, setHasChangedAvatar] = useState(false);
 	const [avatarError, setAvatarError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -100,7 +98,7 @@ export function CompleteProfileForm({
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Something went wrong. Please try again.",
+					: "Something went wrong. Please try again."
 			);
 			setIsLoading(false);
 		}
@@ -117,12 +115,12 @@ export function CompleteProfileForm({
 					src="/ThorbisLogo.webp"
 					width={34}
 				/>
-				<span className="font-semibold text-xl">Thorbis</span>
+				<span className="text-xl font-semibold">Thorbis</span>
 			</div>
 
 			{/* Welcome Text */}
 			<div>
-				<h2 className="mb-1.5 font-semibold text-2xl">Complete your profile</h2>
+				<h2 className="mb-1.5 text-2xl font-semibold">Complete your profile</h2>
 				<p className="text-muted-foreground">
 					We need a few more details to get your account set up
 				</p>
@@ -140,17 +138,13 @@ export function CompleteProfileForm({
 			<Alert>
 				<CheckCircle2 className="h-4 w-4" />
 				<AlertDescription>
-					You signed in with <strong>{userEmail}</strong>. Just a few more
-					details and you're all set!
+					You signed in with <strong>{userEmail}</strong>. Just a few more details and you're all
+					set!
 				</AlertDescription>
 			</Alert>
 
 			{/* Profile Completion Form */}
-			<form
-				className="space-y-6"
-				encType="multipart/form-data"
-				onSubmit={handleSubmit}
-			>
+			<form className="space-y-6" encType="multipart/form-data" onSubmit={handleSubmit}>
 				{/* Name Field (if missing) */}
 				{!existingName && (
 					<div className="space-y-1">
@@ -186,8 +180,8 @@ export function CompleteProfileForm({
 							type="tel"
 						/>
 						<p className="text-muted-foreground text-xs">
-							We'll text urgent dispatch alerts and MFA codes here. Please
-							verify this is a number you can receive texts on.
+							We'll text urgent dispatch alerts and MFA codes here. Please verify this is a number
+							you can receive texts on.
 						</p>
 					</div>
 				)}
@@ -197,13 +191,11 @@ export function CompleteProfileForm({
 					<Label htmlFor="avatar">
 						Profile image{" "}
 						{existingAvatar && !hasChangedAvatar && (
-							<span className="font-normal text-muted-foreground text-xs">
-								(from Google)
-							</span>
+							<span className="text-muted-foreground text-xs font-normal">(from Google)</span>
 						)}
 					</Label>
-					<div className="flex flex-col gap-4 rounded-2xl border border-border/70 border-dashed p-4 sm:flex-row sm:items-center">
-						<div className="relative size-20 shrink-0 overflow-hidden rounded-full border border-border/80">
+					<div className="border-border/70 flex flex-col gap-4 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center">
+						<div className="border-border/80 relative size-20 shrink-0 overflow-hidden rounded-full border">
 							{avatarPreview ? (
 								<Image
 									alt="Avatar preview"
@@ -214,7 +206,7 @@ export function CompleteProfileForm({
 									unoptimized
 								/>
 							) : (
-								<div className="flex size-full items-center justify-center bg-muted text-muted-foreground">
+								<div className="bg-muted text-muted-foreground flex size-full items-center justify-center">
 									<ImageUp className="h-6 w-6" />
 								</div>
 							)}

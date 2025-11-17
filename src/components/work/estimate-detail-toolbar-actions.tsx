@@ -27,12 +27,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function EstimateDetailToolbarActions() {
@@ -86,12 +81,7 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								className="h-8 gap-1.5"
-								onClick={handlePreview}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="h-8 gap-1.5" onClick={handlePreview} size="sm" variant="outline">
 								<Eye className="size-3.5" />
 								<span className="hidden md:inline">Preview</span>
 							</Button>
@@ -105,12 +95,7 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								className="h-8 gap-1.5"
-								onClick={handleExportPDF}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="h-8 gap-1.5" onClick={handleExportPDF} size="sm" variant="outline">
 								<Download className="size-3.5" />
 								<span className="hidden lg:inline">PDF</span>
 							</Button>
@@ -124,12 +109,7 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button
-								className="h-8 gap-1.5"
-								onClick={handleSendEmail}
-								size="sm"
-								variant="outline"
-							>
+							<Button className="h-8 gap-1.5" onClick={handleSendEmail} size="sm" variant="outline">
 								<Mail className="size-3.5" />
 								<span className="hidden lg:inline">Send</span>
 							</Button>
@@ -148,7 +128,7 @@ export function EstimateDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button
-								className="h-8 gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10"
+								className="border-destructive/40 text-destructive hover:bg-destructive/10 h-8 gap-1.5"
 								onClick={() => setIsArchiveDialogOpen(true)}
 								size="sm"
 								variant="outline"
@@ -169,8 +149,8 @@ export function EstimateDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Estimate</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this estimate? Archived estimates
-							can be restored within 90 days.
+							Are you sure you want to archive this estimate? Archived estimates can be restored
+							within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -181,11 +161,7 @@ export function EstimateDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button
-							disabled={isArchiving}
-							onClick={handleArchive}
-							variant="destructive"
-						>
+						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
 							{isArchiving ? "Archiving..." : "Archive Estimate"}
 						</Button>
 					</DialogFooter>

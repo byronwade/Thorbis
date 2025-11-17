@@ -30,11 +30,7 @@ type DataTableColumnsStore = {
 	columnOrder: AllEntitiesOrderState;
 
 	// Actions - Visibility
-	setColumnVisibility: (
-		entity: string,
-		columnKey: string,
-		visible: boolean,
-	) => void;
+	setColumnVisibility: (entity: string, columnKey: string, visible: boolean) => void;
 	toggleColumn: (entity: string, columnKey: string) => void;
 	showAllColumns: (entity: string, columnKeys: string[]) => void;
 	hideAllColumns: (entity: string, columnKeys: string[]) => void;
@@ -185,6 +181,6 @@ export const useDataTableColumnsStore = create<DataTableColumnsStore>()(
 			name: "datatable-columns-storage", // localStorage key
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 			version: 2, // Increment version for new state structure
-		},
-	),
+		}
+	)
 );

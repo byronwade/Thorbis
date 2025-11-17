@@ -110,16 +110,14 @@ export function EmailDialog({
 						<Mail className="size-5" />
 						Send Email
 					</DialogTitle>
-					<DialogDescription>
-						Compose and send an email to {customerName}
-					</DialogDescription>
+					<DialogDescription>Compose and send an email to {customerName}</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
 					{/* Recipient Info */}
-					<div className="rounded-lg border bg-muted/50 p-3">
+					<div className="bg-muted/50 rounded-lg border p-3">
 						<div className="flex items-center gap-3">
-							<div className="flex size-10 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary text-sm">
+							<div className="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-full text-sm font-semibold">
 								{customerName
 									.split(" ")
 									.map((n) => n[0])
@@ -127,10 +125,8 @@ export function EmailDialog({
 									.toUpperCase()}
 							</div>
 							<div className="min-w-0 flex-1">
-								<div className="font-medium text-sm">{customerName}</div>
-								<div className="text-muted-foreground text-xs">
-									{customerEmail}
-								</div>
+								<div className="text-sm font-medium">{customerName}</div>
+								<div className="text-muted-foreground text-xs">{customerEmail}</div>
 							</div>
 						</div>
 					</div>
@@ -154,25 +150,16 @@ export function EmailDialog({
 							placeholder="Type your message here..."
 							value={body}
 						/>
-						<div className="text-muted-foreground text-xs">
-							{body.length} characters
-						</div>
+						<div className="text-muted-foreground text-xs">{body.length} characters</div>
 					</div>
 				</div>
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-2">
-					<Button
-						disabled={isPending}
-						onClick={() => onOpenChange(false)}
-						variant="outline"
-					>
+					<Button disabled={isPending} onClick={() => onOpenChange(false)} variant="outline">
 						Cancel
 					</Button>
-					<Button
-						disabled={isPending || !subject.trim() || !body.trim()}
-						onClick={handleSend}
-					>
+					<Button disabled={isPending || !subject.trim() || !body.trim()} onClick={handleSend}>
 						<Send className="mr-2 size-4" />
 						Send Email
 					</Button>

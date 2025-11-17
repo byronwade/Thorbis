@@ -5,10 +5,7 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type {
-	KanbanItemBase,
-	KanbanMoveEvent,
-} from "@/components/ui/shadcn-io/kanban";
+import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 
 type AppointmentStatus =
@@ -58,9 +55,7 @@ const APPOINTMENT_STATUS_COLUMNS: Array<{
 	{ id: "no_show", name: "No Show", accentColor: "#F59E0B" },
 ];
 
-const COLUMN_LABEL = new Map(
-	APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]),
-);
+const COLUMN_LABEL = new Map(APPOINTMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
 const DEFAULT_STATUS: AppointmentStatus = "scheduled";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
@@ -116,45 +111,39 @@ function getCustomerName(appointment: Appointment): string {
 
 function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 	const { appointment, columnId } = item;
-	const startTime = appointment.start_time
-		? new Date(appointment.start_time)
-		: null;
+	const startTime = appointment.start_time ? new Date(appointment.start_time) : null;
 	const endTime = appointment.end_time ? new Date(appointment.end_time) : null;
 
 	return (
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<h3 className="font-semibold text-foreground text-sm leading-snug">
+					<h3 className="text-foreground text-sm leading-snug font-semibold">
 						{appointment.title}
 					</h3>
 				</div>
 			</div>
 
 			{appointment.description && (
-				<p className="line-clamp-2 text-muted-foreground text-xs">
-					{appointment.description}
-				</p>
+				<p className="text-muted-foreground line-clamp-2 text-xs">{appointment.description}</p>
 			)}
 
-			<div className="space-y-2 text-muted-foreground text-xs">
+			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
-					<User className="size-4 text-primary" />
-					<span className="font-medium text-foreground">
-						{getCustomerName(appointment)}
-					</span>
+					<User className="text-primary size-4" />
+					<span className="text-foreground font-medium">{getCustomerName(appointment)}</span>
 				</div>
 
 				{startTime && (
 					<div className="flex items-center gap-2">
-						<CalendarDays className="size-4 text-primary" />
+						<CalendarDays className="text-primary size-4" />
 						<span>{formatDate(startTime)}</span>
 					</div>
 				)}
 
 				{startTime && endTime && (
 					<div className="flex items-center gap-2">
-						<Clock className="size-4 text-primary" />
+						<Clock className="text-primary size-4" />
 						<span>
 							{formatTime(startTime)} - {formatTime(endTime)}
 						</span>
@@ -163,13 +152,13 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 
 				{appointment.assigned_user?.name && (
 					<div className="flex items-center gap-2">
-						<User className="size-4 text-primary" />
+						<User className="text-primary size-4" />
 						<span>{appointment.assigned_user.name}</span>
 					</div>
 				)}
 			</div>
 
-			<div className="flex items-center justify-between pt-2 text-[11px] text-muted-foreground tracking-wide">
+			<div className="text-muted-foreground flex items-center justify-between pt-2 text-[11px] tracking-wide">
 				<span>{startTime && fullDateFormatter.format(startTime)}</span>
 				<span className="uppercase">
 					{COLUMN_LABEL.get(columnId as AppointmentStatus) ?? columnId}
@@ -177,12 +166,7 @@ function AppointmentCardContent({ item }: { item: AppointmentsKanbanItem }) {
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button
-					asChild
-					className="gap-1 text-primary text-xs"
-					size="sm"
-					variant="ghost"
-				>
+				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
 					<Link href={`/dashboard/work/appointments/${appointment.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />
@@ -219,9 +203,7 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 				//   return;
 				// }
 
-				toast.success(
-					`Appointment moved to ${COLUMN_LABEL.get(toColumnId as AppointmentStatus)}`,
-				);
+				toast.success(`Appointment moved to ${COLUMN_LABEL.get(toColumnId as AppointmentStatus)}`);
 			})();
 		});
 	};
@@ -248,11 +230,9 @@ export function AppointmentsKanban({ appointments }: AppointmentsKanbanProps) {
 				/>
 			)}
 			renderDragOverlay={(item) => (
-				<div className="w-[280px] rounded-md border border-border/70 bg-background/95 p-3 shadow-lg">
+				<div className="border-border/70 bg-background/95 w-[280px] rounded-md border p-3 shadow-lg">
 					<AppointmentCardContent
-						item={
-							{ ...item, appointment: item.entity } as AppointmentsKanbanItem
-						}
+						item={{ ...item, appointment: item.entity } as AppointmentsKanbanItem}
 					/>
 				</div>
 			)}

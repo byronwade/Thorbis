@@ -66,9 +66,7 @@ export async function generateMetadata({ params }: BlogArticlePageProps) {
 	});
 }
 
-export default async function BlogArticlePage({
-	params,
-}: BlogArticlePageProps) {
+export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
 	const { slug } = await params;
 	const post = await getBlogPostBySlug(slug);
 
@@ -80,18 +78,13 @@ export default async function BlogArticlePage({
 		categorySlug: post.category?.slug,
 		limit: 4,
 	});
-	const relatedPosts = relatedResult.data
-		.filter((item) => item.slug !== post.slug)
-		.slice(0, 3);
+	const relatedPosts = relatedResult.data.filter((item) => item.slug !== post.slug).slice(0, 3);
 
 	const publishedLabel = formatDate(post.publishedAt);
 	const updatedLabel =
-		post.updatedAt && post.updatedAt !== post.publishedAt
-			? formatDate(post.updatedAt)
-			: null;
+		post.updatedAt && post.updatedAt !== post.publishedAt ? formatDate(post.updatedAt) : null;
 	const wordCount = post.content.split(/\s+/).filter(Boolean).length;
-	const readTimeISO =
-		post.readingTime > 0 ? `PT${post.readingTime}M` : undefined;
+	const readTimeISO = post.readingTime > 0 ? `PT${post.readingTime}M` : undefined;
 
 	return (
 		<>
@@ -100,8 +93,7 @@ export default async function BlogArticlePage({
 					__html: JSON.stringify(
 						createArticleSchema({
 							title: post.title,
-							description:
-								post.seoDescription ?? post.excerpt ?? "Thorbis blog article",
+							description: post.seoDescription ?? post.excerpt ?? "Thorbis blog article",
 							url: `${siteUrl}/blog/${post.slug}`,
 							image: post.heroImageUrl ?? buildShareImageUrl(),
 							publishedTime: post.publishedAt ?? undefined,
@@ -111,7 +103,7 @@ export default async function BlogArticlePage({
 							section: post.category?.name ?? "Blog",
 							wordCount,
 							estimatedReadTime: readTimeISO,
-						}),
+						})
 					),
 				}}
 				id="blog-article-ld"
@@ -124,7 +116,7 @@ export default async function BlogArticlePage({
 							{ name: "Home", url: siteUrl },
 							{ name: "Blog", url: `${siteUrl}/blog` },
 							{ name: post.title, url: `${siteUrl}/blog/${post.slug}` },
-						]),
+						])
 					),
 				}}
 				id="blog-article-breadcrumb-ld"
@@ -133,15 +125,12 @@ export default async function BlogArticlePage({
 
 			<article className="bg-background">
 				<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
-					<nav className="mb-10 flex items-center gap-2 text-muted-foreground text-sm">
-						<Link className="transition-colors hover:text-foreground" href="/">
+					<nav className="text-muted-foreground mb-10 flex items-center gap-2 text-sm">
+						<Link className="hover:text-foreground transition-colors" href="/">
 							Home
 						</Link>
 						<span aria-hidden="true">/</span>
-						<Link
-							className="transition-colors hover:text-foreground"
-							href="/blog"
-						>
+						<Link className="hover:text-foreground transition-colors" href="/blog">
 							Blog
 						</Link>
 						<span aria-hidden="true">/</span>
@@ -149,26 +138,18 @@ export default async function BlogArticlePage({
 					</nav>
 
 					<header className="mx-auto mb-12 max-w-3xl text-center">
-						<div className="mb-4 flex flex-wrap justify-center gap-2 font-medium text-primary text-xs uppercase tracking-wide">
-							{post.category?.name ? (
-								<Badge variant="outline">{post.category.name}</Badge>
-							) : null}
-							{post.featured ? (
-								<Badge variant="secondary">Featured</Badge>
-							) : null}
-							{post.pinned ? (
-								<Badge variant="secondary">Spotlight</Badge>
-							) : null}
+						<div className="text-primary mb-4 flex flex-wrap justify-center gap-2 text-xs font-medium tracking-wide uppercase">
+							{post.category?.name ? <Badge variant="outline">{post.category.name}</Badge> : null}
+							{post.featured ? <Badge variant="secondary">Featured</Badge> : null}
+							{post.pinned ? <Badge variant="secondary">Spotlight</Badge> : null}
 						</div>
 
-						<h1 className="mb-4 text-balance font-bold text-4xl tracking-tight sm:text-5xl">
+						<h1 className="mb-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{post.title}
 						</h1>
-						{post.excerpt ? (
-							<p className="text-lg text-muted-foreground">{post.excerpt}</p>
-						) : null}
+						{post.excerpt ? <p className="text-muted-foreground text-lg">{post.excerpt}</p> : null}
 
-						<div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-muted-foreground text-sm">
+						<div className="text-muted-foreground mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
 							{post.author?.name ? (
 								<span className="inline-flex items-center gap-1">
 									<User aria-hidden="true" className="size-4" />
@@ -178,9 +159,7 @@ export default async function BlogArticlePage({
 							{publishedLabel ? (
 								<span className="inline-flex items-center gap-1">
 									<Calendar aria-hidden="true" className="size-4" />
-									<time dateTime={post.publishedAt ?? undefined}>
-										{publishedLabel}
-									</time>
+									<time dateTime={post.publishedAt ?? undefined}>{publishedLabel}</time>
 								</span>
 							) : null}
 							{post.readingTime > 0 ? (
@@ -189,9 +168,7 @@ export default async function BlogArticlePage({
 									{post.readingTime} min read
 								</span>
 							) : null}
-							{updatedLabel ? (
-								<span aria-label="Last updated on">{updatedLabel}</span>
-							) : null}
+							{updatedLabel ? <span aria-label="Last updated on">{updatedLabel}</span> : null}
 						</div>
 					</header>
 
@@ -212,28 +189,27 @@ export default async function BlogArticlePage({
 						<MarkdownContent content={post.content} />
 
 						{post.tags.length ? (
-							<section className="flex flex-wrap items-center gap-3 rounded-xl border bg-muted/20 p-6">
-								<h2 className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+							<section className="bg-muted/20 flex flex-wrap items-center gap-3 rounded-xl border p-6">
+								<h2 className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
 									Tags
 								</h2>
 								<div className="flex flex-wrap gap-2">
 									{post.tags.map((tag) => (
 										<Link
-											className="inline-flex items-center gap-1 rounded-full border border-border px-3 py-1 text-xs transition-colors hover:border-primary hover:text-primary"
+											className="border-border hover:border-primary hover:text-primary inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs transition-colors"
 											href={`/blog?tag=${tag.slug}`}
 											key={tag.id}
 										>
-											<TagIcon aria-hidden="true" className="size-3" />#
-											{tag.name}
+											<TagIcon aria-hidden="true" className="size-3" />#{tag.name}
 										</Link>
 									))}
 								</div>
 							</section>
 						) : null}
 
-						<footer className="flex flex-col gap-6 rounded-xl border bg-muted/20 p-6 sm:flex-row sm:items-center sm:justify-between">
+						<footer className="bg-muted/20 flex flex-col gap-6 rounded-xl border p-6 sm:flex-row sm:items-center sm:justify-between">
 							<div className="space-y-1">
-								<p className="font-semibold text-muted-foreground text-sm uppercase tracking-wide">
+								<p className="text-muted-foreground text-sm font-semibold tracking-wide uppercase">
 									Share this article
 								</p>
 								<p className="text-muted-foreground text-sm">
@@ -268,11 +244,11 @@ export default async function BlogArticlePage({
 				</div>
 			</article>
 
-			<section className="border-t bg-muted/30 py-16">
+			<section className="bg-muted/30 border-t py-16">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mb-8 flex items-center justify-between gap-4">
 						<div>
-							<h2 className="font-semibold text-2xl">More for you</h2>
+							<h2 className="text-2xl font-semibold">More for you</h2>
 							<p className="text-muted-foreground text-sm">
 								Continue exploring strategies from the Thorbis team.
 							</p>
@@ -288,9 +264,8 @@ export default async function BlogArticlePage({
 							))}
 						</div>
 					) : (
-						<p className="rounded-xl border border-dashed bg-background/60 p-6 text-muted-foreground">
-							We&apos;re crafting more stories in this category. Check back
-							soon.
+						<p className="bg-background/60 text-muted-foreground rounded-xl border border-dashed p-6">
+							We&apos;re crafting more stories in this category. Check back soon.
 						</p>
 					)}
 				</div>

@@ -12,10 +12,7 @@ import { addDays, subDays } from "date-fns";
 import { Suspense } from "react";
 import { CompanyGate } from "@/components/company/company-gate";
 import { SchedulePageClient } from "@/components/schedule/schedule-page-client";
-import {
-	getActiveCompanyId,
-	getUserCompanies,
-} from "@/lib/auth/company-context";
+import { getActiveCompanyId, getUserCompanies } from "@/lib/auth/company-context";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { serializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { fetchScheduleData } from "@/lib/schedule-data";
@@ -30,12 +27,7 @@ async function ScheduleData() {
 
 	if (!companyId) {
 		const companies = await getUserCompanies();
-		return (
-			<CompanyGate
-				context="scheduling"
-				hasCompanies={(companies ?? []).length > 0}
-			/>
-		);
+		return <CompanyGate context="scheduling" hasCompanies={(companies ?? []).length > 0} />;
 	}
 
 	if (!supabase) {
@@ -71,12 +63,7 @@ async function ScheduleData() {
 					: "Unable to load schedule data";
 	}
 
-	return (
-		<SchedulePageClient
-			bootstrapError={bootstrapError}
-			initialData={initialData}
-		/>
-	);
+	return <SchedulePageClient bootstrapError={bootstrapError} initialData={initialData} />;
 }
 
 // Loading skeleton
@@ -84,7 +71,7 @@ function ScheduleSkeleton() {
 	return (
 		<div className="flex h-full w-full items-center justify-center">
 			<div className="flex flex-col items-center gap-4">
-				<div className="size-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+				<div className="border-primary/20 border-t-primary size-12 animate-spin rounded-full border-4" />
 				<p className="text-muted-foreground text-sm">Loading schedule...</p>
 			</div>
 		</div>

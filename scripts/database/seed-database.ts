@@ -15,14 +15,11 @@ config({ path: ".env.local" });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey =
-	process.env.SUPABASE_SERVICE_ROLE_KEY ||
-	process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+	process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!(supabaseUrl && supabaseServiceKey)) {
 	console.error("❌ Missing Supabase credentials in .env.local");
-	console.error(
-		"Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY",
-	);
+	console.error("Required: NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
 	process.exit(1);
 }
 
@@ -58,10 +55,7 @@ async function runSeedFile(filepath: string): Promise<void> {
 	console.log(`\n📄 Running: ${filename}`);
 
 	try {
-		const sql = readFileSync(
-			join(process.cwd(), "supabase", filepath),
-			"utf-8",
-		);
+		const sql = readFileSync(join(process.cwd(), "supabase", filepath), "utf-8");
 
 		// Execute the SQL
 		const { error } = await supabase.rpc("exec_sql", { sql_query: sql });
@@ -93,11 +87,8 @@ async function runMainSeed(): Promise<void> {
 		// Extract just the DO blocks (before the \ir commands)
 		const setupSQL =
 			mainSeed.split(
-				"-- ============================================================================",
-			)[0] +
-			mainSeed
-				.split("-- IMPORT ALL SEED FILES IN ORDER")[0]
-				.split("END $$;")[1];
+				"-- ============================================================================"
+			)[0] + mainSeed.split("-- IMPORT ALL SEED FILES IN ORDER")[0].split("END $$;")[1];
 
 		const { error: setupError } = await supabase.rpc("exec_sql", {
 			sql_query: setupSQL,
@@ -137,7 +128,7 @@ async function checkUserExists(): Promise<boolean> {
 
 		if (error) {
 			console.error(
-				"❌ Cannot access auth.users. Make sure SUPABASE_SERVICE_ROLE_KEY is set in .env.local",
+				"❌ Cannot access auth.users. Make sure SUPABASE_SERVICE_ROLE_KEY is set in .env.local"
 			);
 			return false;
 		}

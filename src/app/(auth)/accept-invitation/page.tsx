@@ -7,14 +7,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	AlertCircle,
-	CheckCircle,
-	Eye,
-	EyeOff,
-	Loader2,
-	User,
-} from "lucide-react";
+import { AlertCircle, CheckCircle, Eye, EyeOff, Loader2, User } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -22,13 +15,7 @@ import { z } from "zod";
 import { acceptTeamInvitation } from "@/actions/accept-invitation";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Form,
 	FormControl,
@@ -108,9 +95,7 @@ function AcceptInvitationContent() {
 
 			try {
 				// Verify token and get invitation details
-				const response = await fetch(
-					`/api/verify-invitation?token=${encodeURIComponent(token)}`,
-				);
+				const response = await fetch(`/api/verify-invitation?token=${encodeURIComponent(token)}`);
 
 				if (!response.ok) {
 					throw new Error("Failed to verify invitation");
@@ -205,7 +190,7 @@ function AcceptInvitationContent() {
 			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 				<Card className="w-full max-w-md">
 					<CardContent className="flex flex-col items-center gap-4 pt-6">
-						<Loader2 className="size-8 animate-spin text-primary" />
+						<Loader2 className="text-primary size-8 animate-spin" />
 						<p className="text-muted-foreground">Verifying invitation...</p>
 					</CardContent>
 				</Card>
@@ -226,15 +211,10 @@ function AcceptInvitationContent() {
 					<CardContent>
 						<Alert variant="destructive">
 							<AlertCircle className="size-4" />
-							<AlertDescription>
-								{tokenError || "The invitation token is invalid"}
-							</AlertDescription>
+							<AlertDescription>{tokenError || "The invitation token is invalid"}</AlertDescription>
 						</Alert>
 						<div className="mt-6 space-y-2 text-center text-sm">
-							<p>
-								If you believe this is an error, please contact the person who
-								invited you.
-							</p>
+							<p>If you believe this is an error, please contact the person who invited you.</p>
 							<Button
 								className="mt-4 w-full"
 								onClick={() => router.push("/login")}
@@ -255,8 +235,7 @@ function AcceptInvitationContent() {
 				<CardHeader>
 					<CardTitle>Accept Team Invitation</CardTitle>
 					<CardDescription>
-						You've been invited to join{" "}
-						<strong>{invitationData?.companyName}</strong> as a{" "}
+						You've been invited to join <strong>{invitationData?.companyName}</strong> as a{" "}
 						<strong>{invitationData?.role}</strong>
 					</CardDescription>
 				</CardHeader>
@@ -273,7 +252,7 @@ function AcceptInvitationContent() {
 											src={photoPreview}
 										/>
 										<Button
-											className="-right-1 -top-1 absolute size-6 rounded-full p-0"
+											className="absolute -top-1 -right-1 size-6 rounded-full p-0"
 											onClick={() => {
 												form.setValue("photo", undefined);
 												setPhotoPreview(null);
@@ -287,7 +266,7 @@ function AcceptInvitationContent() {
 									</div>
 								) : (
 									<div className="flex size-20 items-center justify-center rounded-full border border-dashed">
-										<User className="size-8 text-muted-foreground" />
+										<User className="text-muted-foreground size-8" />
 									</div>
 								)}
 								<div className="flex-1">
@@ -297,7 +276,7 @@ function AcceptInvitationContent() {
 										onChange={handlePhotoChange}
 										type="file"
 									/>
-									<p className="mt-1 text-muted-foreground text-xs">
+									<p className="text-muted-foreground mt-1 text-xs">
 										Profile photo (optional, max 5MB)
 									</p>
 								</div>
@@ -342,16 +321,9 @@ function AcceptInvitationContent() {
 										<FormItem>
 											<FormLabel>Email *</FormLabel>
 											<FormControl>
-												<Input
-													disabled
-													placeholder="john@example.com"
-													type="email"
-													{...field}
-												/>
+												<Input disabled placeholder="john@example.com" type="email" {...field} />
 											</FormControl>
-											<FormDescription>
-												This email cannot be changed
-											</FormDescription>
+											<FormDescription>This email cannot be changed</FormDescription>
 											<FormMessage />
 										</FormItem>
 									)}
@@ -363,11 +335,7 @@ function AcceptInvitationContent() {
 										<FormItem>
 											<FormLabel>Phone (Optional)</FormLabel>
 											<FormControl>
-												<Input
-													placeholder="+1 (555) 123-4567"
-													type="tel"
-													{...field}
-												/>
+												<Input placeholder="+1 (555) 123-4567" type="tel" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -405,8 +373,7 @@ function AcceptInvitationContent() {
 											</div>
 										</FormControl>
 										<FormDescription>
-											At least 8 characters with uppercase, lowercase, and a
-											number
+											At least 8 characters with uppercase, lowercase, and a number
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
@@ -429,9 +396,7 @@ function AcceptInvitationContent() {
 												/>
 												<Button
 													className="absolute top-0 right-0 h-full px-3"
-													onClick={() =>
-														setShowConfirmPassword(!showConfirmPassword)
-													}
+													onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 													size="sm"
 													type="button"
 													variant="ghost"
@@ -477,7 +442,7 @@ export default function AcceptInvitationPage() {
 				<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
 					<Card className="w-full max-w-md">
 						<CardContent className="flex flex-col items-center gap-4 pt-6">
-							<Loader2 className="size-8 animate-spin text-primary" />
+							<Loader2 className="text-primary size-8 animate-spin" />
 							<p className="text-muted-foreground">Loading...</p>
 						</CardContent>
 					</Card>

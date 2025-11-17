@@ -112,8 +112,7 @@
 	--sidebar-width: 12rem;
 	--top-spacing: 1rem;
 	--font-geist-sans:
-		"Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system,
-		BlinkMacSystemFont, sans-serif;
+		"Inter", "SF Pro Display", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 	--font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
 
 	/* Shadcn Neutral – clean minimalistic palette with electric blue accent */

@@ -22,13 +22,7 @@ type JobTemplate = {
 	id: string;
 	name: string;
 	shortcut: string;
-	jobType:
-		| "service"
-		| "installation"
-		| "repair"
-		| "maintenance"
-		| "inspection"
-		| "consultation";
+	jobType: "service" | "installation" | "repair" | "maintenance" | "inspection" | "consultation";
 	priority: "low" | "medium" | "high" | "urgent";
 	duration: number; // minutes
 	title: string;
@@ -114,9 +108,7 @@ export function JobTemplates({ onTemplateSelect }: JobTemplatesProps) {
 			<DropdownMenuContent align="start" className="w-64">
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Job Templates</span>
-					<span className="font-normal text-muted-foreground text-xs">
-						Alt + 1-6
-					</span>
+					<span className="text-muted-foreground text-xs font-normal">Alt + 1-6</span>
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{JOB_TEMPLATES.map((template) => (
@@ -131,9 +123,7 @@ export function JobTemplates({ onTemplateSelect }: JobTemplatesProps) {
 								{template.duration} min • {template.priority}
 							</span>
 						</div>
-						<span className="text-muted-foreground text-xs">
-							{template.shortcut.split("+")[1]}
-						</span>
+						<span className="text-muted-foreground text-xs">{template.shortcut.split("+")[1]}</span>
 					</DropdownMenuItem>
 				))}
 			</DropdownMenuContent>

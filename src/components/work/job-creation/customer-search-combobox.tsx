@@ -12,11 +12,7 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/components/ui/command";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 /**
@@ -63,12 +59,8 @@ export function CustomerSearchCombobox({
 	const [searchQuery, setSearchQuery] = useState("");
 
 	// Get recent customers for quick access
-	const recentCustomers = customers.filter((c) =>
-		recentCustomerIds.includes(c.id),
-	);
-	const otherCustomers = customers.filter(
-		(c) => !recentCustomerIds.includes(c.id),
-	);
+	const recentCustomers = customers.filter((c) => recentCustomerIds.includes(c.id));
+	const otherCustomers = customers.filter((c) => !recentCustomerIds.includes(c.id));
 
 	// Format customer display name
 	const formatCustomerName = (customer: Customer) => {
@@ -77,8 +69,7 @@ export function CustomerSearchCombobox({
 	};
 
 	// Format secondary info (email or phone)
-	const formatSecondaryInfo = (customer: Customer) =>
-		customer.email || customer.phone || "";
+	const formatSecondaryInfo = (customer: Customer) => customer.email || customer.phone || "";
 
 	return (
 		<Popover onOpenChange={setOpen} open={open}>
@@ -92,10 +83,8 @@ export function CustomerSearchCombobox({
 				>
 					{selectedCustomer ? (
 						<div className="flex items-center gap-2">
-							<User className="size-4 text-muted-foreground" />
-							<span className="truncate">
-								{formatCustomerName(selectedCustomer)}
-							</span>
+							<User className="text-muted-foreground size-4" />
+							<span className="truncate">{formatCustomerName(selectedCustomer)}</span>
 						</div>
 					) : (
 						<span className="text-muted-foreground">{placeholder}</span>
@@ -113,9 +102,7 @@ export function CustomerSearchCombobox({
 					<CommandList>
 						<CommandEmpty>
 							<div className="py-6 text-center">
-								<p className="text-muted-foreground text-sm">
-									No customers found
-								</p>
+								<p className="text-muted-foreground text-sm">No customers found</p>
 								<Button
 									className="mt-3"
 									onClick={() => {
@@ -154,11 +141,7 @@ export function CustomerSearchCombobox({
 										<CommandItem
 											key={customer.id}
 											onSelect={() => {
-												onSelectCustomer(
-													customer.id === selectedCustomer?.id
-														? null
-														: customer,
-												);
+												onSelectCustomer(customer.id === selectedCustomer?.id ? null : customer);
 												setOpen(false);
 											}}
 											value={`${customer.first_name} ${customer.last_name} ${customer.email} ${customer.phone} ${customer.company_name || ""}`}
@@ -166,22 +149,16 @@ export function CustomerSearchCombobox({
 											<Check
 												className={cn(
 													"mr-2 size-4",
-													selectedCustomer?.id === customer.id
-														? "opacity-100"
-														: "opacity-0",
+													selectedCustomer?.id === customer.id ? "opacity-100" : "opacity-0"
 												)}
 											/>
 											<div className="flex flex-1 flex-col">
-												<span className="font-medium">
-													{formatCustomerName(customer)}
-												</span>
+												<span className="font-medium">{formatCustomerName(customer)}</span>
 												<span className="text-muted-foreground text-xs">
 													{formatSecondaryInfo(customer)}
 												</span>
 											</div>
-											<span className="ml-auto text-muted-foreground text-xs">
-												{customer.type}
-											</span>
+											<span className="text-muted-foreground ml-auto text-xs">{customer.type}</span>
 										</CommandItem>
 									))}
 								</CommandGroup>
@@ -190,9 +167,7 @@ export function CustomerSearchCombobox({
 						)}
 
 						{/* All Customers */}
-						<CommandGroup
-							heading={searchQuery ? "Search Results" : "All Customers"}
-						>
+						<CommandGroup heading={searchQuery ? "Search Results" : "All Customers"}>
 							{(searchQuery ? customers : otherCustomers)
 								.filter((customer) => {
 									if (!searchQuery) {
@@ -212,9 +187,7 @@ export function CustomerSearchCombobox({
 									<CommandItem
 										key={customer.id}
 										onSelect={() => {
-											onSelectCustomer(
-												customer.id === selectedCustomer?.id ? null : customer,
-											);
+											onSelectCustomer(customer.id === selectedCustomer?.id ? null : customer);
 											setOpen(false);
 										}}
 										value={`${customer.first_name} ${customer.last_name} ${customer.email} ${customer.phone} ${customer.company_name || ""}`}
@@ -222,22 +195,16 @@ export function CustomerSearchCombobox({
 										<Check
 											className={cn(
 												"mr-2 size-4",
-												selectedCustomer?.id === customer.id
-													? "opacity-100"
-													: "opacity-0",
+												selectedCustomer?.id === customer.id ? "opacity-100" : "opacity-0"
 											)}
 										/>
 										<div className="flex flex-1 flex-col">
-											<span className="font-medium">
-												{formatCustomerName(customer)}
-											</span>
+											<span className="font-medium">{formatCustomerName(customer)}</span>
 											<span className="text-muted-foreground text-xs">
 												{formatSecondaryInfo(customer)}
 											</span>
 										</div>
-										<span className="ml-auto text-muted-foreground text-xs">
-											{customer.type}
-										</span>
+										<span className="text-muted-foreground ml-auto text-xs">{customer.type}</span>
 									</CommandItem>
 								))}
 						</CommandGroup>

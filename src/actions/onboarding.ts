@@ -51,11 +51,7 @@ const onboardingSchema = z.object({
 	orgCity: z.string().min(2, "City is required"),
 	orgState: z.string().min(2, "State is required"),
 	orgZip: z.string().min(5, "ZIP code is required"),
-	orgWebsite: z
-		.string()
-		.url("Please enter a valid URL")
-		.optional()
-		.or(z.literal("")),
+	orgWebsite: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 	orgTaxId: z.string().optional(),
 });
 
@@ -101,9 +97,7 @@ function buildFullAddress(data: {
 	orgState: string;
 	orgZip: string;
 }): string {
-	return [data.orgAddress, data.orgCity, data.orgState, data.orgZip]
-		.filter(Boolean)
-		.join(", ");
+	return [data.orgAddress, data.orgCity, data.orgState, data.orgZip].filter(Boolean).join(", ");
 }
 
 function formatDisplayPhoneNumber(phoneNumber: string): string {
@@ -120,7 +114,7 @@ function formatDisplayPhoneNumber(phoneNumber: string): string {
 async function uploadCompanyLogo(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
-	logoFile: File | null,
+	logoFile: File | null
 ): Promise<string | null> {
 	if (!logoFile || logoFile.size === 0) {
 		return null;
@@ -164,22 +158,16 @@ async function uploadCompanyLogo(
 async function ensureActiveMembership(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
-	userId: string,
+	userId: string
 ): Promise<void> {
 	// First verify the table exists by checking if we can query it
-	const { error: testError } = await serviceSupabase
-		.from("team_members")
-		.select("id")
-		.limit(1);
+	const { error: testError } = await serviceSupabase.from("team_members").select("id").limit(1);
 
 	if (testError) {
 		// If table doesn't exist, this is a critical error
-		if (
-			testError.message?.includes("does not exist") ||
-			testError.code === "42P01"
-		) {
+		if (testError.message?.includes("does not exist") || testError.code === "42P01") {
 			throw new Error(
-				"Database schema error: team_members table not found. Please contact support.",
+				"Database schema error: team_members table not found. Please contact support."
 			);
 		}
 		throw new Error(`Database error: ${testError.message}`);
@@ -197,20 +185,16 @@ async function ensureActiveMembership(
 	}
 
 	if (!membership) {
-		const { error: insertError } = await serviceSupabase
-			.from("team_members")
-			.insert({
-				company_id: companyId,
-				user_id: userId,
-				status: "active",
-				role: "owner", // Set as owner since they're creating the company
-				joined_at: new Date().toISOString(),
-			});
+		const { error: insertError } = await serviceSupabase.from("team_members").insert({
+			company_id: companyId,
+			user_id: userId,
+			status: "active",
+			role: "owner", // Set as owner since they're creating the company
+			joined_at: new Date().toISOString(),
+		});
 
 		if (insertError) {
-			throw new Error(
-				`Failed to add you to the organization: ${insertError.message}`,
-			);
+			throw new Error(`Failed to add you to the organization: ${insertError.message}`);
 		}
 		return;
 	}
@@ -226,16 +210,14 @@ async function ensureActiveMembership(
 			.eq("id", membership.id);
 
 		if (updateError) {
-			throw new Error(
-				`Failed to reactivate your organization access: ${updateError.message}`,
-			);
+			throw new Error(`Failed to reactivate your organization access: ${updateError.message}`);
 		}
 	}
 }
 
 async function fetchIncompleteCompanyCandidates(
 	serviceSupabase: ServiceSupabaseClient,
-	userId: string,
+	userId: string
 ): Promise<IncompleteCompanyCandidate[]> {
 	const { data, error } = await serviceSupabase
 		.from("team_members")
@@ -249,15 +231,12 @@ async function fetchIncompleteCompanyCandidates(
           stripe_subscription_status,
           deleted_at
         )
-      `,
+      `
 		)
 		.eq("user_id", userId)
 		.neq("status", "archived")
 		.is("companies.deleted_at", null)
-		.in(
-			"companies.stripe_subscription_status",
-			INCOMPLETE_SUBSCRIPTION_STATUSES,
-		);
+		.in("companies.stripe_subscription_status", INCOMPLETE_SUBSCRIPTION_STATUSES);
 
 	if (error) {
 		return [];
@@ -275,7 +254,7 @@ async function fetchIncompleteCompanyCandidates(
 async function validateCompanyForOnboarding(
 	serviceSupabase: ServiceSupabaseClient,
 	userId: string,
-	companyId?: string,
+	companyId?: string
 ): Promise<IncompleteCompanyCandidate | null> {
 	if (!companyId) {
 		return null;
@@ -295,7 +274,7 @@ async function validateCompanyForOnboarding(
 		!company ||
 		company.deleted_at ||
 		!INCOMPLETE_SUBSCRIPTION_STATUSES.includes(
-			company.stripe_subscription_status as (typeof INCOMPLETE_SUBSCRIPTION_STATUSES)[number],
+			company.stripe_subscription_status as (typeof INCOMPLETE_SUBSCRIPTION_STATUSES)[number]
 		)
 	) {
 		return null;
@@ -336,17 +315,13 @@ function pickCompanyCandidate(options: {
 		return existing.id;
 	}
 
-	const byName = candidates.find(
-		(candidate) => candidate.normalizedName === normalizedName,
-	);
+	const byName = candidates.find((candidate) => candidate.normalizedName === normalizedName);
 	if (byName) {
 		return byName.id;
 	}
 
 	if (activeCompanyId) {
-		const activeMatch = candidates.find(
-			(candidate) => candidate.id === activeCompanyId,
-		);
+		const activeMatch = candidates.find((candidate) => candidate.id === activeCompanyId);
 		if (activeMatch) {
 			return activeMatch.id;
 		}
@@ -357,7 +332,7 @@ function pickCompanyCandidate(options: {
 
 async function generateUniqueSlug(
 	serviceSupabase: ServiceSupabaseClient,
-	baseSlug: string,
+	baseSlug: string
 ): Promise<string> {
 	let slug = baseSlug;
 	let counter = 1;
@@ -400,23 +375,21 @@ function extractDomainFromUrl(url?: string | null) {
 async function autoConfigureEmailInfrastructure(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
-	website?: string | null,
+	website?: string | null
 ) {
 	const domain = extractDomainFromUrl(website);
 	if (domain) {
 		try {
 			const result = await createResendDomain(domain);
 			if (result.success) {
-				await (serviceSupabase as any)
-					.from("communication_email_domains")
-					.insert({
-						company_id: companyId,
-						domain,
-						status: result.data.status || "pending",
-						resend_domain_id: result.data.id,
-						dns_records: result.data.records || [],
-						last_synced_at: new Date().toISOString(),
-					});
+				await (serviceSupabase as any).from("communication_email_domains").insert({
+					company_id: companyId,
+					domain,
+					status: result.data.status || "pending",
+					resend_domain_id: result.data.id,
+					dns_records: result.data.records || [],
+					last_synced_at: new Date().toISOString(),
+				});
 			}
 		} catch (_error) {
 			// Error setting up domain, continue with flow
@@ -449,17 +422,15 @@ async function autoConfigureEmailInfrastructure(
 		});
 
 		if (result.success) {
-			await (serviceSupabase as any)
-				.from("communication_email_inbound_routes")
-				.insert({
-					company_id: companyId,
-					route_address: routeAddress,
-					resend_route_id: result.data.id,
-					signing_secret: result.data.secret || null,
-					status: result.data.status || "pending",
-					destination_url: destinationUrl,
-					last_synced_at: new Date().toISOString(),
-				});
+			await (serviceSupabase as any).from("communication_email_inbound_routes").insert({
+				company_id: companyId,
+				route_address: routeAddress,
+				resend_route_id: result.data.id,
+				signing_secret: result.data.secret || null,
+				status: result.data.status || "pending",
+				destination_url: destinationUrl,
+				last_synced_at: new Date().toISOString(),
+			});
 		}
 	} catch (_error) {
 		// Ignore QuickBooks sync errors during onboarding
@@ -469,7 +440,7 @@ async function autoConfigureEmailInfrastructure(
 async function updateOnboardingProgressRecord(
 	serviceSupabase: ServiceSupabaseClient,
 	companyId: string,
-	update: ProgressUpdate,
+	update: ProgressUpdate
 ): Promise<void> {
 	const { data: company, error } = await serviceSupabase
 		.from("companies")
@@ -481,8 +452,7 @@ async function updateOnboardingProgressRecord(
 		throw new Error(`Failed to load onboarding progress: ${error.message}`);
 	}
 
-	const current =
-		(company?.onboarding_progress as Record<string, unknown>) || {};
+	const current = (company?.onboarding_progress as Record<string, unknown>) || {};
 
 	const next: Record<string, unknown> = {
 		...current,
@@ -492,9 +462,7 @@ async function updateOnboardingProgressRecord(
 	if (typeof update.step === "number") {
 		next[`step${update.step}`] = update.stepData ?? {};
 		const existingStep =
-			typeof current.currentStep === "number"
-				? (current.currentStep as number)
-				: 1;
+			typeof current.currentStep === "number" ? (current.currentStep as number) : 1;
 		next.currentStep = Math.max(existingStep, update.step);
 	}
 
@@ -506,9 +474,7 @@ async function updateOnboardingProgressRecord(
 		.eq("id", companyId);
 
 	if (updateError) {
-		throw new Error(
-			`Failed to update onboarding progress: ${updateError.message}`,
-		);
+		throw new Error(`Failed to update onboarding progress: ${updateError.message}`);
 	}
 }
 
@@ -585,7 +551,7 @@ function extractTeamMembers(formData: FormData): TeamMemberProgressInput[] {
 	}
 
 	return Object.values(members).filter(
-		(member) => member.email || member.firstName || member.lastName,
+		(member) => member.email || member.firstName || member.lastName
 	);
 }
 
@@ -593,7 +559,7 @@ export async function saveOnboardingProgress(
 	formData: FormData,
 	existingCompanyId?: string,
 	step?: number,
-	stepData?: Record<string, unknown>,
+	stepData?: Record<string, unknown>
 ): Promise<OnboardingResult> {
 	try {
 		const data = onboardingSchema.parse({
@@ -670,7 +636,7 @@ export async function saveOnboardingProgress(
 			data.orgCity,
 			data.orgState,
 			data.orgZip,
-			"USA",
+			"USA"
 		);
 
 		if (geocodeResult) {
@@ -806,11 +772,7 @@ export async function saveOnboardingProgress(
 		}
 
 		try {
-			await autoConfigureEmailInfrastructure(
-				serviceSupabase,
-				companyId,
-				data.orgWebsite,
-			);
+			await autoConfigureEmailInfrastructure(serviceSupabase, companyId, data.orgWebsite);
 		} catch (_emailInfraError) {
 			// Ignore email infrastructure errors during onboarding
 		}
@@ -865,9 +827,7 @@ export async function saveOnboardingProgress(
 	}
 }
 
-export async function completeOnboarding(
-	formData: FormData,
-): Promise<OnboardingResult> {
+export async function completeOnboarding(formData: FormData): Promise<OnboardingResult> {
 	const result = await saveOnboardingProgress(formData);
 
 	if (!(result.success && result.companyId)) {
@@ -900,7 +860,7 @@ export async function completeOnboarding(
 export async function saveOnboardingStepProgress(
 	companyId: string,
 	step: number,
-	stepData: Record<string, unknown>,
+	stepData: Record<string, unknown>
 ): Promise<OnboardingResult> {
 	try {
 		const supabase = await createClient();
@@ -926,11 +886,7 @@ export async function saveOnboardingStepProgress(
 
 		const serviceSupabase = await createServiceSupabaseClient();
 
-		const candidate = await validateCompanyForOnboarding(
-			serviceSupabase,
-			user.id,
-			companyId,
-		);
+		const candidate = await validateCompanyForOnboarding(serviceSupabase, user.id, companyId);
 
 		if (!candidate) {
 			return {
@@ -959,10 +915,7 @@ export async function saveOnboardingStepProgress(
 		} catch (progressError) {
 			return {
 				success: false,
-				error:
-					progressError instanceof Error
-						? progressError.message
-						: "Failed to save progress",
+				error: progressError instanceof Error ? progressError.message : "Failed to save progress",
 			};
 		}
 
@@ -985,9 +938,7 @@ export async function saveOnboardingStepProgress(
 /**
  * Purchase a phone number during onboarding
  */
-export async function purchaseOnboardingPhoneNumber(
-	formData: FormData,
-): Promise<{
+export async function purchaseOnboardingPhoneNumber(formData: FormData): Promise<{
 	success: boolean;
 	error?: string;
 	phoneNumberId?: string;
@@ -1047,10 +998,7 @@ export async function purchaseOnboardingPhoneNumber(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to purchase phone number",
+			error: error instanceof Error ? error.message : "Failed to purchase phone number",
 		};
 	}
 }
@@ -1189,20 +1137,18 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 					})
 					.eq("id", existingPhone.id);
 			} else if (portingRequestId) {
-				const { error: insertPhoneError } = await supabase
-					.from("phone_numbers")
-					.insert({
-						company_id: activeCompanyId,
-						phone_number: formattedE164,
-						formatted_number: formattedDisplay,
-						country_code: "US",
-						number_type: "local",
-						status: "porting",
-						porting_request_id: portingRequestId,
-						metadata: {
-							source: "porting",
-						},
-					});
+				const { error: insertPhoneError } = await supabase.from("phone_numbers").insert({
+					company_id: activeCompanyId,
+					phone_number: formattedE164,
+					formatted_number: formattedDisplay,
+					country_code: "US",
+					number_type: "local",
+					status: "porting",
+					porting_request_id: portingRequestId,
+					metadata: {
+						source: "porting",
+					},
+				});
 
 				if (insertPhoneError) {
 					// TODO: Handle error case
@@ -1216,8 +1162,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error ? error.message : "Failed to initiate porting",
+			error: error instanceof Error ? error.message : "Failed to initiate porting",
 		};
 	}
 }
@@ -1225,9 +1170,7 @@ export async function portOnboardingPhoneNumber(formData: FormData): Promise<{
 /**
  * Save notification settings during onboarding
  */
-export async function saveOnboardingNotificationSettings(
-	formData: FormData,
-): Promise<{
+export async function saveOnboardingNotificationSettings(formData: FormData): Promise<{
 	success: boolean;
 	error?: string;
 }> {
@@ -1238,17 +1181,12 @@ export async function saveOnboardingNotificationSettings(
 	} catch (error) {
 		return {
 			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: "Failed to save notification settings",
+			error: error instanceof Error ? error.message : "Failed to save notification settings",
 		};
 	}
 }
 
-export async function archiveIncompleteCompany(
-	companyId: string,
-): Promise<OnboardingResult> {
+export async function archiveIncompleteCompany(companyId: string): Promise<OnboardingResult> {
 	try {
 		const supabase = await createClient();
 
@@ -1346,9 +1284,7 @@ export async function archiveIncompleteCompany(
 			// TODO: Handle error case
 		}
 
-		const { getActiveCompanyId, clearActiveCompany } = await import(
-			"@/lib/auth/company-context"
-		);
+		const { getActiveCompanyId, clearActiveCompany } = await import("@/lib/auth/company-context");
 		const activeCompanyId = await getActiveCompanyId();
 		if (activeCompanyId === companyId) {
 			await clearActiveCompany();

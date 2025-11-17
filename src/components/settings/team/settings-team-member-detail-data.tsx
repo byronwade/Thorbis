@@ -57,9 +57,7 @@ export async function SettingsTeamMemberDetailData({
 		return notFound();
 	}
 
-	const userData = Array.isArray(teamMember.user)
-		? teamMember.user[0]
-		: teamMember.user;
+	const userData = Array.isArray(teamMember.user) ? teamMember.user[0] : teamMember.user;
 
 	const [
 		{ data: assignedJobs },
@@ -96,16 +94,11 @@ export async function SettingsTeamMemberDetailData({
 	]);
 
 	const totalJobs = assignedJobs?.length || 0;
-	const completedJobs =
-		assignedJobs?.filter((job) => job.status === "completed").length || 0;
-	const hoursWorked =
-		timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+	const completedJobs = assignedJobs?.filter((job) => job.status === "completed").length || 0;
+	const hoursWorked = timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
 	// Access financial domain with optional chaining and fallback
 	const revenueGenerated =
-		assignedJobs?.reduce(
-			(sum, job) => sum + (job.financial?.total_amount ?? 0),
-			0,
-		) || 0;
+		assignedJobs?.reduce((sum, job) => sum + (job.financial?.total_amount ?? 0), 0) || 0;
 
 	const metrics = {
 		totalJobs,

@@ -54,17 +54,15 @@ export function ContractsFilterDropdown({
 		}
 	}, [isOpen, globalFilters]);
 
-	const activeFilterCount = Object.entries(globalFilters).filter(
-		([key, value]) => {
-			if (key === "archiveStatus") {
-				return value !== "active";
-			}
-			if (key === "status") {
-				return value !== "all";
-			}
-			return value !== "";
-		},
-	).length;
+	const activeFilterCount = Object.entries(globalFilters).filter(([key, value]) => {
+		if (key === "archiveStatus") {
+			return value !== "active";
+		}
+		if (key === "status") {
+			return value !== "all";
+		}
+		return value !== "";
+	}).length;
 
 	const handleApplyFilters = () => {
 		setFilters(localFilters);
@@ -84,10 +82,7 @@ export function ContractsFilterDropdown({
 					Filters
 					<ChevronDown className="ml-2 size-4" />
 					{activeFilterCount > 0 && (
-						<Badge
-							className="ml-2 size-5 rounded-full p-0 text-xs"
-							variant="secondary"
-						>
+						<Badge className="ml-2 size-5 rounded-full p-0 text-xs" variant="secondary">
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -96,7 +91,7 @@ export function ContractsFilterDropdown({
 			<DropdownMenuContent align="start" className="w-80 p-4">
 				<div className="space-y-4">
 					<div className="flex items-center justify-between">
-						<h4 className="font-semibold text-sm">Filter Contracts</h4>
+						<h4 className="text-sm font-semibold">Filter Contracts</h4>
 						{activeFilterCount > 0 && (
 							<Button
 								className="h-auto p-1 text-xs"
@@ -128,8 +123,7 @@ export function ContractsFilterDropdown({
 									Active Only {activeCount !== undefined && `(${activeCount})`}
 								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only{" "}
-									{archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 								<SelectItem value="all">
 									All Contracts {totalCount !== undefined && `(${totalCount})`}
@@ -142,9 +136,7 @@ export function ContractsFilterDropdown({
 					<div className="space-y-2">
 						<Label className="text-xs">Contract Status</Label>
 						<Select
-							onValueChange={(value) =>
-								setLocalFilters({ ...localFilters, status: value })
-							}
+							onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
 							value={localFilters.status}
 						>
 							<SelectTrigger className="h-9">
@@ -198,18 +190,14 @@ export function ContractsFilterDropdown({
 						<div className="flex gap-2">
 							<Input
 								className="h-9"
-								onChange={(e) =>
-									setLocalFilters({ ...localFilters, valueMin: e.target.value })
-								}
+								onChange={(e) => setLocalFilters({ ...localFilters, valueMin: e.target.value })}
 								placeholder="Min"
 								type="number"
 								value={localFilters.valueMin}
 							/>
 							<Input
 								className="h-9"
-								onChange={(e) =>
-									setLocalFilters({ ...localFilters, valueMax: e.target.value })
-								}
+								onChange={(e) => setLocalFilters({ ...localFilters, valueMax: e.target.value })}
 								placeholder="Max"
 								type="number"
 								value={localFilters.valueMax}
@@ -221,12 +209,7 @@ export function ContractsFilterDropdown({
 
 					{/* Actions */}
 					<div className="flex gap-2">
-						<Button
-							className="flex-1"
-							onClick={() => setIsOpen(false)}
-							size="sm"
-							variant="outline"
-						>
+						<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
 							Cancel
 						</Button>
 						<Button className="flex-1" onClick={handleApplyFilters} size="sm">

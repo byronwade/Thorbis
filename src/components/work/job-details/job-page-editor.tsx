@@ -61,11 +61,10 @@ import { JobCommandPalette } from "./job-command-palette";
 
 // Lazy load heavy tab components
 const OverviewTab = dynamic(
-	() =>
-		import("./tabs/overview-tab").then((mod) => ({ default: mod.OverviewTab })),
+	() => import("./tabs/overview-tab").then((mod) => ({ default: mod.OverviewTab })),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const TeamScheduleTab = dynamic(
@@ -75,7 +74,7 @@ const TeamScheduleTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const FinancialsTab = dynamic(
@@ -85,7 +84,7 @@ const FinancialsTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const MaterialsTab = dynamic(
@@ -95,7 +94,7 @@ const MaterialsTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const PhotosDocsTab = dynamic(
@@ -105,7 +104,7 @@ const PhotosDocsTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const ActivityTab = dynamic(
@@ -115,7 +114,7 @@ const ActivityTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 const EquipmentTab = dynamic(
@@ -125,7 +124,7 @@ const EquipmentTab = dynamic(
 		})),
 	{
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	},
+	}
 );
 
 // ============================================================================
@@ -204,8 +203,7 @@ export function JobPageEditor({
 
 	// Local state for save feedback
 	const [showSaveSuccess, setShowSaveSuccess] = useState(false);
-	const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] =
-		useState(false);
+	const [isUnsavedChangesDialogOpen, setIsUnsavedChangesDialogOpen] = useState(false);
 
 	// ============================================================================
 	// Keyboard Shortcuts
@@ -327,13 +325,9 @@ export function JobPageEditor({
 	return (
 		<div className="flex h-full w-full flex-col">
 			{/* Top Bar - Edit Mode Toggle & Save */}
-			<div className="flex items-center justify-between border-b bg-background px-4 py-2">
+			<div className="bg-background flex items-center justify-between border-b px-4 py-2">
 				<div className="flex items-center gap-2">
-					<Button
-						onClick={toggleEditMode}
-						size="sm"
-						variant={isEditMode ? "default" : "outline"}
-					>
+					<Button onClick={toggleEditMode} size="sm" variant={isEditMode ? "default" : "outline"}>
 						<Edit3 className="mr-2 h-4 w-4" />
 						{isEditMode ? "Editing" : "Edit Mode"}
 					</Button>
@@ -358,11 +352,7 @@ export function JobPageEditor({
 				<div className="flex items-center gap-2">
 					{isEditMode && hasUnsavedChanges && (
 						<>
-							<Button
-								onClick={() => toggleEditMode()}
-								size="sm"
-								variant="outline"
-							>
+							<Button onClick={() => toggleEditMode()} size="sm" variant="outline">
 								<X className="mr-2 h-4 w-4" />
 								Cancel
 							</Button>
@@ -381,7 +371,7 @@ export function JobPageEditor({
 						variant="ghost"
 					>
 						<span className="text-xs">Press</span>
-						<kbd className="pointer-events-none mx-1 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-medium font-mono text-[10px] text-muted-foreground">
+						<kbd className="bg-muted text-muted-foreground pointer-events-none mx-1 inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium select-none">
 							<span className="text-xs">⌘</span>K
 						</kbd>
 						<span className="text-xs">for commands</span>
@@ -402,16 +392,13 @@ export function JobPageEditor({
 				value={activeTab}
 			>
 				{/* Tab Navigation */}
-				<TabsList className="w-full justify-start rounded-none border-b bg-background px-4">
+				<TabsList className="bg-background w-full justify-start rounded-none border-b px-4">
 					{tabs.map((tab) => (
 						<TabsTrigger className="relative" key={tab.id} value={tab.id}>
 							<tab.icon className="mr-2 h-4 w-4" />
 							{tab.label}
 							{tab.count !== undefined && tab.count > 0 && (
-								<Badge
-									className="ml-2 h-5 min-w-5 px-1.5 text-xs"
-									variant="secondary"
-								>
+								<Badge className="ml-2 h-5 min-w-5 px-1.5 text-xs" variant="secondary">
 									{tab.count}
 								</Badge>
 							)}
@@ -454,11 +441,7 @@ export function JobPageEditor({
 					</TabsContent>
 
 					<TabsContent className="m-0 h-full p-6" value="materials">
-						<MaterialsTab
-							isEditMode={isEditMode}
-							job={job}
-							materials={materials}
-						/>
+						<MaterialsTab isEditMode={isEditMode} job={job} materials={materials} />
 					</TabsContent>
 
 					<TabsContent className="m-0 h-full p-6" value="photos-docs">
@@ -498,7 +481,7 @@ export function JobPageEditor({
 			<Sheet onOpenChange={toggleRightSidebar} open={isRightSidebarOpen}>
 				<SheetContent className="w-[400px] sm:w-[540px]" side="right">
 					<div className="flex h-full flex-col">
-						<h2 className="font-semibold text-lg">Quick Actions</h2>
+						<h2 className="text-lg font-semibold">Quick Actions</h2>
 						<div className="mt-4 space-y-4">
 							{/* TODO: Add quick action buttons */}
 							<Button className="w-full" variant="outline">
@@ -525,16 +508,13 @@ export function JobPageEditor({
 			<JobCommandPalette customer={customer} jobId={job.id} />
 
 			{/* Unsaved Changes Confirmation Dialog */}
-			<AlertDialog
-				onOpenChange={setIsUnsavedChangesDialogOpen}
-				open={isUnsavedChangesDialogOpen}
-			>
+			<AlertDialog onOpenChange={setIsUnsavedChangesDialogOpen} open={isUnsavedChangesDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
 						<AlertDialogDescription>
-							You have unsaved changes. Are you sure you want to cancel? All
-							unsaved changes will be lost.
+							You have unsaved changes. Are you sure you want to cancel? All unsaved changes will be
+							lost.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

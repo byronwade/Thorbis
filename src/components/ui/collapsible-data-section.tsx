@@ -15,11 +15,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import {
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -130,7 +126,7 @@ export function CollapsibleDataSection({
 
 	// Render error state
 	const renderError = () => (
-		<div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6 text-center">
+		<div className="border-destructive/50 bg-destructive/5 rounded-lg border p-6 text-center">
 			<p className="text-destructive text-sm">{error}</p>
 		</div>
 	);
@@ -140,17 +136,14 @@ export function CollapsibleDataSection({
 		<div className="flex h-full min-h-[50vh] items-center justify-center px-4 py-12 md:min-h-[60vh]">
 			<div className="mx-auto w-full max-w-md space-y-4 text-center">
 				{emptyState?.icon && (
-					<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+					<div className="bg-muted mx-auto flex h-16 w-16 items-center justify-center rounded-full">
 						{emptyState.icon}
 					</div>
 				)}
 				<div className="space-y-2">
-					<h3 className="font-semibold text-lg">
-						{emptyState?.title || "No items found"}
-					</h3>
+					<h3 className="text-lg font-semibold">{emptyState?.title || "No items found"}</h3>
 					<p className="text-muted-foreground text-sm">
-						{emptyState?.description ||
-							"Get started by creating your first item."}
+						{emptyState?.description || "Get started by creating your first item."}
 					</p>
 					{emptyState?.action && (
 						<div className="flex justify-center pt-2">{emptyState.action}</div>
@@ -171,35 +164,29 @@ export function CollapsibleDataSection({
 		if (showEmptyState) {
 			return renderEmptyState();
 		}
-		return fullWidthContent ? (
-			<div>{children}</div>
-		) : (
-			<div className="space-y-4">{children}</div>
-		);
+		return fullWidthContent ? <div>{children}</div> : <div className="space-y-4">{children}</div>;
 	};
 
 	// Standalone mode (not within Accordion)
 	if (standalone) {
 		return (
-			<div className={cn("rounded-lg border bg-card shadow-sm", className)}>
+			<div className={cn("bg-card rounded-lg border shadow-sm", className)}>
 				<div className="flex w-full items-center justify-between gap-4 px-6 py-3.5">
 					<button
-						className="flex flex-1 items-center gap-3 rounded-md text-left transition-colors hover:bg-muted/50"
+						className="hover:bg-muted/50 flex flex-1 items-center gap-3 rounded-md text-left transition-colors"
 						onClick={toggleOpen}
 						type="button"
 					>
 						{/* Icon with Background */}
 						{icon && (
-							<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
-									{icon}
-								</span>
+							<div className="bg-primary/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-md">
+								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
 							</div>
 						)}
 
 						<div className="min-w-0 flex-1">
 							<div className="flex items-center gap-2">
-								<h3 className="font-medium text-sm">{title}</h3>
+								<h3 className="text-sm font-medium">{title}</h3>
 								{count !== undefined && !badge && (
 									<Badge className="ml-1 text-xs" variant="secondary">
 										{count}
@@ -208,26 +195,21 @@ export function CollapsibleDataSection({
 								{badge}
 							</div>
 							{summary && !isOpen && (
-								<p className="mt-0.5 text-muted-foreground text-xs">
-									{summary}
-								</p>
+								<p className="text-muted-foreground mt-0.5 text-xs">{summary}</p>
 							)}
 						</div>
 
 						{/* Collapse/Expand Chevron */}
 						{isOpen ? (
-							<ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform" />
+							<ChevronDown className="text-muted-foreground size-4 shrink-0 transition-transform" />
 						) : (
-							<ChevronRight className="size-4 shrink-0 text-muted-foreground transition-transform" />
+							<ChevronRight className="text-muted-foreground size-4 shrink-0 transition-transform" />
 						)}
 					</button>
 
 					{/* Action Buttons - Always visible on far right */}
 					{actions && (
-						<div
-							className="flex shrink-0 items-center gap-2"
-							onClick={(e) => e.stopPropagation()}
-						>
+						<div className="flex shrink-0 items-center gap-2" onClick={(e) => e.stopPropagation()}>
 							{actions}
 						</div>
 					)}
@@ -238,7 +220,7 @@ export function CollapsibleDataSection({
 					<div
 						className={cn(
 							"fade-in slide-in-from-top-2 animate-in border-t p-6 duration-200",
-							fullWidthContent && "p-0",
+							fullWidthContent && "p-0"
 						)}
 					>
 						{renderContent()}
@@ -252,28 +234,26 @@ export function CollapsibleDataSection({
 	return (
 		<AccordionItem
 			className={cn(
-				"rounded-lg bg-card shadow-sm",
+				"bg-card rounded-lg shadow-sm",
 				fullWidthContent ? "overflow-hidden border-0" : "border",
-				className,
+				className
 			)}
 			value={value}
 		>
 			<div
 				className={cn(
 					"flex items-center justify-between gap-4 py-3.5",
-					fullWidthContent ? "border-b px-6" : "px-6",
+					fullWidthContent ? "border-b px-6" : "px-6"
 				)}
 			>
 				<AccordionTrigger className="flex-1 hover:no-underline">
 					<div className="flex items-center gap-3">
 						{icon && (
-							<div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
-								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">
-									{icon}
-								</span>
+							<div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
+								<span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
 							</div>
 						)}
-						<span className="font-medium text-sm">{title}</span>
+						<span className="text-sm font-medium">{title}</span>
 						{count !== undefined && !badge && (
 							<Badge className="ml-1 text-xs" variant="secondary">
 								{count}
@@ -356,12 +336,7 @@ export function EmptyStateActionButton({
 	className,
 }: EmptyStateActionButtonProps) {
 	return (
-		<Button
-			className={cn("gap-2", className)}
-			disabled={disabled}
-			onClick={onClick}
-			size="sm"
-		>
+		<Button className={cn("gap-2", className)} disabled={disabled} onClick={onClick} size="sm">
 			{icon}
 			{children}
 		</Button>

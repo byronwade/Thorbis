@@ -11,19 +11,13 @@ import { createClient } from "@/lib/supabase/server";
 /**
  * POST - Force refresh enrichment data
  */
-export async function POST(
-	_request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
 	try {
 		const { id } = await params;
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json(
-				{ error: "Database connection failed" },
-				{ status: 500 },
-			);
+			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
 		}
 
 		const {
@@ -49,9 +43,6 @@ export async function POST(
 
 		return NextResponse.json({ data: result.data }, { status: 200 });
 	} catch (_error) {
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 	}
 }

@@ -82,10 +82,7 @@ type PropertyPageContentProps = {
 	};
 };
 
-export function PropertyPageContent({
-	entityData,
-	metrics,
-}: PropertyPageContentProps) {
+export function PropertyPageContent({ entityData, metrics }: PropertyPageContentProps) {
 	const propertyData = entityData;
 	const router = useRouter();
 	const { toast } = useToast();
@@ -177,16 +174,12 @@ export function PropertyPageContent({
 			label: "Best Access Time",
 			icon: <Clock className="h-3.5 w-3.5" />,
 			value: property.best_access_time || "Anytime",
-			helperText: property.requires_appointment
-				? "Appointment required"
-				: undefined,
+			helperText: property.requires_appointment ? "Appointment required" : undefined,
 		},
 		{
 			label: "Owner",
 			icon: <User className="h-3.5 w-3.5" />,
-			value: customer
-				? `${customer.first_name} ${customer.last_name}`
-				: "Not assigned",
+			value: customer ? `${customer.first_name} ${customer.last_name}` : "Not assigned",
 			helperText: customer?.email,
 		},
 		{
@@ -196,10 +189,7 @@ export function PropertyPageContent({
 				property.lat && property.lon
 					? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}`
 					: "Not set",
-			helperText:
-				property.lat && property.lon
-					? "Geocoded"
-					: "Click Location section to geocode",
+			helperText: property.lat && property.lon ? "Geocoded" : "Click Location section to geocode",
 		},
 		{
 			label: "Total Jobs",
@@ -231,8 +221,7 @@ export function PropertyPageContent({
 			helperText: metrics.lastServiceDate
 				? (() => {
 						const diffDays = Math.floor(
-							(Date.now() - new Date(metrics.lastServiceDate).getTime()) /
-								(1000 * 60 * 60 * 24),
+							(Date.now() - new Date(metrics.lastServiceDate).getTime()) / (1000 * 60 * 60 * 24)
 						);
 						return diffDays === 0 ? "Today" : `${diffDays} days ago`;
 					})()
@@ -244,40 +233,27 @@ export function PropertyPageContent({
 		<div className="space-y-3">
 			{items.slice(0, 25).map((communication) => {
 				const contactName =
-					communication.customer?.first_name ||
-					communication.customer?.last_name
+					communication.customer?.first_name || communication.customer?.last_name
 						? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
 						: communication.direction === "inbound"
 							? communication.from_address
 							: communication.to_address;
 				const preview =
-					communication.subject ||
-					communication.body?.slice(0, 160) ||
-					"No additional details";
+					communication.subject || communication.body?.slice(0, 160) || "No additional details";
 				const timestamp = new Date(communication.created_at).toLocaleString();
 
 				return (
 					<div className="rounded-lg border p-3" key={communication.id}>
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant="outline">
-								{communication.type?.toUpperCase()}
-							</Badge>
-							<Badge
-								variant={
-									communication.direction === "inbound"
-										? "secondary"
-										: "default"
-								}
-							>
+							<Badge variant="outline">{communication.type?.toUpperCase()}</Badge>
+							<Badge variant={communication.direction === "inbound" ? "secondary" : "default"}>
 								{communication.direction === "inbound" ? "Inbound" : "Outbound"}
 							</Badge>
-							{communication.status && (
-								<Badge variant="outline">{communication.status}</Badge>
-							)}
+							{communication.status && <Badge variant="outline">{communication.status}</Badge>}
 							<span className="text-muted-foreground text-xs">{timestamp}</span>
 						</div>
 						<div className="mt-2">
-							<p className="font-medium text-sm">{contactName || "Contact"}</p>
+							<p className="text-sm font-medium">{contactName || "Contact"}</p>
 							<p className="text-muted-foreground text-sm">{preview}</p>
 						</div>
 					</div>
@@ -291,8 +267,8 @@ export function PropertyPageContent({
 		subtitle: `${property.city}, ${property.state} ${property.zip_code}`,
 		metadata: metadataItems,
 		leadingVisual: (
-			<div className="flex size-16 items-center justify-center rounded-lg bg-primary/10 ring-2 ring-border">
-				<Building2 className="size-8 text-primary" />
+			<div className="bg-primary/10 ring-border flex size-16 items-center justify-center rounded-lg ring-2">
+				<Building2 className="text-primary size-8" />
 			</div>
 		),
 	};
@@ -313,26 +289,22 @@ export function PropertyPageContent({
 							property.parking_instructions ||
 							property.service_entrance_notes) && (
 							<div className="space-y-3">
-								<h3 className="font-semibold text-sm">Access Information</h3>
+								<h3 className="text-sm font-semibold">Access Information</h3>
 								<div className="space-y-2">
 									{property.directions && (
-										<div className="rounded-lg border bg-muted/50 p-3">
+										<div className="bg-muted/50 rounded-lg border p-3">
 											<div className="mb-1 flex items-center gap-2">
-												<Navigation className="size-4 text-muted-foreground" />
-												<p className="font-medium text-sm">Directions</p>
+												<Navigation className="text-muted-foreground size-4" />
+												<p className="text-sm font-medium">Directions</p>
 											</div>
-											<p className="text-muted-foreground text-sm">
-												{property.directions}
-											</p>
+											<p className="text-muted-foreground text-sm">{property.directions}</p>
 										</div>
 									)}
 									{property.parking_instructions && (
-										<div className="rounded-lg border bg-muted/50 p-3">
+										<div className="bg-muted/50 rounded-lg border p-3">
 											<div className="mb-1 flex items-center gap-2">
-												<Info className="size-4 text-muted-foreground" />
-												<p className="font-medium text-sm">
-													Parking Instructions
-												</p>
+												<Info className="text-muted-foreground size-4" />
+												<p className="text-sm font-medium">Parking Instructions</p>
 											</div>
 											<p className="text-muted-foreground text-sm">
 												{property.parking_instructions}
@@ -340,10 +312,10 @@ export function PropertyPageContent({
 										</div>
 									)}
 									{property.service_entrance_notes && (
-										<div className="rounded-lg border bg-muted/50 p-3">
+										<div className="bg-muted/50 rounded-lg border p-3">
 											<div className="mb-1 flex items-center gap-2">
-												<AlertCircle className="size-4 text-muted-foreground" />
-												<p className="font-medium text-sm">Service Entrance</p>
+												<AlertCircle className="text-muted-foreground size-4" />
+												<p className="text-sm font-medium">Service Entrance</p>
 											</div>
 											<p className="text-muted-foreground text-sm">
 												{property.service_entrance_notes}
@@ -364,8 +336,8 @@ export function PropertyPageContent({
 			content: (
 				<UnifiedAccordionContent>
 					{communications.length === 0 ? (
-						<div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground text-sm">
-							<MessageSquare className="mb-4 size-10 text-muted-foreground" />
+						<div className="text-muted-foreground flex flex-col items-center justify-center py-12 text-center text-sm">
+							<MessageSquare className="text-muted-foreground mb-4 size-10" />
 							No communications logged for this property yet.
 						</div>
 					) : (
@@ -391,14 +363,10 @@ export function PropertyPageContent({
 				jobs.length === 0 ? (
 					<UnifiedAccordionContent>
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<Briefcase className="mb-4 size-12 text-muted-foreground" />
-							<p className="text-muted-foreground text-sm">
-								No jobs found for this property
-							</p>
+							<Briefcase className="text-muted-foreground mb-4 size-12" />
+							<p className="text-muted-foreground text-sm">No jobs found for this property</p>
 							<Button asChild className="mt-4" size="sm">
-								<Link href={`/dashboard/work/new?propertyId=${property.id}`}>
-									Create First Job
-								</Link>
+								<Link href={`/dashboard/work/new?propertyId=${property.id}`}>Create First Job</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -415,9 +383,7 @@ export function PropertyPageContent({
 			count: equipment.length,
 			actions: (
 				<Button asChild size="sm" variant="outline">
-					<Link
-						href={`/dashboard/work/equipment/new?propertyId=${property.id}`}
-					>
+					<Link href={`/dashboard/work/equipment/new?propertyId=${property.id}`}>
 						<Settings className="mr-2 size-4" />
 						Add Equipment
 					</Link>
@@ -427,14 +393,12 @@ export function PropertyPageContent({
 				equipment.length === 0 ? (
 					<UnifiedAccordionContent>
 						<div className="flex flex-col items-center justify-center py-12 text-center">
-							<Settings className="mb-4 size-12 text-muted-foreground" />
+							<Settings className="text-muted-foreground mb-4 size-12" />
 							<p className="text-muted-foreground text-sm">
 								No equipment installed at this property
 							</p>
 							<Button asChild className="mt-4" size="sm" variant="outline">
-								<Link
-									href={`/dashboard/work/equipment/new?propertyId=${property.id}`}
-								>
+								<Link href={`/dashboard/work/equipment/new?propertyId=${property.id}`}>
 									Add Equipment
 								</Link>
 							</Button>
@@ -454,50 +418,33 @@ export function PropertyPageContent({
 			count: estimates.length,
 			content: (
 				<UnifiedAccordionContent className="p-0">
-					<div className="border-b px-6 py-4 text-muted-foreground text-sm">
+					<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 						Estimates and quotes for work at this property.
 					</div>
 					{estimates.length > 0 ? (
 						<div className="overflow-x-auto">
 							<table className="w-full">
-								<thead className="border-b bg-muted/50">
+								<thead className="bg-muted/50 border-b">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Estimate #
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Title
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Date
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Total
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Status
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Actions
-										</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Estimate #</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Title</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Total</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									{estimates.map((estimate: any) => (
-										<tr
-											className="border-b hover:bg-muted/30"
-											key={estimate.id}
-										>
+										<tr className="hover:bg-muted/30 border-b" key={estimate.id}>
 											<td className="px-6 py-4 text-sm">
 												#{estimate.estimate_number || estimate.id.slice(0, 8)}
 											</td>
-											<td className="px-6 py-4 text-sm">
-												{estimate.title || "-"}
-											</td>
+											<td className="px-6 py-4 text-sm">{estimate.title || "-"}</td>
 											<td className="px-6 py-4 text-sm">
 												{new Date(estimate.created_at).toLocaleDateString()}
 											</td>
-											<td className="px-6 py-4 font-medium text-sm">
+											<td className="px-6 py-4 text-sm font-medium">
 												{formatCurrency(estimate.total_amount)}
 											</td>
 											<td className="px-6 py-4 text-sm">
@@ -518,8 +465,8 @@ export function PropertyPageContent({
 						</div>
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
-							<FileText className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">
+							<FileText className="text-muted-foreground h-8 w-8" />
+							<p className="text-muted-foreground mt-2 text-sm">
 								No estimates for this property yet.
 							</p>
 						</div>
@@ -535,61 +482,41 @@ export function PropertyPageContent({
 			count: invoices.length,
 			content: (
 				<UnifiedAccordionContent className="p-0">
-					<div className="border-b px-6 py-4 text-muted-foreground text-sm">
+					<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 						Billing and invoices for work at this property.
 					</div>
 					{invoices.length > 0 ? (
 						<div className="overflow-x-auto">
 							<table className="w-full">
-								<thead className="border-b bg-muted/50">
+								<thead className="bg-muted/50 border-b">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Invoice #
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Title
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Date
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Total
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Balance
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Status
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Actions
-										</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Invoice #</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Title</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Total</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Balance</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									{invoices.map((invoice: any) => (
-										<tr className="border-b hover:bg-muted/30" key={invoice.id}>
+										<tr className="hover:bg-muted/30 border-b" key={invoice.id}>
 											<td className="px-6 py-4 text-sm">
 												#{invoice.invoice_number || invoice.id.slice(0, 8)}
 											</td>
-											<td className="px-6 py-4 text-sm">
-												{invoice.title || "-"}
-											</td>
+											<td className="px-6 py-4 text-sm">{invoice.title || "-"}</td>
 											<td className="px-6 py-4 text-sm">
 												{new Date(invoice.created_at).toLocaleDateString()}
 											</td>
-											<td className="px-6 py-4 font-medium text-sm">
+											<td className="px-6 py-4 text-sm font-medium">
 												{formatCurrency(invoice.total_amount)}
 											</td>
-											<td className="px-6 py-4 font-medium text-sm">
+											<td className="px-6 py-4 text-sm font-medium">
 												{formatCurrency(invoice.balance_amount)}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Badge
-													variant={
-														invoice.status === "paid" ? "default" : "outline"
-													}
-												>
+												<Badge variant={invoice.status === "paid" ? "default" : "outline"}>
 													{invoice.status}
 												</Badge>
 											</td>
@@ -608,8 +535,8 @@ export function PropertyPageContent({
 						</div>
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
-							<Receipt className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">
+							<Receipt className="text-muted-foreground h-8 w-8" />
+							<p className="text-muted-foreground mt-2 text-sm">
 								No invoices for this property yet.
 							</p>
 						</div>
@@ -625,35 +552,25 @@ export function PropertyPageContent({
 			count: maintenancePlans.length,
 			content: (
 				<UnifiedAccordionContent className="p-0">
-					<div className="border-b px-6 py-4 text-muted-foreground text-sm">
+					<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 						Active maintenance plans for this property.
 					</div>
 					{maintenancePlans.length > 0 ? (
 						<div className="overflow-x-auto">
 							<table className="w-full">
-								<thead className="border-b bg-muted/50">
+								<thead className="bg-muted/50 border-b">
 									<tr>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Plan Name
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Frequency
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Next Service
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Status
-										</th>
-										<th className="px-6 py-3 text-left font-medium text-sm">
-											Actions
-										</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Plan Name</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Frequency</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Next Service</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
+										<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
 									{maintenancePlans.map((plan: any) => (
-										<tr className="border-b hover:bg-muted/30" key={plan.id}>
-											<td className="px-6 py-4 font-medium text-sm">
+										<tr className="hover:bg-muted/30 border-b" key={plan.id}>
+											<td className="px-6 py-4 text-sm font-medium">
 												{plan.name || `Plan ${plan.id.slice(0, 8)}`}
 											</td>
 											<td className="px-6 py-4 text-sm capitalize">
@@ -661,15 +578,11 @@ export function PropertyPageContent({
 											</td>
 											<td className="px-6 py-4 text-sm">
 												{plan.next_service_date
-													? new Date(
-															plan.next_service_date,
-														).toLocaleDateString()
+													? new Date(plan.next_service_date).toLocaleDateString()
 													: "-"}
 											</td>
 											<td className="px-6 py-4 text-sm">
-												<Badge variant="outline">
-													{plan.status || "active"}
-												</Badge>
+												<Badge variant="outline">{plan.status || "active"}</Badge>
 											</td>
 											<td className="px-6 py-4 text-sm">
 												<Link
@@ -686,8 +599,8 @@ export function PropertyPageContent({
 						</div>
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center">
-							<ShieldCheck className="h-8 w-8 text-muted-foreground" />
-							<p className="mt-2 text-muted-foreground text-sm">
+							<ShieldCheck className="text-muted-foreground h-8 w-8" />
+							<p className="text-muted-foreground mt-2 text-sm">
 								No maintenance plans for this property.
 							</p>
 						</div>
@@ -711,7 +624,7 @@ export function PropertyPageContent({
 					<div className="space-y-4">
 						{notes.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-12 text-center">
-								<FileText className="mb-4 size-12 text-muted-foreground" />
+								<FileText className="text-muted-foreground mb-4 size-12" />
 								<p className="text-muted-foreground text-sm">No notes yet</p>
 							</div>
 						) : (
@@ -753,21 +666,19 @@ export function PropertyPageContent({
 					<div className="space-y-4">
 						{attachments.length === 0 ? (
 							<div className="flex flex-col items-center justify-center py-12 text-center">
-								<Paperclip className="mb-4 size-12 text-muted-foreground" />
-								<p className="text-muted-foreground text-sm">
-									No attachments yet
-								</p>
+								<Paperclip className="text-muted-foreground mb-4 size-12" />
+								<p className="text-muted-foreground text-sm">No attachments yet</p>
 							</div>
 						) : (
 							<div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
 								{attachments.map((attachment: any, idx: number) => (
 									<div
-										className="flex items-center gap-3 rounded-lg border p-4 hover:bg-accent"
+										className="hover:bg-accent flex items-center gap-3 rounded-lg border p-4"
 										key={idx}
 									>
-										<Paperclip className="size-4 text-muted-foreground" />
+										<Paperclip className="text-muted-foreground size-4" />
 										<div className="flex-1 overflow-hidden">
-											<p className="truncate font-medium text-sm">
+											<p className="truncate text-sm font-medium">
 												{attachment.filename || "Untitled"}
 											</p>
 											<p className="text-muted-foreground text-xs">
@@ -788,26 +699,22 @@ export function PropertyPageContent({
 
 	// Custom Header with Travel Time
 	const propertyTags =
-		(property?.metadata?.tags &&
-			Array.isArray(property.metadata.tags) &&
-			property.metadata.tags) ||
+		(property?.metadata?.tags && Array.isArray(property.metadata.tags) && property.metadata.tags) ||
 		[];
 
 	const customHeader = (
 		<div className="w-full px-2 sm:px-0">
-			<div className="mx-auto max-w-7xl rounded-md bg-muted/50 shadow-sm">
+			<div className="bg-muted/50 mx-auto max-w-7xl rounded-md shadow-sm">
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					{/* Property Name and Location */}
 					<div className="flex flex-col gap-3">
 						<div className="flex items-start justify-between">
 							<div className="flex items-center gap-4">
-								<div className="flex size-16 items-center justify-center rounded-lg bg-primary/10 ring-2 ring-border">
-									<Building2 className="size-8 text-primary" />
+								<div className="bg-primary/10 ring-border flex size-16 items-center justify-center rounded-lg ring-2">
+									<Building2 className="text-primary size-8" />
 								</div>
 								<div>
-									<h1 className="font-semibold text-2xl">
-										{property.name || property.address}
-									</h1>
+									<h1 className="text-2xl font-semibold">{property.name || property.address}</h1>
 									<p className="text-muted-foreground text-sm">
 										{property.city}, {property.state} {property.zip_code}
 									</p>
@@ -844,15 +751,11 @@ export function PropertyPageContent({
 
 					{/* Tags */}
 					<div className="flex flex-wrap items-center gap-2">
-						<span className="font-medium text-muted-foreground text-xs">
-							Tags:
-						</span>
+						<span className="text-muted-foreground text-xs font-medium">Tags:</span>
 						<EntityTags
 							entityId={property.id}
 							entityType="property"
-							onUpdateTags={(id, tags) =>
-								updateEntityTags("property", id, tags)
-							}
+							onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
 							tags={propertyTags}
 						/>
 					</div>

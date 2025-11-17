@@ -179,10 +179,7 @@ export function IntelligentCustomerWizard() {
 		internalNotes: "",
 	});
 
-	const updateField = <K extends keyof CustomerData>(
-		field: K,
-		value: CustomerData[K],
-	) => {
+	const updateField = <K extends keyof CustomerData>(field: K, value: CustomerData[K]) => {
 		setCustomerData((prev) => ({ ...prev, [field]: value }));
 	};
 
@@ -292,10 +289,7 @@ export function IntelligentCustomerWizard() {
 			}
 
 			// Business details
-			formData.append(
-				"preferredContactMethod",
-				customerData.preferredContactMethod,
-			);
+			formData.append("preferredContactMethod", customerData.preferredContactMethod);
 			formData.append("paymentTerms", customerData.paymentTerms);
 			formData.append("creditLimit", customerData.creditLimit);
 			formData.append("taxExempt", customerData.taxExempt ? "on" : "");
@@ -328,10 +322,8 @@ export function IntelligentCustomerWizard() {
 			{/* Header */}
 			<div className="space-y-2 text-center md:text-left">
 				<div className="flex items-center justify-center gap-2 md:justify-start">
-					<Sparkles className="size-6 text-primary" />
-					<h1 className="font-bold text-2xl tracking-tight md:text-3xl">
-						Add New Customer
-					</h1>
+					<Sparkles className="text-primary size-6" />
+					<h1 className="text-2xl font-bold tracking-tight md:text-3xl">Add New Customer</h1>
 				</div>
 				<p className="text-muted-foreground text-sm md:text-base">
 					Quick 4-step process to get started
@@ -342,13 +334,13 @@ export function IntelligentCustomerWizard() {
 			<div className="space-y-3">
 				<div className="flex items-center justify-between text-sm">
 					<div className="flex items-center gap-2">
-						<StepIcon className="size-4 text-primary md:size-5" />
+						<StepIcon className="text-primary size-4 md:size-5" />
 						<span className="font-medium">Step {currentStep} of 4</span>
 					</div>
 					<span className="text-muted-foreground">{Math.round(progress)}%</span>
 				</div>
 				<Progress className="h-2" value={progress} />
-				<p className="text-center text-muted-foreground text-xs md:text-left md:text-sm">
+				<p className="text-muted-foreground text-center text-xs md:text-left md:text-sm">
 					{STEP_INFO[currentStep].description}
 				</p>
 			</div>
@@ -374,9 +366,7 @@ export function IntelligentCustomerWizard() {
 					{currentStep === 1 && (
 						<div className="flex h-full flex-col space-y-6">
 							<div className="space-y-2 text-center md:text-left">
-								<h2 className="font-semibold text-xl md:text-2xl">
-									Choose Customer Type
-								</h2>
+								<h2 className="text-xl font-semibold md:text-2xl">Choose Customer Type</h2>
 								<p className="text-muted-foreground text-sm">
 									Select a template to get started quickly
 								</p>
@@ -396,9 +386,7 @@ export function IntelligentCustomerWizard() {
 													: "border-border hover:border-primary/50"
 											}`}
 											key={key}
-											onClick={() =>
-												applyTemplate(key as keyof typeof CUSTOMER_TEMPLATES)
-											}
+											onClick={() => applyTemplate(key as keyof typeof CUSTOMER_TEMPLATES)}
 											type="button"
 										>
 											<div
@@ -409,18 +397,11 @@ export function IntelligentCustomerWizard() {
 												/>
 											</div>
 											<div className="space-y-1">
-												<h3 className="font-semibold text-base md:text-lg">
-													{template.name}
-												</h3>
-												<p className="text-muted-foreground text-xs">
-													{template.description}
-												</p>
+												<h3 className="text-base font-semibold md:text-lg">{template.name}</h3>
+												<p className="text-muted-foreground text-xs">{template.description}</p>
 											</div>
 											{isSelected && (
-												<Badge
-													className="absolute top-2 right-2 text-xs"
-													variant="default"
-												>
+												<Badge className="absolute top-2 right-2 text-xs" variant="default">
 													<CheckCircle2 className="mr-1 size-3" />
 													Selected
 												</Badge>
@@ -432,16 +413,14 @@ export function IntelligentCustomerWizard() {
 
 							{/* Company Name (for non-residential) */}
 							{customerData.type !== "residential" && (
-								<div className="space-y-4 rounded-lg border bg-muted/30 p-4 md:p-6">
+								<div className="bg-muted/30 space-y-4 rounded-lg border p-4 md:p-6">
 									<div className="space-y-2">
 										<Label htmlFor="companyName">
 											Company Name <span className="text-destructive">*</span>
 										</Label>
 										<Input
 											id="companyName"
-											onChange={(e) =>
-												updateField("companyName", e.target.value)
-											}
+											onChange={(e) => updateField("companyName", e.target.value)}
 											placeholder="ABC Corporation"
 											type="text"
 											value={customerData.companyName}
@@ -461,9 +440,7 @@ export function IntelligentCustomerWizard() {
 												<SelectItem value="retail">Retail</SelectItem>
 												<SelectItem value="healthcare">Healthcare</SelectItem>
 												<SelectItem value="hospitality">Hospitality</SelectItem>
-												<SelectItem value="manufacturing">
-													Manufacturing
-												</SelectItem>
+												<SelectItem value="manufacturing">Manufacturing</SelectItem>
 												<SelectItem value="education">Education</SelectItem>
 												<SelectItem value="real_estate">Real Estate</SelectItem>
 												<SelectItem value="technology">Technology</SelectItem>
@@ -480,9 +457,7 @@ export function IntelligentCustomerWizard() {
 					{currentStep === 2 && (
 						<div className="flex h-full flex-col space-y-6">
 							<div className="space-y-2 text-center md:text-left">
-								<h2 className="font-semibold text-xl md:text-2xl">
-									Primary Contact
-								</h2>
+								<h2 className="text-xl font-semibold md:text-2xl">Primary Contact</h2>
 								<p className="text-muted-foreground text-sm">
 									Who should we contact about this account?
 								</p>
@@ -506,13 +481,9 @@ export function IntelligentCustomerWizard() {
 								/>
 
 								<div className="space-y-2">
-									<Label htmlFor="preferredContactMethod">
-										Preferred Contact Method
-									</Label>
+									<Label htmlFor="preferredContactMethod">Preferred Contact Method</Label>
 									<Select
-										onValueChange={(value) =>
-											updateField("preferredContactMethod", value)
-										}
+										onValueChange={(value) => updateField("preferredContactMethod", value)}
 										value={customerData.preferredContactMethod}
 									>
 										<SelectTrigger id="preferredContactMethod">
@@ -533,9 +504,7 @@ export function IntelligentCustomerWizard() {
 					{currentStep === 3 && (
 						<div className="flex h-full flex-col space-y-6">
 							<div className="space-y-2 text-center md:text-left">
-								<h2 className="font-semibold text-xl md:text-2xl">
-									Service Location
-								</h2>
+								<h2 className="text-xl font-semibold md:text-2xl">Service Location</h2>
 								<p className="text-muted-foreground text-sm">
 									Where will we provide service? (Optional - can add later)
 								</p>
@@ -564,10 +533,9 @@ export function IntelligentCustomerWizard() {
 								/>
 							</div>
 
-							<div className="rounded-lg border bg-muted/50 p-4 text-center">
+							<div className="bg-muted/50 rounded-lg border p-4 text-center">
 								<p className="text-muted-foreground text-sm">
-									💡 Tip: You can skip this and add addresses later from the
-									customer profile
+									💡 Tip: You can skip this and add addresses later from the customer profile
 								</p>
 							</div>
 						</div>
@@ -577,9 +545,7 @@ export function IntelligentCustomerWizard() {
 					{currentStep === 4 && (
 						<div className="flex h-full flex-col space-y-6">
 							<div className="space-y-2 text-center md:text-left">
-								<h2 className="font-semibold text-xl md:text-2xl">
-									Business Details
-								</h2>
+								<h2 className="text-xl font-semibold md:text-2xl">Business Details</h2>
 								<p className="text-muted-foreground text-sm">
 									Optional billing and account information
 								</p>
@@ -590,18 +556,14 @@ export function IntelligentCustomerWizard() {
 									<div className="space-y-2">
 										<Label htmlFor="paymentTerms">Payment Terms</Label>
 										<Select
-											onValueChange={(value) =>
-												updateField("paymentTerms", value)
-											}
+											onValueChange={(value) => updateField("paymentTerms", value)}
 											value={customerData.paymentTerms}
 										>
 											<SelectTrigger id="paymentTerms">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="due_on_receipt">
-													Due on Receipt
-												</SelectItem>
+												<SelectItem value="due_on_receipt">Due on Receipt</SelectItem>
 												<SelectItem value="net_15">Net 15</SelectItem>
 												<SelectItem value="net_30">Net 30</SelectItem>
 												<SelectItem value="net_60">Net 60</SelectItem>
@@ -614,9 +576,7 @@ export function IntelligentCustomerWizard() {
 										<Input
 											id="creditLimit"
 											min="0"
-											onChange={(e) =>
-												updateField("creditLimit", e.target.value)
-											}
+											onChange={(e) => updateField("creditLimit", e.target.value)}
 											placeholder="0"
 											type="number"
 											value={customerData.creditLimit}
@@ -627,9 +587,7 @@ export function IntelligentCustomerWizard() {
 										<Label htmlFor="billingEmail">Billing Email</Label>
 										<Input
 											id="billingEmail"
-											onChange={(e) =>
-												updateField("billingEmail", e.target.value)
-											}
+											onChange={(e) => updateField("billingEmail", e.target.value)}
 											placeholder="billing@example.com"
 											type="email"
 											value={customerData.billingEmail}
@@ -668,10 +626,10 @@ export function IntelligentCustomerWizard() {
 									</div>
 								</div>
 
-								<div className="flex items-start gap-3 rounded-lg border bg-muted/30 p-4">
+								<div className="bg-muted/30 flex items-start gap-3 rounded-lg border p-4">
 									<input
 										checked={customerData.taxExempt}
-										className="mt-1 size-4 rounded border-border"
+										className="border-border mt-1 size-4 rounded"
 										id="taxExempt"
 										onChange={(e) => updateField("taxExempt", e.target.checked)}
 										type="checkbox"
@@ -691,9 +649,7 @@ export function IntelligentCustomerWizard() {
 										<Label htmlFor="taxExemptNumber">Tax Exempt Number</Label>
 										<Input
 											id="taxExemptNumber"
-											onChange={(e) =>
-												updateField("taxExemptNumber", e.target.value)
-											}
+											onChange={(e) => updateField("taxExemptNumber", e.target.value)}
 											placeholder="EX-12345"
 											type="text"
 											value={customerData.taxExemptNumber}
@@ -714,15 +670,11 @@ export function IntelligentCustomerWizard() {
 								</div>
 
 								<div className="space-y-2">
-									<Label htmlFor="internalNotes">
-										Internal Notes (Staff Only, Optional)
-									</Label>
+									<Label htmlFor="internalNotes">Internal Notes (Staff Only, Optional)</Label>
 									<Textarea
 										className="resize-none"
 										id="internalNotes"
-										onChange={(e) =>
-											updateField("internalNotes", e.target.value)
-										}
+										onChange={(e) => updateField("internalNotes", e.target.value)}
 										placeholder="Internal notes not visible to customer..."
 										rows={2}
 										value={customerData.internalNotes}
@@ -735,7 +687,7 @@ export function IntelligentCustomerWizard() {
 			</Card>
 
 			{/* Navigation - Sticky on mobile */}
-			<div className="-mx-4 sticky bottom-0 z-10 border-t bg-background p-4 shadow-lg md:relative md:mx-0 md:border-0 md:p-0 md:shadow-none">
+			<div className="bg-background sticky bottom-0 z-10 -mx-4 border-t p-4 shadow-lg md:relative md:mx-0 md:border-0 md:p-0 md:shadow-none">
 				<div className="flex items-center justify-between gap-3">
 					<Button
 						className="flex-1 sm:flex-none"
@@ -761,12 +713,7 @@ export function IntelligentCustomerWizard() {
 					</Button>
 
 					{currentStep < 4 ? (
-						<Button
-							className="flex-1 sm:flex-none"
-							onClick={nextStep}
-							size="lg"
-							type="button"
-						>
+						<Button className="flex-1 sm:flex-none" onClick={nextStep} size="lg" type="button">
 							<span className="hidden sm:inline">Next Step</span>
 							<span className="sm:hidden">Next</span>
 							<ArrowRight className="ml-2 size-4" />

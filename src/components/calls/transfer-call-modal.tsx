@@ -107,7 +107,7 @@ export function TransferCallModal({
 					<div className="space-y-2">
 						<Label htmlFor="destination">Destination Phone Number</Label>
 						<div className="relative">
-							<Phone className="absolute top-3 left-3 size-4 text-muted-foreground" />
+							<Phone className="text-muted-foreground absolute top-3 left-3 size-4" />
 							<Input
 								autoFocus
 								className="pl-10"
@@ -125,16 +125,14 @@ export function TransferCallModal({
 					</div>
 
 					{error && (
-						<div className="rounded-lg border border-destructive bg-destructive/10 p-3 text-destructive text-sm">
+						<div className="border-destructive bg-destructive/10 text-destructive rounded-lg border p-3 text-sm">
 							<p>{error}</p>
 						</div>
 					)}
 
-					<div className="rounded-lg border bg-muted/50 p-3">
-						<p className="font-medium text-sm">
-							What happens when you transfer?
-						</p>
-						<ul className="mt-2 space-y-1 text-muted-foreground text-xs">
+					<div className="bg-muted/50 rounded-lg border p-3">
+						<p className="text-sm font-medium">What happens when you transfer?</p>
+						<ul className="text-muted-foreground mt-2 space-y-1 text-xs">
 							<li>• The caller will be connected to the destination number</li>
 							<li>• You will be disconnected from the call</li>
 							<li>• The caller won't need to dial again</li>
@@ -144,17 +142,10 @@ export function TransferCallModal({
 				</div>
 
 				<DialogFooter className="sm:space-x-2">
-					<Button
-						disabled={isTransferring}
-						onClick={handleClose}
-						variant="outline"
-					>
+					<Button disabled={isTransferring} onClick={handleClose} variant="outline">
 						Cancel
 					</Button>
-					<Button
-						disabled={isTransferring || !destinationNumber}
-						onClick={handleTransfer}
-					>
+					<Button disabled={isTransferring || !destinationNumber} onClick={handleTransfer}>
 						{isTransferring ? (
 							<>
 								<div className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

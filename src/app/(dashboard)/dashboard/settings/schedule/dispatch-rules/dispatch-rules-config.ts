@@ -1,29 +1,26 @@
 import type { Database } from "@/types/supabase";
 
-export type DispatchRuleRecord =
-	Database["public"]["Tables"]["schedule_dispatch_rules"]["Row"];
+export type DispatchRuleRecord = Database["public"]["Tables"]["schedule_dispatch_rules"]["Row"];
 
 export type DispatchRuleForm = {
 	id: string;
 	ruleName: string;
 	priority: number;
 	isActive: boolean;
-	assignmentMethod:
-		| "auto"
-		| "manual"
-		| "round_robin"
-		| "closest_technician"
-		| "skill_based";
+	assignmentMethod: "auto" | "manual" | "round_robin" | "closest_technician" | "skill_based";
 	conditions: string;
 	actions: string;
 };
 
-export const DISPATCH_ASSIGNMENT_METHODS: DispatchRuleForm["assignmentMethod"][] =
-	["auto", "manual", "round_robin", "closest_technician", "skill_based"];
+export const DISPATCH_ASSIGNMENT_METHODS: DispatchRuleForm["assignmentMethod"][] = [
+	"auto",
+	"manual",
+	"round_robin",
+	"closest_technician",
+	"skill_based",
+];
 
-export function mapDispatchRuleRows(
-	rows: DispatchRuleRecord[],
-): DispatchRuleForm[] {
+export function mapDispatchRuleRows(rows: DispatchRuleRecord[]): DispatchRuleForm[] {
 	if (!rows?.length) {
 		return [];
 	}
@@ -33,8 +30,7 @@ export function mapDispatchRuleRows(
 		ruleName: row.rule_name ?? "",
 		priority: row.priority ?? 0,
 		isActive: row.is_active ?? true,
-		assignmentMethod:
-			(row.assignment_method as DispatchRuleForm["assignmentMethod"]) ?? "auto",
+		assignmentMethod: (row.assignment_method as DispatchRuleForm["assignmentMethod"]) ?? "auto",
 		conditions: JSON.stringify(row.conditions ?? {}, null, 2),
 		actions: JSON.stringify(row.actions ?? {}, null, 2),
 	}));

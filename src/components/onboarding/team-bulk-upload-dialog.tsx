@@ -50,11 +50,7 @@ type TeamBulkUploadDialogProps = {
 	onImport: (members: TeamMemberRow[]) => void;
 };
 
-export function TeamBulkUploadDialog({
-	open,
-	onOpenChange,
-	onImport,
-}: TeamBulkUploadDialogProps) {
+export function TeamBulkUploadDialog({ open, onOpenChange, onImport }: TeamBulkUploadDialogProps) {
 	const [isUploading, setIsUploading] = useState(false);
 	const [previewData, setPreviewData] = useState<TeamMemberRow[] | null>(null);
 	const [errors, setErrors] = useState<string[] | null>(null);
@@ -69,9 +65,7 @@ export function TeamBulkUploadDialog({
 		const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
 		if (!["xlsx", "xls", "csv"].includes(fileExtension || "")) {
-			setErrors([
-				"Please upload a valid Excel (.xlsx, .xls) or CSV (.csv) file",
-			]);
+			setErrors(["Please upload a valid Excel (.xlsx, .xls) or CSV (.csv) file"]);
 			return;
 		}
 
@@ -96,9 +90,7 @@ export function TeamBulkUploadDialog({
 				setPreviewData(null);
 			}
 		} catch (_error) {
-			setErrors([
-				"Failed to parse file. Please check the format and try again.",
-			]);
+			setErrors(["Failed to parse file. Please check the format and try again."]);
 			setPreviewData(null);
 		} finally {
 			setIsUploading(false);
@@ -139,8 +131,8 @@ export function TeamBulkUploadDialog({
 					<Alert>
 						<AlertCircle className="size-4" />
 						<AlertDescription>
-							<strong>Required columns:</strong> firstName, lastName, email,
-							role (owner/admin/manager/dispatcher/technician), phone (optional)
+							<strong>Required columns:</strong> firstName, lastName, email, role
+							(owner/admin/manager/dispatcher/technician), phone (optional)
 						</AlertDescription>
 					</Alert>
 
@@ -174,9 +166,7 @@ export function TeamBulkUploadDialog({
 
 					{/* File Upload */}
 					<div className="space-y-3">
-						<Label htmlFor="bulk-upload-file">
-							Step 2: Upload your completed file
-						</Label>
+						<Label htmlFor="bulk-upload-file">Step 2: Upload your completed file</Label>
 						<div className="flex items-center gap-4">
 							<div className="flex-1">
 								<Input
@@ -188,12 +178,10 @@ export function TeamBulkUploadDialog({
 									type="file"
 								/>
 							</div>
-							{isUploading && (
-								<Loader2 className="size-5 animate-spin text-primary" />
-							)}
+							{isUploading && <Loader2 className="text-primary size-5 animate-spin" />}
 						</div>
 						{fileName && !isUploading && (
-							<div className="flex items-center gap-2 text-muted-foreground text-sm">
+							<div className="text-muted-foreground flex items-center gap-2 text-sm">
 								<FileSpreadsheet className="size-4" />
 								<span>{fileName}</span>
 							</div>
@@ -214,9 +202,7 @@ export function TeamBulkUploadDialog({
 									))}
 								</ul>
 								{errors.length > 10 && (
-									<p className="mt-2 text-sm">
-										...and {errors.length - 10} more errors
-									</p>
+									<p className="mt-2 text-sm">...and {errors.length - 10} more errors</p>
 								)}
 							</AlertDescription>
 						</Alert>
@@ -235,7 +221,7 @@ export function TeamBulkUploadDialog({
 							<div className="overflow-hidden rounded-lg border">
 								<div className="max-h-[300px] overflow-y-auto">
 									<Table>
-										<TableHeader className="sticky top-0 bg-muted">
+										<TableHeader className="bg-muted sticky top-0">
 											<TableRow>
 												<TableHead>Name</TableHead>
 												<TableHead>Email</TableHead>
@@ -272,10 +258,7 @@ export function TeamBulkUploadDialog({
 					<Button onClick={handleClose} variant="outline">
 						Cancel
 					</Button>
-					<Button
-						disabled={!previewData || previewData.length === 0}
-						onClick={handleImport}
-					>
+					<Button disabled={!previewData || previewData.length === 0} onClick={handleImport}>
 						<Upload className="mr-2 size-4" />
 						Import {previewData?.length || 0} Members
 					</Button>

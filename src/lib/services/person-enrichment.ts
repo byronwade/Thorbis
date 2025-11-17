@@ -93,9 +93,7 @@ export class PersonEnrichmentService {
 	 * Enrich using Hunter.io API
 	 * https://hunter.io/api-documentation
 	 */
-	private async enrichWithHunter(
-		email: string,
-	): Promise<PersonEnrichment | null> {
+	private async enrichWithHunter(email: string): Promise<PersonEnrichment | null> {
 		if (!this.hunterApiKey) {
 			return null;
 		}
@@ -127,9 +125,7 @@ export class PersonEnrichmentService {
 				: undefined,
 			socialProfiles: data.data.sources?.length
 				? {
-						linkedin: data.data.sources.find((s: any) =>
-							s.uri?.includes("linkedin"),
-						)?.uri,
+						linkedin: data.data.sources.find((s: any) => s.uri?.includes("linkedin"))?.uri,
 					}
 				: undefined,
 			source: "hunter",

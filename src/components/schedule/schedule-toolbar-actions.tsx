@@ -10,18 +10,9 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
 
@@ -32,13 +23,11 @@ const jobTypeLegend = [
 	},
 	{
 		label: "Callback / Follow Up",
-		classes:
-			"border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
+		classes: "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
 	},
 	{
 		label: "Meetings / Events",
-		classes:
-			"border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
+		classes: "border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
 	},
 	{
 		label: "Install / New Work",
@@ -75,10 +64,10 @@ export function ScheduleToolbarActions() {
 	if (!mounted) {
 		return (
 			<div className="flex items-center gap-3">
-				<div className="h-8 w-8 rounded-md bg-muted" />
-				<div className="h-8 w-20 rounded-md bg-muted" />
-				<div className="h-8 w-32 rounded-md bg-muted" />
-				<div className="h-8 w-10 rounded-md bg-muted" />
+				<div className="bg-muted h-8 w-8 rounded-md" />
+				<div className="bg-muted h-8 w-20 rounded-md" />
+				<div className="bg-muted h-8 w-32 rounded-md" />
+				<div className="bg-muted h-8 w-10 rounded-md" />
 			</div>
 		);
 	}
@@ -153,18 +142,16 @@ export function ScheduleToolbarActions() {
 				</PopoverTrigger>
 				<PopoverContent align="end" className="w-64 space-y-4 text-sm">
 					<div>
-						<p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+						<p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
 							Job Type Colors
 						</p>
 						<div className="space-y-1.5">
 							{jobTypeLegend.map((item) => (
 								<div
-									className="flex items-center gap-2 rounded-md border bg-card/70 px-2.5 py-1.5 text-xs"
+									className="bg-card/70 flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs"
 									key={item.label}
 								>
-									<span
-										className={cn("h-4 w-4 rounded-full border", item.classes)}
-									/>
+									<span className={cn("h-4 w-4 rounded-full border", item.classes)} />
 									<span className="text-foreground">{item.label}</span>
 								</div>
 							))}
@@ -172,15 +159,13 @@ export function ScheduleToolbarActions() {
 					</div>
 
 					<div>
-						<p className="mb-2 font-semibold text-muted-foreground text-xs uppercase tracking-wide">
+						<p className="text-muted-foreground mb-2 text-xs font-semibold tracking-wide uppercase">
 							Status Dot Legend
 						</p>
 						<div className="grid grid-cols-2 gap-2 text-xs">
 							{statusLegend.map((item) => (
 								<div className="flex items-center gap-2" key={item.label}>
-									<span
-										className={cn("h-2.5 w-2.5 rounded-full", item.classes)}
-									/>
+									<span className={cn("h-2.5 w-2.5 rounded-full", item.classes)} />
 									<span>{item.label}</span>
 								</div>
 							))}

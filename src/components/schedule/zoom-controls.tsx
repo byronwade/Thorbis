@@ -80,9 +80,9 @@ export function ZoomControls() {
 			</Button>
 
 			{/* Zoom Level Indicator */}
-			<div className="flex min-w-[140px] items-center gap-2 rounded-md border bg-muted/50 px-2 py-1">
-				<Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-				<span className="font-medium text-muted-foreground text-xs">
+			<div className="bg-muted/50 flex min-w-[140px] items-center gap-2 rounded-md border px-2 py-1">
+				<Calendar className="text-muted-foreground h-3.5 w-3.5" />
+				<span className="text-muted-foreground text-xs font-medium">
 					{getZoomDescription(zoom)}
 				</span>
 			</div>

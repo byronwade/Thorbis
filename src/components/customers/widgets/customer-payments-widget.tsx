@@ -28,24 +28,15 @@ export function CustomerPaymentsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: payments, isLoading, error } = useCustomerPayments(
-					customerId,
-					isVisible,
-				);
+				const { data: payments, isLoading, error } = useCustomerPayments(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-center text-muted-foreground text-sm">
-							Failed to load payments
-						</div>
+						<div className="text-muted-foreground text-center text-sm">Failed to load payments</div>
 					);
 				if (!payments || payments.length === 0)
-					return (
-						<div className="text-center text-muted-foreground text-sm">
-							No payments found
-						</div>
-					);
+					return <div className="text-muted-foreground text-center text-sm">No payments found</div>;
 
 				return (
 					<div className="space-y-3">
@@ -53,21 +44,19 @@ export function CustomerPaymentsWidget({
 							<Link
 								key={payment.id}
 								href={`/dashboard/work/payments/${payment.id}`}
-								className="block rounded-lg border p-3 transition-colors hover:bg-accent"
+								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="font-semibold text-sm">
+											<span className="text-sm font-semibold">
 												{formatCurrencyFromDollars(payment.amount || 0)}
 											</span>
 											<Badge variant="outline" className="text-xs">
 												{payment.payment_method || "Unknown"}
 											</Badge>
 										</div>
-										<p className="text-muted-foreground text-xs">
-											{payment.status}
-										</p>
+										<p className="text-muted-foreground text-xs">{payment.status}</p>
 										<p className="text-muted-foreground text-xs">
 											{formatDate(payment.processed_at || payment.created_at)}
 										</p>

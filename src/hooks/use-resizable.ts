@@ -35,9 +35,7 @@ export function useResizable(options: UseResizableOptions = {}) {
 	} = options;
 
 	const width = useCallPreferencesStore((state) => state.popoverWidth);
-	const setPopoverWidth = useCallPreferencesStore(
-		(state) => state.setPopoverWidth,
-	);
+	const setPopoverWidth = useCallPreferencesStore((state) => state.setPopoverWidth);
 
 	const [isResizing, setIsResizing] = useState(false);
 	const [tempWidth, setTempWidth] = useState(width);
@@ -59,7 +57,7 @@ export function useResizable(options: UseResizableOptions = {}) {
 			startXRef.current = e.clientX;
 			startWidthRef.current = tempWidth;
 		},
-		[tempWidth],
+		[tempWidth]
 	);
 
 	// Handle mouse move during resize
@@ -98,15 +96,7 @@ export function useResizable(options: UseResizableOptions = {}) {
 			document.removeEventListener("mousemove", handleMouseMove);
 			document.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [
-		isResizing,
-		minWidth,
-		maxWidth,
-		snapPoints,
-		snapThreshold,
-		tempWidth,
-		setPopoverWidth,
-	]);
+	}, [isResizing, minWidth, maxWidth, snapPoints, snapThreshold, tempWidth, setPopoverWidth]);
 
 	// Handle touch events for mobile
 	const handleTouchStart = useCallback(
@@ -116,7 +106,7 @@ export function useResizable(options: UseResizableOptions = {}) {
 			startXRef.current = e.touches[0].clientX;
 			startWidthRef.current = tempWidth;
 		},
-		[tempWidth],
+		[tempWidth]
 	);
 
 	useEffect(() => {
@@ -152,15 +142,7 @@ export function useResizable(options: UseResizableOptions = {}) {
 			document.removeEventListener("touchmove", handleTouchMove);
 			document.removeEventListener("touchend", handleTouchEnd);
 		};
-	}, [
-		isResizing,
-		minWidth,
-		maxWidth,
-		snapPoints,
-		snapThreshold,
-		tempWidth,
-		setPopoverWidth,
-	]);
+	}, [isResizing, minWidth, maxWidth, snapPoints, snapThreshold, tempWidth, setPopoverWidth]);
 
 	return {
 		width: isResizing ? tempWidth : width,
