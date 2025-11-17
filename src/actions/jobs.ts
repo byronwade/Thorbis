@@ -259,14 +259,11 @@ export async function createJob(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -305,7 +302,7 @@ export async function createJob(
 
 		assertExists(property, "Property");
 
-		if (property.company_id !== teamMember.company_id) {
+		if (property.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("property"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -317,7 +314,7 @@ export async function createJob(
 		const customerId = data.customerId || property.customer_id;
 
 		// Generate unique job number
-		const jobNumber = await generateJobNumber(supabase, teamMember.company_id);
+		const jobNumber = await generateJobNumber(supabase, companyId);
 
 		// Add time window info to notes if applicable
 		let jobNotes = data.notes || "";
@@ -330,7 +327,7 @@ export async function createJob(
 		const { data: newJob, error: createError } = await supabase
 			.from("jobs")
 			.insert({
-				company_id: teamMember.company_id,
+				company_id: companyId,
 				property_id: data.propertyId,
 				customer_id: customerId,
 				assigned_to: data.assignedTo,
@@ -362,7 +359,7 @@ export async function createJob(
 				.from("job_financial")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					total_amount: 0,
 					paid_amount: 0,
 					deposit_amount: 0,
@@ -373,7 +370,7 @@ export async function createJob(
 				.from("job_workflow")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					workflow_completed_stages: [],
 				}),
 
@@ -382,7 +379,7 @@ export async function createJob(
 				.from("job_time_tracking")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					total_labor_hours: 0,
 					break_time_minutes: 0,
 				}),
@@ -392,7 +389,7 @@ export async function createJob(
 				.from("job_customer_approval")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					customer_approval_status: "pending",
 				}),
 
@@ -401,7 +398,7 @@ export async function createJob(
 				.from("job_equipment_service")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					equipment_service_history: [],
 					equipment_serviced: [],
 				}),
@@ -411,7 +408,7 @@ export async function createJob(
 				.from("job_dispatch")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 				}),
 
 			// Quality - always create
@@ -419,7 +416,7 @@ export async function createJob(
 				.from("job_quality")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					inspection_required: false,
 				}),
 
@@ -428,7 +425,7 @@ export async function createJob(
 				.from("job_safety")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					requires_permit: false,
 				}),
 
@@ -437,7 +434,7 @@ export async function createJob(
 				.from("job_ai_enrichment")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 				}),
 
 			// Multi-entity - always create
@@ -445,7 +442,7 @@ export async function createJob(
 				.from("job_multi_entity")
 				.insert({
 					job_id: newJob.id,
-					company_id: teamMember.company_id,
+					company_id: companyId,
 					requires_multiple_properties: false,
 					requires_multiple_customers: false,
 				}),
@@ -465,7 +462,7 @@ export async function createJob(
 		// Create recurring jobs if requested
 		if (data.isRecurring && data.recurrenceType && data.scheduledStart) {
 			const baseJob = {
-				company_id: teamMember.company_id,
+				company_id: companyId,
 				property_id: data.propertyId,
 				customer_id: customerId,
 				assigned_to: data.assignedTo,
@@ -481,7 +478,7 @@ export async function createJob(
 
 			await createRecurringJobs(
 				supabase,
-				teamMember.company_id,
+				companyId,
 				baseJob,
 				data.recurrenceType,
 				data.recurrenceEndDate,
@@ -493,7 +490,7 @@ export async function createJob(
 		if (data.assignedTo && data.assignedTo !== user.id) {
 			await notifyJobCreated({
 				userId: data.assignedTo,
-				companyId: teamMember.company_id,
+				companyId: companyId,
 				jobId: newJob.id,
 				jobTitle: data.title,
 				address: property.address || "Unknown address",
@@ -533,14 +530,11 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -583,7 +577,7 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 		assertExists(job, "Job");
 
 		// Verify job belongs to company
-		if (job.company_id !== teamMember.company_id) {
+		if (job.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -855,14 +849,11 @@ export async function updateJobStatus(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -895,7 +886,7 @@ export async function updateJobStatus(
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -956,14 +947,11 @@ export async function assignJob(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -980,7 +968,7 @@ export async function assignJob(
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -993,7 +981,7 @@ export async function assignJob(
 			.from("team_members")
 			.select("user_id")
 			.eq("user_id", technicianId)
-			.eq("company_id", teamMember.company_id)
+			.eq("company_id", companyId)
 			.single();
 
 		if (!technician) {
@@ -1045,14 +1033,11 @@ export async function scheduleJob(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1074,7 +1059,7 @@ export async function scheduleJob(
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1126,14 +1111,11 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1150,7 +1132,7 @@ export async function startJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1211,14 +1193,11 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1235,7 +1214,7 @@ export async function completeJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1313,14 +1292,11 @@ export async function cancelJob(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1337,7 +1313,7 @@ export async function cancelJob(
 
 		assertExists(existingJob, "Job");
 
-		if (existingJob.company_id !== teamMember.company_id) {
+		if (existingJob.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1422,7 +1398,7 @@ export async function searchJobs(
 
 		const jobs = await searchJobsFullText(
 			supabase,
-			teamMember.company_id,
+			companyId,
 			searchTerm,
 			{
 				limit: options?.limit || 50,
@@ -1471,7 +1447,7 @@ export async function searchAll(
 
 		// Use universal search RPC function
 		const { data, error } = await supabase.rpc("search_all_entities", {
-			company_id_param: teamMember.company_id,
+			company_id_param: companyId,
 			search_query: searchTerm,
 			per_entity_limit: 5,
 		});
@@ -1533,7 +1509,7 @@ export async function archiveJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== teamMember.company_id) {
+		if (job.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1634,7 +1610,7 @@ export async function restoreJob(jobId: string): Promise<ActionResult<void>> {
 
 		assertExists(job, "Job");
 
-		if (job.company_id !== teamMember.company_id) {
+		if (job.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("job"),
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1707,14 +1683,11 @@ export async function removeTeamAssignment(
 		} = await supabase.auth.getUser();
 		assertAuthenticated(user?.id);
 
-		// Get user's company
-		const { data: teamMember } = await supabase
-			.from("team_members")
-			.select("company_id")
-			.eq("user_id", user.id)
-			.single();
+		// Get user's active company using helper (handles multi-company users)
+		const { getActiveCompanyId } = await import("@/lib/auth/company-context");
+		const companyId = await getActiveCompanyId();
 
-		if (!teamMember?.company_id) {
+		if (!companyId) {
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
@@ -1736,7 +1709,7 @@ export async function removeTeamAssignment(
 			);
 		}
 
-		if (record.company_id !== teamMember.company_id) {
+		if (record.company_id !== companyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("team assignment"),
 				ERROR_CODES.AUTH_FORBIDDEN,
