@@ -793,8 +793,8 @@ export function FullWidthDataTable<T>({
 									</Button>
 									<span className="text-nowrap font-medium text-muted-foreground text-xs tabular-nums">
 										{(currentPage - 1) * itemsPerPage + 1}-
-										{Math.min(currentPage * itemsPerPage, filteredData.length)}{" "}
-										of {filteredData.length.toLocaleString()}
+										{Math.min(currentPage * itemsPerPage, totalCount || filteredData.length)}{" "}
+										of {(totalCount || filteredData.length).toLocaleString()}
 									</span>
 									<Button
 										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
