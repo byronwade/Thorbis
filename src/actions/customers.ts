@@ -1484,7 +1484,9 @@ export async function getAllCustomers(): Promise<
 				// Get last completed job date (with time tracking for actual_end)
 				const { data: lastJob } = await supabase
 					.from("jobs")
-					.select("created_at, scheduled_end, timeTracking:job_time_tracking(actual_end)")
+					.select(
+						"created_at, scheduled_end, timeTracking:job_time_tracking(actual_end)",
+					)
 					.eq("customer_id", customer.id)
 					.eq("company_id", teamMember.company_id)
 					.eq("status", "completed")
@@ -1513,7 +1515,10 @@ export async function getAllCustomers(): Promise<
 
 				const total_jobs = jobStats?.length || 0;
 				const total_revenue =
-					jobStats?.reduce((sum, job) => sum + (job.financial?.total_amount || 0), 0) || 0;
+					jobStats?.reduce(
+						(sum, job) => sum + (job.financial?.total_amount || 0),
+						0,
+					) || 0;
 
 				return {
 					...customer,

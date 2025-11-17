@@ -445,10 +445,12 @@ export function TeamScheduleTab({
 
 					<Separator />
 
-					{job.dispatch_zone && (
+					{job.dispatch?.dispatch_zone && (
 						<div>
 							<p className="text-muted-foreground text-xs">Dispatch Zone</p>
-							<p className="font-medium text-sm">{job.dispatch_zone}</p>
+							<p className="font-medium text-sm">
+								{job.dispatch.dispatch_zone}
+							</p>
 						</div>
 					)}
 
@@ -463,11 +465,11 @@ export function TeamScheduleTab({
 						</div>
 					)}
 
-					{job.route_order && (
+					{job.scheduling?.route_order && (
 						<div>
 							<p className="text-muted-foreground text-xs">Route Order</p>
 							<p className="font-medium text-sm">
-								Position #{job.route_order} in route
+								Position #{job.scheduling.route_order} in route
 							</p>
 						</div>
 					)}

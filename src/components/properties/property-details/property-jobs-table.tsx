@@ -173,11 +173,11 @@ export function PropertyJobsTable({ jobs }: PropertyJobsTableProps) {
 				render: (job) => (
 					<div className="flex flex-col items-end gap-1">
 						<span className="font-medium text-sm">
-							{formatCurrency(job.total_amount)}
+							{formatCurrency(job.financial?.total_amount ?? 0)}
 						</span>
-						{job.paid_amount && job.total_amount && (
+						{job.financial?.paid_amount && job.financial?.total_amount && (
 							<span className="text-muted-foreground text-xs">
-								{formatCurrency(job.paid_amount)} paid
+								{formatCurrency(job.financial.paid_amount)} paid
 							</span>
 						)}
 					</div>

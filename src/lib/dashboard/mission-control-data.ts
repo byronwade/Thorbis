@@ -389,7 +389,7 @@ export async function getMissionControlData(
 		const activities = activityResult.data ?? [];
 
 		const revenueTodayCents = completedToday.reduce(
-			(sum, job) => sum + formatCurrencyCents(job.total_amount),
+			(sum, job) => sum + formatCurrencyCents(job.financial?.total_amount ?? 0),
 			0,
 		);
 
@@ -475,7 +475,7 @@ export async function getMissionControlData(
 				]
 					.filter(Boolean)
 					.join(", "),
-			totalAmountCents: formatCurrencyCents(job.total_amount),
+			totalAmountCents: formatCurrencyCents(job.financial?.total_amount ?? 0),
 		});
 
 		const operations = {

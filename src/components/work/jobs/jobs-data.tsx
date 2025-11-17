@@ -40,6 +40,14 @@ const JOB_SELECT = `
     city,
     state,
     zip_code
+  ),
+  financial:job_financial (
+    total_amount,
+    paid_amount
+  ),
+  timeTracking:job_time_tracking (
+    actual_start,
+    actual_end
   )
 `;
 
@@ -150,6 +158,10 @@ export async function JobsData() {
 				}
 			: null;
 
+		// Extract domain data with null safety
+		const financial = resolveRelation(job.financial as any);
+		const timeTracking = resolveRelation(job.timeTracking as any);
+
 		return {
 			id: job.id,
 			companyId: job.company_id,
@@ -170,6 +182,11 @@ export async function JobsData() {
 			updatedAt: new Date(job.updated_at),
 			customers: customerData,
 			properties: propertyData,
+			// Domain fields from separate tables
+			totalAmount: financial?.total_amount ?? null,
+			paidAmount: financial?.paid_amount ?? null,
+			actualStart: toDate(timeTracking?.actual_start ?? null),
+			actualEnd: toDate(timeTracking?.actual_end ?? null),
 		} satisfies ExtendedJob;
 	});
 

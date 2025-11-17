@@ -84,7 +84,9 @@ export function LinkedDataAlerts({
 
 	// Check unpaid deposit
 	const hasUnpaidDeposit =
-		job.deposit_amount && job.deposit_amount > 0 && !job.deposit_paid_at;
+		job.financial?.deposit_amount &&
+		job.financial.deposit_amount > 0 &&
+		!job.deposit_paid_at;
 
 	// Check completion overdue
 	const isCompletionOverdue =
@@ -214,7 +216,7 @@ export function LinkedDataAlerts({
 				key="deposit"
 			>
 				<DollarSign className="size-4" />
-				Deposit Due • {formatCurrency(job.deposit_amount || 0)}
+				Deposit Due • {formatCurrency(job.financial?.deposit_amount ?? 0)}
 			</button>,
 		);
 	}

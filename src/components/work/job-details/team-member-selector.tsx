@@ -23,7 +23,14 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, Loader2, UserPlus, Users, X } from "lucide-react";
+import {
+	Check,
+	ChevronsUpDown,
+	Loader2,
+	UserPlus,
+	Users,
+	X,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -44,7 +51,11 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +78,10 @@ type TeamMember = {
 };
 
 // eslint-disable-next-line complexity
-export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProps) {
+export function TeamMemberSelector({
+	jobId,
+	isEditMode,
+}: TeamMemberSelectorProps) {
 	const queryClient = useQueryClient();
 
 	// Local UI state
@@ -109,7 +123,13 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 	// React Query: Assign team member mutation
 	const assignMutation = useMutation({
-		mutationFn: async ({ teamMemberId, role }: { teamMemberId: string; role: string }) => {
+		mutationFn: async ({
+			teamMemberId,
+			role,
+		}: {
+			teamMemberId: string;
+			role: string;
+		}) => {
 			const result = await assignTeamMemberToJob({
 				jobId,
 				teamMemberId,
@@ -124,7 +144,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 			setProcessingIds((prev) => new Set(prev).add(teamMemberId));
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["job-team-assignments", jobId] });
+			queryClient.invalidateQueries({
+				queryKey: ["job-team-assignments", jobId],
+			});
 			setShowAll(false);
 			setShowAllEdit(false);
 			toast.success("Team member assigned");
@@ -156,16 +178,24 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 		onMutate: (teamMemberId) => {
 			setProcessingIds((prev) => new Set(prev).add(teamMemberId));
 			// Optimistic update
-			const previousAssignments = queryClient.getQueryData(["job-team-assignments", jobId]);
-			queryClient.setQueryData(["job-team-assignments", jobId], (old: TeamMemberAssignment[] | undefined) =>
-				old ? old.filter((a) => a.teamMemberId !== teamMemberId) : old
+			const previousAssignments = queryClient.getQueryData([
+				"job-team-assignments",
+				jobId,
+			]);
+			queryClient.setQueryData(
+				["job-team-assignments", jobId],
+				(old: TeamMemberAssignment[] | undefined) =>
+					old ? old.filter((a) => a.teamMemberId !== teamMemberId) : old,
 			);
 			return { previousAssignments };
 		},
 		onError: (error: Error, _teamMemberId, context) => {
 			// Rollback on error
 			if (context?.previousAssignments) {
-				queryClient.setQueryData(["job-team-assignments", jobId], context.previousAssignments);
+				queryClient.setQueryData(
+					["job-team-assignments", jobId],
+					context.previousAssignments,
+				);
 			}
 			toast.error(error.message);
 		},
@@ -180,7 +210,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 				next.delete(teamMemberId);
 				return next;
 			});
-			queryClient.invalidateQueries({ queryKey: ["job-team-assignments", jobId] });
+			queryClient.invalidateQueries({
+				queryKey: ["job-team-assignments", jobId],
+			});
 		},
 	});
 
@@ -194,7 +226,8 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 	const getFullName = (firstName: string | null, lastName: string | null) =>
 		`${firstName || ""} ${lastName || ""}`.trim() || "Unknown";
 
-	const isAssigned = (teamMemberId: string) => assignments.some((a) => a.teamMemberId === teamMemberId);
+	const isAssigned = (teamMemberId: string) =>
+		assignments.some((a) => a.teamMemberId === teamMemberId);
 
 	// Handlers
 	const handleAssign = (teamMemberId: string) => {
@@ -248,7 +281,10 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 		const MAX_VISIBLE_AVATARS = 5;
 		const visibleAssignments = assignments.slice(0, MAX_VISIBLE_AVATARS);
-		const remainingCount = Math.max(0, assignments.length - MAX_VISIBLE_AVATARS);
+		const remainingCount = Math.max(
+			0,
+			assignments.length - MAX_VISIBLE_AVATARS,
+		);
 
 		return (
 			<div className="space-y-2">
@@ -261,18 +297,21 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 								key={assignment.id}
 								title={getFullName(
 									assignment.teamMember.user.firstName,
-									assignment.teamMember.user.lastName
+									assignment.teamMember.user.lastName,
 								)}
 							>
 								<AvatarImage
 									alt={getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName
+										assignment.teamMember.user.lastName,
 									)}
 									src={assignment.teamMember.user.avatarUrl || undefined}
 								/>
 								<AvatarFallback className="text-xs">
-									{getInitials(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getInitials(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</AvatarFallback>
 							</Avatar>
 						))}
@@ -311,19 +350,22 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 									<AvatarImage
 										alt={getFullName(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
 										{getInitials(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
-									{getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getFullName(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</span>
 								{assignment.role === "primary" && (
 									<Badge className="text-xs" variant="secondary">
@@ -340,7 +382,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 	// Edit mode: Show selector with assigned members (compact for many members)
 	const MAX_VISIBLE_IN_EDIT = 10;
-	const visibleInEdit = showAllEdit ? assignments : assignments.slice(0, MAX_VISIBLE_IN_EDIT);
+	const visibleInEdit = showAllEdit
+		? assignments
+		: assignments.slice(0, MAX_VISIBLE_IN_EDIT);
 	const remainingInEdit = Math.max(0, assignments.length - MAX_VISIBLE_IN_EDIT);
 
 	return (
@@ -375,19 +419,22 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 									<AvatarImage
 										alt={getFullName(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
 										{getInitials(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
-									{getFullName(assignment.teamMember.user.firstName, assignment.teamMember.user.lastName)}
+									{getFullName(
+										assignment.teamMember.user.firstName,
+										assignment.teamMember.user.lastName,
+									)}
 								</span>
 								{assignment.role === "primary" && (
 									<Badge className="text-xs" variant="secondary">
@@ -437,7 +484,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 						<CommandInput placeholder="Search team members..." />
 						<CommandList className="max-h-[400px]">
 							<CommandEmpty>No team members found.</CommandEmpty>
-							<CommandGroup heading={`Available Team Members (${availableMembers.length})`}>
+							<CommandGroup
+								heading={`Available Team Members (${availableMembers.length})`}
+							>
 								{availableMembers.map((member) => {
 									const assigned = isAssigned(member.id);
 									const processing = processingIds.has(member.id);
@@ -456,7 +505,7 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 													"flex h-4 w-4 items-center justify-center rounded-sm border",
 													assigned
 														? "border-primary bg-primary text-primary-foreground"
-														: "border-muted-foreground"
+														: "border-muted-foreground",
 												)}
 											>
 												{assigned && <Check className="h-3 w-3" />}
@@ -465,26 +514,39 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 											{/* Avatar */}
 											<Avatar className="h-6 w-6">
 												<AvatarImage
-													alt={getFullName(member.user.firstName, member.user.lastName)}
+													alt={getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 													src={member.user.avatarUrl || undefined}
 												/>
 												<AvatarFallback className="text-[10px]">
-													{getInitials(member.user.firstName, member.user.lastName)}
+													{getInitials(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 												</AvatarFallback>
 											</Avatar>
 
 											{/* Name and Title */}
 											<div className="flex flex-1 flex-col">
 												<span className="text-sm">
-													{getFullName(member.user.firstName, member.user.lastName)}
+													{getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 												</span>
 												{member.jobTitle && (
-													<span className="text-muted-foreground text-xs">{member.jobTitle}</span>
+													<span className="text-muted-foreground text-xs">
+														{member.jobTitle}
+													</span>
 												)}
 											</div>
 
 											{/* Loading spinner */}
-											{processing && <Loader2 className="h-4 w-4 animate-spin" />}
+											{processing && (
+												<Loader2 className="h-4 w-4 animate-spin" />
+											)}
 										</CommandItem>
 									);
 								})}

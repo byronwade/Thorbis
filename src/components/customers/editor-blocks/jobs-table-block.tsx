@@ -50,6 +50,7 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 	}
 
 	// Transform jobs to match Job type expected by JobsTable
+	// Access domain fields with optional chaining and fallbacks
 	const transformedJobs = (jobs || []).map((job: any) => ({
 		id: job.id,
 		companyId: job.company_id,
@@ -64,20 +65,29 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 		jobType: job.job_type,
 		scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
 		scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
-		actualStart: job.actual_start ? new Date(job.actual_start) : null,
-		actualEnd: job.actual_end ? new Date(job.actual_end) : null,
-		totalAmount: job.total_amount || 0,
-		paidAmount: job.paid_amount || 0,
+		// Time Tracking Domain fields
+		actualStart: job.timeTracking?.actual_start
+			? new Date(job.timeTracking.actual_start)
+			: null,
+		actualEnd: job.timeTracking?.actual_end
+			? new Date(job.timeTracking.actual_end)
+			: null,
+		// Financial Domain fields
+		totalAmount: job.financial?.total_amount ?? 0,
+		paidAmount: job.financial?.paid_amount ?? 0,
 		notes: job.notes,
 		metadata: job.metadata,
 		createdAt: new Date(job.created_at),
 		updatedAt: new Date(job.updated_at),
-		aiCategories: job.ai_categories,
-		aiEquipment: job.ai_equipment,
-		aiServiceType: job.ai_service_type,
-		aiPriorityScore: job.ai_priority_score,
-		aiTags: job.ai_tags,
-		aiProcessedAt: job.ai_processed_at ? new Date(job.ai_processed_at) : null,
+		// AI Enrichment Domain fields
+		aiCategories: job.aiEnrichment?.ai_categories,
+		aiEquipment: job.aiEnrichment?.ai_equipment,
+		aiServiceType: job.aiEnrichment?.ai_service_type,
+		aiPriorityScore: job.aiEnrichment?.ai_priority_score,
+		aiTags: job.aiEnrichment?.ai_tags,
+		aiProcessedAt: job.aiEnrichment?.ai_processed_at
+			? new Date(job.aiEnrichment.ai_processed_at)
+			: null,
 	}));
 
 	return (

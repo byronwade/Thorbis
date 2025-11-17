@@ -175,9 +175,15 @@ async function fetchRelatedCustomerData(
 		equipmentResult,
 	] = await Promise.all([
 		// Jobs (last 10, ordered by created date)
+		// Use getJobListSelect() to get core + financial data (total_amount, paid_amount needed for call window)
 		supabase
 			.from("jobs")
-			.select("*")
+			.select(`
+				id, job_number, title, description, status, priority, job_type,
+				created_at, updated_at, scheduled_date,
+				customer_id, property_id, company_id, created_by,
+				financial:job_financial(total_amount, paid_amount, deposit_amount)
+			`)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false })

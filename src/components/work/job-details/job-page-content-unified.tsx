@@ -585,10 +585,10 @@ export function JobPageContentUnified({
 						)}
 
 						{/* Service Type */}
-						{(job.service_type || job.ai_service_type) && (
+						{(job.service_type || job.ai?.service_type) && (
 							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
 								<Wrench className="size-4" />
-								{job.service_type || job.ai_service_type}
+								{job.service_type || job.ai?.service_type}
 							</div>
 						)}
 
@@ -614,35 +614,35 @@ export function JobPageContentUnified({
 						)}
 
 						{/* Job Value */}
-						{(job.total_amount ?? 0) > 0 && (
+						{(job.financial?.total_amount ?? 0) > 0 && (
 							<div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background px-4 py-2 font-medium text-sm transition-colors hover:border-primary/50 hover:bg-primary/5">
 								<DollarSign className="size-4" />
 								{new Intl.NumberFormat("en-US", {
 									style: "currency",
 									currency: "USD",
 									minimumFractionDigits: 0,
-								}).format(job.total_amount)}
+								}).format(job.financial?.total_amount ?? 0)}
 							</div>
 						)}
 
 						{/* Deposit Status */}
-						{(job.deposit_amount ?? 0) > 0 && (
+						{(job.financial?.deposit_amount ?? 0) > 0 && (
 							<div
 								className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium text-sm transition-colors ${
-									job.deposit_paid_at
+									job.financial?.deposit_paid_at
 										? "border-green-200 bg-green-50 text-green-700 hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400 dark:hover:border-green-900/40 dark:hover:bg-green-900/30"
 										: "border-amber-200 bg-amber-50 text-amber-700 hover:border-amber-300 hover:bg-amber-100 dark:border-amber-900/30 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:border-amber-900/40 dark:hover:bg-amber-900/30"
 								}`}
 							>
 								<DollarSign className="size-4" />
 								Deposit{" "}
-								{job.deposit_paid_at
+								{job.financial?.deposit_paid_at
 									? "Paid"
 									: `Due: ${new Intl.NumberFormat("en-US", {
 											style: "currency",
 											currency: "USD",
 											minimumFractionDigits: 0,
-										}).format(job.deposit_amount)}`}
+										}).format(job.financial?.deposit_amount ?? 0)}`}
 							</div>
 						)}
 
@@ -688,8 +688,8 @@ export function JobPageContentUnified({
 									)
 									.toFixed(1)}
 								h
-								{job.estimated_labor_hours &&
-									` / ${job.estimated_labor_hours}h`}
+								{job.timeTracking?.estimated_labor_hours &&
+									` / ${job.timeTracking?.estimated_labor_hours}h`}
 							</div>
 						)}
 
@@ -815,8 +815,8 @@ export function JobPageContentUnified({
 									invoices={invoices}
 									job={{
 										id: job.id,
-										deposit_amount: job.deposit_amount,
-										deposit_paid_at: job.deposit_paid_at,
+										deposit_amount: job.financial?.deposit_amount,
+										deposit_paid_at: job.financial?.deposit_paid_at,
 										scheduled_end: job.scheduled_end,
 										status: job.status,
 									}}

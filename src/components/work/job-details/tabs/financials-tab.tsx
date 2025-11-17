@@ -436,21 +436,21 @@ export function FinancialsTab({
 					<Separator />
 
 					<div className="grid gap-4 md:grid-cols-2">
-						{job.payment_terms && (
+						{job.financial?.payment_terms && (
 							<div>
 								<p className="font-medium text-sm">Payment Terms</p>
 								<p className="text-muted-foreground text-sm">
-									{job.payment_terms}
+									{job.financial.payment_terms}
 								</p>
 							</div>
 						)}
 
-						{job.deposit_amount > 0 && (
+						{(job.financial?.deposit_amount ?? 0) > 0 && (
 							<div>
 								<p className="font-medium text-sm">Deposit</p>
 								<div className="flex items-center gap-2">
 									<p className="text-muted-foreground text-sm">
-										{formatCurrency(job.deposit_amount)}
+										{formatCurrency(job.financial.deposit_amount ?? 0)}
 									</p>
 									{job.deposit_paid_at && (
 										<Badge className="text-xs" variant="default">

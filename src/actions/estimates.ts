@@ -742,6 +742,7 @@ export async function convertEstimateToJob(
 		}
 
 		// Create job from estimate
+		// NOTE: Job must be created first (core table), then financial domain record created separately
 		const { data: newJob, error: createError } = await supabase
 			.from("jobs")
 			.insert({
@@ -753,10 +754,18 @@ export async function convertEstimateToJob(
 				description: estimate.description,
 				status: "scheduled",
 				priority: "medium",
-				total_amount: estimate.total_amount,
 			})
 			.select("id")
 			.single();
+
+		if (!createError && newJob) {
+			// Create financial domain record with total_amount from estimate
+			await supabase.from("job_financial").insert({
+				job_id: newJob.id,
+				total_amount: estimate.total_amount,
+				paid_amount: 0,
+			});
+		}
 
 		if (createError) {
 			throw new ActionError(

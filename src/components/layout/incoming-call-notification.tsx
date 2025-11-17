@@ -1863,10 +1863,8 @@ export function IncomingCallNotification() {
 	}, []);
 
 	// Fetch real customer data from database (React Query)
-	const { data: fetchedCustomerData, isLoading: isLoadingCustomer } = useCustomerLookup(
-		call.caller?.number,
-		companyId || undefined
-	);
+	const { data: fetchedCustomerData, isLoading: isLoadingCustomer } =
+		useCustomerLookup(call.caller?.number, companyId || undefined);
 
 	// Use fetched data or fallback to default
 	const customerData: CustomerData = fetchedCustomerData || {

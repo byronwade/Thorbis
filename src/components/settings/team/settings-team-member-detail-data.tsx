@@ -100,8 +100,12 @@ export async function SettingsTeamMemberDetailData({
 		assignedJobs?.filter((job) => job.status === "completed").length || 0;
 	const hoursWorked =
 		timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+	// Access financial domain with optional chaining and fallback
 	const revenueGenerated =
-		assignedJobs?.reduce((sum, job) => sum + (job.total_amount || 0), 0) || 0;
+		assignedJobs?.reduce(
+			(sum, job) => sum + (job.financial?.total_amount ?? 0),
+			0,
+		) || 0;
 
 	const metrics = {
 		totalJobs,

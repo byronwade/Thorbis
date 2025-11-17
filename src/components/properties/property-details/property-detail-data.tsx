@@ -314,8 +314,9 @@ export async function PropertyDetailData({
 			job.status &&
 			!["completed", "cancelled"].includes(job.status.toLowerCase()),
 	).length;
+	// Access financial domain with optional chaining
 	const totalRevenue = jobs.reduce(
-		(sum: number, job: any) => sum + (job.total_amount || 0),
+		(sum: number, job: any) => sum + (job.financial?.total_amount ?? 0),
 		0,
 	);
 	const completedJobs = jobs.filter(

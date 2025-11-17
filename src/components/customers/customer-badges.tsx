@@ -31,6 +31,7 @@ import {
 	X,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import {
 	addCustomerBadge,
 	generateAutoBadges,
@@ -39,7 +40,12 @@ import {
 } from "@/actions/customer-badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -50,11 +56,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { type CustomerBadge, PREMADE_BADGES } from "@/types/customer-badges";
-import { toast } from "sonner";
 
 type CustomerBadgesProps = {
 	customerId: string;
@@ -115,7 +126,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 			return result;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["customer-badges", customerId] });
+			queryClient.invalidateQueries({
+				queryKey: ["customer-badges", customerId],
+			});
 			toast.success("Badge added successfully");
 		},
 		onError: (error: Error) => {
@@ -134,14 +147,21 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 		},
 		onMutate: async (badgeId) => {
 			// Cancel outgoing refetches
-			await queryClient.cancelQueries({ queryKey: ["customer-badges", customerId] });
+			await queryClient.cancelQueries({
+				queryKey: ["customer-badges", customerId],
+			});
 
 			// Snapshot previous value
-			const previousBadges = queryClient.getQueryData(["customer-badges", customerId]);
+			const previousBadges = queryClient.getQueryData([
+				"customer-badges",
+				customerId,
+			]);
 
 			// Optimistically remove badge
-			queryClient.setQueryData(["customer-badges", customerId], (old: CustomerBadge[] | undefined) =>
-				old ? old.filter((badge) => badge.id !== badgeId) : old
+			queryClient.setQueryData(
+				["customer-badges", customerId],
+				(old: CustomerBadge[] | undefined) =>
+					old ? old.filter((badge) => badge.id !== badgeId) : old,
 			);
 
 			return { previousBadges };
@@ -149,12 +169,17 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 		onError: (error: Error, _badgeId, context) => {
 			// Rollback on error
 			if (context?.previousBadges) {
-				queryClient.setQueryData(["customer-badges", customerId], context.previousBadges);
+				queryClient.setQueryData(
+					["customer-badges", customerId],
+					context.previousBadges,
+				);
 			}
 			toast.error(error.message);
 		},
 		onSettled: () => {
-			queryClient.invalidateQueries({ queryKey: ["customer-badges", customerId] });
+			queryClient.invalidateQueries({
+				queryKey: ["customer-badges", customerId],
+			});
 		},
 	});
 
@@ -168,7 +193,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 			return result;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["customer-badges", customerId] });
+			queryClient.invalidateQueries({
+				queryKey: ["customer-badges", customerId],
+			});
 			toast.success("Auto badges generated");
 		},
 		onError: (error: Error) => {
@@ -225,7 +252,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 		return (
 			<div className="flex items-center gap-2 px-8 py-6">
 				<AlertTriangle className="size-4 text-destructive" />
-				<p className="text-destructive text-sm">Failed to load badges: {error.message}</p>
+				<p className="text-destructive text-sm">
+					Failed to load badges: {error.message}
+				</p>
 			</div>
 		);
 	}
@@ -245,7 +274,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 						<Badge
 							className={cn(
 								"gap-1.5 pr-7 font-medium text-xs",
-								badge.badge_type === "auto_generated" && "opacity-90"
+								badge.badge_type === "auto_generated" && "opacity-90",
 							)}
 							variant={badge.variant as any}
 						>
@@ -274,7 +303,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="start" className="w-64">
-					<DropdownMenuLabel className="text-xs">Premade Badges</DropdownMenuLabel>
+					<DropdownMenuLabel className="text-xs">
+						Premade Badges
+					</DropdownMenuLabel>
 					{PREMADE_BADGES.map((premade) => {
 						const Icon = ICON_MAP[premade.icon];
 						return (
@@ -290,7 +321,10 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 						);
 					})}
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="cursor-pointer" onClick={() => setShowCustomDialog(true)}>
+					<DropdownMenuItem
+						className="cursor-pointer"
+						onClick={() => setShowCustomDialog(true)}
+					>
 						<Plus className="mr-2 size-4" />
 						<span className="text-sm">Custom Badge</span>
 					</DropdownMenuItem>
@@ -302,7 +336,9 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					>
 						<LayoutGrid className="mr-2 size-4" />
 						<span className="text-sm">
-							{generateAutoBadgesMutation.isPending ? "Generating..." : "Generate Auto Badges"}
+							{generateAutoBadgesMutation.isPending
+								? "Generating..."
+								: "Generate Auto Badges"}
 						</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
@@ -353,7 +389,11 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 							</Select>
 						</div>
 						<div className="flex gap-2 pt-2">
-							<Button className="flex-1" onClick={() => setShowCustomDialog(false)} variant="outline">
+							<Button
+								className="flex-1"
+								onClick={() => setShowCustomDialog(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
 							<Button

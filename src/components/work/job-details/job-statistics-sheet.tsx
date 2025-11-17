@@ -66,7 +66,7 @@ export function JobStatisticsSheet({
 			maximumFractionDigits: 0,
 		}).format(cents / CENTS_PER_DOLLAR);
 
-	const formatHours = (hours: number) => `${hours.toFixed(1)}h`;
+	const formatHours = (hours: number | undefined | null) => hours != null ? `${hours.toFixed(1)}h` : '0.0h';
 
 	// Calculate detailed metrics
 	const detailedMetrics = useMemo(() => {

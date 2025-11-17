@@ -1387,15 +1387,10 @@ export async function searchJobs(
 			"@/lib/search/full-text-search"
 		);
 
-		const jobs = await searchJobsFullText(
-			supabase,
-			companyId,
-			searchTerm,
-			{
-				limit: options?.limit || 50,
-				offset: options?.offset || 0,
-			},
-		);
+		const jobs = await searchJobsFullText(supabase, companyId, searchTerm, {
+			limit: options?.limit || 50,
+			offset: options?.offset || 0,
+		});
 
 		return jobs;
 	});

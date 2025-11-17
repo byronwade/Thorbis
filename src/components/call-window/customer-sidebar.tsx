@@ -434,9 +434,9 @@ export function CustomerSidebar({
 								<p className="font-mono text-muted-foreground text-xs">
 									#{job.job_number}
 								</p>
-								{job.total_amount && (
+								{job.financial?.total_amount && (
 									<p className="mt-1 text-xs">
-										{formatCurrency(job.total_amount)}
+										{formatCurrency(job.financial.total_amount)}
 									</p>
 								)}
 							</div>
