@@ -37,6 +37,11 @@ import {
 	verifySmsCapability,
 	verifyVoiceCapability,
 } from "@/lib/telnyx/phone-number-setup";
+import {
+	ensureCompanyTelnyxSetup,
+	fetchCompanyTelnyxSettings,
+	type CompanyTelnyxSettingsRow,
+} from "@/lib/telnyx/provision-company";
 import type { Database, Json } from "@/types/supabase";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
@@ -74,6 +79,31 @@ function formatDisplayPhoneNumber(phoneNumber: string): string {
 		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 	}
 	return phoneNumber;
+}
+
+async function getCompanyTelnyxSettings(
+	supabase: TypedSupabaseClient,
+	companyId: string | null,
+): Promise<CompanyTelnyxSettingsRow | null> {
+	if (!companyId) {
+		return null;
+	}
+
+	const existing = await fetchCompanyTelnyxSettings(supabase, companyId);
+	if (existing && existing.status === "ready") {
+		return existing;
+	}
+
+	const provisionResult = await ensureCompanyTelnyxSetup({
+		companyId,
+		supabase,
+	});
+
+	if (!provisionResult.success) {
+		return null;
+	}
+
+	return provisionResult.settings ?? null;
 }
 
 function normalizeBaseUrl(url: string): string {
@@ -164,7 +194,10 @@ async function buildAbsoluteUrl(path: string): Promise<string | undefined> {
 	return `${base}${normalizedPath}`;
 }
 
-async function getTelnyxWebhookUrl(): Promise<string | undefined> {
+async function getTelnyxWebhookUrl(companyId?: string): Promise<string | undefined> {
+	if (companyId) {
+		return buildAbsoluteUrl(`/api/webhooks/telnyx?company=${companyId}`);
+	}
 	return buildAbsoluteUrl("/api/webhooks/telnyx");
 }
 
@@ -492,7 +525,6 @@ export async function makeCall(params: {
 	estimateId?: string;
 }) {
 	try {
-		// Validate call configuration
 		const callConfig = validateCallConfig();
 		if (!callConfig.valid) {
 			return {
@@ -501,8 +533,37 @@ export async function makeCall(params: {
 			};
 		}
 
-		// Verify connection
-		const connectionStatus = await verifyConnection();
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Service unavailable" };
+		}
+
+		const companySettings = await getCompanyTelnyxSettings(
+			supabase,
+			params.companyId,
+		);
+
+		const connectionOverride =
+			companySettings?.call_control_application_id || TELNYX_CONFIG.connectionId;
+		const outboundNumber =
+			params.from || companySettings?.default_outbound_number || "";
+
+		if (!connectionOverride) {
+			return {
+				success: false,
+				error: "No Telnyx connection configured for this company.",
+			};
+		}
+
+		if (!outboundNumber) {
+			return {
+				success: false,
+				error:
+					"Company does not have a default outbound phone number configured. Please provision numbers first.",
+			};
+		}
+
+		const connectionStatus = await verifyConnection(connectionOverride);
 		if (connectionStatus.needsFix) {
 			return {
 				success: false,
@@ -510,15 +571,9 @@ export async function makeCall(params: {
 			};
 		}
 
-		const supabase = await createClient();
-		if (!supabase) {
-			return { success: false, error: "Service unavailable" };
-		}
-
-		const fromAddress = normalizePhoneNumber(params.from);
+		const fromAddress = normalizePhoneNumber(outboundNumber);
 		const toAddress = normalizePhoneNumber(params.to);
 
-		// Verify phone number has voice capability
 		const voiceCapability = await verifyVoiceCapability(fromAddress);
 		if (!voiceCapability.hasVoice) {
 			return {
@@ -527,8 +582,7 @@ export async function makeCall(params: {
 			};
 		}
 
-		// Initiate call via Telnyx
-		const telnyxWebhookUrl = await getTelnyxWebhookUrl();
+		const telnyxWebhookUrl = await getTelnyxWebhookUrl(params.companyId);
 		if (!telnyxWebhookUrl) {
 			return {
 				success: false,
@@ -536,10 +590,11 @@ export async function makeCall(params: {
 					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
 			};
 		}
+
 		const result = await initiateCall({
 			to: toAddress,
 			from: fromAddress,
-			connectionId: TELNYX_CONFIG.connectionId,
+			connectionId: connectionOverride,
 			webhookUrl: telnyxWebhookUrl,
 			answeringMachineDetection: "premium",
 		});
@@ -548,7 +603,6 @@ export async function makeCall(params: {
 			return result;
 		}
 
-		// Create communication record
 		const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
 		const { data, error } = await supabase
 			.from("communications")
@@ -595,6 +649,8 @@ export async function makeCall(params: {
 	}
 }
 
+/**
+ * Answer an incoming call
 /**
  * Answer an incoming call
  */
@@ -805,37 +861,68 @@ export async function sendTextMessage(params: {
 	estimateId?: string;
 }) {
 	try {
-		// Validate SMS configuration
+		const supabase = await createClient();
+		if (!supabase) {
+			return { success: false, error: "Service unavailable" };
+		}
+
+		const companySettings = await getCompanyTelnyxSettings(
+			supabase,
+			params.companyId,
+		);
+		if (!companySettings) {
+			return {
+				success: false,
+				error:
+					"Unable to provision Telnyx resources for this company. Please verify the company's onboarding is complete and try again.",
+			};
+		}
+
 		const smsConfig = await validateSmsConfig();
-		if (!smsConfig.valid) {
+		if (!smsConfig.valid && !companySettings?.messaging_profile_id) {
 			let errorMessage = smsConfig.error || "SMS configuration is invalid";
-			
-			// If we have a suggested profile ID, include it in the error
 			if (smsConfig.suggestedProfileId) {
-				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
+				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} or provision company-specific settings.`;
 			}
-			
 			return {
 				success: false,
 				error: errorMessage,
 			};
 		}
 
-		// Verify messaging profile
-		const messagingProfileStatus = await verifyMessagingProfile();
-		if (messagingProfileStatus.needsFix) {
+		const messagingProfileId =
+			companySettings?.messaging_profile_id || DEFAULT_MESSAGING_PROFILE_ID;
+		if (!messagingProfileId) {
 			return {
 				success: false,
-				error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() to auto-fix.`,
+				error:
+					"Messaging profile is not configured for this company. Please provision communications before sending SMS.",
 			};
 		}
 
-		const supabase = await createClient();
-		if (!supabase) {
-			return { success: false, error: "Service unavailable" };
+		if (messagingProfileId) {
+			const messagingProfileStatus = await verifyMessagingProfile(
+				messagingProfileId,
+			);
+			if (messagingProfileStatus.needsFix) {
+				return {
+					success: false,
+					error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() or reprovision the company.`,
+				};
+			}
 		}
 
-		const fromAddress = normalizePhoneNumber(params.from);
+		if (!params.from && !companySettings.default_outbound_number) {
+			return {
+				success: false,
+				error:
+					"Company does not have a default outbound phone number configured. Please provision numbers first.",
+			};
+		}
+
+		const fromAddress = normalizePhoneNumber(
+			params.from || companySettings.default_outbound_number || params.from,
+		);
 		const toAddress = normalizePhoneNumber(params.to);
 
 		// Verify phone number has SMS capability
@@ -847,7 +934,7 @@ export async function sendTextMessage(params: {
 			};
 		}
 
-		const webhookUrl = await getTelnyxWebhookUrl();
+		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);
 		if (!webhookUrl) {
 			return {
 				success: false,
@@ -862,6 +949,7 @@ export async function sendTextMessage(params: {
 			from: fromAddress,
 			text: params.text,
 			webhookUrl,
+			messagingProfileId,
 		});
 
 		if (!result.success) {
@@ -937,10 +1025,54 @@ export async function sendMMSMessage(params: {
 			return { success: false, error: "Service unavailable" };
 		}
 
-		const fromAddress = normalizePhoneNumber(params.from);
+		const companySettings = await getCompanyTelnyxSettings(
+			supabase,
+			params.companyId,
+		);
+		if (!companySettings) {
+			return {
+				success: false,
+				error:
+					"Unable to provision Telnyx resources for this company. Please verify onboarding is complete.",
+			};
+		}
+
+		const smsConfig = await validateSmsConfig();
+		if (!smsConfig.valid && !companySettings.messaging_profile_id) {
+			let errorMessage = smsConfig.error || "SMS configuration is invalid";
+			if (smsConfig.suggestedProfileId) {
+				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} or reprovision the company.`;
+			}
+			return {
+				success: false,
+				error: errorMessage,
+			};
+		}
+
+		const messagingProfileId =
+			companySettings.messaging_profile_id || DEFAULT_MESSAGING_PROFILE_ID;
+		if (!messagingProfileId) {
+			return {
+				success: false,
+				error:
+					"Messaging profile is not configured for this company. Please provision communications before sending MMS.",
+			};
+		}
+
+		const fromNumber =
+			params.from || companySettings.default_outbound_number || "";
+		if (!fromNumber) {
+			return {
+				success: false,
+				error:
+					"Company does not have a default outbound phone number configured.",
+			};
+		}
+
+		const fromAddress = normalizePhoneNumber(fromNumber);
 		const toAddress = normalizePhoneNumber(params.to);
 
-		const webhookUrl = await getTelnyxWebhookUrl();
+		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);
 		if (!webhookUrl) {
 			return {
 				success: false,
@@ -949,32 +1081,18 @@ export async function sendMMSMessage(params: {
 			};
 		}
 
-		// Validate SMS configuration (MMS uses same config)
-		const smsConfig = await validateSmsConfig();
-		if (!smsConfig.valid) {
-			let errorMessage = smsConfig.error || "SMS configuration is invalid";
-			
-			// If we have a suggested profile ID, include it in the error
-			if (smsConfig.suggestedProfileId) {
-				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
+		if (messagingProfileId) {
+			const messagingProfileStatus = await verifyMessagingProfile(
+				messagingProfileId,
+			);
+			if (messagingProfileStatus.needsFix) {
+				return {
+					success: false,
+					error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() or reprovision the company.`,
+				};
 			}
-			
-			return {
-				success: false,
-				error: errorMessage,
-			};
 		}
 
-		// Verify messaging profile
-		const messagingProfileStatus = await verifyMessagingProfile();
-		if (messagingProfileStatus.needsFix) {
-			return {
-				success: false,
-				error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() to auto-fix.`,
-			};
-		}
-
-		// Verify phone number has SMS capability (MMS requires SMS)
 		const smsCapability = await verifySmsCapability(fromAddress);
 		if (!smsCapability.hasSms) {
 			return {
@@ -983,20 +1101,19 @@ export async function sendMMSMessage(params: {
 			};
 		}
 
-		// Send MMS via Telnyx
 		const result = await sendMMS({
 			to: toAddress,
 			from: fromAddress,
 			text: params.text,
 			mediaUrls: params.mediaUrls,
 			webhookUrl,
+			messagingProfileId,
 		});
 
 		if (!result.success) {
 			return result;
 		}
 
-		// Create communication record
 		const phoneNumberId = await getPhoneNumberId(supabase, fromAddress);
 		const { data, error } = await supabase
 			.from("communications")

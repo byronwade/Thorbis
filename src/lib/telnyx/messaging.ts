@@ -83,12 +83,14 @@ export async function sendSMS(params: {
 	webhookUrl?: string;
 	webhookFailoverUrl?: string;
 	useProfileWebhooks?: boolean;
+	messagingProfileId?: string;
 }) {
 	try {
 		const message = await telnyxMessageRequest({
 			to: params.to,
 			from: params.from,
 			text: params.text,
+			messaging_profile_id: params.messagingProfileId,
 			webhook_url: params.webhookUrl,
 			webhook_failover_url: params.webhookFailoverUrl,
 			use_profile_webhooks: params.useProfileWebhooks ?? true,
@@ -118,6 +120,7 @@ export async function sendMMS(params: {
 	webhookUrl?: string;
 	webhookFailoverUrl?: string;
 	subject?: string;
+	messagingProfileId?: string;
 }) {
 	try {
 		const message = await telnyxMessageRequest({
@@ -125,6 +128,7 @@ export async function sendMMS(params: {
 			from: params.from,
 			text: params.text,
 			media_urls: params.mediaUrls,
+			messaging_profile_id: params.messagingProfileId,
 			webhook_url: params.webhookUrl,
 			webhook_failover_url: params.webhookFailoverUrl,
 			subject: params.subject,
