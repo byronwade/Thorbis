@@ -99,14 +99,31 @@ async function checkTelnyxVerificationStatus(
 		};
 	}
 
-	// Check 10DLC registration
-	if (!settings.ten_dlc_brand_id || !settings.ten_dlc_campaign_id) {
+	// Check if ANY verification is complete (toll-free OR 10DLC)
+	const hasTollFreeVerification = settings.toll_free_verification_status === "approved";
+	const has10DLC = settings.ten_dlc_brand_id && settings.ten_dlc_campaign_id;
+	const hasPendingTollFree = settings.toll_free_verification_status === "pending";
+
+	if (!hasTollFreeVerification && !has10DLC) {
+		// Check if toll-free verification is pending
+		if (hasPendingTollFree) {
+			return {
+				isReady: false,
+				step: "pending_10dlc",
+				issues: ["Toll-free verification pending (5-7 business days)"],
+				nextAction:
+					"Your toll-free verification has been submitted and is pending approval. You'll receive an email when approved.",
+				setupUrl: "/dashboard/settings/messaging",
+			};
+		}
+
+		// Not started at all
 		return {
 			isReady: false,
 			step: "pending_10dlc",
-			issues: ["10DLC registration not completed"],
+			issues: ["Messaging verification not completed"],
 			nextAction:
-				"Register for 10DLC (Application-to-Person) messaging. This is required by US carriers for SMS.",
+				"Enable business messaging with automated verification. Uses toll-free numbers for instant setup (5-7 day approval).",
 			setupUrl: "/test-telnyx-setup",
 		};
 	}
@@ -160,7 +177,7 @@ export async function CommunicationVerificationGate({
 								? "Setup In Progress"
 								: status.step === "pending_porting"
 									? "Phone Number Porting In Progress"
-									: "10DLC Registration Required"}
+									: "Messaging Verification Required"}
 					</h1>
 					<p className="text-muted-foreground text-lg">{status.nextAction}</p>
 				</div>
@@ -270,9 +287,9 @@ export async function CommunicationVerificationGate({
 						<div className="flex items-start gap-3">
 							<CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
 							<div>
-								<p className="font-medium text-foreground">10DLC Compliance</p>
+								<p className="font-medium text-foreground">Carrier Compliance</p>
 								<p className="text-sm text-muted-foreground">
-									Carrier-approved messaging for reliable delivery
+									Verified messaging for reliable delivery (toll-free or 10DLC)
 								</p>
 							</div>
 						</div>
@@ -295,7 +312,7 @@ export async function CommunicationVerificationGate({
 							{status.step === "not_started"
 								? "🚀 Start Automated Setup"
 								: status.step === "pending_10dlc"
-									? "📱 Complete 10DLC Registration"
+									? "📱 Enable Business Messaging"
 									: "⚙️ Continue Setup"}
 						</Link>
 					)}
@@ -310,25 +327,26 @@ export async function CommunicationVerificationGate({
 				<div className="mt-8 pt-6 border-t border-border">
 					<details className="group">
 						<summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-							What is 10DLC and why do I need it?
+							How does business messaging verification work?
 						</summary>
 						<div className="mt-3 text-sm text-muted-foreground space-y-2">
 							<p>
 								<strong className="text-foreground">
-									10DLC (10-Digit Long Code)
+									Business messaging verification
 								</strong>{" "}
-								is required by US carriers for business text messaging. Without
-								it, your messages will be blocked or heavily filtered.
+								is required by US carriers for text messaging. We use toll-free
+								numbers by default, which provide instant setup with 5-7 day
+								approval.
 							</p>
 							<p>
-								The registration process verifies your business with The
-								Campaign Registry and ensures your messages are delivered
-								reliably to customers.
+								The verification process confirms your business identity with
+								carriers and ensures your messages are delivered reliably to
+								customers.
 							</p>
 							<p>
-								Our automated setup handles everything: brand registration,
-								campaign creation, carrier approval, and phone number
-								configuration.
+								Our automated setup handles everything: verification submission,
+								carrier approval tracking, and email notifications when complete.
+								No manual steps or external portals required.
 							</p>
 						</div>
 					</details>
