@@ -1006,7 +1006,6 @@ export async function sendTextMessage(params: {
 				company_id: params.companyId,
 				customer_id: params.customerId,
 				job_id: params.jobId ?? null,
-				property_id: params.propertyId ?? null,
 				invoice_id: params.invoiceId ?? null,
 				estimate_id: params.estimateId ?? null,
 				type: "sms",
