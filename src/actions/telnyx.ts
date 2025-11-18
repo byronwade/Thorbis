@@ -221,6 +221,54 @@ async function getPhoneNumberId(
 	return data?.id ?? null;
 }
 
+async function resolveOutboundPhoneNumber(
+	supabase: TypedSupabaseClient,
+	companyId: string,
+	explicitFrom?: string | null,
+	defaultNumber?: string | null,
+): Promise<string | null> {
+	if (explicitFrom) {
+		return normalizePhoneNumber(explicitFrom);
+	}
+
+	const normalizedDefault = defaultNumber
+		? normalizePhoneNumber(defaultNumber)
+		: null;
+
+	try {
+		const { data } = await supabase
+			.from("phone_numbers")
+			.select("phone_number, number_type")
+			.eq("company_id", companyId)
+			.eq("status", "active");
+
+		if (data && data.length > 0) {
+			const tollFree = data.find((n) => n.number_type === "toll-free");
+			if (tollFree) {
+				return normalizePhoneNumber(tollFree.phone_number);
+			}
+
+			if (normalizedDefault) {
+				const defaultExists = data.some(
+					(n) => normalizePhoneNumber(n.phone_number) === normalizedDefault,
+				);
+				if (defaultExists) {
+					return normalizedDefault;
+				}
+			}
+
+			return normalizePhoneNumber(data[0].phone_number);
+		}
+	} catch (error) {
+		console.warn(
+			"Failed to load company phone numbers for outbound selection:",
+			error,
+		);
+	}
+
+	return normalizedDefault;
+}
+
 async function mergeProviderMetadata(
 	supabase: TypedSupabaseClient,
 	communicationId: string,
@@ -549,26 +597,29 @@ export async function makeCall(params: {
 			params.companyId,
 		);
 
-		const connectionOverride =
-			companySettings?.call_control_application_id ||
-			TELNYX_CONFIG.connectionId;
-		const outboundNumber =
-			params.from || companySettings?.default_outbound_number || "";
+	const connectionOverride =
+		companySettings?.call_control_application_id || TELNYX_CONFIG.connectionId;
+	const fromAddress = await resolveOutboundPhoneNumber(
+		supabase,
+		params.companyId,
+		params.from,
+		companySettings?.default_outbound_number || null,
+	);
 
-		if (!connectionOverride) {
-			return {
-				success: false,
-				error: "No Telnyx connection configured for this company.",
-			};
-		}
+	if (!connectionOverride) {
+		return {
+			success: false,
+			error: "No Telnyx connection configured for this company.",
+		};
+	}
 
-		if (!outboundNumber) {
-			return {
-				success: false,
-				error:
-					"Company does not have a default outbound phone number configured. Please provision numbers first.",
-			};
-		}
+	if (!fromAddress) {
+		return {
+			success: false,
+			error:
+				"Company does not have a default outbound phone number configured. Please provision numbers first.",
+		};
+	}
 
 		const connectionStatus = await verifyConnection(connectionOverride);
 		if (connectionStatus.needsFix) {
@@ -578,8 +629,7 @@ export async function makeCall(params: {
 			};
 		}
 
-		const fromAddress = normalizePhoneNumber(outboundNumber);
-		const toAddress = normalizePhoneNumber(params.to);
+	const toAddress = normalizePhoneNumber(params.to);
 
 		const voiceCapability = await verifyVoiceCapability(fromAddress);
 		if (!voiceCapability.hasVoice) {
@@ -941,19 +991,21 @@ export async function sendTextMessage(params: {
 			console.log("✅ Messaging profile verified");
 		}
 
-		if (!params.from && !companySettings.default_outbound_number) {
-			console.error("❌ No from number available");
-			return {
-				success: false,
-				error:
-					"Company does not have a default outbound phone number configured. Please provision numbers first.",
-			};
-		}
-
-		const fromAddress = normalizePhoneNumber(
-			params.from || companySettings.default_outbound_number || params.from,
-		);
-		const toAddress = normalizePhoneNumber(params.to);
+	const fromAddress = await resolveOutboundPhoneNumber(
+		supabase,
+		params.companyId,
+		params.from,
+		companySettings.default_outbound_number,
+	);
+	if (!fromAddress) {
+		console.error("❌ No from number available");
+		return {
+			success: false,
+			error:
+				"Company does not have a default outbound phone number configured. Please provision numbers first.",
+		};
+	}
+	const toAddress = normalizePhoneNumber(params.to);
 		console.log("✅ Phone numbers normalized:", {
 			from: fromAddress,
 			to: toAddress,
@@ -1155,17 +1207,19 @@ export async function sendMMSMessage(params: {
 			};
 		}
 
-		const fromNumber =
-			params.from || companySettings.default_outbound_number || "";
-		if (!fromNumber) {
-			return {
-				success: false,
-				error:
-					"Company does not have a default outbound phone number configured.",
-			};
-		}
-
-		const fromAddress = normalizePhoneNumber(fromNumber);
+	const fromAddress = await resolveOutboundPhoneNumber(
+		supabase,
+		params.companyId,
+		params.from,
+		companySettings.default_outbound_number,
+	);
+	if (!fromAddress) {
+		return {
+			success: false,
+			error:
+				"Company does not have a default outbound phone number configured.",
+		};
+	}
 		const toAddress = normalizePhoneNumber(params.to);
 
 		const webhookUrl = await getTelnyxWebhookUrl(params.companyId);

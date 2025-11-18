@@ -1,8 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase";
 import { telnyxClient } from "./client";
-import { purchaseNumber, searchAvailableNumbers } from "./numbers";
-import type { NumberFeature } from "./phone-number-setup";
+import {
+	purchaseNumber,
+	searchAvailableNumbers,
+	type NumberFeature,
+	type NumberType,
+} from "./numbers";
 
 export type CompanyTelnyxSettingsRow = {
 	company_id: string;
@@ -94,6 +98,7 @@ async function ensurePhoneNumbersInserted(
 		areaCode?: string;
 		countryCode?: string;
 		telnyxPhoneNumberId?: string;
+		numberType?: NumberType;
 	}>,
 	defaults: {
 		messagingProfileId: string | null;
@@ -118,6 +123,7 @@ async function ensurePhoneNumbersInserted(
 			formatted_number: formatDisplay(e164),
 			area_code: number.areaCode || e164.slice(2, 5),
 			country_code: number.countryCode || "US",
+			number_type: number.numberType || "local",
 			status: "active",
 			features: DEFAULT_FEATURES,
 			telnyx_phone_number_id: number.telnyxPhoneNumberId || null,
@@ -177,6 +183,7 @@ async function purchaseNumbers(
 		phoneNumber: string;
 		telnyxPhoneNumberId?: string;
 		areaCode?: string;
+		numberType?: NumberType;
 	}>
 > {
 	const search = await searchAvailableNumbers({
@@ -193,6 +200,7 @@ async function purchaseNumbers(
 		phoneNumber: string;
 		telnyxPhoneNumberId?: string;
 		areaCode?: string;
+		numberType?: NumberType;
 	}> = [];
 	const candidates = search.data as any[];
 
@@ -220,6 +228,7 @@ async function purchaseNumbers(
 			phoneNumber: number,
 			areaCode: candidate.national_destination_code || candidate.area_code,
 			telnyxPhoneNumberId: candidate.id || candidate.phone_number,
+			numberType: candidate.number_type,
 		});
 	}
 
@@ -351,7 +360,9 @@ export async function ensureCompanyTelnyxSetup(
 			connectionId,
 		});
 
-		const defaultNumber = purchasedNumbers[0];
+		const defaultNumber =
+			purchasedNumbers.find((n) => n.numberType === "toll-free") ||
+			purchasedNumbers[0];
 
 		const upsertResult = await (supabase as any)
 			.from(COMPANY_SETTINGS_TABLE)
@@ -427,6 +438,24 @@ export async function purchaseAdditionalNumbers(
 			messagingProfileId: settings.messaging_profile_id,
 			connectionId: settings.call_control_application_id,
 		});
+
+		// Prefer toll-free numbers as the default outbound if available
+		const tollFreeNumber = purchasedNumbers.find(
+			(n) => n.numberType === "toll-free",
+		);
+		if (
+			tollFreeNumber &&
+			settings.default_outbound_number !== tollFreeNumber.phoneNumber
+		) {
+			await supabase
+				.from(COMPANY_SETTINGS_TABLE)
+				.update({
+					default_outbound_number: tollFreeNumber.phoneNumber,
+					default_outbound_phone_number_id:
+						tollFreeNumber.telnyxPhoneNumberId || null,
+				})
+				.eq("company_id", companyId);
+		}
 
 		return {
 			success: true,
