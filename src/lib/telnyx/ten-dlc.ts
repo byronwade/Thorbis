@@ -107,9 +107,10 @@ export async function attachNumberToCampaign(
 /**
  * Toll-Free Verification Payload
  * Required fields as of January 1, 2026
+ * @see https://developers.telnyx.com/docs/messaging/toll-free-verification
  */
 export type TollFreeVerificationPayload = {
-	// Business Information
+	// Business Information (Required)
 	businessName: string;
 	corporateWebsite: string;
 	businessAddr1: string;
@@ -117,35 +118,45 @@ export type TollFreeVerificationPayload = {
 	businessState: string;
 	businessZip: string;
 
-	// Contact Information
+	// Contact Information (Required)
 	businessContactFirstName: string;
 	businessContactLastName: string;
 	businessContactEmail: string;
 	businessContactPhone: string;
 
-	// Phone Numbers to Verify
+	// Phone Numbers to Verify (Required)
 	phoneNumbers: Array<{ phoneNumber: string }>;
 
-	// Use Case Information
+	// Use Case Information (Required)
 	useCase: string; // e.g., "Account Notifications", "Customer Support", etc.
 	useCaseSummary: string;
 	productionMessageContent: string;
 	messageVolume: string; // e.g., "10000", "100000"
 
-	// Opt-in/Opt-out Workflow
+	// Opt-in/Opt-out Workflow (Required)
 	optInWorkflow: string;
 	optInWorkflowImageURLs?: Array<{ url: string }>;
 
 	// Business Registration (Required as of Jan 1, 2026)
 	businessRegistrationNumber: string; // e.g., EIN number
-	businessRegistrationType: string; // e.g., "EIN", "VAT", "ABN"
+	businessRegistrationType: string; // e.g., "EIN", "VAT", "ABN", "SSN", "CRA"
 	businessRegistrationCountry: string; // ISO 3166-1 alpha-2 (e.g., "US")
 
-	// Entity Type
-	entityType: "PRIVATE_PROFIT" | "PUBLIC_PROFIT" | "NON_PROFIT";
-
-	// Additional optional fields
+	// Optional Fields
+	entityType?:
+		| "SOLE_PROPRIETOR"
+		| "PRIVATE_PROFIT"
+		| "PUBLIC_PROFIT"
+		| "NON_PROFIT"
+		| "GOVERNMENT";
 	additionalInformation?: string;
+	doingBusinessAs?: string;
+	optInConfirmationResponse?: string;
+	helpMessageResponse?: string;
+	privacyPolicyURL?: string;
+	termsAndConditionURL?: string;
+	ageGatedContent?: boolean;
+	optInKeywords?: string;
 };
 
 /**
@@ -160,7 +171,7 @@ export async function submitTollFreeVerification(
 		id: string;
 		status: string;
 		createdAt: string;
-	}>("/public/api/v2/requests", {
+	}>("/messaging_tollfree/verification/requests", {
 		method: "POST",
 		body: payload,
 	});
@@ -174,5 +185,5 @@ export async function getTollFreeVerificationStatus(requestId: string) {
 		id: string;
 		status: string;
 		phoneNumbers: Array<{ phoneNumber: string; status: string }>;
-	}>(`/public/api/v2/requests/${requestId}`);
+	}>(`/messaging_tollfree/verification/requests/${requestId}`);
 }

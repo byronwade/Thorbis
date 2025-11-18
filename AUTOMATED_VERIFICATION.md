@@ -264,7 +264,7 @@ be able to send text messages until it's done.
 
 ### For Toll-Free Numbers
 
-**Endpoint**: `POST /public/api/v2/requests`
+**Endpoint**: `POST /v2/messaging_tollfree/verification/requests`
 
 **Data Sent**:
 ```json

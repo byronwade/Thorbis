@@ -171,6 +171,8 @@ WHERE company_id = 'your-company-id';
 
 **Endpoint**: `POST /v2/messaging_tollfree/verification/requests`
 
+**Full URL**: `https://api.telnyx.com/v2/messaging_tollfree/verification/requests`
+
 **Payload** (automatically built from company data):
 ```json
 {
