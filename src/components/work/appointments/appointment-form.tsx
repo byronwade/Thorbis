@@ -90,14 +90,14 @@ export function AppointmentForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [selectedJobId, setSelectedJobId] = useState<string | undefined>(
-		preselectedJobId || searchParams?.get("jobId") || undefined
+		preselectedJobId || searchParams?.get("jobId") || undefined,
 	);
 	const [appointmentType, setAppointmentType] = useState("service");
 	const [priority, setPriority] = useState("normal");
@@ -236,7 +236,11 @@ export function AppointmentForm({
 
 							<div className="space-y-2">
 								<Label htmlFor="job-select">Link to Job (Optional)</Label>
-								<Select name="jobId" onValueChange={setSelectedJobId} value={selectedJobId}>
+								<Select
+									name="jobId"
+									onValueChange={setSelectedJobId}
+									value={selectedJobId}
+								>
 									<SelectTrigger id="job-select">
 										<SelectValue placeholder="Select job" />
 									</SelectTrigger>
@@ -264,7 +268,12 @@ export function AppointmentForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., Annual HVAC Maintenance" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., Annual HVAC Maintenance"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
@@ -280,7 +289,11 @@ export function AppointmentForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="type">Type</Label>
-							<Select name="type" onValueChange={setAppointmentType} value={appointmentType}>
+							<Select
+								name="type"
+								onValueChange={setAppointmentType}
+								value={appointmentType}
+							>
 								<SelectTrigger id="type">
 									<SelectValue />
 								</SelectTrigger>
@@ -298,7 +311,11 @@ export function AppointmentForm({
 
 						<div className="space-y-2">
 							<Label htmlFor="priority">Priority</Label>
-							<Select name="priority" onValueChange={setPriority} value={priority}>
+							<Select
+								name="priority"
+								onValueChange={setPriority}
+								value={priority}
+							>
 								<SelectTrigger id="priority">
 									<SelectValue />
 								</SelectTrigger>
@@ -435,7 +452,12 @@ export function AppointmentForm({
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

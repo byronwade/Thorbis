@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type EntityType =
@@ -30,24 +30,59 @@ type EntityType =
 	| "vendor"
 	| "material";
 
-export function useEntityAttachments(entityType: EntityType, entityId: string, enabled = true) {
-	return useQuery({
-		queryKey: ["entity-attachments", entityType, entityId],
-		queryFn: async () => {
-			const supabase = createClient();
+type Attachment = {
+	id: string;
+	entity_type: string;
+	entity_id: string;
+	file_name: string;
+	file_url: string;
+	file_type: string;
+	file_size: number;
+	created_at: string;
+	updated_at: string;
+};
 
-			const { data, error } = await supabase
-				.from("attachments")
-				.select("*")
-				.eq("entity_type", entityType)
-				.eq("entity_id", entityId)
-				.order("created_at", { ascending: false });
+export function useEntityAttachments(
+	entityType: EntityType,
+	entityId: string,
+	enabled = true,
+) {
+	const [data, setData] = useState<Attachment[] | null>(null);
+	const [error, setError] = useState<Error | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
-			if (error) throw error;
-			return data;
-		},
-		enabled, // Only fetch when tab is opened
-		staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
-		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-	});
+	useEffect(() => {
+		if (!enabled) {
+			return;
+		}
+
+		const fetchAttachments = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const supabase = createClient();
+
+				const { data: attachments, error: fetchError } = await supabase
+					.from("attachments")
+					.select("*")
+					.eq("entity_type", entityType)
+					.eq("entity_id", entityId)
+					.order("created_at", { ascending: false });
+
+				if (fetchError) throw fetchError;
+				setData(attachments);
+			} catch (err) {
+				setError(
+					err instanceof Error ? err : new Error("Failed to fetch attachments"),
+				);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchAttachments();
+	}, [entityType, entityId, enabled]);
+
+	return { data, error, isLoading };
 }

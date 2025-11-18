@@ -16,7 +16,7 @@ import { Archive, Download, Mail, Printer } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archivePayment } from "@/actions/payments";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function PaymentDetailToolbarActions() {
@@ -133,8 +138,8 @@ export function PaymentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Payment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this payment? Archived payments can be restored
-							within 90 days.
+							Are you sure you want to archive this payment? Archived payments
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -145,7 +150,11 @@ export function PaymentDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Payment"}
 						</Button>
 					</DialogFooter>

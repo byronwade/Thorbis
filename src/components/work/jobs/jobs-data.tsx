@@ -3,53 +3,7 @@ import { JobsKanban } from "@/components/work/jobs-kanban";
 import { JobsTable } from "@/components/work/jobs-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import type { Job } from "@/lib/db/schema";
-import { createClient } from "@/lib/supabase/server";
-
-// Configuration constants
-const JOBS_PAGE_SIZE = 50;
-
-const JOB_SELECT = `
-  id,
-  company_id,
-  property_id,
-  customer_id,
-  assigned_to,
-  job_number,
-  title,
-  description,
-  status,
-  priority,
-  job_type,
-  service_type,
-  scheduled_start,
-  scheduled_end,
-  notes,
-  metadata,
-  created_at,
-  updated_at,
-  archived_at,
-  deleted_at,
-  customers:customers!customer_id (
-    first_name,
-    last_name,
-    email,
-    phone
-  ),
-  properties:properties!property_id (
-    address,
-    city,
-    state,
-    zip_code
-  ),
-  financial:job_financial (
-    total_amount,
-    paid_amount
-  ),
-  timeTracking:job_time_tracking (
-    actual_start,
-    actual_end
-  )
-`;
+import { getJobsPageData, JOBS_PAGE_SIZE } from "@/lib/queries/jobs";
 
 type RelatedCustomer = {
 	display_name?: string | null;
@@ -95,13 +49,11 @@ type ExtendedJob = Job & {
  *
  * Server-side pagination: Only fetches current page of data based on URL params.
  */
-export async function JobsData({ searchParams }: { searchParams?: { page?: string } }) {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
+export async function JobsData({
+	searchParams,
+}: {
+	searchParams?: { page?: string; search?: string };
+}) {
 	// Get user's active company
 	const { getActiveCompanyId } = await import("@/lib/auth/company-context");
 	const companyId = await getActiveCompanyId();
@@ -110,37 +62,22 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 		return notFound();
 	}
 
-	// Get current page from URL (default to 1)
 	const currentPage = Number(searchParams?.page) || 1;
-	const start = (currentPage - 1) * JOBS_PAGE_SIZE;
-	const end = start + JOBS_PAGE_SIZE - 1;
+	const searchQuery = searchParams?.search ?? "";
 
-	// Fetch total count (just the number, very fast)
-	const { count: totalCount } = await supabase
-		.from("jobs")
-		.select("*", { count: "exact", head: true })
-		.eq("company_id", companyId)
-		.is("deleted_at", null);
-
-	// Fetch only current page of jobs (server-side pagination)
-	const { data: jobsRaw, error } = await supabase
-		.from("jobs")
-		.select(JOB_SELECT)
-		.eq("company_id", companyId)
-		.is("deleted_at", null)
-		.order("created_at", { ascending: false })
-		.range(start, end); // Fetch current page based on URL param
-
-	if (error) {
-		const errorMessage =
-			error.message || error.hint || JSON.stringify(error) || "Unknown database error";
-		throw new Error(`Failed to load jobs: ${errorMessage}`);
-	}
+	const { jobs: jobsRaw, totalCount } = await getJobsPageData(
+		currentPage,
+		JOBS_PAGE_SIZE,
+		searchQuery,
+		companyId,
+	);
 
 	// Transform snake_case to camelCase for the component
 	const toDate = (value: string | null) => (value ? new Date(value) : null);
 
-	const resolveRelation = <T,>(relation: T | T[] | null | undefined): T | null => {
+	const resolveRelation = <T,>(
+		relation: T | T[] | null | undefined,
+	): T | null => {
 		if (!relation) {
 			return null;
 		}
@@ -149,10 +86,10 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 
 	const jobs: ExtendedJob[] = (jobsRaw ?? []).map((job) => {
 		const customer = resolveRelation<RelatedCustomer>(
-			job.customers as RelatedCustomer | RelatedCustomer[] | null
+			job.customers as RelatedCustomer | RelatedCustomer[] | null,
 		);
 		const property = resolveRelation<RelatedProperty>(
-			job.properties as RelatedProperty | RelatedProperty[] | null
+			job.properties as RelatedProperty | RelatedProperty[] | null,
 		);
 
 		const customerData: RelatedCustomer | null = customer
@@ -214,7 +151,8 @@ export async function JobsData({ searchParams }: { searchParams?: { page?: strin
 			section="jobs"
 			table={
 				<JobsTable
-					itemsPerPage={50}
+					initialSearchQuery={searchQuery}
+					itemsPerPage={JOBS_PAGE_SIZE}
 					jobs={jobs}
 					totalCount={totalCount || 0}
 					currentPage={currentPage}

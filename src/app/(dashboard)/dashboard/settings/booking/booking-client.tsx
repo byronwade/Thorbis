@@ -1,6 +1,12 @@
 "use client";
 
-import { CalendarCheck, Globe, HelpCircle, Mail, ShieldCheck } from "lucide-react";
+import {
+	CalendarCheck,
+	Globe,
+	HelpCircle,
+	Mail,
+	ShieldCheck,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
 import { getBookingSettings, updateBookingSettings } from "@/actions/settings";
@@ -14,12 +20,23 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
 import {
 	BOOKING_NOTICE_MAX,
@@ -34,34 +51,67 @@ type BookingSettingsClientProps = {
 	initialSettings: Partial<BookingSettingsState> | null;
 };
 
-export function BookingSettingsClient({ initialSettings }: BookingSettingsClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<BookingSettingsState>({
-			getter: getBookingSettings,
-			setter: updateBookingSettings,
-			initialState: DEFAULT_BOOKING_SETTINGS,
-			settingsName: "booking",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapBookingSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("onlineBookingEnabled", state.onlineBookingEnabled.toString());
-				formData.append("requireAccount", state.requireAccount.toString());
-				formData.append("requireServiceSelection", state.requireServiceSelection.toString());
-				formData.append("showPricing", state.showPricing.toString());
-				formData.append("allowTimePreferences", state.allowTimePreferences.toString());
-				formData.append("requireImmediatePayment", state.requireImmediatePayment.toString());
-				formData.append("sendConfirmationEmail", state.sendConfirmationEmail.toString());
-				formData.append("sendConfirmationSms", state.sendConfirmationSms.toString());
-				formData.append("minBookingNoticeHours", state.minBookingNoticeHours.toString());
-				if (typeof state.maxBookingsPerDay === "number") {
-					formData.append("maxBookingsPerDay", state.maxBookingsPerDay.toString());
-				} else {
-					formData.delete("maxBookingsPerDay");
-				}
-				return formData;
-			},
-		});
+export function BookingSettingsClient({
+	initialSettings,
+}: BookingSettingsClientProps) {
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<BookingSettingsState>({
+		getter: getBookingSettings,
+		setter: updateBookingSettings,
+		initialState: DEFAULT_BOOKING_SETTINGS,
+		settingsName: "booking",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapBookingSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append(
+				"onlineBookingEnabled",
+				state.onlineBookingEnabled.toString(),
+			);
+			formData.append("requireAccount", state.requireAccount.toString());
+			formData.append(
+				"requireServiceSelection",
+				state.requireServiceSelection.toString(),
+			);
+			formData.append("showPricing", state.showPricing.toString());
+			formData.append(
+				"allowTimePreferences",
+				state.allowTimePreferences.toString(),
+			);
+			formData.append(
+				"requireImmediatePayment",
+				state.requireImmediatePayment.toString(),
+			);
+			formData.append(
+				"sendConfirmationEmail",
+				state.sendConfirmationEmail.toString(),
+			);
+			formData.append(
+				"sendConfirmationSms",
+				state.sendConfirmationSms.toString(),
+			);
+			formData.append(
+				"minBookingNoticeHours",
+				state.minBookingNoticeHours.toString(),
+			);
+			if (typeof state.maxBookingsPerDay === "number") {
+				formData.append(
+					"maxBookingsPerDay",
+					state.maxBookingsPerDay.toString(),
+				);
+			} else {
+				formData.delete("maxBookingsPerDay");
+			}
+			return formData;
+		},
+	});
 
 	const handleSave = useCallback(() => {
 		saveSettings().catch(() => {
@@ -143,7 +193,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.onlineBookingEnabled}
-								onCheckedChange={(checked) => updateSetting("onlineBookingEnabled", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("onlineBookingEnabled", checked)
+								}
 							/>
 						</div>
 
@@ -168,7 +220,10 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 										max={BOOKING_NOTICE_MAX}
 										min={BOOKING_NOTICE_MIN}
 										onChange={(event) =>
-											updateSetting("minBookingNoticeHours", Number(event.target.value))
+											updateSetting(
+												"minBookingNoticeHours",
+												Number(event.target.value),
+											)
 										}
 										type="number"
 										value={settings.minBookingNoticeHours}
@@ -194,7 +249,10 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 										min={BOOKING_PER_DAY_MIN}
 										onChange={(event) => {
 											const value = event.target.value;
-											updateSetting("maxBookingsPerDay", value === "" ? null : Number(value));
+											updateSetting(
+												"maxBookingsPerDay",
+												value === "" ? null : Number(value),
+											);
 										}}
 										placeholder="Unlimited"
 										type="number"
@@ -221,7 +279,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 								</div>
 								<Switch
 									checked={settings.requireAccount}
-									onCheckedChange={(checked) => updateSetting("requireAccount", checked)}
+									onCheckedChange={(checked) =>
+										updateSetting("requireAccount", checked)
+									}
 								/>
 							</div>
 							<div className="flex items-center justify-between rounded-lg border p-3">
@@ -233,7 +293,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 								</div>
 								<Switch
 									checked={settings.requireImmediatePayment}
-									onCheckedChange={(checked) => updateSetting("requireImmediatePayment", checked)}
+									onCheckedChange={(checked) =>
+										updateSetting("requireImmediatePayment", checked)
+									}
 								/>
 							</div>
 						</div>
@@ -246,7 +308,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							<ShieldCheck className="size-4" />
 							Required inputs
 						</CardTitle>
-						<CardDescription>Gate bookings unless key information is provided</CardDescription>
+						<CardDescription>
+							Gate bookings unless key information is provided
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-2">
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -258,7 +322,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.requireServiceSelection}
-								onCheckedChange={(checked) => updateSetting("requireServiceSelection", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("requireServiceSelection", checked)
+								}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -270,7 +336,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.showPricing}
-								onCheckedChange={(checked) => updateSetting("showPricing", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("showPricing", checked)
+								}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -282,7 +350,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.allowTimePreferences}
-								onCheckedChange={(checked) => updateSetting("allowTimePreferences", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("allowTimePreferences", checked)
+								}
 							/>
 						</div>
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -294,7 +364,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.sendConfirmationSms}
-								onCheckedChange={(checked) => updateSetting("sendConfirmationSms", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("sendConfirmationSms", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -320,7 +392,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.sendConfirmationEmail}
-								onCheckedChange={(checked) => updateSetting("sendConfirmationEmail", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("sendConfirmationEmail", checked)
+								}
 							/>
 						</div>
 						<Separator />
@@ -333,7 +407,9 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							</div>
 							<Switch
 								checked={settings.sendConfirmationSms}
-								onCheckedChange={(checked) => updateSetting("sendConfirmationSms", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("sendConfirmationSms", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -345,24 +421,32 @@ export function BookingSettingsClient({ initialSettings }: BookingSettingsClient
 							<CalendarCheck className="size-4" />
 							Operational guardrails
 						</CardTitle>
-						<CardDescription>Prevent overbooking and keep dispatch predictable</CardDescription>
+						<CardDescription>
+							Prevent overbooking and keep dispatch predictable
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-4 md:grid-cols-2">
 						<div className="rounded-lg border p-3">
 							<p className="text-muted-foreground text-xs uppercase">Notice</p>
-							<p className="mt-2 text-2xl font-semibold">{settings.minBookingNoticeHours}h</p>
+							<p className="mt-2 text-2xl font-semibold">
+								{settings.minBookingNoticeHours}h
+							</p>
 							<p className="text-muted-foreground text-xs">
 								Minimum lead time for any self-serve job
 							</p>
 						</div>
 						<div className="rounded-lg border p-3">
-							<p className="text-muted-foreground text-xs uppercase">Daily cap</p>
+							<p className="text-muted-foreground text-xs uppercase">
+								Daily cap
+							</p>
 							<p className="mt-2 text-2xl font-semibold">
 								{typeof settings.maxBookingsPerDay === "number"
 									? settings.maxBookingsPerDay
 									: "Unlimited"}
 							</p>
-							<p className="text-muted-foreground text-xs">Pending bookings routed per day</p>
+							<p className="text-muted-foreground text-xs">
+								Pending bookings routed per day
+							</p>
 						</div>
 					</CardContent>
 				</Card>

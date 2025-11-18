@@ -25,18 +25,25 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UnifiedAccordion, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordion,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import { useTranscriptStore } from "@/lib/stores/transcript-store";
 
 export function TranscriptPanel() {
 	const entries = useTranscriptStore((state) =>
-		state.filteredEntries.length > 0 ? state.filteredEntries : state.entries
+		state.filteredEntries.length > 0 ? state.filteredEntries : state.entries,
 	);
 	const searchQuery = useTranscriptStore((state) => state.searchQuery);
 	const setSearchQuery = useTranscriptStore((state) => state.setSearchQuery);
 	const isRecording = useTranscriptStore((state) => state.isRecording);
-	const exportTranscript = useTranscriptStore((state) => state.exportTranscript);
-	const getFullTranscript = useTranscriptStore((state) => state.getFullTranscript);
+	const exportTranscript = useTranscriptStore(
+		(state) => state.exportTranscript,
+	);
+	const getFullTranscript = useTranscriptStore(
+		(state) => state.getFullTranscript,
+	);
 
 	const [autoScroll, setAutoScroll] = useState(true);
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -44,14 +51,16 @@ export function TranscriptPanel() {
 	// Auto-scroll to bottom when new entries arrive
 	useEffect(() => {
 		if (autoScroll && scrollContainerRef.current) {
-			scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+			scrollContainerRef.current.scrollTop =
+				scrollContainerRef.current.scrollHeight;
 		}
 	}, [autoScroll]);
 
 	// Handle scroll to detect manual scrolling
 	const handleScroll = () => {
 		if (scrollContainerRef.current) {
-			const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+			const { scrollTop, scrollHeight, clientHeight } =
+				scrollContainerRef.current;
 			const isAtBottom = scrollHeight - scrollTop - clientHeight < 50;
 			setAutoScroll(isAtBottom);
 		}
@@ -147,7 +156,9 @@ export function TranscriptPanel() {
 								<div className="bg-foreground rounded-full p-4">
 									<Sparkles className="text-muted-foreground size-8" />
 								</div>
-								<p className="text-muted-foreground mt-4 text-sm font-medium">No transcript yet</p>
+								<p className="text-muted-foreground mt-4 text-sm font-medium">
+									No transcript yet
+								</p>
 								<p className="text-muted-foreground mt-1 text-xs">
 									Transcript will appear here during the call
 								</p>
@@ -169,7 +180,9 @@ export function TranscriptPanel() {
 											{entry.isAnalyzing && (
 												<div className="flex items-center gap-1">
 													<div className="bg-warning size-1 animate-pulse rounded-full" />
-													<span className="text-warning text-[10px]">AI Analyzing...</span>
+													<span className="text-warning text-[10px]">
+														AI Analyzing...
+													</span>
 												</div>
 											)}
 										</div>
@@ -179,7 +192,9 @@ export function TranscriptPanel() {
 									</div>
 
 									{/* Entry text */}
-									<p className="text-muted-foreground text-sm leading-relaxed">{entry.text}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{entry.text}
+									</p>
 
 									{/* AI extracted data */}
 									{entry.aiExtracted && (
@@ -201,14 +216,16 @@ export function TranscriptPanel() {
 											{entry.aiExtracted.issueCategories &&
 												entry.aiExtracted.issueCategories.length > 0 && (
 													<div className="flex flex-wrap gap-1">
-														{entry.aiExtracted.issueCategories.map((category) => (
-															<span
-																className="bg-warning/30 text-warning rounded px-2 py-0.5 text-[10px]"
-																key={category}
-															>
-																{category}
-															</span>
-														))}
+														{entry.aiExtracted.issueCategories.map(
+															(category) => (
+																<span
+																	className="bg-warning/30 text-warning rounded px-2 py-0.5 text-[10px]"
+																	key={category}
+																>
+																	{category}
+																</span>
+															),
+														)}
 													</div>
 												)}
 											{entry.aiExtracted.sentiment && (

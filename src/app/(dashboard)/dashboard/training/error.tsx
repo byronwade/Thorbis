@@ -34,7 +34,9 @@ export default function TrainingError({
 						{error.message || "An error occurred in the training section."}
 					</p>
 					{error.digest && (
-						<p className="text-muted-foreground font-mono text-xs">Error ID: {error.digest}</p>
+						<p className="text-muted-foreground font-mono text-xs">
+							Error ID: {error.digest}
+						</p>
 					)}
 				</div>
 
@@ -43,7 +45,10 @@ export default function TrainingError({
 						<RefreshCw className="mr-2 size-4" />
 						Try Again
 					</Button>
-					<Button onClick={() => (window.location.href = "/dashboard")} variant="outline">
+					<Button
+						onClick={() => (window.location.href = "/dashboard")}
+						variant="outline"
+					>
 						<Home className="mr-2 size-4" />
 						Dashboard
 					</Button>

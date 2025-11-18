@@ -16,7 +16,7 @@ import { Archive, ClipboardList, Copy, Wrench } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveEquipment } from "@/actions/equipment";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function EquipmentDetailToolbarActions() {
@@ -84,7 +89,9 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}>
+								<a
+									href={`/dashboard/work/equipment/${equipmentId}?tab=maintenance`}
+								>
 									<ClipboardList />
 									<span className="hidden lg:inline">Maintenance</span>
 								</a>
@@ -98,7 +105,9 @@ export function EquipmentDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}>
+								<a
+									href={`/dashboard/work/equipment/new?cloneFrom=${equipmentId}`}
+								>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -139,8 +148,8 @@ export function EquipmentDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Equipment</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this equipment? Archived records can be restored
-							within 90 days.
+							Are you sure you want to archive this equipment? Archived records
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -151,7 +160,11 @@ export function EquipmentDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Equipment"}
 						</Button>
 					</DialogFooter>

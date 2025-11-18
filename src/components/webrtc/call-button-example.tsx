@@ -19,8 +19,8 @@
 
 "use client";
 
+import { AlertCircle, Loader2, Phone, PhoneOff } from "lucide-react";
 import { useState } from "react";
-import { Phone, PhoneOff, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useWebRTCService } from "@/hooks/use-webrtc-service";
@@ -33,11 +33,14 @@ type CallButtonProps = {
 
 function CallButtonInner({ phoneNumber, displayName }: CallButtonProps) {
 	const { toast } = useToast();
-	const { isAvailable, makeCall, endCall, status, activeCalls } = useWebRTCService();
+	const { isAvailable, makeCall, endCall, status, activeCalls } =
+		useWebRTCService();
 	const [isConnecting, setIsConnecting] = useState(false);
 
 	// Find active call for this phone number
-	const activeCall = activeCalls.find((call) => call.phoneNumber === phoneNumber);
+	const activeCall = activeCalls.find(
+		(call) => call.phoneNumber === phoneNumber,
+	);
 
 	/**
 	 * Handle call initiation
@@ -126,7 +129,12 @@ function CallButtonInner({ phoneNumber, displayName }: CallButtonProps) {
 	 * Render: Ready to Call
 	 */
 	return (
-		<Button onClick={handleCall} disabled={isConnecting} variant="default" size="sm">
+		<Button
+			onClick={handleCall}
+			disabled={isConnecting}
+			variant="default"
+			size="sm"
+		>
 			{isConnecting ? (
 				<>
 					<Loader2 className="mr-2 size-4 animate-spin" />

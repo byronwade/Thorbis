@@ -3,7 +3,13 @@
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -16,13 +22,17 @@ export function GoogleCalendarSettings() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Calendar Sync</CardTitle>
-					<CardDescription>Sync appointments and events with Google Calendar</CardDescription>
+					<CardDescription>
+						Sync appointments and events with Google Calendar
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Two-way Sync</Label>
-							<p className="text-muted-foreground text-sm">Sync events both ways</p>
+							<p className="text-muted-foreground text-sm">
+								Sync events both ways
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -44,7 +54,9 @@ export function GoogleCalendarSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Event Reminders</Label>
-							<p className="text-muted-foreground text-sm">Send reminders for upcoming jobs</p>
+							<p className="text-muted-foreground text-sm">
+								Send reminders for upcoming jobs
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>

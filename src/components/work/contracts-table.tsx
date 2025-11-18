@@ -1,6 +1,14 @@
 "use client";
 
-import { Archive, Download, Eye, FileSignature, MoreHorizontal, Plus, Send } from "lucide-react";
+import {
+	Archive,
+	Download,
+	Eye,
+	FileSignature,
+	MoreHorizontal,
+	Plus,
+	Send,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -27,7 +35,10 @@ import {
 	type ColumnDef,
 	FullWidthDataTable,
 } from "@/components/ui/full-width-datatable";
-import { ContractStatusBadge, ContractTypeBadge } from "@/components/ui/status-badge";
+import {
+	ContractStatusBadge,
+	ContractTypeBadge,
+} from "@/components/ui/status-badge";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 
 export type Contract = {
@@ -47,9 +58,13 @@ export type Contract = {
 export function ContractsTable({
 	contracts,
 	itemsPerPage = 50,
+	currentPage = 1,
+	totalCount,
 }: {
 	contracts: Contract[];
 	itemsPerPage?: number;
+	currentPage?: number;
+	totalCount?: number;
 }) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.contracts);
@@ -57,8 +72,12 @@ export function ContractsTable({
 	// State for archive confirmation dialogs
 	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [contractToArchive, setContractToArchive] = useState<string | null>(null);
-	const [selectedContractIds, setSelectedContractIds] = useState<Set<string>>(new Set());
+	const [contractToArchive, setContractToArchive] = useState<string | null>(
+		null,
+	);
+	const [selectedContractIds, setSelectedContractIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	// Filter contracts based on archive status
 	const filteredContracts = contracts.filter((contract) => {
@@ -99,7 +118,9 @@ export function ContractsTable({
 			hideable: false, // CRITICAL: Customer essential for quick identification
 			render: (contract) => (
 				<div className="min-w-0">
-					<div className="truncate leading-tight font-medium">{contract.customer}</div>
+					<div className="truncate leading-tight font-medium">
+						{contract.customer}
+					</div>
 				</div>
 			),
 		},
@@ -141,7 +162,9 @@ export function ContractsTable({
 			hideable: true,
 			render: (contract) => (
 				<span className="text-muted-foreground text-sm leading-tight">
-					{contract.signerName || <span className="text-muted-foreground">Not assigned</span>}
+					{contract.signerName || (
+						<span className="text-muted-foreground">Not assigned</span>
+					)}
 				</span>
 			),
 		},
@@ -274,7 +297,9 @@ export function ContractsTable({
 				data={filteredContracts}
 				emptyAction={
 					<Button
-						onClick={() => (window.location.href = "/dashboard/work/contracts/new")}
+						onClick={() =>
+							(window.location.href = "/dashboard/work/contracts/new")
+						}
 						size="sm"
 					>
 						<Plus className="mr-2 size-4" />
@@ -287,9 +312,13 @@ export function ContractsTable({
 				entity="contracts"
 				getHighlightClass={() => "bg-success/30 dark:bg-success/10"}
 				getItemId={(contract) => contract.id}
-				isArchived={(contract) => Boolean(contract.archived_at || contract.deleted_at)}
+				isArchived={(contract) =>
+					Boolean(contract.archived_at || contract.deleted_at)
+				}
 				isHighlighted={(contract) => contract.status === "signed"}
 				itemsPerPage={itemsPerPage}
+				currentPageFromServer={currentPage}
+				serverPagination
 				onRefresh={() => window.location.reload()}
 				onRowClick={(contract) =>
 					(window.location.href = `/dashboard/work/contracts/${contract.id}`)
@@ -298,16 +327,20 @@ export function ContractsTable({
 				searchPlaceholder="Search contracts by number, customer, title, or status..."
 				showArchived={archiveFilter !== "active"}
 				showRefresh={false}
+				totalCount={totalCount ?? filteredContracts.length}
 			/>
 
 			{/* Single Contract Archive Dialog */}
-			<AlertDialog onOpenChange={setIsSingleArchiveOpen} open={isSingleArchiveOpen}>
+			<AlertDialog
+				onOpenChange={setIsSingleArchiveOpen}
+				open={isSingleArchiveOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Contract?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This contract will be archived and can be restored within 90 days. After 90 days, it
-							will be permanently deleted.
+							This contract will be archived and can be restored within 90 days.
+							After 90 days, it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -330,10 +363,12 @@ export function ContractsTable({
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Archive {selectedContractIds.size} Contract(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Archive {selectedContractIds.size} Contract(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							These contracts will be archived and can be restored within 90 days. After 90 days,
-							they will be permanently deleted.
+							These contracts will be archived and can be restored within 90
+							days. After 90 days, they will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

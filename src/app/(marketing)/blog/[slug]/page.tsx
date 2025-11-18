@@ -66,7 +66,9 @@ export async function generateMetadata({ params }: BlogArticlePageProps) {
 	});
 }
 
-export default async function BlogArticlePage({ params }: BlogArticlePageProps) {
+export default async function BlogArticlePage({
+	params,
+}: BlogArticlePageProps) {
 	const { slug } = await params;
 	const post = await getBlogPostBySlug(slug);
 
@@ -78,13 +80,18 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 		categorySlug: post.category?.slug,
 		limit: 4,
 	});
-	const relatedPosts = relatedResult.data.filter((item) => item.slug !== post.slug).slice(0, 3);
+	const relatedPosts = relatedResult.data
+		.filter((item) => item.slug !== post.slug)
+		.slice(0, 3);
 
 	const publishedLabel = formatDate(post.publishedAt);
 	const updatedLabel =
-		post.updatedAt && post.updatedAt !== post.publishedAt ? formatDate(post.updatedAt) : null;
+		post.updatedAt && post.updatedAt !== post.publishedAt
+			? formatDate(post.updatedAt)
+			: null;
 	const wordCount = post.content.split(/\s+/).filter(Boolean).length;
-	const readTimeISO = post.readingTime > 0 ? `PT${post.readingTime}M` : undefined;
+	const readTimeISO =
+		post.readingTime > 0 ? `PT${post.readingTime}M` : undefined;
 
 	return (
 		<>
@@ -93,7 +100,8 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 					__html: JSON.stringify(
 						createArticleSchema({
 							title: post.title,
-							description: post.seoDescription ?? post.excerpt ?? "Thorbis blog article",
+							description:
+								post.seoDescription ?? post.excerpt ?? "Thorbis blog article",
 							url: `${siteUrl}/blog/${post.slug}`,
 							image: post.heroImageUrl ?? buildShareImageUrl(),
 							publishedTime: post.publishedAt ?? undefined,
@@ -103,7 +111,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 							section: post.category?.name ?? "Blog",
 							wordCount,
 							estimatedReadTime: readTimeISO,
-						})
+						}),
 					),
 				}}
 				id="blog-article-ld"
@@ -116,7 +124,7 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 							{ name: "Home", url: siteUrl },
 							{ name: "Blog", url: `${siteUrl}/blog` },
 							{ name: post.title, url: `${siteUrl}/blog/${post.slug}` },
-						])
+						]),
 					),
 				}}
 				id="blog-article-breadcrumb-ld"
@@ -130,7 +138,10 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 							Home
 						</Link>
 						<span aria-hidden="true">/</span>
-						<Link className="hover:text-foreground transition-colors" href="/blog">
+						<Link
+							className="hover:text-foreground transition-colors"
+							href="/blog"
+						>
 							Blog
 						</Link>
 						<span aria-hidden="true">/</span>
@@ -139,15 +150,23 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 
 					<header className="mx-auto mb-12 max-w-3xl text-center">
 						<div className="text-primary mb-4 flex flex-wrap justify-center gap-2 text-xs font-medium tracking-wide uppercase">
-							{post.category?.name ? <Badge variant="outline">{post.category.name}</Badge> : null}
-							{post.featured ? <Badge variant="secondary">Featured</Badge> : null}
-							{post.pinned ? <Badge variant="secondary">Spotlight</Badge> : null}
+							{post.category?.name ? (
+								<Badge variant="outline">{post.category.name}</Badge>
+							) : null}
+							{post.featured ? (
+								<Badge variant="secondary">Featured</Badge>
+							) : null}
+							{post.pinned ? (
+								<Badge variant="secondary">Spotlight</Badge>
+							) : null}
 						</div>
 
 						<h1 className="mb-4 text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{post.title}
 						</h1>
-						{post.excerpt ? <p className="text-muted-foreground text-lg">{post.excerpt}</p> : null}
+						{post.excerpt ? (
+							<p className="text-muted-foreground text-lg">{post.excerpt}</p>
+						) : null}
 
 						<div className="text-muted-foreground mt-6 flex flex-wrap items-center justify-center gap-4 text-sm">
 							{post.author?.name ? (
@@ -159,7 +178,9 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 							{publishedLabel ? (
 								<span className="inline-flex items-center gap-1">
 									<Calendar aria-hidden="true" className="size-4" />
-									<time dateTime={post.publishedAt ?? undefined}>{publishedLabel}</time>
+									<time dateTime={post.publishedAt ?? undefined}>
+										{publishedLabel}
+									</time>
 								</span>
 							) : null}
 							{post.readingTime > 0 ? (
@@ -168,7 +189,9 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 									{post.readingTime} min read
 								</span>
 							) : null}
-							{updatedLabel ? <span aria-label="Last updated on">{updatedLabel}</span> : null}
+							{updatedLabel ? (
+								<span aria-label="Last updated on">{updatedLabel}</span>
+							) : null}
 						</div>
 					</header>
 
@@ -200,7 +223,8 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 											href={`/blog?tag=${tag.slug}`}
 											key={tag.id}
 										>
-											<TagIcon aria-hidden="true" className="size-3" />#{tag.name}
+											<TagIcon aria-hidden="true" className="size-3" />#
+											{tag.name}
 										</Link>
 									))}
 								</div>
@@ -265,7 +289,8 @@ export default async function BlogArticlePage({ params }: BlogArticlePageProps) 
 						</div>
 					) : (
 						<p className="bg-background/60 text-muted-foreground rounded-xl border border-dashed p-6">
-							We&apos;re crafting more stories in this category. Check back soon.
+							We&apos;re crafting more stories in this category. Check back
+							soon.
 						</p>
 					)}
 				</div>

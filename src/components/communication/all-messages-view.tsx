@@ -50,6 +50,8 @@ type UnifiedMessage = {
 	duration?: number;
 	telnyxCallControlId?: string;
 	callRecordingUrl?: string;
+	threadId?: string | null;
+	threadAddress?: string | null;
 };
 
 type AllMessagesViewProps = {
@@ -58,17 +60,40 @@ type AllMessagesViewProps = {
 	onViewRecording?: (recordingUrl: string) => void;
 };
 
-export function AllMessagesView({ messages, onResumeCall, onViewRecording }: AllMessagesViewProps) {
+export function AllMessagesView({
+	messages,
+	onResumeCall,
+	onViewRecording,
+}: AllMessagesViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
 
 	const handleOpenMessage = useCallback(
 		(message: UnifiedMessage) => {
 			setSelectedMessageId(message.id);
+
+			if (message.type === "sms") {
+				const threadIdentifier =
+					message.threadId ||
+					message.threadAddress ||
+					message.fromPhone ||
+					message.toPhone;
+
+				if (threadIdentifier) {
+					const normalized = normalizePhone(threadIdentifier);
+					router.push(
+						`/dashboard/communication/messages?thread=${encodeURIComponent(normalized)}`,
+					);
+					return;
+				}
+			}
+
 			router.push(`/dashboard/communication?id=${message.id}`);
 		},
-		[router, setSelectedMessageId]
+		[router, setSelectedMessageId],
 	);
 
 	// Get icon based on message type
@@ -77,20 +102,30 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			case "email":
 				return <Mail className="size-4 text-blue-600 dark:text-blue-400" />;
 			case "sms":
-				return <MessageCircle className="size-4 text-green-600 dark:text-green-400" />;
+				return (
+					<MessageCircle className="size-4 text-green-600 dark:text-green-400" />
+				);
 			case "phone":
 				if (message.callType === "incoming") {
-					return <PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />;
+					return (
+						<PhoneIncoming className="size-4 text-purple-600 dark:text-purple-400" />
+					);
 				}
 				if (message.callType === "outgoing") {
-					return <PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />;
+					return (
+						<PhoneOutgoing className="size-4 text-blue-600 dark:text-blue-400" />
+					);
 				}
 				if (message.callType === "missed") {
-					return <PhoneMissed className="size-4 text-red-600 dark:text-red-400" />;
+					return (
+						<PhoneMissed className="size-4 text-red-600 dark:text-red-400" />
+					);
 				}
 				return <Phone className="text-primary size-4" />;
 			case "ticket":
-				return <Ticket className="size-4 text-orange-600 dark:text-orange-400" />;
+				return (
+					<Ticket className="size-4 text-orange-600 dark:text-orange-400" />
+				);
 			default:
 				return <Mail className="text-muted-foreground size-4" />;
 		}
@@ -113,7 +148,7 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 	};
 
 	const getPriorityVariant = (
-		priority: MessagePriority
+		priority: MessagePriority,
 	): "default" | "secondary" | "destructive" | "outline" => {
 		switch (priority) {
 			case "urgent":
@@ -199,11 +234,15 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			sortable: true,
 			render: (message) => (
 				<div className="flex flex-col gap-1">
-					<span className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}>
+					<span
+						className={`text-sm ${message.status === "unread" ? "font-semibold" : ""}`}
+					>
 						{message.subject || "(No subject)"}
 					</span>
 					{message.preview && (
-						<p className="text-muted-foreground line-clamp-1 text-xs">{message.preview}</p>
+						<p className="text-muted-foreground line-clamp-1 text-xs">
+							{message.preview}
+						</p>
 					)}
 					{message.type === "phone" && message.duration !== undefined && (
 						<span className="text-muted-foreground text-xs">
@@ -218,7 +257,10 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			header: "Priority",
 			width: "w-28",
 			render: (message) => (
-				<Badge className="capitalize" variant={getPriorityVariant(message.priority)}>
+				<Badge
+					className="capitalize"
+					variant={getPriorityVariant(message.priority)}
+				>
 					{message.priority}
 				</Badge>
 			),
@@ -247,7 +289,9 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
 			),
 		},
 	];
@@ -281,6 +325,20 @@ export function AllMessagesView({ messages, onResumeCall, onViewRecording }: All
 			message.type.toLowerCase().includes(needle)
 		);
 	};
+
+	function normalizePhone(raw?: string | null): string {
+		if (!raw) {
+			return "";
+		}
+		const digits = raw.replace(/[^0-9]/g, "");
+		if (digits.length === 11 && digits.startsWith("1")) {
+			return `+${digits}`;
+		}
+		if (digits.length === 10) {
+			return `+1${digits}`;
+		}
+		return raw.startsWith("+") ? raw : `+${raw}`;
+	}
 
 	return (
 		<FullWidthDataTable

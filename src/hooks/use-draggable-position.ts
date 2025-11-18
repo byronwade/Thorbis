@@ -51,7 +51,9 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 		if (typeof window === "undefined") {
 			return { x: 0, y: 0 };
 		}
-		return position === "default" ? { x: window.innerWidth - width - 24, y: 24 } : position;
+		return position === "default"
+			? { x: window.innerWidth - width - 24, y: 24 }
+			: position;
 	});
 
 	const dragStartPosRef = useRef<Position>({ x: 0, y: 0 });
@@ -115,7 +117,7 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
 			return { x, y };
 		},
-		[width, height, snapThreshold]
+		[width, height, snapThreshold],
 	);
 
 	// Handle drag start
@@ -131,7 +133,7 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 
 			onDragStart?.();
 		},
-		[currentPosition, onDragStart]
+		[currentPosition, onDragStart],
 	);
 
 	// Mouse events
@@ -142,13 +144,15 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 			if (target.closest("[data-drag-handle]")) {
 				e.preventDefault();
 				// Find the draggable container (go up to the element with drag handlers)
-				const container = e.currentTarget.closest("[data-draggable-container]") as HTMLElement;
+				const container = e.currentTarget.closest(
+					"[data-draggable-container]",
+				) as HTMLElement;
 				if (container) {
 					handleDragStart(e.clientX, e.clientY, container);
 				}
 			}
 		},
-		[handleDragStart]
+		[handleDragStart],
 	);
 
 	// Touch events
@@ -158,13 +162,15 @@ export function useDraggablePosition(options: UseDraggablePositionOptions) {
 			if (target.closest("[data-drag-handle]")) {
 				e.preventDefault();
 				const touch = e.touches[0];
-				const container = e.currentTarget.closest("[data-draggable-container]") as HTMLElement;
+				const container = e.currentTarget.closest(
+					"[data-draggable-container]",
+				) as HTMLElement;
 				if (container) {
 					handleDragStart(touch.clientX, touch.clientY, container);
 				}
 			}
 		},
-		[handleDragStart]
+		[handleDragStart],
 	);
 
 	// Use refs for callbacks to prevent listener stacking (CRITICAL FIX)

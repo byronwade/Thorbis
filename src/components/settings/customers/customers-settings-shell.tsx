@@ -10,7 +10,9 @@ type CustomersSettingsShellProps = {
  * Renders the static header and layout instantly; dynamic content
  * (cards, sections) streams in under PPR.
  */
-export function CustomersSettingsShell({ children }: CustomersSettingsShellProps) {
+export function CustomersSettingsShell({
+	children,
+}: CustomersSettingsShellProps) {
 	return (
 		<div className="space-y-6">
 			<div>

@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
 import { TeamsKanban } from "@/components/work/teams-kanban";
-import { TeamsTable } from "@/components/work/teams-table";
+import { type TeamMember, TeamsTable } from "@/components/work/teams-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import {
+	getTeamMembersPageData,
+	TEAM_MEMBERS_PAGE_SIZE,
+} from "@/lib/queries/team-members";
+import type { ArchiveFilter } from "@/lib/utils/archive";
 
 function getRelativeTime(date: Date): string {
 	const now = new Date();
@@ -44,93 +48,236 @@ function getDepartmentColor(deptName: string | undefined): string {
 	return colors[deptName || ""] || "#6b7280";
 }
 
-export async function UteamData() {
-	const supabase = await createClient();
-	if (!supabase) {
-		return notFound();
-	}
+const FALLBACK_ROLE = "Team Member";
 
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+type RawMember = Awaited<
+	ReturnType<typeof getTeamMembersPageData>
+>["teamMembers"][number];
+
+const NAME_FIELDS = [
+	"full_name",
+	"fullName",
+	"name",
+	"display_name",
+	"displayName",
+	"preferred_name",
+	"preferredName",
+];
+
+const FIRST_NAME_FIELDS = [
+	"first_name",
+	"firstName",
+	"given_name",
+	"givenName",
+	"first",
+];
+
+const LAST_NAME_FIELDS = [
+	"last_name",
+	"lastName",
+	"family_name",
+	"familyName",
+	"surname",
+	"last",
+];
+
+const MIDDLE_NAME_FIELDS = ["middle_name", "middleName", "middle"];
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+	return value && typeof value === "object"
+		? (value as Record<string, unknown>)
+		: null;
+}
+
+function getStringFromKeys(
+	source: Record<string, unknown> | null,
+	keys: string[],
+): string | undefined {
+	if (!source) {
+		return undefined;
+	}
+	for (const key of keys) {
+		const raw = source[key];
+		if (typeof raw === "string") {
+			const trimmed = raw.trim();
+			if (trimmed) {
+				return trimmed;
+			}
+		}
+	}
+	return undefined;
+}
+
+function buildNameFromMeta(
+	meta: Record<string, unknown> | null,
+): string | undefined {
+	if (!meta) {
+		return undefined;
+	}
+	const direct = getStringFromKeys(meta, NAME_FIELDS);
+	if (direct) {
+		return direct;
+	}
+	const first = getStringFromKeys(meta, FIRST_NAME_FIELDS);
+	const middle = getStringFromKeys(meta, MIDDLE_NAME_FIELDS);
+	const last = getStringFromKeys(meta, LAST_NAME_FIELDS);
+	const parts = [first, middle, last].filter(Boolean) as string[];
+	if (parts.length) {
+		return parts.join(" ").replace(/\s+/g, " ").trim();
+	}
+	const nestedProfile = asRecord(meta.profile);
+	if (nestedProfile) {
+		return buildNameFromMeta(nestedProfile);
+	}
+	return undefined;
+}
+
+function extractUserMeta(user: RawMember["user"]): Record<string, unknown> {
 	if (!user) {
-		return notFound();
+		return {};
 	}
+	return (
+		(user.raw_user_meta_data as Record<string, unknown> | null) ??
+		(user.user_metadata as Record<string, unknown> | null) ??
+		{}
+	);
+}
 
+function buildDisplayName(member: RawMember): string {
+	const meta = extractUserMeta(member.user);
+	const metaName = buildNameFromMeta(meta);
+	const profileName = buildNameFromMeta(asRecord(meta.profile));
+	const userName =
+		typeof member.user?.full_name === "string"
+			? member.user.full_name
+			: undefined;
+
+	const emailName =
+		member.user?.email?.split("@")[0] || member.email?.split("@")[0] || null;
+
+	return (
+		member.invited_name ||
+		metaName ||
+		profileName ||
+		userName ||
+		emailName ||
+		member.invited_email ||
+		member.email ||
+		(member.role
+			? member.role
+					.replace(/_/g, " ")
+					.replace(/\b\w/g, (char) => char.toUpperCase())
+			: undefined) ||
+		"Unknown"
+	);
+}
+
+function buildAvatar(
+	member: RawMember,
+	meta: Record<string, unknown>,
+): string | undefined {
+	const avatar =
+		getStringFromKeys(meta, [
+			"avatar_url",
+			"avatar",
+			"photoURL",
+			"photo_url",
+		]) ||
+		getStringFromKeys(asRecord(meta.profile), [
+			"avatar_url",
+			"avatar",
+			"photoURL",
+			"photo_url",
+		]);
+	if (avatar) {
+		return avatar;
+	}
+	const userAvatar = member.user?.avatar_url;
+	return typeof userAvatar === "string" && userAvatar.length > 0
+		? userAvatar
+		: undefined;
+}
+
+function transformMember(member: RawMember): TeamMember {
+	const meta = extractUserMeta(member.user);
+	const roleName = member.role || FALLBACK_ROLE;
+	const departmentName = member.department || "General";
+	const joinedDateSource = member.joined_at || member.invited_at;
+	const lastActiveSource =
+		member.last_active_at || member.user?.last_sign_in_at;
+
+	return {
+		id: member.id,
+		name: buildDisplayName(member),
+		email: member.user?.email || member.email || member.invited_email || "",
+		roleId: "team-role",
+		roleName,
+		roleColor: getRoleColor(roleName),
+		departmentId: "team-department",
+		departmentName,
+		departmentColor: getDepartmentColor(departmentName),
+		status: (member.status as TeamMember["status"]) || "active",
+		avatar: buildAvatar(member, meta),
+		jobTitle:
+			member.job_title ||
+			(typeof meta.title === "string" ? meta.title : undefined) ||
+			FALLBACK_ROLE,
+		phone:
+			member.phone || (typeof meta.phone === "string" ? meta.phone : undefined),
+		joinedDate: joinedDateSource
+			? new Date(joinedDateSource).toLocaleDateString()
+			: "",
+		lastActive: lastActiveSource
+			? getRelativeTime(new Date(lastActiveSource))
+			: "Never",
+		archived_at: member.archived_at,
+	};
+}
+
+export async function UteamData({
+	searchParams,
+}: {
+	searchParams?: { page?: string; search?: string; filter?: string };
+}) {
 	const activeCompanyId = await getActiveCompanyId();
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Fetch team members using scalar columns only (no relationships required)
-	const { data: teamMembersRaw, error } = await supabase
-		.from("team_members")
-		.select(
-			[
-				"id",
-				"status",
-				"job_title",
-				"phone",
-				"joined_at",
-				"invited_at",
-				"last_active_at",
-				"archived_at",
-				"email",
-				"invited_email",
-				"invited_name",
-				"role",
-				"department",
-			].join(", ")
-		)
-		.eq("company_id", activeCompanyId)
-		.order("created_at", { ascending: false });
+	const currentPage = Number(searchParams?.page) || 1;
+	const searchQuery = searchParams?.search ?? "";
+	const requestedFilter = (searchParams?.filter as ArchiveFilter) ?? "active";
+	const archiveFilter: ArchiveFilter = ["active", "archived", "all"].includes(
+		requestedFilter,
+	)
+		? requestedFilter
+		: "active";
 
-	if (error) {
-		throw new Error(`Failed to load team members: ${error.message}`);
-	}
+	const { teamMembers: teamMembersRaw, totalCount } =
+		await getTeamMembersPageData(
+			currentPage,
+			TEAM_MEMBERS_PAGE_SIZE,
+			searchQuery,
+			activeCompanyId,
+			archiveFilter,
+		);
 
-	// Transform data for components
-	const teamMembers = (teamMembersRaw || []).map((member: any) => {
-		const nameFromEmail =
-			member.email?.split("@")[0] || member.invited_email?.split("@")[0] || undefined;
-		const name = member.invited_name || nameFromEmail || member.email || "Unknown";
-
-		const email = member.email || member.invited_email || "";
-
-		const roleName = member.role || "Team Member";
-		const departmentName = member.department || "General";
-
-		return {
-			id: member.id,
-			name,
-			email,
-			roleId: "team-role", // placeholder ID – table uses roleName + color primarily
-			roleName,
-			roleColor: getRoleColor(roleName),
-			departmentId: "team-department",
-			departmentName,
-			departmentColor: getDepartmentColor(departmentName),
-			status: member.status || "active",
-			avatar: undefined,
-			jobTitle: member.job_title || "Team Member",
-			phone: member.phone,
-			joinedDate: member.joined_at
-				? new Date(member.joined_at).toLocaleDateString()
-				: member.invited_at
-					? new Date(member.invited_at).toLocaleDateString()
-					: "",
-			lastActive: member.last_active_at
-				? getRelativeTime(new Date(member.last_active_at))
-				: "Never",
-			archived_at: member.archived_at,
-		};
-	});
+	const teamMembers: TeamMember[] = teamMembersRaw.map(transformMember);
 
 	return (
 		<WorkDataView
-			kanban={<TeamsKanban teamMembers={teamMembers} />}
+			kanban={<TeamsKanban members={teamMembers} />}
 			section="team"
-			table={<TeamsTable itemsPerPage={50} teamMembers={teamMembers} />}
+			table={
+				<TeamsTable
+					initialArchiveFilter={archiveFilter}
+					initialSearchQuery={searchQuery}
+					itemsPerPage={TEAM_MEMBERS_PAGE_SIZE}
+					teamMembers={teamMembers}
+					totalCount={totalCount}
+					currentPage={currentPage}
+				/>
+			}
 		/>
 	);
 }

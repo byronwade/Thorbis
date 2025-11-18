@@ -9,7 +9,12 @@ import { getKBArticles, searchKBArticles } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSearch } from "@/components/kb/kb-search";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
@@ -87,7 +92,9 @@ async function SearchResultsContent({
 			<Card>
 				<CardHeader>
 					<CardTitle>No results found</CardTitle>
-					<CardDescription>Try adjusting your search terms or browse by category.</CardDescription>
+					<CardDescription>
+						Try adjusting your search terms or browse by category.
+					</CardDescription>
 				</CardHeader>
 			</Card>
 		);

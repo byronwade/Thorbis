@@ -30,7 +30,8 @@ export async function LeadsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Lead Capture</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Automatically capture leads from your website, phone calls, and marketing campaigns
+							Automatically capture leads from your website, phone calls, and
+							marketing campaigns
 						</p>
 					</div>
 
@@ -41,7 +42,8 @@ export async function LeadsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Lead Scoring</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Prioritize your best leads with AI-powered scoring and qualification
+							Prioritize your best leads with AI-powered scoring and
+							qualification
 						</p>
 					</div>
 

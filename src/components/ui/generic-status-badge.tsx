@@ -47,12 +47,16 @@ export function GenericStatusBadge({
 	className,
 	variant,
 }: GenericStatusBadgeProps) {
-	const statusConfig = config[status] || (defaultStatus ? config[defaultStatus] : null);
+	const statusConfig =
+		config[status] || (defaultStatus ? config[defaultStatus] : null);
 
 	if (!statusConfig) {
 		// Fallback if status not found and no default
 		return (
-			<Badge className={cn("text-xs font-medium", className)} variant={variant || "outline"}>
+			<Badge
+				className={cn("text-xs font-medium", className)}
+				variant={variant || "outline"}
+			>
 				{status}
 			</Badge>
 		);

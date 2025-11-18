@@ -11,9 +11,9 @@ export default function SchedulerShowcase() {
 					Scheduler experience lives in a separate playground for now
 				</h1>
 				<p className="text-muted-foreground text-base">
-					We&apos;re actively iterating on a full scheduling workspace. Visit the dedicated
-					prototype to explore the latest concepts, or stay tuned as we bring it directly into the
-					dashboard.
+					We&apos;re actively iterating on a full scheduling workspace. Visit
+					the dedicated prototype to explore the latest concepts, or stay tuned
+					as we bring it directly into the dashboard.
 				</p>
 			</div>
 			<div className="flex flex-wrap items-center justify-center gap-3">

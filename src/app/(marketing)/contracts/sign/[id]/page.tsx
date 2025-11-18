@@ -1,5 +1,11 @@
 import { CheckCircle2, Clock, FileSignature, Shield } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { ContractSigningForm } from "@/components/work/contract-signing-form";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 
@@ -69,7 +75,11 @@ function formatDate(dateString: string) {
 	});
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id } = await params;
 
 	return generateSEOMetadata({
@@ -85,7 +95,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 	});
 }
 
-export default async function ContractSignPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ContractSignPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	// Await params in Next.js 16+
 	const { id } = await params;
 
@@ -170,7 +184,9 @@ export default async function ContractSignPage({ params }: { params: Promise<{ i
 							<CheckCircle2 className="text-accent-foreground dark:text-accent-foreground size-5" />
 							<div>
 								<p className="text-sm font-medium">Legally Binding</p>
-								<p className="text-muted-foreground text-xs">E-signature law compliant</p>
+								<p className="text-muted-foreground text-xs">
+									E-signature law compliant
+								</p>
 							</div>
 						</CardContent>
 					</Card>
@@ -180,7 +196,9 @@ export default async function ContractSignPage({ params }: { params: Promise<{ i
 				<Card className="mb-8">
 					<CardHeader>
 						<CardTitle>Contract Terms</CardTitle>
-						<CardDescription>Please review the terms carefully before signing</CardDescription>
+						<CardDescription>
+							Please review the terms carefully before signing
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="mb-6 space-y-4">
@@ -201,21 +219,27 @@ export default async function ContractSignPage({ params }: { params: Promise<{ i
 						{contract.terms && (
 							<div className="mt-6">
 								<h4 className="mb-2 text-sm font-semibold">Additional Terms</h4>
-								<p className="text-muted-foreground text-sm">{contract.terms}</p>
+								<p className="text-muted-foreground text-sm">
+									{contract.terms}
+								</p>
 							</div>
 						)}
 					</CardContent>
 				</Card>
 
 				{/* Signing Form */}
-				<ContractSigningForm contractId={contract.id} defaultEmail={contract.signerEmail} />
+				<ContractSigningForm
+					contractId={contract.id}
+					defaultEmail={contract.signerEmail}
+				/>
 
 				{/* Legal Disclaimer */}
 				<div className="mt-8 text-center">
 					<p className="text-muted-foreground text-xs">
-						By signing this contract, you agree to be legally bound by its terms. Your signature,
-						along with your IP address and timestamp, will be recorded for legal compliance. This
-						document is protected by electronic signature laws.
+						By signing this contract, you agree to be legally bound by its
+						terms. Your signature, along with your IP address and timestamp,
+						will be recorded for legal compliance. This document is protected by
+						electronic signature laws.
 					</p>
 				</div>
 			</div>

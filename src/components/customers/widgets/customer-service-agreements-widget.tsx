@@ -7,8 +7,8 @@
 import { ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerServiceAgreements } from "@/hooks/use-customer-360";
 import { formatDate } from "@/lib/formatters";
 
@@ -43,7 +43,9 @@ export function CustomerServiceAgreementsWidget({
 					);
 				if (!agreements || agreements.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No service agreements</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No service agreements
+						</div>
 					);
 
 				return (
@@ -72,7 +74,9 @@ export function CustomerServiceAgreementsWidget({
 
 						{agreements.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link href={`/dashboard/work/service-agreements?customer=${customerId}`}>
+								<Link
+									href={`/dashboard/work/service-agreements?customer=${customerId}`}
+								>
 									View All Agreements
 								</Link>
 							</Button>

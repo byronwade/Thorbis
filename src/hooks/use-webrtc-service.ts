@@ -90,7 +90,9 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
 			} catch (err) {
 				// Service not available - graceful degradation
 				setStatus("error");
-				setError(err instanceof Error ? err : new Error("WebRTC service unavailable"));
+				setError(
+					err instanceof Error ? err : new Error("WebRTC service unavailable"),
+				);
 			}
 		};
 
@@ -167,7 +169,9 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
 			}
 
 			setActiveCalls((prev) =>
-				prev.map((call) => (call.id === callId ? { ...call, status: "active" } : call))
+				prev.map((call) =>
+					call.id === callId ? { ...call, status: "active" } : call,
+				),
 			);
 		} catch (err) {
 			setError(err instanceof Error ? err : new Error("Failed to answer call"));
@@ -178,7 +182,10 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
 	/**
 	 * Generate WebRTC credentials (safe - won't crash if service unavailable)
 	 */
-	const generateCredential = async (username: string, ttl?: number): Promise<any> => {
+	const generateCredential = async (
+		username: string,
+		ttl?: number,
+	): Promise<any> => {
 		if (status !== "ready") {
 			throw new Error("WebRTC service not ready");
 		}
@@ -197,7 +204,9 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
 			const data = await response.json();
 			return data.credential;
 		} catch (err) {
-			setError(err instanceof Error ? err : new Error("Failed to generate credential"));
+			setError(
+				err instanceof Error ? err : new Error("Failed to generate credential"),
+			);
 			throw err;
 		}
 	};
@@ -230,7 +239,7 @@ export function useWebRTCService(): UseWebRTCServiceReturn {
  */
 export function useWebRTCFallback(
 	telephonyComponent: React.ReactNode,
-	fallbackComponent?: React.ReactNode
+	fallbackComponent?: React.ReactNode,
 ): React.ReactNode {
 	const { isAvailable, status } = useWebRTCService();
 

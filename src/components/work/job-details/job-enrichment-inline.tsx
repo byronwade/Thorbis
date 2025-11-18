@@ -7,9 +7,21 @@
 
 "use client";
 
-import { AlertTriangle, Clock, Cloud, CloudRain, Route, Sun, Wind } from "lucide-react";
+import {
+	AlertTriangle,
+	Clock,
+	Cloud,
+	CloudRain,
+	Route,
+	Sun,
+	Wind,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 type EnrichmentData = {
 	enrichmentStatus?: string;
@@ -40,7 +52,13 @@ type EnrichmentData = {
 	};
 	traffic?: {
 		incidents: Array<{
-			type: "crash" | "construction" | "road_closed" | "police" | "congestion" | "other";
+			type:
+				| "crash"
+				| "construction"
+				| "road_closed"
+				| "police"
+				| "congestion"
+				| "other";
 			severity: "minor" | "moderate" | "major";
 			description: string;
 			distance: number;
@@ -88,7 +106,9 @@ export function JobEnrichmentInline({
 	jobId,
 	property,
 }: JobEnrichmentInlineProps) {
-	const [enrichmentData, setEnrichmentData] = useState<EnrichmentData | null>(initialData || null);
+	const [enrichmentData, setEnrichmentData] = useState<EnrichmentData | null>(
+		initialData || null,
+	);
 	const [isLoading, setIsLoading] = useState(!initialData);
 	const [hasFetched, setHasFetched] = useState(false);
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
@@ -155,7 +175,12 @@ export function JobEnrichmentInline({
 
 	useEffect(() => {
 		// Only fetch once on mount if no initial data
-		if (!enrichmentFetchedRef.current && !(initialData || hasFetched) && jobId && property) {
+		if (
+			!enrichmentFetchedRef.current &&
+			!(initialData || hasFetched) &&
+			jobId &&
+			property
+		) {
 			enrichmentFetchedRef.current = true;
 			fetchEnrichmentRef.current();
 		}
@@ -182,7 +207,12 @@ export function JobEnrichmentInline({
 					params.set("destinationLat", property.lat.toString());
 					params.set("destinationLon", property.lon.toString());
 				} else {
-					const destination = [property.address, property.city, property.state, property.zip_code]
+					const destination = [
+						property.address,
+						property.city,
+						property.state,
+						property.zip_code,
+					]
 						.filter(Boolean)
 						.join(", ");
 					params.set("destination", destination);
@@ -209,7 +239,11 @@ export function JobEnrichmentInline({
 		property?.lon,
 	]);
 
-	if (isLoading || !enrichmentData || enrichmentData.enrichmentStatus === "failed") {
+	if (
+		isLoading ||
+		!enrichmentData ||
+		enrichmentData.enrichmentStatus === "failed"
+	) {
 		return null;
 	}
 
@@ -220,12 +254,15 @@ export function JobEnrichmentInline({
 		// TODO: Handle error case
 	}
 
-	const hasWeatherAlerts = weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;
-	const hasTrafficIncidents = traffic?.incidents && traffic.incidents.length > 0;
+	const hasWeatherAlerts =
+		weather?.hasActiveAlerts && weather?.alerts && weather.alerts.length > 0;
+	const hasTrafficIncidents =
+		traffic?.incidents && traffic.incidents.length > 0;
 	const todayForecast = weather?.forecast?.periods?.[0];
 	const shouldReschedule = recommendations?.shouldReschedule;
 	const hasSafetyWarnings =
-		recommendations?.safetyWarnings && recommendations.safetyWarnings.length > 0;
+		recommendations?.safetyWarnings &&
+		recommendations.safetyWarnings.length > 0;
 
 	// If no important data, don't render anything
 	if (
@@ -245,7 +282,8 @@ export function JobEnrichmentInline({
 	const uniqueAlerts =
 		hasWeatherAlerts && weather.alerts
 			? weather.alerts.filter(
-					(alert, index, self) => index === self.findIndex((a) => a.event === alert.event)
+					(alert, index, self) =>
+						index === self.findIndex((a) => a.event === alert.event),
 				)
 			: [];
 
@@ -324,14 +362,17 @@ export function JobEnrichmentInline({
 					<HoverCardTrigger asChild>
 						<div className="border-border/60 bg-background hover:border-primary/50 hover:bg-primary/5 inline-flex cursor-help items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors">
 							<Route className="size-4" />
-							{formatDuration(travelTime.duration)} • {travelTime.distance.toFixed(1)} mi
+							{formatDuration(travelTime.duration)} •{" "}
+							{travelTime.distance.toFixed(1)} mi
 						</div>
 					</HoverCardTrigger>
 					<HoverCardContent className="w-80">
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Distance from HQ</h4>
-								<p className="text-muted-foreground text-xs">Real-time driving info</p>
+								<p className="text-muted-foreground text-xs">
+									Real-time driving info
+								</p>
 							</div>
 							<div className="bg-muted/50 flex items-center gap-3 rounded-md p-3">
 								<div className="flex items-center gap-2">
@@ -367,10 +408,16 @@ export function JobEnrichmentInline({
 									{todayForecast.temperature}°{todayForecast.temperatureUnit}
 								</div>
 							</HoverCardTrigger>
-							<HoverCardContent align="start" className="w-[420px]" side="bottom">
+							<HoverCardContent
+								align="start"
+								className="w-[420px]"
+								side="bottom"
+							>
 								<div className="space-y-3">
 									<div>
-										<h4 className="text-sm font-semibold">7-Day Weather Forecast</h4>
+										<h4 className="text-sm font-semibold">
+											7-Day Weather Forecast
+										</h4>
 										<p className="text-muted-foreground text-xs">
 											Plan ahead for your service visit
 										</p>
@@ -386,7 +433,9 @@ export function JobEnrichmentInline({
 													<div className="flex min-w-0 flex-1 items-center gap-2">
 														<PeriodIcon className="text-muted-foreground size-4 shrink-0" />
 														<div className="min-w-0 flex-1">
-															<p className="truncate text-sm font-medium">{period.name}</p>
+															<p className="truncate text-sm font-medium">
+																{period.name}
+															</p>
 															<p className="text-muted-foreground truncate text-xs">
 																{period.shortForecast}
 															</p>
@@ -428,7 +477,10 @@ export function JobEnrichmentInline({
 							</div>
 							<ul className="space-y-2">
 								{recommendations.safetyWarnings.map((warning, idx) => (
-									<li className="text-muted-foreground text-xs leading-relaxed" key={idx}>
+									<li
+										className="text-muted-foreground text-xs leading-relaxed"
+										key={idx}
+									>
 										• {warning}
 									</li>
 								))}
@@ -464,7 +516,9 @@ export function JobEnrichmentInline({
 									{alert.severity}
 								</span>
 							</div>
-							<p className="text-muted-foreground text-xs leading-relaxed">{alert.headline}</p>
+							<p className="text-muted-foreground text-xs leading-relaxed">
+								{alert.headline}
+							</p>
 							{alert.urgency && (
 								<p className="text-muted-foreground text-xs">
 									<span className="font-medium">Urgency:</span> {alert.urgency}
@@ -498,7 +552,9 @@ export function JobEnrichmentInline({
 							<div className="space-y-2">
 								<div className="flex items-center gap-2">
 									<AlertTriangle className="size-4" />
-									<h4 className="text-sm font-semibold">{getTrafficLabel(incident.type)}</h4>
+									<h4 className="text-sm font-semibold">
+										{getTrafficLabel(incident.type)}
+									</h4>
 									<span className="ml-auto rounded-full border px-2 py-0.5 text-xs">
 										{incident.severity}
 									</span>
@@ -508,7 +564,8 @@ export function JobEnrichmentInline({
 								</p>
 								<div className="text-muted-foreground flex items-center gap-4 text-xs">
 									<span>
-										<span className="font-medium">Distance:</span> {incident.distance.toFixed(1)} mi
+										<span className="font-medium">Distance:</span>{" "}
+										{incident.distance.toFixed(1)} mi
 									</span>
 									{incident.affectsRoute && (
 										<span className="font-medium text-amber-600 dark:text-amber-400">

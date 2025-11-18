@@ -87,7 +87,7 @@ export function SubscriptionCard({
 	const handleCancelSubscription = async () => {
 		if (
 			!confirm(
-				"Are you sure you want to cancel this subscription? It will remain active until the end of the current billing period."
+				"Are you sure you want to cancel this subscription? It will remain active until the end of the current billing period.",
 			)
 		) {
 			return;
@@ -100,7 +100,9 @@ export function SubscriptionCard({
 		const result = await cancelCompanySubscription(companyId);
 
 		if (result.success) {
-			setSuccess("Subscription will be canceled at the end of the billing period");
+			setSuccess(
+				"Subscription will be canceled at the end of the billing period",
+			);
 			setTimeout(() => window.location.reload(), 2000);
 		} else {
 			setError(result.error || "Failed to cancel subscription");
@@ -183,7 +185,9 @@ export function SubscriptionCard({
 				<div className="flex items-start justify-between">
 					<div>
 						<CardTitle>{companyName}</CardTitle>
-						<CardDescription className="mt-1">Organization subscription details</CardDescription>
+						<CardDescription className="mt-1">
+							Organization subscription details
+						</CardDescription>
 					</div>
 					{getStatusBadge(status)}
 				</div>
@@ -211,7 +215,9 @@ export function SubscriptionCard({
 						{/* Trial Period */}
 						{status === "trialing" && trialEndsAt && (
 							<div className="border-primary bg-primary dark:border-primary dark:bg-primary rounded-lg border p-3">
-								<p className="text-primary dark:text-primary text-sm font-medium">Trial Period</p>
+								<p className="text-primary dark:text-primary text-sm font-medium">
+									Trial Period
+								</p>
 								<p className="text-primary dark:text-primary text-sm">
 									Trial ends on {formatDate(trialEndsAt)}
 								</p>
@@ -223,12 +229,15 @@ export function SubscriptionCard({
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Current period:</span>
 								<span className="font-medium">
-									{formatDate(currentPeriodStart)} - {formatDate(currentPeriodEnd)}
+									{formatDate(currentPeriodStart)} -{" "}
+									{formatDate(currentPeriodEnd)}
 								</span>
 							</div>
 							{subscriptionId && (
 								<div className="flex justify-between">
-									<span className="text-muted-foreground">Subscription ID:</span>
+									<span className="text-muted-foreground">
+										Subscription ID:
+									</span>
 									<span className="font-mono text-xs">{subscriptionId}</span>
 								</div>
 							)}
@@ -239,7 +248,8 @@ export function SubscriptionCard({
 							<Alert>
 								<AlertCircle className="size-4" />
 								<AlertDescription>
-									This subscription will be canceled on {formatDate(currentPeriodEnd)}
+									This subscription will be canceled on{" "}
+									{formatDate(currentPeriodEnd)}
 								</AlertDescription>
 							</Alert>
 						)}
@@ -257,17 +267,29 @@ export function SubscriptionCard({
 			<CardFooter className="flex gap-2">
 				{hasActiveSubscription ? (
 					<>
-						<Button disabled={isLoading} onClick={handleManageBilling} variant="outline">
+						<Button
+							disabled={isLoading}
+							onClick={handleManageBilling}
+							variant="outline"
+						>
 							<CreditCard className="mr-2 size-4" />
 							Manage Billing
 						</Button>
 
 						{cancelAtPeriodEnd ? (
-							<Button disabled={isLoading} onClick={handleReactivateSubscription} variant="default">
+							<Button
+								disabled={isLoading}
+								onClick={handleReactivateSubscription}
+								variant="default"
+							>
 								Reactivate Subscription
 							</Button>
 						) : (
-							<Button disabled={isLoading} onClick={handleCancelSubscription} variant="destructive">
+							<Button
+								disabled={isLoading}
+								onClick={handleCancelSubscription}
+								variant="destructive"
+							>
 								Cancel Subscription
 							</Button>
 						)}

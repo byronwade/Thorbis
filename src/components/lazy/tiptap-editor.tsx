@@ -24,7 +24,7 @@ export const LazyTipTapEditor = dynamic(
 	{
 		ssr: false,
 		loading: EditorLoadingSkeleton,
-	}
+	},
 );
 
 // Re-export hooks and utilities (these are lightweight)

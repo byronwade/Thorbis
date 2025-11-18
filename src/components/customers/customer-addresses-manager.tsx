@@ -1,6 +1,16 @@
 "use client";
 
-import { Building2, Home, MapPin, Package, Plus, Star, Trash2, Truck, X } from "lucide-react";
+import {
+	Building2,
+	Home,
+	MapPin,
+	Package,
+	Plus,
+	Star,
+	Trash2,
+	Truck,
+	X,
+} from "lucide-react";
 import { useState } from "react";
 import {
 	addCustomerAddress,
@@ -9,7 +19,13 @@ import {
 } from "@/actions/customer-enhancements";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -65,9 +81,11 @@ const ADDRESS_TYPE_ICONS = {
 const ADDRESS_TYPE_COLORS = {
 	billing: "bg-primary text-primary dark:bg-primary dark:text-primary",
 	shipping: "bg-success text-success dark:bg-success dark:text-success",
-	service: "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+	service:
+		"bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
 	mailing: "bg-warning text-warning dark:bg-warning dark:text-warning",
-	other: "bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
+	other:
+		"bg-muted text-foreground dark:bg-foreground dark:text-muted-foreground",
 };
 
 export function CustomerAddressesManager({
@@ -158,8 +176,8 @@ export function CustomerAddressesManager({
 										parking_instructions: formData.parkingInstructions,
 										gate_code: formData.gateCode,
 									}
-								: a
-						)
+								: a,
+						),
 					);
 					resetForm();
 				} else {
@@ -238,7 +256,8 @@ export function CustomerAddressesManager({
 	};
 
 	const getTypeIcon = (type: string) => {
-		const Icon = ADDRESS_TYPE_ICONS[type as keyof typeof ADDRESS_TYPE_ICONS] || MapPin;
+		const Icon =
+			ADDRESS_TYPE_ICONS[type as keyof typeof ADDRESS_TYPE_ICONS] || MapPin;
 		return Icon;
 	};
 
@@ -254,7 +273,9 @@ export function CustomerAddressesManager({
 						{addresses.length} address{addresses.length !== 1 ? "es" : ""}
 					</Badge>
 				</div>
-				<CardDescription>Manage billing, shipping, and service locations</CardDescription>
+				<CardDescription>
+					Manage billing, shipping, and service locations
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				{/* Existing Addresses */}
@@ -268,7 +289,9 @@ export function CustomerAddressesManager({
 
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											{address.label && <p className="font-semibold">{address.label}</p>}
+											{address.label && (
+												<p className="font-semibold">{address.label}</p>
+											)}
 											<Badge
 												className={`text-xs capitalize ${
 													ADDRESS_TYPE_COLORS[
@@ -345,7 +368,10 @@ export function CustomerAddressesManager({
 
 				{/* Add/Edit Form */}
 				{showAddForm ? (
-					<form className="bg-card space-y-4 rounded-lg border p-4" onSubmit={handleSubmit}>
+					<form
+						className="bg-card space-y-4 rounded-lg border p-4"
+						onSubmit={handleSubmit}
+					>
 						<div className="flex items-center justify-between">
 							<h4 className="text-sm font-semibold">
 								{editingId ? "Edit Address" : "Add New Address"}
@@ -367,7 +393,9 @@ export function CustomerAddressesManager({
 									Address Type *
 								</Label>
 								<Select
-									onValueChange={(value: any) => setFormData({ ...formData, addressType: value })}
+									onValueChange={(value: any) =>
+										setFormData({ ...formData, addressType: value })
+									}
 									value={formData.addressType}
 								>
 									<SelectTrigger className="h-9" id="addressType">
@@ -389,7 +417,9 @@ export function CustomerAddressesManager({
 								<Input
 									className="h-9"
 									id="label"
-									onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, label: e.target.value })
+									}
 									placeholder="Main Office, Warehouse, etc."
 									value={formData.label}
 								/>
@@ -403,7 +433,9 @@ export function CustomerAddressesManager({
 							<Input
 								className="h-9"
 								id="addressLine1"
-								onChange={(e) => setFormData({ ...formData, addressLine1: e.target.value })}
+								onChange={(e) =>
+									setFormData({ ...formData, addressLine1: e.target.value })
+								}
 								placeholder="123 Main St"
 								required
 								value={formData.addressLine1}
@@ -417,7 +449,9 @@ export function CustomerAddressesManager({
 							<Input
 								className="h-9"
 								id="addressLine2"
-								onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
+								onChange={(e) =>
+									setFormData({ ...formData, addressLine2: e.target.value })
+								}
 								placeholder="Suite 100"
 								value={formData.addressLine2}
 							/>
@@ -431,7 +465,9 @@ export function CustomerAddressesManager({
 								<Input
 									className="h-9"
 									id="city"
-									onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, city: e.target.value })
+									}
 									required
 									value={formData.city}
 								/>
@@ -444,7 +480,9 @@ export function CustomerAddressesManager({
 									className="h-9"
 									id="state"
 									maxLength={2}
-									onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, state: e.target.value })
+									}
 									placeholder="CA"
 									required
 									value={formData.state}
@@ -457,7 +495,9 @@ export function CustomerAddressesManager({
 								<Input
 									className="h-9"
 									id="zipCode"
-									onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+									onChange={(e) =>
+										setFormData({ ...formData, zipCode: e.target.value })
+									}
 									required
 									value={formData.zipCode}
 								/>
@@ -474,7 +514,9 @@ export function CustomerAddressesManager({
 									<Textarea
 										className="text-sm"
 										id="directions"
-										onChange={(e) => setFormData({ ...formData, directions: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, directions: e.target.value })
+										}
 										placeholder="Turn left after the red barn, driveway on right..."
 										rows={2}
 										value={formData.directions}
@@ -489,7 +531,9 @@ export function CustomerAddressesManager({
 										<Input
 											className="h-9"
 											id="gateCode"
-											onChange={(e) => setFormData({ ...formData, gateCode: e.target.value })}
+											onChange={(e) =>
+												setFormData({ ...formData, gateCode: e.target.value })
+											}
 											placeholder="#1234"
 											value={formData.gateCode}
 										/>
@@ -520,7 +564,9 @@ export function CustomerAddressesManager({
 									<Textarea
 										className="text-sm"
 										id="accessNotes"
-										onChange={(e) => setFormData({ ...formData, accessNotes: e.target.value })}
+										onChange={(e) =>
+											setFormData({ ...formData, accessNotes: e.target.value })
+										}
 										placeholder="Use side entrance, call before arrival, etc."
 										rows={2}
 										value={formData.accessNotes}
@@ -536,13 +582,24 @@ export function CustomerAddressesManager({
 							<Switch
 								checked={formData.isDefault}
 								id="isDefault"
-								onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked })}
+								onCheckedChange={(checked) =>
+									setFormData({ ...formData, isDefault: checked })
+								}
 							/>
 						</div>
 
 						<div className="flex gap-2">
-							<Button className="flex-1" disabled={isLoading} size="sm" type="submit">
-								{isLoading ? "Saving..." : editingId ? "Update Address" : "Add Address"}
+							<Button
+								className="flex-1"
+								disabled={isLoading}
+								size="sm"
+								type="submit"
+							>
+								{isLoading
+									? "Saving..."
+									: editingId
+										? "Update Address"
+										: "Add Address"}
 							</Button>
 							<Button
 								disabled={isLoading}
@@ -571,7 +628,9 @@ export function CustomerAddressesManager({
 				{addresses.length === 0 && !showAddForm && (
 					<div className="py-6 text-center">
 						<MapPin className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-						<p className="text-muted-foreground text-sm">No addresses added yet</p>
+						<p className="text-muted-foreground text-sm">
+							No addresses added yet
+						</p>
 						<p className="text-muted-foreground text-xs">
 							Add billing, shipping, or service addresses
 						</p>

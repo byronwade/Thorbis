@@ -81,8 +81,14 @@ const buckets: VirtualBucket[] = [
 ];
 
 export function VirtualBucketsOverview() {
-	const totalAllocated = buckets.reduce((sum, bucket) => sum + bucket.currentBalance, 0);
-	const totalTarget = buckets.reduce((sum, bucket) => sum + bucket.targetAmount, 0);
+	const totalAllocated = buckets.reduce(
+		(sum, bucket) => sum + bucket.currentBalance,
+		0,
+	);
+	const totalTarget = buckets.reduce(
+		(sum, bucket) => sum + bucket.targetAmount,
+		0,
+	);
 
 	return (
 		<Card>
@@ -96,7 +102,9 @@ export function VirtualBucketsOverview() {
 						<CardDescription>Organize funds for specific goals</CardDescription>
 					</div>
 					<Button asChild size="sm" variant="ghost">
-						<Link href="/dashboard/settings/finance/virtual-buckets">Manage</Link>
+						<Link href="/dashboard/settings/finance/virtual-buckets">
+							Manage
+						</Link>
 					</Button>
 				</div>
 			</CardHeader>
@@ -105,10 +113,16 @@ export function VirtualBucketsOverview() {
 				{/* Total Overview */}
 				<div className="border-border/20 bg-accent/5 rounded-lg border-2 p-4">
 					<p className="text-muted-foreground text-sm">Total in Buckets</p>
-					<p className="text-3xl font-bold">${totalAllocated.toLocaleString()}</p>
+					<p className="text-3xl font-bold">
+						${totalAllocated.toLocaleString()}
+					</p>
 					<div className="mt-2 flex items-center justify-between text-xs">
-						<span className="text-muted-foreground">{buckets.length} buckets</span>
-						<span className="text-muted-foreground">Target: ${totalTarget.toLocaleString()}</span>
+						<span className="text-muted-foreground">
+							{buckets.length} buckets
+						</span>
+						<span className="text-muted-foreground">
+							Target: ${totalTarget.toLocaleString()}
+						</span>
 					</div>
 				</div>
 			</CardContent>
@@ -139,11 +153,15 @@ export function VirtualBucketsOverview() {
 												style={{ width: `${Math.min(progress, 100)}%` }}
 											/>
 										</div>
-										<span className="text-muted-foreground text-xs">{progress.toFixed(0)}%</span>
+										<span className="text-muted-foreground text-xs">
+											{progress.toFixed(0)}%
+										</span>
 									</div>
 								</div>
 								<div className="text-right">
-									<p className="text-sm font-semibold">${bucket.currentBalance.toLocaleString()}</p>
+									<p className="text-sm font-semibold">
+										${bucket.currentBalance.toLocaleString()}
+									</p>
 									<p className="text-muted-foreground text-xs">
 										/ ${bucket.targetAmount.toLocaleString()}
 									</p>

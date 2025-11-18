@@ -2,7 +2,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -15,7 +21,11 @@ export const metadata = generateSEOMetadata({
 		"Join the Thorbis community for webinars, office hours, and peer-led discussions. Share best practices with fellow operators.",
 	path: "/community",
 	section: "Resources",
-	keywords: ["thorbis community", "field service community", "thorbis office hours"],
+	keywords: [
+		"thorbis community",
+		"field service community",
+		"thorbis office hours",
+	],
 });
 
 const COMMUNITY_PROGRAMS = [
@@ -45,7 +55,7 @@ export default function CommunityPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Community", url: `${siteUrl}/community` },
-						])
+						]),
 					),
 				}}
 				id="community-breadcrumb-ld"
@@ -60,9 +70,9 @@ export default function CommunityPage() {
 						Learn from operators building the future of service
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Join thousands of service professionals who share playbooks, automation tips, and growth
-						strategies in the Thorbis community. Participate in live sessions or catch on-demand
-						recordings anytime.
+						Join thousands of service professionals who share playbooks,
+						automation tips, and growth strategies in the Thorbis community.
+						Participate in live sessions or catch on-demand recordings anytime.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
@@ -95,9 +105,9 @@ export default function CommunityPage() {
 				<section className="mt-16 space-y-4">
 					<h2 className="text-2xl font-semibold">Join the conversation</h2>
 					<p className="text-muted-foreground text-sm">
-						Thorbis community members connect inside our private Slack workspace and in-person
-						meetups at industry events. Request an invite to collaborate with peers and share best
-						practices.
+						Thorbis community members connect inside our private Slack workspace
+						and in-person meetups at industry events. Request an invite to
+						collaborate with peers and share best practices.
 					</p>
 					<Button asChild variant="secondary">
 						<a href="mailto:community@thorbis.com?subject=Join%20Thorbis%20Community">

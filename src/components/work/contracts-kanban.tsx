@@ -28,7 +28,9 @@ const CONTRACT_COLUMNS: Array<{
 	{ id: "expired", name: "Expired", accentColor: "#F97316" },
 ];
 
-const columnLabel = new Map(CONTRACT_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	CONTRACT_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 export function ContractsKanban({ contracts }: { contracts: Contract[] }) {
 	return (
@@ -43,11 +45,15 @@ export function ContractsKanban({ contracts }: { contracts: Contract[] }) {
 				contract,
 			})}
 			renderCard={(item) => (
-				<ContractCard item={{ ...item, contract: item.entity } as ContractsKanbanItem} />
+				<ContractCard
+					item={{ ...item, contract: item.entity } as ContractsKanbanItem}
+				/>
 			)}
 			renderDragOverlay={(item) => (
 				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
-					<ContractCard item={{ ...item, contract: item.entity } as ContractsKanbanItem} />
+					<ContractCard
+						item={{ ...item, contract: item.entity } as ContractsKanbanItem}
+					/>
 				</div>
 			)}
 			updateEntityStatus={(contract, newStatus) => ({
@@ -68,13 +74,15 @@ function ContractCard({ item }: { item: ContractsKanbanItem }) {
 					<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 						{contract.contractNumber}
 					</p>
-					<h3 className="text-foreground text-sm leading-snug font-semibold">{contract.title}</h3>
+					<h3 className="text-foreground text-sm leading-snug font-semibold">
+						{contract.title}
+					</h3>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
 								columnId === "rejected" && "bg-destructive/10 text-destructive",
-								columnId === "signed" && "bg-primary/10 text-primary"
+								columnId === "signed" && "bg-primary/10 text-primary",
 							)}
 							variant={
 								columnId === "signed"
@@ -96,7 +104,9 @@ function ContractCard({ item }: { item: ContractsKanbanItem }) {
 			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
 					<Users className="text-primary size-4" />
-					<span className="text-foreground font-medium">{contract.customer}</span>
+					<span className="text-foreground font-medium">
+						{contract.customer}
+					</span>
 				</div>
 				<div className="flex items-center gap-2">
 					<CalendarDays className="text-primary size-4" />
@@ -106,13 +116,20 @@ function ContractCard({ item }: { item: ContractsKanbanItem }) {
 				</div>
 				<p>
 					Signer:{" "}
-					<span className="text-foreground font-medium">{contract.signerName ?? "Unassigned"}</span>
+					<span className="text-foreground font-medium">
+						{contract.signerName ?? "Unassigned"}
+					</span>
 				</p>
 			</div>
 
 			<div className="text-muted-foreground flex items-center justify-between pt-2 text-xs">
 				<span>Status: {columnLabel.get(columnId as ContractStatus)}</span>
-				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
+				<Button
+					asChild
+					className="text-primary gap-1 text-xs"
+					size="sm"
+					variant="ghost"
+				>
 					<Link href={`/dashboard/work/contracts/${contract.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />

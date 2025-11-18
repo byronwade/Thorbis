@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type EntityType =
@@ -30,25 +30,60 @@ type EntityType =
 	| "vendor"
 	| "material";
 
-export function useEntityNotes(entityType: EntityType, entityId: string, enabled = true) {
-	return useQuery({
-		queryKey: ["entity-notes", entityType, entityId],
-		queryFn: async () => {
-			const supabase = createClient();
+type Note = {
+	id: string;
+	entity_type: string;
+	entity_id: string;
+	content: string;
+	created_at: string;
+	updated_at: string;
+	deleted_at: string | null;
+	user_id: string;
+	company_id: string;
+};
 
-			const { data, error } = await supabase
-				.from("notes")
-				.select("*")
-				.eq("entity_type", entityType)
-				.eq("entity_id", entityId)
-				.is("deleted_at", null)
-				.order("created_at", { ascending: false });
+export function useEntityNotes(
+	entityType: EntityType,
+	entityId: string,
+	enabled = true,
+) {
+	const [data, setData] = useState<Note[] | null>(null);
+	const [error, setError] = useState<Error | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
-			if (error) throw error;
-			return data;
-		},
-		enabled, // Only fetch when tab is opened
-		staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
-		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-	});
+	useEffect(() => {
+		if (!enabled) {
+			return;
+		}
+
+		const fetchNotes = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const supabase = createClient();
+
+				const { data: notes, error: fetchError } = await supabase
+					.from("notes")
+					.select("*")
+					.eq("entity_type", entityType)
+					.eq("entity_id", entityId)
+					.is("deleted_at", null)
+					.order("created_at", { ascending: false });
+
+				if (fetchError) throw fetchError;
+				setData(notes);
+			} catch (err) {
+				setError(
+					err instanceof Error ? err : new Error("Failed to fetch notes"),
+				);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchNotes();
+	}, [entityType, entityId, enabled]);
+
+	return { data, error, isLoading };
 }

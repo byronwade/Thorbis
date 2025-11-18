@@ -166,7 +166,14 @@ export const ALLOWED_MIME_TYPES = {
 		"video/webm",
 		"video/x-matroska",
 	],
-	audio: ["audio/mpeg", "audio/mp4", "audio/wav", "audio/webm", "audio/ogg", "audio/flac"],
+	audio: [
+		"audio/mpeg",
+		"audio/mp4",
+		"audio/wav",
+		"audio/webm",
+		"audio/ogg",
+		"audio/flac",
+	],
 	archive: [
 		"application/zip",
 		"application/x-rar-compressed",
@@ -235,7 +242,7 @@ export type ValidationOptions = {
  */
 export async function validateFile(
 	file: File,
-	options: ValidationOptions = {}
+	options: ValidationOptions = {},
 ): Promise<ValidationResult> {
 	const {
 		context = "general",
@@ -276,7 +283,7 @@ export async function validateFile(
 	const sizeLimit = maxSize ?? SIZE_LIMITS[context];
 	if (file.size > sizeLimit) {
 		errors.push(
-			`File size (${formatFileSize(file.size)}) exceeds maximum allowed size (${formatFileSize(sizeLimit)})`
+			`File size (${formatFileSize(file.size)}) exceeds maximum allowed size (${formatFileSize(sizeLimit)})`,
 		);
 	}
 
@@ -285,9 +292,13 @@ export async function validateFile(
 	}
 
 	// 5. Check MIME type
-	if (allowedMimeTypes && allowedMimeTypes.length > 0 && !allowedMimeTypes.includes(file.type)) {
+	if (
+		allowedMimeTypes &&
+		allowedMimeTypes.length > 0 &&
+		!allowedMimeTypes.includes(file.type)
+	) {
 		errors.push(
-			`File type "${file.type}" is not allowed. Allowed types: ${allowedMimeTypes.join(", ")}`
+			`File type "${file.type}" is not allowed. Allowed types: ${allowedMimeTypes.join(", ")}`,
 		);
 	}
 
@@ -303,10 +314,12 @@ export async function validateFile(
 			if (detectedMimeType && detectedMimeType !== file.type) {
 				if (strictMode) {
 					errors.push(
-						`File signature mismatch. Claimed: "${file.type}", Detected: "${detectedMimeType}"`
+						`File signature mismatch. Claimed: "${file.type}", Detected: "${detectedMimeType}"`,
 					);
 				} else {
-					warnings.push(`File type mismatch detected. Using detected type: ${detectedMimeType}`);
+					warnings.push(
+						`File type mismatch detected. Using detected type: ${detectedMimeType}`,
+					);
 				}
 			}
 		} catch (_error) {
@@ -363,7 +376,10 @@ export function getFileExtension(filename: string): string {
 export function sanitizeFileName(fileName: string): string {
 	// Get extension first
 	const extension = getFileExtension(fileName);
-	const nameWithoutExt = fileName.substring(0, fileName.length - extension.length);
+	const nameWithoutExt = fileName.substring(
+		0,
+		fileName.length - extension.length,
+	);
 
 	// Remove path traversal attempts
 	let sanitized = nameWithoutExt.replace(/\.\./g, "");
@@ -402,7 +418,9 @@ async function verifyFileSignature(file: File): Promise<string | null> {
 	// Check against known signatures
 	for (const [mimeType, signatures] of Object.entries(FILE_SIGNATURES)) {
 		for (const sig of signatures) {
-			const matches = sig.bytes.every((byte, index) => bytes[sig.offset + index] === byte);
+			const matches = sig.bytes.every(
+				(byte, index) => bytes[sig.offset + index] === byte,
+			);
 			if (matches) {
 				return mimeType;
 			}
@@ -444,7 +462,7 @@ function detectFileCategory(mimeType: string): string | undefined {
  */
 function performSecurityChecks(
 	file: File,
-	sanitizedName: string
+	sanitizedName: string,
 ): { errors: string[]; warnings: string[] } {
 	const errors: string[] = [];
 	const warnings: string[] = [];
@@ -454,7 +472,9 @@ function performSecurityChecks(
 	if (parts.length > 2) {
 		const secondExt = `.${parts.at(-2)}`;
 		if (isBlockedExtension(secondExt)) {
-			errors.push("File has suspicious double extension that could hide malicious content");
+			errors.push(
+				"File has suspicious double extension that could hide malicious content",
+			);
 		}
 	}
 
@@ -500,7 +520,7 @@ export function formatFileSize(bytes: number): string {
  */
 export async function validateImage(
 	file: File,
-	maxSize = SIZE_LIMITS.image
+	maxSize = SIZE_LIMITS.image,
 ): Promise<ValidationResult> {
 	return validateFile(file, {
 		context: "image",
@@ -516,7 +536,7 @@ export async function validateImage(
  */
 export async function validateDocument(
 	file: File,
-	maxSize = SIZE_LIMITS.document
+	maxSize = SIZE_LIMITS.document,
 ): Promise<ValidationResult> {
 	return validateFile(file, {
 		context: "document",
@@ -531,7 +551,7 @@ export async function validateDocument(
  */
 export async function validateVideo(
 	file: File,
-	maxSize = SIZE_LIMITS.video
+	maxSize = SIZE_LIMITS.video,
 ): Promise<ValidationResult> {
 	return validateFile(file, {
 		context: "video",
@@ -549,7 +569,9 @@ export async function validateAvatar(file: File): Promise<ValidationResult> {
 
 	// Additional avatar-specific validation
 	if (result.valid && file.type === "image/svg+xml") {
-		result.warnings.push("SVG avatars may be sanitized to remove potential scripts");
+		result.warnings.push(
+			"SVG avatars may be sanitized to remove potential scripts",
+		);
 	}
 
 	return result;
@@ -560,7 +582,7 @@ export async function validateAvatar(file: File): Promise<ValidationResult> {
  */
 export async function validateFiles(
 	files: File[],
-	options: ValidationOptions = {}
+	options: ValidationOptions = {},
 ): Promise<Map<string, ValidationResult>> {
 	const results = new Map<string, ValidationResult>();
 
@@ -577,7 +599,10 @@ export async function validateFiles(
 /**
  * Check if file passes validation
  */
-export async function isValidFile(file: File, options: ValidationOptions = {}): Promise<boolean> {
+export async function isValidFile(
+	file: File,
+	options: ValidationOptions = {},
+): Promise<boolean> {
 	const result = await validateFile(file, options);
 	return result.valid;
 }

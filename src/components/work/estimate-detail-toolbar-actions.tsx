@@ -16,7 +16,7 @@ import { Archive, Download, Eye, Mail } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveEstimate } from "@/actions/estimates";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function EstimateDetailToolbarActions() {
@@ -81,7 +86,12 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handlePreview} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handlePreview}
+								size="sm"
+								variant="outline"
+							>
 								<Eye className="size-3.5" />
 								<span className="hidden md:inline">Preview</span>
 							</Button>
@@ -95,7 +105,12 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handleExportPDF} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handleExportPDF}
+								size="sm"
+								variant="outline"
+							>
 								<Download className="size-3.5" />
 								<span className="hidden lg:inline">PDF</span>
 							</Button>
@@ -109,7 +124,12 @@ export function EstimateDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handleSendEmail} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handleSendEmail}
+								size="sm"
+								variant="outline"
+							>
 								<Mail className="size-3.5" />
 								<span className="hidden lg:inline">Send</span>
 							</Button>
@@ -149,8 +169,8 @@ export function EstimateDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Estimate</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this estimate? Archived estimates can be restored
-							within 90 days.
+							Are you sure you want to archive this estimate? Archived estimates
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -161,7 +181,11 @@ export function EstimateDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Estimate"}
 						</Button>
 					</DialogFooter>

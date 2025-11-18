@@ -45,7 +45,9 @@ export function KBFeedback({
 
 		if (result.success) {
 			setHelpful(value);
-			toast.success("Thank you! Your feedback helps us improve our documentation.");
+			toast.success(
+				"Thank you! Your feedback helps us improve our documentation.",
+			);
 		} else {
 			toast.error(result.error || "Failed to submit feedback");
 		}
@@ -75,7 +77,9 @@ export function KBFeedback({
 	return (
 		<div className={cn("space-y-4 border-t pt-6", className)}>
 			<div>
-				<h3 className="mb-2 text-sm font-semibold">Was this article helpful?</h3>
+				<h3 className="mb-2 text-sm font-semibold">
+					Was this article helpful?
+				</h3>
 				<div className="flex items-center gap-4">
 					<Button
 						disabled={isSubmitting || helpful === true}
@@ -99,7 +103,9 @@ export function KBFeedback({
 			</div>
 
 			<div>
-				<h3 className="mb-2 text-sm font-semibold">Have a comment or suggestion?</h3>
+				<h3 className="mb-2 text-sm font-semibold">
+					Have a comment or suggestion?
+				</h3>
 				<div className="space-y-2">
 					<Textarea
 						className="resize-none"

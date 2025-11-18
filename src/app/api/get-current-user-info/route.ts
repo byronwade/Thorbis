@@ -15,7 +15,10 @@ export async function GET() {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database not configured" },
+				{ status: 500 },
+			);
 		}
 
 		// Get user profile from database
@@ -26,7 +29,11 @@ export async function GET() {
 			.single();
 
 		// Extract name parts from full name or email
-		const fullName = profile?.name || user.user_metadata?.name || user.email?.split("@")[0] || "";
+		const fullName =
+			profile?.name ||
+			user.user_metadata?.name ||
+			user.email?.split("@")[0] ||
+			"";
 		const nameParts = fullName.split(" ");
 		const firstName = nameParts[0] || "";
 		const lastName = nameParts.slice(1).join(" ") || "";
@@ -38,6 +45,9 @@ export async function GET() {
 			phone: profile?.phone || user.user_metadata?.phone || "",
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

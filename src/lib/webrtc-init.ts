@@ -47,12 +47,19 @@ export async function initializeWebRTC(): Promise<boolean> {
 			}
 			console.warn("[WebRTC Init] ⚠ WebRTC service failed to start");
 			console.warn("[WebRTC Init] Telephony features will be unavailable");
-			console.warn("[WebRTC Init] Main application continues to function normally");
+			console.warn(
+				"[WebRTC Init] Main application continues to function normally",
+			);
 			return false;
 		} catch (error) {
-			console.error("[WebRTC Init] ✗ WebRTC service initialization error:", error);
+			console.error(
+				"[WebRTC Init] ✗ WebRTC service initialization error:",
+				error,
+			);
 			console.error("[WebRTC Init] Telephony features will be unavailable");
-			console.error("[WebRTC Init] Main application continues to function normally");
+			console.error(
+				"[WebRTC Init] Main application continues to function normally",
+			);
 			return false;
 		} finally {
 			initializationPromise = null;

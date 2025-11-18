@@ -56,14 +56,19 @@ export function CustomerAppointmentsWidget({
 								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
-									<p className="text-sm font-medium">{formatDate(appointment.scheduled_start)}</p>
+									<p className="text-sm font-medium">
+										{formatDate(appointment.scheduled_start)}
+									</p>
 									{appointment.job && (
 										<p className="text-muted-foreground text-xs">
-											Job: {appointment.job.job_number} - {appointment.job.title}
+											Job: {appointment.job.job_number} -{" "}
+											{appointment.job.title}
 										</p>
 									)}
 									{appointment.property && (
-										<p className="text-muted-foreground text-xs">{appointment.property.address}</p>
+										<p className="text-muted-foreground text-xs">
+											{appointment.property.address}
+										</p>
 									)}
 								</div>
 							</Link>
@@ -71,7 +76,9 @@ export function CustomerAppointmentsWidget({
 
 						{appointments.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link href={`/dashboard/work/appointments?customer=${customerId}`}>
+								<Link
+									href={`/dashboard/work/appointments?customer=${customerId}`}
+								>
 									View All Appointments
 								</Link>
 							</Button>

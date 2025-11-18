@@ -17,14 +17,21 @@ import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 // ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
 export const revalidate = 60;
 
-export default function UpaymentsPage() {
+export default async function UpaymentsPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<>
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<UpaymentsStats />
 			</Suspense>
 			<Suspense fallback={<PaymentsSkeleton />}>
-				<UpaymentsData />
+				<UpaymentsData searchParams={params} />
 			</Suspense>
 		</>
 	);

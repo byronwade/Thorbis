@@ -165,7 +165,10 @@ export function ToolsSidebar() {
 	return (
 		<nav className="flex flex-col gap-2 py-2">
 			{sidebarGroups.map((group) => (
-				<div className="relative flex w-full min-w-0 flex-col p-2" key={group.label}>
+				<div
+					className="relative flex w-full min-w-0 flex-col p-2"
+					key={group.label}
+				>
 					<div className="text-muted-foreground flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium">
 						{group.label}
 					</div>
@@ -180,7 +183,8 @@ export function ToolsSidebar() {
 											"focus-visible:ring-ring focus-visible:ring-2",
 											"hover:bg-accent hover:text-accent-foreground",
 											"h-[30px] w-full border border-transparent text-[0.8rem] font-medium",
-											isActive && "border-accent bg-accent text-accent-foreground font-medium"
+											isActive &&
+												"border-accent bg-accent text-accent-foreground font-medium",
 										)}
 										href={item.href}
 									>

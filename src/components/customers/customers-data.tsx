@@ -1,8 +1,14 @@
 import { notFound } from "next/navigation";
 import { CustomersKanban } from "@/components/customers/customers-kanban";
-import { type Customer, CustomersTable } from "@/components/customers/customers-table";
+import {
+	type Customer,
+	CustomersTable,
+} from "@/components/customers/customers-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { getCustomersWithStats } from "@/lib/queries/customers";
+import {
+	CUSTOMERS_PAGE_SIZE,
+	getCustomersPageData,
+} from "@/lib/queries/customers";
 
 /**
  * Customers Data - Async Server Component
@@ -14,9 +20,16 @@ import { getCustomersWithStats } from "@/lib/queries/customers";
  *
  * Expected: 200-400ms (was 6400-7300ms) - 16-36x faster!
  */
-export async function CustomersData() {
-	// Fetch customers with stats from optimized cached query
-	const dbCustomers = await getCustomersWithStats();
+export async function CustomersData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
+	const currentPage = Number(searchParams?.page) || 1;
+	const { customers: dbCustomers, totalCount } = await getCustomersPageData(
+		currentPage,
+		CUSTOMERS_PAGE_SIZE,
+	);
 
 	if (!dbCustomers) {
 		return notFound();
@@ -33,9 +46,16 @@ export async function CustomersData() {
 		city: c.city,
 		state: c.state,
 		zipCode: c.zip_code,
-		status: c.status === "active" ? "active" : c.status === "inactive" ? "inactive" : "prospect",
-		lastService: c.last_job_date ? new Date(c.last_job_date).toLocaleDateString() : "None",
-		nextService: c.next_scheduled_job ? new Date(c.next_scheduled_job).toLocaleDateString() : "TBD",
+		status:
+			c.status === "active"
+				? "active"
+				: c.status === "inactive"
+					? "inactive"
+					: "prospect",
+		lastService: c.last_job_date
+			? new Date(c.last_job_date).toLocaleDateString()
+			: "None",
+		nextService: "TBD",
 		totalValue: c.total_revenue || 0,
 		archived_at: c.archived_at,
 		deleted_at: c.deleted_at,
@@ -45,7 +65,14 @@ export async function CustomersData() {
 		<WorkDataView
 			kanban={<CustomersKanban customers={customers} />}
 			section="customers"
-			table={<CustomersTable customers={customers} itemsPerPage={50} />}
+			table={
+				<CustomersTable
+					customers={customers}
+					itemsPerPage={CUSTOMERS_PAGE_SIZE}
+					totalCount={totalCount}
+					currentPage={currentPage}
+				/>
+			}
 		/>
 	);
 }

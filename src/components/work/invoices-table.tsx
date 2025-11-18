@@ -47,6 +47,8 @@ type InvoicesTableProps = {
 	itemsPerPage?: number;
 	showRefresh?: boolean;
 	enableVirtualization?: boolean | "auto";
+	totalCount?: number;
+	currentPage?: number;
 };
 
 export function InvoicesTable({
@@ -54,6 +56,8 @@ export function InvoicesTable({
 	itemsPerPage = 50,
 	showRefresh = false,
 	enableVirtualization = "auto",
+	totalCount,
+	currentPage = 1,
 }: InvoicesTableProps) {
 	// Get filters from global store
 	const filters = useInvoiceFiltersStore((state) => state.filters);
@@ -62,7 +66,9 @@ export function InvoicesTable({
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
 	const [isBulkSendDialogOpen, setIsBulkSendDialogOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+		new Set(),
+	);
 	const [pendingSendIds, setPendingSendIds] = useState<Set<string>>(new Set());
 
 	// Apply filters from store
@@ -73,7 +79,9 @@ export function InvoicesTable({
 		if (filters.archiveStatus === "active") {
 			result = result.filter((inv) => !(inv.archived_at || inv.deleted_at));
 		} else if (filters.archiveStatus === "archived") {
-			result = result.filter((inv) => Boolean(inv.archived_at || inv.deleted_at));
+			result = result.filter((inv) =>
+				Boolean(inv.archived_at || inv.deleted_at),
+			);
 		}
 		// "all" = no archive filtering
 
@@ -95,20 +103,25 @@ export function InvoicesTable({
 		// 4. Filter by customer name
 		if (filters.customerName) {
 			const search = filters.customerName.toLowerCase();
-			result = result.filter((inv) => inv.customer.toLowerCase().includes(search));
+			result = result.filter((inv) =>
+				inv.customer.toLowerCase().includes(search),
+			);
 		}
 
 		// 5. Filter by invoice number
 		if (filters.invoiceNumber) {
 			const search = filters.invoiceNumber.toLowerCase();
-			result = result.filter((inv) => inv.invoiceNumber.toLowerCase().includes(search));
+			result = result.filter((inv) =>
+				inv.invoiceNumber.toLowerCase().includes(search),
+			);
 		}
 
 		return result;
 	}, [invoices, filters]);
 
 	// Determine if we're showing archived items
-	const showingArchived = filters.archiveStatus === "archived" || filters.archiveStatus === "all";
+	const showingArchived =
+		filters.archiveStatus === "archived" || filters.archiveStatus === "all";
 
 	const columns: ColumnDef<Invoice>[] = [
 		{
@@ -121,6 +134,7 @@ export function InvoicesTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/invoices/${invoice.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{invoice.invoiceNumber}
@@ -137,6 +151,7 @@ export function InvoicesTable({
 				<Link
 					className="block"
 					href={`/dashboard/work/invoices/${invoice.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<span className="text-foreground text-sm font-medium hover:underline">
@@ -154,7 +169,9 @@ export function InvoicesTable({
 			sortable: true,
 			hideable: true,
 			render: (invoice) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{invoice.date}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{invoice.date}
+				</span>
 			),
 		},
 		{
@@ -166,7 +183,9 @@ export function InvoicesTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Due dates are essential for AR management
 			render: (invoice) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{invoice.dueDate}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{invoice.dueDate}
+				</span>
 			),
 		},
 		{
@@ -253,7 +272,9 @@ export function InvoicesTable({
 					return;
 				}
 
-				const invoicesToSend = filteredInvoices.filter((inv) => selectedIds.has(inv.id));
+				const invoicesToSend = filteredInvoices.filter((inv) =>
+					selectedIds.has(inv.id),
+				);
 
 				if (invoicesToSend.length === 0) {
 					toast.error("No invoices selected");
@@ -278,7 +299,7 @@ export function InvoicesTable({
 			onClick: (selectedIds) => {
 				// Check if all selected are paid invoices
 				const hasNonPaidInvoices = filteredInvoices.some(
-					(inv) => selectedIds.has(inv.id) && inv.status !== "paid"
+					(inv) => selectedIds.has(inv.id) && inv.status !== "paid",
 				);
 
 				if (!hasNonPaidInvoices) {
@@ -318,7 +339,12 @@ export function InvoicesTable({
 				columns={columns}
 				data={filteredInvoices}
 				emptyAction={
-					<Button onClick={() => (window.location.href = "/dashboard/work/invoices/new")} size="sm">
+					<Button
+						onClick={() =>
+							(window.location.href = "/dashboard/work/invoices/new")
+						}
+						size="sm"
+					>
 						<Plus className="mr-2 size-4" />
 						Create Invoice
 					</Button>
@@ -333,6 +359,9 @@ export function InvoicesTable({
 				isArchived={(invoice) => !!(invoice.archived_at || invoice.deleted_at)}
 				isHighlighted={isHighlighted}
 				itemsPerPage={itemsPerPage}
+				totalCount={totalCount ?? filteredInvoices.length}
+				currentPageFromServer={currentPage}
+				serverPagination
 				onRefresh={() => window.location.reload()}
 				onRowClick={handleRowClick}
 				searchFilter={searchFilter}
@@ -343,7 +372,10 @@ export function InvoicesTable({
 			/>
 
 			{/* Archive Single Invoice Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Invoice?</AlertDialogTitle>
@@ -358,7 +390,9 @@ export function InvoicesTable({
 							onClick={async () => {
 								if (itemToArchive) {
 									try {
-										const { archiveInvoice } = await import("@/actions/invoices");
+										const { archiveInvoice } = await import(
+											"@/actions/invoices"
+										);
 										const result = await archiveInvoice(itemToArchive);
 										if (result.success) {
 											toast.success("Invoice archived successfully");
@@ -382,10 +416,13 @@ export function InvoicesTable({
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Archive {selectedItemIds.size} Invoice(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Archive {selectedItemIds.size} Invoice(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} invoice(s) will be archived and can be restored within 90 days.
-							Paid invoices will be automatically skipped.
+							{selectedItemIds.size} invoice(s) will be archived and can be
+							restored within 90 days. Paid invoices will be automatically
+							skipped.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -394,12 +431,16 @@ export function InvoicesTable({
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
 								const loadingToast = toast.loading(
-									`Archiving ${selectedItemIds.size} invoice(s)...`
+									`Archiving ${selectedItemIds.size} invoice(s)...`,
 								);
 
 								try {
-									const { bulkArchiveInvoices } = await import("@/actions/bulk-archive");
-									const result = await bulkArchiveInvoices(Array.from(selectedItemIds));
+									const { bulkArchiveInvoices } = await import(
+										"@/actions/bulk-archive"
+									);
+									const result = await bulkArchiveInvoices(
+										Array.from(selectedItemIds),
+									);
 
 									toast.dismiss(loadingToast);
 
@@ -411,10 +452,12 @@ export function InvoicesTable({
 											window.location.reload();
 										} else if (skipped > 0 && failed === 0) {
 											toast.warning(
-												`${skipped} paid invoice${skipped !== 1 ? "s" : ""} cannot be archived`
+												`${skipped} paid invoice${skipped !== 1 ? "s" : ""} cannot be archived`,
 											);
 										} else {
-											toast.error(result.message || "Failed to archive invoices");
+											toast.error(
+												result.message || "Failed to archive invoices",
+											);
 										}
 									} else {
 										toast.error("Failed to archive invoices");
@@ -422,7 +465,9 @@ export function InvoicesTable({
 								} catch (error) {
 									toast.dismiss(loadingToast);
 									toast.error(
-										error instanceof Error ? error.message : "Failed to archive invoices"
+										error instanceof Error
+											? error.message
+											: "Failed to archive invoices",
 									);
 								}
 							}}
@@ -434,16 +479,23 @@ export function InvoicesTable({
 			</AlertDialog>
 
 			{/* Bulk Send Confirmation Dialog */}
-			<AlertDialog onOpenChange={setIsBulkSendDialogOpen} open={isBulkSendDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsBulkSendDialogOpen}
+				open={isBulkSendDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Send {pendingSendIds.size} Invoice(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Send {pendingSendIds.size} Invoice(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
 							This will send {pendingSendIds.size} invoice
-							{pendingSendIds.size !== 1 ? "s" : ""} via email to your customers.
+							{pendingSendIds.size !== 1 ? "s" : ""} via email to your
+							customers.
 							<br />
 							<br />
-							<strong>Estimated time:</strong> {Math.ceil(pendingSendIds.size * 0.5)} second
+							<strong>Estimated time:</strong>{" "}
+							{Math.ceil(pendingSendIds.size * 0.5)} second
 							{Math.ceil(pendingSendIds.size * 0.5) !== 1 ? "s" : ""}
 							<br />
 							<br />
@@ -458,7 +510,9 @@ export function InvoicesTable({
 								setIsBulkSending(true);
 
 								// Import sync store
-								const { useSyncStore } = await import("@/lib/stores/sync-store");
+								const { useSyncStore } = await import(
+									"@/lib/stores/sync-store"
+								);
 								const { startOperation, updateOperation, completeOperation } =
 									useSyncStore.getState();
 
@@ -475,7 +529,9 @@ export function InvoicesTable({
 								});
 
 								try {
-									const { bulkSendInvoices } = await import("@/actions/bulk-communications");
+									const { bulkSendInvoices } = await import(
+										"@/actions/bulk-communications"
+									);
 
 									// Send invoices
 									const result = await bulkSendInvoices(invoiceIds, {
@@ -491,7 +547,7 @@ export function InvoicesTable({
 										completeOperation(
 											operationId,
 											false,
-											result.error || "Failed to send invoices"
+											result.error || "Failed to send invoices",
 										);
 										toast.error(result.error || "Failed to send invoices");
 									}
@@ -504,9 +560,15 @@ export function InvoicesTable({
 									completeOperation(
 										operationId,
 										false,
-										error instanceof Error ? error.message : "Failed to send invoices"
+										error instanceof Error
+											? error.message
+											: "Failed to send invoices",
 									);
-									toast.error(error instanceof Error ? error.message : "Failed to send invoices");
+									toast.error(
+										error instanceof Error
+											? error.message
+											: "Failed to send invoices",
+									);
 								} finally {
 									setIsBulkSending(false);
 									setPendingSendIds(new Set());

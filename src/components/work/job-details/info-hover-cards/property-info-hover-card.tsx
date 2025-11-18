@@ -22,7 +22,11 @@ import { updateEntityTags } from "@/actions/entity-tags";
 import { EntityTags } from "@/components/shared/tags/entity-tags";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TravelTimeData = {
@@ -53,7 +57,9 @@ type PropertyInfoHoverCardProps = {
 	};
 };
 
-export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) {
+export function PropertyInfoHoverCard({
+	property,
+}: PropertyInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 	const [travelTime, setTravelTime] = useState<TravelTimeData | null>(null);
 	const [isLoadingTravel, setIsLoadingTravel] = useState(false);
@@ -88,7 +94,12 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 					params.set("destinationLat", property.lat.toString());
 					params.set("destinationLon", property.lon.toString());
 				} else {
-					const destination = [property.address, property.city, property.state, property.zip_code]
+					const destination = [
+						property.address,
+						property.city,
+						property.state,
+						property.zip_code,
+					]
 						.filter(Boolean)
 						.join(", ");
 					params.set("destination", destination);
@@ -117,12 +128,19 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 
 	const displayName = property.name || property.address || "Service Location";
 
-	const fullAddress = [property.address, property.city, property.state, property.zip_code]
+	const fullAddress = [
+		property.address,
+		property.city,
+		property.state,
+		property.zip_code,
+	]
 		.filter(Boolean)
 		.join(", ");
 
 	const coordinates =
-		property.lat && property.lon ? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}` : null;
+		property.lat && property.lon
+			? `${property.lat.toFixed(6)}, ${property.lon.toFixed(6)}`
+			: null;
 
 	// Format duration for display
 	const formatDuration = (seconds: number): string => {
@@ -245,7 +263,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 								{isLoadingTravel && (
 									<div className="bg-muted/50 flex items-center gap-2 rounded-md p-2">
 										<Loader2 className="text-muted-foreground size-4 animate-spin" />
-										<span className="text-muted-foreground text-sm">Calculating...</span>
+										<span className="text-muted-foreground text-sm">
+											Calculating...
+										</span>
 									</div>
 								)}
 								{travelTime && !isLoadingTravel && (
@@ -255,7 +275,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 											<span className="font-semibold tabular-nums">
 												{formatDuration(travelTime.duration)}
 											</span>
-											<span className="text-muted-foreground text-xs">drive</span>
+											<span className="text-muted-foreground text-xs">
+												drive
+											</span>
 										</div>
 										<Separator className="h-4" orientation="vertical" />
 										<div className="flex items-center gap-1.5">
@@ -279,7 +301,9 @@ export function PropertyInfoHoverCard({ property }: PropertyInfoHoverCardProps) 
 						<EntityTags
 							entityId={property.id}
 							entityType="property"
-							onUpdateTags={(id, tags) => updateEntityTags("property", id, tags)}
+							onUpdateTags={(id, tags) =>
+								updateEntityTags("property", id, tags)
+							}
 							tags={property.metadata?.tags || []}
 						/>
 					</div>

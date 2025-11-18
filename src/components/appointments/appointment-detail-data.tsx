@@ -24,7 +24,9 @@ type AppointmentDetailDataProps = {
 	appointmentId: string;
 };
 
-export async function AppointmentDetailData({ appointmentId }: AppointmentDetailDataProps) {
+export async function AppointmentDetailData({
+	appointmentId,
+}: AppointmentDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -63,7 +65,7 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 
 	// Fetch appointment with all related data
 	const { data: appointment, error } = await supabase
-		.from("schedules")
+		.from("appointments")
 		.select(
 			`
       *,
@@ -71,7 +73,7 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
       property:properties(*),
       job:jobs(*),
       assigned_user:users!assigned_to(*)
-    `
+    `,
 		)
 		.eq("id", appointmentId)
 		.is("deleted_at", null)
@@ -87,31 +89,35 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 	}
 
 	// Fetch related data
-	const [{ data: teamAssignments }, { data: tasks }, { data: notes }, { data: activities }] =
-		await Promise.all([
-			supabase
-				.from("schedule_team_assignments")
-				.select("*, user:users(*)")
-				.eq("schedule_id", appointmentId),
-			supabase
-				.from("job_tasks")
-				.select("*")
-				.eq("job_id", appointment.job_id)
-				.eq("status", "pending"),
-			supabase
-				.from("job_notes")
-				.select("*, user:users(*)")
-				.eq("job_id", appointment.job_id)
-				.order("created_at", { ascending: false })
-				.limit(10),
-			supabase
-				.from("activity_log")
-				.select("*, user:users(*)")
-				.eq("entity_type", "schedule")
-				.eq("entity_id", appointmentId)
-				.order("created_at", { ascending: false })
-				.limit(20),
-		]);
+	const [
+		{ data: teamAssignments },
+		{ data: tasks },
+		{ data: notes },
+		{ data: activities },
+	] = await Promise.all([
+		supabase
+			.from("schedule_team_assignments")
+			.select("*, user:users(*)")
+			.eq("schedule_id", appointmentId),
+		supabase
+			.from("job_tasks")
+			.select("*")
+			.eq("job_id", appointment.job_id)
+			.eq("status", "pending"),
+		supabase
+			.from("job_notes")
+			.select("*, user:users(*)")
+			.eq("job_id", appointment.job_id)
+			.order("created_at", { ascending: false })
+			.limit(10),
+		supabase
+			.from("activity_log")
+			.select("*, user:users(*)")
+			.eq("entity_type", "schedule")
+			.eq("entity_id", appointmentId)
+			.order("created_at", { ascending: false })
+			.limit(20),
+	]);
 
 	// Get customer and property from appointment
 	const customer = Array.isArray(appointment.customer)
@@ -120,15 +126,23 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 	const property = Array.isArray(appointment.property)
 		? appointment.property[0]
 		: appointment.property;
-	const job = Array.isArray(appointment.job) ? appointment.job[0] : appointment.job;
+	const job = Array.isArray(appointment.job)
+		? appointment.job[0]
+		: appointment.job;
 
 	// Calculate metrics
-	const appointmentStart = appointment.start_time ? new Date(appointment.start_time) : null;
-	const appointmentEnd = appointment.end_time ? new Date(appointment.end_time) : null;
+	const appointmentStart = appointment.start_time
+		? new Date(appointment.start_time)
+		: null;
+	const appointmentEnd = appointment.end_time
+		? new Date(appointment.end_time)
+		: null;
 
 	const duration =
 		appointmentStart && appointmentEnd
-			? Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
+			? Math.floor(
+					(appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60),
+				)
 			: 0;
 
 	const metrics = {
@@ -160,7 +174,10 @@ export async function AppointmentDetailData({ appointmentId }: AppointmentDetail
 			<div className="flex h-full w-full flex-col overflow-auto">
 				<div className="mx-auto w-full max-w-7xl">
 					<div className="p-6">
-						<AppointmentPageContent entityData={appointmentData} metrics={metrics} />
+						<AppointmentPageContent
+							entityData={appointmentData}
+							metrics={metrics}
+						/>
 					</div>
 				</div>
 			</div>

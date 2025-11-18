@@ -82,7 +82,7 @@ NEW TRANSCRIPT PORTION:
 Update the extraction with any new information found. Maintain or update confidence scores. Only change fields that have new or contradicting information.`;
 
 export function formatTranscriptForExtraction(
-	entries: Array<{ speaker: string; text: string; timestamp: Date }>
+	entries: Array<{ speaker: string; text: string; timestamp: Date }>,
 ): string {
 	return entries
 		.map((entry) => {
@@ -97,7 +97,11 @@ export function getJobTypeFromDescription(description: string): string {
 	const lower = description.toLowerCase();
 
 	// HVAC
-	if (lower.includes("heat") || lower.includes("furnace") || lower.includes("hot")) {
+	if (
+		lower.includes("heat") ||
+		lower.includes("furnace") ||
+		lower.includes("hot")
+	) {
 		return "Heating Repair";
 	}
 	if (
@@ -113,7 +117,11 @@ export function getJobTypeFromDescription(description: string): string {
 	}
 
 	// Plumbing
-	if (lower.includes("leak") || lower.includes("pipe") || lower.includes("water")) {
+	if (
+		lower.includes("leak") ||
+		lower.includes("pipe") ||
+		lower.includes("water")
+	) {
 		return "Plumbing Repair";
 	}
 	if (lower.includes("drain") || lower.includes("clog")) {
@@ -121,7 +129,11 @@ export function getJobTypeFromDescription(description: string): string {
 	}
 
 	// Electrical
-	if (lower.includes("electric") || lower.includes("outlet") || lower.includes("wiring")) {
+	if (
+		lower.includes("electric") ||
+		lower.includes("outlet") ||
+		lower.includes("wiring")
+	) {
 		return "Electrical Repair";
 	}
 

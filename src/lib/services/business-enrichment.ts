@@ -56,7 +56,7 @@ export const BusinessEnrichmentSchema = z.object({
 				rating: z.number(),
 				text: z.string(),
 				time: z.string(),
-			})
+			}),
 		)
 		.optional(),
 
@@ -116,14 +116,19 @@ export class BusinessEnrichmentService {
 		businessName: string,
 		address?: string,
 		city?: string,
-		state?: string
+		state?: string,
 	): Promise<BusinessEnrichment | null> {
 		let placesData: any = null;
 		let corporatesData: any = null;
 
 		// Try Google Places first
 		try {
-			placesData = await this.enrichWithGooglePlaces(businessName, address, city, state);
+			placesData = await this.enrichWithGooglePlaces(
+				businessName,
+				address,
+				city,
+				state,
+			);
 		} catch (_error) {}
 
 		// Try OpenCorporates for registration data
@@ -138,7 +143,10 @@ export class BusinessEnrichmentService {
 
 		// Merge data from both sources
 		return BusinessEnrichmentSchema.parse({
-			businessName: placesData?.businessName || corporatesData?.businessName || businessName,
+			businessName:
+				placesData?.businessName ||
+				corporatesData?.businessName ||
+				businessName,
 			businessType: placesData?.businessType || corporatesData?.businessType,
 			phone: placesData?.phone,
 			website: placesData?.website,
@@ -154,7 +162,11 @@ export class BusinessEnrichmentService {
 			photos: placesData?.photos,
 			registration: corporatesData?.registration,
 			source:
-				placesData && corporatesData ? "combined" : placesData ? "google_places" : "opencorporates",
+				placesData && corporatesData
+					? "combined"
+					: placesData
+						? "google_places"
+						: "opencorporates",
 			confidence: placesData ? 90 : 70,
 			enrichedAt: new Date().toISOString(),
 		});
@@ -167,21 +179,25 @@ export class BusinessEnrichmentService {
 		businessName: string,
 		address?: string,
 		city?: string,
-		state?: string
+		state?: string,
 	): Promise<Partial<BusinessEnrichment> | null> {
 		if (!this.googlePlacesApiKey) {
 			return null;
 		}
 
 		// Build search query
-		const query = [businessName, address, city, state].filter(Boolean).join(", ");
+		const query = [businessName, address, city, state]
+			.filter(Boolean)
+			.join(", ");
 
 		// Step 1: Find place
 		const searchUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&fields=place_id&key=${this.googlePlacesApiKey}`;
 
 		const searchResponse = await fetch(searchUrl);
 		if (!searchResponse.ok) {
-			throw new Error(`Google Places search error: ${searchResponse.statusText}`);
+			throw new Error(
+				`Google Places search error: ${searchResponse.statusText}`,
+			);
 		}
 
 		const searchData = await searchResponse.json();
@@ -196,7 +212,9 @@ export class BusinessEnrichmentService {
 
 		const detailsResponse = await fetch(detailsUrl);
 		if (!detailsResponse.ok) {
-			throw new Error(`Google Places details error: ${detailsResponse.statusText}`);
+			throw new Error(
+				`Google Places details error: ${detailsResponse.statusText}`,
+			);
 		}
 
 		const detailsData = await detailsResponse.json();
@@ -227,7 +245,7 @@ export class BusinessEnrichmentService {
 			?.slice(0, 5)
 			.map(
 				(photo: any) =>
-					`https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${this.googlePlacesApiKey}`
+					`https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${photo.photo_reference}&key=${this.googlePlacesApiKey}`,
 			);
 
 		return {
@@ -263,7 +281,7 @@ export class BusinessEnrichmentService {
 	 */
 	private async enrichWithOpenCorporates(
 		businessName: string,
-		state?: string
+		state?: string,
 	): Promise<Partial<BusinessEnrichment> | null> {
 		// OpenCorporates has a free tier, no API key required for basic searches
 		const jurisdiction = state ? `us_${state.toLowerCase()}` : "us";

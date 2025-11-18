@@ -32,7 +32,11 @@ type DrillDownViewProps = {
 	itemsPerPage?: number;
 };
 
-export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: DrillDownViewProps) {
+export function DrillDownView({
+	items,
+	categories = [],
+	itemsPerPage = 50,
+}: DrillDownViewProps) {
 	const router = useRouter();
 	const navigationPath = usePriceBookStore((state) => state.navigationPath);
 	const viewMode = usePriceBookStore((state) => state.viewMode);
@@ -72,7 +76,9 @@ export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: Dri
 				return false;
 			}
 
-			return navigationPath.every((segment, index) => itemPath[index] === segment);
+			return navigationPath.every(
+				(segment, index) => itemPath[index] === segment,
+			);
 		});
 	};
 
@@ -108,7 +114,9 @@ export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: Dri
 						<CategoryCard
 							count={0}
 							description="Create a new category"
-							name={navigationPath.length === 0 ? "Add Category" : "Add Subcategory"}
+							name={
+								navigationPath.length === 0 ? "Add Category" : "Add Subcategory"
+							}
 							onClick={() => {}}
 							variant="add"
 						/>
@@ -151,10 +159,12 @@ export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: Dri
 								/>
 							</svg>
 						</div>
-						<h3 className="text-foreground mb-2 text-lg font-semibold">No items yet</h3>
+						<h3 className="text-foreground mb-2 text-lg font-semibold">
+							No items yet
+						</h3>
 						<p className="text-muted-foreground mx-auto mb-6 max-w-sm text-sm">
-							This category is empty. Start building your price book by adding items or creating
-							subcategories.
+							This category is empty. Start building your price book by adding
+							items or creating subcategories.
 						</p>
 						<div className="flex items-center justify-center gap-3">
 							<button
@@ -169,7 +179,11 @@ export function DrillDownView({ items, categories = [], itemsPerPage = 50 }: Dri
 									viewBox="0 0 24 24"
 									xmlns="http://www.w3.org/2000/svg"
 								>
-									<path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" />
+									<path
+										d="M12 4v16m8-8H4"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
 								</svg>
 								Add Item
 							</button>

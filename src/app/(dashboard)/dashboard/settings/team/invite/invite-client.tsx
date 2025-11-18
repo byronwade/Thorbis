@@ -14,7 +14,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -87,7 +93,7 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 	const updateInvite = <K extends keyof InviteRow>(
 		index: number,
 		field: K,
-		value: InviteRow[K]
+		value: InviteRow[K],
 	) => {
 		setInvites((prev) => {
 			const next = [...prev];
@@ -145,11 +151,15 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 			}
 
 			if (successCount) {
-				toast.success(`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`);
+				toast.success(
+					`Sent ${successCount} invitation${successCount > 1 ? "s" : ""}.`,
+				);
 				resetInvites();
 			}
 			if (failureCount) {
-				toast.error(`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`);
+				toast.error(
+					`Failed to send ${failureCount} invitation${failureCount > 1 ? "s" : ""}.`,
+				);
 			}
 		});
 	};
@@ -177,7 +187,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/team">Team & Permissions</Link>
+									<Link href="/dashboard/settings/team">
+										Team & Permissions
+									</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -201,10 +213,13 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 								<Mail className="text-primary h-5 w-5" />
 							</div>
 							<div>
-								<CardTitle className="text-base">How invitations work</CardTitle>
+								<CardTitle className="text-base">
+									How invitations work
+								</CardTitle>
 								<CardDescription className="text-xs">
-									Each teammate receives an email with a secure link to create their account. They
-									start with the role and department you assign here.
+									Each teammate receives an email with a secure link to create
+									their account. They start with the role and department you
+									assign here.
 								</CardDescription>
 							</div>
 						</div>
@@ -218,7 +233,8 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 							Team member details
 						</CardTitle>
 						<CardDescription>
-							Add one or more teammates. Roles are required; departments are optional.
+							Add one or more teammates. Roles are required; departments are
+							optional.
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-8">
@@ -245,7 +261,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											Email address <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "email", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "email", event.target.value)
+											}
 											placeholder="teammate@company.com"
 											type="email"
 											value={invite.email}
@@ -254,7 +272,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 									<div className="space-y-2">
 										<p className="text-sm font-medium">Job title (optional)</p>
 										<Input
-											onChange={(event) => updateInvite(index, "jobTitle", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "jobTitle", event.target.value)
+											}
 											placeholder="e.g., Senior Technician"
 											value={invite.jobTitle}
 										/>
@@ -264,7 +284,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											First name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "firstName", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "firstName", event.target.value)
+											}
 											placeholder="First name"
 											value={invite.firstName}
 										/>
@@ -274,7 +296,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											Last name <span className="text-destructive">*</span>
 										</p>
 										<Input
-											onChange={(event) => updateInvite(index, "lastName", event.target.value)}
+											onChange={(event) =>
+												updateInvite(index, "lastName", event.target.value)
+											}
 											placeholder="Last name"
 											value={invite.lastName}
 										/>
@@ -284,7 +308,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 											Role <span className="text-destructive">*</span>
 										</p>
 										<Select
-											onValueChange={(value) => updateInvite(index, "roleName", value)}
+											onValueChange={(value) =>
+												updateInvite(index, "roleName", value)
+											}
 											value={invite.roleName}
 										>
 											<SelectTrigger>
@@ -302,7 +328,9 @@ export function InviteMembersClient({ roles, departments }: InviteClientProps) {
 									<div className="space-y-2">
 										<p className="text-sm font-medium">Department (optional)</p>
 										<Select
-											onValueChange={(value) => updateInvite(index, "departmentId", value)}
+											onValueChange={(value) =>
+												updateInvite(index, "departmentId", value)
+											}
 											value={invite.departmentId}
 										>
 											<SelectTrigger>

@@ -1,6 +1,14 @@
 "use client";
 
-import { Briefcase, Clock, Edit2, Eye, MoreHorizontal, Play, Square } from "lucide-react";
+import {
+	Briefcase,
+	Clock,
+	Edit2,
+	Eye,
+	MoreHorizontal,
+	Play,
+	Square,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +20,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 
 type TimeEntry = {
 	id: string;
@@ -62,7 +73,9 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 		const clockIn = new Date(entry.clock_in);
 		const clockOut = entry.clock_out ? new Date(entry.clock_out) : new Date();
 
-		let duration = Math.floor((clockOut.getTime() - clockIn.getTime()) / (1000 * 60));
+		let duration = Math.floor(
+			(clockOut.getTime() - clockIn.getTime()) / (1000 * 60),
+		);
 
 		// Subtract break duration if provided
 		if (entry.break_duration) {
@@ -111,7 +124,9 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 						>
 							<Briefcase className="text-muted-foreground size-4" />
 							<div className="flex flex-col">
-								<span className="font-mono text-sm font-medium">#{job.job_number}</span>
+								<span className="font-mono text-sm font-medium">
+									#{job.job_number}
+								</span>
 								<span className="text-sm">{job.title}</span>
 							</div>
 						</Link>
@@ -172,7 +187,9 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 					return (
 						<div className="flex items-center gap-2">
 							<Clock className="text-muted-foreground size-4" />
-							<span className="text-sm font-medium">{formatDuration(duration)}</span>
+							<span className="text-sm font-medium">
+								{formatDuration(duration)}
+							</span>
 						</div>
 					);
 				},
@@ -183,7 +200,11 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 				width: "w-20",
 				shrink: true,
 				hideOnMobile: true,
-				render: (entry) => <span className="text-sm">{formatDuration(entry.break_duration)}</span>,
+				render: (entry) => (
+					<span className="text-sm">
+						{formatDuration(entry.break_duration)}
+					</span>
+				),
 			},
 			{
 				key: "status",
@@ -193,7 +214,9 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 				render: (entry) => {
 					const hasClockOut = Boolean(entry.clock_out);
 					return (
-						<Badge className={getStatusColor(entry)}>{hasClockOut ? "Completed" : "Active"}</Badge>
+						<Badge className={getStatusColor(entry)}>
+							{hasClockOut ? "Completed" : "Active"}
+						</Badge>
 					);
 				},
 			},
@@ -231,7 +254,7 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 				),
 			},
 		],
-		[calculateDuration, formatDuration, getStatusColor]
+		[calculateDuration, formatDuration, getStatusColor],
 	);
 
 	// Calculate total hours
@@ -255,7 +278,9 @@ export function TimeEntriesTable({ timeEntries }: TimeEntriesTableProps) {
 					</div>
 					<div>
 						<p className="text-muted-foreground text-sm">Active Now</p>
-						<p className="text-2xl font-bold">{timeEntries.filter((e) => !e.clock_out).length}</p>
+						<p className="text-2xl font-bold">
+							{timeEntries.filter((e) => !e.clock_out).length}
+						</p>
 					</div>
 				</div>
 			</div>

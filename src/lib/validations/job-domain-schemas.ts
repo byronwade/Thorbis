@@ -106,7 +106,9 @@ export const jobCustomerApprovalInsertSchema = z.object({
 	job_id: z.string().uuid(),
 	company_id: z.string().uuid(),
 	customer_signature: z.any().optional().nullable(),
-	customer_approval_status: z.enum(["pending", "approved", "rejected"]).default("pending"),
+	customer_approval_status: z
+		.enum(["pending", "approved", "rejected"])
+		.default("pending"),
 	customer_approval_timestamp: z.date().optional().nullable(),
 	customer_notes: z.string().optional().nullable(),
 });
@@ -115,15 +117,22 @@ export const jobCustomerApprovalUpdateSchema = jobCustomerApprovalInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobCustomerApprovalSelectSchema = jobCustomerApprovalInsertSchema.extend({
-	id: z.string().uuid(),
-	created_at: z.date(),
-	updated_at: z.date(),
-});
+export const jobCustomerApprovalSelectSchema =
+	jobCustomerApprovalInsertSchema.extend({
+		id: z.string().uuid(),
+		created_at: z.date(),
+		updated_at: z.date(),
+	});
 
-export type JobCustomerApprovalInsert = z.infer<typeof jobCustomerApprovalInsertSchema>;
-export type JobCustomerApprovalUpdate = z.infer<typeof jobCustomerApprovalUpdateSchema>;
-export type JobCustomerApprovalSelect = z.infer<typeof jobCustomerApprovalSelectSchema>;
+export type JobCustomerApprovalInsert = z.infer<
+	typeof jobCustomerApprovalInsertSchema
+>;
+export type JobCustomerApprovalUpdate = z.infer<
+	typeof jobCustomerApprovalUpdateSchema
+>;
+export type JobCustomerApprovalSelect = z.infer<
+	typeof jobCustomerApprovalSelectSchema
+>;
 
 // ============================================================================
 // JOB_EQUIPMENT_SERVICE - Equipment service tracking
@@ -144,15 +153,22 @@ export const jobEquipmentServiceUpdateSchema = jobEquipmentServiceInsertSchema
 	.partial()
 	.omit({ job_id: true, company_id: true });
 
-export const jobEquipmentServiceSelectSchema = jobEquipmentServiceInsertSchema.extend({
-	id: z.string().uuid(),
-	created_at: z.date(),
-	updated_at: z.date(),
-});
+export const jobEquipmentServiceSelectSchema =
+	jobEquipmentServiceInsertSchema.extend({
+		id: z.string().uuid(),
+		created_at: z.date(),
+		updated_at: z.date(),
+	});
 
-export type JobEquipmentServiceInsert = z.infer<typeof jobEquipmentServiceInsertSchema>;
-export type JobEquipmentServiceUpdate = z.infer<typeof jobEquipmentServiceUpdateSchema>;
-export type JobEquipmentServiceSelect = z.infer<typeof jobEquipmentServiceSelectSchema>;
+export type JobEquipmentServiceInsert = z.infer<
+	typeof jobEquipmentServiceInsertSchema
+>;
+export type JobEquipmentServiceUpdate = z.infer<
+	typeof jobEquipmentServiceUpdateSchema
+>;
+export type JobEquipmentServiceSelect = z.infer<
+	typeof jobEquipmentServiceSelectSchema
+>;
 
 // ============================================================================
 // JOB_DISPATCH - Dispatch and routing information
@@ -192,7 +208,13 @@ export const jobQualityInsertSchema = z.object({
 	inspection_required: z.boolean().default(false),
 	inspection_completed_at: z.date().optional().nullable(),
 	quality_score: z.number().int().min(0).max(100).optional().nullable(),
-	customer_satisfaction_rating: z.number().int().min(1).max(5).optional().nullable(),
+	customer_satisfaction_rating: z
+		.number()
+		.int()
+		.min(1)
+		.max(5)
+		.optional()
+		.nullable(),
 	quality_notes: z.string().optional().nullable(),
 	internal_priority_score: z.number().int().optional().nullable(),
 });
@@ -416,7 +438,7 @@ export function getJobWithDomains(
 		| "safety"
 		| "aiEnrichment"
 		| "multiEntity"
-	>
+	>,
 ): string {
 	const domainMap = {
 		financial: "financial:job_financial(*)",

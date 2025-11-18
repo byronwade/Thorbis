@@ -27,7 +27,7 @@ const CustomerContactsTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[300px] w-full" />,
-	}
+	},
 );
 
 // React component that renders the block
@@ -48,7 +48,10 @@ export function CustomerContactsBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="customer-contacts-block" data-drag-handle>
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddContact}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddContact}
+					>
 						Add Contact
 					</CollapsibleActionButton>
 				}
@@ -62,7 +65,10 @@ export function CustomerContactsBlockComponent({ node, editor }: any) {
 				title="Additional Contacts"
 				value="customer-contacts"
 			>
-				<CustomerContactsTable customerId={customerId} triggerAdd={triggerAddContact} />
+				<CustomerContactsTable
+					customerId={customerId}
+					triggerAdd={triggerAddContact}
+				/>
 			</CollapsibleDataSection>
 		</NodeViewWrapper>
 	);

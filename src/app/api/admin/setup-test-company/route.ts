@@ -11,7 +11,10 @@ export async function POST() {
 		const supabase = await createClient();
 
 		if (!supabase) {
-			return NextResponse.json({ error: "Database connection failed" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database connection failed" },
+				{ status: 500 },
+			);
 		}
 
 		// Get authenticated user
@@ -52,7 +55,7 @@ export async function POST() {
 		if (companyError) {
 			return NextResponse.json(
 				{ error: "Failed to create company", details: companyError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -71,7 +74,7 @@ export async function POST() {
 		if (teamMemberError) {
 			return NextResponse.json(
 				{ error: "Failed to create team member", details: teamMemberError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -189,7 +192,7 @@ export async function POST() {
 	} catch (error: any) {
 		return NextResponse.json(
 			{ error: "Internal server error", details: error.message },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

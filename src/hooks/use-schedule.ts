@@ -14,9 +14,21 @@ export function useSchedule() {
 	const jobs = useScheduleStore((state) => state.jobs);
 	const technicians = useScheduleStore((state) => state.technicians);
 	const selectedJobId = useScheduleStore((state) => state.selectedJobId);
-	const selectedTechnicianId = useScheduleStore((state) => state.selectedTechnicianId);
+	const selectedTechnicianId = useScheduleStore(
+		(state) => state.selectedTechnicianId,
+	);
 	const lastFetchedRange = useScheduleStore((state) => state.lastFetchedRange);
 	const storeCompanyId = useScheduleStore((state) => state.companyId);
+	const unassignedHasMore = useScheduleStore(
+		(state) => state.unassignedHasMore,
+	);
+	const unassignedSearch = useScheduleStore((state) => state.unassignedSearch);
+	const isLoadingUnassigned = useScheduleStore(
+		(state) => state.isLoadingUnassigned,
+	);
+	const unassignedTotalCount = useScheduleStore(
+		(state) => state.unassignedTotalCount,
+	);
 
 	// Get actions
 	const setLoading = useScheduleStore((state) => state.setLoading);
@@ -34,10 +46,20 @@ export function useSchedule() {
 	const syncWithServer = useScheduleStore((state) => state.syncWithServer);
 	const setLastSync = useScheduleStore((state) => state.setLastSync);
 	const setCompanyId = useScheduleStore((state) => state.setCompanyId);
-	const setLastFetchedRange = useScheduleStore((state) => state.setLastFetchedRange);
-	const getUnassignedJobsFromStore = useScheduleStore((state) => state.getUnassignedJobs);
+	const setLastFetchedRange = useScheduleStore(
+		(state) => state.setLastFetchedRange,
+	);
+	const setUnassignedMeta = useScheduleStore(
+		(state) => state.setUnassignedMeta,
+	);
+	const getUnassignedJobsFromStore = useScheduleStore(
+		(state) => state.getUnassignedJobs,
+	);
 	const getJobsGroupedByTechnicianFromStore = useScheduleStore(
-		(state) => state.getJobsGroupedByTechnician
+		(state) => state.getJobsGroupedByTechnician,
+	);
+	const loadMoreUnassignedJobs = useScheduleStore(
+		(state) => state.loadMoreUnassignedJobs,
 	);
 
 	// Get view store values with selectors to avoid re-renders
@@ -47,11 +69,16 @@ export function useSchedule() {
 	const _zoom = useViewStore((state) => state.zoom);
 
 	// Calculate visible time range once
-	const visibleTimeRange = useMemo(() => useViewStore.getState().getVisibleTimeRange(), []);
+	const visibleTimeRange = useMemo(
+		() => useViewStore.getState().getVisibleTimeRange(),
+		[],
+	);
 
 	const rangeStart = visibleTimeRange.start.getTime();
 	const rangeEnd = visibleTimeRange.end.getTime();
-	const companyIdRef = useRef<string | null>(useScheduleStore.getState().companyId);
+	const companyIdRef = useRef<string | null>(
+		useScheduleStore.getState().companyId,
+	);
 
 	useEffect(() => {
 		companyIdRef.current = storeCompanyId;
@@ -129,10 +156,16 @@ export function useSchedule() {
 				}
 
 				if (!companyId) {
-					throw new Error("Unable to resolve company context for schedule data");
+					throw new Error(
+						"Unable to resolve company context for schedule data",
+					);
 				}
 
-				const { jobs: convertedJobs, technicians: convertedTechnicians } = await fetchScheduleData({
+				const {
+					jobs: convertedJobs,
+					technicians: convertedTechnicians,
+					unassignedMeta,
+				} = await fetchScheduleData({
 					supabase,
 					companyId,
 					range: {
@@ -154,6 +187,10 @@ export function useSchedule() {
 
 				setTechnicians(convertedTechnicians);
 				setJobs(convertedJobs);
+				const unassignedCount = convertedJobs.filter(
+					(job) => job.isUnassigned,
+				).length;
+				setUnassignedMeta(unassignedMeta, unassignedCount);
 				setLastSync(new Date());
 				setLastFetchedRange(fetchedRange);
 			} catch (error) {
@@ -219,7 +256,9 @@ export function useSchedule() {
 
 		// If technician filter is active, only show filtered technicians
 		if (filters.technicianIds.length > 0) {
-			return allTechnicians.filter((tech) => filters.technicianIds.includes(tech.id));
+			return allTechnicians.filter((tech) =>
+				filters.technicianIds.includes(tech.id),
+			);
 		}
 
 		return allTechnicians;
@@ -229,7 +268,7 @@ export function useSchedule() {
 	const getJobsForTechnician = useCallback(
 		(technicianId: string): Job[] =>
 			filteredJobs.filter((job) => job.technicianId === technicianId),
-		[filteredJobs]
+		[filteredJobs],
 	);
 
 	// Get jobs within visible time range - MEMOIZED
@@ -243,7 +282,10 @@ export function useSchedule() {
 	}, [filteredJobs, visibleTimeRange]);
 
 	// Get all jobs (unfiltered)
-	const getAllJobs = useCallback((): Job[] => Array.from(jobs.values()), [jobs]);
+	const getAllJobs = useCallback(
+		(): Job[] => Array.from(jobs.values()),
+		[jobs],
+	);
 
 	return {
 		// State
@@ -268,6 +310,11 @@ export function useSchedule() {
 		selectTechnician,
 		getUnassignedJobs: getUnassignedJobsFromStore,
 		getJobsGroupedByTechnician: getJobsGroupedByTechnicianFromStore,
+		unassignedHasMore,
+		unassignedSearch,
+		isLoadingUnassigned,
+		unassignedTotalCount,
+		loadMoreUnassignedJobs,
 
 		// Mutations
 		addJob,

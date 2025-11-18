@@ -79,7 +79,9 @@ export function AddPropertyDialog({
 
 		if (propertiesResult.success && propertiesResult.data) {
 			// Find the newly created property
-			const newProperty = propertiesResult.data.find((p) => p.id === result.data);
+			const newProperty = propertiesResult.data.find(
+				(p) => p.id === result.data,
+			);
 
 			if (newProperty) {
 				// Notify parent component with full property data
@@ -110,7 +112,8 @@ export function AddPropertyDialog({
 						<DialogTitle>Add New Property</DialogTitle>
 					</div>
 					<DialogDescription>
-						Add a new service location for this customer. All fields marked with * are required.
+						Add a new service location for this customer. All fields marked with
+						* are required.
 						{customerAddress?.address && (
 							<span className="text-success mt-2 block font-medium">
 								✓ Address fields pre-filled from customer profile
@@ -131,7 +134,9 @@ export function AddPropertyDialog({
 					<div className="space-y-2">
 						<Label htmlFor="name">Property Name *</Label>
 						<Input
-							defaultValue={customerAddress?.address ? "Primary Location" : undefined}
+							defaultValue={
+								customerAddress?.address ? "Primary Location" : undefined
+							}
 							disabled={isLoading}
 							id="name"
 							name="name"
@@ -155,7 +160,9 @@ export function AddPropertyDialog({
 							required
 						/>
 						{customerAddress?.address && (
-							<p className="text-muted-foreground text-xs">Pre-filled from customer profile</p>
+							<p className="text-muted-foreground text-xs">
+								Pre-filled from customer profile
+							</p>
 						)}
 					</div>
 

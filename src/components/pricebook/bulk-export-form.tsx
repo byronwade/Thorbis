@@ -14,7 +14,13 @@ import { Download, FileSpreadsheet, FileText } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -111,14 +117,14 @@ export function BulkExportForm() {
 
 	const selectAllColumns = () => {
 		const allSelected = Object.fromEntries(
-			Object.keys(columns).map((key) => [key, true])
+			Object.keys(columns).map((key) => [key, true]),
 		) as ColumnConfig;
 		setColumns(allSelected);
 	};
 
 	const deselectAllColumns = () => {
 		const allDeselected = Object.fromEntries(
-			Object.keys(columns).map((key) => [key, false])
+			Object.keys(columns).map((key) => [key, false]),
 		) as ColumnConfig;
 		setColumns(allDeselected);
 	};
@@ -155,7 +161,10 @@ export function BulkExportForm() {
 						<CardDescription>Choose the file format for export</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
-						<RadioGroup onValueChange={(value: ExportFormat) => setFormat(value)} value={format}>
+						<RadioGroup
+							onValueChange={(value: ExportFormat) => setFormat(value)}
+							value={format}
+						>
 							<div className="hover:bg-accent flex items-center justify-between space-x-2 rounded-lg border p-3">
 								<div className="flex items-center space-x-3">
 									<RadioGroupItem id="csv" value="csv" />
@@ -164,7 +173,9 @@ export function BulkExportForm() {
 										<Label className="font-normal" htmlFor="csv">
 											CSV
 										</Label>
-										<p className="text-muted-foreground text-xs">Comma-separated values</p>
+										<p className="text-muted-foreground text-xs">
+											Comma-separated values
+										</p>
 									</div>
 								</div>
 								<Badge variant="outline">Universal</Badge>
@@ -178,7 +189,9 @@ export function BulkExportForm() {
 										<Label className="font-normal" htmlFor="excel">
 											Excel
 										</Label>
-										<p className="text-muted-foreground text-xs">Microsoft Excel (.xlsx)</p>
+										<p className="text-muted-foreground text-xs">
+											Microsoft Excel (.xlsx)
+										</p>
 									</div>
 								</div>
 								<Badge variant="outline">Formatted</Badge>
@@ -192,7 +205,9 @@ export function BulkExportForm() {
 										<Label className="font-normal" htmlFor="pdf">
 											PDF
 										</Label>
-										<p className="text-muted-foreground text-xs">Printable document</p>
+										<p className="text-muted-foreground text-xs">
+											Printable document
+										</p>
 									</div>
 								</div>
 								<Badge variant="outline">Print-ready</Badge>
@@ -218,7 +233,9 @@ export function BulkExportForm() {
 						<div className="space-y-2">
 							<Label>Item Type</Label>
 							<Select
-								onValueChange={(value: any) => setFilters({ ...filters, itemType: value })}
+								onValueChange={(value: any) =>
+									setFilters({ ...filters, itemType: value })
+								}
 								value={filters.itemType}
 							>
 								<SelectTrigger>
@@ -286,7 +303,9 @@ export function BulkExportForm() {
 						<div className="space-y-2">
 							<Label>Status</Label>
 							<Select
-								onValueChange={(value: any) => setFilters({ ...filters, isActive: value })}
+								onValueChange={(value: any) =>
+									setFilters({ ...filters, isActive: value })
+								}
 								value={filters.isActive}
 							>
 								<SelectTrigger>
@@ -307,7 +326,9 @@ export function BulkExportForm() {
 									onChange={(e) =>
 										setFilters({
 											...filters,
-											priceMin: e.target.value ? Number.parseFloat(e.target.value) : null,
+											priceMin: e.target.value
+												? Number.parseFloat(e.target.value)
+												: null,
 										})
 									}
 									placeholder="Min"
@@ -318,7 +339,9 @@ export function BulkExportForm() {
 									onChange={(e) =>
 										setFilters({
 											...filters,
-											priceMax: e.target.value ? Number.parseFloat(e.target.value) : null,
+											priceMax: e.target.value
+												? Number.parseFloat(e.target.value)
+												: null,
 										})
 									}
 									placeholder="Max"
@@ -339,7 +362,9 @@ export function BulkExportForm() {
 						<div className="flex items-center justify-between">
 							<div>
 								<CardTitle>Export Columns</CardTitle>
-								<CardDescription>Choose which fields to include</CardDescription>
+								<CardDescription>
+									Choose which fields to include
+								</CardDescription>
 							</div>
 							<Badge variant="secondary">{selectedColumnsCount} selected</Badge>
 						</div>
@@ -355,18 +380,20 @@ export function BulkExportForm() {
 						</div>
 
 						<div className="grid grid-cols-2 gap-2">
-							{(Object.keys(columns) as Array<keyof ColumnConfig>).map((column) => (
-								<div className="flex items-center space-x-2" key={column}>
-									<Checkbox
-										checked={columns[column]}
-										id={column}
-										onCheckedChange={() => toggleColumn(column)}
-									/>
-									<Label className="font-normal" htmlFor={column}>
-										{columnLabels[column]}
-									</Label>
-								</div>
-							))}
+							{(Object.keys(columns) as Array<keyof ColumnConfig>).map(
+								(column) => (
+									<div className="flex items-center space-x-2" key={column}>
+										<Checkbox
+											checked={columns[column]}
+											id={column}
+											onCheckedChange={() => toggleColumn(column)}
+										/>
+										<Label className="font-normal" htmlFor={column}>
+											{columnLabels[column]}
+										</Label>
+									</div>
+								),
+							)}
 						</div>
 					</CardContent>
 				</Card>
@@ -381,7 +408,9 @@ export function BulkExportForm() {
 						<div className="grid grid-cols-2 gap-3">
 							<div className="bg-muted/30 rounded-lg border p-3">
 								<p className="text-muted-foreground text-xs">Estimated Items</p>
-								<p className="text-2xl font-semibold">{estimatedItemCount.toLocaleString()}</p>
+								<p className="text-2xl font-semibold">
+									{estimatedItemCount.toLocaleString()}
+								</p>
 							</div>
 							<div className="bg-muted/30 rounded-lg border p-3">
 								<p className="text-muted-foreground text-xs">Columns</p>
@@ -400,7 +429,9 @@ export function BulkExportForm() {
 							</div>
 							<div className="flex justify-between text-sm">
 								<span className="text-muted-foreground">Estimated Size</span>
-								<span className="font-medium">{format === "pdf" ? "~2 MB" : "~150 KB"}</span>
+								<span className="font-medium">
+									{format === "pdf" ? "~2 MB" : "~150 KB"}
+								</span>
 							</div>
 						</div>
 

@@ -46,7 +46,7 @@ type InvoiceAudit = {
  * - Returns detailed results
  */
 export async function bulkArchiveInvoices(
-	invoiceIds: string[]
+	invoiceIds: string[],
 ): Promise<ActionResult<BulkArchiveResult>> {
 	const actionResult = await withErrorHandling(async () => {
 		const supabase = await createClient();
@@ -64,7 +64,7 @@ export async function bulkArchiveInvoices(
 			throw new ActionError(
 				"You must be part of a company",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.forbidden
+				HTTP_STATUS.forbidden,
 			);
 		}
 
@@ -76,17 +76,23 @@ export async function bulkArchiveInvoices(
 			.returns<InvoiceRecord[]>();
 
 		if (fetchError) {
-			throw new ActionError("Failed to fetch invoices", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to fetch invoices",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
-		const { archivableIds, failed, skipped, errors } = evaluateInvoices(invoices ?? [], companyId);
+		const { archivableIds, failed, skipped, errors } = evaluateInvoices(
+			invoices ?? [],
+			companyId,
+		);
 
 		// Bulk archive in single query
 		let successful = 0;
 		if (archivableIds.length > 0) {
 			const now = new Date().toISOString();
 			const scheduledDeletion = new Date(
-				Date.now() + PERMANENT_DELETE_BUFFER_DAYS * MILLISECONDS_IN_DAY
+				Date.now() + PERMANENT_DELETE_BUFFER_DAYS * MILLISECONDS_IN_DAY,
 			).toISOString();
 
 			const { error: archiveError } = await supabase
@@ -100,7 +106,10 @@ export async function bulkArchiveInvoices(
 				.in("id", archivableIds);
 
 			if (archiveError) {
-				throw new ActionError("Failed to archive invoices", ERROR_CODES.DB_QUERY_ERROR);
+				throw new ActionError(
+					"Failed to archive invoices",
+					ERROR_CODES.DB_QUERY_ERROR,
+				);
 			}
 
 			successful = archivableIds.length;
@@ -134,21 +143,30 @@ function generateSummaryMessage(result: BulkArchiveResult): string {
 	const parts: string[] = [];
 
 	if (result.successful > 0) {
-		parts.push(`${result.successful} invoice${result.successful !== 1 ? "s" : ""} archived`);
+		parts.push(
+			`${result.successful} invoice${result.successful !== 1 ? "s" : ""} archived`,
+		);
 	}
 
 	if (result.skipped > 0) {
-		parts.push(`${result.skipped} paid invoice${result.skipped !== 1 ? "s" : ""} skipped`);
+		parts.push(
+			`${result.skipped} paid invoice${result.skipped !== 1 ? "s" : ""} skipped`,
+		);
 	}
 
 	if (result.failed > 0) {
-		parts.push(`${result.failed} invoice${result.failed !== 1 ? "s" : ""} failed`);
+		parts.push(
+			`${result.failed} invoice${result.failed !== 1 ? "s" : ""} failed`,
+		);
 	}
 
 	return parts.join(", ");
 }
 
-function evaluateInvoices(invoices: InvoiceRecord[], companyId: string): InvoiceAudit {
+function evaluateInvoices(
+	invoices: InvoiceRecord[],
+	companyId: string,
+): InvoiceAudit {
 	return invoices.reduce<InvoiceAudit>(
 		(audit, invoice) => {
 			if (invoice.company_id !== companyId) {
@@ -170,6 +188,6 @@ function evaluateInvoices(invoices: InvoiceRecord[], companyId: string): Invoice
 			failed: 0,
 			skipped: 0,
 			errors: [],
-		}
+		},
 	);
 }

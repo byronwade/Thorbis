@@ -104,7 +104,10 @@ describe("schedule-data normalization", () => {
 
 		techniciansLookup.technicians.push(primaryTechnician);
 		techniciansLookup.byId.set(primaryTechnician.id, primaryTechnician);
-		techniciansLookup.byUserId.set(primaryTechnician.userId!, primaryTechnician);
+		techniciansLookup.byUserId.set(
+			primaryTechnician.userId!,
+			primaryTechnician,
+		);
 
 		const schedule = {
 			...baseSchedule,
@@ -331,7 +334,9 @@ describe("schedule-data helpers", () => {
 		const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 		const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 
-		expect(range.end.getTime() - range.start.getTime()).toBe(sevenDaysMs + thirtyDaysMs);
+		expect(range.end.getTime() - range.start.getTime()).toBe(
+			sevenDaysMs + thirtyDaysMs,
+		);
 		expect(range.start.getTime()).toBe(anchor.getTime() - sevenDaysMs);
 		expect(range.end.getTime()).toBe(anchor.getTime() + thirtyDaysMs);
 	});

@@ -9,10 +9,21 @@
  * - Margin analysis
  */
 
-import { AlertCircle, DollarSign, TrendingDown, TrendingUp } from "lucide-react";
+import {
+	AlertCircle,
+	DollarSign,
+	TrendingDown,
+	TrendingUp,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -66,7 +77,8 @@ export default function ProfitLossCalculator() {
 		otherNum;
 
 	const operatingProfit = grossProfit - totalOperatingExpenses;
-	const operatingMargin = revenueNum > 0 ? (operatingProfit / revenueNum) * 100 : 0;
+	const operatingMargin =
+		revenueNum > 0 ? (operatingProfit / revenueNum) * 100 : 0;
 
 	const netProfit = operatingProfit;
 	const netMargin = revenueNum > 0 ? (netProfit / revenueNum) * 100 : 0;
@@ -81,7 +93,9 @@ export default function ProfitLossCalculator() {
 					</div>
 					<div>
 						<div className="flex items-center gap-2">
-							<h1 className="text-3xl font-bold tracking-tight">Profit & Loss Calculator</h1>
+							<h1 className="text-3xl font-bold tracking-tight">
+								Profit & Loss Calculator
+							</h1>
 							<Badge variant="secondary">Popular</Badge>
 						</div>
 						<p className="text-muted-foreground mt-1">
@@ -103,16 +117,19 @@ export default function ProfitLossCalculator() {
 					<p>A P&L statement shows:</p>
 					<ul className="ml-4 list-disc space-y-1">
 						<li>
-							<strong>Gross Profit:</strong> Revenue minus direct costs (materials, labor)
+							<strong>Gross Profit:</strong> Revenue minus direct costs
+							(materials, labor)
 						</li>
 						<li>
-							<strong>Operating Profit:</strong> Gross profit minus operating expenses
+							<strong>Operating Profit:</strong> Gross profit minus operating
+							expenses
 						</li>
 						<li>
 							<strong>Net Profit:</strong> Your bottom line after all expenses
 						</li>
 						<li>
-							<strong>Profit Margins:</strong> Profitability as percentage of revenue
+							<strong>Profit Margins:</strong> Profitability as percentage of
+							revenue
 						</li>
 					</ul>
 				</CardContent>
@@ -127,7 +144,9 @@ export default function ProfitLossCalculator() {
 								<TrendingUp className="size-5" />
 								Revenue
 							</CardTitle>
-							<CardDescription>Total income from sales and services</CardDescription>
+							<CardDescription>
+								Total income from sales and services
+							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-2">
@@ -149,7 +168,9 @@ export default function ProfitLossCalculator() {
 								<TrendingDown className="size-5" />
 								Cost of Goods Sold (COGS)
 							</CardTitle>
-							<CardDescription>Direct costs to deliver services</CardDescription>
+							<CardDescription>
+								Direct costs to deliver services
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
@@ -192,7 +213,9 @@ export default function ProfitLossCalculator() {
 								<DollarSign className="size-5" />
 								Operating Expenses
 							</CardTitle>
-							<CardDescription>Overhead and administrative costs</CardDescription>
+							<CardDescription>
+								Overhead and administrative costs
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="grid grid-cols-2 gap-4">
@@ -286,8 +309,12 @@ export default function ProfitLossCalculator() {
 								</div>
 							</div>
 							<div className="flex justify-between border-t pt-2">
-								<span className="text-sm font-semibold">Total Operating Expenses:</span>
-								<span className="font-bold">${totalOperatingExpenses.toLocaleString()}</span>
+								<span className="text-sm font-semibold">
+									Total Operating Expenses:
+								</span>
+								<span className="font-bold">
+									${totalOperatingExpenses.toLocaleString()}
+								</span>
 							</div>
 						</CardContent>
 					</Card>
@@ -304,7 +331,9 @@ export default function ProfitLossCalculator() {
 						<CardContent>
 							<div className="space-y-4">
 								<div>
-									<p className="text-muted-foreground text-sm">Your Bottom Line</p>
+									<p className="text-muted-foreground text-sm">
+										Your Bottom Line
+									</p>
 									<p
 										className={`text-5xl font-bold ${netProfit >= 0 ? "text-success" : "text-destructive"}`}
 									>
@@ -321,8 +350,12 @@ export default function ProfitLossCalculator() {
 										</p>
 									</div>
 									<div>
-										<p className="text-muted-foreground text-xs">Total Revenue</p>
-										<p className="text-2xl font-semibold">${revenueNum.toLocaleString()}</p>
+										<p className="text-muted-foreground text-xs">
+											Total Revenue
+										</p>
+										<p className="text-2xl font-semibold">
+											${revenueNum.toLocaleString()}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -386,7 +419,12 @@ export default function ProfitLossCalculator() {
 										<span>Other Operating</span>
 										<span>
 											-$
-											{(utilitiesNum + suppliesNum + vehicleNum + otherNum).toLocaleString()}
+											{(
+												utilitiesNum +
+												suppliesNum +
+												vehicleNum +
+												otherNum
+											).toLocaleString()}
 										</span>
 									</div>
 								</div>

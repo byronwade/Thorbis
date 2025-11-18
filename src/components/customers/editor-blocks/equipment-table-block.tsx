@@ -27,7 +27,7 @@ const EquipmentTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[200px] w-full" />,
-	}
+	},
 );
 
 // React component that renders the block
@@ -40,9 +40,15 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
 	};
 
 	// Calculate equipment summary
-	const activeEquipment = (equipment || []).filter((eq: any) => eq.status === "active");
-	const inServiceEquipment = (equipment || []).filter((eq: any) => eq.status === "in_service");
-	const retiredEquipment = (equipment || []).filter((eq: any) => eq.status === "retired");
+	const activeEquipment = (equipment || []).filter(
+		(eq: any) => eq.status === "active",
+	);
+	const inServiceEquipment = (equipment || []).filter(
+		(eq: any) => eq.status === "in_service",
+	);
+	const retiredEquipment = (equipment || []).filter(
+		(eq: any) => eq.status === "retired",
+	);
 
 	let summary = "";
 	if (equipment.length === 0) {
@@ -88,9 +94,15 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
 					}
 				: null,
 			installDate: eq.install_date ? new Date(eq.install_date) : null,
-			lastServiceDate: eq.last_service_date ? new Date(eq.last_service_date) : null,
-			nextServiceDue: eq.next_service_due ? new Date(eq.next_service_due) : null,
-			warrantyExpiration: eq.warranty_expiration ? new Date(eq.warranty_expiration) : null,
+			lastServiceDate: eq.last_service_date
+				? new Date(eq.last_service_date)
+				: null,
+			nextServiceDue: eq.next_service_due
+				? new Date(eq.next_service_due)
+				: null,
+			warrantyExpiration: eq.warranty_expiration
+				? new Date(eq.warranty_expiration)
+				: null,
 			notes: eq.notes,
 			createdAt: new Date(eq.created_at),
 			updatedAt: new Date(eq.updated_at),
@@ -101,7 +113,10 @@ export function EquipmentTableBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="equipment-table-block">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddEquipment}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddEquipment}
+					>
 						Add Equipment
 					</CollapsibleActionButton>
 				}
@@ -170,7 +185,11 @@ export const EquipmentTableBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "equipment-table-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "equipment-table-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

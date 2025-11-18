@@ -22,7 +22,8 @@ export async function TechnicianAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Revenue per Technician</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track revenue generation, job value averages, and upsell performance
+							Track revenue generation, job value averages, and upsell
+							performance
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function TechnicianAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Customer Satisfaction</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor customer ratings, reviews, and feedback for each technician
+							Monitor customer ratings, reviews, and feedback for each
+							technician
 						</p>
 					</div>
 
@@ -58,7 +60,9 @@ export async function TechnicianAnalyticsData() {
 				</div>
 
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Optimize Team Performance</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Optimize Team Performance
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Data-driven insights to improve technician productivity
 					</p>

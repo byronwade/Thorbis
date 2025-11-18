@@ -94,7 +94,10 @@ export function CompanyRandomizerWidget({
 
 						{/* Selected item */}
 						<div>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								Selected
 							</ResponsiveText>
 							<ResponsiveText className="font-bold" variant="title">
@@ -105,7 +108,10 @@ export function CompanyRandomizerWidget({
 						{/* Description */}
 						{selected.description && (
 							<div className="bg-background/50 rounded-lg px-4 py-2">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									{selected.description}
 								</ResponsiveText>
 							</div>
@@ -121,7 +127,10 @@ export function CompanyRandomizerWidget({
 							<div className="bg-primary/20 flex size-8 items-center justify-center rounded-full">
 								{getCategoryIcon(selected.category)}
 							</div>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								{getCategoryLabel(selected.category)}
 							</ResponsiveText>
 						</div>

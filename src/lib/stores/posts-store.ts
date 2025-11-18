@@ -87,7 +87,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.error = null;
 					},
 					false,
-					"setPosts"
+					"setPosts",
 				),
 
 			addPost: (post) =>
@@ -96,7 +96,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.posts.unshift(post);
 					},
 					false,
-					"addPost"
+					"addPost",
 				),
 
 			updatePost: (id, updates) =>
@@ -111,7 +111,7 @@ export const usePostsStore = create<PostsStore>()(
 						}
 					},
 					false,
-					"updatePost"
+					"updatePost",
 				),
 
 			deletePost: (id) =>
@@ -123,7 +123,7 @@ export const usePostsStore = create<PostsStore>()(
 						}
 					},
 					false,
-					"deletePost"
+					"deletePost",
 				),
 
 			setSelectedPost: (post) =>
@@ -132,7 +132,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.selectedPost = post;
 					},
 					false,
-					"setSelectedPost"
+					"setSelectedPost",
 				),
 
 			setLoading: (loading) =>
@@ -141,7 +141,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.isLoading = loading;
 					},
 					false,
-					"setLoading"
+					"setLoading",
 				),
 
 			setError: (error) =>
@@ -151,7 +151,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.isLoading = false;
 					},
 					false,
-					"setError"
+					"setError",
 				),
 
 			setFilters: (filters) =>
@@ -160,7 +160,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.filters = { ...state.filters, ...filters };
 					},
 					false,
-					"setFilters"
+					"setFilters",
 				),
 
 			clearFilters: () =>
@@ -169,7 +169,7 @@ export const usePostsStore = create<PostsStore>()(
 						state.filters = {};
 					},
 					false,
-					"clearFilters"
+					"clearFilters",
 				),
 
 			getFilteredPosts: () => {
@@ -179,7 +179,8 @@ export const usePostsStore = create<PostsStore>()(
 				if (filters.published !== undefined) {
 					filtered = filtered.filter((p) => {
 						const isPublished =
-							String(p.published).toLowerCase() === "true" || p.published === true;
+							String(p.published).toLowerCase() === "true" ||
+							p.published === true;
 						return isPublished === filters.published;
 					});
 				}
@@ -193,8 +194,8 @@ export const usePostsStore = create<PostsStore>()(
 
 			reset: () => set(initialState, false, "reset"),
 		})),
-		{ name: "PostsStore" }
-	)
+		{ name: "PostsStore" },
+	),
 );
 
 /**
@@ -207,9 +208,13 @@ export const postsSelectors = {
 	error: (state: PostsStore) => state.error,
 	filters: (state: PostsStore) => state.filters,
 	publishedPosts: (state: PostsStore) =>
-		state.posts.filter((p) => String(p.published).toLowerCase() === "true" || p.published === true),
+		state.posts.filter(
+			(p) =>
+				String(p.published).toLowerCase() === "true" || p.published === true,
+		),
 	draftPosts: (state: PostsStore) =>
 		state.posts.filter(
-			(p) => !(String(p.published).toLowerCase() === "true" || p.published === true)
+			(p) =>
+				!(String(p.published).toLowerCase() === "true" || p.published === true),
 		),
 };

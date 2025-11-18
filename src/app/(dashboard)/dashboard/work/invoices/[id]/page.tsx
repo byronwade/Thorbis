@@ -27,14 +27,22 @@ import { Suspense } from "react";
 import { InvoiceDetailDataOptimized } from "@/components/invoices/invoice-detail-data-optimized";
 import { InvoiceDetailSkeleton } from "@/components/invoices/invoice-detail-skeleton";
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: _id } = await params;
 	return {
 		title: "Invoice Details",
 	};
 }
 
-export default async function InvoiceDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function InvoiceDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: invoiceId } = await params;
 
 	return (

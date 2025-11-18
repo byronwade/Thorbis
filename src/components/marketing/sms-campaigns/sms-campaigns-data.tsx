@@ -30,8 +30,8 @@ export async function SmsCampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Bulk SMS Messaging</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Send promotional offers, announcements, and updates to thousands of customers
-							instantly
+							Send promotional offers, announcements, and updates to thousands
+							of customers instantly
 						</p>
 					</div>
 
@@ -42,7 +42,8 @@ export async function SmsCampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Automated Campaigns</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Schedule messages in advance and set up automated drip campaigns to nurture leads
+							Schedule messages in advance and set up automated drip campaigns
+							to nurture leads
 						</p>
 					</div>
 
@@ -53,7 +54,8 @@ export async function SmsCampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Appointment Reminders</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Reduce no-shows with automatic appointment reminders and confirmation requests
+							Reduce no-shows with automatic appointment reminders and
+							confirmation requests
 						</p>
 					</div>
 
@@ -64,8 +66,8 @@ export async function SmsCampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Targeted Segments</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Send personalized messages to specific customer segments based on location, service
-							history, and preferences
+							Send personalized messages to specific customer segments based on
+							location, service history, and preferences
 						</p>
 					</div>
 				</div>
@@ -78,7 +80,9 @@ export async function SmsCampaignsData() {
 					</div>
 					<div className="border-primary/10 bg-card/50 rounded-lg border p-6 text-center backdrop-blur-sm">
 						<div className="text-primary mb-2 text-3xl font-bold">90s</div>
-						<div className="text-muted-foreground text-sm">Avg. Response Time</div>
+						<div className="text-muted-foreground text-sm">
+							Avg. Response Time
+						</div>
 					</div>
 					<div className="border-primary/10 bg-card/50 rounded-lg border p-6 text-center backdrop-blur-sm">
 						<div className="text-primary mb-2 text-3xl font-bold">5x</div>
@@ -88,7 +92,9 @@ export async function SmsCampaignsData() {
 
 				{/* CTA section */}
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Start Texting Your Customers</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Start Texting Your Customers
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Drive more bookings and revenue with SMS marketing
 					</p>

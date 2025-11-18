@@ -9,14 +9,22 @@
 import { Download, FileSpreadsheet, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { downloadExcelTemplate } from "@/lib/data/excel-template-generator";
 
 type TemplateDownloadClientProps = {
 	dataType: string;
 };
 
-export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps) {
+export function TemplateDownloadClient({
+	dataType,
+}: TemplateDownloadClientProps) {
 	const formatDataType = (type: string) =>
 		type
 			.split("-")
@@ -53,7 +61,9 @@ export function TemplateDownloadClient({ dataType }: TemplateDownloadClientProps
 						<div className="flex items-center justify-between rounded-lg border p-3">
 							<div>
 								<p className="text-sm font-medium">File Format</p>
-								<p className="text-muted-foreground text-xs">Microsoft Excel (.xlsx)</p>
+								<p className="text-muted-foreground text-xs">
+									Microsoft Excel (.xlsx)
+								</p>
 							</div>
 							<Badge>Excel</Badge>
 						</div>

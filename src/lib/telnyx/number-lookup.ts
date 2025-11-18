@@ -32,7 +32,7 @@ export async function lookupCallerInfo(phoneNumber: string) {
 					Authorization: `Bearer ${apiKey}`,
 				},
 				cache: "no-store",
-			}
+			},
 		);
 
 		if (!response.ok) {
@@ -42,7 +42,9 @@ export async function lookupCallerInfo(phoneNumber: string) {
 
 			return {
 				success: false,
-				error: errorPayload?.errors?.[0]?.detail || `Telnyx lookup failed (${response.status})`,
+				error:
+					errorPayload?.errors?.[0]?.detail ||
+					`Telnyx lookup failed (${response.status})`,
 			};
 		}
 
@@ -55,7 +57,8 @@ export async function lookupCallerInfo(phoneNumber: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Unknown error during lookup",
+			error:
+				error instanceof Error ? error.message : "Unknown error during lookup",
 		};
 	}
 }

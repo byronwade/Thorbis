@@ -38,7 +38,10 @@ const COORDINATE_PRECISION = 4;
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class TimeZoneService {
 	private readonly apiKey: string | undefined;
-	private readonly cache: Map<string, { data: TimeZoneInfo; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: TimeZoneInfo; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = CACHE_TTL_MS;
 
 	constructor() {
@@ -120,7 +123,9 @@ export class TimeZoneService {
 	 * Get current local time for a timezone
 	 */
 	getCurrentLocalTime(timeZoneId: string): Date {
-		return new Date(new Date().toLocaleString("en-US", { timeZone: timeZoneId }));
+		return new Date(
+			new Date().toLocaleString("en-US", { timeZone: timeZoneId }),
+		);
 	}
 
 	/**

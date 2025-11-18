@@ -11,7 +11,13 @@
 import { Wallet } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 type BankAccount = {
 	id: string;
@@ -51,11 +57,21 @@ const accounts: BankAccount[] = [
 ];
 
 export function BankAccountsOverview() {
-	const checkingAccounts = accounts.filter((acc) => acc.accountType === "checking");
-	const savingsAccounts = accounts.filter((acc) => acc.accountType === "savings");
+	const checkingAccounts = accounts.filter(
+		(acc) => acc.accountType === "checking",
+	);
+	const savingsAccounts = accounts.filter(
+		(acc) => acc.accountType === "savings",
+	);
 
-	const totalChecking = checkingAccounts.reduce((sum, acc) => sum + acc.balance, 0);
-	const totalSavings = savingsAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+	const totalChecking = checkingAccounts.reduce(
+		(sum, acc) => sum + acc.balance,
+		0,
+	);
+	const totalSavings = savingsAccounts.reduce(
+		(sum, acc) => sum + acc.balance,
+		0,
+	);
 
 	return (
 		<div className="grid gap-6 md:grid-cols-2">
@@ -71,7 +87,9 @@ export function BankAccountsOverview() {
 							<CardDescription>Business operating accounts</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="ghost">
-							<Link href="/dashboard/settings/finance/bank-accounts">Manage</Link>
+							<Link href="/dashboard/settings/finance/bank-accounts">
+								Manage
+							</Link>
 						</Button>
 					</div>
 				</CardHeader>
@@ -79,7 +97,9 @@ export function BankAccountsOverview() {
 					{/* Total Checking */}
 					<div className="border-primary/20 bg-primary/5 rounded-lg border-2 p-4">
 						<p className="text-muted-foreground text-sm">Total Checking</p>
-						<p className="text-3xl font-bold">${totalChecking.toLocaleString()}</p>
+						<p className="text-3xl font-bold">
+							${totalChecking.toLocaleString()}
+						</p>
 						<p className="text-muted-foreground text-xs">
 							{checkingAccounts.length} account
 							{checkingAccounts.length !== 1 ? "s" : ""}
@@ -99,7 +119,9 @@ export function BankAccountsOverview() {
 										{account.bankName} •••• {account.lastFour}
 									</p>
 								</div>
-								<p className="text-sm font-semibold">${account.balance.toLocaleString()}</p>
+								<p className="text-sm font-semibold">
+									${account.balance.toLocaleString()}
+								</p>
 							</div>
 						))}
 					</div>
@@ -118,7 +140,9 @@ export function BankAccountsOverview() {
 							<CardDescription>Business savings accounts</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="ghost">
-							<Link href="/dashboard/settings/finance/bank-accounts">Manage</Link>
+							<Link href="/dashboard/settings/finance/bank-accounts">
+								Manage
+							</Link>
 						</Button>
 					</div>
 				</CardHeader>
@@ -126,7 +150,9 @@ export function BankAccountsOverview() {
 					{/* Total Savings */}
 					<div className="border-success/20 bg-success/5 rounded-lg border-2 p-4">
 						<p className="text-muted-foreground text-sm">Total Savings</p>
-						<p className="text-3xl font-bold">${totalSavings.toLocaleString()}</p>
+						<p className="text-3xl font-bold">
+							${totalSavings.toLocaleString()}
+						</p>
 						<p className="text-muted-foreground text-xs">
 							{savingsAccounts.length} account
 							{savingsAccounts.length !== 1 ? "s" : ""}
@@ -146,7 +172,9 @@ export function BankAccountsOverview() {
 										{account.bankName} •••• {account.lastFour}
 									</p>
 								</div>
-								<p className="text-sm font-semibold">${account.balance.toLocaleString()}</p>
+								<p className="text-sm font-semibold">
+									${account.balance.toLocaleString()}
+								</p>
 							</div>
 						))}
 					</div>

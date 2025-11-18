@@ -14,7 +14,10 @@ import { Check, Loader2, MapPin, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { isGoogleMapsLoaded, loadGoogleMapsScript } from "@/lib/utils/load-google-maps";
+import {
+	isGoogleMapsLoaded,
+	loadGoogleMapsScript,
+} from "@/lib/utils/load-google-maps";
 
 type AddressData = {
 	address: string;
@@ -83,10 +86,13 @@ export function SmartAddressInput({
 	// Initialize autocomplete when loaded
 	useEffect(() => {
 		if (isAutocompleteLoaded && autocompleteInputRef.current && !isManualMode) {
-			autocompleteRef.current = new google.maps.places.Autocomplete(autocompleteInputRef.current, {
-				types: ["address"],
-				componentRestrictions: { country: "us" },
-			});
+			autocompleteRef.current = new google.maps.places.Autocomplete(
+				autocompleteInputRef.current,
+				{
+					types: ["address"],
+					componentRestrictions: { country: "us" },
+				},
+			);
 
 			autocompleteRef.current.addListener("place_changed", handlePlaceSelect);
 		}
@@ -115,7 +121,8 @@ export function SmartAddressInput({
 				newAddress.address = component.long_name;
 			}
 			if (types.includes("route")) {
-				newAddress.address = `${newAddress.address} ${component.long_name}`.trim();
+				newAddress.address =
+					`${newAddress.address} ${component.long_name}`.trim();
 			}
 			if (types.includes("locality")) {
 				newAddress.city = component.long_name;

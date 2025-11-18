@@ -14,17 +14,24 @@ import { EstimatesData } from "@/components/work/estimates/estimates-data";
 import { EstimatesSkeleton } from "@/components/work/estimates/estimates-skeleton";
 import { EstimatesStats } from "@/components/work/estimates/estimates-stats";
 
-export default function EstimatesPage() {
+export default async function EstimatesPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<>
 			{/* Stats - Streams in first */}
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<EstimatesStats />
 			</Suspense>
 
 			{/* Table/Kanban - Streams in second */}
 			<Suspense fallback={<EstimatesSkeleton />}>
-				<EstimatesData />
+				<EstimatesData searchParams={params} />
 			</Suspense>
 		</>
 	);

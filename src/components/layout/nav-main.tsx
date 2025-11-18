@@ -1,6 +1,10 @@
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
 	SidebarMenu,
@@ -37,14 +41,21 @@ export function NavMain({
 					const isExactMatch = safePathname === item.url;
 					const isDetailPage = safePathname.startsWith(`${item.url}/`);
 					const hasActiveSubItem = item.items?.some(
-						(subItem) => safePathname === subItem.url || safePathname.startsWith(`${subItem.url}/`)
+						(subItem) =>
+							safePathname === subItem.url ||
+							safePathname.startsWith(`${subItem.url}/`),
 					);
 					const isActive = isExactMatch || isDetailPage || hasActiveSubItem;
 
 					// If item has sub-items, render parent + children
 					if (item.items && item.items.length > 0) {
 						return (
-							<Collapsible asChild defaultOpen={true} key={item.title} open={true}>
+							<Collapsible
+								asChild
+								defaultOpen={true}
+								key={item.title}
+								open={true}
+							>
 								<SidebarMenuItem>
 									<CollapsibleTrigger asChild>
 										<SidebarMenuButton
@@ -64,7 +75,10 @@ export function NavMain({
 													safePathname.startsWith(`${subItem.url}/`);
 												return (
 													<SidebarMenuSubItem key={subItem.title}>
-														<SidebarMenuSubButton asChild isActive={isSubActive}>
+														<SidebarMenuSubButton
+															asChild
+															isActive={isSubActive}
+														>
 															<Link href={subItem.url}>
 																<span>{subItem.title}</span>
 															</Link>
@@ -82,7 +96,11 @@ export function NavMain({
 					// Regular menu item without sub-items
 					return (
 						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton asChild isActive={isActive} tooltip={item.title}>
+							<SidebarMenuButton
+								asChild
+								isActive={isActive}
+								tooltip={item.title}
+							>
 								<Link href={item.url}>
 									{item.icon && <item.icon />}
 									<span>{item.title}</span>

@@ -13,10 +13,15 @@
 
 import { Briefcase, Calendar, MapPin } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function PropertyDetailToolbarActions() {
 	const pathname = usePathname();

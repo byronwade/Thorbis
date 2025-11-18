@@ -43,11 +43,12 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 										<div
 											className={cn(
 												"flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors",
-												stage.status === "completed" && "border-success bg-success text-white",
+												stage.status === "completed" &&
+													"border-success bg-success text-white",
 												stage.status === "current" &&
 													"border-primary bg-primary text-primary-foreground",
 												stage.status === "pending" &&
-													"border-muted-foreground/30 bg-muted text-muted-foreground"
+													"border-muted-foreground/30 bg-muted text-muted-foreground",
 											)}
 										>
 											{stage.status === "completed" ? (
@@ -70,7 +71,8 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 												<p
 													className={cn(
 														"text-sm font-medium",
-														stage.status === "pending" && "text-muted-foreground"
+														stage.status === "pending" &&
+															"text-muted-foreground",
 													)}
 												>
 													{stage.label}
@@ -86,7 +88,9 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 												</p>
 											)}
 											{stage.description && (
-												<p className="text-muted-foreground mt-1 text-xs">{stage.description}</p>
+												<p className="text-muted-foreground mt-1 text-xs">
+													{stage.description}
+												</p>
 											)}
 										</div>
 									</div>
@@ -100,7 +104,7 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 													stages[index + 1].status === "completed" ||
 														stages[index + 1].status === "current"
 														? "bg-success"
-														: "bg-muted-foreground/20"
+														: "bg-muted-foreground/20",
 												)}
 											/>
 										</div>
@@ -124,11 +128,12 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 									<div
 										className={cn(
 											"flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-											stage.status === "completed" && "border-success bg-success text-white",
+											stage.status === "completed" &&
+												"border-success bg-success text-white",
 											stage.status === "current" &&
 												"border-primary bg-primary text-primary-foreground",
 											stage.status === "pending" &&
-												"border-muted-foreground/30 bg-muted text-muted-foreground"
+												"border-muted-foreground/30 bg-muted text-muted-foreground",
 										)}
 									>
 										{stage.status === "completed" ? (
@@ -151,7 +156,7 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 											<p
 												className={cn(
 													"font-medium",
-													stage.status === "pending" && "text-muted-foreground"
+													stage.status === "pending" && "text-muted-foreground",
 												)}
 											>
 												{stage.label}
@@ -167,7 +172,9 @@ export function WorkflowTimeline({ stages, className }: WorkflowTimelineProps) {
 											</p>
 										)}
 										{stage.description && (
-											<p className="text-muted-foreground mt-1 text-sm">{stage.description}</p>
+											<p className="text-muted-foreground mt-1 text-sm">
+												{stage.description}
+											</p>
 										)}
 									</div>
 								</div>

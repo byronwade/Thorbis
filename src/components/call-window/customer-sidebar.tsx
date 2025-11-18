@@ -35,7 +35,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
-import { UnifiedAccordion, type UnifiedAccordionSection } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordion,
+	type UnifiedAccordionSection,
+} from "@/components/ui/unified-accordion";
 import type { CustomerCallData } from "@/types/call-window";
 import { DEFAULT_CSR_REMINDERS } from "@/types/csr-reminders";
 
@@ -44,11 +47,14 @@ type CustomerSidebarProps = {
 	isLoading?: boolean;
 };
 
-export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProps) {
+export function CustomerSidebar({
+	customerData,
+	isLoading,
+}: CustomerSidebarProps) {
 	// TODO: Fetch CSR reminders from user settings/company settings
 	// For now, use default reminders
 	const csrReminders = DEFAULT_CSR_REMINDERS.filter((r) => r.enabled).sort(
-		(a, b) => a.order - b.order
+		(a, b) => a.order - b.order,
 	);
 
 	if (isLoading) {
@@ -56,7 +62,9 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			<div className="flex h-full items-center justify-center p-6">
 				<div className="text-center">
 					<div className="border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent" />
-					<p className="text-muted-foreground text-sm">Loading customer data...</p>
+					<p className="text-muted-foreground text-sm">
+						Loading customer data...
+					</p>
 				</div>
 			</div>
 		);
@@ -76,8 +84,16 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 		);
 	}
 
-	const { customer, stats, jobs, invoices, estimates, appointments, properties, equipment } =
-		customerData;
+	const {
+		customer,
+		stats,
+		jobs,
+		invoices,
+		estimates,
+		appointments,
+		properties,
+		equipment,
+	} = customerData;
 
 	// Format currency
 	const formatCurrency = (amount: number) =>
@@ -100,10 +116,10 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 
 	// State for editable customer data
 	const [phoneNumbers, setPhoneNumbers] = useState<string[]>(
-		customer?.phone ? [customer.phone] : [""]
+		customer?.phone ? [customer.phone] : [""],
 	);
 	const [emailAddresses, setEmailAddresses] = useState<string[]>(
-		customer?.email ? [customer.email] : [""]
+		customer?.email ? [customer.email] : [""],
 	);
 
 	// Add/remove phone numbers
@@ -205,7 +221,9 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 										<Mail className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
 										<Input
 											className="pl-9"
-											onChange={(e) => updateEmailAddress(index, e.target.value)}
+											onChange={(e) =>
+												updateEmailAddress(index, e.target.value)
+											}
 											placeholder="email@example.com"
 											type="email"
 											value={email}
@@ -223,7 +241,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									)}
 								</div>
 							))}
-							<Button className="w-full" onClick={addEmailAddress} size="sm" variant="outline">
+							<Button
+								className="w-full"
+								onClick={addEmailAddress}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Email
 							</Button>
@@ -256,7 +279,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									)}
 								</div>
 							))}
-							<Button className="w-full" onClick={addPhoneNumber} size="sm" variant="outline">
+							<Button
+								className="w-full"
+								onClick={addPhoneNumber}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Phone
 							</Button>
@@ -283,15 +311,27 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 						<div className="grid gap-4 sm:grid-cols-3">
 							<div className="space-y-2">
 								<Label htmlFor="city">City</Label>
-								<Input defaultValue={customer?.city || ""} id="city" placeholder="City" />
+								<Input
+									defaultValue={customer?.city || ""}
+									id="city"
+									placeholder="City"
+								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="state">State</Label>
-								<Input defaultValue={customer?.state || ""} id="state" placeholder="State" />
+								<Input
+									defaultValue={customer?.state || ""}
+									id="state"
+									placeholder="State"
+								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="zipCode">ZIP Code</Label>
-								<Input defaultValue={customer?.zip_code || ""} id="zipCode" placeholder="12345" />
+								<Input
+									defaultValue={customer?.zip_code || ""}
+									id="zipCode"
+									placeholder="12345"
+								/>
 							</div>
 						</div>
 					</div>
@@ -332,7 +372,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									<Label htmlFor="twitter">Twitter</Label>
 									<div className="relative">
 										<Twitter className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-										<Input className="pl-9" defaultValue="" id="twitter" placeholder="@username" />
+										<Input
+											className="pl-9"
+											defaultValue=""
+											id="twitter"
+											placeholder="@username"
+										/>
 									</div>
 								</div>
 								<div className="space-y-2">
@@ -360,7 +405,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <Briefcase className="h-4 w-4" />,
 			count: jobs.length,
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Job
 				</Button>
@@ -369,16 +419,25 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 				jobs.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{jobs.map((job) => (
-							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={job.id}>
+							<div
+								className="bg-muted/30 rounded-lg border p-3 text-sm"
+								key={job.id}
+							>
 								<div className="mb-1 flex items-start justify-between">
-									<span className="font-medium">{job.title || "Untitled Job"}</span>
+									<span className="font-medium">
+										{job.title || "Untitled Job"}
+									</span>
 									<Badge className="text-xs" variant="outline">
 										{job.status}
 									</Badge>
 								</div>
-								<p className="text-muted-foreground font-mono text-xs">#{job.job_number}</p>
+								<p className="text-muted-foreground font-mono text-xs">
+									#{job.job_number}
+								</p>
 								{job.financial?.total_amount && (
-									<p className="mt-1 text-xs">{formatCurrency(job.financial.total_amount)}</p>
+									<p className="mt-1 text-xs">
+										{formatCurrency(job.financial.total_amount)}
+									</p>
 								)}
 							</div>
 						))}
@@ -387,7 +446,9 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
 						<Briefcase className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No jobs found</p>
-						<p className="text-muted-foreground text-xs">This customer has no jobs yet</p>
+						<p className="text-muted-foreground text-xs">
+							This customer has no jobs yet
+						</p>
 					</div>
 				),
 		},
@@ -398,7 +459,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <FileText className="h-4 w-4" />,
 			count: invoices.length,
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Invoice
 				</Button>
@@ -407,9 +473,14 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 				invoices.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{invoices.map((invoice) => (
-							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={invoice.id}>
+							<div
+								className="bg-muted/30 rounded-lg border p-3 text-sm"
+								key={invoice.id}
+							>
 								<div className="mb-1 flex items-start justify-between">
-									<span className="font-medium">Invoice #{invoice.invoice_number}</span>
+									<span className="font-medium">
+										Invoice #{invoice.invoice_number}
+									</span>
 									<Badge
 										className="text-xs"
 										variant={
@@ -423,8 +494,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 										{invoice.status}
 									</Badge>
 								</div>
-								<p className="font-semibold">{formatCurrency(invoice.total_amount || 0)}</p>
-								<p className="text-muted-foreground text-xs">Due: {formatDate(invoice.due_date)}</p>
+								<p className="font-semibold">
+									{formatCurrency(invoice.total_amount || 0)}
+								</p>
+								<p className="text-muted-foreground text-xs">
+									Due: {formatDate(invoice.due_date)}
+								</p>
 							</div>
 						))}
 					</div>
@@ -432,7 +507,9 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 					<div className="flex flex-col items-center justify-center p-6 py-12 text-center">
 						<FileText className="text-muted-foreground mb-4 h-12 w-12" />
 						<p className="text-muted-foreground text-sm">No invoices found</p>
-						<p className="text-muted-foreground text-xs">This customer has no invoices yet</p>
+						<p className="text-muted-foreground text-xs">
+							This customer has no invoices yet
+						</p>
 					</div>
 				),
 		},
@@ -443,7 +520,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <Calendar className="h-4 w-4" />,
 			count: appointments.length,
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Schedule
 				</Button>
@@ -460,15 +542,22 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 								null;
 
 							return (
-								<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={appointment.id}>
+								<div
+									className="bg-muted/30 rounded-lg border p-3 text-sm"
+									key={appointment.id}
+								>
 									<div className="mb-1 flex items-start justify-between">
-										<span className="font-medium">{appointment.title || "Appointment"}</span>
+										<span className="font-medium">
+											{appointment.title || "Appointment"}
+										</span>
 										<Badge className="text-xs" variant="outline">
 											{appointment.status}
 										</Badge>
 									</div>
 									<p className="text-muted-foreground text-xs">
-										{appointmentDate ? formatDate(appointmentDate) : "Date to be scheduled"}
+										{appointmentDate
+											? formatDate(appointmentDate)
+											: "Date to be scheduled"}
 									</p>
 								</div>
 							);
@@ -491,7 +580,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <Home className="h-4 w-4" />,
 			count: properties.length,
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Link Property
 				</Button>
@@ -500,12 +594,17 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 				properties.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{properties.map((property) => (
-							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={property.id}>
+							<div
+								className="bg-muted/30 rounded-lg border p-3 text-sm"
+								key={property.id}
+							>
 								<div className="mb-1 flex items-start gap-2">
 									<MapPin className="text-muted-foreground mt-0.5 h-4 w-4 shrink-0" />
 									<div className="flex-1">
 										<p className="font-medium">{property.name || "Property"}</p>
-										<p className="text-muted-foreground text-xs">{property.address}</p>
+										<p className="text-muted-foreground text-xs">
+											{property.address}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -528,7 +627,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <Wrench className="h-4 w-4" />,
 			count: equipment.length,
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Add Equipment
 				</Button>
@@ -537,9 +641,16 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 				equipment.length > 0 ? (
 					<div className="space-y-2 p-6">
 						{equipment.map((item) => (
-							<div className="bg-muted/30 rounded-lg border p-3 text-sm" key={item.id}>
+							<div
+								className="bg-muted/30 rounded-lg border p-3 text-sm"
+								key={item.id}
+							>
 								<p className="font-medium">{item.name || "Equipment"}</p>
-								{item.model && <p className="text-muted-foreground text-xs">Model: {item.model}</p>}
+								{item.model && (
+									<p className="text-muted-foreground text-xs">
+										Model: {item.model}
+									</p>
+								)}
 								{item.serial_number && (
 									<p className="text-muted-foreground font-mono text-xs">
 										S/N: {item.serial_number}
@@ -565,7 +676,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 			icon: <FileText className="h-4 w-4" />,
 			count: 0, // TODO: Get actual notes count
 			actions: (
-				<Button className="h-8 gap-1.5 px-3" onClick={() => {}} size="sm" variant="outline">
+				<Button
+					className="h-8 gap-1.5 px-3"
+					onClick={() => {}}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 h-3.5 w-3.5" />
 					Add Note
 				</Button>
@@ -586,7 +702,11 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									<User className="h-3 w-3" />
 									<span>System</span>
 									<span>•</span>
-									<span>{formatDate(customer.created_at || new Date().toISOString())}</span>
+									<span>
+										{formatDate(
+											customer.created_at || new Date().toISOString(),
+										)}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -594,8 +714,15 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<FileText className="text-muted-foreground mb-4 h-12 w-12" />
 							<p className="text-muted-foreground text-sm">No notes yet</p>
-							<p className="text-muted-foreground text-xs">Add notes about this customer</p>
-							<Button className="mt-4" onClick={() => {}} size="sm" variant="outline">
+							<p className="text-muted-foreground text-xs">
+								Add notes about this customer
+							</p>
+							<Button
+								className="mt-4"
+								onClick={() => {}}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Note
 							</Button>
@@ -617,7 +744,9 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 								<Lightbulb className="text-primary h-4 w-4" />
 							</div>
 							<div className="flex-1 space-y-2">
-								<h3 className="text-foreground text-sm font-semibold">Call Reminders</h3>
+								<h3 className="text-foreground text-sm font-semibold">
+									Call Reminders
+								</h3>
 								<ul className="text-muted-foreground space-y-1.5 text-xs">
 									{csrReminders.map((reminder) => (
 										<li className="flex items-start gap-2" key={reminder.id}>
@@ -641,7 +770,12 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									<h4 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 										Customer Tags
 									</h4>
-									<Button className="h-6 px-2 text-xs" onClick={() => {}} size="sm" variant="ghost">
+									<Button
+										className="h-6 px-2 text-xs"
+										onClick={() => {}}
+										size="sm"
+										variant="ghost"
+									>
 										<Plus className="mr-1 h-3 w-3" />
 										Add
 									</Button>
@@ -654,7 +788,10 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 									<Badge className="text-xs" variant="secondary">
 										Recurring
 									</Badge>
-									<Badge className="hover:bg-muted cursor-pointer text-xs" variant="outline">
+									<Badge
+										className="hover:bg-muted cursor-pointer text-xs"
+										variant="outline"
+									>
 										<Plus className="mr-1 h-3 w-3" />
 										Add Tag
 									</Badge>
@@ -679,20 +816,26 @@ export function CustomerSidebar({ customerData, isLoading }: CustomerSidebarProp
 										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Active
 										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">{stats.activeJobs}</p>
+										<p className="text-foreground mt-0.5 text-sm font-bold">
+											{stats.activeJobs}
+										</p>
 									</div>
 									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
 										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Invoices
 										</p>
-										<p className="text-foreground mt-0.5 text-sm font-bold">{stats.openInvoices}</p>
+										<p className="text-foreground mt-0.5 text-sm font-bold">
+											{stats.openInvoices}
+										</p>
 									</div>
 									<div className="bg-muted/20 rounded-lg border p-2.5 text-center">
 										<p className="text-muted-foreground text-[10px] tracking-wide uppercase">
 											Since
 										</p>
 										<p className="text-foreground mt-0.5 text-sm font-bold">
-											{stats.customerSince ? new Date(stats.customerSince).getFullYear() : "N/A"}
+											{stats.customerSince
+												? new Date(stats.customerSince).getFullYear()
+												: "N/A"}
 										</p>
 									</div>
 								</div>

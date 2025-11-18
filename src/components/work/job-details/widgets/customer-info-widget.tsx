@@ -48,7 +48,10 @@ export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
 				<Mail className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Email</div>
-					<Link className="text-sm hover:underline" href={`mailto:${customer.email}`}>
+					<Link
+						className="text-sm hover:underline"
+						href={`mailto:${customer.email}`}
+					>
 						{customer.email}
 					</Link>
 				</div>
@@ -58,7 +61,10 @@ export function CustomerInfoWidget({ customer }: CustomerInfoWidgetProps) {
 				<Phone className="text-muted-foreground mt-0.5 size-4" />
 				<div className="flex-1">
 					<div className="text-muted-foreground text-xs">Phone</div>
-					<Link className="text-sm hover:underline" href={`tel:${customer.phone}`}>
+					<Link
+						className="text-sm hover:underline"
+						href={`tel:${customer.phone}`}
+					>
 						{customer.phone}
 					</Link>
 				</div>

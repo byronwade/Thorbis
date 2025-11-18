@@ -68,7 +68,7 @@ export function CallComposerDialog({
 
 	const canCall = useMemo(
 		() => Boolean(toNumber.trim() && fromNumber && companyPhones.length > 0),
-		[toNumber, fromNumber, companyPhones]
+		[toNumber, fromNumber, companyPhones],
 	);
 
 	const handleStartCall = () => {
@@ -110,7 +110,7 @@ export function CallComposerDialog({
 				window.open(
 					`/call-window?callId=${encodeURIComponent(result.callControlId)}`,
 					"_blank",
-					`width=${width},height=${height},noopener`
+					`width=${width},height=${height},noopener`,
 				);
 			}
 			toast.success("Call started");
@@ -126,7 +126,9 @@ export function CallComposerDialog({
 						Start Call
 					</DialogTitle>
 					<DialogDescription>
-						{contactName ? `Call ${contactName}` : "Dial out using your Telnyx-powered number"}
+						{contactName
+							? `Call ${contactName}`
+							: "Dial out using your Telnyx-powered number"}
 					</DialogDescription>
 				</DialogHeader>
 
@@ -159,16 +161,26 @@ export function CallComposerDialog({
 							</SelectContent>
 						</Select>
 						{companyPhones.length === 0 && (
-							<p className="text-muted-foreground text-xs">Add a company phone number first.</p>
+							<p className="text-muted-foreground text-xs">
+								Add a company phone number first.
+							</p>
 						)}
 					</div>
 				</div>
 
 				<div className="flex justify-end gap-2 pt-2">
-					<Button onClick={() => onOpenChange(false)} type="button" variant="outline">
+					<Button
+						onClick={() => onOpenChange(false)}
+						type="button"
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={!canCall || isPending} onClick={handleStartCall} type="button">
+					<Button
+						disabled={!canCall || isPending}
+						onClick={handleStartCall}
+						type="button"
+					>
 						{isPending ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />

@@ -7,10 +7,22 @@
  * - ISR with 1 hour revalidation
  */
 
-import { BarChart, Calculator, ChevronRight, DollarSign, TrendingUp } from "lucide-react";
+import {
+	BarChart,
+	Calculator,
+	ChevronRight,
+	DollarSign,
+	TrendingUp,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 type CalculatorTool = {
 	title: string;
@@ -44,7 +56,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Job Pricing Calculator",
-		description: "Price jobs accurately with material, labor, and overhead costs",
+		description:
+			"Price jobs accurately with material, labor, and overhead costs",
 		detailedDescription:
 			"Build accurate job quotes by calculating material costs, labor hours, equipment usage, and overhead. Ensure profitable pricing on every project.",
 		href: "/tools/calculators/job-pricing",
@@ -60,7 +73,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Profit & Loss Calculator",
-		description: "Track revenue, expenses, and calculate your net profit margins",
+		description:
+			"Track revenue, expenses, and calculate your net profit margins",
 		detailedDescription:
 			"Monitor your business financial health with detailed P&L tracking. Calculate gross profit, operating profit, and net profit margins to understand your bottom line.",
 		href: "/tools/calculators/profit-loss",
@@ -104,7 +118,8 @@ const calculators: CalculatorTool[] = [
 	},
 	{
 		title: "Industry Pricing Standards",
-		description: "Compare your pricing against industry benchmarks and averages",
+		description:
+			"Compare your pricing against industry benchmarks and averages",
 		detailedDescription:
 			"Access industry-specific pricing data and benchmarks. Compare your rates to regional and national averages to ensure competitive pricing.",
 		href: "/tools/calculators/industry-pricing",
@@ -129,7 +144,9 @@ export default function CalculatorsPage() {
 						<Calculator className="text-primary size-6" />
 					</div>
 					<div>
-						<h1 className="text-4xl font-bold tracking-tight">Business Calculators</h1>
+						<h1 className="text-4xl font-bold tracking-tight">
+							Business Calculators
+						</h1>
 						<p className="text-muted-foreground mt-1 text-lg">
 							Essential tools for pricing, profit analysis, and growth planning
 						</p>
@@ -137,9 +154,10 @@ export default function CalculatorsPage() {
 				</div>
 
 				<p className="text-muted-foreground max-w-3xl">
-					Make data-driven decisions with our suite of business calculators. From pricing jobs and
-					calculating hourly rates to analyzing profit margins and planning commissions, these tools
-					help you run a more profitable trade business.
+					Make data-driven decisions with our suite of business calculators.
+					From pricing jobs and calculating hourly rates to analyzing profit
+					margins and planning commissions, these tools help you run a more
+					profitable trade business.
 				</p>
 			</div>
 
@@ -178,7 +196,9 @@ export default function CalculatorsPage() {
 
 			{/* Calculator Tools Grid */}
 			<div className="space-y-4">
-				<h2 className="text-2xl font-semibold tracking-tight">Available Calculators</h2>
+				<h2 className="text-2xl font-semibold tracking-tight">
+					Available Calculators
+				</h2>
 				<div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
 					{calculators.map((calculator) => {
 						const Icon = calculator.icon;
@@ -220,9 +240,14 @@ export default function CalculatorsPage() {
 											</p>
 											<ul className="space-y-1">
 												{calculator.features.slice(0, 3).map((feature, idx) => (
-													<li className="flex items-start gap-2 text-sm" key={idx}>
+													<li
+														className="flex items-start gap-2 text-sm"
+														key={idx}
+													>
 														<span className="text-primary mt-0.5">•</span>
-														<span className="text-muted-foreground">{feature}</span>
+														<span className="text-muted-foreground">
+															{feature}
+														</span>
 													</li>
 												))}
 											</ul>
@@ -243,8 +268,8 @@ export default function CalculatorsPage() {
 						Need Help Using These Calculators?
 					</CardTitle>
 					<CardDescription>
-						Our team can help you understand your numbers and make the right pricing decisions for
-						your business
+						Our team can help you understand your numbers and make the right
+						pricing decisions for your business
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">

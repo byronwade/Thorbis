@@ -27,7 +27,7 @@ const CustomerNotesTable = dynamic(
 	{
 		ssr: false,
 		loading: () => <Skeleton className="h-[400px] w-full" />,
-	}
+	},
 );
 
 // React component that renders the block
@@ -36,7 +36,9 @@ export function NotesCollapsibleBlockComponent({ node, editor }: any) {
 	const [triggerAddNote, setTriggerAddNote] = useState(0);
 
 	const summary =
-		notesCount === 0 ? "No notes yet" : `${notesCount} note${notesCount === 1 ? "" : "s"}`;
+		notesCount === 0
+			? "No notes yet"
+			: `${notesCount} note${notesCount === 1 ? "" : "s"}`;
 
 	const handleAddNote = () => {
 		setTriggerAddNote((prev) => prev + 1);
@@ -46,7 +48,10 @@ export function NotesCollapsibleBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="notes-collapsible-block" data-drag-handle>
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="h-3.5 w-3.5" />} onClick={handleAddNote}>
+					<CollapsibleActionButton
+						icon={<Plus className="h-3.5 w-3.5" />}
+						onClick={handleAddNote}
+					>
 						Add Note
 					</CollapsibleActionButton>
 				}
@@ -60,7 +65,10 @@ export function NotesCollapsibleBlockComponent({ node, editor }: any) {
 				title="Notes & Documentation"
 				value="customer-notes"
 			>
-				<CustomerNotesTable customerId={customerId} triggerAdd={triggerAddNote} />
+				<CustomerNotesTable
+					customerId={customerId}
+					triggerAdd={triggerAddNote}
+				/>
 			</CollapsibleDataSection>
 		</NodeViewWrapper>
 	);

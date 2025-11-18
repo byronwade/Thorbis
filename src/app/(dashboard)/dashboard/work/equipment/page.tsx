@@ -14,14 +14,21 @@ import { UequipmentData } from "@/components/work/equipment/equipment-data";
 import EquipmentSkeleton from "@/components/work/equipment/equipment-skeleton";
 import { UequipmentStats } from "@/components/work/equipment/equipment-stats";
 
-export default function UequipmentPage() {
+export default async function UequipmentPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<>
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<UequipmentStats />
 			</Suspense>
 			<Suspense fallback={<EquipmentSkeleton />}>
-				<UequipmentData />
+				<UequipmentData searchParams={params} />
 			</Suspense>
 		</>
 	);

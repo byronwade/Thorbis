@@ -13,7 +13,7 @@
 
 import { Archive, ArrowLeft, Copy, Edit, MoreVertical } from "lucide-react";
 import Link from "next/link";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -23,7 +23,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type ItemDetailToolbarActionsProps = {
 	/** Item ID for edit/delete operations */

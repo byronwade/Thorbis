@@ -61,7 +61,8 @@ const statusConfig: Record<
 > = {
 	draft: {
 		label: "Draft",
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		Icon: Package,
 	},
 	pending_approval: {
@@ -81,7 +82,8 @@ const statusConfig: Record<
 	},
 	partially_received: {
 		label: "Partially Received",
-		className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+		className:
+			"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 		Icon: PackageCheck,
 	},
 	received: {
@@ -91,7 +93,8 @@ const statusConfig: Record<
 	},
 	cancelled: {
 		label: "Cancelled",
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		Icon: PackageX,
 	},
 };
@@ -109,12 +112,18 @@ const priorityConfig: Record<
 export function PurchaseOrdersTable({
 	orders,
 	itemsPerPage = 50,
+	currentPage = 1,
+	totalCount,
 }: {
 	orders: PurchaseOrder[];
 	itemsPerPage?: number;
+	currentPage?: number;
+	totalCount?: number;
 }) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.purchase_orders);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.purchase_orders,
+	);
 
 	// Filter orders based on archive status
 	const filteredOrders = orders.filter((order) => {
@@ -159,7 +168,9 @@ export function PurchaseOrdersTable({
 			shrink: true,
 			sortable: true,
 			hideable: false, // CRITICAL: Vendor essential for quick identification
-			render: (po) => <span className="text-foreground text-sm">{po.vendor}</span>,
+			render: (po) => (
+				<span className="text-foreground text-sm">{po.vendor}</span>
+			),
 		},
 		{
 			key: "title",
@@ -192,7 +203,9 @@ export function PurchaseOrdersTable({
 			sortable: true,
 			hideable: true,
 			render: (po) => (
-				<span className={`text-sm font-medium ${priorityConfig[po.priority].className}`}>
+				<span
+					className={`text-sm font-medium ${priorityConfig[po.priority].className}`}
+				>
 					{priorityConfig[po.priority].label}
 				</span>
 			),
@@ -206,7 +219,9 @@ export function PurchaseOrdersTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Financial data essential
 			render: (po) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(po.totalAmount)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(po.totalAmount)}
+				</span>
 			),
 		},
 		{
@@ -233,7 +248,10 @@ export function PurchaseOrdersTable({
 			render: (po) => {
 				const config = statusConfig[po.status];
 				return (
-					<Badge className={`text-xs font-medium ${config?.className || ""}`} variant="outline">
+					<Badge
+						className={`text-xs font-medium ${config?.className || ""}`}
+						variant="outline"
+					>
 						{config?.label || po.status}
 					</Badge>
 				);
@@ -277,7 +295,8 @@ export function PurchaseOrdersTable({
 									<DropdownMenuSeparator />
 								</>
 							)}
-							{(po.status === "ordered" || po.status === "partially_received") && (
+							{(po.status === "ordered" ||
+								po.status === "partially_received") && (
 								<>
 									<DropdownMenuItem>
 										<PackageCheck className="mr-2 size-4" />
@@ -343,7 +362,9 @@ export function PurchaseOrdersTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredOrders}
-			emptyIcon={<Package className="text-muted-foreground mx-auto h-12 w-12" />}
+			emptyIcon={
+				<Package className="text-muted-foreground mx-auto h-12 w-12" />
+			}
 			emptyMessage="No purchase orders found"
 			enableSelection={true}
 			entity="purchase_orders"
@@ -352,6 +373,8 @@ export function PurchaseOrdersTable({
 			isArchived={(po) => Boolean(po.archived_at || po.deleted_at)}
 			isHighlighted={(po) => po.status === "pending_approval"}
 			itemsPerPage={itemsPerPage}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => {
 				window.location.reload();
 			}}
@@ -362,6 +385,7 @@ export function PurchaseOrdersTable({
 			searchPlaceholder="Search by PO number, vendor, title, job, or status..."
 			showArchived={archiveFilter !== "active"}
 			showRefresh={false}
+			totalCount={totalCount ?? filteredOrders.length}
 		/>
 	);
 }

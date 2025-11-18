@@ -35,7 +35,7 @@ const MAX_RETRIES = 3;
 export async function addToSyncQueue(
 	operation: "INSERT" | "UPDATE" | "DELETE",
 	table: string,
-	data: any
+	data: any,
 ): Promise<string> {
 	const id = generateTempId();
 	const syncOp: SyncOperation = {
@@ -77,7 +77,8 @@ export async function processSyncQueue(): Promise<{
 			await deleteRecord("sync-queue", operation.id);
 			successCount++;
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Unknown error";
+			const errorMessage =
+				error instanceof Error ? error.message : "Unknown error";
 
 			// Increment retry count
 			const updatedOp = {
@@ -103,7 +104,10 @@ export async function processSyncQueue(): Promise<{
 /**
  * Process a single sync operation
  */
-async function processSingleOperation(supabase: any, operation: SyncOperation): Promise<void> {
+async function processSingleOperation(
+	supabase: any,
+	operation: SyncOperation,
+): Promise<void> {
 	const { operation: op, table, data } = operation;
 
 	switch (op) {
@@ -132,7 +136,10 @@ async function processSingleOperation(supabase: any, operation: SyncOperation): 
 
 		case "UPDATE": {
 			const { id, ...updateData } = data;
-			const { error } = await supabase.from(table).update(updateData).eq("id", id);
+			const { error } = await supabase
+				.from(table)
+				.update(updateData)
+				.eq("id", id);
 
 			if (error) {
 				throw new Error(error.message);
@@ -185,7 +192,7 @@ function getStoreNameFromTable(table: string): StoreName | null {
 		communications: "communications",
 		payments: "payments",
 		equipment: "equipment",
-		schedules: "schedules",
+		schedules: "appointments",
 		tags: "tags",
 		attachments: "attachments",
 	};
@@ -228,7 +235,8 @@ export async function retryOperation(operationId: string): Promise<boolean> {
 		await deleteRecord("sync-queue", operationId);
 		return true;
 	} catch (error) {
-		const _errorMessage = error instanceof Error ? error.message : "Unknown error";
+		const _errorMessage =
+			error instanceof Error ? error.message : "Unknown error";
 		return false;
 	}
 }

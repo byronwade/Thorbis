@@ -48,7 +48,10 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+		const statusMap: Record<
+			string,
+			"default" | "secondary" | "outline" | "destructive"
+		> = {
 			draft: "outline",
 			sent: "secondary",
 			accepted: "default",
@@ -67,7 +70,9 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 					Create an estimate for this job to get started.
 				</p>
 				<Button asChild size="sm">
-					<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>Create Estimate</Link>
+					<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
+						Create Estimate
+					</Link>
 				</Button>
 			</div>
 		);
@@ -98,13 +103,17 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 										{estimate.status || "draft"}
 									</Badge>
 								</TableCell>
-								<TableCell>{formatCurrency(estimate.total_amount || estimate.total)}</TableCell>
+								<TableCell>
+									{formatCurrency(estimate.total_amount || estimate.total)}
+								</TableCell>
 								<TableCell>{formatDate(estimate.created_at)}</TableCell>
 								<TableCell className="max-w-[280px] align-top">
 									<EntityTags
 										entityId={estimate.id}
 										entityType="estimate"
-										onUpdateTags={(id, tags) => updateEntityTags("estimate", id, tags)}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("estimate", id, tags)
+										}
 										tags={
 											Array.isArray(estimate?.metadata?.tags)
 												? (estimate.metadata.tags as any[])
@@ -138,7 +147,10 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 					<p className="text-sm font-medium">Total Value</p>
 					<p className="text-muted-foreground text-xs">
 						{formatCurrency(
-							estimates.reduce((sum, est) => sum + (est.total_amount || est.total || 0), 0)
+							estimates.reduce(
+								(sum, est) => sum + (est.total_amount || est.total || 0),
+								0,
+							),
 						)}
 					</p>
 				</div>
@@ -146,7 +158,9 @@ export function JobEstimates({ estimates, jobId }: JobEstimatesProps) {
 
 			{/* Create New Button */}
 			<Button asChild className="w-full" size="sm" variant="outline">
-				<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>Create New Estimate</Link>
+				<Link href={`/dashboard/work/estimates/new?jobId=${jobId}`}>
+					Create New Estimate
+				</Link>
 			</Button>
 		</div>
 	);

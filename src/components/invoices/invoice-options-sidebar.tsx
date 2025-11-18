@@ -25,7 +25,11 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -142,13 +146,17 @@ export function InvoiceOptionsSidebar() {
 
 	const toggleOption = (optionId: string) => {
 		setEnabledOptions((prev) =>
-			prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+			prev.includes(optionId)
+				? prev.filter((id) => id !== optionId)
+				: [...prev, optionId],
 		);
 	};
 
 	const togglePaymentOption = (optionId: string) => {
 		setEnabledPaymentOptions((prev) =>
-			prev.includes(optionId) ? prev.filter((id) => id !== optionId) : [...prev, optionId]
+			prev.includes(optionId)
+				? prev.filter((id) => id !== optionId)
+				: [...prev, optionId],
 		);
 	};
 
@@ -166,7 +174,9 @@ export function InvoiceOptionsSidebar() {
 				<div className="flex items-center justify-between p-4">
 					<div>
 						<h2 className="text-sm font-semibold">Customer View</h2>
-						<p className="text-muted-foreground mt-0.5 text-xs">Customize what customers see</p>
+						<p className="text-muted-foreground mt-0.5 text-xs">
+							Customize what customers see
+						</p>
 					</div>
 					<Button onClick={handlePreview} size="icon" variant="ghost">
 						<Eye className="size-4" />
@@ -190,7 +200,8 @@ export function InvoiceOptionsSidebar() {
 									<Card
 										className={cn(
 											"group hover:border-primary/50 hover:bg-accent/5 cursor-pointer rounded-lg border p-3 transition-all",
-											selectedLayout === layout.id && "border-primary bg-primary/5"
+											selectedLayout === layout.id &&
+												"border-primary bg-primary/5",
 										)}
 										key={layout.id}
 										onClick={() => handleLayoutChange(layout.id)}
@@ -200,10 +211,16 @@ export function InvoiceOptionsSidebar() {
 												<layout.icon className="text-muted-foreground size-4" />
 											</div>
 											<div className="flex-1 space-y-1">
-												<p className="text-sm leading-none font-medium">{layout.name}</p>
-												<p className="text-muted-foreground text-xs">{layout.description}</p>
+												<p className="text-sm leading-none font-medium">
+													{layout.name}
+												</p>
+												<p className="text-muted-foreground text-xs">
+													{layout.description}
+												</p>
 											</div>
-											{selectedLayout === layout.id && <Check className="text-primary size-4" />}
+											{selectedLayout === layout.id && (
+												<Check className="text-primary size-4" />
+											)}
 										</div>
 									</Card>
 								))}
@@ -256,7 +273,9 @@ export function InvoiceOptionsSidebar() {
 										step={10}
 										value={logoOpacity}
 									/>
-									<p className="text-muted-foreground text-xs">{logoOpacity[0]}%</p>
+									<p className="text-muted-foreground text-xs">
+										{logoOpacity[0]}%
+									</p>
 								</div>
 
 								<div className="space-y-2">
@@ -304,11 +323,19 @@ export function InvoiceOptionsSidebar() {
 										>
 											<span className="flex items-center gap-2">
 												{isEnabled && <Check className="text-primary size-3" />}
-												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>
+												<span
+													className={cn(
+														"text-xs",
+														isEnabled ? "font-medium" : "",
+													)}
+												>
 													{option.label}
 												</span>
 											</span>
-											<Switch checked={isEnabled} onCheckedChange={() => toggleOption(option.id)} />
+											<Switch
+												checked={isEnabled}
+												onCheckedChange={() => toggleOption(option.id)}
+											/>
 										</button>
 									);
 								})}
@@ -344,7 +371,12 @@ export function InvoiceOptionsSidebar() {
 										>
 											<span className="flex items-center gap-2">
 												{isEnabled && <Check className="text-primary size-3" />}
-												<span className={cn("text-xs", isEnabled ? "font-medium" : "")}>
+												<span
+													className={cn(
+														"text-xs",
+														isEnabled ? "font-medium" : "",
+													)}
+												>
 													{option.label}
 												</span>
 											</span>
@@ -384,7 +416,10 @@ export function InvoiceOptionsSidebar() {
 												Automatically email invoice to customer
 											</p>
 										</div>
-										<Switch checked={sendEmailOnCreate} onCheckedChange={setSendEmailOnCreate} />
+										<Switch
+											checked={sendEmailOnCreate}
+											onCheckedChange={setSendEmailOnCreate}
+										/>
 									</div>
 								</Card>
 
@@ -423,18 +458,23 @@ export function InvoiceOptionsSidebar() {
 								<Card
 									className={cn(
 										"group hover:border-primary/50 hover:bg-accent/5 cursor-pointer rounded-lg border p-3 transition-all",
-										enablePortal && "border-primary bg-primary/5"
+										enablePortal && "border-primary bg-primary/5",
 									)}
 									onClick={() => setEnablePortal(!enablePortal)}
 								>
 									<div className="flex items-start justify-between gap-2">
 										<div className="flex-1 space-y-1">
-											<p className="text-sm leading-none font-medium">Portal Access</p>
+											<p className="text-sm leading-none font-medium">
+												Portal Access
+											</p>
 											<p className="text-muted-foreground text-xs">
 												{enablePortal ? "Enabled" : "Disabled"}
 											</p>
 										</div>
-										<Switch checked={enablePortal} onCheckedChange={setEnablePortal} />
+										<Switch
+											checked={enablePortal}
+											onCheckedChange={setEnablePortal}
+										/>
 									</div>
 								</Card>
 
@@ -462,7 +502,9 @@ export function InvoiceOptionsSidebar() {
 					<div className="space-y-2 px-2">
 						<Button
 							className="w-full justify-start gap-2 text-xs"
-							onClick={() => window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")}
+							onClick={() =>
+								window.open(`/api/invoices/${invoiceId}/pdf`, "_blank")
+							}
 							size="sm"
 							variant="outline"
 						>
@@ -485,7 +527,12 @@ export function InvoiceOptionsSidebar() {
 			</SidebarContent>
 
 			<SidebarFooter className="border-t p-3">
-				<Button className="w-full gap-2" onClick={handleSave} size="sm" variant="default">
+				<Button
+					className="w-full gap-2"
+					onClick={handleSave}
+					size="sm"
+					variant="default"
+				>
 					<Settings className="size-4" />
 					Save Settings
 				</Button>

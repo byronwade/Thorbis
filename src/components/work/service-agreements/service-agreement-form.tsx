@@ -66,12 +66,12 @@ export function ServiceAgreementForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [paymentSchedule, setPaymentSchedule] = useState("monthly");
 	const [autoRenew, setAutoRenew] = useState(false);
 	const [showSLA, setShowSLA] = useState(false);
@@ -198,7 +198,12 @@ export function ServiceAgreementForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., Annual Service Agreement" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., Annual Service Agreement"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
@@ -321,7 +326,12 @@ export function ServiceAgreementForm({
 							<Shield className="h-5 w-5" />
 							<CardTitle>Service Level Agreement (Optional)</CardTitle>
 						</div>
-						<Button onClick={() => setShowSLA(!showSLA)} size="sm" type="button" variant="outline">
+						<Button
+							onClick={() => setShowSLA(!showSLA)}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							{showSLA ? "Hide" : "Show"} SLA
 						</Button>
 					</div>
@@ -342,7 +352,9 @@ export function ServiceAgreementForm({
 							</div>
 
 							<div className="space-y-2">
-								<Label htmlFor="resolutionTimeHours">Resolution Time (hours)</Label>
+								<Label htmlFor="resolutionTimeHours">
+									Resolution Time (hours)
+								</Label>
 								<Input
 									id="resolutionTimeHours"
 									min="0"
@@ -408,14 +420,24 @@ export function ServiceAgreementForm({
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

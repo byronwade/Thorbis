@@ -46,7 +46,7 @@ export type CallStatus =
  */
 async function telnyxCallRequest<T>(
 	endpoint: string,
-	body: Record<string, unknown>
+	body: Record<string, unknown>,
 ): Promise<{ success: boolean; data?: T; error?: string }> {
 	const apiKey = process.env.TELNYX_API_KEY;
 	if (!apiKey) {
@@ -67,7 +67,9 @@ async function telnyxCallRequest<T>(
 
 		if (!response.ok) {
 			const errorMessage =
-				result?.errors?.[0]?.detail || result?.errors?.[0] || response.statusText;
+				result?.errors?.[0]?.detail ||
+				result?.errors?.[0] ||
+				response.statusText;
 			return {
 				success: false,
 				error: `Telnyx ${response.status}: ${errorMessage}`,
@@ -103,7 +105,8 @@ export async function initiateCall(params: {
 			from: params.from,
 			connection_id: params.connectionId,
 			webhook_url: params.webhookUrl,
-			answering_machine_detection: params.answeringMachineDetection || "disabled",
+			answering_machine_detection:
+				params.answeringMachineDetection || "disabled",
 			custom_headers: params.customHeaders,
 		});
 
@@ -137,10 +140,13 @@ export async function answerCall(params: {
 	clientState?: string;
 }) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/answer`, {
-			webhook_url: params.webhookUrl,
-			client_state: params.clientState,
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/answer`,
+			{
+				webhook_url: params.webhookUrl,
+				client_state: params.clientState,
+			},
+		);
 
 		return {
 			success: result.success,
@@ -163,9 +169,12 @@ export async function rejectCall(params: {
 	cause?: "CALL_REJECTED" | "USER_BUSY";
 }) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/reject`, {
-			cause: params.cause || "CALL_REJECTED",
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/reject`,
+			{
+				cause: params.cause || "CALL_REJECTED",
+			},
+		);
 
 		return {
 			success: result.success,
@@ -185,7 +194,10 @@ export async function rejectCall(params: {
  */
 export async function hangupCall(params: { callControlId: string }) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/hangup`, {});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/hangup`,
+			{},
+		);
 
 		return {
 			success: result.success,
@@ -209,10 +221,13 @@ export async function startRecording(params: {
 	channels?: "single" | "dual";
 }) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/record_start`, {
-			format: params.format || "mp3",
-			channels: params.channels || "single",
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/record_start`,
+			{
+				format: params.format || "mp3",
+				channels: params.channels || "single",
+			},
+		);
 
 		return {
 			success: result.success,
@@ -222,7 +237,8 @@ export async function startRecording(params: {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to start recording",
+			error:
+				error instanceof Error ? error.message : "Failed to start recording",
 		};
 	}
 }
@@ -234,7 +250,7 @@ export async function stopRecording(params: { callControlId: string }) {
 	try {
 		const result = await telnyxCallRequest(
 			`/calls/${params.callControlId}/actions/record_stop`,
-			{}
+			{},
 		);
 
 		return {
@@ -245,7 +261,8 @@ export async function stopRecording(params: { callControlId: string }) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to stop recording",
+			error:
+				error instanceof Error ? error.message : "Failed to stop recording",
 		};
 	}
 }
@@ -264,7 +281,7 @@ export async function playAudio(params: {
 			{
 				audio_url: params.audioUrl,
 				loop: params.loop,
-			}
+			},
 		);
 
 		return {
@@ -290,11 +307,14 @@ export async function speakText(params: {
 	language?: string;
 }) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/speak`, {
-			payload: params.text,
-			voice: params.voice || "female",
-			language: params.language || "en-US",
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/speak`,
+			{
+				payload: params.text,
+				voice: params.voice || "female",
+				language: params.language || "en-US",
+			},
+		);
 
 		return {
 			success: result.success,
@@ -312,12 +332,19 @@ export async function speakText(params: {
 /**
  * Transfer a call to another number
  */
-export async function transferCall(params: { callControlId: string; to: string; from: string }) {
+export async function transferCall(params: {
+	callControlId: string;
+	to: string;
+	from: string;
+}) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/transfer`, {
-			to: params.to,
-			from: params.from,
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/transfer`,
+			{
+				to: params.to,
+				from: params.from,
+			},
+		);
 
 		return {
 			success: result.success,
@@ -335,11 +362,17 @@ export async function transferCall(params: { callControlId: string; to: string; 
 /**
  * Send DTMF tones (phone keypad presses)
  */
-export async function sendDTMF(params: { callControlId: string; digits: string }) {
+export async function sendDTMF(params: {
+	callControlId: string;
+	digits: string;
+}) {
 	try {
-		const result = await telnyxCallRequest(`/calls/${params.callControlId}/actions/send_dtmf`, {
-			digits: params.digits,
-		});
+		const result = await telnyxCallRequest(
+			`/calls/${params.callControlId}/actions/send_dtmf`,
+			{
+				digits: params.digits,
+			},
+		);
 
 		return {
 			success: result.success,

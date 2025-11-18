@@ -10,7 +10,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CustomerInfoHoverCardProps = {
@@ -31,7 +35,9 @@ type CustomerInfoHoverCardProps = {
 	};
 };
 
-export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) {
+export function CustomerInfoHoverCard({
+	customer,
+}: CustomerInfoHoverCardProps) {
 	const [copiedField, setCopiedField] = useState<string | null>(null);
 
 	const copyToClipboard = (text: string, field: string) => {
@@ -45,7 +51,12 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 		`${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
 		"Unknown Customer";
 
-	const fullAddress = [customer.address, customer.city, customer.state, customer.zip_code]
+	const fullAddress = [
+		customer.address,
+		customer.city,
+		customer.state,
+		customer.zip_code,
+	]
 		.filter(Boolean)
 		.join(", ");
 
@@ -67,7 +78,9 @@ export function CustomerInfoHoverCard({ customer }: CustomerInfoHoverCardProps) 
 						<div>
 							<h4 className="text-sm font-semibold">{displayName}</h4>
 							{customer.company_name && (
-								<p className="text-muted-foreground text-xs">{customer.company_name}</p>
+								<p className="text-muted-foreground text-xs">
+									{customer.company_name}
+								</p>
 							)}
 						</div>
 						{customer.status && (

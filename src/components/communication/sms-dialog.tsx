@@ -68,7 +68,9 @@ export function SMSDialog({
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [message, setMessage] = useState("");
-	const [selectedPhone, setSelectedPhone] = useState(companyPhones[0]?.number || "");
+	const [selectedPhone, setSelectedPhone] = useState(
+		companyPhones[0]?.number || "",
+	);
 
 	const charCount = message.length;
 	const maxChars = 1600; // SMS max length (multiple segments)
@@ -118,7 +120,9 @@ export function SMSDialog({
 						<MessageSquare className="size-5" />
 						Send Text Message
 					</DialogTitle>
-					<DialogDescription>Send an SMS message to {customerName}</DialogDescription>
+					<DialogDescription>
+						Send an SMS message to {customerName}
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -134,7 +138,9 @@ export function SMSDialog({
 							</div>
 							<div className="min-w-0 flex-1">
 								<div className="text-sm font-medium">{customerName}</div>
-								<div className="text-muted-foreground text-xs">{customerPhone}</div>
+								<div className="text-muted-foreground text-xs">
+									{customerPhone}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -190,11 +196,20 @@ export function SMSDialog({
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-2">
-					<Button disabled={isPending} onClick={() => onOpenChange(false)} variant="outline">
+					<Button
+						disabled={isPending}
+						onClick={() => onOpenChange(false)}
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button
-						disabled={isPending || !message.trim() || !selectedPhone || companyPhones.length === 0}
+						disabled={
+							isPending ||
+							!message.trim() ||
+							!selectedPhone ||
+							companyPhones.length === 0
+						}
 						onClick={handleSend}
 					>
 						<Send className="mr-2 size-4" />

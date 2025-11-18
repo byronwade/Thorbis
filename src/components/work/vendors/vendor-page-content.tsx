@@ -111,7 +111,7 @@ export function VendorPageContent({
 	const [isLinkingPO, setIsLinkingPO] = useState(false);
 
 	const [tags, setTags] = useState<EntityTag[]>(
-		Array.isArray(initialVendor.tags) ? initialVendor.tags : []
+		Array.isArray(initialVendor.tags) ? initialVendor.tags : [],
 	);
 
 	const handleTagsUpdate = async (entityId: string, newTags: EntityTag[]) => {
@@ -133,7 +133,10 @@ export function VendorPageContent({
 	const handleLinkPurchaseOrder = async (purchaseOrderId: string) => {
 		setIsLinkingPO(true);
 		try {
-			const result = await linkPurchaseOrderToVendor(purchaseOrderId, vendor.id);
+			const result = await linkPurchaseOrderToVendor(
+				purchaseOrderId,
+				vendor.id,
+			);
 
 			if (result.success) {
 				toast.success("Purchase order linked successfully");
@@ -203,7 +206,10 @@ export function VendorPageContent({
 				formData.append("credit_limit", (vendor.credit_limit / 100).toString());
 			}
 			if (vendor.preferred_payment_method) {
-				formData.append("preferred_payment_method", vendor.preferred_payment_method);
+				formData.append(
+					"preferred_payment_method",
+					vendor.preferred_payment_method,
+				);
 			}
 			if (vendor.category) {
 				formData.append("category", vendor.category);
@@ -265,7 +271,10 @@ export function VendorPageContent({
 			title: "Vendor Information",
 			icon: <Building2 className="size-4" />,
 			actions: hasChanges ? (
-				<Badge className="bg-amber-100 text-amber-900 dark:bg-amber-500/20" variant="outline">
+				<Badge
+					className="bg-amber-100 text-amber-900 dark:bg-amber-500/20"
+					variant="outline"
+				>
 					<Save className="mr-1 size-3" />
 					Unsaved
 				</Badge>
@@ -287,14 +296,18 @@ export function VendorPageContent({
 								<Label htmlFor="display_name">Display Name</Label>
 								<Input
 									id="display_name"
-									onChange={(e) => handleFieldChange("display_name", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("display_name", e.target.value)
+									}
 									value={vendor.display_name || ""}
 								/>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="category">Category</Label>
 								<Select
-									onValueChange={(value) => handleFieldChange("category", value)}
+									onValueChange={(value) =>
+										handleFieldChange("category", value)
+									}
 									value={vendor.category || ""}
 								>
 									<SelectTrigger id="category">
@@ -304,7 +317,9 @@ export function VendorPageContent({
 										<SelectItem value="supplier">Supplier</SelectItem>
 										<SelectItem value="distributor">Distributor</SelectItem>
 										<SelectItem value="manufacturer">Manufacturer</SelectItem>
-										<SelectItem value="service_provider">Service Provider</SelectItem>
+										<SelectItem value="service_provider">
+											Service Provider
+										</SelectItem>
 										<SelectItem value="other">Other</SelectItem>
 									</SelectContent>
 								</Select>
@@ -350,7 +365,9 @@ export function VendorPageContent({
 								<Label htmlFor="secondary_phone">Secondary Phone</Label>
 								<Input
 									id="secondary_phone"
-									onChange={(e) => handleFieldChange("secondary_phone", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("secondary_phone", e.target.value)
+									}
 									type="tel"
 									value={vendor.secondary_phone || ""}
 								/>
@@ -383,7 +400,9 @@ export function VendorPageContent({
 								<Label htmlFor="address2">Address Line 2</Label>
 								<Input
 									id="address2"
-									onChange={(e) => handleFieldChange("address2", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("address2", e.target.value)
+									}
 									value={vendor.address2 || ""}
 								/>
 							</div>
@@ -407,7 +426,9 @@ export function VendorPageContent({
 								<Label htmlFor="zip_code">ZIP Code</Label>
 								<Input
 									id="zip_code"
-									onChange={(e) => handleFieldChange("zip_code", e.target.value)}
+									onChange={(e) =>
+										handleFieldChange("zip_code", e.target.value)
+									}
 									value={vendor.zip_code || ""}
 								/>
 							</div>
@@ -437,7 +458,9 @@ export function VendorPageContent({
 							<div className="space-y-2">
 								<Label htmlFor="payment_terms">Payment Terms</Label>
 								<Select
-									onValueChange={(value) => handleFieldChange("payment_terms", value)}
+									onValueChange={(value) =>
+										handleFieldChange("payment_terms", value)
+									}
 									value={vendor.payment_terms || "net_30"}
 								>
 									<SelectTrigger id="payment_terms">
@@ -447,7 +470,9 @@ export function VendorPageContent({
 										<SelectItem value="net_15">Net 15</SelectItem>
 										<SelectItem value="net_30">Net 30</SelectItem>
 										<SelectItem value="net_60">Net 60</SelectItem>
-										<SelectItem value="due_on_receipt">Due on Receipt</SelectItem>
+										<SelectItem value="due_on_receipt">
+											Due on Receipt
+										</SelectItem>
 										<SelectItem value="custom">Custom</SelectItem>
 									</SelectContent>
 								</Select>
@@ -460,7 +485,9 @@ export function VendorPageContent({
 									onChange={(e) =>
 										handleFieldChange(
 											"credit_limit",
-											Math.round(Number.parseFloat(e.target.value || "0") * 100)
+											Math.round(
+												Number.parseFloat(e.target.value || "0") * 100,
+											),
 										)
 									}
 									step="0.01"
@@ -469,9 +496,13 @@ export function VendorPageContent({
 								/>
 							</div>
 							<div className="space-y-2">
-								<Label htmlFor="preferred_payment_method">Preferred Payment Method</Label>
+								<Label htmlFor="preferred_payment_method">
+									Preferred Payment Method
+								</Label>
 								<Select
-									onValueChange={(value) => handleFieldChange("preferred_payment_method", value)}
+									onValueChange={(value) =>
+										handleFieldChange("preferred_payment_method", value)
+									}
 									value={vendor.preferred_payment_method || ""}
 								>
 									<SelectTrigger id="preferred_payment_method">
@@ -504,7 +535,9 @@ export function VendorPageContent({
 							<Label htmlFor="internal_notes">Internal Notes</Label>
 							<Textarea
 								id="internal_notes"
-								onChange={(e) => handleFieldChange("internal_notes", e.target.value)}
+								onChange={(e) =>
+									handleFieldChange("internal_notes", e.target.value)
+								}
 								placeholder="Private team notes..."
 								rows={3}
 								value={vendor.internal_notes || ""}
@@ -541,7 +574,11 @@ export function VendorPageContent({
 			icon: <Receipt className="size-4" />,
 			count: purchaseOrders.length,
 			actions: (
-				<Button onClick={() => setIsPOSearchOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsPOSearchOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Link PO
 				</Button>
@@ -551,9 +588,13 @@ export function VendorPageContent({
 					{purchaseOrders.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Receipt className="text-muted-foreground mb-4 size-12" />
-							<p className="text-muted-foreground text-sm">No purchase orders yet</p>
+							<p className="text-muted-foreground text-sm">
+								No purchase orders yet
+							</p>
 							<Button asChild className="mt-4" size="sm" variant="outline">
-								<Link href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}>
+								<Link
+									href={`/dashboard/work/purchase-orders/new?vendorId=${vendor.id}`}
+								>
 									Create Purchase Order
 								</Link>
 							</Button>
@@ -572,7 +613,9 @@ export function VendorPageContent({
 												<p className="font-medium">{po.po_number}</p>
 												<Badge variant="outline">{po.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">{po.title}</p>
+											<p className="text-muted-foreground text-sm">
+												{po.title}
+											</p>
 											{po.expected_delivery && (
 												<p className="text-muted-foreground text-xs">
 													Expected: {formatDate(po.expected_delivery)}
@@ -580,8 +623,12 @@ export function VendorPageContent({
 											)}
 										</div>
 										<div className="text-right">
-											<p className="font-medium">{formatCurrency(po.total_amount)}</p>
-											<p className="text-muted-foreground text-xs">{formatDate(po.created_at)}</p>
+											<p className="font-medium">
+												{formatCurrency(po.total_amount)}
+											</p>
+											<p className="text-muted-foreground text-xs">
+												{formatDate(po.created_at)}
+											</p>
 										</div>
 									</div>
 								</Link>
@@ -614,7 +661,9 @@ export function VendorPageContent({
 						</CardHeader>
 						<CardContent>
 							<p className="text-2xl font-bold">{openPOCount}</p>
-							<p className="text-muted-foreground text-xs">{formatCurrency(openPOValue)} value</p>
+							<p className="text-muted-foreground text-xs">
+								{formatCurrency(openPOValue)} value
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -622,8 +671,12 @@ export function VendorPageContent({
 							<CardTitle className="text-sm">Avg Order Value</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-2xl font-bold">{formatCurrency(averageOrderValue)}</p>
-							<p className="text-muted-foreground text-xs">Per purchase order</p>
+							<p className="text-2xl font-bold">
+								{formatCurrency(averageOrderValue)}
+							</p>
+							<p className="text-muted-foreground text-xs">
+								Per purchase order
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -645,7 +698,9 @@ export function VendorPageContent({
 						</CardHeader>
 						<CardContent>
 							<p className="text-2xl font-bold">{onTimeDeliveryRate}%</p>
-							<p className="text-muted-foreground text-xs">Delivery performance</p>
+							<p className="text-muted-foreground text-xs">
+								Delivery performance
+							</p>
 						</CardContent>
 					</Card>
 					<Card>
@@ -672,7 +727,9 @@ export function VendorPageContent({
 					{relatedJobs.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<ShoppingCart className="text-muted-foreground mb-4 size-12" />
-							<p className="text-muted-foreground text-sm">No jobs linked to this vendor yet</p>
+							<p className="text-muted-foreground text-sm">
+								No jobs linked to this vendor yet
+							</p>
 						</div>
 					) : (
 						<div className="space-y-3">
@@ -688,9 +745,13 @@ export function VendorPageContent({
 												<p className="font-medium">{job.job_number}</p>
 												<Badge variant="outline">{job.status}</Badge>
 											</div>
-											<p className="text-muted-foreground text-sm">{job.title}</p>
+											<p className="text-muted-foreground text-sm">
+												{job.title}
+											</p>
 										</div>
-										<p className="text-muted-foreground text-xs">{formatDate(job.created_at)}</p>
+										<p className="text-muted-foreground text-xs">
+											{formatDate(job.created_at)}
+										</p>
 									</div>
 								</Link>
 							))}
@@ -707,7 +768,11 @@ export function VendorPageContent({
 			icon: <User className="size-4" />,
 			count: contacts.length,
 			actions: (
-				<Button onClick={() => setIsContactSearchOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsContactSearchOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Link Contact
 				</Button>
@@ -717,7 +782,9 @@ export function VendorPageContent({
 					{contacts.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<User className="text-muted-foreground mb-4 size-12" />
-							<p className="text-muted-foreground text-sm">No contacts added yet</p>
+							<p className="text-muted-foreground text-sm">
+								No contacts added yet
+							</p>
 							<Button className="mt-4" size="sm" variant="outline">
 								Add Contact
 							</Button>
@@ -731,7 +798,9 @@ export function VendorPageContent({
 											{contact.first_name} {contact.last_name}
 										</CardTitle>
 										{contact.title && (
-											<p className="text-muted-foreground text-sm">{contact.title}</p>
+											<p className="text-muted-foreground text-sm">
+												{contact.title}
+											</p>
 										)}
 									</CardHeader>
 									<CardContent className="space-y-2">
@@ -771,7 +840,11 @@ export function VendorPageContent({
 			icon: <FileText className="size-4" />,
 			count: notes.length,
 			actions: (
-				<Button onClick={() => setIsNoteDialogOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsNoteDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Add Note
 				</Button>
@@ -804,7 +877,11 @@ export function VendorPageContent({
 			icon: <Paperclip className="size-4" />,
 			count: attachments.length,
 			actions: (
-				<Button onClick={() => setIsAttachmentDialogOpen(true)} size="sm" variant="outline">
+				<Button
+					onClick={() => setIsAttachmentDialogOpen(true)}
+					size="sm"
+					variant="outline"
+				>
 					<Plus className="mr-2 size-3.5" />
 					Upload
 				</Button>
@@ -814,7 +891,9 @@ export function VendorPageContent({
 					{attachments.length === 0 ? (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Paperclip className="text-muted-foreground mb-4 size-12" />
-							<p className="text-muted-foreground text-sm">No attachments yet</p>
+							<p className="text-muted-foreground text-sm">
+								No attachments yet
+							</p>
 						</div>
 					) : (
 						<div className="space-y-3">
@@ -848,7 +927,9 @@ export function VendorPageContent({
 							{activities.map((activity: any) => (
 								<div className="rounded-lg border p-4" key={activity.id}>
 									<p className="text-sm">{activity.action}</p>
-									<p className="text-muted-foreground text-xs">{formatDate(activity.created_at)}</p>
+									<p className="text-muted-foreground text-xs">
+										{formatDate(activity.created_at)}
+									</p>
 								</div>
 							))}
 						</div>
@@ -872,7 +953,9 @@ export function VendorPageContent({
 								<h1 className="text-3xl font-bold tracking-tight">
 									{vendor.display_name || vendor.name}
 								</h1>
-								<Badge variant={vendor.status === "active" ? "default" : "secondary"}>
+								<Badge
+									variant={vendor.status === "active" ? "default" : "secondary"}
+								>
 									{vendor.status}
 								</Badge>
 							</div>
@@ -954,8 +1037,12 @@ export function VendorPageContent({
 									availablePurchaseOrders.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
-											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
+											po.po_number
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()) ||
+											po.title
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()),
 									).length
 								})`}
 							>
@@ -963,18 +1050,24 @@ export function VendorPageContent({
 									.filter(
 										(po: any) =>
 											!poSearchQuery ||
-											po.po_number?.toLowerCase().includes(poSearchQuery.toLowerCase()) ||
-											po.title?.toLowerCase().includes(poSearchQuery.toLowerCase())
+											po.po_number
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()) ||
+											po.title
+												?.toLowerCase()
+												.includes(poSearchQuery.toLowerCase()),
 									)
 									.slice(0, 8)
 									.map((po: any) => {
 										const statusColors: Record<string, string> = {
-											draft: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+											draft:
+												"bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
 											pending_approval:
 												"bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
 											approved:
 												"bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-											ordered: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+											ordered:
+												"bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 											partially_received:
 												"bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
 										};
@@ -1026,7 +1119,10 @@ export function VendorPageContent({
 			</CommandDialog>
 
 			{/* Contact Search Dialog */}
-			<CommandDialog onOpenChange={setIsContactSearchOpen} open={isContactSearchOpen}>
+			<CommandDialog
+				onOpenChange={setIsContactSearchOpen}
+				open={isContactSearchOpen}
+			>
 				<CommandInput
 					onValueChange={setContactSearchQuery}
 					placeholder="Search contacts by name, email, or company..."
@@ -1058,7 +1154,9 @@ export function VendorPageContent({
 									<Plus className="size-4 text-white" />
 								</div>
 								<div className="flex flex-col">
-									<span className="text-sm font-semibold text-blue-100">Create New Contact</span>
+									<span className="text-sm font-semibold text-blue-100">
+										Create New Contact
+									</span>
 									<span className="text-xs text-blue-100/70">
 										Add a new contact for this vendor
 									</span>
@@ -1075,9 +1173,15 @@ export function VendorPageContent({
 									availableContacts.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
+											contact.name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.email
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()),
 									).length
 								})`}
 							>
@@ -1085,9 +1189,15 @@ export function VendorPageContent({
 									.filter(
 										(contact: any) =>
 											!contactSearchQuery ||
-											contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.email?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
-											contact.company_name?.toLowerCase().includes(contactSearchQuery.toLowerCase())
+											contact.name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.email
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()) ||
+											contact.company_name
+												?.toLowerCase()
+												.includes(contactSearchQuery.toLowerCase()),
 									)
 									.slice(0, 8)
 									.map((contact: any) => (
@@ -1110,10 +1220,16 @@ export function VendorPageContent({
 													{(contact.title || contact.company_name) && (
 														<div className="text-muted-foreground flex items-center gap-1.5 text-xs">
 															{contact.title && (
-																<span className="font-medium">{contact.title}</span>
+																<span className="font-medium">
+																	{contact.title}
+																</span>
 															)}
-															{contact.title && contact.company_name && <span>•</span>}
-															{contact.company_name && <span>{contact.company_name}</span>}
+															{contact.title && contact.company_name && (
+																<span>•</span>
+															)}
+															{contact.company_name && (
+																<span>{contact.company_name}</span>
+															)}
 														</div>
 													)}
 													{contact.email && (
@@ -1127,7 +1243,9 @@ export function VendorPageContent({
 													{contact.phone && (
 														<div className="flex items-center gap-1.5">
 															<Phone className="text-muted-foreground size-3" />
-															<span className="text-muted-foreground text-xs">{contact.phone}</span>
+															<span className="text-muted-foreground text-xs">
+																{contact.phone}
+															</span>
 														</div>
 													)}
 												</div>
@@ -1148,13 +1266,18 @@ export function VendorPageContent({
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Add Note</DialogTitle>
-						<DialogDescription>Add a note about this vendor for your team.</DialogDescription>
+						<DialogDescription>
+							Add a note about this vendor for your team.
+						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
 						<Textarea placeholder="Enter note content..." rows={4} />
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsNoteDialogOpen(false)} variant="outline">
+						<Button
+							onClick={() => setIsNoteDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button
@@ -1171,7 +1294,10 @@ export function VendorPageContent({
 			</Dialog>
 
 			{/* Upload Attachment Dialog */}
-			<Dialog onOpenChange={setIsAttachmentDialogOpen} open={isAttachmentDialogOpen}>
+			<Dialog
+				onOpenChange={setIsAttachmentDialogOpen}
+				open={isAttachmentDialogOpen}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Upload Attachment</DialogTitle>
@@ -1182,11 +1308,16 @@ export function VendorPageContent({
 					<div className="space-y-4 py-4">
 						<div className="rounded-2xl border border-dashed border-white/15 bg-zinc-900/70 p-10 text-center shadow-inner shadow-black/40 transition-colors hover:border-white/25 hover:bg-zinc-900/80">
 							<Paperclip className="mx-auto mb-4 size-12 text-zinc-400" />
-							<p className="text-sm text-zinc-300">Drag and drop files here or click to browse</p>
+							<p className="text-sm text-zinc-300">
+								Drag and drop files here or click to browse
+							</p>
 						</div>
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsAttachmentDialogOpen(false)} variant="outline">
+						<Button
+							onClick={() => setIsAttachmentDialogOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button

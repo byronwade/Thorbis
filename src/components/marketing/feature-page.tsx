@@ -27,14 +27,20 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{feature.heroTitle}
 						</h1>
-						<p className="text-muted-foreground text-lg">{feature.heroDescription}</p>
+						<p className="text-muted-foreground text-lg">
+							{feature.heroDescription}
+						</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild size="lg">
-								<Link href={feature.primaryCta.href}>{feature.primaryCta.label}</Link>
+								<Link href={feature.primaryCta.href}>
+									{feature.primaryCta.label}
+								</Link>
 							</Button>
 							{feature.secondaryCta ? (
 								<Button asChild size="lg" variant="outline">
-									<Link href={feature.secondaryCta.href}>{feature.secondaryCta.label}</Link>
+									<Link href={feature.secondaryCta.href}>
+										{feature.secondaryCta.label}
+									</Link>
 								</Button>
 							) : null}
 						</div>
@@ -61,7 +67,9 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 			<section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
 				<div className="bg-muted/20 rounded-2xl border p-8">
 					<h2 className="text-xl font-semibold">Why teams choose Thorbis</h2>
-					<p className="text-muted-foreground mt-4 leading-relaxed">{feature.summary}</p>
+					<p className="text-muted-foreground mt-4 leading-relaxed">
+						{feature.summary}
+					</p>
 				</div>
 				<div className="bg-background rounded-2xl border p-8">
 					<h3 className="text-lg font-semibold">Top challenges solved</h3>
@@ -126,9 +134,15 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 								className="border-primary/30 bg-background/80 rounded-xl border border-dashed p-4"
 								key={stat.label}
 							>
-								<dt className="text-muted-foreground text-sm font-medium">{stat.label}</dt>
-								<dd className="text-primary text-2xl font-semibold">{stat.value}</dd>
-								<p className="text-muted-foreground mt-1 text-xs">{stat.description}</p>
+								<dt className="text-muted-foreground text-sm font-medium">
+									{stat.label}
+								</dt>
+								<dd className="text-primary text-2xl font-semibold">
+									{stat.value}
+								</dd>
+								<p className="text-muted-foreground mt-1 text-xs">
+									{stat.description}
+								</p>
 							</div>
 						))}
 					</dl>
@@ -151,7 +165,9 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 
 			{feature.testimonial ? (
 				<section className="bg-primary/10 rounded-3xl border p-10 text-center">
-					<p className="text-primary text-2xl font-semibold">“{feature.testimonial.quote}”</p>
+					<p className="text-primary text-2xl font-semibold">
+						“{feature.testimonial.quote}”
+					</p>
 					<p className="text-muted-foreground mt-4">
 						— {feature.testimonial.attribution}
 						{feature.testimonial.role ? `, ${feature.testimonial.role}` : null}
@@ -164,7 +180,9 @@ export function FeaturePage({ feature }: FeaturePageProps) {
 				<Accordion className="w-full" collapsible type="single">
 					{feature.faq.map((item, index) => (
 						<AccordionItem key={item.question} value={`faq-${index}`}>
-							<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+							<AccordionTrigger className="text-left">
+								{item.question}
+							</AccordionTrigger>
 							<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 								{item.answer}
 							</AccordionContent>

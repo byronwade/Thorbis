@@ -1,13 +1,12 @@
 "use client";
 
 /**
- * Customer Badges Component - React Query Refactored
+ * Customer Badges Component - Server Actions + useOptimistic (React 19)
  *
  * Performance optimizations:
- * - Uses React Query for automatic caching and refetching
- * - Optimistic updates for instant UI feedback
- * - Automatic background refetching
- * - Intelligent cache invalidation
+ * - useOptimistic for instant UI feedback
+ * - Server Actions for mutations with auto-revalidation
+ * - No external state management needed
  *
  * Displays badges at the top of the customer profile:
  * - Custom badges
@@ -16,7 +15,6 @@
  * - Dropdown to add new badges
  */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	AlertTriangle,
 	Calendar,
@@ -30,7 +28,7 @@ import {
 	UserPlus,
 	X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
 	addCustomerBadge,
@@ -40,7 +38,12 @@ import {
 } from "@/actions/customer-badges";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -64,6 +67,7 @@ import { type CustomerBadge, PREMADE_BADGES } from "@/types/customer-badges";
 
 type CustomerBadgesProps = {
 	customerId: string;
+	initialBadges?: CustomerBadge[];
 };
 
 const ICON_MAP: Record<string, any> = {
@@ -77,156 +81,176 @@ const ICON_MAP: Record<string, any> = {
 	UserPlus,
 };
 
-export function CustomerBadges({ customerId }: CustomerBadgesProps) {
-	const queryClient = useQueryClient();
-
+export function CustomerBadges({
+	customerId,
+	initialBadges = [],
+}: CustomerBadgesProps) {
 	// Local UI state
 	const [showCustomDialog, setShowCustomDialog] = useState(false);
 	const [customLabel, setCustomLabel] = useState("");
 	const [customVariant, setCustomVariant] = useState<string>("default");
 
-	// React Query: Fetch badges
-	const {
-		data: badges,
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["customer-badges", customerId],
-		queryFn: async () => {
+	// Data state
+	const [badges, setBadges] = useState<CustomerBadge[]>(initialBadges);
+	const [isLoading, setIsLoading] = useState(initialBadges.length === 0);
+	const [error, setError] = useState<string | null>(null);
+
+	const [isPending, startTransition] = useTransition();
+	const [optimisticBadges, updateOptimisticBadges] = useOptimistic(
+		badges,
+		(state, update: CustomerBadge | { id: string; action: "delete" }) => {
+			if ("action" in update && update.action === "delete") {
+				return state.filter((badge) => badge.id !== update.id);
+			}
+			return [...state, update as CustomerBadge];
+		},
+	);
+
+	// Load badges on mount
+	useEffect(() => {
+		const loadBadges = async () => {
+			setIsLoading(true);
+			setError(null);
+
 			const result = await getCustomerBadges(customerId);
+
 			if (!result.success) {
-				throw new Error(result.error || "Failed to fetch badges");
+				setError(result.error || "Failed to fetch badges");
+			} else {
+				setBadges(result.data || []);
 			}
-			return result.data || [];
-		},
-		staleTime: 60 * 1000, // 1 minute
-		refetchOnWindowFocus: true,
-	});
 
-	// React Query: Add badge mutation
-	const addBadgeMutation = useMutation({
-		mutationFn: async (badge: {
-			label: string;
-			variant: string;
-			badgeType: string;
-			icon?: string;
-		}) => {
-			const result = await addCustomerBadge({
-				customerId,
-				...badge,
-			});
-			if (!result.success) {
-				throw new Error(result.error || "Failed to add badge");
-			}
-			return result;
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ["customer-badges", customerId],
-			});
-			toast.success("Badge added successfully");
-		},
-		onError: (error: Error) => {
-			toast.error(error.message);
-		},
-	});
+			setIsLoading(false);
+		};
 
-	// React Query: Remove badge mutation with optimistic update
-	const removeBadgeMutation = useMutation({
-		mutationFn: async (badgeId: string) => {
-			const result = await removeCustomerBadge(badgeId, customerId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to remove badge");
-			}
-			return result;
-		},
-		onMutate: async (badgeId) => {
-			// Cancel outgoing refetches
-			await queryClient.cancelQueries({
-				queryKey: ["customer-badges", customerId],
-			});
-
-			// Snapshot previous value
-			const previousBadges = queryClient.getQueryData(["customer-badges", customerId]);
-
-			// Optimistically remove badge
-			queryClient.setQueryData(
-				["customer-badges", customerId],
-				(old: CustomerBadge[] | undefined) =>
-					old ? old.filter((badge) => badge.id !== badgeId) : old
-			);
-
-			return { previousBadges };
-		},
-		onError: (error: Error, _badgeId, context) => {
-			// Rollback on error
-			if (context?.previousBadges) {
-				queryClient.setQueryData(["customer-badges", customerId], context.previousBadges);
-			}
-			toast.error(error.message);
-		},
-		onSettled: () => {
-			queryClient.invalidateQueries({
-				queryKey: ["customer-badges", customerId],
-			});
-		},
-	});
-
-	// React Query: Generate auto badges mutation
-	const generateAutoBadgesMutation = useMutation({
-		mutationFn: async () => {
-			const result = await generateAutoBadges(customerId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to generate badges");
-			}
-			return result;
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ["customer-badges", customerId],
-			});
-			toast.success("Auto badges generated");
-		},
-		onError: (error: Error) => {
-			toast.error(error.message);
-		},
-	});
+		if (initialBadges.length === 0) {
+			loadBadges();
+		}
+	}, [customerId, initialBadges.length]);
 
 	// Handlers
-	const handleAddPremadeBadge = (premade: (typeof PREMADE_BADGES)[0]) => {
-		addBadgeMutation.mutate({
+	const handleAddPremadeBadge = async (premade: (typeof PREMADE_BADGES)[0]) => {
+		const tempBadge: CustomerBadge = {
+			id: `temp-${Date.now()}`,
+			customer_id: customerId,
+			company_id: "",
 			label: premade.label,
 			variant: premade.variant,
-			badgeType: "premade",
+			badge_type: "premade",
 			icon: premade.icon,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+		};
+
+		startTransition(async () => {
+			updateOptimisticBadges(tempBadge);
+
+			const result = await addCustomerBadge({
+				customerId,
+				label: premade.label,
+				variant: premade.variant,
+				badgeType: "premade",
+				icon: premade.icon,
+			});
+
+			if (result.success) {
+				toast.success("Badge added successfully");
+				// Refresh badges
+				const refreshResult = await getCustomerBadges(customerId);
+				if (refreshResult.success) {
+					setBadges(refreshResult.data || []);
+				}
+			} else {
+				toast.error(result.error || "Failed to add badge");
+				// Revert optimistic update
+				setBadges((prev) => prev.filter((b) => b.id !== tempBadge.id));
+			}
 		});
 	};
 
-	const handleAddCustomBadge = () => {
+	const handleAddCustomBadge = async () => {
 		if (!customLabel.trim()) {
 			toast.error("Badge label is required");
 			return;
 		}
-		addBadgeMutation.mutate({
+
+		const tempBadge: CustomerBadge = {
+			id: `temp-${Date.now()}`,
+			customer_id: customerId,
+			company_id: "",
 			label: customLabel,
 			variant: customVariant,
-			badgeType: "custom",
+			badge_type: "custom",
+			icon: undefined,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+		};
+
+		startTransition(async () => {
+			updateOptimisticBadges(tempBadge);
+
+			const result = await addCustomerBadge({
+				customerId,
+				label: customLabel,
+				variant: customVariant,
+				badgeType: "custom",
+			});
+
+			if (result.success) {
+				toast.success("Badge added successfully");
+				setCustomLabel("");
+				setCustomVariant("default");
+				setShowCustomDialog(false);
+				// Refresh badges
+				const refreshResult = await getCustomerBadges(customerId);
+				if (refreshResult.success) {
+					setBadges(refreshResult.data || []);
+				}
+			} else {
+				toast.error(result.error || "Failed to add badge");
+				// Revert optimistic update
+				setBadges((prev) => prev.filter((b) => b.id !== tempBadge.id));
+			}
 		});
-		setCustomLabel("");
-		setCustomVariant("default");
-		setShowCustomDialog(false);
 	};
 
-	const handleRemoveBadge = (badgeId: string) => {
-		removeBadgeMutation.mutate(badgeId);
+	const handleRemoveBadge = async (badgeId: string) => {
+		startTransition(async () => {
+			updateOptimisticBadges({ id: badgeId, action: "delete" });
+
+			const result = await removeCustomerBadge(badgeId, customerId);
+
+			if (!result.success) {
+				toast.error(result.error || "Failed to remove badge");
+			}
+
+			// Refresh badges
+			const refreshResult = await getCustomerBadges(customerId);
+			if (refreshResult.success) {
+				setBadges(refreshResult.data || []);
+			}
+		});
 	};
 
-	const handleGenerateAuto = () => {
-		generateAutoBadgesMutation.mutate();
+	const handleGenerateAuto = async () => {
+		startTransition(async () => {
+			const result = await generateAutoBadges(customerId);
+
+			if (result.success) {
+				toast.success("Auto badges generated");
+				// Refresh badges
+				const refreshResult = await getCustomerBadges(customerId);
+				if (refreshResult.success) {
+					setBadges(refreshResult.data || []);
+				}
+			} else {
+				toast.error(result.error || "Failed to generate badges");
+			}
+		});
 	};
 
 	// Loading skeleton
-	if (isLoading) {
+	if (isLoading && badges.length === 0) {
 		return (
 			<div className="flex gap-2 px-8 py-6">
 				<Skeleton className="h-6 w-24 rounded-full" />
@@ -237,11 +261,13 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 	}
 
 	// Error state
-	if (error) {
+	if (error && badges.length === 0) {
 		return (
 			<div className="flex items-center gap-2 px-8 py-6">
 				<AlertTriangle className="text-destructive size-4" />
-				<p className="text-destructive text-sm">Failed to load badges: {error.message}</p>
+				<p className="text-destructive text-sm">
+					Failed to load badges: {error}
+				</p>
 			</div>
 		);
 	}
@@ -249,19 +275,21 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 	return (
 		<div className="flex flex-wrap items-center gap-2 px-8 py-6">
 			{/* Display Badges */}
-			{badges?.length === 0 && (
+			{optimisticBadges.length === 0 && (
 				<p className="text-muted-foreground text-sm">
 					No badges yet — add badges to highlight important customer attributes
 				</p>
 			)}
-			{badges?.map((badge) => {
+			{optimisticBadges.map((badge) => {
 				const Icon = badge.icon ? ICON_MAP[badge.icon] : null;
+				const isTemp = badge.id.startsWith("temp-");
 				return (
 					<div className="group relative" key={badge.id}>
 						<Badge
 							className={cn(
 								"gap-1.5 pr-7 text-xs font-medium",
-								badge.badge_type === "auto_generated" && "opacity-90"
+								badge.badge_type === "auto_generated" && "opacity-90",
+								isTemp && "opacity-50",
 							)}
 							variant={badge.variant as any}
 						>
@@ -269,7 +297,7 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 							{badge.label}
 							<button
 								className="hover:bg-background/20 absolute top-1/2 right-1.5 -translate-y-1/2 rounded-sm p-0.5 opacity-0 transition-opacity group-hover:opacity-100"
-								disabled={removeBadgeMutation.isPending}
+								disabled={isPending || isTemp}
 								onClick={() => handleRemoveBadge(badge.id)}
 								title="Remove badge"
 								type="button"
@@ -290,13 +318,15 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="start" className="w-64">
-					<DropdownMenuLabel className="text-xs">Premade Badges</DropdownMenuLabel>
+					<DropdownMenuLabel className="text-xs">
+						Premade Badges
+					</DropdownMenuLabel>
 					{PREMADE_BADGES.map((premade) => {
 						const Icon = ICON_MAP[premade.icon];
 						return (
 							<DropdownMenuItem
 								className="cursor-pointer"
-								disabled={addBadgeMutation.isPending}
+								disabled={isPending}
 								key={premade.label}
 								onClick={() => handleAddPremadeBadge(premade)}
 							>
@@ -306,19 +336,22 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 						);
 					})}
 					<DropdownMenuSeparator />
-					<DropdownMenuItem className="cursor-pointer" onClick={() => setShowCustomDialog(true)}>
+					<DropdownMenuItem
+						className="cursor-pointer"
+						onClick={() => setShowCustomDialog(true)}
+					>
 						<Plus className="mr-2 size-4" />
 						<span className="text-sm">Custom Badge</span>
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
 					<DropdownMenuItem
 						className="cursor-pointer"
-						disabled={generateAutoBadgesMutation.isPending}
+						disabled={isPending}
 						onClick={handleGenerateAuto}
 					>
 						<LayoutGrid className="mr-2 size-4" />
 						<span className="text-sm">
-							{generateAutoBadgesMutation.isPending ? "Generating..." : "Generate Auto Badges"}
+							{isPending ? "Generating..." : "Generate Auto Badges"}
 						</span>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
@@ -378,11 +411,11 @@ export function CustomerBadges({ customerId }: CustomerBadgesProps) {
 							</Button>
 							<Button
 								className="flex-1"
-								disabled={addBadgeMutation.isPending}
+								disabled={isPending}
 								onClick={handleAddCustomBadge}
 							>
 								<Plus className="mr-2 size-4" />
-								{addBadgeMutation.isPending ? "Adding..." : "Add Badge"}
+								{isPending ? "Adding..." : "Add Badge"}
 							</Button>
 						</div>
 					</div>

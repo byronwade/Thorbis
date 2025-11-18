@@ -80,11 +80,17 @@ export function RowActionsDropdown({
 
 						const menuItem = action.href ? (
 							<DropdownMenuItem asChild key={index}>
-								<Link href={action.href}>{ActionContent}</Link>
+								<Link href={action.href} prefetch={false}>
+									{ActionContent}
+								</Link>
 							</DropdownMenuItem>
 						) : (
 							<DropdownMenuItem
-								className={action.variant === "destructive" ? "text-destructive" : undefined}
+								className={
+									action.variant === "destructive"
+										? "text-destructive"
+										: undefined
+								}
 								key={index}
 								onClick={action.onClick}
 							>
@@ -94,7 +100,9 @@ export function RowActionsDropdown({
 
 						return (
 							<div key={index}>
-								{action.separatorBefore && index > 0 && <DropdownMenuSeparator />}
+								{action.separatorBefore && index > 0 && (
+									<DropdownMenuSeparator />
+								)}
 								{menuItem}
 							</div>
 						);

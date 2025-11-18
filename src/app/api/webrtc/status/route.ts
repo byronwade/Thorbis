@@ -25,7 +25,7 @@ export async function GET() {
 					healthy: false,
 					error: "WebRTC service not initialized",
 				},
-				{ status: 503 }
+				{ status: 503 },
 			);
 		}
 
@@ -50,7 +50,7 @@ export async function GET() {
 				healthy: false,
 				error: error instanceof Error ? error.message : "Unknown error",
 			},
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

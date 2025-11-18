@@ -430,7 +430,7 @@ export function PresetReportsDropdown() {
 		.map((category) => ({
 			...category,
 			items: category.items.filter((item) =>
-				item.title.toLowerCase().includes(searchQuery.toLowerCase())
+				item.title.toLowerCase().includes(searchQuery.toLowerCase()),
 			),
 		}))
 		.filter((category) => category.items.length > 0);
@@ -449,7 +449,7 @@ export function PresetReportsDropdown() {
 						"flex w-full items-center justify-between gap-2 rounded-md px-2 py-2",
 						"text-sm font-medium transition-colors",
 						"hover:bg-accent hover:text-accent-foreground",
-						"focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+						"focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
 					)}
 					type="button"
 				>
@@ -457,7 +457,9 @@ export function PresetReportsDropdown() {
 						<FileBarChart className="h-4 w-4" />
 						<span>Browse Preset Reports</span>
 					</div>
-					<ChevronRight className={cn("h-4 w-4 transition-transform", open && "rotate-90")} />
+					<ChevronRight
+						className={cn("h-4 w-4 transition-transform", open && "rotate-90")}
+					/>
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start" className="w-[320px]" side="right">
@@ -478,11 +480,16 @@ export function PresetReportsDropdown() {
 				{/* Report Categories */}
 				<ScrollArea className="h-[400px]">
 					{filteredReports.length === 0 ? (
-						<div className="text-muted-foreground py-6 text-center text-sm">No reports found</div>
+						<div className="text-muted-foreground py-6 text-center text-sm">
+							No reports found
+						</div>
 					) : (
 						<div className="flex flex-col gap-2">
 							{filteredReports.map((category) => (
-								<div className="relative flex w-full min-w-0 flex-col p-2" key={category.label}>
+								<div
+									className="relative flex w-full min-w-0 flex-col p-2"
+									key={category.label}
+								>
 									{/* Match SidebarGroupLabel styling */}
 									<div className="text-muted-foreground flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium">
 										{category.label}
@@ -498,7 +505,8 @@ export function PresetReportsDropdown() {
 														"focus-visible:ring-ring focus-visible:ring-2",
 														"hover:bg-accent hover:text-accent-foreground",
 														"h-[30px] w-full border border-transparent text-[0.8rem] font-medium",
-														isActive && "border-accent bg-accent text-accent-foreground font-medium"
+														isActive &&
+															"border-accent bg-accent text-accent-foreground font-medium",
 													)}
 													key={item.href}
 													onClick={() => handleNavigate(item.href)}
@@ -524,7 +532,8 @@ export function PresetReportsDropdown() {
 				{/* Footer */}
 				<DropdownMenuSeparator />
 				<div className="text-muted-foreground p-2 text-center text-xs">
-					{presetReports.reduce((sum, cat) => sum + cat.items.length, 0)} preset reports available
+					{presetReports.reduce((sum, cat) => sum + cat.items.length, 0)} preset
+					reports available
 				</div>
 			</DropdownMenuContent>
 		</DropdownMenu>

@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import { MaterialsKanban } from "@/components/work/materials-kanban";
-import { type Material, MaterialsTable } from "@/components/work/materials-table";
+import {
+	type Material,
+	MaterialsTable,
+} from "@/components/work/materials-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import {
+	getMaterialsPageData,
+	MATERIALS_PAGE_SIZE,
+} from "@/lib/queries/materials";
 
 type PriceBookItemRow = {
 	id: string;
@@ -36,69 +42,24 @@ type InventoryRow = {
 	price_book_item: PriceBookItemRow | PriceBookItemRow[] | null;
 };
 
-export async function MaterialsData() {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
-	if (!user) {
-		return notFound();
-	}
-
+export async function MaterialsData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
 	const activeCompanyId = await getActiveCompanyId();
-
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	const { data: materialsRaw, error } = await supabase
-		.from("inventory")
-		.select(
-			`
-      id,
-      price_book_item_id,
-      quantity_on_hand,
-      quantity_reserved,
-      quantity_available,
-      minimum_quantity,
-      cost_per_unit,
-      total_cost_value,
-      updated_at,
-      status,
-      warehouse_location,
-      primary_location,
-      is_low_stock,
-      low_stock_alert_sent,
-      notes,
-      deleted_at,
-      price_book_item:price_book_items!inventory_price_book_item_id_price_book_items_id_fk (
-        id,
-        company_id,
-        name,
-        description,
-        sku,
-        category,
-        subcategory,
-        unit,
-        is_active
-      )
-    `
-		)
-		.eq("company_id", activeCompanyId)
-		.is("deleted_at", null)
-		.order("updated_at", { ascending: false });
+	const currentPage = Number(searchParams?.page) || 1;
+	const { materials: materialsRaw, totalCount } = await getMaterialsPageData(
+		currentPage,
+		MATERIALS_PAGE_SIZE,
+		activeCompanyId,
+	);
 
-	if (error) {
-		throw new Error(`Failed to fetch materials: ${error.message}`);
-	}
-
-	const inventoryRows = (materialsRaw ?? []) as InventoryRow[];
+	const inventoryRows = materialsRaw as InventoryRow[];
 
 	const materials = inventoryRows.reduce<Material[]>((accumulator, row) => {
 		const item = Array.isArray(row.price_book_item)
@@ -109,16 +70,22 @@ export async function MaterialsData() {
 			return accumulator;
 		}
 
-		const quantityAvailable = Number(row.quantity_available ?? row.quantity_on_hand ?? 0);
+		const quantityAvailable = Number(
+			row.quantity_available ?? row.quantity_on_hand ?? 0,
+		);
 		const unitCost = Number(row.cost_per_unit ?? 0);
 		const totalValue =
 			Number(row.total_cost_value ?? 0) ||
 			unitCost * Number(row.quantity_on_hand ?? quantityAvailable ?? 0);
 
 		const isActive = item.is_active !== false;
-		const archivedAt = isActive ? null : (row.deleted_at ?? row.updated_at ?? null);
+		const archivedAt = isActive
+			? null
+			: (row.deleted_at ?? row.updated_at ?? null);
 
-		const categoryLabel = [item.category, item.subcategory].filter(Boolean).join(" • ");
+		const categoryLabel = [item.category, item.subcategory]
+			.filter(Boolean)
+			.join(" • ");
 
 		const material: Material = {
 			id: row.id,
@@ -142,7 +109,14 @@ export async function MaterialsData() {
 		<WorkDataView
 			kanban={<MaterialsKanban materials={materials} />}
 			section="materials"
-			table={<MaterialsTable itemsPerPage={50} materials={materials} />}
+			table={
+				<MaterialsTable
+					currentPage={currentPage}
+					itemsPerPage={MATERIALS_PAGE_SIZE}
+					materials={materials}
+					totalCount={totalCount}
+				/>
+			}
 		/>
 	);
 }

@@ -159,7 +159,10 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 						<ResponsiveText className="text-muted-foreground" variant="caption">
 							Revenue
 						</ResponsiveText>
-						<ResponsiveText className="text-primary font-bold" variant="display">
+						<ResponsiveText
+							className="text-primary font-bold"
+							variant="display"
+						>
 							{formatPercentage(revenueProgress, "compact")}
 						</ResponsiveText>
 					</div>
@@ -168,7 +171,10 @@ export function CompanyGoalsWidget({ data }: CompanyGoalsWidgetProps) {
 				{/* TINY Stage: Just the number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="text-primary font-bold" variant="display">
+						<ResponsiveText
+							className="text-primary font-bold"
+							variant="display"
+						>
 							{Math.round(revenueProgress)}%
 						</ResponsiveText>
 					</div>

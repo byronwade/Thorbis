@@ -10,7 +10,11 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { sendEmail } from "@/lib/email/email-sender";
 import { EmailTemplate } from "@/lib/email/email-types";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -26,12 +30,15 @@ const INVITATION_EXPIRY_DAYS = 7;
  * Send team member invitations after onboarding payment
  */
 export async function sendTeamMemberInvitations(
-	companyId: string
+	companyId: string,
 ): Promise<ActionResult<{ sent: number; failed: number }>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get company and onboarding progress
@@ -42,11 +49,16 @@ export async function sendTeamMemberInvitations(
 			.single();
 
 		if (companyError || !company) {
-			throw new ActionError("Company not found", ERROR_CODES.DB_RECORD_NOT_FOUND, 404);
+			throw new ActionError(
+				"Company not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+				404,
+			);
 		}
 
 		// Get team members from onboarding progress
-		const teamMembers = (company.onboarding_progress as any)?.step2?.teamMembers || [];
+		const teamMembers =
+			(company.onboarding_progress as any)?.step2?.teamMembers || [];
 
 		if (!Array.isArray(teamMembers) || teamMembers.length === 0) {
 			return { sent: 0, failed: 0 };
@@ -74,20 +86,22 @@ export async function sendTeamMemberInvitations(
 			// Skip current user
 			if (member.isCurrentUser) {
 				// Create team_members record for current user (owner)
-				const { error: ownerError } = await supabase.from("team_members").upsert(
-					{
-						company_id: companyId,
-						user_id: user.id,
-						role: member.role,
-						status: "active",
-						job_title: "Owner",
-						phone: member.phone || null,
-						joined_at: new Date().toISOString(),
-					},
-					{
-						onConflict: "user_id,company_id",
-					}
-				);
+				const { error: ownerError } = await supabase
+					.from("team_members")
+					.upsert(
+						{
+							company_id: companyId,
+							user_id: user.id,
+							role: member.role,
+							status: "active",
+							job_title: "Owner",
+							phone: member.phone || null,
+							joined_at: new Date().toISOString(),
+						},
+						{
+							onConflict: "user_id,company_id",
+						},
+					);
 
 				if (ownerError) {
 					// TODO: Handle error case
@@ -107,17 +121,19 @@ export async function sendTeamMemberInvitations(
 				expiresAt.setDate(expiresAt.getDate() + INVITATION_EXPIRY_DAYS);
 
 				// Store invitation in database
-				const { error: invitationError } = await supabase.from("team_invitations").insert({
-					company_id: companyId,
-					email: member.email,
-					first_name: member.firstName,
-					last_name: member.lastName,
-					role: member.role,
-					phone: member.phone || null,
-					token,
-					invited_by: user.id,
-					expires_at: expiresAt.toISOString(),
-				});
+				const { error: invitationError } = await supabase
+					.from("team_invitations")
+					.insert({
+						company_id: companyId,
+						email: member.email,
+						first_name: member.firstName,
+						last_name: member.lastName,
+						role: member.role,
+						phone: member.phone || null,
+						token,
+						invited_by: user.id,
+						expires_at: expiresAt.toISOString(),
+					});
 
 				if (invitationError) {
 					failedCount++;
@@ -158,11 +174,16 @@ export async function sendTeamMemberInvitations(
 /**
  * Send a single team invitation (for adding members after onboarding)
  */
-export async function sendSingleTeamInvitation(formData: FormData): Promise<ActionResult<string>> {
+export async function sendSingleTeamInvitation(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Get current user
@@ -183,7 +204,7 @@ export async function sendSingleTeamInvitation(formData: FormData): Promise<Acti
 			throw new ActionError(
 				"You must be part of a company to invite team members",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403
+				403,
 			);
 		}
 
@@ -214,22 +235,24 @@ export async function sendSingleTeamInvitation(formData: FormData): Promise<Acti
 		expiresAt.setDate(expiresAt.getDate() + INVITATION_EXPIRY_DAYS);
 
 		// Store invitation
-		const { error: invitationError } = await supabase.from("team_invitations").insert({
-			company_id: teamMember.company_id,
-			email: validated.email,
-			first_name: validated.firstName,
-			last_name: validated.lastName,
-			role: validated.role,
-			phone: phone || null,
-			token,
-			invited_by: user.id,
-			expires_at: expiresAt.toISOString(),
-		});
+		const { error: invitationError } = await supabase
+			.from("team_invitations")
+			.insert({
+				company_id: teamMember.company_id,
+				email: validated.email,
+				first_name: validated.firstName,
+				last_name: validated.lastName,
+				role: validated.role,
+				phone: phone || null,
+				token,
+				invited_by: user.id,
+				expires_at: expiresAt.toISOString(),
+			});
 
 		if (invitationError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("send invitation"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -273,11 +296,16 @@ export async function sendSingleTeamInvitation(formData: FormData): Promise<Acti
 /**
  * Cancel/revoke an invitation
  */
-export async function cancelTeamInvitation(invitationId: string): Promise<ActionResult<void>> {
+export async function cancelTeamInvitation(
+	invitationId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -286,12 +314,15 @@ export async function cancelTeamInvitation(invitationId: string): Promise<Action
 		assertAuthenticated(user?.id);
 
 		// Delete invitation (RLS will ensure user has permission)
-		const { error } = await supabase.from("team_invitations").delete().eq("id", invitationId);
+		const { error } = await supabase
+			.from("team_invitations")
+			.delete()
+			.eq("id", invitationId);
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("cancel invitation"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

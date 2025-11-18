@@ -23,9 +23,15 @@ export type View = {
 /**
  * Calculate views based on widgets and grid dimensions
  */
-export function useViewPagination(widgets: Widget[], dimensions: GridDimensions) {
+export function useViewPagination(
+	widgets: Widget[],
+	dimensions: GridDimensions,
+) {
 	// Calculate views and distribute widgets
-	const views = useMemo(() => distributeWidgetsToViews(widgets, dimensions), [widgets, dimensions]);
+	const views = useMemo(
+		() => distributeWidgetsToViews(widgets, dimensions),
+		[widgets, dimensions],
+	);
 
 	// Get widgets for a specific view
 	const getViewWidgets = useCallback(
@@ -33,7 +39,7 @@ export function useViewPagination(widgets: Widget[], dimensions: GridDimensions)
 			const view = views.find((v) => v.index === viewIndex);
 			return view?.widgets || [];
 		},
-		[views]
+		[views],
 	);
 
 	// Check if widget can fit in a specific view
@@ -49,7 +55,7 @@ export function useViewPagination(widgets: Widget[], dimensions: GridDimensions)
 
 			return widgetCells <= view.availableCells;
 		},
-		[views]
+		[views],
 	);
 
 	// Find the best view for a new widget
@@ -68,7 +74,7 @@ export function useViewPagination(widgets: Widget[], dimensions: GridDimensions)
 			// Create new view
 			return views.length;
 		},
-		[views]
+		[views],
 	);
 
 	return {
@@ -83,7 +89,10 @@ export function useViewPagination(widgets: Widget[], dimensions: GridDimensions)
 /**
  * Distribute widgets across views based on grid capacity
  */
-function distributeWidgetsToViews(widgets: Widget[], dimensions: GridDimensions): View[] {
+function distributeWidgetsToViews(
+	widgets: Widget[],
+	dimensions: GridDimensions,
+): View[] {
 	if (widgets.length === 0) {
 		return [];
 	}
@@ -162,11 +171,14 @@ export function optimizeViewDistribution(views: View[]): View[] {
 		const widgetsToMove = secondLastView.widgets.slice(-2);
 		const cellsToMove = widgetsToMove.reduce(
 			(sum, w) => sum + calculateWidgetCells(convertLegacySize(w.size)),
-			0
+			0,
 		);
 
 		// Only move if it doesn't overflow the last view
-		if (cellsToMove + lastView.usedCells <= lastView.availableCells + lastView.usedCells) {
+		if (
+			cellsToMove + lastView.usedCells <=
+			lastView.availableCells + lastView.usedCells
+		) {
 			secondLastView.widgets = secondLastView.widgets.slice(0, -2);
 			lastView.widgets = [...widgetsToMove, ...lastView.widgets];
 

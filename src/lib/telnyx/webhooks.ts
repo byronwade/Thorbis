@@ -188,7 +188,12 @@ export function verifyWebhookSignature(params: {
 			type: "spki",
 		});
 
-		return crypto.verify(null, signedPayload, publicKey, Buffer.from(params.signature, "base64"));
+		return crypto.verify(
+			null,
+			signedPayload,
+			publicKey,
+			Buffer.from(params.signature, "base64"),
+		);
 	} catch (_error) {
 		return false;
 	}
@@ -197,10 +202,14 @@ export function verifyWebhookSignature(params: {
 /**
  * Parse and validate webhook payload
  */
-export function parseWebhookPayload(rawPayload: string | Buffer): WebhookPayload | null {
+export function parseWebhookPayload(
+	rawPayload: string | Buffer,
+): WebhookPayload | null {
 	try {
 		const payload =
-			typeof rawPayload === "string" ? JSON.parse(rawPayload) : JSON.parse(rawPayload.toString());
+			typeof rawPayload === "string"
+				? JSON.parse(rawPayload)
+				: JSON.parse(rawPayload.toString());
 
 		// Validate required fields
 		if (!(payload.data?.event_type && payload.data.payload)) {
@@ -244,7 +253,10 @@ export function isNumberEvent(eventType: WebhookEventType): boolean {
 /**
  * Calculate call duration from start and end times
  */
-export function calculateCallDuration(startTime: string, endTime: string): number {
+export function calculateCallDuration(
+	startTime: string,
+	endTime: string,
+): number {
 	const start = new Date(startTime).getTime();
 	const end = new Date(endTime).getTime();
 	return Math.round((end - start) / 1000); // Return duration in seconds
@@ -256,7 +268,11 @@ export function calculateCallDuration(startTime: string, endTime: string): numbe
 export function createWebhookResponse(success: boolean, message?: string) {
 	return {
 		success,
-		message: message || (success ? "Webhook processed successfully" : "Webhook processing failed"),
+		message:
+			message ||
+			(success
+				? "Webhook processed successfully"
+				: "Webhook processing failed"),
 	};
 }
 
@@ -264,7 +280,10 @@ export function createWebhookResponse(success: boolean, message?: string) {
  * Validate webhook timestamp to prevent replay attacks
  * Reject webhooks older than 5 minutes
  */
-export function isWebhookTimestampValid(timestamp: string, maxAgeSeconds = 300): boolean {
+export function isWebhookTimestampValid(
+	timestamp: string,
+	maxAgeSeconds = 300,
+): boolean {
 	try {
 		let webhookTimeMs: number;
 

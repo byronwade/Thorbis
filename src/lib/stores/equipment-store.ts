@@ -135,7 +135,9 @@ export const useEquipmentStore = create<EquipmentStore>()(
 				toggleSelection: (id) =>
 					set((state) => ({
 						selectedEquipmentIds: state.selectedEquipmentIds.includes(id)
-							? state.selectedEquipmentIds.filter((equipmentId) => equipmentId !== id)
+							? state.selectedEquipmentIds.filter(
+									(equipmentId) => equipmentId !== id,
+								)
 							: [...state.selectedEquipmentIds, id],
 					})),
 
@@ -223,7 +225,8 @@ export const useEquipmentStore = create<EquipmentStore>()(
 				},
 
 				// Sidebar Actions
-				toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+				toggleSidebar: () =>
+					set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
 
 				setActiveSection: (section) => set({ activeSection: section }),
 
@@ -240,8 +243,8 @@ export const useEquipmentStore = create<EquipmentStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "EquipmentStore" }
-	)
+		{ name: "EquipmentStore" },
+	),
 );

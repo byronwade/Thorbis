@@ -44,7 +44,8 @@ const COMPETITORS: CompetitorComparison[] = [
 		summary:
 			"Switch to Thorbis for a modern platform built around AI-assisted workflows, flexible pricing, and rapid innovation. While ServiceTitan users report annual costs exceeding $353,000 with 31 BBB complaints in 3 years, Thorbis offers transparent pricing starting at $100/month with pay-as-you-go AI features—no multi-year lock-ins, no hidden fees, no surprise charges.",
 		seo: {
-			title: "Thorbis vs ServiceTitan | Modern Field Service Platform Comparison",
+			title:
+				"Thorbis vs ServiceTitan | Modern Field Service Platform Comparison",
 			description:
 				"Compare Thorbis and ServiceTitan on pricing, user experience, AI, and implementation. Discover why high-growth contractors choose Thorbis after ServiceTitan's hidden fees and poor support.",
 			keywords: [
@@ -202,22 +203,26 @@ const COMPETITORS: CompetitorComparison[] = [
 		},
 		faq: [
 			{
-				question: "Can Thorbis import my historical ServiceTitan data without data loss?",
+				question:
+					"Can Thorbis import my historical ServiceTitan data without data loss?",
 				answer:
 					"Yes. We migrate customers, jobs, equipment, memberships, pricebooks, service history, and custom fields. ServiceTitan customers report 'could never figure out how to transfer all our data'—we provide dedicated data engineers who handle the entire export/import process. Historical invoices and notes are stored for reference. We validate 100% data accuracy before cutover with side-by-side reports.",
 			},
 			{
-				question: "Will I face the same unauthorized charges and hidden fees with Thorbis?",
+				question:
+					"Will I face the same unauthorized charges and hidden fees with Thorbis?",
 				answer:
 					"No. ServiceTitan users report '$5,276 unauthorized Marketing Pro charges', '$23,842 termination fees', and '$353,000 annual costs' with unclear billing. Thorbis pricing is transparent: $100/month base + pay-as-you-go AI usage. All charges visible in your dashboard before billing. No surprise fees, no unauthorized charges, no hidden costs. Average customer pays $350-800/month all-in—60-70% less than ServiceTitan's reported costs.",
 			},
 			{
-				question: "How does Thorbis support compare to ServiceTitan's reported issues?",
+				question:
+					"How does Thorbis support compare to ServiceTitan's reported issues?",
 				answer:
 					"ServiceTitan has 31 BBB complaints in 3 years with customers reporting 'worst customer service ever', 'weeks without resolution', and 'unresponsive support'. Thorbis provides: live chat/phone/email with <2hr response SLA, named account manager (growth tiers), bi-weekly business reviews, and 98% customer satisfaction rating. We don't let issues linger for weeks—critical issues escalated to engineering same-day.",
 			},
 			{
-				question: "How quickly can we launch vs ServiceTitan's 4-6 month onboarding?",
+				question:
+					"How quickly can we launch vs ServiceTitan's 4-6 month onboarding?",
 				answer:
 					"Most Thorbis teams go live in 30-45 days vs ServiceTitan's reported 4-6 months. ServiceTitan users complain: 'onboarding was chaotic', 'we have NEVER BEEN ONBOARDED after paying for 1 year', and 'it takes a long time to set things up properly'. We handle the heavy lifting with dedicated migration engineers, prebuilt templates, parallel environments, and validation sessions—your staff stays focused on customers.",
 			},
@@ -228,17 +233,20 @@ const COMPETITORS: CompetitorComparison[] = [
 					"Yes. Thorbis offers direct integrations with QuickBooks Desktop & Online, Sunbit, GreenSky, and popular distributor catalogs (Ferguson, Johnstone, etc.). We also integrate with payment processors, accounting systems, and marketing tools. If ServiceTitan worked with a vendor critical to your business, we likely integrate with them too—or can build a custom integration as part of your migration.",
 			},
 			{
-				question: "What if Thorbis doesn't work out? Am I locked into a multi-year contract?",
+				question:
+					"What if Thorbis doesn't work out? Am I locked into a multi-year contract?",
 				answer:
 					"No multi-year lock-in. ServiceTitan users report being trapped in multi-year contracts with '$23,842 termination fees'. Thorbis: Annual contract with 30-day out clause after year 1. No early termination penalties. No auto-renewal traps. If we're not delivering value, you can leave without financial penalties. We retain customers by providing value, not by contract clauses.",
 			},
 			{
-				question: "Is Thorbis too complex for small teams or too simple for enterprise?",
+				question:
+					"Is Thorbis too complex for small teams or too simple for enterprise?",
 				answer:
 					"Thorbis scales 1-500+ technicians. ServiceTitan users report it's 'overbuilt for smaller teams' and 'built for enterprise-level contractors... if a company with six people it's really not a good fit.' We provide the features you need without forcing enterprise complexity on small teams. Start simple, add complexity as you grow. No shelfware, no unused modules you're forced to buy.",
 			},
 			{
-				question: "What happens to my existing ServiceTitan contract during migration?",
+				question:
+					"What happens to my existing ServiceTitan contract during migration?",
 				answer:
 					"We run Thorbis in parallel with ServiceTitan during your migration (typically 30-45 days), then execute a cutover weekend. You can maintain your ServiceTitan subscription during the transition for safety, then cancel once you've validated Thorbis works for your business. We've helped customers navigate ServiceTitan contract terminations—including those facing unreasonable termination fees.",
 			},
@@ -427,7 +435,8 @@ const COMPETITORS: CompetitorComparison[] = [
 					"Thorbis mobile runs on iOS and Android—same devices your techs use for Housecall Pro. The interface is intuitive and similar to Housecall Pro's mobile app. Most technicians become proficient in 1-2 days with our training videos and live sessions. We provide recommended specs during onboarding to reuse existing hardware. Many customers report: 'Techs picked it up faster than Housecall Pro.'",
 			},
 			{
-				question: "What happens to our online booking links and website integration?",
+				question:
+					"What happens to our online booking links and website integration?",
 				answer:
 					"Thorbis embeds on your website with minimal changes. If you have Housecall Pro booking widgets, we can match the look/feel and URL structure for seamless transition. Existing forms can forward into Thorbis scheduler. We handle DNS updates and provide redirect strategies so customers never see a broken link. Most migrations complete website integration in 1-2 hours.",
 			},
@@ -447,7 +456,8 @@ const COMPETITORS: CompetitorComparison[] = [
 					"Thorbis often costs less than Housecall Pro while providing more features. Housecall Pro: $169-$499/month plus per-user fees. Thorbis: $100/month base + usage, average $350-800/month all-in with unlimited office users. As you grow, Housecall Pro's per-user pricing increases linearly. Thorbis pricing scales more efficiently with volume discounts. Plus, Thorbis includes AI, advanced dispatch, and job costing that Housecall Pro doesn't offer.",
 			},
 			{
-				question: "What about the bugs and reliability issues we've experienced?",
+				question:
+					"What about the bugs and reliability issues we've experienced?",
 				answer:
 					"Multiple Housecall Pro users report 'occasional bugs and technical issues that disrupt operations.' Thorbis provides enterprise reliability: 99.9% uptime SLA, redundant infrastructure, automated backups, 24/7 monitoring. When issues arise (rare), our incident response team resolves them within hours, not days. Your business can't afford downtime during peak season—Thorbis delivers the reliability growing businesses require.",
 			},
@@ -855,12 +865,15 @@ const COMPETITORS: CompetitorComparison[] = [
 		comparisonTable: [
 			{
 				category: "Dispatching",
-				thorbis: "Skill-based scheduling, crew coordination, and real-time updates per technician.",
-				competitor: "Calendar-based scheduling with limited capacity views for larger teams.",
+				thorbis:
+					"Skill-based scheduling, crew coordination, and real-time updates per technician.",
+				competitor:
+					"Calendar-based scheduling with limited capacity views for larger teams.",
 			},
 			{
 				category: "Automations",
-				thorbis: "AI and marketing automations drive booking, renewals, and review requests.",
+				thorbis:
+					"AI and marketing automations drive booking, renewals, and review requests.",
 				competitor: "Automations limited to basic reminders and follow-ups.",
 			},
 			{
@@ -871,7 +884,8 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 			{
 				category: "Scalability",
-				thorbis: "Designed for 5 to 500 tech organizations with role-based permissions.",
+				thorbis:
+					"Designed for 5 to 500 tech organizations with role-based permissions.",
 				competitor: "Optimized for micro teams with limited growth features.",
 			},
 		],
@@ -898,7 +912,8 @@ const COMPETITORS: CompetitorComparison[] = [
 			},
 			{
 				title: "Adoption support",
-				description: "Role-based training and office hours keep teams confident during transition.",
+				description:
+					"Role-based training and office hours keep teams confident during transition.",
 				steps: [
 					"Live dispatcher training and scenario planning.",
 					"Technician mobile app onboarding with offline best practices.",
@@ -1111,6 +1126,8 @@ export function getAllCompetitors(): CompetitorComparison[] {
 	return COMPETITORS;
 }
 
-export function getCompetitorBySlug(slug: string): CompetitorComparison | undefined {
+export function getCompetitorBySlug(
+	slug: string,
+): CompetitorComparison | undefined {
 	return COMPETITORS.find((competitor) => competitor.slug === slug);
 }

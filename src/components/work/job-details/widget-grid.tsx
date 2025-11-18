@@ -40,7 +40,10 @@ import { useMemo, useState } from "react";
 import type { Job, Property, User } from "@/lib/db/schema";
 import type { PropertyEnrichment } from "@/lib/services/property-enrichment";
 import { useEditModeStore } from "@/lib/stores/edit-mode-store";
-import { useJobDetailsLayoutStore, WIDGET_METADATA } from "@/lib/stores/job-details-layout-store";
+import {
+	useJobDetailsLayoutStore,
+	WIDGET_METADATA,
+} from "@/lib/stores/job-details-layout-store";
 import { WidgetContainer } from "./widget-container";
 import { WidgetRenderer } from "./widget-renderer";
 
@@ -93,7 +96,10 @@ export function WidgetGrid({
 	const updateWidget = useJobDetailsLayoutStore((state) => state.updateWidget);
 
 	// Filter only by visibility (no collapse state)
-	const widgets = useMemo(() => allWidgets.filter((w) => w.isVisible), [allWidgets]);
+	const widgets = useMemo(
+		() => allWidgets.filter((w) => w.isVisible),
+		[allWidgets],
+	);
 
 	// Initialize items array with widget IDs in current order
 	useMemo(() => {
@@ -108,7 +114,7 @@ export function WidgetGrid({
 			items
 				.map((id) => widgets.find((w) => w.id === id))
 				.filter((w): w is NonNullable<typeof w> => w !== undefined),
-		[items, widgets]
+		[items, widgets],
 	);
 
 	// Configure drag sensors with reduced activation distance for better responsiveness
@@ -120,7 +126,7 @@ export function WidgetGrid({
 		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
-		})
+		}),
 	);
 
 	// Drop animation configuration for smooth transitions
@@ -137,7 +143,7 @@ export function WidgetGrid({
 	// Get the active widget for drag overlay
 	const activeWidget = useMemo(
 		() => orderedWidgets.find((w) => w.id === activeId),
-		[activeId, orderedWidgets]
+		[activeId, orderedWidgets],
 	);
 
 	// ============================================================================
@@ -216,7 +222,9 @@ export function WidgetGrid({
 			<div className="border-muted-foreground/25 flex min-h-[400px] items-center justify-center rounded-lg border-2 border-dashed">
 				<div className="text-center">
 					<p className="text-muted-foreground text-lg">No widgets to display</p>
-					<p className="text-muted-foreground text-sm">Add widgets from the customization panel</p>
+					<p className="text-muted-foreground text-sm">
+						Add widgets from the customization panel
+					</p>
 				</div>
 			</div>
 		);

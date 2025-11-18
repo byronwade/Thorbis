@@ -107,11 +107,17 @@ function getPropertyBadge(type?: string) {
 	const variants: Record<string, string> = {
 		residential: "bg-success text-success dark:bg-success dark:text-success",
 		commercial: "bg-primary text-primary dark:bg-primary dark:text-primary",
-		industrial: "bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
+		industrial:
+			"bg-accent text-accent-foreground dark:bg-accent dark:text-accent-foreground",
 	};
 
 	return (
-		<Badge className={cn("text-xs", variants[type || "residential"] || variants.residential)}>
+		<Badge
+			className={cn(
+				"text-xs",
+				variants[type || "residential"] || variants.residential,
+			)}
+		>
 			{type ? type.charAt(0).toUpperCase() + type.slice(1) : "Residential"}
 		</Badge>
 	);
@@ -140,7 +146,9 @@ export function PropertiesTable({
 	const [hoveredProperty, setHoveredProperty] = useState<Property | null>(null);
 	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	const handleMouseEnter = (property: Property, event: React.MouseEvent) => {
 		setHoveredProperty(property);
@@ -172,7 +180,9 @@ export function PropertiesTable({
 			variant: "ghost",
 			onClick: async (selectedIds) => {
 				// TODO: Implement move dialog
-				alert(`Move ${selectedIds.size} properties to another customer (coming soon)`);
+				alert(
+					`Move ${selectedIds.size} properties to another customer (coming soon)`,
+				);
 			},
 		},
 	];
@@ -221,7 +231,9 @@ export function PropertiesTable({
 			sortable: true,
 			align: "right",
 			render: (property) => {
-				const sqFt = property.square_footage || property.enrichment?.details?.squareFootage;
+				const sqFt =
+					property.square_footage ||
+					property.enrichment?.details?.squareFootage;
 				const beds = property.enrichment?.details?.bedrooms;
 				const baths = property.enrichment?.details?.bathrooms;
 
@@ -234,7 +246,9 @@ export function PropertiesTable({
 							</p>
 						)}
 						{!sqFt && property.year_built && (
-							<p className="text-muted-foreground text-xs">Built {property.year_built}</p>
+							<p className="text-muted-foreground text-xs">
+								Built {property.year_built}
+							</p>
 						)}
 					</div>
 				);
@@ -262,7 +276,11 @@ export function PropertiesTable({
 								<p className="text-success dark:text-success font-semibold">
 									{formatCurrency(displayValue)}
 								</p>
-								{tax && <p className="text-muted-foreground text-xs">Tax: {formatCurrency(tax)}</p>}
+								{tax && (
+									<p className="text-muted-foreground text-xs">
+										Tax: {formatCurrency(tax)}
+									</p>
+								)}
 							</>
 						) : (
 							<span className="text-muted-foreground text-xs">No data</span>
@@ -304,7 +322,9 @@ export function PropertiesTable({
 									</SheetDescription>
 								</SheetHeader>
 								<div className="mt-6">
-									<JobEnrichmentPanel enrichmentData={property.operationalIntelligence} />
+									<JobEnrichmentPanel
+										enrichmentData={property.operationalIntelligence}
+									/>
 								</div>
 							</SheetContent>
 						</Sheet>
@@ -359,7 +379,9 @@ export function PropertiesTable({
 				enableSelection={true}
 				entity="properties"
 				getItemId={(property) => property.id}
-				isArchived={(property) => Boolean(property.archived_at || property.deleted_at)}
+				isArchived={(property) =>
+					Boolean(property.archived_at || property.deleted_at)
+				}
 				itemsPerPage={itemsPerPage}
 				searchFilter={searchFilter}
 				searchPlaceholder="Search properties..."
@@ -389,14 +411,16 @@ export function PropertiesTable({
 								", " +
 								hoveredProperty.state +
 								" " +
-								hoveredProperty.zip_code
+								hoveredProperty.zip_code,
 						)}&zoom=14`}
 						style={{ border: 0 }}
 						title={`Map of ${hoveredProperty.address}`}
 						width="100%"
 					/>
 					<div className="bg-background/95 absolute right-0 bottom-0 left-0 border-t p-2 backdrop-blur">
-						<p className="truncate text-xs font-medium">{hoveredProperty.address}</p>
+						<p className="truncate text-xs font-medium">
+							{hoveredProperty.address}
+						</p>
 						<p className="text-muted-foreground truncate text-xs">
 							{hoveredProperty.city}, {hoveredProperty.state}
 						</p>
@@ -413,8 +437,9 @@ export function PropertiesTable({
 							{selectedItemIds.size === 1 ? "Property" : "Properties"}?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} {selectedItemIds.size === 1 ? "property" : "properties"} will
-							be archived and can be restored within 90 days.
+							{selectedItemIds.size}{" "}
+							{selectedItemIds.size === 1 ? "property" : "properties"} will be
+							archived and can be restored within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

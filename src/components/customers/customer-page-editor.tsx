@@ -46,7 +46,10 @@ import {
 	Wrench,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { LazyTipTapEditor as EditorContent, useEditor } from "@/components/lazy/tiptap-editor";
+import {
+	LazyTipTapEditor as EditorContent,
+	useEditor,
+} from "@/components/lazy/tiptap-editor";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -117,15 +120,20 @@ export function CustomerPageEditor({
 						...node,
 						attrs: {
 							id: initialData?.id,
-							displayName: initialData?.display_name || nodeAttrs.displayName || "",
+							displayName:
+								initialData?.display_name || nodeAttrs.displayName || "",
 							firstName: initialData?.first_name || nodeAttrs.firstName || "",
 							lastName: initialData?.last_name || nodeAttrs.lastName || "",
 							email: initialData?.email || nodeAttrs.email || "",
 							phone: initialData?.phone || nodeAttrs.phone || "",
-							secondaryPhone: initialData?.secondary_phone || nodeAttrs.secondaryPhone || "",
-							billingEmail: initialData?.billing_email || nodeAttrs.billingEmail || "",
-							companyName: initialData?.company_name || nodeAttrs.companyName || "",
-							customerType: initialData?.type || nodeAttrs.customerType || "residential",
+							secondaryPhone:
+								initialData?.secondary_phone || nodeAttrs.secondaryPhone || "",
+							billingEmail:
+								initialData?.billing_email || nodeAttrs.billingEmail || "",
+							companyName:
+								initialData?.company_name || nodeAttrs.companyName || "",
+							customerType:
+								initialData?.type || nodeAttrs.customerType || "residential",
 						},
 					};
 				}
@@ -181,12 +189,19 @@ export function CustomerPageEditor({
 						...node,
 						attrs: {
 							id: initialData?.id,
-							billingEmail: initialData?.billing_email || nodeAttrs.billingEmail || "",
+							billingEmail:
+								initialData?.billing_email || nodeAttrs.billingEmail || "",
 							paymentTerms:
-								initialData?.payment_terms || nodeAttrs.paymentTerms || "due_on_receipt",
-							creditLimit: initialData?.credit_limit || nodeAttrs.creditLimit || 0,
+								initialData?.payment_terms ||
+								nodeAttrs.paymentTerms ||
+								"due_on_receipt",
+							creditLimit:
+								initialData?.credit_limit || nodeAttrs.creditLimit || 0,
 							taxExempt: initialData?.tax_exempt || nodeAttrs.taxExempt,
-							taxExemptNumber: initialData?.tax_exempt_number || nodeAttrs.taxExemptNumber || "",
+							taxExemptNumber:
+								initialData?.tax_exempt_number ||
+								nodeAttrs.taxExemptNumber ||
+								"",
 							paymentMethods: initialData?.paymentMethods || [],
 							customerId,
 						},
@@ -216,7 +231,7 @@ export function CustomerPageEditor({
 
 			// Check if badges block exists, if not, add it at the beginning
 			const hasBadgesBlock = updatedContent.some(
-				(node: any) => node.type === "customerBadgesBlock"
+				(node: any) => node.type === "customerBadgesBlock",
 			);
 
 			if (!hasBadgesBlock) {
@@ -371,7 +386,8 @@ export function CustomerPageEditor({
 			TiptapTableRow,
 			TiptapTableHeader.configure({
 				HTMLAttributes: {
-					class: "border border-border bg-muted/50 px-4 py-2 text-left font-medium",
+					class:
+						"border border-border bg-muted/50 px-4 py-2 text-left font-medium",
 				},
 			}),
 			TiptapTableCell.configure({
@@ -398,7 +414,9 @@ export function CustomerPageEditor({
 						return [
 							{ id: "1", label: "Team Member 1" },
 							{ id: "2", label: "Team Member 2" },
-						].filter((item) => item.label.toLowerCase().includes(query.toLowerCase()));
+						].filter((item) =>
+							item.label.toLowerCase().includes(query.toLowerCase()),
+						);
 					},
 					render: () => {
 						// TODO: Implement custom mention dropdown UI
@@ -431,7 +449,7 @@ export function CustomerPageEditor({
 			attributes: {
 				class: cn(
 					"prose prose-sm mx-auto min-h-screen w-full max-w-7xl px-4 py-4 pb-96 focus:outline-none",
-					isEditable && "cursor-text"
+					isEditable && "cursor-text",
 				),
 			},
 			// Enable drag and drop
@@ -538,7 +556,11 @@ export function CustomerPageEditor({
 					</Button>
 					<Button
 						onClick={() =>
-							editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+							editor
+								.chain()
+								.focus()
+								.insertTable({ rows: 3, cols: 3, withHeaderRow: true })
+								.run()
 						}
 						size="sm"
 						title="Insert Table"
@@ -548,7 +570,12 @@ export function CustomerPageEditor({
 						<TableIcon className="size-4" />
 					</Button>
 					<Separator className="mx-1 h-6" orientation="vertical" />
-					<Button size="sm" title="Mention Team Member (@)" type="button" variant="ghost">
+					<Button
+						size="sm"
+						title="Mention Team Member (@)"
+						type="button"
+						variant="ghost"
+					>
 						<AtSign className="size-4" />
 					</Button>
 					<Separator className="mx-1 h-6" orientation="vertical" />
@@ -556,7 +583,13 @@ export function CustomerPageEditor({
 					{/* Add Widget Dropdown */}
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button className="gap-1" size="sm" title="Add Widget" type="button" variant="ghost">
+							<Button
+								className="gap-1"
+								size="sm"
+								title="Add Widget"
+								type="button"
+								variant="ghost"
+							>
 								<Plus className="size-4" />
 								<span className="text-xs">Add Widget</span>
 								<ChevronDown className="size-3" />
@@ -703,15 +736,25 @@ export function CustomerPageEditor({
 			{/* Helper Text at Bottom - Always show since always editable */}
 			<div className="bg-muted/30 border-t px-4 py-3">
 				<p className="text-muted-foreground text-xs">
-					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">/</kbd> for
-					commands •{" "}
-					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">Cmd+B</kbd>{" "}
+					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">
+						/
+					</kbd>{" "}
+					for commands •{" "}
+					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">
+						Cmd+B
+					</kbd>{" "}
 					bold •{" "}
-					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">Cmd+I</kbd>{" "}
+					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">
+						Cmd+I
+					</kbd>{" "}
 					italic •{" "}
-					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">Cmd+K</kbd>{" "}
+					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">
+						Cmd+K
+					</kbd>{" "}
 					link •{" "}
-					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">@</kbd>{" "}
+					<kbd className="bg-background rounded border px-1.5 py-0.5 font-mono text-xs">
+						@
+					</kbd>{" "}
 					mention team member
 				</p>
 			</div>
@@ -721,7 +764,9 @@ export function CustomerPageEditor({
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Insert Link</DialogTitle>
-						<DialogDescription>Enter the URL you want to link to.</DialogDescription>
+						<DialogDescription>
+							Enter the URL you want to link to.
+						</DialogDescription>
 					</DialogHeader>
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
@@ -746,7 +791,11 @@ export function CustomerPageEditor({
 						</div>
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsLinkDialogOpen(false)} type="button" variant="outline">
+						<Button
+							onClick={() => setIsLinkDialogOpen(false)}
+							type="button"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button
@@ -770,7 +819,9 @@ export function CustomerPageEditor({
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Insert Image</DialogTitle>
-						<DialogDescription>Enter the URL of the image you want to insert.</DialogDescription>
+						<DialogDescription>
+							Enter the URL of the image you want to insert.
+						</DialogDescription>
 					</DialogHeader>
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
@@ -795,7 +846,11 @@ export function CustomerPageEditor({
 						</div>
 					</div>
 					<DialogFooter>
-						<Button onClick={() => setIsImageDialogOpen(false)} type="button" variant="outline">
+						<Button
+							onClick={() => setIsImageDialogOpen(false)}
+							type="button"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button

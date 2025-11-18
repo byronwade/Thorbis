@@ -110,7 +110,9 @@ export function EmailDialog({
 						<Mail className="size-5" />
 						Send Email
 					</DialogTitle>
-					<DialogDescription>Compose and send an email to {customerName}</DialogDescription>
+					<DialogDescription>
+						Compose and send an email to {customerName}
+					</DialogDescription>
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
@@ -126,7 +128,9 @@ export function EmailDialog({
 							</div>
 							<div className="min-w-0 flex-1">
 								<div className="text-sm font-medium">{customerName}</div>
-								<div className="text-muted-foreground text-xs">{customerEmail}</div>
+								<div className="text-muted-foreground text-xs">
+									{customerEmail}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -150,16 +154,25 @@ export function EmailDialog({
 							placeholder="Type your message here..."
 							value={body}
 						/>
-						<div className="text-muted-foreground text-xs">{body.length} characters</div>
+						<div className="text-muted-foreground text-xs">
+							{body.length} characters
+						</div>
 					</div>
 				</div>
 
 				{/* Actions */}
 				<div className="flex items-center justify-end gap-2">
-					<Button disabled={isPending} onClick={() => onOpenChange(false)} variant="outline">
+					<Button
+						disabled={isPending}
+						onClick={() => onOpenChange(false)}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={isPending || !subject.trim() || !body.trim()} onClick={handleSend}>
+					<Button
+						disabled={isPending || !subject.trim() || !body.trim()}
+						onClick={handleSend}
+					>
 						<Send className="mr-2 size-4" />
 						Send Email
 					</Button>

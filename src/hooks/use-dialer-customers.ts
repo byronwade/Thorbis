@@ -14,7 +14,6 @@
  */
 
 import { useEffect, useState } from "react";
-import { getCustomersForDialer } from "@/actions/customers";
 
 type DialerCustomer = {
 	id: string;
@@ -24,6 +23,12 @@ type DialerCustomer = {
 	email: string | null;
 	phone: string | null;
 	company_name: string | null;
+	secondary_phone?: string | null;
+	address: string | null;
+	address2: string | null;
+	city: string | null;
+	state: string | null;
+	zip_code: string | null;
 };
 
 // In-memory cache with 5-minute TTL
@@ -42,36 +47,54 @@ export function useDialerCustomers(shouldFetch = false) {
 			return;
 		}
 
-		// Check cache first
+		// Serve from cache when available
 		const now = Date.now();
 		if (cachedCustomers && now - cacheTimestamp < CACHE_TTL) {
 			setCustomers(cachedCustomers);
 			return;
 		}
 
-		// Fetch from server
+		const controller = new AbortController();
 		const fetchCustomers = async () => {
 			setIsLoading(true);
 			setError(null);
 
 			try {
-				const result = await getCustomersForDialer();
+				const response = await fetch("/api/dialer/customers", {
+					signal: controller.signal,
+					cache: "no-store",
+				});
 
-				if (result.success && result.data) {
-					cachedCustomers = result.data;
-					cacheTimestamp = now;
-					setCustomers(result.data);
-				} else {
-					setError(result.error || "Failed to load customers");
+				if (!response.ok) {
+					const payload = await response.json().catch(() => ({}));
+					throw new Error(payload.error || "Failed to load customers");
 				}
+
+				const payload = (await response.json()) as {
+					customers: DialerCustomer[];
+				};
+				cachedCustomers = payload.customers;
+				cacheTimestamp = Date.now();
+				setCustomers(payload.customers);
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Failed to load customers");
+				if (controller.signal.aborted) {
+					return;
+				}
+				setError(
+					err instanceof Error ? err.message : "Failed to load customers",
+				);
 			} finally {
-				setIsLoading(false);
+				if (!controller.signal.aborted) {
+					setIsLoading(false);
+				}
 			}
 		};
 
 		fetchCustomers();
+
+		return () => {
+			controller.abort();
+		};
 	}, [shouldFetch]);
 
 	return { customers, isLoading, error };

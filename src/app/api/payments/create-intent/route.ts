@@ -26,7 +26,10 @@ export async function POST(request: NextRequest) {
 		// Get authenticated user
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+			return NextResponse.json(
+				{ error: "Service unavailable" },
+				{ status: 503 },
+			);
 		}
 		const {
 			data: { user },
@@ -38,7 +41,10 @@ export async function POST(request: NextRequest) {
 		}
 
 		if (!stripe) {
-			return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+			return NextResponse.json(
+				{ error: "Payment service unavailable" },
+				{ status: 503 },
+			);
 		}
 
 		// Parse and validate request body
@@ -71,7 +77,10 @@ export async function POST(request: NextRequest) {
 				stripeCustomerId = customer.id;
 
 				// Save Stripe customer ID to database
-				await supabase.from("users").update({ stripe_customer_id: customer.id }).eq("id", user.id);
+				await supabase
+					.from("users")
+					.update({ stripe_customer_id: customer.id })
+					.eq("id", user.id);
 			}
 		}
 
@@ -95,7 +104,8 @@ export async function POST(request: NextRequest) {
 			paymentIntentParams.setup_future_usage = data.setupFutureUsage;
 		}
 
-		const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+		const paymentIntent =
+			await stripe.paymentIntents.create(paymentIntentParams);
 
 		return NextResponse.json({
 			clientSecret: paymentIntent.client_secret,
@@ -105,10 +115,13 @@ export async function POST(request: NextRequest) {
 		if (error instanceof z.ZodError) {
 			return NextResponse.json(
 				{ error: error.issues[0]?.message || "Validation error" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

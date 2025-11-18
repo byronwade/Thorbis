@@ -132,7 +132,10 @@ export function ImportExportDropdown({
 					Bulk Actions {hasSelection && `(${selectedIds.length})`}
 				</DropdownMenuLabel>
 				<DropdownMenuGroup>
-					<DropdownMenuItem disabled={!hasSelection} onClick={() => handleBulkAction("edit")}>
+					<DropdownMenuItem
+						disabled={!hasSelection}
+						onClick={() => handleBulkAction("edit")}
+					>
 						<Pencil className="mr-2 size-4" />
 						<span>Bulk Edit</span>
 					</DropdownMenuItem>

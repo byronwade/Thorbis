@@ -7,8 +7,8 @@
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerEstimates } from "@/hooks/use-customer-360";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
@@ -28,7 +28,11 @@ export function CustomerEstimatesWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: estimates, isLoading, error } = useCustomerEstimates(customerId, isVisible);
+				const {
+					data: estimates,
+					isLoading,
+					error,
+				} = useCustomerEstimates(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
@@ -39,7 +43,9 @@ export function CustomerEstimatesWidget({
 					);
 				if (!estimates || estimates.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No estimates found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No estimates found
+						</div>
 					);
 
 				return (
@@ -53,7 +59,9 @@ export function CustomerEstimatesWidget({
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="text-sm font-medium">{estimate.estimate_number}</span>
+											<span className="text-sm font-medium">
+												{estimate.estimate_number}
+											</span>
 											<Badge variant="outline" className="text-xs">
 												{estimate.status}
 											</Badge>

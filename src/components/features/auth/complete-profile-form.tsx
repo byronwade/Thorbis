@@ -27,7 +27,9 @@ export function CompleteProfileForm({
 	userEmail,
 }: CompleteProfileFormProps) {
 	const router = useRouter();
-	const [avatarPreview, setAvatarPreview] = useState<string | null>(existingAvatar);
+	const [avatarPreview, setAvatarPreview] = useState<string | null>(
+		existingAvatar,
+	);
 	const [hasChangedAvatar, setHasChangedAvatar] = useState(false);
 	const [avatarError, setAvatarError] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +100,7 @@ export function CompleteProfileForm({
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Something went wrong. Please try again."
+					: "Something went wrong. Please try again.",
 			);
 			setIsLoading(false);
 		}
@@ -138,13 +140,17 @@ export function CompleteProfileForm({
 			<Alert>
 				<CheckCircle2 className="h-4 w-4" />
 				<AlertDescription>
-					You signed in with <strong>{userEmail}</strong>. Just a few more details and you're all
-					set!
+					You signed in with <strong>{userEmail}</strong>. Just a few more
+					details and you're all set!
 				</AlertDescription>
 			</Alert>
 
 			{/* Profile Completion Form */}
-			<form className="space-y-6" encType="multipart/form-data" onSubmit={handleSubmit}>
+			<form
+				className="space-y-6"
+				encType="multipart/form-data"
+				onSubmit={handleSubmit}
+			>
 				{/* Name Field (if missing) */}
 				{!existingName && (
 					<div className="space-y-1">
@@ -180,8 +186,8 @@ export function CompleteProfileForm({
 							type="tel"
 						/>
 						<p className="text-muted-foreground text-xs">
-							We'll text urgent dispatch alerts and MFA codes here. Please verify this is a number
-							you can receive texts on.
+							We'll text urgent dispatch alerts and MFA codes here. Please
+							verify this is a number you can receive texts on.
 						</p>
 					</div>
 				)}
@@ -191,7 +197,9 @@ export function CompleteProfileForm({
 					<Label htmlFor="avatar">
 						Profile image{" "}
 						{existingAvatar && !hasChangedAvatar && (
-							<span className="text-muted-foreground text-xs font-normal">(from Google)</span>
+							<span className="text-muted-foreground text-xs font-normal">
+								(from Google)
+							</span>
 						)}
 					</Label>
 					<div className="border-border/70 flex flex-col gap-4 rounded-2xl border border-dashed p-4 sm:flex-row sm:items-center">

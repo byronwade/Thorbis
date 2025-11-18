@@ -7,10 +7,13 @@
 
 "use client";
 
-import { GitBranch, Check, FileText, FileCheck } from "lucide-react";
+import { Check, FileCheck, FileText, GitBranch } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { useInvoiceEstimate, useInvoiceContract } from "@/hooks/use-invoice-360";
+import {
+	useInvoiceContract,
+	useInvoiceEstimate,
+} from "@/hooks/use-invoice-360";
 import { formatDate } from "@/lib/formatters";
 
 type InvoiceWorkflowWidgetProps = {
@@ -33,14 +36,10 @@ export function InvoiceWorkflowWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: estimate, isLoading: estimateLoading } = useInvoiceEstimate(
-					estimateId,
-					isVisible
-				);
-				const { data: contract, isLoading: contractLoading } = useInvoiceContract(
-					invoiceId,
-					isVisible
-				);
+				const { data: estimate, isLoading: estimateLoading } =
+					useInvoiceEstimate(estimateId, isVisible);
+				const { data: contract, isLoading: contractLoading } =
+					useInvoiceContract(invoiceId, isVisible);
 
 				if (estimateLoading || contractLoading) {
 					return <WidgetSkeleton rows={3} />;

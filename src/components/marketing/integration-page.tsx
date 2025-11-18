@@ -8,7 +8,13 @@ import {
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { getMarketingIcon } from "./marketing-icons";
 
@@ -17,8 +23,13 @@ type IntegrationPageProps = {
 	related?: MarketingIntegrationContent[];
 };
 
-export function IntegrationPage({ integration, related = [] }: IntegrationPageProps) {
-	const PrimaryIcon = getMarketingIcon(integration.valueProps[0]?.icon ?? "sparkles");
+export function IntegrationPage({
+	integration,
+	related = [],
+}: IntegrationPageProps) {
+	const PrimaryIcon = getMarketingIcon(
+		integration.valueProps[0]?.icon ?? "sparkles",
+	);
 
 	return (
 		<div className="space-y-16">
@@ -31,21 +42,30 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{integration.heroTitle}
 						</h1>
-						<p className="text-muted-foreground text-lg">{integration.heroDescription}</p>
+						<p className="text-muted-foreground text-lg">
+							{integration.heroDescription}
+						</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild size="lg">
-								<Link href={integration.primaryCta.href}>{integration.primaryCta.label}</Link>
+								<Link href={integration.primaryCta.href}>
+									{integration.primaryCta.label}
+								</Link>
 							</Button>
 							{integration.secondaryCta ? (
 								<Button asChild size="lg" variant="outline">
-									<Link href={integration.secondaryCta.href}>{integration.secondaryCta.label}</Link>
+									<Link href={integration.secondaryCta.href}>
+										{integration.secondaryCta.label}
+									</Link>
 								</Button>
 							) : null}
 						</div>
 						<div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
 							<span className="inline-flex items-center gap-2">
 								<span className="bg-muted relative flex size-9 items-center justify-center rounded-full">
-									<PrimaryIcon aria-hidden="true" className="text-primary size-5" />
+									<PrimaryIcon
+										aria-hidden="true"
+										className="text-primary size-5"
+									/>
 								</span>
 								{integration.partner.name}
 							</span>
@@ -94,8 +114,12 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 
 			<section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
 				<div className="bg-muted/20 rounded-2xl border p-8">
-					<h2 className="text-xl font-semibold">Why teams connect {integration.name}</h2>
-					<p className="text-muted-foreground mt-4 leading-relaxed">{integration.summary}</p>
+					<h2 className="text-xl font-semibold">
+						Why teams connect {integration.name}
+					</h2>
+					<p className="text-muted-foreground mt-4 leading-relaxed">
+						{integration.summary}
+					</p>
 				</div>
 				<div className="bg-background rounded-2xl border p-8">
 					<h3 className="text-lg font-semibold">Key benefits</h3>
@@ -103,7 +127,10 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 						{integration.valueProps.map((prop) => {
 							const Icon = getMarketingIcon(prop.icon);
 							return (
-								<div className="bg-muted/20 space-y-2 rounded-xl border p-4" key={prop.title}>
+								<div
+									className="bg-muted/20 space-y-2 rounded-xl border p-4"
+									key={prop.title}
+								>
 									<Icon aria-hidden="true" className="text-primary size-5" />
 									<h4 className="font-medium">{prop.title}</h4>
 									<p className="text-muted-foreground text-sm leading-relaxed">
@@ -143,7 +170,8 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 							<CardHeader>
 								<CardTitle>Performance impact</CardTitle>
 								<CardDescription>
-									Customers report measurable improvements after connecting {integration.name}.
+									Customers report measurable improvements after connecting{" "}
+									{integration.name}.
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -153,9 +181,15 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 											className="border-primary/30 bg-background/80 rounded-xl border border-dashed p-4"
 											key={stat.label}
 										>
-											<dt className="text-muted-foreground text-sm font-medium">{stat.label}</dt>
-											<dd className="text-primary text-2xl font-semibold">{stat.value}</dd>
-											<p className="text-muted-foreground mt-1 text-xs">{stat.description}</p>
+											<dt className="text-muted-foreground text-sm font-medium">
+												{stat.label}
+											</dt>
+											<dd className="text-primary text-2xl font-semibold">
+												{stat.value}
+											</dd>
+											<p className="text-muted-foreground mt-1 text-xs">
+												{stat.description}
+											</p>
 										</div>
 									))}
 								</dl>
@@ -206,7 +240,9 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 				<Accordion collapsible type="single">
 					{integration.faq.map((item, index) => (
 						<AccordionItem key={item.question} value={`faq-${index}`}>
-							<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+							<AccordionTrigger className="text-left">
+								{item.question}
+							</AccordionTrigger>
 							<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 								{item.answer}
 							</AccordionContent>
@@ -234,7 +270,11 @@ export function IntegrationPage({ integration, related = [] }: IntegrationPagePr
 	);
 }
 
-function IntegrationRelatedCard({ integration }: { integration: MarketingIntegrationContent }) {
+function IntegrationRelatedCard({
+	integration,
+}: {
+	integration: MarketingIntegrationContent;
+}) {
 	const Icon = getMarketingIcon(integration.valueProps[0]?.icon ?? "sparkles");
 
 	return (
@@ -251,9 +291,13 @@ function IntegrationRelatedCard({ integration }: { integration: MarketingIntegra
 				</div>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-3">
-				<p className="text-muted-foreground text-sm leading-relaxed">{integration.summary}</p>
+				<p className="text-muted-foreground text-sm leading-relaxed">
+					{integration.summary}
+				</p>
 				<Button asChild variant="outline">
-					<Link href={`/integrations/${integration.slug}`}>View integration</Link>
+					<Link href={`/integrations/${integration.slug}`}>
+						View integration
+					</Link>
 				</Button>
 			</CardContent>
 		</Card>

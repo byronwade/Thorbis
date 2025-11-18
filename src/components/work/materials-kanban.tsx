@@ -26,7 +26,9 @@ const MATERIAL_COLUMNS: Array<{
 	{ id: "out-of-stock", name: "Out of Stock", accentColor: "#EF4444" },
 ];
 
-const columnLabel = new Map(MATERIAL_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	MATERIAL_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -40,7 +42,7 @@ export function MaterialsKanban({ materials }: { materials: Material[] }) {
 				const columnItems = items.filter((item) => item.columnId === columnId);
 				const totalValue = columnItems.reduce(
 					(sum, item) => sum + (item.entity as Material).totalValue,
-					0
+					0,
 				);
 				return { count: columnItems.length, value: totalValue };
 			}}
@@ -55,11 +57,15 @@ export function MaterialsKanban({ materials }: { materials: Material[] }) {
 				material,
 			})}
 			renderCard={(item) => (
-				<MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />
+				<MaterialCard
+					item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+				/>
 			)}
 			renderDragOverlay={(item) => (
 				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
-					<MaterialCard item={{ ...item, material: item.entity } as MaterialsKanbanItem} />
+					<MaterialCard
+						item={{ ...item, material: item.entity } as MaterialsKanbanItem}
+					/>
 				</div>
 			)}
 			showTotals={true}
@@ -80,13 +86,16 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 					<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 						{material.itemCode}
 					</p>
-					<h3 className="text-foreground text-sm font-semibold">{material.description}</h3>
+					<h3 className="text-foreground text-sm font-semibold">
+						{material.description}
+					</h3>
 					<div className="mt-2 flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
-								columnId === "out-of-stock" && "bg-destructive/10 text-destructive",
-								columnId === "in-stock" && "bg-primary/10 text-primary"
+								columnId === "out-of-stock" &&
+									"bg-destructive/10 text-destructive",
+								columnId === "in-stock" && "bg-primary/10 text-primary",
 							)}
 							variant={
 								columnId === "in-stock"
@@ -132,7 +141,10 @@ function MaterialCard({ item }: { item: MaterialsKanbanItem }) {
 				size="sm"
 				variant="ghost"
 			>
-				<Link href={`/dashboard/work/materials/${material.id}`}>
+				<Link
+					href={`/dashboard/work/materials/${material.id}`}
+					prefetch={false}
+				>
 					Manage inventory
 					<ArrowUpRight className="size-3.5" />
 				</Link>

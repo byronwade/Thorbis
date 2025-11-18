@@ -47,6 +47,6 @@ export const useCustomersFiltersStore = create<CustomersFiltersStore>()(
 		{
 			name: "customers-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		}
-	)
+		},
+	),
 );

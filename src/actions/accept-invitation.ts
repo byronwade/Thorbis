@@ -12,8 +12,15 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
-import { type ActionResult, withErrorHandling } from "@/lib/errors/with-error-handling";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
+import {
+	type ActionResult,
+	withErrorHandling,
+} from "@/lib/errors/with-error-handling";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
@@ -46,11 +53,16 @@ type InvitationRecord = Database["public"]["Tables"]["team_invitations"]["Row"];
 /**
  * Accept a team invitation and create user account
  */
-export async function acceptTeamInvitation(formData: FormData): Promise<ActionResult<string>> {
+export async function acceptTeamInvitation(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return await withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const token = formData.get("token") as string;
@@ -99,7 +111,7 @@ export async function acceptTeamInvitation(formData: FormData): Promise<ActionRe
 
 async function fetchInvitation(
 	supabase: SupabaseServerClient,
-	token: string
+	token: string,
 ): Promise<InvitationRecord> {
 	const { data, error } = await supabase
 		.from("team_invitations")
@@ -112,7 +124,7 @@ async function fetchInvitation(
 		throw new ActionError(
 			"Invalid or expired invitation",
 			ERROR_CODES.DB_RECORD_NOT_FOUND,
-			HTTP_STATUS.notFound
+			HTTP_STATUS.notFound,
 		);
 	}
 
@@ -121,21 +133,25 @@ async function fetchInvitation(
 
 function validateInvitation(invitation: InvitationRecord, email: string) {
 	if (new Date(invitation.expires_at) < new Date()) {
-		throw new ActionError("Invitation has expired", ERROR_CODES.VALIDATION_ERROR, HTTP_STATUS.gone);
+		throw new ActionError(
+			"Invitation has expired",
+			ERROR_CODES.VALIDATION_ERROR,
+			HTTP_STATUS.gone,
+		);
 	}
 
 	if (invitation.email !== email) {
 		throw new ActionError(
 			"Email does not match invitation",
 			ERROR_CODES.VALIDATION_ERROR,
-			HTTP_STATUS.badRequest
+			HTTP_STATUS.badRequest,
 		);
 	}
 }
 
 async function ensureAuthUser(
 	supabase: SupabaseServerClient,
-	validated: z.infer<typeof acceptInvitationSchema>
+	validated: z.infer<typeof acceptInvitationSchema>,
 ): Promise<User> {
 	const { data, error } = await supabase.auth.signUp({
 		email: validated.email,
@@ -154,16 +170,17 @@ async function ensureAuthUser(
 	}
 
 	if (error?.message?.includes("already registered")) {
-		const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-			email: validated.email,
-			password: validated.password,
-		});
+		const { data: signInData, error: signInError } =
+			await supabase.auth.signInWithPassword({
+				email: validated.email,
+				password: validated.password,
+			});
 
 		if (signInError || !signInData.user) {
 			throw new ActionError(
 				"An account with this email already exists. Please log in or reset your password.",
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS.conflict
+				HTTP_STATUS.conflict,
 			);
 		}
 
@@ -173,17 +190,19 @@ async function ensureAuthUser(
 	throw new ActionError(
 		error?.message || "Failed to create account",
 		ERROR_CODES.AUTH_UNAUTHORIZED,
-		HTTP_STATUS.internal
+		HTTP_STATUS.internal,
 	);
 }
 
 async function uploadProfilePhoto(
 	supabase: SupabaseServerClient,
 	userId: string,
-	photo: File
+	photo: File,
 ): Promise<string | null> {
 	const photoPath = `team-member-photos/${userId}/${Date.now()}-${photo.name}`;
-	const { error } = await supabase.storage.from("avatars").upload(photoPath, photo);
+	const { error } = await supabase.storage
+		.from("avatars")
+		.upload(photoPath, photo);
 
 	if (error) {
 		return null;
@@ -228,11 +247,17 @@ async function upsertTeamMember({
 	const error: null | Error = null;
 
 	if (error) {
-		throw new ActionError(ERROR_MESSAGES.operationFailed("join team"), ERROR_CODES.DB_QUERY_ERROR);
+		throw new ActionError(
+			ERROR_MESSAGES.operationFailed("join team"),
+			ERROR_CODES.DB_QUERY_ERROR,
+		);
 	}
 }
 
-async function markInvitationUsed(supabase: SupabaseServerClient, invitationId: string) {
+async function markInvitationUsed(
+	supabase: SupabaseServerClient,
+	invitationId: string,
+) {
 	// TODO: team_invitations table doesn't exist - create migration
 	// const { error } = await supabase
 	// 	.from("team_invitations")

@@ -13,7 +13,9 @@ import { ColumnVisibilityMenu } from "@/components/ui/column-visibility-menu";
 import { ServiceAgreementsFilterDropdown } from "@/components/work/service-agreements-filter-dropdown";
 
 // Critical columns (always visible - shown for reference)
-const SERVICE_AGREEMENTS_CRITICAL_COLUMNS = [{ key: "status", label: "Status" }];
+const SERVICE_AGREEMENTS_CRITICAL_COLUMNS = [
+	{ key: "status", label: "Status" },
+];
 
 // Optional columns (can be hidden)
 const SERVICE_AGREEMENTS_OPTIONAL_COLUMNS = [

@@ -185,7 +185,9 @@ function getDaysUntil(value?: string | null): number | null {
 	return Math.round(diffMs / (1000 * 60 * 60 * 24));
 }
 
-export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) {
+export function EquipmentPageContent({
+	entityData,
+}: EquipmentPageContentProps) {
 	const {
 		equipment,
 		customer,
@@ -207,14 +209,14 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 	}, []);
 
 	const rawClassification =
-		(equipment.classification as keyof typeof classificationLabelMap | undefined) ?? "equipment";
-	const classificationKey: keyof typeof classificationLabelMap = classificationLabelMap[
-		rawClassification
-	]
-		? rawClassification
-		: "equipment";
+		(equipment.classification as
+			| keyof typeof classificationLabelMap
+			| undefined) ?? "equipment";
+	const classificationKey: keyof typeof classificationLabelMap =
+		classificationLabelMap[rawClassification] ? rawClassification : "equipment";
 	const classificationLabel =
-		classificationLabelMap[classificationKey] || formatLabel(equipment.classification);
+		classificationLabelMap[classificationKey] ||
+		formatLabel(equipment.classification);
 	const typeLabel = formatLabel(equipment.type);
 	const assetCategoryLabel = equipment.asset_category
 		? formatLabel(equipment.asset_category)
@@ -235,15 +237,22 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 	const headerBadges = [
 		getStatusBadge(equipment.status || "active", "status"),
 		getConditionBadge(equipment.condition || "good", "condition"),
-		<Badge className="bg-primary/10 text-primary" key="classification" variant="outline">
+		<Badge
+			className="bg-primary/10 text-primary"
+			key="classification"
+			variant="outline"
+		>
 			{classificationLabel}
 		</Badge>,
 	];
 
 	const equipmentIdentifier =
-		equipment.equipment_number || equipment.asset_id || equipment.id?.slice(0, 8).toUpperCase();
+		equipment.equipment_number ||
+		equipment.asset_id ||
+		equipment.id?.slice(0, 8).toUpperCase();
 
-	const equipmentName = equipment.name || `Equipment ${equipmentIdentifier ?? ""}`.trim();
+	const equipmentName =
+		equipment.name || `Equipment ${equipmentIdentifier ?? ""}`.trim();
 
 	const subtitleSegments = [
 		classificationLabel,
@@ -252,7 +261,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		equipment.model || null,
 	].filter(Boolean);
 
-	const headerSubtitle = subtitleSegments.length > 0 ? subtitleSegments.join(" • ") : undefined;
+	const headerSubtitle =
+		subtitleSegments.length > 0 ? subtitleSegments.join(" • ") : undefined;
 
 	const metadataItems = [] as NonNullable<DetailPageHeaderConfig["metadata"]>;
 
@@ -274,7 +284,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		label: "Installed",
 		icon: <Calendar className="text-muted-foreground h-3.5 w-3.5" />,
 		value: formatDate(equipment.install_date),
-		helperText: equipment.installed_by ? `By ${equipment.installed_by}` : undefined,
+		helperText: equipment.installed_by
+			? `By ${equipment.installed_by}`
+			: undefined,
 	});
 
 	if (equipment.serial_number) {
@@ -322,7 +334,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 					className="text-foreground text-sm font-medium hover:underline"
 					href={`/dashboard/work/maintenance-plans/${servicePlan.id}`}
 				>
-					{servicePlan.name || `Plan ${servicePlan.plan_number || servicePlan.id.slice(0, 8)}`}
+					{servicePlan.name ||
+						`Plan ${servicePlan.plan_number || servicePlan.id.slice(0, 8)}`}
 				</Link>
 			),
 			helperText: servicePlan.status || undefined,
@@ -335,15 +348,17 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		secondaryActions.push(
 			<Button asChild key="view-customer" size="sm" variant="outline">
 				<Link href={`/dashboard/customers/${customer.id}`}>View Customer</Link>
-			</Button>
+			</Button>,
 		);
 	}
 
 	if (property) {
 		secondaryActions.push(
 			<Button asChild key="view-property" size="sm" variant="outline">
-				<Link href={`/dashboard/work/properties/${property.id}`}>View Property</Link>
-			</Button>
+				<Link href={`/dashboard/work/properties/${property.id}`}>
+					View Property
+				</Link>
+			</Button>,
 		);
 	}
 
@@ -352,7 +367,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		subtitle: headerSubtitle,
 		badges: headerBadges,
 		metadata: metadataItems,
-		secondaryActions: secondaryActions.length > 0 ? secondaryActions : undefined,
+		secondaryActions:
+			secondaryActions.length > 0 ? secondaryActions : undefined,
 	};
 
 	const smartInsights = useMemo(() => {
@@ -368,9 +384,15 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 				typeof equipment.vehicle_odometer === "number" &&
 				typeof equipment.vehicle_next_service_mileage === "number"
 			) {
-				const milesRemaining = equipment.vehicle_next_service_mileage - equipment.vehicle_odometer;
+				const milesRemaining =
+					equipment.vehicle_next_service_mileage - equipment.vehicle_odometer;
 				if (Number.isFinite(milesRemaining)) {
-					const tone = milesRemaining < 0 ? "critical" : milesRemaining <= 500 ? "warning" : "info";
+					const tone =
+						milesRemaining < 0
+							? "critical"
+							: milesRemaining <= 500
+								? "warning"
+								: "info";
 					insights.push({
 						tone,
 						title:
@@ -379,7 +401,7 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 								: `Service due in ${formatNumber(milesRemaining, "mi")}`,
 						description: `Next service at ${formatNumber(
 							equipment.vehicle_next_service_mileage,
-							"mi"
+							"mi",
 						)}${equipment.next_service_due ? ` • ${formatDate(equipment.next_service_due)}` : ""}`,
 						icon: <Gauge className="size-4" />,
 					});
@@ -388,7 +410,12 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 
 			const inspectionDays = getDaysUntil(equipment.vehicle_inspection_due);
 			if (inspectionDays !== null) {
-				const tone = inspectionDays < 0 ? "critical" : inspectionDays <= 14 ? "warning" : "info";
+				const tone =
+					inspectionDays < 0
+						? "critical"
+						: inspectionDays <= 14
+							? "warning"
+							: "info";
 				insights.push({
 					tone,
 					title:
@@ -400,10 +427,16 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 				});
 			}
 
-			const registrationDays = getDaysUntil(equipment.vehicle_registration_expiration);
+			const registrationDays = getDaysUntil(
+				equipment.vehicle_registration_expiration,
+			);
 			if (registrationDays !== null) {
 				const tone =
-					registrationDays < 0 ? "critical" : registrationDays <= 30 ? "warning" : "info";
+					registrationDays < 0
+						? "critical"
+						: registrationDays <= 30
+							? "warning"
+							: "info";
 				insights.push({
 					tone,
 					title:
@@ -426,7 +459,12 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		} else if (isTool) {
 			const calibrationDays = getDaysUntil(equipment.tool_calibration_due);
 			if (calibrationDays !== null) {
-				const tone = calibrationDays < 0 ? "critical" : calibrationDays <= 14 ? "warning" : "info";
+				const tone =
+					calibrationDays < 0
+						? "critical"
+						: calibrationDays <= 14
+							? "warning"
+							: "info";
 				insights.push({
 					tone,
 					title:
@@ -440,7 +478,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 
 			if (equipment.condition) {
 				const tone =
-					equipment.condition === "needs_replacement" || equipment.condition === "poor"
+					equipment.condition === "needs_replacement" ||
+					equipment.condition === "poor"
 						? "warning"
 						: "info";
 				insights.push({
@@ -464,7 +503,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		} else {
 			const serviceDays = getDaysUntil(equipment.next_service_due);
 			if (serviceDays !== null) {
-				const tone = serviceDays < 0 ? "critical" : serviceDays <= 30 ? "warning" : "info";
+				const tone =
+					serviceDays < 0 ? "critical" : serviceDays <= 30 ? "warning" : "info";
 				insights.push({
 					tone,
 					title:
@@ -479,7 +519,12 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 			if (equipment.is_under_warranty && equipment.warranty_expiration) {
 				const warrantyDays = getDaysUntil(equipment.warranty_expiration);
 				if (warrantyDays !== null) {
-					const tone = warrantyDays < 0 ? "warning" : warrantyDays <= 60 ? "warning" : "positive";
+					const tone =
+						warrantyDays < 0
+							? "warning"
+							: warrantyDays <= 60
+								? "warning"
+								: "positive";
 					insights.push({
 						tone,
 						title:
@@ -518,14 +563,18 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 			key: "install",
 			label: "Install Date",
 			value: formatDate(equipment.install_date),
-			helperText: equipment.installed_by ? `Installed by ${equipment.installed_by}` : undefined,
+			helperText: equipment.installed_by
+				? `Installed by ${equipment.installed_by}`
+				: undefined,
 			icon: <Calendar className="text-muted-foreground h-4 w-4" />,
 		},
 		{
 			key: "last-service",
 			label: "Last Service",
 			value: formatDate(equipment.last_service_date),
-			helperText: equipment.last_service_job_id ? "Linked job on record" : undefined,
+			helperText: equipment.last_service_job_id
+				? "Linked job on record"
+				: undefined,
 			icon: <Wrench className="text-muted-foreground h-4 w-4" />,
 		},
 		{
@@ -560,10 +609,15 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		lifecycleTiles.length > 0 ? (
 			<DetailPageSurface className="w-full" padding="lg" variant="muted">
 				<div className="flex flex-col gap-4">
-					<h3 className="text-foreground text-base font-semibold">Lifecycle Overview</h3>
+					<h3 className="text-foreground text-base font-semibold">
+						Lifecycle Overview
+					</h3>
 					<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 						{lifecycleTiles.map(({ key, label, value, helperText, icon }) => (
-							<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
+							<div
+								className="border-border/40 bg-background rounded-lg border px-3 py-3"
+								key={key}
+							>
 								<div className="flex items-center gap-3">
 									{icon}
 									<div className="flex flex-col">
@@ -572,7 +626,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 										</span>
 										<span className="text-sm font-semibold">{value}</span>
 										{helperText ? (
-											<span className="text-muted-foreground text-xs">{helperText}</span>
+											<span className="text-muted-foreground text-xs">
+												{helperText}
+											</span>
 										) : null}
 									</div>
 								</div>
@@ -587,7 +643,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 		smartInsights.length > 0 ? (
 			<DetailPageSurface className="w-full" padding="lg" variant="muted">
 				<div className="flex flex-col gap-3">
-					<h3 className="text-foreground text-base font-semibold">Smart Insights</h3>
+					<h3 className="text-foreground text-base font-semibold">
+						Smart Insights
+					</h3>
 					<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
 						{smartInsights.map((insight) => (
 							<div
@@ -596,11 +654,17 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							>
 								<div className="flex items-start gap-3">
 									{insight.icon && (
-										<div className="text-muted-foreground mt-0.5">{insight.icon}</div>
+										<div className="text-muted-foreground mt-0.5">
+											{insight.icon}
+										</div>
 									)}
 									<div className="space-y-1">
-										<p className="text-foreground font-medium">{insight.title}</p>
-										<p className="text-muted-foreground text-xs">{insight.description}</p>
+										<p className="text-foreground font-medium">
+											{insight.title}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{insight.description}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -630,7 +694,10 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Equipment Number</Label>
-								<Input readOnly value={equipment.equipment_number || equipment.id.slice(0, 8)} />
+								<Input
+									readOnly
+									value={equipment.equipment_number || equipment.id.slice(0, 8)}
+								/>
 							</div>
 							<div>
 								<Label>Classification</Label>
@@ -638,7 +705,10 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							</div>
 							<div>
 								<Label>Type</Label>
-								<Input readOnly value={typeLabel !== "N/A" ? typeLabel : "Unspecified"} />
+								<Input
+									readOnly
+									value={typeLabel !== "N/A" ? typeLabel : "Unspecified"}
+								/>
 							</div>
 							<div>
 								<Label>Manufacturer</Label>
@@ -728,7 +798,11 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 								<Label>Year</Label>
 								<Input
 									readOnly
-									value={equipment.vehicle_year ? equipment.vehicle_year.toString() : "N/A"}
+									value={
+										equipment.vehicle_year
+											? equipment.vehicle_year.toString()
+											: "N/A"
+									}
 								/>
 							</div>
 							<div>
@@ -737,14 +811,19 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							</div>
 							<div>
 								<Label>License / Unit</Label>
-								<Input readOnly value={equipment.vehicle_license_plate || "N/A"} />
+								<Input
+									readOnly
+									value={equipment.vehicle_license_plate || "N/A"}
+								/>
 							</div>
 							<div>
 								<Label>Fuel Type</Label>
 								<Input
 									readOnly
 									value={
-										equipment.vehicle_fuel_type ? formatLabel(equipment.vehicle_fuel_type) : "N/A"
+										equipment.vehicle_fuel_type
+											? formatLabel(equipment.vehicle_fuel_type)
+											: "N/A"
 									}
 								/>
 							</div>
@@ -762,20 +841,29 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Odometer</Label>
-								<Input readOnly value={formatNumber(equipment.vehicle_odometer, "mi")} />
+								<Input
+									readOnly
+									value={formatNumber(equipment.vehicle_odometer, "mi")}
+								/>
 							</div>
 							<div>
 								<Label>Last Service Mileage</Label>
 								<Input
 									readOnly
-									value={formatNumber(equipment.vehicle_last_service_mileage, "mi")}
+									value={formatNumber(
+										equipment.vehicle_last_service_mileage,
+										"mi",
+									)}
 								/>
 							</div>
 							<div>
 								<Label>Next Service Mileage</Label>
 								<Input
 									readOnly
-									value={formatNumber(equipment.vehicle_next_service_mileage, "mi")}
+									value={formatNumber(
+										equipment.vehicle_next_service_mileage,
+										"mi",
+									)}
 								/>
 							</div>
 							<div>
@@ -805,11 +893,17 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Registration Expires</Label>
-								<Input readOnly value={formatDate(equipment.vehicle_registration_expiration)} />
+								<Input
+									readOnly
+									value={formatDate(equipment.vehicle_registration_expiration)}
+								/>
 							</div>
 							<div>
 								<Label>Inspection Due</Label>
-								<Input readOnly value={formatDate(equipment.vehicle_inspection_due)} />
+								<Input
+									readOnly
+									value={formatDate(equipment.vehicle_inspection_due)}
+								/>
 							</div>
 						</div>
 					</UnifiedAccordionContent>
@@ -831,7 +925,10 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							</div>
 							<div>
 								<Label>Primary Use</Label>
-								<Input readOnly value={assetSubcategoryLabel || assetCategoryLabel || "N/A"} />
+								<Input
+									readOnly
+									value={assetSubcategoryLabel || assetCategoryLabel || "N/A"}
+								/>
 							</div>
 						</div>
 					</UnifiedAccordionContent>
@@ -847,11 +944,17 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Calibration Due</Label>
-								<Input readOnly value={formatDate(equipment.tool_calibration_due)} />
+								<Input
+									readOnly
+									value={formatDate(equipment.tool_calibration_due)}
+								/>
 							</div>
 							<div>
 								<Label>Warranty Expires</Label>
-								<Input readOnly value={formatDate(equipment.warranty_expiration)} />
+								<Input
+									readOnly
+									value={formatDate(equipment.warranty_expiration)}
+								/>
 							</div>
 							<div>
 								<Label>Condition</Label>
@@ -876,7 +979,12 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 								{equipment.install_date && (
 									<div>
 										<Label>Install Date</Label>
-										<Input readOnly value={new Date(equipment.install_date).toLocaleDateString()} />
+										<Input
+											readOnly
+											value={new Date(
+												equipment.install_date,
+											).toLocaleDateString()}
+										/>
 									</div>
 								)}
 								{equipment.installed_by && (
@@ -896,10 +1004,15 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 											<h4 className="text-lg font-semibold">
 												{installJob.title || `Job #${installJob.job_number}`}
 											</h4>
-											<p className="text-muted-foreground text-sm">#{installJob.job_number}</p>
+											<p className="text-muted-foreground text-sm">
+												#{installJob.job_number}
+											</p>
 											{installJob.completed_at && (
 												<p className="text-muted-foreground mt-1 text-xs">
-													Completed: {new Date(installJob.completed_at).toLocaleDateString()}
+													Completed:{" "}
+													{new Date(
+														installJob.completed_at,
+													).toLocaleDateString()}
 												</p>
 											)}
 											<div className="mt-2">
@@ -907,7 +1020,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 											</div>
 										</div>
 										<Button asChild size="sm" variant="outline">
-											<Link href={`/dashboard/work/${installJob.id}`}>View Job</Link>
+											<Link href={`/dashboard/work/${installJob.id}`}>
+												View Job
+											</Link>
 										</Button>
 									</div>
 								</div>
@@ -931,12 +1046,18 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 								<div>
 									<Label className="mb-2 block">Most Recent Service</Label>
 									<h4 className="text-lg font-semibold">
-										{lastServiceJob.title || `Job #${lastServiceJob.job_number}`}
+										{lastServiceJob.title ||
+											`Job #${lastServiceJob.job_number}`}
 									</h4>
-									<p className="text-muted-foreground text-sm">#{lastServiceJob.job_number}</p>
+									<p className="text-muted-foreground text-sm">
+										#{lastServiceJob.job_number}
+									</p>
 									{lastServiceJob.completed_at && (
 										<p className="text-muted-foreground mt-1 text-xs">
-											Completed: {new Date(lastServiceJob.completed_at).toLocaleDateString()}
+											Completed:{" "}
+											{new Date(
+												lastServiceJob.completed_at,
+											).toLocaleDateString()}
 										</p>
 									)}
 									<div className="mt-2">
@@ -944,7 +1065,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 									</div>
 								</div>
 								<Button asChild size="sm" variant="outline">
-									<Link href={`/dashboard/work/${lastServiceJob.id}`}>View Job</Link>
+									<Link href={`/dashboard/work/${lastServiceJob.id}`}>
+										View Job
+									</Link>
 								</Button>
 							</div>
 						</div>
@@ -964,26 +1087,36 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 					<UnifiedAccordionContent>
 						<div className="space-y-3">
 							{upcomingMaintenance.map((schedule: any) => (
-								<div className="bg-card rounded-lg border p-4" key={schedule.id}>
+								<div
+									className="bg-card rounded-lg border p-4"
+									key={schedule.id}
+								>
 									<div className="flex items-start justify-between">
 										<div>
 											<p className="font-medium">
-												{new Date(schedule.scheduled_start).toLocaleDateString("en-US", {
-													weekday: "long",
-													month: "long",
-													day: "numeric",
-													year: "numeric",
-												})}
+												{new Date(schedule.scheduled_start).toLocaleDateString(
+													"en-US",
+													{
+														weekday: "long",
+														month: "long",
+														day: "numeric",
+														year: "numeric",
+													},
+												)}
 											</p>
 											<p className="text-muted-foreground text-sm">
-												{new Date(schedule.scheduled_start).toLocaleTimeString("en-US", {
-													hour: "numeric",
-													minute: "2-digit",
-												})}
+												{new Date(schedule.scheduled_start).toLocaleTimeString(
+													"en-US",
+													{
+														hour: "numeric",
+														minute: "2-digit",
+													},
+												)}
 											</p>
 											{schedule.job && (
 												<p className="text-muted-foreground mt-1 text-xs">
-													{schedule.job.title || `Job #${schedule.job.job_number}`}
+													{schedule.job.title ||
+														`Job #${schedule.job.job_number}`}
 												</p>
 											)}
 											<div className="mt-2">
@@ -991,7 +1124,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 											</div>
 										</div>
 										<Button asChild size="sm" variant="outline">
-											<Link href={`/dashboard/appointments/${schedule.id}`}>View</Link>
+											<Link href={`/dashboard/appointments/${schedule.id}`}>
+												View
+											</Link>
 										</Button>
 									</div>
 								</div>
@@ -1012,14 +1147,19 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Under Warranty</Label>
-								<Input readOnly value={equipment.is_under_warranty ? "Yes" : "No"} />
+								<Input
+									readOnly
+									value={equipment.is_under_warranty ? "Yes" : "No"}
+								/>
 							</div>
 							{equipment.warranty_expiration && (
 								<div>
 									<Label>Warranty Expiration</Label>
 									<Input
 										readOnly
-										value={new Date(equipment.warranty_expiration).toLocaleDateString()}
+										value={new Date(
+											equipment.warranty_expiration,
+										).toLocaleDateString()}
 									/>
 								</div>
 							)}
@@ -1032,7 +1172,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							{equipment.warranty_notes && (
 								<div className="md:col-span-2">
 									<Label>Warranty Notes</Label>
-									<p className="text-sm whitespace-pre-wrap">{equipment.warranty_notes}</p>
+									<p className="text-sm whitespace-pre-wrap">
+										{equipment.warranty_notes}
+									</p>
 								</div>
 							)}
 						</div>
@@ -1056,7 +1198,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 									key={service.id}
 								>
 									<div>
-										<p className="text-sm font-medium">{service.service_type || "Service"}</p>
+										<p className="text-sm font-medium">
+											{service.service_type || "Service"}
+										</p>
 										<p className="text-muted-foreground text-xs">
 											{service.serviced_at
 												? new Date(service.serviced_at).toLocaleDateString()
@@ -1065,7 +1209,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 									</div>
 									{service.job_id && (
 										<Button asChild size="sm" variant="ghost">
-											<Link href={`/dashboard/work/${service.job_id}`}>View Job</Link>
+											<Link href={`/dashboard/work/${service.job_id}`}>
+												View Job
+											</Link>
 										</Button>
 									)}
 								</div>
@@ -1089,7 +1235,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 									<Label>Last Service</Label>
 									<Input
 										readOnly
-										value={new Date(equipment.last_service_date).toLocaleDateString()}
+										value={new Date(
+											equipment.last_service_date,
+										).toLocaleDateString()}
 									/>
 								</div>
 							)}
@@ -1098,14 +1246,19 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 									<Label>Next Service Due</Label>
 									<Input
 										readOnly
-										value={new Date(equipment.next_service_due).toLocaleDateString()}
+										value={new Date(
+											equipment.next_service_due,
+										).toLocaleDateString()}
 									/>
 								</div>
 							)}
 							{equipment.service_interval_days && (
 								<div>
 									<Label>Service Interval</Label>
-									<Input readOnly value={`${equipment.service_interval_days} days`} />
+									<Input
+										readOnly
+										value={`${equipment.service_interval_days} days`}
+									/>
 								</div>
 							)}
 						</div>
@@ -1137,7 +1290,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>
+									View Full Profile
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -1166,7 +1321,7 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 							<Button asChild size="sm" variant="outline">
 								<a
 									href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-										`${property.address}, ${property.city}, ${property.state}`
+										`${property.address}, ${property.city}, ${property.state}`,
 									)}`}
 									rel="noopener noreferrer"
 									target="_blank"
@@ -1219,7 +1374,8 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 				id: `property-${property.id}`,
 				type: "property",
 				title: property.address || property.name || "Property",
-				subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+				subtitle:
+					`${property.city || ""}, ${property.state || ""}`.trim() || undefined,
 				href: `/dashboard/work/properties/${property.id}`,
 			});
 		}
@@ -1228,7 +1384,9 @@ export function EquipmentPageContent({ entityData }: EquipmentPageContentProps) 
 			items.push({
 				id: `service-plan-${servicePlan.id}`,
 				type: "service_plan",
-				title: servicePlan.name || `Plan ${servicePlan.plan_number || servicePlan.id.slice(0, 8)}`,
+				title:
+					servicePlan.name ||
+					`Plan ${servicePlan.plan_number || servicePlan.id.slice(0, 8)}`,
 				subtitle: servicePlan.status,
 				href: `/dashboard/work/maintenance-plans/${servicePlan.id}`,
 				badge: servicePlan.status

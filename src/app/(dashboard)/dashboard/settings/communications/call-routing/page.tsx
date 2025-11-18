@@ -78,7 +78,9 @@ export default function CallRoutingPage() {
 					<TabsContent className="mt-0 flex-1 p-6" value="after-hours">
 						{/* After-hours routing will be added here */}
 						<div className="rounded-lg border border-dashed p-12 text-center">
-							<h3 className="mb-2 text-lg font-semibold">After Hours Routing</h3>
+							<h3 className="mb-2 text-lg font-semibold">
+								After Hours Routing
+							</h3>
 							<p className="text-muted-foreground mb-4">
 								Configure what happens when calls come in outside business hours
 							</p>

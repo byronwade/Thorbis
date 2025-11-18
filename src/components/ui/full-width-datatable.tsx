@@ -32,7 +32,11 @@ import {
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import { horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
+import {
+	horizontalListSortingStrategy,
+	SortableContext,
+	useSortable,
+} from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -45,13 +49,16 @@ import {
 	RefreshCw,
 	Search,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { getColumnWidthClass, renderCustomColumn } from "@/lib/datatable/custom-column-renderer";
+import {
+	getColumnWidthClass,
+	renderCustomColumn,
+} from "@/lib/datatable/custom-column-renderer";
 import { useCustomColumnsStore } from "@/lib/stores/custom-columns-store";
 import { useDataTableColumnsStore } from "@/lib/stores/datatable-columns-store";
 
@@ -110,7 +117,14 @@ function SortableColumnHeader<T>({
 		y: number;
 	} | null>(null);
 
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({
 		id: column.key,
 	});
 
@@ -123,7 +137,8 @@ function SortableColumnHeader<T>({
 				? "justify-center text-center"
 				: "justify-start text-left";
 	const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
-	const cellBorder = colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
+	const cellBorder =
+		colIndex < totalColumns - 1 ? "border-r border-border/30" : "";
 
 	const style: React.CSSProperties = {
 		transform: CSS.Transform.toString(transform),
@@ -215,6 +230,8 @@ export type FullWidthDataTableProps<T> = {
 	totalCount?: number;
 	/** Current page (for server-side pagination, passed from URL params) */
 	currentPageFromServer?: number;
+	/** Data is already paginated on the server (skip client-side slicing) */
+	serverPagination?: boolean;
 	/** Custom toolbar actions (rendered on right side) */
 	toolbarActions?: React.ReactNode;
 	/** Enable row selection */
@@ -233,6 +250,14 @@ export type FullWidthDataTableProps<T> = {
 	showArchived?: boolean;
 	/** Function to determine if item is archived */
 	isArchived?: (item: T) => boolean;
+	/** Initial search query from server (for server-side search) */
+	initialSearchQuery?: string;
+	/** Enable server-driven search (updates query string instead of client filtering) */
+	serverSearch?: boolean;
+	/** Query parameter name to use for server search */
+	searchParamKey?: string;
+	/** Debounce (ms) before triggering server search */
+	searchDebounceMs?: number;
 };
 
 export function FullWidthDataTable<T>({
@@ -254,6 +279,7 @@ export function FullWidthDataTable<T>({
 	itemsPerPage = 50,
 	totalCount,
 	currentPageFromServer = 1,
+	serverPagination = false,
 	toolbarActions,
 	enableSelection = true,
 	getRowClassName,
@@ -263,12 +289,17 @@ export function FullWidthDataTable<T>({
 	entity,
 	showArchived = true,
 	isArchived,
+	initialSearchQuery = "",
+	serverSearch = false,
+	searchParamKey = "search",
+	searchDebounceMs = 300,
 }: FullWidthDataTableProps<T>) {
 	const router = useRouter();
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-	const [searchQuery, setSearchQuery] = useState("");
+	const [searchQuery, setSearchQuery] = useState(initialSearchQuery ?? "");
 	// Use page from server (no hydration mismatch)
 	const [currentPage, setCurrentPage] = useState(currentPageFromServer);
+	const lastServerSearchRef = useRef(initialSearchQuery ?? "");
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const toolbarRef = useRef<HTMLDivElement>(null);
 	const [toolbarHeight, setToolbarHeight] = useState(50); // Default fallback
@@ -281,19 +312,27 @@ export function FullWidthDataTable<T>({
 	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
 	// Column visibility and ordering from Zustand store
-	const _isColumnVisible = useDataTableColumnsStore((state) => state.isColumnVisible);
-	const getColumnOrder = useDataTableColumnsStore((state) => state.getColumnOrder);
-	const setColumnOrder = useDataTableColumnsStore((state) => state.setColumnOrder);
-	const initializeEntity = useDataTableColumnsStore((state) => state.initializeEntity);
+	const _isColumnVisible = useDataTableColumnsStore(
+		(state) => state.isColumnVisible,
+	);
+	const getColumnOrder = useDataTableColumnsStore(
+		(state) => state.getColumnOrder,
+	);
+	const setColumnOrder = useDataTableColumnsStore(
+		(state) => state.setColumnOrder,
+	);
+	const initializeEntity = useDataTableColumnsStore(
+		(state) => state.initializeEntity,
+	);
 
 	// Subscribe to column visibility state to trigger re-renders when columns are toggled
 	const columnVisibilityState = useDataTableColumnsStore((state) =>
-		entity ? state.entities[entity] : null
+		entity ? state.entities[entity] : null,
 	);
 
 	// Subscribe to column order state to trigger re-renders when columns are reordered
 	const columnOrderState = useDataTableColumnsStore((state) =>
-		entity ? state.columnOrder[entity] : null
+		entity ? state.columnOrder[entity] : null,
 	);
 
 	// Set client flag after mount to prevent hydration issues
@@ -301,11 +340,21 @@ export function FullWidthDataTable<T>({
 		setIsClient(true);
 	}, []);
 
+	useEffect(() => {
+		setCurrentPage(currentPageFromServer);
+	}, [currentPageFromServer]);
+
+	useEffect(() => {
+		const normalized = initialSearchQuery ?? "";
+		setSearchQuery(normalized);
+		lastServerSearchRef.current = normalized;
+	}, [initialSearchQuery]);
+
 	// Custom columns from Zustand store - use stable selector
 	const allCustomColumns = useCustomColumnsStore((state) => state.columns);
 	const customColumns = useMemo(
 		() => (entity ? allCustomColumns[entity] || [] : []),
-		[allCustomColumns, entity]
+		[allCustomColumns, entity],
 	);
 
 	// Measure toolbar height dynamically
@@ -329,6 +378,31 @@ export function FullWidthDataTable<T>({
 			clearTimeout(timer);
 		};
 	}, []); // Re-measure when toolbar content changes
+
+	useEffect(() => {
+		if (!serverSearch) {
+			return;
+		}
+		if (searchQuery === lastServerSearchRef.current) {
+			return;
+		}
+		const handler = setTimeout(() => {
+			if (typeof window === "undefined") {
+				return;
+			}
+			const params = new URLSearchParams(window.location.search);
+			if (searchQuery) {
+				params.set(searchParamKey, searchQuery);
+			} else {
+				params.delete(searchParamKey);
+			}
+			params.set("page", "1");
+			const queryString = params.toString();
+			router.push(queryString ? `?${queryString}` : "?", { scroll: false });
+			lastServerSearchRef.current = searchQuery;
+		}, searchDebounceMs);
+		return () => clearTimeout(handler);
+	}, [searchQuery, serverSearch, searchParamKey, router, searchDebounceMs]);
 
 	// Merge predefined columns with custom columns
 	const allColumns = useMemo(() => {
@@ -354,7 +428,7 @@ export function FullWidthDataTable<T>({
 		if (isClient && entity && allColumns.length > 0) {
 			initializeEntity(
 				entity,
-				allColumns.map((col) => col.key)
+				allColumns.map((col) => col.key),
 			);
 		}
 		// ESLint disable: initializeEntity is a Zustand action with stable reference
@@ -416,12 +490,15 @@ export function FullWidthDataTable<T>({
 
 		// Ensure at least one column has flex-1 for intelligent spacing
 		// If no columns have flex-1, assign it to the first column without a specific width
-		const hasFlexColumn = filtered.some((col) => col.width === "flex-1" || !col.width);
+		const hasFlexColumn = filtered.some(
+			(col) => col.width === "flex-1" || !col.width,
+		);
 
 		if (!hasFlexColumn && filtered.length > 0) {
 			// Find the first column that doesn't have a fixed width or is the longest content column
 			const flexibleColumnIndex = filtered.findIndex(
-				(col) => !col.width || col.width === "flex-1" || !col.width.startsWith("w-")
+				(col) =>
+					!col.width || col.width === "flex-1" || !col.width.startsWith("w-"),
 			);
 
 			if (flexibleColumnIndex !== -1) {
@@ -442,7 +519,9 @@ export function FullWidthDataTable<T>({
 
 		// Filter by search query
 		if (searchQuery && searchFilter) {
-			filtered = filtered.filter((item) => searchFilter(item, searchQuery.toLowerCase()));
+			filtered = filtered.filter((item) =>
+				searchFilter(item, searchQuery.toLowerCase()),
+			);
 		}
 
 		// Filter archived items if showArchived is false
@@ -504,17 +583,26 @@ export function FullWidthDataTable<T>({
 		if (useVirtualization) {
 			return sortedData;
 		}
-		if (!showPagination) {
-			// Return all data for virtualization
+		if (!showPagination || serverPagination) {
+			// Data already represents the correct slice (either virtualized or server-paginated)
 			return sortedData;
 		}
 		const start = (currentPage - 1) * itemsPerPage;
 		const end = start + itemsPerPage;
 		return sortedData.slice(start, end);
-	}, [sortedData, currentPage, itemsPerPage, showPagination, useVirtualization]);
+	}, [
+		sortedData,
+		currentPage,
+		itemsPerPage,
+		showPagination,
+		serverPagination,
+		useVirtualization,
+	]);
 
 	// Get virtual items OUTSIDE of useMemo so it re-renders on scroll
-	const virtualItems = useVirtualization ? rowVirtualizer.getVirtualItems() : [];
+	const virtualItems = useVirtualization
+		? rowVirtualizer.getVirtualItems()
+		: [];
 
 	// Display data: either virtual items or paginated items
 	const displayData = useMemo(() => {
@@ -528,7 +616,9 @@ export function FullWidthDataTable<T>({
 	}, [useVirtualization, virtualItems, sortedData, paginatedData]);
 
 	// Use totalCount from server if provided, otherwise calculate from client data
-	const totalPages = Math.ceil((totalCount || sortedData.length) / itemsPerPage);
+	const totalPages = Math.ceil(
+		(totalCount || sortedData.length) / itemsPerPage,
+	);
 
 	// Selection handlers
 	const handleSelectAll = (checked: boolean) => {
@@ -563,21 +653,30 @@ export function FullWidthDataTable<T>({
 		onRowClick?.(item);
 	};
 
+	const updatePageInQuery = (newPage: number) => {
+		if (typeof window === "undefined") {
+			return;
+		}
+		const params = new URLSearchParams(window.location.search);
+		params.set("page", String(newPage));
+		const queryString = params.toString();
+		router.push(queryString ? `?${queryString}` : "?", { scroll: false });
+	};
+
 	const handlePreviousPage = () => {
 		const newPage = Math.max(1, currentPage - 1);
 		setCurrentPage(newPage);
-		// Update URL and trigger server refetch
-		router.push(`?page=${newPage}`, { scroll: false });
+		updatePageInQuery(newPage);
 	};
 
 	const handleNextPage = () => {
 		const newPage = Math.min(totalPages, currentPage + 1);
 		setCurrentPage(newPage);
-		// Update URL and trigger server refetch
-		router.push(`?page=${newPage}`, { scroll: false });
+		updatePageInQuery(newPage);
 	};
 
-	const isAllSelected = selectedIds.size === paginatedData.length && paginatedData.length > 0;
+	const isAllSelected =
+		selectedIds.size === paginatedData.length && paginatedData.length > 0;
 
 	// Sort handler - click once = asc, twice = desc, third = clear
 	const handleSort = (columnKey: string) => {
@@ -610,7 +709,7 @@ export function FullWidthDataTable<T>({
 				tolerance: 5,
 			},
 		}),
-		useSensor(KeyboardSensor)
+		useSensor(KeyboardSensor),
 	);
 
 	// Track active drag column for overlay
@@ -678,7 +777,10 @@ export function FullWidthDataTable<T>({
 
 	return (
 		<div className="bg-background relative flex h-full flex-col overflow-hidden">
-			<div className="momentum-scroll flex-1 overflow-auto" ref={scrollContainerRef}>
+			<div
+				className="momentum-scroll flex-1 overflow-auto"
+				ref={scrollContainerRef}
+			>
 				{/* Sticky Top Toolbar */}
 				<div
 					className="border-border/30 bg-background dark:bg-background sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b px-4 py-2 sm:gap-2 sm:px-4"
@@ -722,7 +824,9 @@ export function FullWidthDataTable<T>({
 											variant={action.variant || "ghost"}
 										>
 											{action.icon}
-											<span className="ml-2 hidden sm:inline">{action.label}</span>
+											<span className="ml-2 hidden sm:inline">
+												{action.label}
+											</span>
 										</Button>
 									))}
 									<span className="text-muted-foreground ml-1 text-xs font-medium">
@@ -737,7 +841,7 @@ export function FullWidthDataTable<T>({
 					<div className="ml-auto flex flex-wrap items-center gap-2">
 						{toolbarActions}
 
-						{searchFilter && (
+						{(searchFilter || serverSearch) && (
 							<div className="relative">
 								<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transition-colors" />
 								<Input
@@ -767,8 +871,11 @@ export function FullWidthDataTable<T>({
 									</Button>
 									<span className="text-muted-foreground text-xs font-medium text-nowrap tabular-nums">
 										{(currentPage - 1) * itemsPerPage + 1}-
-										{Math.min(currentPage * itemsPerPage, totalCount || filteredData.length)} of{" "}
-										{(totalCount || filteredData.length).toLocaleString()}
+										{Math.min(
+											currentPage * itemsPerPage,
+											totalCount || filteredData.length,
+										)}{" "}
+										of {(totalCount || filteredData.length).toLocaleString()}
 									</span>
 									<Button
 										className="transition-all duration-200 hover:scale-110 active:scale-95 disabled:hover:scale-100"
@@ -843,7 +950,9 @@ export function FullWidthDataTable<T>({
 										}`}
 										style={{ width: `${activeColumn.width}px` }}
 									>
-										<span className="truncate">{activeColumn.column.header}</span>
+										<span className="truncate">
+											{activeColumn.column.header}
+										</span>
 										{activeColumn.column.sortable && (
 											<ArrowUpDown className="size-3 shrink-0 opacity-50" />
 										)}
@@ -869,9 +978,13 @@ export function FullWidthDataTable<T>({
 										: column.align === "center"
 											? "justify-center text-center"
 											: "justify-start text-left";
-								const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+								const hideClass = column.hideOnMobile
+									? "hidden md:flex"
+									: "flex";
 								const cellBorder =
-									colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
+									colIndex < visibleColumns.length - 1
+										? "border-r border-border/30"
+										: "";
 
 								const isSorted = sortBy === column.key;
 
@@ -917,7 +1030,8 @@ export function FullWidthDataTable<T>({
 								<h3 className="text-lg font-semibold">{emptyMessage}</h3>
 								{searchQuery && (
 									<p className="text-muted-foreground text-sm">
-										No results found for "{searchQuery}". Try adjusting your search terms.
+										No results found for "{searchQuery}". Try adjusting your
+										search terms.
 									</p>
 								)}
 								{!searchQuery && (
@@ -925,7 +1039,11 @@ export function FullWidthDataTable<T>({
 										<p className="text-muted-foreground text-sm">
 											Get started by creating your first item.
 										</p>
-										{emptyAction && <div className="flex justify-center pt-2">{emptyAction}</div>}
+										{emptyAction && (
+											<div className="flex justify-center pt-2">
+												{emptyAction}
+											</div>
+										)}
 									</>
 								)}
 							</div>
@@ -953,11 +1071,16 @@ export function FullWidthDataTable<T>({
 
 							// Excel-like styling
 							const highlightClass = highlighted
-								? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10"
+								? getHighlightClass?.(item) ||
+									"bg-primary/30 dark:bg-primary/10"
 								: "";
 							const customRowClass = getRowClassName?.(item) || "";
-							const excelRowClass = isEvenRow ? "bg-background" : "bg-muted/30 dark:bg-muted/20";
-							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
+							const excelRowClass = isEvenRow
+								? "bg-background"
+								: "bg-muted/30 dark:bg-muted/20";
+							const selectedClass = isSelected
+								? "bg-blue-50 dark:bg-blue-950/50"
+								: "";
 							const archivedClass = archived
 								? "opacity-60 pointer-events-auto cursor-not-allowed bg-muted/40 line-through"
 								: "";
@@ -997,10 +1120,14 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+										const hideClass = column.hideOnMobile
+											? "hidden md:flex"
+											: "flex";
 										// Excel-like cell borders
 										const cellBorder =
-											colIndex < visibleColumns.length - 1 ? "border-r border-border/30" : "";
+											colIndex < visibleColumns.length - 1
+												? "border-r border-border/30"
+												: "";
 
 										return (
 											<div
@@ -1029,10 +1156,13 @@ export function FullWidthDataTable<T>({
 							>
 								<div className="flex items-center gap-2">
 									<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-									<span className="text-foreground text-lg font-semibold">All Data Loaded</span>
+									<span className="text-foreground text-lg font-semibold">
+										All Data Loaded
+									</span>
 								</div>
 								<p className="text-muted-foreground text-sm">
-									Showing {(totalCount || filteredData.length).toLocaleString()} total rows
+									Showing {(totalCount || filteredData.length).toLocaleString()}{" "}
+									total rows
 								</p>
 							</div>
 						)}
@@ -1048,11 +1178,14 @@ export function FullWidthDataTable<T>({
 
 							// Modern clean styling
 							const highlightClass = highlighted
-								? getHighlightClass?.(item) || "bg-primary/30 dark:bg-primary/10"
+								? getHighlightClass?.(item) ||
+									"bg-primary/30 dark:bg-primary/10"
 								: "";
 							const customRowClass = getRowClassName?.(item) || "";
 							const excelRowClass = isEvenRow ? "bg-card" : "bg-card/70";
-							const selectedClass = isSelected ? "bg-blue-50 dark:bg-blue-950/50" : "";
+							const selectedClass = isSelected
+								? "bg-blue-50 dark:bg-blue-950/50"
+								: "";
 
 							return (
 								<div
@@ -1084,10 +1217,14 @@ export function FullWidthDataTable<T>({
 												: column.align === "center"
 													? "justify-center text-center"
 													: "justify-start text-left";
-										const hideClass = column.hideOnMobile ? "hidden md:flex" : "flex";
+										const hideClass = column.hideOnMobile
+											? "hidden md:flex"
+											: "flex";
 										// Subtle cell dividers
 										const cellBorder =
-											colIndex < visibleColumns.length - 1 ? "border-r border-border/20" : "";
+											colIndex < visibleColumns.length - 1
+												? "border-r border-border/20"
+												: "";
 
 										return (
 											<div
@@ -1109,11 +1246,14 @@ export function FullWidthDataTable<T>({
 									<>
 										<div className="flex items-center gap-2">
 											<CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-500" />
-											<span className="text-foreground text-lg font-semibold">All Data Loaded</span>
+											<span className="text-foreground text-lg font-semibold">
+												All Data Loaded
+											</span>
 										</div>
 										<p className="text-muted-foreground text-sm">
 											Page {currentPage} of {totalPages} •{" "}
-											{(totalCount || filteredData.length).toLocaleString()} total rows
+											{(totalCount || filteredData.length).toLocaleString()}{" "}
+											total rows
 										</p>
 									</>
 								) : (

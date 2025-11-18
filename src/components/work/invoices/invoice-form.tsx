@@ -102,12 +102,17 @@ export function InvoiceForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		estimate?.customer_id || preselectedCustomerId || searchParams?.get("customerId") || undefined
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(
+		estimate?.customer_id ||
+			preselectedCustomerId ||
+			searchParams?.get("customerId") ||
+			undefined,
 	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		estimate?.property_id || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(estimate?.property_id || searchParams?.get("propertyId") || undefined);
 
 	// Pre-fill line items from estimate if available
 	const initialLineItems: LineItem[] = estimate?.line_items?.length
@@ -131,7 +136,7 @@ export function InvoiceForm({
 	const [lineItems, setLineItems] = useState<LineItem[]>(initialLineItems);
 	const [taxRate, setTaxRate] = useState(estimate?.tax_rate || 0);
 	const [discountAmount, setDiscountAmount] = useState(
-		estimate?.discount_amount ? estimate.discount_amount / 100 : 0
+		estimate?.discount_amount ? estimate.discount_amount / 100 : 0,
 	);
 	const [showPriceBook, setShowPriceBook] = useState(false);
 	const [paymentTerms, setPaymentTerms] = useState("net_30");
@@ -207,7 +212,7 @@ export function InvoiceForm({
 					return updated;
 				}
 				return item;
-			})
+			}),
 		);
 	};
 
@@ -285,7 +290,8 @@ export function InvoiceForm({
 				<Card className="border-blue-200 bg-blue-50/50">
 					<CardContent className="pt-6">
 						<p className="text-muted-foreground text-sm">
-							📋 Converting from <strong>{estimate.estimate_number}</strong>: {estimate.title}
+							📋 Converting from <strong>{estimate.estimate_number}</strong>:{" "}
+							{estimate.title}
 						</p>
 					</CardContent>
 				</Card>
@@ -379,7 +385,11 @@ export function InvoiceForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="paymentTerms">Payment Terms</Label>
-							<Select name="paymentTerms" onValueChange={setPaymentTerms} value={paymentTerms}>
+							<Select
+								name="paymentTerms"
+								onValueChange={setPaymentTerms}
+								value={paymentTerms}
+							>
 								<SelectTrigger id="paymentTerms">
 									<SelectValue />
 								</SelectTrigger>
@@ -420,7 +430,12 @@ export function InvoiceForm({
 							>
 								Price Book
 							</Button>
-							<Button onClick={addLineItem} size="sm" type="button" variant="outline">
+							<Button
+								onClick={addLineItem}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Item
 							</Button>
@@ -453,10 +468,14 @@ export function InvoiceForm({
 											<div>
 												<p className="font-medium">{item.name}</p>
 												{item.description && (
-													<p className="text-muted-foreground text-sm">{item.description}</p>
+													<p className="text-muted-foreground text-sm">
+														{item.description}
+													</p>
 												)}
 											</div>
-											<p className="font-medium">${(item.unit_price / 100).toFixed(2)}</p>
+											<p className="font-medium">
+												${(item.unit_price / 100).toFixed(2)}
+											</p>
 										</div>
 									</button>
 								))}
@@ -466,10 +485,15 @@ export function InvoiceForm({
 
 					<div className="space-y-3">
 						{lineItems.map((item) => (
-							<div className="grid grid-cols-12 gap-3 rounded-lg border p-3" key={item.id}>
+							<div
+								className="grid grid-cols-12 gap-3 rounded-lg border p-3"
+								key={item.id}
+							>
 								<div className="col-span-5">
 									<Input
-										onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
+										onChange={(e) =>
+											updateLineItem(item.id, "description", e.target.value)
+										}
 										placeholder="Description"
 										value={item.description}
 									/>
@@ -478,7 +502,11 @@ export function InvoiceForm({
 									<Input
 										min="0.01"
 										onChange={(e) =>
-											updateLineItem(item.id, "quantity", Number.parseFloat(e.target.value) || 0)
+											updateLineItem(
+												item.id,
+												"quantity",
+												Number.parseFloat(e.target.value) || 0,
+											)
 										}
 										placeholder="Qty"
 										step="0.01"
@@ -490,7 +518,11 @@ export function InvoiceForm({
 									<Input
 										min="0"
 										onChange={(e) =>
-											updateLineItem(item.id, "unitPrice", Number.parseFloat(e.target.value) || 0)
+											updateLineItem(
+												item.id,
+												"unitPrice",
+												Number.parseFloat(e.target.value) || 0,
+											)
 										}
 										placeholder="Price"
 										step="0.01"
@@ -499,7 +531,11 @@ export function InvoiceForm({
 									/>
 								</div>
 								<div className="col-span-2">
-									<Input className="bg-muted" disabled value={`$${item.total.toFixed(2)}`} />
+									<Input
+										className="bg-muted"
+										disabled
+										value={`$${item.total.toFixed(2)}`}
+									/>
 								</div>
 								<div className="col-span-1 flex items-center justify-center">
 									<Button
@@ -531,7 +567,9 @@ export function InvoiceForm({
 								id="taxRate"
 								max="100"
 								min="0"
-								onChange={(e) => setTaxRate(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setTaxRate(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={taxRate}
@@ -542,7 +580,9 @@ export function InvoiceForm({
 							<Input
 								id="discountAmount"
 								min="0"
-								onChange={(e) => setDiscountAmount(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setDiscountAmount(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={discountAmount}
@@ -591,14 +631,24 @@ export function InvoiceForm({
 
 					<div className="space-y-2">
 						<Label htmlFor="notes">Internal Notes</Label>
-						<Textarea id="notes" name="notes" placeholder="Notes for internal use" rows={2} />
+						<Textarea
+							id="notes"
+							name="notes"
+							placeholder="Notes for internal use"
+							rows={2}
+						/>
 					</div>
 				</CardContent>
 			</Card>
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

@@ -14,7 +14,8 @@ import Stripe from "stripe";
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
-const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] = "2025-01-27.acacia";
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+	"2025-01-27.acacia";
 const WEBHOOK_LIST_LIMIT = 100;
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -50,7 +51,8 @@ async function setupWebhook() {
 		});
 
 		const matchingEndpoint = existingEndpoints.data.find(
-			(endpointItem) => endpointItem.url === webhookUrl && endpointItem.status === "enabled"
+			(endpointItem) =>
+				endpointItem.url === webhookUrl && endpointItem.status === "enabled",
 		);
 
 		if (matchingEndpoint) {
@@ -59,7 +61,9 @@ async function setupWebhook() {
 			console.log(`   Status: ${matchingEndpoint.status}`);
 			console.log(`   Events: ${matchingEndpoint.enabled_events.join(", ")}`);
 			console.log("\n⚠️  To view the signing secret:");
-			console.log(`   1. Go to: https://dashboard.stripe.com/webhooks/${matchingEndpoint.id}`);
+			console.log(
+				`   1. Go to: https://dashboard.stripe.com/webhooks/${matchingEndpoint.id}`,
+			);
 			console.log('   2. Click "Click to reveal" next to Signing secret');
 			console.log("   3. Copy the secret (starts with whsec_)");
 			console.log("   4. Add to .env.local: STRIPE_WEBHOOK_SECRET=whsec_...");
@@ -104,7 +108,9 @@ async function setupWebhook() {
 		console.log("📝 Next Steps:");
 		console.log("1. Copy the STRIPE_WEBHOOK_SECRET above to .env.local");
 		console.log("2. Deploy your webhook handler to production");
-		console.log("3. Test webhook delivery at: https://dashboard.stripe.com/webhooks");
+		console.log(
+			"3. Test webhook delivery at: https://dashboard.stripe.com/webhooks",
+		);
 		console.log("\n");
 	} catch (error) {
 		console.error("❌ Error setting up webhook:", getErrorMessage(error));

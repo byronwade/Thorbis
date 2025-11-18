@@ -28,7 +28,11 @@ export function CustomerPropertiesWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: properties, isLoading, error } = useCustomerProperties(customerId, isVisible);
+				const {
+					data: properties,
+					isLoading,
+					error,
+				} = useCustomerProperties(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={2} />;
 				if (error)
@@ -39,7 +43,9 @@ export function CustomerPropertiesWidget({
 					);
 				if (!properties || properties.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No properties found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No properties found
+						</div>
 					);
 
 				return (
@@ -51,9 +57,16 @@ export function CustomerPropertiesWidget({
 								className="hover:bg-accent block rounded-lg border p-3 transition-colors"
 							>
 								<div className="space-y-1">
-									<p className="text-sm font-medium">{property.name || "Unnamed Property"}</p>
+									<p className="text-sm font-medium">
+										{property.name || "Unnamed Property"}
+									</p>
 									<p className="text-muted-foreground text-xs">
-										{[property.address, property.city, property.state, property.zip_code]
+										{[
+											property.address,
+											property.city,
+											property.state,
+											property.zip_code,
+										]
 											.filter(Boolean)
 											.join(", ")}
 									</p>

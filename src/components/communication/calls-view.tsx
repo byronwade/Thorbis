@@ -18,7 +18,10 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -45,11 +48,19 @@ type CallsViewProps = {
 	onViewRecording?: (recordingUrl: string) => void;
 };
 
-export function CallsView({ messages, onResumeCall, onViewRecording }: CallsViewProps) {
+export function CallsView({
+	messages,
+	onResumeCall,
+	onViewRecording,
+}: CallsViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
 
 	const handleOpenMessage = (message: CallMessage) => {
 		setSelectedMessageId(message.id);
@@ -145,7 +156,9 @@ export function CallsView({ messages, onResumeCall, onViewRecording }: CallsView
 							</Badge>
 						</div>
 						{message.fromPhone && (
-							<span className="text-muted-foreground text-xs">{message.fromPhone}</span>
+							<span className="text-muted-foreground text-xs">
+								{message.fromPhone}
+							</span>
 						)}
 					</div>
 				</div>
@@ -157,7 +170,9 @@ export function CallsView({ messages, onResumeCall, onViewRecording }: CallsView
 			width: "flex-1",
 			render: (message) =>
 				message.callType === "voicemail" ? (
-					<p className="text-muted-foreground line-clamp-1 text-xs">{message.preview}</p>
+					<p className="text-muted-foreground line-clamp-1 text-xs">
+						{message.preview}
+					</p>
 				) : (
 					<span className="text-muted-foreground text-xs">—</span>
 				),
@@ -168,7 +183,9 @@ export function CallsView({ messages, onResumeCall, onViewRecording }: CallsView
 			width: "w-24",
 			align: "center",
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">{formatDuration(message.duration)}</span>
+				<span className="text-muted-foreground text-xs">
+					{formatDuration(message.duration)}
+				</span>
 			),
 		},
 		{
@@ -178,7 +195,9 @@ export function CallsView({ messages, onResumeCall, onViewRecording }: CallsView
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
 			),
 		},
 		{
@@ -235,7 +254,7 @@ export function CallsView({ messages, onResumeCall, onViewRecording }: CallsView
 			const noun = selectedIds.size === 1 ? "call" : "calls";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast]
+		[toast],
 	);
 
 	const bulkActions = [

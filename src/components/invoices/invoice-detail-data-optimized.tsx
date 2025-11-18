@@ -14,7 +14,10 @@
 import { notFound, redirect } from "next/navigation";
 import { InvoicePageContentOptimized } from "@/components/invoices/invoice-page-content-optimized";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
-import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	isActiveCompanyOnboardingComplete,
+} from "@/lib/auth/company-context";
 import { generateInvoiceStats } from "@/lib/stats/utils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,7 +25,9 @@ type InvoiceDetailDataOptimizedProps = {
 	invoiceId: string;
 };
 
-export async function InvoiceDetailDataOptimized({ invoiceId }: InvoiceDetailDataOptimizedProps) {
+export async function InvoiceDetailDataOptimized({
+	invoiceId,
+}: InvoiceDetailDataOptimizedProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -53,31 +58,42 @@ export async function InvoiceDetailDataOptimized({ invoiceId }: InvoiceDetailDat
 	}
 
 	// ✅ OPTIMIZATION: Load ONLY critical data initially (3 queries)
-	const [{ data: invoice, error: invoiceError }, { data: customer }, { data: company }] =
-		await Promise.all([
-			// Query 1: Invoice data (required for page)
-			supabase.from("invoices").select("*").eq("id", invoiceId).single(),
+	const [
+		{ data: invoice, error: invoiceError },
+		{ data: customer },
+		{ data: company },
+	] = await Promise.all([
+		// Query 1: Invoice data (required for page)
+		supabase
+			.from("invoices")
+			.select("*")
+			.eq("id", invoiceId)
+			.single(),
 
-			// Query 2: Customer data (needed for invoice header)
-			supabase
-				.from("invoices")
-				.select("customer_id")
-				.eq("id", invoiceId)
-				.single()
-				.then(async ({ data: invoiceData }) => {
-					if (invoiceData?.customer_id) {
-						return supabase
-							.from("customers")
-							.select("*")
-							.eq("id", invoiceData.customer_id)
-							.single();
-					}
-					return { data: null, error: null };
-				}),
+		// Query 2: Customer data (needed for invoice header)
+		supabase
+			.from("invoices")
+			.select("customer_id")
+			.eq("id", invoiceId)
+			.single()
+			.then(async ({ data: invoiceData }) => {
+				if (invoiceData?.customer_id) {
+					return supabase
+						.from("customers")
+						.select("*")
+						.eq("id", invoiceData.customer_id)
+						.single();
+				}
+				return { data: null, error: null };
+			}),
 
-			// Query 3: Company data (needed for branding/logo)
-			supabase.from("companies").select("*").eq("id", activeCompanyId).single(),
-		]);
+		// Query 3: Company data (needed for branding/logo)
+		supabase
+			.from("companies")
+			.select("*")
+			.eq("id", activeCompanyId)
+			.single(),
+	]);
 
 	if (invoiceError || !invoice) {
 		return notFound();
@@ -124,7 +140,10 @@ export async function InvoiceDetailDataOptimized({ invoiceId }: InvoiceDetailDat
 		<ToolbarStatsProvider stats={stats}>
 			<div className="flex h-full w-full flex-col overflow-auto">
 				<div className="mx-auto w-full max-w-7xl">
-					<InvoicePageContentOptimized entityData={invoiceData} metrics={metrics} />
+					<InvoicePageContentOptimized
+						entityData={invoiceData}
+						metrics={metrics}
+					/>
 				</div>
 			</div>
 		</ToolbarStatsProvider>

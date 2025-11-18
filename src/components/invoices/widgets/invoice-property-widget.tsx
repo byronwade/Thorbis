@@ -42,7 +42,11 @@ export function InvoicePropertyWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: property, isLoading, error } = useInvoiceProperty(propertyId, isVisible);
+				const {
+					data: property,
+					isLoading,
+					error,
+				} = useInvoiceProperty(propertyId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
@@ -53,7 +57,9 @@ export function InvoicePropertyWidget({
 					);
 				if (!property)
 					return (
-						<div className="text-muted-foreground text-center text-sm">Property not found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							Property not found
+						</div>
 					);
 
 				return (
@@ -63,15 +69,23 @@ export function InvoicePropertyWidget({
 					>
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
-								<span className="text-sm font-medium">{property.name || "Property"}</span>
-								<span className="text-muted-foreground text-xs">View Details →</span>
+								<span className="text-sm font-medium">
+									{property.name || "Property"}
+								</span>
+								<span className="text-muted-foreground text-xs">
+									View Details →
+								</span>
 							</div>
 							{property.address && (
-								<p className="text-muted-foreground text-sm">{property.address}</p>
+								<p className="text-muted-foreground text-sm">
+									{property.address}
+								</p>
 							)}
 							{(property.city || property.state || property.zip_code) && (
 								<p className="text-muted-foreground text-xs">
-									{[property.city, property.state, property.zip_code].filter(Boolean).join(", ")}
+									{[property.city, property.state, property.zip_code]
+										.filter(Boolean)
+										.join(", ")}
 								</p>
 							)}
 						</div>

@@ -38,7 +38,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast as sonnerToast } from "sonner";
-import { archivePurchaseOrder, updatePurchaseOrderVendor } from "@/actions/purchase-orders";
+import {
+	archivePurchaseOrder,
+	updatePurchaseOrderVendor,
+} from "@/actions/purchase-orders";
 import { VendorSelect } from "@/components/inventory/vendor-select";
 import { ActivityLogSection } from "@/components/layout/standard-sections/activity-log-section";
 import { AttachmentsSection } from "@/components/layout/standard-sections/attachments-section";
@@ -68,7 +71,10 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { UnifiedAccordion, UnifiedAccordionContent } from "@/components/ui/unified-accordion";
+import {
+	UnifiedAccordion,
+	UnifiedAccordionContent,
+} from "@/components/ui/unified-accordion";
 import { useToast } from "@/hooks/use-toast";
 
 export type PurchaseOrderData = {
@@ -90,7 +96,10 @@ export type PurchaseOrderPageContentProps = {
 
 const _defaultAccordionSections = ["line-items"];
 
-export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderPageContentProps) {
+export function PurchaseOrderPageContent({
+	entityData,
+	metrics,
+}: PurchaseOrderPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [_hasChanges, _setHasChanges] = useState(false);
@@ -111,11 +120,15 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 	} = entityData;
 
 	const [statusUpdateDialogOpen, setStatusUpdateDialogOpen] = useState(false);
-	const [selectedStatus, setSelectedStatus] = useState<string>(po.status || "draft");
+	const [selectedStatus, setSelectedStatus] = useState<string>(
+		po.status || "draft",
+	);
 	const [statusUpdateNotes, setStatusUpdateNotes] = useState("");
 	const [isUpdatingStatus, _setIsUpdatingStatus] = useState(false);
 	const [isEditingVendor, setIsEditingVendor] = useState(false);
-	const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(po.vendor_id);
+	const [selectedVendorId, setSelectedVendorId] = useState<string | undefined>(
+		po.vendor_id,
+	);
 	const [selectedVendor, setSelectedVendor] = useState<any>(null);
 	const [isUpdatingVendor, setIsUpdatingVendor] = useState(false);
 	const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -158,10 +171,16 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 										<TableHead className="w-24 text-right">Ordered</TableHead>
 										{(po.status === "partially_received" ||
 											po.status === "received" ||
-											lineItems.some((item: any) => item.received_quantity > 0)) && (
-											<TableHead className="w-24 text-right">Received</TableHead>
+											lineItems.some(
+												(item: any) => item.received_quantity > 0,
+											)) && (
+											<TableHead className="w-24 text-right">
+												Received
+											</TableHead>
 										)}
-										<TableHead className="w-32 text-right">Unit Price</TableHead>
+										<TableHead className="w-32 text-right">
+											Unit Price
+										</TableHead>
 										<TableHead className="w-32 text-right">Total</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -170,7 +189,8 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 										const receivedQty = item.received_quantity || 0;
 										const orderedQty = item.quantity || 0;
 										const isFullyReceived = receivedQty >= orderedQty;
-										const isPartiallyReceived = receivedQty > 0 && receivedQty < orderedQty;
+										const isPartiallyReceived =
+											receivedQty > 0 && receivedQty < orderedQty;
 
 										return (
 											<TableRow key={item.id}>
@@ -191,7 +211,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 														)}
 													</div>
 												</TableCell>
-												<TableCell className="text-right">{orderedQty}</TableCell>
+												<TableCell className="text-right">
+													{orderedQty}
+												</TableCell>
 												{(po.status === "partially_received" ||
 													po.status === "received" ||
 													receivedQty > 0) && (
@@ -224,7 +246,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 													{new Intl.NumberFormat("en-US", {
 														style: "currency",
 														currency: "USD",
-													}).format((orderedQty * (item.unit_price || 0)) / 100)}
+													}).format(
+														(orderedQty * (item.unit_price || 0)) / 100,
+													)}
 												</TableCell>
 											</TableRow>
 										);
@@ -236,7 +260,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											colSpan={
 												po.status === "partially_received" ||
 												po.status === "received" ||
-												lineItems.some((item: any) => item.received_quantity > 0)
+												lineItems.some(
+													(item: any) => item.received_quantity > 0,
+												)
 													? 4
 													: 3
 											}
@@ -251,8 +277,8 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 												lineItems.reduce(
 													(sum: number, item: any) =>
 														sum + (item.quantity || 0) * (item.unit_price || 0),
-													0
-												) / 100
+													0,
+												) / 100,
 											)}
 										</TableCell>
 									</TableRow>
@@ -263,8 +289,12 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 						<div className="flex h-64 items-center justify-center">
 							<div className="text-center">
 								<FileText className="text-muted-foreground/50 mx-auto size-12" />
-								<p className="text-muted-foreground mt-4 text-sm">No line items yet</p>
-								<p className="text-muted-foreground text-xs">Add items to this purchase order</p>
+								<p className="text-muted-foreground mt-4 text-sm">
+									No line items yet
+								</p>
+								<p className="text-muted-foreground text-xs">
+									Add items to this purchase order
+								</p>
 							</div>
 						</div>
 					)}
@@ -379,7 +409,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 						</div>
 						<div>
 							<Label className="text-xs">Status</Label>
-							<Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+							<Badge
+								variant={invoice.status === "paid" ? "default" : "outline"}
+							>
 								{invoice.status}
 							</Badge>
 						</div>
@@ -401,7 +433,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 						{po.delivery_address && (
 							<div>
 								<Label className="text-xs">Delivery Address</Label>
-								<p className="text-sm whitespace-pre-line">{po.delivery_address}</p>
+								<p className="text-sm whitespace-pre-line">
+									{po.delivery_address}
+								</p>
 							</div>
 						)}
 						{po.tracking_number && (
@@ -409,7 +443,12 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 								<Label className="text-xs">Tracking Number</Label>
 								<div className="flex items-center gap-2">
 									<p className="font-mono text-sm">{po.tracking_number}</p>
-									<Button asChild className="h-6 px-2" size="sm" variant="ghost">
+									<Button
+										asChild
+										className="h-6 px-2"
+										size="sm"
+										variant="ghost"
+									>
 										<a
 											href={`https://www.google.com/search?q=${encodeURIComponent(po.tracking_number)}`}
 											rel="noopener noreferrer"
@@ -449,13 +488,19 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											{attachment.original_file_name || attachment.file_name}
 										</p>
 										<p className="text-muted-foreground text-xs">
-											{attachment.file_size ? `${(attachment.file_size / 1024).toFixed(1)} KB` : ""}
+											{attachment.file_size
+												? `${(attachment.file_size / 1024).toFixed(1)} KB`
+												: ""}
 											{attachment.category && ` • ${attachment.category}`}
 										</p>
 									</div>
 								</div>
 								<Button asChild size="sm" variant="ghost">
-									<a href={attachment.storage_url} rel="noopener noreferrer" target="_blank">
+									<a
+										href={attachment.storage_url}
+										rel="noopener noreferrer"
+										target="_blank"
+									>
 										<Download className="size-4" />
 									</a>
 								</Button>
@@ -463,7 +508,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 						))}
 					</div>
 				) : (
-					<p className="text-muted-foreground text-center text-sm">No attachments yet</p>
+					<p className="text-muted-foreground text-center text-sm">
+						No attachments yet
+					</p>
 				)}
 			</UnifiedAccordionContent>
 		),
@@ -527,7 +574,11 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 						</div>
 						<div className="flex h-min gap-2">
 							{/* Print PO */}
-							<Button onClick={() => window.print()} size="sm" variant="outline">
+							<Button
+								onClick={() => window.print()}
+								size="sm"
+								variant="outline"
+							>
 								<Printer className="mr-2 size-4" />
 								Print
 							</Button>
@@ -601,7 +652,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 									>
 										Cancel PO
 									</DropdownMenuItem>
-									<DropdownMenuItem onClick={() => setIsArchiveDialogOpen(true)}>
+									<DropdownMenuItem
+										onClick={() => setIsArchiveDialogOpen(true)}
+									>
 										<Archive className="mr-2 size-4" />
 										Archive
 									</DropdownMenuItem>
@@ -631,7 +684,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 													<h3 className="text-sm font-medium">
 														{po.status
 															?.replace("_", " ")
-															.replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft"}
+															.replace(/\b\w/g, (l: string) =>
+																l.toUpperCase(),
+															) || "Draft"}
 													</h3>
 												</div>
 											</div>
@@ -639,12 +694,18 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											<div className="flex h-[calc(100%-45px)] flex-col p-3">
 												<div className="space-y-3">
 													<div>
-														<p className="text-muted-foreground text-xs">PO Number</p>
-														<p className="text-sm font-medium">{po.po_number || po.poNumber}</p>
+														<p className="text-muted-foreground text-xs">
+															PO Number
+														</p>
+														<p className="text-sm font-medium">
+															{po.po_number || po.poNumber}
+														</p>
 													</div>
 													{po.vendor && (
 														<div>
-															<p className="text-muted-foreground text-xs">Vendor</p>
+															<p className="text-muted-foreground text-xs">
+																Vendor
+															</p>
 															<p className="text-sm font-medium">{po.vendor}</p>
 														</div>
 													)}
@@ -669,7 +730,12 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 
 									{/* Email Vendor */}
 									{po.vendor_email && (
-										<Button asChild className="min-w-[96px] flex-1" size="sm" variant="outline">
+										<Button
+											asChild
+											className="min-w-[96px] flex-1"
+											size="sm"
+											variant="outline"
+										>
 											<a
 												href={`mailto:${po.vendor_email}?subject=Purchase Order ${po.po_number || po.poNumber}`}
 											>
@@ -736,7 +802,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											>
 												Cancel PO
 											</DropdownMenuItem>
-											<DropdownMenuItem onClick={() => setIsArchiveDialogOpen(true)}>
+											<DropdownMenuItem
+												onClick={() => setIsArchiveDialogOpen(true)}
+											>
 												<Archive className="mr-2 size-4" />
 												Archive
 											</DropdownMenuItem>
@@ -750,11 +818,15 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 								<div className="grid grid-cols-2 gap-4 md:grid-cols-4 [&>div]:flex-[0_1_auto]">
 									{/* Created Date */}
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">Created</span>
+										<span className="text-muted-foreground text-xs">
+											Created
+										</span>
 										<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
 											<User className="text-muted-foreground size-4 flex-none" />
 											<span className="-ml-px shrink truncate text-sm">
-												{requestedByUser?.name || requestedByUser?.email || "Unknown"}
+												{requestedByUser?.name ||
+													requestedByUser?.email ||
+													"Unknown"}
 											</span>
 											<span className="text-muted-foreground flex-none text-xs tabular-nums">
 												{new Date(po.created_at).toLocaleDateString()}
@@ -764,7 +836,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 
 									{/* Status */}
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">Status</span>
+										<span className="text-muted-foreground text-xs">
+											Status
+										</span>
 										<div className="-ml-[3px] flex h-5 items-center gap-1 text-sm whitespace-nowrap [&>*]:text-ellipsis">
 											<span className="flex size-4 items-center justify-center">
 												<span
@@ -780,7 +854,8 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											<span className="text-sm">
 												{po.status
 													?.replace("_", " ")
-													.replace(/\b\w/g, (l: string) => l.toUpperCase()) || "Draft"}
+													.replace(/\b\w/g, (l: string) => l.toUpperCase()) ||
+													"Draft"}
 											</span>
 											{po.priority && (
 												<Badge className="ml-1" variant="outline">
@@ -793,7 +868,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 									{/* Expected Delivery */}
 									{po.expected_delivery && (
 										<div className="flex flex-col gap-1">
-											<span className="text-muted-foreground text-xs">Expected Delivery</span>
+											<span className="text-muted-foreground text-xs">
+												Expected Delivery
+											</span>
 											<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap tabular-nums [&>*]:text-ellipsis">
 												<Clock className="text-muted-foreground size-4 flex-none" />
 												<span className="text-sm font-medium">
@@ -832,7 +909,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 												<User className="text-muted-foreground size-4 flex-none" />
 												{po.vendor ? (
 													<>
-														<span className="text-sm font-medium">{po.vendor}</span>
+														<span className="text-sm font-medium">
+															{po.vendor}
+														</span>
 														<Button
 															className="h-6 px-2"
 															onClick={() => setIsEditingVendor(true)}
@@ -878,28 +957,38 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 														setIsUpdatingVendor(true);
 														try {
 															const vendorName =
-																selectedVendor?.display_name || selectedVendor?.name || po.vendor;
-															const vendorEmail = selectedVendor?.email || po.vendor_email;
-															const vendorPhone = selectedVendor?.phone || po.vendor_phone;
+																selectedVendor?.display_name ||
+																selectedVendor?.name ||
+																po.vendor;
+															const vendorEmail =
+																selectedVendor?.email || po.vendor_email;
+															const vendorPhone =
+																selectedVendor?.phone || po.vendor_phone;
 
 															const result = await updatePurchaseOrderVendor(
 																po.id,
 																selectedVendorId,
 																vendorName,
 																vendorEmail,
-																vendorPhone
+																vendorPhone,
 															);
 
 															if (result.success) {
-																toast.success(`Vendor changed to ${vendorName}`);
+																toast.success(
+																	`Vendor changed to ${vendorName}`,
+																);
 																setIsEditingVendor(false);
 																// Server Action handles revalidation automatically
 															} else {
-																throw new Error(result.error || "Failed to update vendor");
+																throw new Error(
+																	result.error || "Failed to update vendor",
+																);
 															}
 														} catch (error) {
 															toast.error(
-																error instanceof Error ? error.message : "Failed to update vendor"
+																error instanceof Error
+																	? error.message
+																	: "Failed to update vendor",
 															);
 														} finally {
 															setIsUpdatingVendor(false);
@@ -930,10 +1019,14 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 								{/* Job Reference */}
 								{po.job_id && (
 									<div className="flex flex-col gap-1">
-										<span className="text-muted-foreground text-xs">Related Job</span>
+										<span className="text-muted-foreground text-xs">
+											Related Job
+										</span>
 										<div className="flex h-5 items-center gap-2 text-sm whitespace-nowrap [&>*]:text-ellipsis">
 											<FileCheck className="text-muted-foreground size-4 flex-none" />
-											<span className="text-sm font-medium">Job #{po.job_id}</span>
+											<span className="text-sm font-medium">
+												Job #{po.job_id}
+											</span>
 										</div>
 									</div>
 								)}
@@ -942,7 +1035,10 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 
 						{/* Collapsible Footer - Outside columns */}
 						<div className="rounded-b" data-orientation="vertical">
-							<div data-orientation="vertical" data-state={isDetailsOpen ? "open" : "closed"}>
+							<div
+								data-orientation="vertical"
+								data-state={isDetailsOpen ? "open" : "closed"}
+							>
 								<button
 									className="ease border-border hover:bg-muted/50 disabled:text-muted-foreground flex h-12 w-full cursor-pointer items-center justify-between border-0 border-t bg-transparent px-4 transition-all duration-200"
 									data-radix-collection-item=""
@@ -956,7 +1052,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 											}`}
 										/>
 										<span className="flex w-full items-center gap-2">
-											<span className="text-sm font-medium">Purchase Order Details</span>
+											<span className="text-sm font-medium">
+												Purchase Order Details
+											</span>
 										</span>
 									</span>
 								</button>
@@ -969,25 +1067,42 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 									<div className="space-y-4 border-t p-4 sm:p-6">
 										{/* PO Number */}
 										<div>
-											<Label className="text-muted-foreground text-xs">PO Number</Label>
-											<p className="mt-1 text-sm font-medium">{po.po_number || po.poNumber}</p>
+											<Label className="text-muted-foreground text-xs">
+												PO Number
+											</Label>
+											<p className="mt-1 text-sm font-medium">
+												{po.po_number || po.poNumber}
+											</p>
 										</div>
 
 										{/* Delivery Address */}
 										{po.delivery_address && (
 											<div>
-												<Label className="text-muted-foreground text-xs">Delivery Address</Label>
-												<p className="mt-1 text-sm whitespace-pre-line">{po.delivery_address}</p>
+												<Label className="text-muted-foreground text-xs">
+													Delivery Address
+												</Label>
+												<p className="mt-1 text-sm whitespace-pre-line">
+													{po.delivery_address}
+												</p>
 											</div>
 										)}
 
 										{/* Tracking Number */}
 										{po.tracking_number && (
 											<div>
-												<Label className="text-muted-foreground text-xs">Tracking Number</Label>
+												<Label className="text-muted-foreground text-xs">
+													Tracking Number
+												</Label>
 												<div className="mt-1 flex items-center gap-2">
-													<p className="font-mono text-sm">{po.tracking_number}</p>
-													<Button asChild className="h-6 px-2" size="sm" variant="ghost">
+													<p className="font-mono text-sm">
+														{po.tracking_number}
+													</p>
+													<Button
+														asChild
+														className="h-6 px-2"
+														size="sm"
+														variant="ghost"
+													>
 														<a
 															href={`https://www.google.com/search?q=${encodeURIComponent(po.tracking_number)}`}
 															rel="noopener noreferrer"
@@ -1003,15 +1118,21 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 										{/* Notes */}
 										{po.notes && (
 											<div>
-												<Label className="text-muted-foreground text-xs">Public Notes</Label>
-												<p className="mt-1 text-sm whitespace-pre-wrap">{po.notes}</p>
+												<Label className="text-muted-foreground text-xs">
+													Public Notes
+												</Label>
+												<p className="mt-1 text-sm whitespace-pre-wrap">
+													{po.notes}
+												</p>
 											</div>
 										)}
 
 										{/* Internal Notes */}
 										{po.internal_notes && (
 											<div>
-												<Label className="text-muted-foreground text-xs">Internal Notes</Label>
+												<Label className="text-muted-foreground text-xs">
+													Internal Notes
+												</Label>
 												<p className="text-muted-foreground mt-1 text-sm whitespace-pre-wrap">
 													{po.internal_notes}
 												</p>
@@ -1024,17 +1145,24 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 					</div>
 
 					{/* Unified Accordion Section */}
-					<UnifiedAccordion defaultOpenSection="line-items" sections={accordionSections} />
+					<UnifiedAccordion
+						defaultOpenSection="line-items"
+						sections={accordionSections}
+					/>
 				</div>
 			</div>
 
 			{/* Status Update Dialog */}
-			<Dialog onOpenChange={setStatusUpdateDialogOpen} open={statusUpdateDialogOpen}>
+			<Dialog
+				onOpenChange={setStatusUpdateDialogOpen}
+				open={statusUpdateDialogOpen}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Update Purchase Order Status</DialogTitle>
 						<DialogDescription>
-							Update the status of this purchase order to {selectedStatus.replace("_", " ")}.
+							Update the status of this purchase order to{" "}
+							{selectedStatus.replace("_", " ")}.
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4 py-4">
@@ -1075,7 +1203,9 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 							disabled={isUpdatingStatus}
 							onClick={async () => {
 								// TODO: Implement status update logic
-								toast.success(`Status changed to ${selectedStatus.replace("_", " ")}`);
+								toast.success(
+									`Status changed to ${selectedStatus.replace("_", " ")}`,
+								);
 								setStatusUpdateDialogOpen(false);
 								setStatusUpdateNotes("");
 							}}
@@ -1092,8 +1222,8 @@ export function PurchaseOrderPageContent({ entityData, metrics }: PurchaseOrderP
 					<DialogHeader>
 						<DialogTitle>Archive Purchase Order?</DialogTitle>
 						<DialogDescription>
-							This will archive the purchase order. You can restore it from the archive within 90
-							days.
+							This will archive the purchase order. You can restore it from the
+							archive within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>

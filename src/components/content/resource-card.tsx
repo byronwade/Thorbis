@@ -1,4 +1,12 @@
-import { BookOpen, Calendar, Clock, Download, ExternalLink, PlayCircle, Users } from "lucide-react";
+import {
+	BookOpen,
+	Calendar,
+	Clock,
+	Download,
+	ExternalLink,
+	PlayCircle,
+	Users,
+} from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -24,7 +32,10 @@ const RESOURCE_LABELS: Record<ResourceType, string> = {
 	status_update: "Status Update",
 };
 
-const RESOURCE_ICONS: Record<ResourceType, ComponentType<{ className?: string }>> = {
+const RESOURCE_ICONS: Record<
+	ResourceType,
+	ComponentType<{ className?: string }>
+> = {
 	case_study: BookOpen,
 	webinar: PlayCircle,
 	template: Download,
@@ -33,7 +44,10 @@ const RESOURCE_ICONS: Record<ResourceType, ComponentType<{ className?: string }>
 	status_update: Clock,
 };
 
-function formatDate(input?: string | null, options?: Intl.DateTimeFormatOptions) {
+function formatDate(
+	input?: string | null,
+	options?: Intl.DateTimeFormatOptions,
+) {
 	if (!input) {
 		return null;
 	}
@@ -57,7 +71,11 @@ type ResourceCardProps = {
 	showImage?: boolean;
 };
 
-export function ResourceCard({ item, className, showImage = true }: ResourceCardProps) {
+export function ResourceCard({
+	item,
+	className,
+	showImage = true,
+}: ResourceCardProps) {
 	const basePath =
 		item.type === "webinar"
 			? "/webinars"
@@ -97,7 +115,10 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 
 	return (
 		<Card
-			className={cn("group relative overflow-hidden transition-shadow hover:shadow-md", className)}
+			className={cn(
+				"group relative overflow-hidden transition-shadow hover:shadow-md",
+				className,
+			)}
 		>
 			{showImage && item.heroImageUrl ? (
 				<div className="relative h-48 w-full overflow-hidden">
@@ -130,19 +151,27 @@ export function ResourceCard({ item, className, showImage = true }: ResourceCard
 					</Link>
 				</CardTitle>
 				{item.excerpt ? (
-					<CardDescription className="line-clamp-3 text-base">{item.excerpt}</CardDescription>
+					<CardDescription className="line-clamp-3 text-base">
+						{item.excerpt}
+					</CardDescription>
 				) : null}
 			</CardHeader>
 			<CardContent className="text-muted-foreground space-y-4 text-sm">
 				{item.type === "webinar" && (eventDate || isUpcoming) ? (
 					<div className="bg-primary/10 text-primary inline-flex items-center gap-2 rounded-md px-2 py-1">
 						<Calendar aria-hidden="true" className="size-4" />
-						{isUpcoming ? <span>Live on {eventDate}</span> : <span>Available on-demand</span>}
+						{isUpcoming ? (
+							<span>Live on {eventDate}</span>
+						) : (
+							<span>Available on-demand</span>
+						)}
 					</div>
 				) : null}
 				<div className="flex flex-wrap gap-2">
 					{item.author?.name ? <span>By {item.author.name}</span> : null}
-					{publishedLabel ? <span aria-label="Published date">{publishedLabel}</span> : null}
+					{publishedLabel ? (
+						<span aria-label="Published date">{publishedLabel}</span>
+					) : null}
 					{item.tags.slice(0, 3).map((tag) => (
 						<Link
 							className="border-border hover:border-primary hover:text-primary inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs leading-none transition-colors"

@@ -64,11 +64,15 @@ export function InspirationalQuoteWidget() {
 						<div className="relative">
 							<Sparkles className="text-primary/30 absolute -top-2 -left-2 size-6" />
 							<blockquote className="text-foreground/90 leading-relaxed font-medium italic">
-								<ResponsiveText variant="body">"{currentQuote.text}"</ResponsiveText>
+								<ResponsiveText variant="body">
+									"{currentQuote.text}"
+								</ResponsiveText>
 							</blockquote>
 						</div>
 						<footer className="text-muted-foreground">
-							<ResponsiveText variant="caption">— {currentQuote.author}</ResponsiveText>
+							<ResponsiveText variant="caption">
+								— {currentQuote.author}
+							</ResponsiveText>
 						</footer>
 					</div>
 				</ShowAt>
@@ -77,12 +81,18 @@ export function InspirationalQuoteWidget() {
 				<ShowAt stage="comfortable">
 					<div className="flex flex-1 flex-col justify-center gap-2 overflow-hidden">
 						<blockquote className="overflow-hidden italic">
-							<ResponsiveText className="line-clamp-3 leading-snug" variant="body">
+							<ResponsiveText
+								className="line-clamp-3 leading-snug"
+								variant="body"
+							>
 								"{truncateText(currentQuote.text, "comfortable")}"
 							</ResponsiveText>
 						</blockquote>
 						<footer>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								— {currentQuote.author}
 							</ResponsiveText>
 						</footer>
@@ -93,7 +103,10 @@ export function InspirationalQuoteWidget() {
 				<ShowAt stage="compact">
 					<div className="flex flex-1 flex-col items-center justify-center text-center">
 						<Quote className="text-primary/50 mb-2 size-4" />
-						<ResponsiveText className="leading-tight font-medium italic" variant="body">
+						<ResponsiveText
+							className="leading-tight font-medium italic"
+							variant="body"
+						>
 							{currentQuote.short}
 						</ResponsiveText>
 					</div>

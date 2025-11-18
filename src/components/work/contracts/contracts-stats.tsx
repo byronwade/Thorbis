@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getContractsStatusSummary } from "@/lib/queries/contracts";
 
 /**
  * ContractsStats - Async Server Component
@@ -11,49 +12,43 @@ import { createClient } from "@/lib/supabase/server";
  * This streams in first, before the table/kanban.
  */
 export async function ContractsStats() {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+	const [user, activeCompanyId] = await Promise.all([
+		getCurrentUser(),
+		getActiveCompanyId(),
+	]);
 
 	if (!user) {
 		return notFound();
 	}
 
-	const activeCompanyId = await getActiveCompanyId();
-
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Fetch contracts for stats (only need status and archived fields)
-	const { data: contractsRaw, error } = await supabase
-		.from("contracts")
-		.select("id, status, archived_at, deleted_at, created_at, expires_at")
-		.eq("company_id", activeCompanyId)
-		.order("created_at", { ascending: false });
-
-	if (error) {
-		// Return empty stats on error
+	let statusRows: Awaited<ReturnType<typeof getContractsStatusSummary>> = [];
+	try {
+		statusRows = await getContractsStatusSummary(activeCompanyId);
+	} catch (_error) {
 		return <StatusPipeline compact stats={[]} />;
 	}
-
-	// Filter to active contracts for stats calculations
-	const activeContracts = (contractsRaw || []).filter((c: any) => !(c.archived_at || c.deleted_at));
+	const activeContracts = statusRows.filter(
+		(contract) => !(contract.archived_at || contract.deleted_at),
+	);
 
 	// Calculate contract stats (from active contracts only)
 	const totalContracts = activeContracts.length;
-	const signedCount = activeContracts.filter((c: any) => c.status === "signed").length;
-	const pendingCount = activeContracts.filter(
-		(c: any) => c.status === "sent" || c.status === "viewed"
+	const signedCount = activeContracts.filter(
+		(c: any) => c.status === "signed",
 	).length;
-	const draftCount = activeContracts.filter((c: any) => c.status === "draft").length;
-	const expiredCount = activeContracts.filter((c: any) => c.status === "expired").length;
+	const pendingCount = activeContracts.filter(
+		(c: any) => c.status === "sent" || c.status === "viewed",
+	).length;
+	const draftCount = activeContracts.filter(
+		(c: any) => c.status === "draft",
+	).length;
+	const expiredCount = activeContracts.filter(
+		(c: any) => c.status === "expired",
+	).length;
 
 	const CHANGE_PERCENTAGE_DRAFT_POSITIVE = 5.1;
 	const CHANGE_PERCENTAGE_PENDING_POSITIVE = 6.8;
@@ -85,8 +80,11 @@ export async function ContractsStats() {
 			label: "Expired",
 			value: expiredCount,
 			change:
-				expiredCount > 0 ? CHANGE_PERCENTAGE_EXPIRED_NEGATIVE : CHANGE_PERCENTAGE_EXPIRED_POSITIVE,
-			changeLabel: expiredCount > 0 ? `${expiredCount} expired` : "none expired",
+				expiredCount > 0
+					? CHANGE_PERCENTAGE_EXPIRED_NEGATIVE
+					: CHANGE_PERCENTAGE_EXPIRED_POSITIVE,
+			changeLabel:
+				expiredCount > 0 ? `${expiredCount} expired` : "none expired",
 		},
 		{
 			label: "Total Contracts",

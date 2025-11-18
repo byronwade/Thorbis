@@ -15,57 +15,7 @@ const withBundleAnalyzer =
 			})
 		: (baseConfig: NextConfig) => baseConfig;
 
-const isPwaEnabled = process.env.NEXT_PUBLIC_ENABLE_PWA === "true";
-
-const withPWA = isPwaEnabled
-	? require("next-pwa")({
-			dest: "public",
-			disable: false,
-			register: true,
-			skipWaiting: true,
-			buildExcludes: [/app-build-manifest\.json$/], // Exclude from build for faster builds
-			runtimeCaching: [
-				{
-					urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
-					handler: "NetworkFirst",
-					options: {
-						cacheName: "supabase-api-cache",
-						expiration: {
-							maxEntries: 100,
-							maxAgeSeconds: 60 * 60, // 1 hour
-						},
-						networkTimeoutSeconds: 10,
-					},
-				},
-				{
-					urlPattern: /^https:\/\/.*\.supabase\.co\/auth\/.*/i,
-					handler: "NetworkOnly", // Never cache auth requests for security
-				},
-				{
-					urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-					handler: "CacheFirst",
-					options: {
-						cacheName: "image-cache",
-						expiration: {
-							maxEntries: 50,
-							maxAgeSeconds: THIRTY_DAYS_IN_SECONDS, // 30 days
-						},
-					},
-				},
-				{
-					urlPattern: /\.(?:js|css)$/i,
-					handler: "StaleWhileRevalidate",
-					options: {
-						cacheName: "static-resources",
-						expiration: {
-							maxEntries: 60,
-							maxAgeSeconds: ONE_DAY_IN_SECONDS, // 1 day
-						},
-					},
-				},
-			],
-		})
-	: (baseConfig: NextConfig) => baseConfig;
+// PWA removed - was disabled by default and unused
 
 const nextConfig: NextConfig = {
 	// PERFORMANCE: Static generation RE-ENABLED! ✅
@@ -180,8 +130,7 @@ const nextConfig: NextConfig = {
 
 	// Optimize development server performance
 	devIndicators: {
-		buildActivity: true, // Show build indicator
-		buildActivityPosition: "bottom-right",
+		position: "bottom-right",
 	},
 
 	images: {
@@ -218,9 +167,6 @@ let mergedConfig = nextConfig;
 // Only apply bundle analyzer when ANALYZE=true
 mergedConfig = withBundleAnalyzer(mergedConfig);
 
-// Apply PWA (already optimized to skip in dev)
-mergedConfig = withPWA(mergedConfig);
-
 // DISABLED: Vercel Workflow was causing 123-second hangs and Turbopack crashes
 // "Discovering workflow directives" was taking 50-123 seconds per build
 // Re-enable only if needed for specific workflow features
@@ -229,5 +175,5 @@ mergedConfig = withPWA(mergedConfig);
 // Wrap with BotID protection (outermost wrapper for security)
 export default withBotId(async (phase, config) =>
 	// Use mergedConfig directly instead of workflowEnabledConfig
-	Promise.resolve(mergedConfig)
+	Promise.resolve(mergedConfig),
 );

@@ -7,7 +7,11 @@
 
 import { Calculator, Receipt, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type ManagerJobMetricsProps = {
@@ -47,9 +51,11 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 	const totalRevenue = metrics.totalInvoiced || 0;
 	const totalCosts = (metrics.laborCosts || 0) + (metrics.materialCosts || 0);
 	const grossProfit = totalRevenue - totalCosts;
-	const profitMargin = totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : "0";
+	const profitMargin =
+		totalRevenue > 0 ? ((grossProfit / totalRevenue) * 100).toFixed(1) : "0";
 
-	const outstandingBalance = (metrics.totalInvoiced || 0) - (metrics.totalPaid || 0);
+	const outstandingBalance =
+		(metrics.totalInvoiced || 0) - (metrics.totalPaid || 0);
 
 	return (
 		<div className="flex flex-wrap items-center gap-3">
@@ -67,7 +73,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="flex items-start justify-between">
 							<div>
 								<h4 className="text-base font-semibold">Job Financials</h4>
-								<p className="text-muted-foreground text-xs">Complete financial overview</p>
+								<p className="text-muted-foreground text-xs">
+									Complete financial overview
+								</p>
 							</div>
 							<div
 								className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -121,11 +129,15 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 							<div className="bg-muted/50 space-y-2 rounded-lg p-3">
 								<div className="flex items-center justify-between text-sm">
 									<span>Labor Costs</span>
-									<span className="font-medium">{formatCurrency(metrics.laborCosts)}</span>
+									<span className="font-medium">
+										{formatCurrency(metrics.laborCosts)}
+									</span>
 								</div>
 								<div className="flex items-center justify-between text-sm">
 									<span>Material Costs</span>
-									<span className="font-medium">{formatCurrency(metrics.materialCosts)}</span>
+									<span className="font-medium">
+										{formatCurrency(metrics.materialCosts)}
+									</span>
 								</div>
 								<div className="border-border flex items-center justify-between border-t pt-2">
 									<span className="text-sm font-medium">Total Costs</span>
@@ -140,7 +152,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="border-primary/20 bg-primary/5 rounded-lg border-2 p-3">
 							<div className="flex items-center justify-between">
 								<div>
-									<span className="text-muted-foreground block text-xs">Gross Profit</span>
+									<span className="text-muted-foreground block text-xs">
+										Gross Profit
+									</span>
 									<span
 										className={`block text-xl font-bold ${
 											grossProfit >= 0
@@ -172,7 +186,8 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 							<Receipt className="size-4" />
 							<span>
 								{metrics.estimateCount} Estimate
-								{metrics.estimateCount !== 1 ? "s" : ""} • {formatCurrency(metrics.estimatesTotal)}
+								{metrics.estimateCount !== 1 ? "s" : ""} •{" "}
+								{formatCurrency(metrics.estimatesTotal)}
 							</span>
 						</button>
 					</HoverCardTrigger>
@@ -180,7 +195,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="space-y-2">
 							<div>
 								<h4 className="text-sm font-semibold">Estimates</h4>
-								<p className="text-muted-foreground text-xs">Total estimated value for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Total estimated value for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="flex items-center justify-between">
@@ -191,7 +208,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 							</div>
 							<div className="flex items-center justify-between">
 								<span className="text-sm">Number of Estimates</span>
-								<span className="text-sm font-medium">{metrics.estimateCount}</span>
+								<span className="text-sm font-medium">
+									{metrics.estimateCount}
+								</span>
 							</div>
 						</div>
 					</HoverCardContent>
@@ -214,7 +233,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Progress Payments</h4>
-								<p className="text-muted-foreground text-xs">Milestone-based payment schedule</p>
+								<p className="text-muted-foreground text-xs">
+									Milestone-based payment schedule
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -224,7 +245,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 										key={payment.id}
 									>
 										<div className="flex items-center gap-2">
-											<span className="text-sm font-medium">Payment {index + 1}</span>
+											<span className="text-sm font-medium">
+												Payment {index + 1}
+											</span>
 											<Badge
 												className="capitalize"
 												variant={
@@ -238,7 +261,9 @@ export function ManagerJobMetrics({ metrics }: ManagerJobMetricsProps) {
 												{payment.status}
 											</Badge>
 										</div>
-										<span className="text-sm font-semibold">{formatCurrency(payment.amount)}</span>
+										<span className="text-sm font-semibold">
+											{formatCurrency(payment.amount)}
+										</span>
 									</div>
 								))}
 							</div>

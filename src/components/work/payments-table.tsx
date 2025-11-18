@@ -12,7 +12,14 @@
  * - Click to view payment details
  */
 
-import { Archive, CreditCard, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
+import {
+	Archive,
+	CreditCard,
+	Edit,
+	Eye,
+	MoreHorizontal,
+	Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -66,6 +73,8 @@ type PaymentsTableProps = {
 	itemsPerPage?: number;
 	onPaymentClick?: (payment: Payment) => void;
 	showRefresh?: boolean;
+	totalCount?: number;
+	currentPage?: number;
 };
 
 function formatCurrency(cents: number | null): string {
@@ -113,7 +122,8 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		failed: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Failed",
 		},
 		refunded: {
@@ -137,7 +147,10 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge className={cn("text-xs font-medium", config.className)} variant="outline">
+		<Badge
+			className={cn("text-xs font-medium", config.className)}
+			variant="outline"
+		>
 			{config.label}
 		</Badge>
 	);
@@ -173,6 +186,8 @@ export function PaymentsTable({
 	itemsPerPage = 50,
 	onPaymentClick,
 	showRefresh = false,
+	totalCount,
+	currentPage = 1,
 }: PaymentsTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.payments);
@@ -203,6 +218,7 @@ export function PaymentsTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/payments/${payment.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{payment.payment_number}
@@ -217,7 +233,9 @@ export function PaymentsTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Always show customer for quick identification
 			render: (payment) => (
-				<span className="text-muted-foreground text-sm">{getCustomerName(payment)}</span>
+				<span className="text-muted-foreground text-sm">
+					{getCustomerName(payment)}
+				</span>
 			),
 		},
 		{
@@ -229,7 +247,9 @@ export function PaymentsTable({
 			sortable: true,
 			hideable: false, // CRITICAL: Financial data essential
 			render: (payment) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(payment.amount)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(payment.amount)}
+				</span>
 			),
 		},
 		{
@@ -287,13 +307,19 @@ export function PaymentsTable({
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link href={`/dashboard/work/payments/${payment.id}`}>
+								<Link
+									href={`/dashboard/work/payments/${payment.id}`}
+									prefetch={false}
+								>
 									<Eye className="mr-2 size-4" />
 									View Details
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
-								<Link href={`/dashboard/work/payments/${payment.id}/edit`}>
+								<Link
+									href={`/dashboard/work/payments/${payment.id}/edit`}
+									prefetch={false}
+								>
 									<Edit className="mr-2 size-4" />
 									Edit Payment
 								</Link>
@@ -370,8 +396,13 @@ export function PaymentsTable({
 				enableSelection={true}
 				entity="payments"
 				getItemId={(payment) => payment.id}
-				isArchived={(payment) => Boolean(payment.archived_at || payment.deleted_at)}
+				isArchived={(payment) =>
+					Boolean(payment.archived_at || payment.deleted_at)
+				}
 				itemsPerPage={itemsPerPage}
+				totalCount={totalCount ?? filteredPayments.length}
+				currentPageFromServer={currentPage}
+				serverPagination
 				onRefresh={handleRefresh}
 				onRowClick={handleRowClick}
 				searchFilter={searchFilter}
@@ -381,13 +412,16 @@ export function PaymentsTable({
 			/>
 
 			{/* Archive Payment Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Payment?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This payment will be archived and can be restored within 90 days. After 90 days, it
-							will be permanently deleted.
+							This payment will be archived and can be restored within 90 days.
+							After 90 days, it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

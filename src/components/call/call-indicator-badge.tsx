@@ -20,7 +20,12 @@ import { Phone, PhoneOff, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 type CallIndicatorBadgeProps = {
@@ -95,7 +100,10 @@ export function CallIndicatorBadge({
 
 	return (
 		<div
-			className={cn("fixed z-50 transition-all duration-200", positionClasses[position])}
+			className={cn(
+				"fixed z-50 transition-all duration-200",
+				positionClasses[position],
+			)}
 			onContextMenu={handleContextMenu}
 		>
 			<TooltipProvider>
@@ -107,7 +115,7 @@ export function CallIndicatorBadge({
 								"border-primary/30 from-primary/10 to-primary/5 rounded-2xl border-2 bg-gradient-to-br",
 								"shadow-primary/20 shadow-lg backdrop-blur-sm",
 								"hover:border-primary/50 hover:shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-xl",
-								"animate-pulse-slow"
+								"animate-pulse-slow",
 							)}
 							onClick={onFocusPopOut}
 						>
@@ -123,8 +131,12 @@ export function CallIndicatorBadge({
 
 								{/* Call info */}
 								<div className="flex flex-col gap-1">
-									<div className="text-foreground text-sm font-semibold">{customerName}</div>
-									<div className="text-muted-foreground text-xs">{customerPhone}</div>
+									<div className="text-foreground text-sm font-semibold">
+										{customerName}
+									</div>
+									<div className="text-muted-foreground text-xs">
+										{customerPhone}
+									</div>
 									<div className="text-primary font-mono text-xs font-bold">
 										{formatDuration(displayDuration)}
 									</div>
@@ -148,7 +160,9 @@ export function CallIndicatorBadge({
 					<TooltipContent className="max-w-xs" side="left">
 						<div className="space-y-2">
 							<p className="font-semibold">Active Call (Pop-out Window)</p>
-							<p className="text-muted-foreground text-xs">Click to bring window to front</p>
+							<p className="text-muted-foreground text-xs">
+								Click to bring window to front
+							</p>
 							<p className="text-muted-foreground text-xs">
 								Right-click or click X to return to main window
 							</p>

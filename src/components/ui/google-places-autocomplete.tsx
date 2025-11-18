@@ -46,7 +46,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 
 		// Check if script element already exists
 		const existingScript = document.querySelector(
-			'script[src^="https://maps.googleapis.com/maps/api/js"]'
+			'script[src^="https://maps.googleapis.com/maps/api/js"]',
 		);
 
 		if (existingScript) {
@@ -132,11 +132,14 @@ export function GooglePlacesAutocomplete({
 			google.maps.event.clearInstanceListeners(autocompleteRef.current);
 		}
 
-		const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-			types: ["address"],
-			componentRestrictions: { country: "us" }, // Restrict to US addresses
-			fields: ["address_components", "formatted_address", "geometry"],
-		});
+		const autocomplete = new window.google.maps.places.Autocomplete(
+			inputRef.current,
+			{
+				types: ["address"],
+				componentRestrictions: { country: "us" }, // Restrict to US addresses
+				fields: ["address_components", "formatted_address", "geometry"],
+			},
+		);
 
 		// Store reference
 		autocompleteRef.current = autocomplete;

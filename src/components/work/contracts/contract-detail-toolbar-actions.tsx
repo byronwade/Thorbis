@@ -16,7 +16,7 @@ import { Archive, Copy, Download, Mail } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveContract } from "@/actions/contracts";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -27,7 +27,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function ContractDetailToolbarActions() {
@@ -94,7 +99,9 @@ export function ContractDetailToolbarActions() {
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button asChild size="sm" variant="outline">
-								<a href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}>
+								<a
+									href={`/dashboard/work/contracts/new?cloneFrom=${contractId}`}
+								>
 									<Copy />
 									<span className="hidden lg:inline">Copy</span>
 								</a>
@@ -135,8 +142,8 @@ export function ContractDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Contract</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this contract? Archived contracts can be restored
-							within 90 days.
+							Are you sure you want to archive this contract? Archived contracts
+							can be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -147,7 +154,11 @@ export function ContractDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Contract"}
 						</Button>
 					</DialogFooter>

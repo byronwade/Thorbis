@@ -141,7 +141,11 @@ export function createPopOutWindow(callId: string): Window | null {
 	const { target, features } = POP_OUT_CONFIG;
 
 	try {
-		const popOut = window.open(`/call-window?callId=${callId}`, target, features);
+		const popOut = window.open(
+			`/call-window?callId=${callId}`,
+			target,
+			features,
+		);
 
 		if (!popOut) {
 			return null;
@@ -156,7 +160,10 @@ export function createPopOutWindow(callId: string): Window | null {
 /**
  * Sends a message to a pop-out window with security verification
  */
-export function sendToPopOut(popOutWindow: Window | null, message: PopOutMessage): boolean {
+export function sendToPopOut(
+	popOutWindow: Window | null,
+	message: PopOutMessage,
+): boolean {
 	if (!popOutWindow || popOutWindow.closed) {
 		return false;
 	}
@@ -228,7 +235,7 @@ export function isPopOutMessage(data: unknown): data is PopOutMessage {
 export function monitorPopOutWindow(
 	popOutWindow: Window,
 	onClose: () => void,
-	intervalMs = 500
+	intervalMs = 500,
 ): () => void {
 	const checkInterval = setInterval(() => {
 		if (popOutWindow.closed) {
@@ -248,7 +255,7 @@ export function waitForPopOutReady(
 	popOutWindow: Window,
 	callId: string,
 	onReady: () => void,
-	timeoutMs = 5000
+	timeoutMs = 5000,
 ): () => void {
 	const checkInterval = setInterval(() => {
 		if (popOutWindow.closed) {

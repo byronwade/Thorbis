@@ -68,7 +68,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-phone-inbound",
 		name: "AI Phone Calls (Inbound)",
-		description: "AI answers customer calls, books appointments, answers questions",
+		description:
+			"AI answers customer calls, books appointments, answers questions",
 		icon: Phone,
 		unit: "per minute",
 		cost: 0.15, // Twilio $0.015/min + AI processing ~$0.085/min (real-time processing) = $0.10 × 1.5 markup = $0.15
@@ -152,7 +153,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-job-intelligence",
 		name: "AI Job Intelligence",
-		description: "Smart scheduling suggestions, pricing optimization, dispatch recommendations",
+		description:
+			"Smart scheduling suggestions, pricing optimization, dispatch recommendations",
 		icon: Shield,
 		unit: "per analysis",
 		cost: 0.08, // ~2000 tokens × $0.00004/token × 1.5 markup = $0.08 (needs context from multiple jobs)
@@ -164,7 +166,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-system-control",
 		name: "AI System Control & Commands",
-		description: "Ask AI to do anything - send invoices, create quotes, update customers, etc.",
+		description:
+			"Ask AI to do anything - send invoices, create quotes, update customers, etc.",
 		icon: Bot,
 		unit: "per command",
 		cost: 0.12, // ~3000 tokens (complex multi-step operations) × $0.00004/token × 1.5 markup = $0.12
@@ -177,7 +180,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-24-7-monitoring",
 		name: "24/7 AI Business Monitoring",
-		description: "AI watches for price changes, missing photos, errors, opportunities - constantly",
+		description:
+			"AI watches for price changes, missing photos, errors, opportunities - constantly",
 		icon: Bell,
 		unit: "per business/month",
 		cost: 50.0, // Dedicated server monitoring 24/7 (~$100/mo server cost × 0.5 allocation × 1.5 markup)
@@ -203,7 +207,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-emergency-detection",
 		name: "AI Emergency Call Detection",
-		description: "Instantly detect emergencies, prioritize, dispatch nearest tech, alert managers",
+		description:
+			"Instantly detect emergencies, prioritize, dispatch nearest tech, alert managers",
 		icon: AlertCircle,
 		unit: "per call analyzed",
 		cost: 0.08, // Real-time keyword detection + priority routing × 1.5 markup
@@ -216,7 +221,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-call-analytics",
 		name: "AI Call Analytics & Insights",
-		description: "Track conversion rates, identify objections, measure sentiment, improve sales",
+		description:
+			"Track conversion rates, identify objections, measure sentiment, improve sales",
 		icon: BarChart3,
 		unit: "per call analyzed",
 		cost: 0.1, // Conversation analysis + sentiment + insights generation × 1.5 markup
@@ -243,7 +249,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-smart-invoicing",
 		name: "AI Smart Invoicing",
-		description: "AI detects billing errors, inconsistencies, missing line items before sending",
+		description:
+			"AI detects billing errors, inconsistencies, missing line items before sending",
 		icon: FileText,
 		unit: "per invoice analyzed",
 		cost: 0.06, // Document analysis + math verification × 1.5 markup
@@ -256,7 +263,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-inventory-auto-order",
 		name: "AI Inventory Auto-Ordering",
-		description: "AI monitors stock levels, predicts needs, auto-orders from suppliers",
+		description:
+			"AI monitors stock levels, predicts needs, auto-orders from suppliers",
 		icon: Zap,
 		unit: "per order placed",
 		cost: 0.15, // Inventory analysis + supplier API + order creation × 1.5 markup
@@ -269,7 +277,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-cash-flow-optimization",
 		name: "AI Cash Flow Optimization",
-		description: "AI analyzes accounts, optimizes transfers, maximizes savings automatically",
+		description:
+			"AI analyzes accounts, optimizes transfers, maximizes savings automatically",
 		icon: DollarSign,
 		unit: "per optimization",
 		cost: 0.5, // Complex financial analysis + multi-account review + transfer execution × 1.5 markup
@@ -282,7 +291,8 @@ const PRICING_ITEMS = [
 	{
 		id: "ai-customer-risk-analysis",
 		name: "AI Customer Risk Analysis",
-		description: "Identify no-show patterns, payment risks, recommend deposits/prepayment",
+		description:
+			"Identify no-show patterns, payment risks, recommend deposits/prepayment",
 		icon: Shield,
 		unit: "per customer analyzed",
 		cost: 0.05, // Historical pattern analysis + risk scoring × 1.5 markup
@@ -301,8 +311,8 @@ export function PricingCalculator() {
 				acc[item.id] = item.defaultValue;
 				return acc;
 			},
-			{} as Record<string, number>
-		)
+			{} as Record<string, number>,
+		),
 	);
 
 	// Calculate total usage costs
@@ -335,8 +345,9 @@ export function PricingCalculator() {
 							You&apos;ll Actually Understand
 						</h1>
 						<p className="text-foreground/70 mx-auto mb-8 max-w-3xl text-xl">
-							<strong>$100/month base</strong> + pay only for what you use. Calculate your exact
-							monthly cost below. No surprises. No hidden fees. No per-user charges.
+							<strong>$100/month base</strong> + pay only for what you use.
+							Calculate your exact monthly cost below. No surprises. No hidden
+							fees. No per-user charges.
 						</p>
 
 						{/* Quick comparison */}
@@ -344,14 +355,22 @@ export function PricingCalculator() {
 							<div className="border-destructive/20 bg-destructive/5 rounded-xl border p-4">
 								<div className="mb-2 text-2xl">🏢</div>
 								<p className="mb-1 font-bold">ServiceTitan</p>
-								<p className="text-destructive dark:text-destructive text-sm">$398/user/mo</p>
-								<p className="text-muted-foreground text-xs">5 users = $23,880/year</p>
+								<p className="text-destructive dark:text-destructive text-sm">
+									$398/user/mo
+								</p>
+								<p className="text-muted-foreground text-xs">
+									5 users = $23,880/year
+								</p>
 							</div>
 							<div className="border-warning/20 bg-warning/5 rounded-xl border p-4">
 								<div className="mb-2 text-2xl">📱</div>
 								<p className="mb-1 font-bold">Housecall Pro</p>
-								<p className="text-warning dark:text-warning text-sm">$289/user/mo</p>
-								<p className="text-muted-foreground text-xs">5 users = $17,340/year</p>
+								<p className="text-warning dark:text-warning text-sm">
+									$289/user/mo
+								</p>
+								<p className="text-muted-foreground text-xs">
+									5 users = $17,340/year
+								</p>
 							</div>
 							<div className="border-primary/20 bg-primary/5 rounded-xl border-2 p-4">
 								<div className="mb-2 text-2xl">⚡</div>
@@ -369,7 +388,8 @@ export function PricingCalculator() {
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl">
 						<h2 className="mb-8 text-center text-3xl font-bold">
-							What&apos;s Included in the <span className="text-primary">$100/month Base Fee</span>
+							What&apos;s Included in the{" "}
+							<span className="text-primary">$100/month Base Fee</span>
 						</h2>
 
 						<div className="grid gap-4 md:grid-cols-2">
@@ -382,7 +402,8 @@ export function PricingCalculator() {
 								{
 									icon: Calendar,
 									title: "Smart Scheduling",
-									description: "4 view types: Timeline, Calendar, Map, Gantt Chart",
+									description:
+										"4 view types: Timeline, Calendar, Map, Gantt Chart",
 								},
 								{
 									icon: DollarSign,
@@ -423,8 +444,12 @@ export function PricingCalculator() {
 										<feature.icon className="text-primary size-5" />
 									</div>
 									<div>
-										<p className="mb-1 text-sm font-semibold">{feature.title}</p>
-										<p className="text-muted-foreground text-xs">{feature.description}</p>
+										<p className="mb-1 text-sm font-semibold">
+											{feature.title}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{feature.description}
+										</p>
 									</div>
 								</div>
 							))}
@@ -439,11 +464,13 @@ export function PricingCalculator() {
 					<div className="mx-auto max-w-5xl">
 						<div className="mb-12 text-center">
 							<h2 className="mb-4 text-3xl font-bold md:text-4xl">
-								Pay-As-You-Go <span className="text-primary">Usage Calculator</span>
+								Pay-As-You-Go{" "}
+								<span className="text-primary">Usage Calculator</span>
 							</h2>
 							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-								Adjust the sliders below to estimate your monthly costs based on actual usage. Most
-								businesses pay <strong>$120-$150/month total</strong>.
+								Adjust the sliders below to estimate your monthly costs based on
+								actual usage. Most businesses pay{" "}
+								<strong>$120-$150/month total</strong>.
 							</p>
 						</div>
 
@@ -468,8 +495,12 @@ export function PricingCalculator() {
 															<ItemIcon className="text-primary size-5" />
 														</div>
 														<div className="flex-1">
-															<h3 className="mb-1 font-semibold">{item.name}</h3>
-															<p className="text-muted-foreground text-sm">{item.description}</p>
+															<h3 className="mb-1 font-semibold">
+																{item.name}
+															</h3>
+															<p className="text-muted-foreground text-sm">
+																{item.description}
+															</p>
 															<p className="text-muted-foreground mt-1 text-xs italic">
 																{item.example}
 															</p>
@@ -488,7 +519,8 @@ export function PricingCalculator() {
 												<div className="space-y-2">
 													<div className="flex items-center justify-between text-sm">
 														<span className="text-muted-foreground">
-															Usage: <strong>{quantity}</strong> {item.unit.replace("per ", "")}
+															Usage: <strong>{quantity}</strong>{" "}
+															{item.unit.replace("per ", "")}
 															{quantity !== 1 ? "s" : ""}
 														</span>
 														{item.note && (
@@ -500,7 +532,9 @@ export function PricingCalculator() {
 													<Slider
 														className="cursor-pointer"
 														max={item.maxValue}
-														onValueChange={([value]) => setUsage({ ...usage, [item.id]: value })}
+														onValueChange={([value]) =>
+															setUsage({ ...usage, [item.id]: value })
+														}
 														step={item.step}
 														value={[quantity]}
 													/>
@@ -520,17 +554,22 @@ export function PricingCalculator() {
 									</div>
 									<div className="flex items-center justify-between text-lg">
 										<span className="text-muted-foreground">Usage Charges</span>
-										<span className="font-semibold">${totalUsageCost.toFixed(2)}</span>
+										<span className="font-semibold">
+											${totalUsageCost.toFixed(2)}
+										</span>
 									</div>
 									<div className="border-border/50 border-t pt-3">
 										<div className="flex items-center justify-between">
-											<span className="text-2xl font-bold">Estimated Monthly Total</span>
+											<span className="text-2xl font-bold">
+												Estimated Monthly Total
+											</span>
 											<span className="text-primary text-4xl font-bold">
 												${monthlyTotal.toFixed(2)}
 											</span>
 										</div>
 										<p className="text-muted-foreground mt-2 text-right text-sm">
-											${(monthlyTotal * 12).toFixed(2)}/year • Unlimited users included
+											${(monthlyTotal * 12).toFixed(2)}/year • Unlimited users
+											included
 										</p>
 									</div>
 								</div>
@@ -540,12 +579,13 @@ export function PricingCalculator() {
 										<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 										<div>
 											<p className="text-success dark:text-success mb-1 font-semibold">
-												You&apos;re saving ${(23_880 - monthlyTotal * 12).toFixed(0)}/year vs
+												You&apos;re saving $
+												{(23_880 - monthlyTotal * 12).toFixed(0)}/year vs
 												ServiceTitan (5 users)
 											</p>
 											<p className="text-muted-foreground text-xs">
-												That&apos;s enough for 2 new technicians, marketing budget, or equipment
-												upgrades.
+												That&apos;s enough for 2 new technicians, marketing
+												budget, or equipment upgrades.
 											</p>
 										</div>
 									</div>
@@ -564,14 +604,22 @@ export function PricingCalculator() {
 
 						{/* Usage breakdown */}
 						<div className="border-primary/10 bg-background mt-8 rounded-xl border p-6">
-							<h3 className="mb-4 text-lg font-semibold">Detailed Cost Breakdown</h3>
+							<h3 className="mb-4 text-lg font-semibold">
+								Detailed Cost Breakdown
+							</h3>
 							<div className="space-y-2">
 								{usageCosts.map((item, i) => (
-									<div className="flex items-center justify-between text-sm" key={i}>
+									<div
+										className="flex items-center justify-between text-sm"
+										key={i}
+									>
 										<span className="text-muted-foreground">
-											{item.name} ({item.quantity} × ${item.unitCost.toFixed(3)})
+											{item.name} ({item.quantity} × ${item.unitCost.toFixed(3)}
+											)
 										</span>
-										<span className="font-semibold">${item.total.toFixed(2)}</span>
+										<span className="font-semibold">
+											${item.total.toFixed(2)}
+										</span>
 									</div>
 								))}
 							</div>
@@ -585,7 +633,8 @@ export function PricingCalculator() {
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-5xl">
 						<h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-							How We Compare to <span className="text-primary">The Competition</span>
+							How We Compare to{" "}
+							<span className="text-primary">The Competition</span>
 						</h2>
 
 						<div className="border-primary/20 overflow-hidden rounded-2xl border-2 shadow-xl">
@@ -594,8 +643,12 @@ export function PricingCalculator() {
 									<thead className="bg-muted/50">
 										<tr>
 											<th className="p-4 text-left font-semibold">Feature</th>
-											<th className="p-4 text-center font-semibold">ServiceTitan</th>
-											<th className="p-4 text-center font-semibold">Housecall Pro</th>
+											<th className="p-4 text-center font-semibold">
+												ServiceTitan
+											</th>
+											<th className="p-4 text-center font-semibold">
+												Housecall Pro
+											</th>
 											<th className="bg-primary/5 text-primary p-4 text-center font-semibold">
 												Thorbis
 											</th>
@@ -668,7 +721,9 @@ export function PricingCalculator() {
 															<XCircle className="text-destructive dark:text-destructive mx-auto size-5" />
 														)
 													) : (
-														<span className="text-muted-foreground text-sm">{row.st}</span>
+														<span className="text-muted-foreground text-sm">
+															{row.st}
+														</span>
 													)}
 												</td>
 												<td className="p-4 text-center">
@@ -679,7 +734,9 @@ export function PricingCalculator() {
 															<XCircle className="text-destructive dark:text-destructive mx-auto size-5" />
 														)
 													) : (
-														<span className="text-muted-foreground text-sm">{row.hcp}</span>
+														<span className="text-muted-foreground text-sm">
+															{row.hcp}
+														</span>
 													)}
 												</td>
 												<td className="bg-primary/5 p-4 text-center">
@@ -712,7 +769,9 @@ export function PricingCalculator() {
 			<section className="border-border/50 bg-muted/30 border-t py-16">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-3xl">
-						<h2 className="mb-12 text-center text-3xl font-bold">Pricing Questions</h2>
+						<h2 className="mb-12 text-center text-3xl font-bold">
+							Pricing Questions
+						</h2>
 						<div className="space-y-6">
 							{[
 								{
@@ -736,7 +795,10 @@ export function PricingCalculator() {
 									a: "Not currently. We keep pricing simple and honest. $100/month + usage is our standard rate for everyone.",
 								},
 							].map((faq, i) => (
-								<div className="border-primary/10 bg-background rounded-xl border p-6" key={i}>
+								<div
+									className="border-primary/10 bg-background rounded-xl border p-6"
+									key={i}
+								>
 									<h3 className="mb-2 font-semibold">{faq.q}</h3>
 									<p className="text-muted-foreground text-sm">{faq.a}</p>
 								</div>
@@ -754,8 +816,8 @@ export function PricingCalculator() {
 							Ready to Save <span className="text-primary">$20,000+/year?</span>
 						</h2>
 						<p className="text-foreground/70 mb-8 text-xl">
-							Start your 14-day free trial today. No credit card required. No sales calls. Cancel
-							anytime.
+							Start your 14-day free trial today. No credit card required. No
+							sales calls. Cancel anytime.
 						</p>
 						<div className="flex justify-center">
 							<Button asChild className="h-14 px-12" size="lg">

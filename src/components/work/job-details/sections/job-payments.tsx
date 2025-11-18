@@ -87,19 +87,29 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 					<TableBody>
 						{payments.map((payment) => (
 							<TableRow key={payment.id}>
-								<TableCell>{formatDate(payment.payment_date || payment.created_at)}</TableCell>
-								<TableCell className="font-medium">{formatCurrency(payment.amount)}</TableCell>
+								<TableCell>
+									{formatDate(payment.payment_date || payment.created_at)}
+								</TableCell>
+								<TableCell className="font-medium">
+									{formatCurrency(payment.amount)}
+								</TableCell>
 								<TableCell>
 									<div className="flex items-center gap-2">
 										<CreditCard className="text-muted-foreground size-4" />
-										{getPaymentMethodLabel(payment.payment_method || payment.method)}
+										{getPaymentMethodLabel(
+											payment.payment_method || payment.method,
+										)}
 									</div>
 								</TableCell>
 								<TableCell className="font-mono text-xs">
 									{payment.reference_number || payment.transaction_id || "—"}
 								</TableCell>
 								<TableCell>
-									<Badge variant={payment.status === "completed" ? "default" : "secondary"}>
+									<Badge
+										variant={
+											payment.status === "completed" ? "default" : "secondary"
+										}
+									>
 										{payment.status || "completed"}
 									</Badge>
 								</TableCell>
@@ -120,7 +130,12 @@ export function JobPayments({ payments }: JobPaymentsProps) {
 					</div>
 					<div className="text-right">
 						<p className="text-2xl font-bold">
-							{formatCurrency(payments.reduce((sum, payment) => sum + (payment.amount || 0), 0))}
+							{formatCurrency(
+								payments.reduce(
+									(sum, payment) => sum + (payment.amount || 0),
+									0,
+								),
+							)}
 						</p>
 					</div>
 				</div>

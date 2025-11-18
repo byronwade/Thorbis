@@ -120,8 +120,12 @@ export function ComingSoon({
 												<FeatureIcon className={`size-7 text-${colorClass}`} />
 											</div>
 										</div>
-										<h3 className="mb-3 text-xl font-semibold">{feature.title}</h3>
-										<p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+										<h3 className="mb-3 text-xl font-semibold">
+											{feature.title}
+										</h3>
+										<p className="text-muted-foreground leading-relaxed">
+											{feature.description}
+										</p>
 									</div>
 								);
 							})}
@@ -144,7 +148,10 @@ export function ComingSoon({
 					)}
 					<div className="text-muted-foreground flex items-center justify-center gap-2">
 						<Rocket className="size-5" />
-						<p>In the meantime, explore the platform and reach out if you need help</p>
+						<p>
+							In the meantime, explore the platform and reach out if you need
+							help
+						</p>
 					</div>
 				</div>
 			</div>

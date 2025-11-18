@@ -11,7 +11,7 @@
 
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 type EntityType =
@@ -30,30 +30,60 @@ type EntityType =
 	| "vendor"
 	| "material";
 
+type Activity = {
+	id: string;
+	entity_type: string;
+	entity_id: string;
+	action: string;
+	created_at: string;
+	updated_at: string;
+	user_id: string;
+	user: any;
+};
+
 export function useEntityActivities(
 	entityType: EntityType,
 	entityId: string,
 	enabled = true,
-	limit = 50
+	limit = 50,
 ) {
-	return useQuery({
-		queryKey: ["entity-activities", entityType, entityId],
-		queryFn: async () => {
-			const supabase = createClient();
+	const [data, setData] = useState<Activity[] | null>(null);
+	const [error, setError] = useState<Error | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
-			const { data, error } = await supabase
-				.from("activity_log")
-				.select("*, user:users!user_id(*)")
-				.eq("entity_type", entityType)
-				.eq("entity_id", entityId)
-				.order("created_at", { ascending: false })
-				.limit(limit);
+	useEffect(() => {
+		if (!enabled) {
+			return;
+		}
 
-			if (error) throw error;
-			return data;
-		},
-		enabled, // Only fetch when tab is opened
-		staleTime: 5 * 60 * 1000, // Consider fresh for 5 minutes
-		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-	});
+		const fetchActivities = async () => {
+			setIsLoading(true);
+			setError(null);
+
+			try {
+				const supabase = createClient();
+
+				const { data: activities, error: fetchError } = await supabase
+					.from("activity_log")
+					.select("*, user:users!user_id(*)")
+					.eq("entity_type", entityType)
+					.eq("entity_id", entityId)
+					.order("created_at", { ascending: false })
+					.limit(limit);
+
+				if (fetchError) throw fetchError;
+				setData(activities);
+			} catch (err) {
+				setError(
+					err instanceof Error ? err : new Error("Failed to fetch activities"),
+				);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+
+		fetchActivities();
+	}, [entityType, entityId, enabled, limit]);
+
+	return { data, error, isLoading };
 }

@@ -78,7 +78,7 @@ export async function VendorDetailData({ vendorId }: VendorDetailDataProps) {
 				`
 				*,
 				job:jobs(id, job_number, title, status)
-			`
+			`,
 			)
 			.eq("vendor_id", vendorId)
 			.eq("company_id", activeCompanyId)
@@ -117,17 +117,24 @@ export async function VendorDetailData({ vendorId }: VendorDetailDataProps) {
 	const poRows = purchaseOrders || [];
 
 	// Calculate metrics
-	const totalSpend = poRows.reduce((sum, po) => sum + (po.total_amount || 0), 0);
+	const totalSpend = poRows.reduce(
+		(sum, po) => sum + (po.total_amount || 0),
+		0,
+	);
 	const openPOs = poRows.filter((po) =>
-		["draft", "pending_approval", "approved", "ordered"].includes(po.status || "")
+		["draft", "pending_approval", "approved", "ordered"].includes(
+			po.status || "",
+		),
 	).length;
 	const completedPOs = poRows.filter(
-		(po) => po.status === "received" || po.status === "completed"
+		(po) => po.status === "received" || po.status === "completed",
 	).length;
 
 	// Extract unique jobs from purchase orders (already joined)
 	const relatedJobs = Array.from(
-		new Map(poRows.filter((po) => po.job).map((po) => [po.job.id, po.job])).values()
+		new Map(
+			poRows.filter((po) => po.job).map((po) => [po.job.id, po.job]),
+		).values(),
 	);
 
 	const vendorData = {

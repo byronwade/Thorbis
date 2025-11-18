@@ -17,7 +17,8 @@ import Stripe from "stripe";
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
-const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] = "2025-01-27.acacia";
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+	"2025-01-27.acacia";
 const PRODUCTS_LIST_LIMIT = 20;
 const PRICES_LIST_LIMIT = 20;
 const WEBHOOK_LIST_LIMIT = 5;
@@ -83,7 +84,9 @@ async function logPrices() {
 		const amount = price.unit_amount
 			? `$${(price.unit_amount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}`
 			: "Usage-based";
-		console.log(`   - ${price.id}: ${amount}/${price.recurring?.interval || "one-time"}`);
+		console.log(
+			`   - ${price.id}: ${amount}/${price.recurring?.interval || "one-time"}`,
+		);
 	}
 	console.log("");
 	return prices.data.length;
@@ -110,7 +113,9 @@ async function createCheckoutSession(customerId: string) {
 	const basePriceId = process.env.STRIPE_PRICE_ID_BASE_PLAN;
 
 	if (!basePriceId) {
-		throw new Error("STRIPE_PRICE_ID_BASE_PLAN is not configured in .env.local");
+		throw new Error(
+			"STRIPE_PRICE_ID_BASE_PLAN is not configured in .env.local",
+		);
 	}
 
 	const session = await stripe.checkout.sessions.create({
@@ -182,7 +187,9 @@ async function createBillingPortalSession(customerId: string) {
 		const errorMessage = getErrorMessage(error);
 		if (errorMessage.includes("configuration has not been created")) {
 			console.log("   ⚠️  Billing portal not configured yet");
-			console.log("   Configure at: https://dashboard.stripe.com/settings/billing/portal");
+			console.log(
+				"   Configure at: https://dashboard.stripe.com/settings/billing/portal",
+			);
 			console.log("   This is optional for testing the payment flow");
 		} else {
 			throw error;
@@ -195,7 +202,7 @@ function logSummary(
 	productCount: number,
 	priceCount: number,
 	checkoutUrl: string | null,
-	customerId: string
+	customerId: string,
 ) {
 	console.log("═══════════════════════════════════════");
 	console.log("🎉 ALL TESTS PASSED!");
@@ -215,11 +222,15 @@ function logSummary(
 	console.log("  1. Visit checkout URL to test payment:");
 	console.log(`     ${checkoutUrl ?? "N/A"}`);
 	console.log("  2. Use test card: 4242 4242 4242 4242");
-	console.log("  3. Configure webhook at: https://dashboard.stripe.com/webhooks");
+	console.log(
+		"  3. Configure webhook at: https://dashboard.stripe.com/webhooks",
+	);
 	console.log("  4. Set STRIPE_WEBHOOK_SECRET in .env.local");
 	console.log("");
 	console.log("Cleanup (Optional):");
-	console.log(`  • Delete test customer: stripe customers delete ${customerId}`);
+	console.log(
+		`  • Delete test customer: stripe customers delete ${customerId}`,
+	);
 	console.log("");
 }
 

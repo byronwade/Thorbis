@@ -5,7 +5,14 @@
  * Full-width Gmail-style table for displaying leads matching work pages pattern
  */
 
-import { Mail, MessageSquare, MoreHorizontal, Phone, TrendingUp, UserPlus } from "lucide-react";
+import {
+	Mail,
+	MessageSquare,
+	MoreHorizontal,
+	Phone,
+	TrendingUp,
+	UserPlus,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,7 +32,12 @@ import {
 import { formatCurrency } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-export type LeadSource = "google-ads" | "thumbtack" | "website-form" | "facebook-ads" | "referral";
+export type LeadSource =
+	| "google-ads"
+	| "thumbtack"
+	| "website-form"
+	| "facebook-ads"
+	| "referral";
 export type LeadScore = "hot" | "warm" | "cold";
 export type LeadStage = "new" | "contacted" | "qualified" | "customer" | "lost";
 
@@ -76,7 +88,8 @@ function getSourceLabel(source: LeadSource): string {
 function getScoreBadge(score: LeadScore) {
 	const config = {
 		hot: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "HOT",
 		},
 		warm: {
@@ -94,7 +107,10 @@ function getScoreBadge(score: LeadScore) {
 	const scoreConfig = config[score];
 
 	return (
-		<Badge className={cn("text-xs font-medium", scoreConfig.className)} variant="outline">
+		<Badge
+			className={cn("text-xs font-medium", scoreConfig.className)}
+			variant="outline"
+		>
 			<TrendingUp className="mr-1 h-3 w-3" />
 			{scoreConfig.label}
 		</Badge>
@@ -122,7 +138,8 @@ function getStageBadge(stage: LeadStage) {
 			label: "Customer",
 		},
 		lost: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Lost",
 		},
 	};
@@ -130,13 +147,19 @@ function getStageBadge(stage: LeadStage) {
 	const stageConfig = config[stage];
 
 	return (
-		<Badge className={cn("text-xs font-medium", stageConfig.className)} variant="outline">
+		<Badge
+			className={cn("text-xs font-medium", stageConfig.className)}
+			variant="outline"
+		>
 			{stageConfig.label}
 		</Badge>
 	);
 }
 
-export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps) {
+export function LeadsDataTable({
+	leads,
+	itemsPerPage = 50,
+}: LeadsDataTableProps) {
 	const columns: ColumnDef<Lead>[] = [
 		{
 			key: "name",
@@ -168,11 +191,15 @@ export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps
 				<div className="flex flex-col gap-1">
 					<div className="flex items-center gap-1">
 						<Mail className="text-muted-foreground h-3 w-3" />
-						<span className="text-muted-foreground text-xs leading-tight">{lead.email}</span>
+						<span className="text-muted-foreground text-xs leading-tight">
+							{lead.email}
+						</span>
 					</div>
 					<div className="flex items-center gap-1">
 						<Phone className="text-muted-foreground h-3 w-3" />
-						<span className="text-muted-foreground text-xs leading-tight">{lead.phone}</span>
+						<span className="text-muted-foreground text-xs leading-tight">
+							{lead.phone}
+						</span>
 					</div>
 				</div>
 			),
@@ -187,7 +214,7 @@ export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps
 				<Badge
 					className={cn(
 						"text-xs font-medium",
-						"border-border/50 bg-background text-muted-foreground"
+						"border-border/50 bg-background text-muted-foreground",
 					)}
 					variant="outline"
 				>
@@ -217,7 +244,9 @@ export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps
 			shrink: true,
 			align: "right",
 			render: (lead) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(lead.value)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(lead.value)}
+				</span>
 			),
 		},
 		{
@@ -265,7 +294,9 @@ export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps
 								<UserPlus className="mr-2 h-4 w-4" />
 								Convert to Job
 							</DropdownMenuItem>
-							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>View Details</DropdownMenuItem>
+							<DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+								View Details
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
@@ -309,7 +340,9 @@ export function LeadsDataTable({ leads, itemsPerPage = 50 }: LeadsDataTableProps
 			bulkActions={bulkActions}
 			columns={columns}
 			data={leads}
-			emptyIcon={<UserPlus className="text-muted-foreground mx-auto h-12 w-12" />}
+			emptyIcon={
+				<UserPlus className="text-muted-foreground mx-auto h-12 w-12" />
+			}
 			emptyMessage="No leads found"
 			enableSelection={true}
 			getItemId={(lead) => lead.id}

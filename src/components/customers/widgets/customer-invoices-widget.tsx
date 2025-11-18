@@ -30,15 +30,25 @@ export function CustomerInvoicesWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: invoices, isLoading, error } = useCustomerInvoices(customerId, isVisible);
+				const {
+					data: invoices,
+					isLoading,
+					error,
+				} = useCustomerInvoices(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-muted-foreground text-center text-sm">Failed to load invoices</div>
+						<div className="text-muted-foreground text-center text-sm">
+							Failed to load invoices
+						</div>
 					);
 				if (!invoices || invoices.length === 0)
-					return <div className="text-muted-foreground text-center text-sm">No invoices found</div>;
+					return (
+						<div className="text-muted-foreground text-center text-sm">
+							No invoices found
+						</div>
+					);
 
 				return (
 					<div className="space-y-3">
@@ -51,7 +61,9 @@ export function CustomerInvoicesWidget({
 								<div className="flex items-start justify-between gap-2">
 									<div className="flex-1 space-y-1">
 										<div className="flex items-center gap-2">
-											<span className="text-sm font-medium">{invoice.invoice_number}</span>
+											<span className="text-sm font-medium">
+												{invoice.invoice_number}
+											</span>
 											<InvoiceStatusBadge status={invoice.status} />
 										</div>
 										<p className="text-sm font-semibold">

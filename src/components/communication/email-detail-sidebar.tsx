@@ -39,8 +39,12 @@ import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 export function EmailDetailSidebar() {
 	const router = useRouter();
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
 
 	const handleBack = () => {
 		setIsDetailView(false);

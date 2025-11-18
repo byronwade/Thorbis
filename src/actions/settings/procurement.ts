@@ -29,7 +29,7 @@ export async function togglePurchaseOrderSystem(enabled: boolean) {
 				po_system_enabled: payload.enabled,
 				po_system_last_enabled_at: payload.enabled ? timestamp : null,
 			},
-			{ onConflict: "company_id" }
+			{ onConflict: "company_id" },
 		)
 		.select("po_system_enabled,po_system_last_enabled_at")
 		.maybeSingle();
@@ -38,8 +38,11 @@ export async function togglePurchaseOrderSystem(enabled: boolean) {
 		throw new Error(error.message || "Failed to update purchase order system");
 	}
 
-	const actorName = (user.user_metadata?.full_name as string | undefined) ?? user.email ?? null;
-	const actionKey = payload.enabled ? "po_system.enabled" : "po_system.disabled";
+	const actorName =
+		(user.user_metadata?.full_name as string | undefined) ?? user.email ?? null;
+	const actionKey = payload.enabled
+		? "po_system.enabled"
+		: "po_system.disabled";
 	const description = payload.enabled
 		? "Purchase order system enabled."
 		: "Purchase order system disabled.";
@@ -73,6 +76,7 @@ export async function togglePurchaseOrderSystem(enabled: boolean) {
 
 	return {
 		enabled: Boolean(data?.po_system_enabled ?? payload.enabled),
-		lastEnabledAt: data?.po_system_last_enabled_at ?? (payload.enabled ? timestamp : null),
+		lastEnabledAt:
+			data?.po_system_last_enabled_at ?? (payload.enabled ? timestamp : null),
 	};
 }

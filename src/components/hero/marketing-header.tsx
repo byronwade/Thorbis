@@ -8,7 +8,12 @@ import { useEffect, useMemo, useState } from "react";
 import { UserMenu } from "@/components/layout/user-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 import type { UserProfile } from "@/lib/auth/user-data";
 import { isOnboardingComplete } from "@/lib/onboarding/status";
 import { createClient } from "@/lib/supabase/client";
@@ -228,7 +233,10 @@ function DesktopNavItem({ section }: { section: NavSection }) {
 			>
 				{section.label}
 				<ChevronDown
-					className={cn("size-3.5 transition-transform duration-200", isOpen && "rotate-180")}
+					className={cn(
+						"size-3.5 transition-transform duration-200",
+						isOpen && "rotate-180",
+					)}
 				/>
 				<span className="bg-primary absolute inset-x-0 -bottom-px h-0.5 scale-x-0 transition-transform group-hover:scale-x-100" />
 			</button>
@@ -311,7 +319,9 @@ export function MarketingHeader() {
 	const [loading, setLoading] = useState(true);
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
-	const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+	const [expandedSections, setExpandedSections] = useState<Set<string>>(
+		new Set(),
+	);
 	const [userCompanies, setUserCompanies] = useState<UserCompany[]>([]);
 
 	useEffect(() => {
@@ -351,13 +361,14 @@ export function MarketingHeader() {
 					return;
 				}
 
-				const fallbackName = user.user_metadata?.name || user.email?.split("@")[0] || "User";
+				const fallbackName =
+					user.user_metadata?.name || user.email?.split("@")[0] || "User";
 				const fallbackEmail = user.email || profile?.email || "";
 				const fallbackAvatar =
 					profile?.avatar ||
 					user.user_metadata?.avatar_url ||
 					`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-						fallbackEmail || fallbackName
+						fallbackEmail || fallbackName,
 					)}&backgroundColor=0ea5e9&textColor=ffffff`;
 
 				setUserProfile({
@@ -385,7 +396,7 @@ export function MarketingHeader() {
               onboarding_completed_at,
               deleted_at
             )
-          `
+          `,
 					)
 					.eq("user_id", user.id)
 					.eq("status", "active")
@@ -398,9 +409,11 @@ export function MarketingHeader() {
 						if (!companyMap.has(companyId)) {
 							const subscriptionStatus = m.companies.stripe_subscription_status;
 							const hasPayment =
-								subscriptionStatus === "active" || subscriptionStatus === "trialing";
+								subscriptionStatus === "active" ||
+								subscriptionStatus === "trialing";
 							const onboardingProgress =
-								(m.companies.onboarding_progress as Record<string, unknown>) || null;
+								(m.companies.onboarding_progress as Record<string, unknown>) ||
+								null;
 							const onboardingComplete = isOnboardingComplete({
 								progress: onboardingProgress,
 								completedAt: m.companies.onboarding_completed_at ?? null,
@@ -408,7 +421,10 @@ export function MarketingHeader() {
 
 							let planLabel = "Active";
 							if (!(hasPayment && onboardingComplete)) {
-								planLabel = subscriptionStatus === "incomplete" ? "Incomplete" : "Setup Required";
+								planLabel =
+									subscriptionStatus === "incomplete"
+										? "Incomplete"
+										: "Setup Required";
 							}
 
 							companyMap.set(companyId, {
@@ -468,7 +484,7 @@ export function MarketingHeader() {
 				...section,
 				items: section.items ?? [],
 			})),
-		[]
+		[],
 	);
 
 	const toggleSection = (sectionLabel: string) => {
@@ -513,7 +529,7 @@ export function MarketingHeader() {
 		<header
 			className={cn(
 				"border-border/40 bg-background/80 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 border-b backdrop-blur-xl transition-all duration-300",
-				scrolled && "border-border/60 shadow-lg shadow-black/5"
+				scrolled && "border-border/60 shadow-lg shadow-black/5",
 			)}
 		>
 			<div className="container mx-auto flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -599,11 +615,19 @@ export function MarketingHeader() {
 				{/* Mobile Menu */}
 				<Sheet onOpenChange={setMobileOpen} open={mobileOpen}>
 					<SheetTrigger asChild>
-						<Button aria-label="Open navigation" className="lg:hidden" size="icon" variant="ghost">
+						<Button
+							aria-label="Open navigation"
+							className="lg:hidden"
+							size="icon"
+							variant="ghost"
+						>
 							<Menu className="size-5" />
 						</Button>
 					</SheetTrigger>
-					<SheetContent className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm" side="right">
+					<SheetContent
+						className="w-[90vw] overflow-y-auto p-0 sm:max-w-sm"
+						side="right"
+					>
 						<SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
 						{/* Mobile Header */}
@@ -643,7 +667,7 @@ export function MarketingHeader() {
 													<ChevronDown
 														className={cn(
 															"text-muted-foreground size-4 transition-transform duration-200",
-															isExpanded && "rotate-180"
+															isExpanded && "rotate-180",
 														)}
 													/>
 												</button>
@@ -700,8 +724,12 @@ export function MarketingHeader() {
 								onClick={() => setMobileOpen(false)}
 							>
 								<div>
-									<span className="text-foreground text-sm font-semibold">Pricing</span>
-									<p className="text-muted-foreground text-[11px]">Flat $100/mo base plus usage</p>
+									<span className="text-foreground text-sm font-semibold">
+										Pricing
+									</span>
+									<p className="text-muted-foreground text-[11px]">
+										Flat $100/mo base plus usage
+									</p>
 								</div>
 								<Badge className="bg-primary text-primary-foreground px-2 py-1 text-xs font-bold">
 									$100/mo
@@ -714,11 +742,22 @@ export function MarketingHeader() {
 							{!loading && userProfile ? (
 								<div className="space-y-3">
 									<div className="border-border/50 from-muted/50 to-muted/20 rounded-xl border bg-gradient-to-br p-3">
-										<p className="text-foreground text-xs font-semibold">{userProfile.name}</p>
-										<p className="text-muted-foreground text-[11px]">{userProfile.email}</p>
+										<p className="text-foreground text-xs font-semibold">
+											{userProfile.name}
+										</p>
+										<p className="text-muted-foreground text-[11px]">
+											{userProfile.email}
+										</p>
 									</div>
-									<Button asChild className="shadow-primary/20 w-full shadow-lg" size="default">
-										<Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+									<Button
+										asChild
+										className="shadow-primary/20 w-full shadow-lg"
+										size="default"
+									>
+										<Link
+											href="/dashboard"
+											onClick={() => setMobileOpen(false)}
+										>
 											<LayoutDashboard className="mr-2 size-4" />
 											Go to Dashboard
 										</Link>
@@ -726,13 +765,25 @@ export function MarketingHeader() {
 								</div>
 							) : (
 								<div className="space-y-2">
-									<Button asChild className="w-full" size="default" variant="outline">
+									<Button
+										asChild
+										className="w-full"
+										size="default"
+										variant="outline"
+									>
 										<Link href="/login" onClick={() => setMobileOpen(false)}>
 											Sign in
 										</Link>
 									</Button>
-									<Button asChild className="shadow-primary/20 w-full shadow-lg" size="default">
-										<Link href={CTA_LINK.href} onClick={() => setMobileOpen(false)}>
+									<Button
+										asChild
+										className="shadow-primary/20 w-full shadow-lg"
+										size="default"
+									>
+										<Link
+											href={CTA_LINK.href}
+											onClick={() => setMobileOpen(false)}
+										>
 											<Plus className="mr-2 size-4" />
 											{CTA_LINK.label}
 										</Link>

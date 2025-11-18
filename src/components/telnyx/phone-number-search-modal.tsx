@@ -120,12 +120,17 @@ export function PhoneNumberSearchModal({
 								placeholder="e.g., 831, 650, 415"
 								value={areaCode}
 							/>
-							<p className="text-muted-foreground text-xs">Leave empty to search all area codes</p>
+							<p className="text-muted-foreground text-xs">
+								Leave empty to search all area codes
+							</p>
 						</div>
 
 						<div className="space-y-2">
 							<Label htmlFor="numberType">Number Type</Label>
-							<Select onValueChange={(v: any) => setNumberType(v)} value={numberType}>
+							<Select
+								onValueChange={(v: any) => setNumberType(v)}
+								value={numberType}
+							>
 								<SelectTrigger id="numberType">
 									<SelectValue />
 								</SelectTrigger>
@@ -133,13 +138,17 @@ export function PhoneNumberSearchModal({
 									<SelectItem value="local">
 										<div className="flex items-center justify-between gap-4">
 											<span>Local Number</span>
-											<span className="text-muted-foreground text-xs">$1/month</span>
+											<span className="text-muted-foreground text-xs">
+												$1/month
+											</span>
 										</div>
 									</SelectItem>
 									<SelectItem value="toll-free">
 										<div className="flex items-center justify-between gap-4">
 											<span>Toll-Free (800/888/877/866/855)</span>
-											<span className="text-muted-foreground text-xs">$2/month</span>
+											<span className="text-muted-foreground text-xs">
+												$2/month
+											</span>
 										</div>
 									</SelectItem>
 								</SelectContent>
@@ -181,7 +190,12 @@ export function PhoneNumberSearchModal({
 					</div>
 
 					{/* Search Button */}
-					<Button className="w-full" disabled={searching} onClick={handleSearch} size="lg">
+					<Button
+						className="w-full"
+						disabled={searching}
+						onClick={handleSearch}
+						size="lg"
+					>
 						{searching ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />
@@ -200,7 +214,9 @@ export function PhoneNumberSearchModal({
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<Label>Available Numbers ({results.length})</Label>
-								<p className="text-muted-foreground text-xs">Click to purchase instantly</p>
+								<p className="text-muted-foreground text-xs">
+									Click to purchase instantly
+								</p>
 							</div>
 
 							<div className="max-h-[400px] space-y-2 overflow-y-auto rounded-lg border p-2">
@@ -212,10 +228,16 @@ export function PhoneNumberSearchModal({
 										<div className="flex items-center gap-3">
 											<Phone className="text-muted-foreground size-4" />
 											<div>
-												<div className="font-medium">{formatPhoneNumber(number.phone_number)}</div>
+												<div className="font-medium">
+													{formatPhoneNumber(number.phone_number)}
+												</div>
 												<div className="flex flex-wrap gap-1.5">
 													{number.features?.map((feature: string) => (
-														<Badge className="text-xs" key={feature} variant="secondary">
+														<Badge
+															className="text-xs"
+															key={feature}
+															variant="secondary"
+														>
 															{feature.toUpperCase()}
 														</Badge>
 													))}
@@ -229,7 +251,9 @@ export function PhoneNumberSearchModal({
 													<DollarSign className="size-3" />
 													{numberType === "toll-free" ? "2.00" : "1.00"}/mo
 												</div>
-												<div className="text-muted-foreground text-xs">$0 setup fee</div>
+												<div className="text-muted-foreground text-xs">
+													$0 setup fee
+												</div>
 											</div>
 
 											<Button

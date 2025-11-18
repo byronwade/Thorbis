@@ -1,6 +1,13 @@
 "use client";
 
-import { Archive, Calendar, Download, FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Archive,
+	Calendar,
+	Download,
+	FileText,
+	MoreHorizontal,
+	Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,11 +50,13 @@ const MAINTENANCE_PLAN_STATUS_CONFIG = {
 		label: "Pending",
 	},
 	paused: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Paused",
 	},
 	cancelled: {
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		label: "Cancelled",
 	},
 } as const;
@@ -55,12 +64,18 @@ const MAINTENANCE_PLAN_STATUS_CONFIG = {
 export function MaintenancePlansTable({
 	plans,
 	itemsPerPage = 50,
+	currentPage = 1,
+	totalCount,
 }: {
 	plans: MaintenancePlan[];
 	itemsPerPage?: number;
+	currentPage?: number;
+	totalCount?: number;
 }) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.maintenance_plans);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.maintenance_plans,
+	);
 
 	// Filter plans based on archive status
 	const filteredPlans = plans.filter((plan) => {
@@ -118,7 +133,9 @@ export function MaintenancePlansTable({
 			shrink: true,
 			sortable: true,
 			hideOnMobile: true,
-			render: (plan) => <span className="text-foreground text-sm">{plan.frequency}</span>,
+			render: (plan) => (
+				<span className="text-foreground text-sm">{plan.frequency}</span>
+			),
 		},
 		{
 			key: "nextVisit",
@@ -128,7 +145,9 @@ export function MaintenancePlansTable({
 			sortable: true,
 			hideOnMobile: true,
 			render: (plan) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{plan.nextVisit}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{plan.nextVisit}
+				</span>
 			),
 		},
 		{
@@ -139,7 +158,9 @@ export function MaintenancePlansTable({
 			sortable: true,
 			align: "right",
 			render: (plan) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(plan.monthlyFee)}/mo</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(plan.monthlyFee)}/mo
+				</span>
 			),
 		},
 		{
@@ -233,7 +254,9 @@ export function MaintenancePlansTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredPlans}
-			emptyIcon={<Calendar className="text-muted-foreground mx-auto h-12 w-12" />}
+			emptyIcon={
+				<Calendar className="text-muted-foreground mx-auto h-12 w-12" />
+			}
 			emptyMessage="No maintenance plans found"
 			enableSelection={true}
 			entity="maintenance_plans"
@@ -242,12 +265,17 @@ export function MaintenancePlansTable({
 			isArchived={(plan) => Boolean(plan.archived_at || plan.deleted_at)}
 			isHighlighted={(plan) => plan.status === "active"}
 			itemsPerPage={itemsPerPage}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => window.location.reload()}
-			onRowClick={(plan) => (window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)}
+			onRowClick={(plan) =>
+				(window.location.href = `/dashboard/work/maintenance-plans/${plan.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search plans by name, customer, service type, frequency, or status..."
 			showArchived={archiveFilter !== "active"}
 			showRefresh={false}
+			totalCount={totalCount ?? filteredPlans.length}
 		/>
 	);
 }

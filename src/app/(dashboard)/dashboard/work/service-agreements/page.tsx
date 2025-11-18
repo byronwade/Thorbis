@@ -15,10 +15,16 @@ import { ServiceAgreementsSkeleton } from "@/components/work/service-agreements/
 // ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
 export const revalidate = 60;
 
-export default function ServiceAgreementsPage() {
+export default async function ServiceAgreementsPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
+
 	return (
 		<Suspense fallback={<ServiceAgreementsSkeleton />}>
-			<ServiceAgreementsData />
+			<ServiceAgreementsData searchParams={params} />
 		</Suspense>
 	);
 }

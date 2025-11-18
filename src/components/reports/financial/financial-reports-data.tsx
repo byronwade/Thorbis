@@ -22,7 +22,8 @@ export async function FinancialReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">P&L Statements</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Generate detailed profit and loss statements by period, service line, or technician
+							Generate detailed profit and loss statements by period, service
+							line, or technician
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function FinancialReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Cash Flow Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track cash inflows and outflows to maintain healthy working capital
+							Track cash inflows and outflows to maintain healthy working
+							capital
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function FinancialReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Revenue Breakdown</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze revenue by service type, customer segment, and geographic area
+							Analyze revenue by service type, customer segment, and geographic
+							area
 						</p>
 					</div>
 
@@ -52,7 +55,8 @@ export async function FinancialReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Profitability Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track gross margin, net profit, and ROI across all business operations
+							Track gross margin, net profit, and ROI across all business
+							operations
 						</p>
 					</div>
 				</div>

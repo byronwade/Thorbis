@@ -1,260 +1,144 @@
-# Thorbis Project Guidelines
+# Stratos Project Guidelines
 
-These guidelines describe how to work effectively and safely in the Thorbis codebase.  
-They complement the main project `README.md` and the docs index at `docs/README.md`.
+**Authoritative ruleset for AI-assisted development in the Stratos codebase.**
 
-- For **high-level overview / onboarding**, start with `README.md`.
-- For **feature- or system-level docs**, see the organized docs under:
-  - `docs/migrations/`, `docs/performance/`, `docs/architecture/`, `docs/status/`, `docs/troubleshooting/`.
-- For **day-to-day implementation notes**, see `notes/`.
-
-This file (`.claude/CLAUDE.md`) is the **authoritative ruleset** for how the AI should reason about and modify this project.
+This file complements:
+- `README.md` - High-level overview and onboarding
+- `/docs/` - Feature and system documentation
+- `/notes/` - Day-to-day implementation notes
+- `/src/lib/stores/README.md` - Zustand state management guide
 
 ---
 
-## 🚀 NEXT.JS 16+ REQUIREMENTS
+## 🎯 PROJECT STATS
 
-**This project uses Next.js 16.0.1 with React 19. ALL code must follow Next.js 16+ patterns.**
+- **Next.js**: 16.0.1 with React 19
+- **Total Pages**: 360
+- **Total Components**: 1,200
+- **Client Components**: 508 (42%)
+- **Server Components**: 692 (58%)
+- **Build Time**: ~10 seconds
+- **Target**: 85%+ Server Components, < 2s page loads
 
-### Breaking Changes from Next.js 14/15
-1. **Async Request APIs** - `cookies()`, `headers()`, `params`, `searchParams` are now async
-2. **Dynamic Route Segments** - All route params must be awaited
-3. **React 19 Features** - Use latest React patterns (ref as prop, actions)
-4. **Proxy Pattern** - Use `proxy.ts` instead of `middleware.ts` for auth/routing (security best practice)
+---
 
-### Required Patterns
+## 🚨 CRITICAL RULES (NEVER BREAK)
 
-#### ✅ Async cookies() - REQUIRED
+### 1. Next.js 16+ Required Patterns
+
+**All code MUST use Next.js 16+ async patterns. Breaking changes from 14/15:**
+
 ```typescript
 // ✅ CORRECT - Next.js 16+
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export async function myFunction() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token");
-}
-
-// ❌ WRONG - Next.js 14/15 pattern
-const cookieStore = cookies(); // This will fail in Next.js 16
-```
-
-#### ✅ Async headers() - REQUIRED
-```typescript
-// ✅ CORRECT - Next.js 16+
-import { headers } from "next/headers";
-
-export async function myFunction() {
   const headersList = await headers();
-  const referer = headersList.get("referer");
 }
 
-// ❌ WRONG - Next.js 14/15 pattern
-const headersList = headers(); // This will fail in Next.js 16
-```
-
-#### ✅ Async params - REQUIRED
-```typescript
-// ✅ CORRECT - Next.js 16+
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
+export default async function Page({
+  params,
+  searchParams
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ query?: string }>;
+}) {
   const { id } = await params;
+  const { query } = await searchParams;
   return <div>ID: {id}</div>;
 }
 
-// ❌ WRONG - Next.js 14/15 pattern
-export default function Page({ params }: { params: { id: string } }) {
-  return <div>ID: {params.id}</div>; // This will fail in Next.js 16
-}
+// ❌ WRONG - Next.js 14/15 pattern (WILL FAIL)
+const cookieStore = cookies(); // No await
+const { id } = params; // Direct access
 ```
 
-#### ✅ Async searchParams - REQUIRED
+**React 19 - ref as prop:**
 ```typescript
-// ✅ CORRECT - Next.js 16+
-export default async function Page({
-  searchParams
-}: {
-  searchParams: Promise<{ query?: string }>
-}) {
-  const { query } = await searchParams;
-  return <div>Search: {query}</div>;
-}
-
-// ❌ WRONG - Next.js 14/15 pattern
-export default function Page({ searchParams }: { searchParams: { query?: string } }) {
-  return <div>Search: {searchParams.query}</div>; // This will fail in Next.js 16
-}
-```
-
-#### ✅ React 19 - ref as prop
-```typescript
-// ✅ CORRECT - React 19
+// ✅ CORRECT
 function MyInput({ ref }: { ref: React.Ref<HTMLInputElement> }) {
   return <input ref={ref} />;
 }
 
-// ❌ WRONG - React 18 pattern
-const MyInput = React.forwardRef<HTMLInputElement>((props, ref) => {
-  return <input ref={ref} />;
+// ❌ WRONG
+const MyInput = React.forwardRef<HTMLInputElement>(...);
+```
+
+**Security - Use proxy.ts (NOT middleware.ts):**
+- Next.js 16+ uses `proxy.ts` in root directory
+- Fixes CVE where `x-middleware-subrequest` could bypass auth
+- See `/proxy.ts` for implementation
+- **NEVER rely solely on proxy for auth** - always validate in Server Actions/API routes
+
+### 2. Server Components First (Target: 85%+)
+
+**Default to Server Components for ALL new components.**
+
+```typescript
+// ✅ Server Component (default - no "use client")
+export default async function CustomersPage() {
+  const customers = await getCustomers(); // Direct DB query
+  return <CustomerTable data={customers} />;
+}
+
+// ✅ Client Component (only when needed)
+"use client";
+export function CustomerTable({ data }: Props) {
+  const [sortBy, setSortBy] = useState("name");
+  return <DataTable data={data} sortBy={sortBy} />;
+}
+```
+
+**Only use `"use client"` when you need:**
+- React hooks (useState, useEffect, etc.)
+- Event handlers (onClick, onChange)
+- Browser APIs (localStorage, window)
+- Third-party client libraries
+
+### 3. Data Fetching Patterns
+
+**Primary: Server Components + React.cache()**
+
+```typescript
+// /src/lib/queries/customers.ts
+import { cache } from "react";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+
+export const getCustomers = cache(async (companyId: string) => {
+  const supabase = createServiceSupabaseClient();
+  return await supabase
+    .from("customers")
+    .select("*")
+    .eq("company_id", companyId)
+    .limit(50);
 });
+
+// Multiple components can call getCustomers() - only 1 DB query executes!
 ```
 
-#### ✅ Proxy Pattern (Next.js 16+) - REQUIRED for Auth/Routing
+**See `/src/lib/queries/` for complete examples.**
+
+**❌ NEVER do this:**
 ```typescript
-// ✅ CORRECT - Next.js 16+ proxy.ts
-// proxy.ts (root level)
-import { NextResponse, type NextRequest } from "next/server";
-
-export async function proxy(request: NextRequest) {
-  // Handle auth, redirects, session refresh
-  // Runs on Node.js runtime (not Edge)
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"]
-};
-
-// ❌ WRONG - Next.js 14/15 middleware.ts pattern
-// middleware.ts (deprecated, security risks)
-export async function middleware(request: NextRequest) {
-  // This pattern is deprecated in Next.js 16
-}
-```
-
-**Why proxy.ts?**
-- **Security**: Fixes critical CVE where `x-middleware-subrequest` header could bypass all auth checks
-- **Clarity**: Explicitly shows network boundary and Node.js runtime
-- **Best Practice**: Vercel recommends NOT relying on middleware.ts for security/auth anymore
-- **Migration**: Use codemod: `npx @next/codemod@latest middleware-to-proxy`
-
-**Important Security Notes:**
-- NEVER rely solely on proxy.ts for authorization
-- ALWAYS validate auth in Server Actions and API routes
-- Use proxy.ts ONLY for lightweight interception (redirects, session refresh)
-- Implement proper Row Level Security (RLS) in Supabase
-
----
-
-## 🔧 MCP SERVERS AVAILABLE
-
-**This project has access to powerful MCP (Model Context Protocol) servers that enhance development capabilities.**
-
-### shadcn MCP Server
-Provides access to shadcn/ui component registry:
-- **Search Components**: `mcp__shadcn__search_items_in_registries` - Find components by keyword
-- **View Examples**: `mcp__shadcn__get_item_examples_from_registries` - Get usage examples and demos
-- **Inspect Details**: `mcp__shadcn__view_items_in_registries` - View implementation details
-- **Add Commands**: `mcp__shadcn__get_add_command_for_items` - Get CLI commands to add components
-- **Audit Checklist**: `mcp__shadcn__get_audit_checklist` - Verify component best practices
-
-**When to Use:**
-- Before creating any new UI component
-- To find existing patterns and established solutions
-- To get proper implementation examples
-- To ensure consistency with shadcn/ui standards
-
-### Next.js MCP Server (next-devtools)
-Provides Next.js runtime inspection and debugging:
-- **Runtime Diagnostics**: `mcp__next-devtools__nextjs_runtime` - Inspect errors, routes, and runtime state
-- **Documentation Search**: `mcp__next-devtools__nextjs_docs` - Search official Next.js docs
-- **Browser Automation**: `mcp__next-devtools__browser_eval` - Test pages in real browsers
-- **Upgrade Assistant**: `mcp__next-devtools__upgrade_nextjs_16` - Automated Next.js 16 upgrade
-- **Cache Components**: `mcp__next-devtools__enable_cache_components` - Setup cache components
-
-**When to Use:**
-- Before implementing ANY changes to understand current state
-- For debugging and investigating issues
-- To verify pages work correctly (not just HTTP 200)
-- When searching for Next.js best practices
-- During Next.js version upgrades
-
-**CRITICAL: Runtime-First Approach**
-- Query `nextjs_runtime` FIRST when asked to investigate or modify the running app
-- Use browser automation to verify pages (curl only fetches HTML, doesn't execute JS)
-- Check runtime state proactively before implementing changes
-
-### Supabase MCP Server
-Already documented - provides database operations:
-- Schema migrations and management
-- Type generation
-- Security advisors
-- Query execution
-
----
-
-## 🚫 STATE MANAGEMENT ANTI-PATTERNS (NEVER DO THIS)
-
-**CRITICAL: This project uses a strict state management architecture. Follow these rules without exception.**
-
-### ❌ ANTI-PATTERN #1: Data Fetching in useEffect
-
-**WRONG - Client Component with useEffect data fetching:**
-```typescript
-"use client"
-export function CustomerList() {
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+"use client";
+export function BadComponent() {
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    async function fetchData() {
-      const result = await getCustomers();
-      setCustomers(result.data);
-      setIsLoading(false);
-    }
-    fetchData();
+    fetchData().then(setData); // WRONG - data fetching in useEffect
   }, []);
 
-  return <div>{customers.map(...)}</div>;
+  return <div>{data.map(...)}</div>;
 }
 ```
 
-**✅ CORRECT - Server Component with direct async/await:**
+### 4. State Management - Zustand Only
+
+**NEVER use React Context. Always use Zustand for shared state.**
+
 ```typescript
-// Server Component (no "use client")
-export default async function CustomerList() {
-  const customers = await getCustomers(); // Direct server-side fetch
-  return <div>{customers.map(...)}</div>;
-}
-```
-
-**✅ CORRECT - React Query for Client Components:**
-```typescript
-"use client"
-import { useQuery } from "@tanstack/react-query";
-
-export function CustomerList() {
-  const { data: customers, isLoading } = useQuery({
-    queryKey: ['customers'],
-    queryFn: getCustomers,
-  });
-
-  if (isLoading) return <Skeleton />;
-  return <div>{customers?.map(...)}</div>;
-}
-```
-
----
-
-### ❌ ANTI-PATTERN #2: useState for Shared State
-
-**WRONG - Duplicated state across components:**
-```typescript
-"use client"
-// Toolbar component
-export function Toolbar() {
-  const [activeFilter, setActiveFilter] = useState("all");
-  // State isolated - can't share!
-}
-
-// Table component
-export function DataTable() {
-  const [activeFilter, setActiveFilter] = useState("all");
-  // Duplicate state - out of sync!
-}
-```
-
-**✅ CORRECT - Zustand store for shared state:**
-```typescript
-// lib/stores/filters-store.ts
+// /src/lib/stores/filters-store.ts
 import { create } from "zustand";
 
 export const useFiltersStore = create((set) => ({
@@ -262,826 +146,162 @@ export const useFiltersStore = create((set) => ({
   setActiveFilter: (filter) => set({ activeFilter: filter })
 }));
 
-// Both components stay in sync
-"use client"
-export function Toolbar() {
-  const activeFilter = useFiltersStore((state) => state.activeFilter);
-  const setActiveFilter = useFiltersStore((state) => state.setActiveFilter);
-}
-
-export function DataTable() {
-  const activeFilter = useFiltersStore((state) => state.activeFilter);
-  // Same state - always in sync!
-}
+// Usage - selective subscriptions prevent unnecessary re-renders
+"use client";
+const activeFilter = useFiltersStore((state) => state.activeFilter);
 ```
 
----
+**Current stores:** 51 stores in `/src/lib/stores/`
 
-### ❌ ANTI-PATTERN #3: Manual Loading/Error States
+**See `/src/lib/stores/README.md` for complete guide.**
 
-**WRONG - Manual state management:**
+**When to use what:**
+- **Zustand** - Shared state across components
+- **useState** - Local UI state (modal open, input values)
+- **useEffect** - Side effects only (event listeners, timers)
+- **Server Components** - Server-renderable data (85%+ of cases)
+
+### 5. Extend Existing Infrastructure (MANDATORY)
+
+**NEVER create duplicate infrastructure. Always check for existing components first.**
+
+**Component Discovery Process (REQUIRED):**
+1. Use shadcn MCP: `mcp__shadcn__search_items_in_registries`
+2. Search codebase: `/src/components/layout/` for shared components
+3. Review similar pages in the same feature area
+4. Only create new if NO existing solution exists
+
+**Key Infrastructure (ALWAYS REUSE):**
+- `AppToolbar` - Universal toolbar for all pages
+- `AppSidebar` - Main sidebar structure
+- `WorkPageLayout` - Page container with stats
+- `FullWidthDatatable` - Tables
+- `AppHeader` - Page headers with breadcrumbs
+- `NavGrouped` - Sidebar navigation
+
 ```typescript
-"use client"
-export function Notes({ customerId }: { customerId: string }) {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+// ✅ CORRECT - Using existing AppToolbar
+import { AppToolbar } from "@/components/layout/app-toolbar";
 
-  useEffect(() => {
-    async function loadNotes() {
-      try {
-        setIsLoading(true);
-        const result = await getNotes(customerId);
-        setNotes(result.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    loadNotes();
-  }, [customerId]);
-
-  // Manual loading/error handling...
-}
-```
-
-**✅ CORRECT - React Query handles everything:**
-```typescript
-"use client"
-import { useQuery } from "@tanstack/react-query";
-
-export function Notes({ customerId }: { customerId: string }) {
-  const { data: notes, isLoading, error } = useQuery({
-    queryKey: ['notes', customerId],
-    queryFn: () => getNotes(customerId),
-  });
-
-  // React Query handles loading, error, caching, refetching automatically
-  if (isLoading) return <Skeleton />;
-  if (error) return <ErrorState error={error} />;
-  return <div>{notes?.map(...)}</div>;
-}
-```
-
----
-
-### ✅ WHEN TO USE useState (Local UI State Only)
-
-**useState is CORRECT for:**
-- Modal open/close state
-- Form input values (controlled inputs)
-- Dropdown expanded state
-- Hover/focus states
-- Animation states
-- Accordion expanded/collapsed
-- Temporary UI flags
-
-**Example of CORRECT useState usage:**
-```typescript
-"use client"
-export function SearchInput() {
-  // ✅ Local UI state - doesn't need to be shared
-  const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-
+export default function ContractsPage() {
   return (
-    <input
-      value={inputValue}
-      onChange={(e) => setInputValue(e.target.value)}
-      onFocus={() => setIsOpen(true)}
-    />
+    <>
+      <AppToolbar
+        title="Contracts"
+        actions={[
+          { label: "New Contract", variant: "default", href: "/dashboard/work/contracts/new" }
+        ]}
+      />
+      <ContractsTable />
+    </>
+  );
+}
+
+// ❌ WRONG - Creating custom toolbar
+export default function ContractsPage() {
+  return (
+    <div>
+      <div className="flex items-center justify-between p-4">
+        <h1>Contracts</h1>
+        <Button>New Contract</Button>
+      </div>
+      <ContractsTable />
+    </div>
   );
 }
 ```
 
----
+### 6. Production-Ready Updates (Complete or Nothing)
 
-### ✅ WHEN TO USE useEffect (Side Effects Only)
+**ALL changes must update the full stack: database → types → RLS → code → docs**
 
-**useEffect is CORRECT for:**
-- Browser API interactions (localStorage, window events)
-- Event listeners (keyboard shortcuts, scroll events)
-- Timers and intervals
-- Third-party library initialization
-- Responding to prop changes for UI effects
+**Database Changes - Mandatory Process:**
+1. **Create migration** - `mcp__supabase__apply_migration`
+2. **Update RLS policies** - Add/update security policies
+3. **Regenerate types** - `mcp__supabase__generate_typescript_types`
+4. **Run security advisors** - `mcp__supabase__get_advisors`
+5. **Update code** - Use new schema/types
+6. **Update docs** - Keep AGENTS.md synchronized
 
-**Example of CORRECT useEffect usage:**
-```typescript
-"use client"
-export function AutoSave({ data }: { data: any }) {
-  // ✅ Side effect - save to localStorage
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      localStorage.setItem('draft', JSON.stringify(data));
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, [data]);
-
-  return null;
-}
-
-export function KeyboardShortcuts() {
-  // ✅ Side effect - event listener
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === 'k' && e.metaKey) {
-        // Open search...
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, []);
-
-  return null;
-}
+**Checklist:**
+```
+✅ Migration created and applied via MCP server
+✅ RLS policies added/updated and tested
+✅ TypeScript types regenerated and imported
+✅ Code updated to use new schema/types
+✅ Security advisors run - no critical issues
+✅ Documentation updated
+✅ Error handling implemented
+✅ Loading states added
+✅ Validation added (Zod schemas)
 ```
 
 ---
 
-### 🎯 STATE MANAGEMENT DECISION TREE
+## ⚡ DATABASE PERFORMANCE PATTERNS
 
-```
-Need to manage state?
-│
-├─ Is it server-renderable data?
-│  └─ YES → ✅ Use Server Component with async/await
-│
-├─ Is it shared across multiple components?
-│  └─ YES → ✅ Use Zustand store
-│
-├─ Is it client-side data that needs caching/refetching?
-│  └─ YES → ✅ Use React Query
-│
-├─ Is it local UI state (modal open, input value)?
-│  └─ YES → ✅ Use useState
-│
-└─ Is it a side effect (event listener, timer)?
-   └─ YES → ✅ Use useEffect
-```
+**Target: ALL pages load in < 2 seconds**
 
----
+### Pattern #1: Composite Indexes (MANDATORY)
 
-### 📦 REACT QUERY SETUP
-
-**This project has React Query installed and configured.**
-
-**Provider location:** `/src/components/providers/query-provider.tsx`
-**Already added to:** `/src/app/layout.tsx`
-
-**Query configuration:**
-- Stale time: 5 minutes (data considered fresh)
-- Refetch on window focus: Yes
-- Retry failed requests: Once
-- Cache time: 10 minutes
-- DevTools: Enabled in development
-
-**Example refactored component:**
-See `/src/components/customers/customer-notes-table.tsx` for a complete example with:
-- ✅ useQuery for data fetching
-- ✅ useMutation for create/delete operations
-- ✅ Optimistic updates for instant UI feedback
-- ✅ Automatic cache invalidation
-- ✅ Loading skeletons
-- ✅ Error boundaries
-
----
-
-### 📋 REFACTORING CHECKLIST
-
-When refactoring components with data fetching:
-
-**Before:**
-```typescript
-"use client"
-const [data, setData] = useState([]);
-useEffect(() => { fetchData().then(setData) }, []);
-```
-
-**After (React Query):**
-```typescript
-"use client"
-import { useQuery } from "@tanstack/react-query";
-const { data, isLoading } = useQuery({
-  queryKey: ['my-data'],
-  queryFn: fetchData
-});
-```
-
-**Migration steps:**
-1. Import `useQuery` and `useMutation` from `@tanstack/react-query`
-2. Replace `useState` + `useEffect` with `useQuery`
-3. Replace manual mutations with `useMutation`
-4. Add `queryClient.invalidateQueries()` after mutations
-5. Use `isLoading` and `error` from query
-6. Add loading skeleton and error states
-7. Test optimistic updates if needed
-
----
-
-## 📚 REQUIRED CONTEXT
-
-**IMPORTANT: ALWAYS reference and apply the complete linting rules from [AGENTS.md](../docs/AGENTS.md) before writing any code.**
-
-The AGENTS.md file contains 481 comprehensive linting rules covering:
-- Accessibility (ARIA, WCAG compliance)
-- TypeScript/JavaScript best practices
-- React/Next.js patterns
-- Security guidelines
-- Performance optimization
-- Testing standards
-- CSS/Styling conventions
-
-**Never skip this reference.** All code must comply with these rules in addition to the critical rules below.
-
----
-
-## 🎯 CRITICAL RULES (NEVER BREAK)
-
-1. **SERVER COMPONENTS FIRST - ALWAYS**
-   - Default to Server Components for ALL new components
-   - Only add `"use client"` when absolutely necessary (hooks, events, browser APIs)
-   - Extract minimal interactive parts to separate client components
-   - Question: "Can this be a Server Component?" before using client
-   - Target: 65%+ Server Components (currently achieved)
-
-2. **PERFORMANCE IS NON-NEGOTIABLE**
-   - Core Web Vitals targets: LCP < 2.5s, FID < 100ms, CLS < 0.1
-   - Keep client bundles under 200KB gzipped
-   - Zero tolerance for unnecessary JavaScript to client
-   - Use dynamic imports for code splitting
-   - Run `pnpm analyze:bundle` regularly to track bundle sizes
-   - Wrap slow components in `<Suspense>` for streaming
-   - Use ISR (`export const revalidate = N`) for static pages
-
-3. **SECURITY BY DEFAULT**
-   - Supabase RLS on ALL tables - no exceptions
-   - Validate all input server-side with Zod
-   - Never trust client input
-   - Use parameterized queries only
-   - Use Server Actions for form submissions (not client-side state)
-   - **Use proxy.ts (NOT middleware.ts)** - Next.js 16+ security best practice
-   - NEVER rely solely on proxy.ts for auth - always validate in Server Actions/API routes
-   - Use proxy.ts ONLY for lightweight redirects and session refresh
-
-4. **STATE MANAGEMENT - ZUSTAND ONLY**
-   - **NEVER use React Context** - always use Zustand for state management
-   - Keep stores extremely well organized in `/src/lib/stores/`
-   - One store per feature domain (e.g., `communication-store.ts`, `schedule-store.ts`)
-   - Use shallow selectors to prevent unnecessary re-renders
-   - No provider wrappers needed - direct imports only
-   - Benefits: Lighter bundle, better performance, cleaner code
-   - Exception: Built-in Next.js contexts (ThemeProvider, etc.) are allowed
-
-5. **EXTEND EXISTING INFRASTRUCTURE - MANDATORY**
-   - **CRITICAL: ALWAYS check for existing components before creating new ones**
-   - **NEVER create duplicate infrastructure** (toolbars, layouts, tables, forms, etc.)
-   - This project has established patterns that MUST be reused and extended
-
-   ### Component Discovery Process (REQUIRED BEFORE ANY NEW COMPONENT)
-   1. **Use shadcn MCP to search registry** - `mcp__shadcn__search_items_in_registries` for existing components
-   2. **Check shadcn examples** - `mcp__shadcn__get_item_examples_from_registries` for usage patterns
-   3. Search for similar components in the codebase (Grep/Glob)
-   4. Review existing implementations in the same feature area
-   5. Check `/src/components/layout/` for shared infrastructure
-   6. Look at similar pages for established patterns
-   7. Only create new components if NO existing solution exists (shadcn or codebase)
-
-   ### Key Infrastructure Components (ALWAYS REUSE)
-   - **AppToolbar** (`src/components/layout/app-toolbar.tsx`) - Universal toolbar for all pages
-   - **AppHeader** (`src/components/layout/app-header.tsx`) - Page headers with breadcrumbs
-   - **WorkPageLayout** (`src/components/work/work-page-layout.tsx`) - Standard page layout
-   - **FullWidthDatatable** (`src/components/ui/full-width-datatable.tsx`) - Tables
-   - **NavGrouped** (`src/components/layout/nav-grouped.tsx`) - Sidebar navigation
-   - **AppSidebar** (`src/components/layout/app-sidebar.tsx`) - Main sidebar structure
-
-   ### Examples of WRONG vs RIGHT Approach
-
-   ❌ **WRONG - Creating New Toolbar:**
-   ```typescript
-   // contracts/page.tsx
-   export default function ContractsPage() {
-     return (
-       <div>
-         <div className="flex items-center justify-between p-4">
-           <h1>Contracts</h1>
-           <Button>New Contract</Button>
-         </div>
-         <ContractsTable />
-       </div>
-     );
-   }
-   ```
-
-   ✅ **RIGHT - Using Existing AppToolbar:**
-   ```typescript
-   // contracts/page.tsx
-   import { AppToolbar } from "@/components/layout/app-toolbar";
-
-   export default function ContractsPage() {
-     return (
-       <>
-         <AppToolbar
-           title="Contracts"
-           actions={[
-             { label: "New Contract", variant: "default", href: "/dashboard/work/contracts/new" }
-           ]}
-         />
-         <ContractsTable />
-       </>
-     );
-   }
-   ```
-
-   ❌ **WRONG - Creating Custom Layout:**
-   ```typescript
-   export default function NewPage() {
-     return (
-       <div className="p-8">
-         <div className="mb-4">
-           <h1 className="text-2xl font-bold">Title</h1>
-         </div>
-         <div className="bg-white rounded-lg p-6">
-           <Content />
-         </div>
-       </div>
-     );
-   }
-   ```
-
-   ✅ **RIGHT - Using WorkPageLayout:**
-   ```typescript
-   import { WorkPageLayout } from "@/components/work/work-page-layout";
-
-   export default function NewPage() {
-     return (
-       <WorkPageLayout title="Title">
-         <Content />
-       </WorkPageLayout>
-     );
-   }
-   ```
-
-   ### Why This Matters
-   - **Consistency**: Users expect the same UX patterns across all pages
-   - **Maintainability**: One component to update vs dozens of duplicates
-   - **Performance**: Shared components are already optimized and bundled
-   - **Quality**: Existing components have been tested and refined
-   - **Speed**: Extending is faster than building from scratch
-
-   ### Enforcement
-   - Before creating ANY new component, ask: "Does something like this already exist?"
-   - Search the codebase using Grep/Glob for similar patterns
-   - Review at least 2-3 similar pages in the same feature area
-   - Consistency is MORE important than individual creativity
-   - When in doubt, extend existing components rather than creating new ones
-
-6. **PRODUCTION-READY UPDATES - COMPLETE OR NOTHING**
-   - **CRITICAL: ALL changes must update the full stack - database, types, RLS, docs**
-   - **NEVER make partial updates** - incomplete changes cause production bugs
-   - This is a production system - every change must be production-ready
-
-   ### Database Changes - Mandatory Process (NO EXCEPTIONS)
-   1. **Use Supabase MCP server ONLY** - never make manual SQL changes
-   2. **Create migration** - `mcp__supabase__apply_migration` for ALL schema changes
-   3. **Update RLS policies** - Add/update policies for new tables/columns
-   4. **Regenerate types** - `mcp__supabase__generate_typescript_types` after every DB change
-   5. **Verify changes** - `mcp__supabase__get_advisors` to catch security/performance issues
-   6. **Update documentation** - Keep AGENTS.md and CLAUDE.md synchronized with changes
-
-   ### Production-Ready Checklist (REQUIRED)
-   ```
-   ✅ Migration created and applied via MCP server
-   ✅ RLS policies added/updated and tested
-   ✅ TypeScript types regenerated and imported
-   ✅ Code updated to use new schema/types
-   ✅ Security advisors run - no critical issues
-   ✅ Documentation updated (AGENTS.md, CLAUDE.md)
-   ✅ Related features updated (forms, actions, pages)
-   ✅ Error handling implemented
-   ✅ Loading states added
-   ✅ Validation added (Zod schemas)
-   ```
-
-   ### Available Supabase MCP Tools
-   - `mcp__supabase__apply_migration` - Create and apply schema migrations
-   - `mcp__supabase__execute_sql` - Execute SQL queries (read-only verification)
-   - `mcp__supabase__list_tables` - List all tables and columns
-   - `mcp__supabase__generate_typescript_types` - Generate types from schema
-   - `mcp__supabase__get_advisors` - Get security and performance recommendations
-   - `mcp__supabase__list_migrations` - List applied migrations
-   - `mcp__supabase__search_docs` - Search Supabase documentation
-
-   ### Why This Matters
-   - **Security**: Missing RLS policies = data breaches
-   - **Type Safety**: Outdated types = runtime errors in production
-   - **Maintainability**: Incomplete updates = technical debt
-   - **Reliability**: Skipped steps = production bugs
-   - **Documentation**: Out-of-sync docs = confusion and mistakes
-
-   ### Anti-Patterns (NEVER DO THIS)
-   ❌ Making SQL changes without migrations
-   ❌ Forgetting to regenerate types after schema changes
-   ❌ Adding tables without RLS policies
-   ❌ Updating code without updating documentation
-   ❌ Skipping security advisor checks
-   ❌ Partial implementations "to finish later"
-
-   ### Examples
-
-   **❌ WRONG - Incomplete Update:**
-   ```typescript
-   // Just adds a column via SQL - NO migration, NO types, NO RLS
-   await supabase.execute("ALTER TABLE jobs ADD COLUMN status TEXT");
-   ```
-
-   **✅ RIGHT - Complete Production-Ready Update:**
-   ```typescript
-   // 1. Create migration
-   await mcp__supabase__apply_migration({
-     name: "add_job_status_column",
-     query: `
-       ALTER TABLE jobs ADD COLUMN status TEXT NOT NULL DEFAULT 'pending';
-
-       -- Add RLS policy for new column
-       CREATE POLICY "Users can view job status"
-         ON jobs FOR SELECT
-         USING (company_id IN (
-           SELECT company_id FROM team_members WHERE user_id = auth.uid()
-         ));
-     `
-   });
-
-   // 2. Regenerate types
-   await mcp__supabase__generate_typescript_types();
-
-   // 3. Run security advisors
-   await mcp__supabase__get_advisors({ type: "security" });
-
-   // 4. Update code to use new column (with new types)
-   // 5. Update Zod schemas for validation
-   // 6. Update forms to include new field
-   // 7. Update documentation in AGENTS.md and CLAUDE.md
-   ```
-
----
-
-## 🐛 DEBUGGING & TESTING WITH MCP TOOLS
-
-**CRITICAL: Use Next.js MCP runtime tools for all debugging, investigation, and testing tasks.**
-
-### Investigation Workflow (ALWAYS Follow)
-
-When asked to investigate, debug, or modify the running Next.js app:
-
-1. **Query Runtime State FIRST**
-   ```typescript
-   // Discover what diagnostics are available
-   mcp__next-devtools__nextjs_runtime({ action: "list_tools" })
-
-   // Get current errors, routes, and runtime information
-   mcp__next-devtools__nextjs_runtime({ action: "call_tool", toolName: "..." })
-   ```
-
-2. **Search Official Docs** (Not Guessing)
-   ```typescript
-   // Search for specific API patterns
-   mcp__next-devtools__nextjs_docs({
-     action: "search",
-     query: "async params",
-     routerType: "app"  // or "pages" or "all"
-   })
-   ```
-
-3. **Verify with Browser Automation** (Critical for Pages)
-   ```typescript
-   // Start browser
-   mcp__next-devtools__browser_eval({ action: "start", headless: true })
-
-   // Navigate and test
-   mcp__next-devtools__browser_eval({ action: "navigate", url: "http://localhost:3000/page" })
-
-   // Capture console errors (hydration, runtime issues)
-   mcp__next-devtools__browser_eval({ action: "console_messages", errorsOnly: true })
-
-   // Take screenshot for visual verification
-   mcp__next-devtools__browser_eval({ action: "screenshot" })
-   ```
-
-### Why Browser Automation? (CRITICAL)
-
-**NEVER use curl or simple HTTP requests to verify Next.js pages.**
-
-❌ **WRONG - Using curl:**
-```bash
-curl http://localhost:3000/page  # Only gets HTML, misses:
-# - JavaScript runtime errors
-# - Hydration issues
-# - Client-side crashes
-# - Console warnings
-# - React errors
-```
-
-✅ **RIGHT - Using Browser Automation:**
-```typescript
-// Renders page in real browser, catches everything:
-// - Runtime errors
-// - Hydration mismatches
-// - Client-side exceptions
-// - Console errors/warnings
-// - Visual rendering issues
-```
-
-### Component Discovery with shadcn MCP
-
-Before creating ANY UI component:
-
-1. **Search shadcn Registry**
-   ```typescript
-   mcp__shadcn__search_items_in_registries({
-     registries: ["@shadcn"],
-     query: "button dialog card table form"
-   })
-   ```
-
-2. **Get Usage Examples**
-   ```typescript
-   mcp__shadcn__get_item_examples_from_registries({
-     registries: ["@shadcn"],
-     query: "button-demo"  // Common patterns: {item}-demo, {item} example
-   })
-   ```
-
-3. **Inspect Implementation**
-   ```typescript
-   mcp__shadcn__view_items_in_registries({
-     items: ["@shadcn/button", "@shadcn/dialog"]
-   })
-   ```
-
-4. **Get Add Command**
-   ```typescript
-   mcp__shadcn__get_add_command_for_items({
-     items: ["@shadcn/button"]
-   })
-   // Returns: npx shadcn add button
-   ```
-
-5. **Run Audit After Creation**
-   ```typescript
-   mcp__shadcn__get_audit_checklist()
-   // Verify: accessibility, TypeScript, testing, documentation
-   ```
-
-### When to Use Each MCP Server
-
-**Use Next.js MCP when:**
-- Investigating bugs or errors
-- Understanding current app structure
-- Verifying pages work correctly
-- Searching for Next.js patterns/APIs
-- Upgrading Next.js versions
-- Testing runtime behavior
-
-**Use shadcn MCP when:**
-- Creating new UI components
-- Looking for design patterns
-- Ensuring component consistency
-- Getting proper TypeScript types
-- Learning component best practices
-
-**Use Supabase MCP when:**
-- Making database schema changes
-- Updating RLS policies
-- Generating TypeScript types
-- Running security audits
-- Verifying database state
-
-### Testing Patterns
-
-**After implementing features:**
-
-1. **Start dev server** (if not running)
-2. **Use browser automation to test**
-   - Navigate to the page
-   - Interact with the UI (click, type, etc.)
-   - Capture console messages
-   - Take screenshots
-   - Verify no errors
-3. **Check Next.js runtime**
-   - Query for errors
-   - Verify routes exist
-   - Check for warnings
-
-**Example: Testing a New Page**
-```typescript
-// 1. Check runtime state
-await mcp__next-devtools__nextjs_runtime({
-  action: "call_tool",
-  toolName: "get_errors"
-})
-
-// 2. Test in browser
-await mcp__next-devtools__browser_eval({ action: "start" })
-await mcp__next-devtools__browser_eval({
-  action: "navigate",
-  url: "http://localhost:3000/dashboard/new-feature"
-})
-
-// 3. Verify no errors
-const messages = await mcp__next-devtools__browser_eval({
-  action: "console_messages",
-  errorsOnly: true
-})
-
-// 4. Take screenshot
-await mcp__next-devtools__browser_eval({
-  action: "screenshot",
-  fullPage: true
-})
-```
-
----
-
-## ⚡ DATABASE PERFORMANCE OPTIMIZATION PATTERNS
-
-**CRITICAL: This project has achieved massive performance gains through systematic database optimization. ALL new database queries must follow these proven patterns.**
-
-### Performance Achievements
-- **Contracts**: 70-85% faster (3-8s → 200-500ms)
-- **Customers**: 16-36x faster (6.4-7.3s → 200-400ms via RPC)
-- **Appointments**: 5-9x faster (1.35-2.4s → 270-540ms)
-- **Target**: ALL pages render in under 2 seconds
-
-### Pattern #1: Composite Database Indexes (MANDATORY)
-
-**Problem**: Full table scans on filtered and sorted queries cause 3-5 second delays.
-
-**Solution**: Create composite indexes matching your WHERE + ORDER BY pattern.
-
-❌ **WRONG - Single-Column Indexes:**
 ```sql
-CREATE INDEX idx_contracts_company ON contracts(company_id);
-CREATE INDEX idx_contracts_created ON contracts(created_at DESC);
--- PostgreSQL must: 1) Use company_id index (finds 1000 rows), 2) Sort all 1000 rows, 3) Return
-```
-
-✅ **RIGHT - Composite Index:**
-```sql
+-- ✅ CORRECT - Composite index matches WHERE + ORDER BY
 CREATE INDEX idx_contracts_company_created
   ON contracts(company_id, created_at DESC)
   WHERE deleted_at IS NULL;
--- PostgreSQL: 1) Use composite index (finds rows ALREADY SORTED), 2) Return immediately
+
+-- ❌ WRONG - Separate single-column indexes
+CREATE INDEX idx_contracts_company ON contracts(company_id);
+CREATE INDEX idx_contracts_created ON contracts(created_at DESC);
 ```
 
-**Pattern for List Pages:**
-```sql
--- Generic pattern for list pages
-CREATE INDEX IF NOT EXISTS idx_{table}_{company}_created
-  ON {table}(company_id, created_at DESC)
-  WHERE deleted_at IS NULL;
+**Performance Impact:** 3-5 seconds saved per query on 1000+ records.
 
--- With status filter
-CREATE INDEX IF NOT EXISTS idx_{table}_company_status_created
-  ON {table}(company_id, status, created_at DESC)
-  WHERE deleted_at IS NULL;
-```
+### Pattern #2: Eliminate N+1 Queries
 
-**When to Create**:
-- Every table with `company_id` filter + `ORDER BY created_at`
-- Every table with `customer_id` filter (for N+1 prevention)
-- Every foreign key column used in JOINs
+**Use LATERAL joins or RPC functions instead of loops:**
 
-**Performance Impact**: 3-5 seconds saved per query on tables with 1000+ records.
-
----
-
-### Pattern #2: Eliminate N+1 Query Patterns (CRITICAL)
-
-**Problem**: Fetching parent records, then making separate queries for each child.
-
-**Example N+1 Anti-Pattern** (`getAllCustomers` - **FIXED**):
 ```typescript
-// ❌ WRONG - N+1 Pattern (151 queries for 50 customers)
-const { data: customers } = await supabase.from("customers").select("*");
-
+// ❌ WRONG - N+1 pattern (151 queries for 50 customers)
+const customers = await supabase.from("customers").select("*");
 const enriched = await Promise.all(
   customers.map(async (customer) => {
-    const { data: lastJob } = await supabase.from("jobs")...  // Query 1 per customer
-    const { data: nextJob } = await supabase.from("jobs")...  // Query 2 per customer
-    const { data: stats } = await supabase.from("jobs")...    // Query 3 per customer
-    return { ...customer, lastJob, nextJob, stats };
+    const lastJob = await supabase.from("jobs")... // 1 query per customer
+    const nextJob = await supabase.from("jobs")... // 1 query per customer
+    return { ...customer, lastJob, nextJob };
   })
 );
-// Total: 1 + (50 × 3) = 151 queries = 5-10 seconds
-```
 
-✅ **RIGHT - Single RPC with LATERAL Joins:**
-```sql
--- Create PostgreSQL function
-CREATE OR REPLACE FUNCTION get_enriched_customers_rpc(p_company_id UUID)
-RETURNS JSONB
-LANGUAGE plpgsql
-AS $$
-DECLARE
-  result JSONB;
-BEGIN
-  SELECT jsonb_agg(customer_data)
-  INTO result
-  FROM (
-    SELECT
-      to_jsonb(c.*) || jsonb_build_object(
-        'last_job_date', last_job.job_date,
-        'next_scheduled_job', next_job.scheduled_start,
-        'total_jobs', COALESCE(job_stats.total_jobs, 0),
-        'total_revenue', COALESCE(job_stats.total_revenue, 0)
-      ) as customer_data
-    FROM customers c
-    -- LATERAL joins run efficiently once per customer
-    LEFT JOIN LATERAL (
-      SELECT COALESCE(jtt.actual_end, j.scheduled_end, j.created_at) as job_date
-      FROM jobs j
-      LEFT JOIN job_time_tracking jtt ON jtt.job_id = j.id
-      WHERE j.customer_id = c.id AND j.status = 'completed'
-      ORDER BY j.created_at DESC LIMIT 1
-    ) last_job ON true
-    LEFT JOIN LATERAL (
-      SELECT scheduled_start
-      FROM jobs
-      WHERE customer_id = c.id AND status IN ('quoted', 'scheduled')
-      ORDER BY scheduled_start ASC LIMIT 1
-    ) next_job ON true
-    LEFT JOIN LATERAL (
-      SELECT COUNT(j.id)::BIGINT as total_jobs, SUM(jf.total_amount) as total_revenue
-      FROM jobs j
-      LEFT JOIN job_financial jf ON jf.job_id = j.id
-      WHERE j.customer_id = c.id
-    ) job_stats ON true
-    WHERE c.company_id = p_company_id AND c.deleted_at IS NULL
-    LIMIT 100
-  ) enriched_customers;
-
-  RETURN COALESCE(result, '[]'::jsonb);
-END;
-$$;
-```
-
-```typescript
-// Use from TypeScript
-const { data, error } = await supabase.rpc("get_enriched_customers_rpc", {
-  p_company_id: activeCompanyId
+// ✅ CORRECT - Single RPC with LATERAL joins (1 query)
+const { data } = await supabase.rpc("get_enriched_customers_rpc", {
+  p_company_id: companyId
 });
-// 1 query = 0.5-2 seconds (5-10 seconds saved!)
 ```
 
-**When to Use**:
-- Any time you have `.map(async (item) => { await supabase... })`
-- Fetching related data for list items
-- Customer/property/job enrichment
+**Performance Impact:** 5-10 seconds saved for 50+ records.
 
-**Performance Impact**: 5-10 seconds saved for 50+ parent records.
+### Pattern #3: LIMIT Clauses (Always)
 
----
-
-### Pattern #3: Add LIMIT Clauses (Always)
-
-**Problem**: Fetching ALL records when only a subset is needed.
-
-❌ **WRONG - No Limit:**
 ```typescript
+// ✅ CORRECT
 const { data } = await supabase
   .from("contracts")
-  .select("contract_number")
-  .eq("company_id", companyId);  // Could fetch 10,000+ records
-```
-
-✅ **RIGHT - With Limit and Smart Filtering:**
-```typescript
-const { data } = await supabase
-  .from("contracts")
-  .select("contract_number")
+  .select("*")
   .eq("company_id", companyId)
-  .like("contract_number", `CON-${year}-%`)  // Filter by prefix in DB
   .order("created_at", { ascending: false })
-  .limit(1);  // Only need the latest one
+  .limit(50); // Prevents fetching thousands of records
+
+// ❌ WRONG
+const { data } = await supabase
+  .from("contracts")
+  .select("*")
+  .eq("company_id", companyId); // Could fetch 10,000+ records
 ```
-
-**When to Add**:
-- ALL list queries (use 50-100 items)
-- Number generation (use `.limit(1)`)
-- Dropdown/autocomplete (use `.limit(20)`)
-
-**Performance Impact**: 1-2 seconds saved on tables with 100+ records.
-
----
 
 ### Pattern #4: React.cache() for Deduplication
 
-**Problem**: Stats and Data components making duplicate queries.
-
-✅ **RIGHT - Shared Cached Query:**
 ```typescript
-// lib/queries/contracts.ts
+// /src/lib/queries/contracts.ts
 import { cache } from "react";
 
 export const getContracts = cache(async (companyId: string) => {
@@ -1092,465 +312,165 @@ export const getContracts = cache(async (companyId: string) => {
     .eq("company_id", companyId);
 });
 
-// Both components share the same cached result
+// Both components share the same cached result - only 1 DB query!
 // - contracts-stats.tsx calls getContracts()
 // - contracts-data.tsx calls getContracts()
-// Only 1 actual database query executes!
 ```
 
-**When to Use**:
-- Stats + Data component pairs
-- Any query used multiple times in same request
-- RPC functions shared across components
+**Performance Checklist:**
+- [ ] Composite indexes for WHERE + ORDER BY columns
+- [ ] No N+1 patterns (use JOINs/LATERAL/RPC)
+- [ ] LIMIT clause added
+- [ ] React.cache() wrapper if used multiple times
+- [ ] Test with 100+ records - verify < 2s load time
 
-**Performance Impact**: Prevents duplicate queries (2x faster rendering).
+**See `/docs/performance/` for detailed patterns.**
 
 ---
 
-### Pattern #5: Supabase JOIN Syntax (Preferred)
+## 🔍 SEARCH IMPLEMENTATION
 
-**Simple Relationships:**
-```typescript
-// ✅ Single JOIN for 1:1 relationships
-const { data } = await supabase
-  .from("contracts")
-  .select(`
-    *,
-    customer:customers(id, display_name, first_name, last_name, email)
-  `)
-  .eq("company_id", companyId);
-```
+**Enterprise PostgreSQL full-text search with fuzzy matching.**
 
-**Complex Relationships:**
-```typescript
-// ✅ Multiple JOINs for complex entities
-const { data } = await supabase
-  .from("jobs")
-  .select(`
-    *,
-    customer:customers(display_name),
-    property:properties(address, city, state),
-    financial:job_financial(total_amount, paid_amount),
-    time:job_time_tracking(actual_start, actual_end)
-  `)
-  .eq("company_id", companyId);
-```
+### Architecture
 
-**When to Use**: Simple 1:1 or 1:many relationships (customers, properties, etc.).
-
----
-
-### Pattern #6: Parallel Queries + Hash Maps (Alternative)
-
-**When JOINs Are Slower:**
-- Very large result sets
-- Complex aggregations
-- Multiple levels of nesting
-
-```typescript
-// Parallel queries (run simultaneously)
-const [customers, jobs, properties] = await Promise.all([
-  supabase.from("customers").select("*").eq("company_id", id),
-  supabase.from("jobs").select("*").eq("company_id", id),
-  supabase.from("properties").select("*").eq("company_id", id)
-]);
-
-// Build hash maps for O(1) lookups
-const jobsMap = new Map(jobs.data?.map(j => [j.customer_id, j]));
-const propsMap = new Map(properties.data?.map(p => [p.id, p]));
-
-// Join in JavaScript
-const enriched = customers.data?.map(c => ({
-  ...c,
-  lastJob: jobsMap.get(c.id),
-  property: propsMap.get(c.property_id)
-}));
-```
-
-**Performance**: 4 parallel queries (100-200ms) can be faster than 1 complex JOIN (900ms).
-
----
-
-### Performance Checklist for New Queries
-
-Before deploying any new database query:
-
-- [ ] **Composite indexes** created for WHERE + ORDER BY columns
-- [ ] **No N+1 patterns** - use JOINs, LATERAL joins, or RPC functions
-- [ ] **LIMIT clause** added (50-100 for lists, 1 for latest item)
-- [ ] **React.cache()** wrapper if query used multiple times
-- [ ] **Foreign key indexes** exist for JOIN columns
-- [ ] **Test with 100+ records** - verify sub-2-second render time
-- [ ] **Check EXPLAIN ANALYZE** - verify indexes are being used
-
----
-
-## 🔍 SEARCH IMPLEMENTATION STANDARDS
-
-**This project uses enterprise-grade PostgreSQL full-text search. ALL search features must follow these patterns.**
-
-### Search Architecture
-
-1. **Full-Text Search with Ranking** (Primary)
-   - Use `search_vector` tsvector columns with GIN indexes
-   - Weighted fields: A (names, IDs) > B (contact) > C (descriptions) > D (notes)
-   - Results ordered by `ts_rank` DESC (best matches first)
-   - Auto-updated via triggers on INSERT/UPDATE
-
-2. **Fuzzy Matching** (Typo Tolerance)
-   - Use `pg_trgm` extension for similarity matching
-   - Trigram indexes on key text fields (names, emails, addresses)
-   - Handles typos and variations automatically
-
-3. **Fallback ILIKE Search** (Backwards Compatibility)
-   - Always implement fallback for compatibility
-   - Uses `.or()` across multiple fields with `.ilike.%term%`
+1. **Full-Text Search** - `search_vector` tsvector columns with GIN indexes
+2. **Fuzzy Matching** - `pg_trgm` extension for typo tolerance
+3. **Ranked Results** - `ts_rank` DESC (best matches first)
 
 ### Entities with Full-Text Search
 
-✅ **Customers**: first_name, last_name, display_name, email, phone, company_name, address, city, state
-✅ **Jobs**: job_number, title, description, notes, job_type, status, priority, ai_service_type
-✅ **Properties**: name, address, city, state, zip_code, notes
-✅ **Price Book Items**: name, sku, supplier_sku, description, category, subcategory
-✅ **Equipment**: equipment_number, name, type, manufacturer, model, serial_number, category, location, notes
-✅ **Invoices**: invoice_number, status, notes
-✅ **Estimates**: estimate_number, status, notes
-✅ **Contracts**: contract_number, title, status, description
+- Customers, Jobs, Properties, Equipment
+- Price Book Items, Invoices, Estimates, Contracts
 
-### Search Utilities
-
-**File**: `/src/lib/search/full-text-search.ts`
+### Utilities
 
 ```typescript
-// Entity-specific search
+// /src/lib/search/full-text-search.ts
 import { searchCustomersFullText } from "@/lib/search/full-text-search";
+
 const results = await searchCustomersFullText(supabase, companyId, "john plumber");
 
 // Universal search across all entities
 import { searchAllEntities } from "@/lib/search/full-text-search";
 const results = await searchAllEntities(supabase, companyId, "furnace");
-// Returns { customers: [...], jobs: [...], properties: [...], equipment: [...], priceBookItems: [...] }
 ```
 
-### Server Actions
+### Query Syntax
 
-**Jobs**: `searchJobs(searchTerm, options?)` - `/src/actions/jobs.ts`
-**Jobs Universal**: `searchAll(searchTerm)` - `/src/actions/jobs.ts`
-**Customers**: `searchCustomers(searchTerm, options?)` - `/src/actions/customers.ts`
-
-### Database RPC Functions
-
-- `search_customers_ranked(company_id, search_query, limit, offset)`
-- `search_jobs_ranked(company_id, search_query, limit, offset)`
-- `search_properties_ranked(company_id, search_query, limit, offset)`
-- `search_price_book_items_ranked(company_id, search_query, limit, offset)`
-- `search_equipment_ranked(company_id, search_query, limit, offset)`
-- `search_all_entities(company_id, search_query, per_entity_limit)`
-
-### Search Query Syntax
-
-Users can use natural language with these operators:
-- **AND**: `"HVAC repair"` - matches both words
-- **OR**: `"furnace OR boiler"` - matches either
-- **Phrase**: `"annual maintenance"` - exact phrase
-- **Negation**: `"plumber -emergency"` - exclude word
-- **Prefix**: `"john*"` - matches john, johnny, johnson
-
-### Performance
-
-- **GIN Indexes**: Sub-millisecond search on millions of records
-- **Weighted Ranking**: Most relevant results first
-- **Company Scoped**: RLS enforced, only searches company's data
-- **Result Limits**: 50 default (configurable), prevents slow queries
-- **Fuzzy Tolerance**: Handles typos automatically with trigram similarity
-
-### Adding Search to New Tables
-
-When adding a new searchable table:
-
-1. Add `search_vector` column: `ALTER TABLE my_table ADD COLUMN search_vector tsvector;`
-2. Create update function with weighted fields
-3. Create trigger to auto-update on changes
-4. Create GIN index: `CREATE INDEX ON my_table USING GIN(search_vector);`
-5. Add trigram indexes for fuzzy match on key fields
-6. Create RPC function for ranked search
-7. Add utility function to `/lib/search/full-text-search.ts`
-8. Update universal `search_all_entities` function
-
-## 📋 Linting Rules
-
-Avoid `accessKey` attr and distracting els
-No `aria-hidden="true"` on focusable els
-No ARIA roles, states, props on unsupported els
-Use `scope` prop only on `<th>` els
-No non-interactive ARIA roles on interactive els
-Label els need text and associated input
-No event handlers on non-interactive els
-No interactive ARIA roles on non-interactive els
-No `tabIndex` on non-interactive els
-No positive integers on `tabIndex` prop
-No `image`, `picture`, or `photo` in img alt props
-No explicit role matching implicit role
-Valid role attrs on static, visible els w/ click handlers
-Use `title` el for `svg` els
-Provide meaningful alt text for all els requiring it
-Anchors need accessible content
-Assign `tabIndex` to non-interactive els w/ `aria-activedescendant`
-Include all required ARIA attrs for els w/ ARIA roles
-Use valid ARIA props for the el's role
-Use `type` attr on `button` els
-Make els w/ interactive roles and handlers focusable
-Heading els need accessible content
-Add `lang` attr to `html` el
-Use `title` attr on `iframe` els
-Pair `onClick` w/ `onKeyUp`, `onKeyDown`, or `onKeyPress`
-Pair `onMouseOver`/`onMouseOut` w/ `onFocus`/`onBlur`
-Add caption tracks to audio and video els
-Use semantic els vs role attrs
-All anchors must be valid and navigable
-Use valid, non-abstract ARIA props, roles, states, and values
-Use valid values for `autocomplete` attr
-Use correct ISO language codes in `lang` attr
-Include generic font family in font families
-No consecutive spaces in regex literals
-Avoid `arguments`, comma op, and primitive type aliases
-No empty type params in type aliases and interfaces
-Keep fns under Cognitive Complexity limit
-Limit nesting depth of `describe()` in tests
-No unnecessary boolean casts or callbacks on `flatMap`
-Use `for...of` vs `Array.forEach`
-No classes w/ only static members
-No `this` and `super` in static contexts
-No unnecessary catch clauses, ctors, `continue`, escape sequences in regex literals, fragments, labels, or nested blocks
-No empty exports
-No renaming imports, exports, or destructured assignments to same name
-No unnecessary string/template literal concatenation or useless cases in switch stmts, `this` aliasing, or `String.raw` without escape sequences
-Use simpler alternatives to ternary ops if possible
-No `any` or `unknown` as type constraints or initializing vars to `undefined`
-Avoid `void` op
-Use arrow fns vs function exprs
-Use `Date.now()` for milliseconds since Unix Epoch
-Use `.flatMap()` vs `map().flat()`
-Use `indexOf`/`lastIndexOf` vs `findIndex`/`findLastIndex` for simple lookups
-Use literal property access vs computed property access
-Use binary, octal, or hex literals vs `parseInt()`
-Use concise optional chains vs chained logical exprs
-Use regex literals vs `RegExp` ctor
-Use base 10 or underscore separators for number literal object member names
-Remove redundant terms from logical exprs
-Use `while` loops vs `for` loops if initializer and update aren't needed
-No reassigning `const` vars or constant exprs in conditions
-No `Math.min`/`Math.max` to clamp values where result is constant
-No return values from ctors or setters
-No empty character classes in regex literals or destructuring patterns
-No `__dirname` and `__filename` in global scope
-No calling global object props as fns or declaring fns and `var` accessible outside their block
-Instantiate builtins correctly
-Use `super()` correctly in classes
-Use standard direction values for linear gradient fns
-Use valid named grid areas in CSS Grid Layouts
-Use `@import` at-rules in valid positions
-No vars and params before their decl
-Include `var` fn for CSS vars
-No `\8` and `\9` escape sequences in strings
-No literal numbers that lose precision, configured els, or assigning where both sides are same
-Compare string case modifications w/ compliant values
-No lexical decls in switch clauses or undeclared vars
-No unknown CSS value fns, media feature names, props, pseudo-class/pseudo-element selectors, type selectors, or units
-No unmatchable An+B selectors or unreachable code
-Call `super()` exactly once before accessing `this` in ctors
-No control flow stmts in `finally` blocks
-No optional chaining where `undefined` is not allowed
-No unused fn params, imports, labels, private class members, or vars
-No return values from fns w/ return type `void`
-Specify all dependencies correctly in React hooks and names for GraphQL operations
-Call React hooks from top level of component fns
-Use `isNaN()` when checking for NaN
-Use `{ type: "json" }` for JSON module imports
-Use radix arg w/ `parseInt()`
-Start JSDoc comment lines w/ single asterisk
-Move `for` loop counters in right direction
-Compare `typeof` exprs to valid values
-Include `yield` in generator fns
-No importing deprecated exports, duplicate dependencies, or Promises where they're likely a mistake
-No non-null assertions after optional chaining or shadowing vars from outer scope
-No expr stmts that aren't fn calls or assignments or useless `undefined`
-Add `href` attr to `<a>` els and `width`/`height` attrs to `<img>` els
-Use consistent arrow fn bodies and either `interface` or `type` consistently
-Specify deletion date w/ `@deprecated` directive
-Make switch-case stmts exhaustive and limit number of fn params
-Sort CSS utility classes
-No spread syntax on accumulators, barrel files, `delete` op, dynamic namespace import access, namespace imports, or duplicate polyfills from Polyfill.io
-Use `preconnect` attr w/ Google Fonts
-Declare regex literals at top level
-Add `rel="noopener"` when using `target="_blank"`
-No dangerous JSX props
-No both `children` and `dangerouslySetInnerHTML` props
-No global `eval()`
-No callbacks in async tests and hooks, TS enums, exporting imported vars, type annotations for vars initialized w/ literals, magic numbers without named constants, or TS namespaces
-No negating `if` conditions when there's an `else` clause, nested ternary exprs, non-null assertions (`!`), reassigning fn params, parameter props in class ctors, specified global var names, importing specified modules, or specified user-defined types
-No constants where value is upper-case version of name, template literals without interpolation or special chars, `else` blocks when `if` block breaks early, yoda exprs, or `Array` ctors
-Use `String.slice()` vs `String.substr()` and `String.substring()`
-Use `as const` vs literal type annotations and `at()` vs integer index access
-Follow curly brace conventions
-Use `else if` vs nested `if` in `else` clauses and single `if` vs nested `if` clauses
-Use `T[]` vs `Array<T>`
-Use `new` for all builtins except `String`, `Number`, and `Boolean`
-Use consistent accessibility modifiers on class props and methods
-Declare object literals consistently
-Use `const` for vars only assigned once
-Put default and optional fn params last
-Include `default` clause in switch stmts
-Specify reason arg w/ `@deprecated` directive
-Explicitly initialize each enum member value
-Use `**` op vs `Math.pow`
-Use `export type` and `import type` for types
-Use kebab-case, ASCII filenames
-Use `for...of` vs `for` loops w/ array index access
-Use `<>...</>` vs `<Fragment>...</Fragment>`
-Capitalize all enum values
-Place getters and setters for same prop adjacent
-Use literal values for all enum members
-Use `node:assert/strict` vs `node:assert`
-Use `node:` protocol for Node.js builtin modules
-Use `Number` props vs global ones
-Use numeric separators in numeric literals
-Use object spread vs `Object.assign()` for new objects
-Mark members `readonly` if never modified outside ctor
-No extra closing tags for comps without children
-Use assignment op shorthand
-Use fn types vs object types w/ call signatures
-Add description param to `Symbol()`
-Use template literals vs string concatenation
-Use `new` when throwing an error
-No throwing non-`Error` values
-Use `String.trimStart()`/`String.trimEnd()` vs `String.trimLeft()`/`String.trimRight()`
-No overload signatures that can be unified
-No lower specificity selectors after higher specificity selectors
-No `@value` rule in CSS modules
-No `alert`, `confirm`, and `prompt`
-Use standard constants vs approximated literals
-No assigning in exprs
-No async fns as Promise executors
-No `!` pattern in first position of `files.includes`
-No bitwise ops
-No reassigning exceptions in catch clauses
-No reassigning class members
-No inserting comments as text nodes
-No comparing against `-0`
-No labeled stmts that aren't loops
-No `void` type outside generic or return types
-No `console`
-No TS const enums
-No exprs where op doesn't affect value
-No control chars in regex literals
-No `debugger`
-No assigning directly to `document.cookie`
-Use `===` and `!==`
-No duplicate `@import` rules, case labels, class members, custom props, conditions in if-else-if chains, GraphQL fields, font family names, object keys, fn param names, decl block props, keyframe selectors, or describe hooks
-No empty CSS blocks, block stmts, static blocks, or interfaces
-No letting vars evolve into `any` type through reassignments
-No `any` type
-No `export` or `module.exports` in test files
-No misusing non-null assertion op (`!`)
-No fallthrough in switch clauses
-No focused or disabled tests
-No reassigning fn decls
-No assigning to native objects and read-only global vars
-Use `Number.isFinite` and `Number.isNaN` vs global `isFinite` and `isNaN`
-No implicit `any` type on var decls
-No assigning to imported bindings
-No `!important` within keyframe decls
-No irregular whitespace chars
-No labels that share name w/ var
-No chars made w/ multiple code points in char classes
-Use `new` and `constructor` properly
-Place assertion fns inside `it()` fn calls
-No shorthand assign when var appears on both sides
-No octal escape sequences in strings
-No `Object.prototype` builtins directly
-No `quickfix.biome` in editor settings
-No redeclaring vars, fns, classes, and types in same scope
-No redundant `use strict`
-No comparing where both sides are same
-No shadowing restricted names
-No shorthand props that override related longhand props
-No sparse arrays
-No template literal placeholder syntax in regular strings
-No `then` prop
-No `@ts-ignore` directive
-No `let` or `var` vars that are read but never assigned
-No unknown at-rules
-No merging interface and class decls unsafely
-No unsafe negation (`!`)
-No unnecessary escapes in strings or useless backreferences in regex literals
-No `var`
-No `with` stmts
-No separating overload signatures
-Use `await` in async fns
-Use correct syntax for ignoring folders in config
-Put default clauses in switch stmts last
-Pass message value when creating built-in errors
-Return value from get methods
-Use recommended display strategy w/ Google Fonts
-Include `if` stmt in for-in loops
-Use `Array.isArray()` vs `instanceof Array`
-Return consistent values in iterable callbacks
-Use `namespace` keyword vs `module` keyword
-Use digits arg w/ `Number#toFixed()`
-Use static `Response` methods vs `new Response()`
-Use `use strict` directive in script files
-No passing children as props. Nest children between opening and closing tags
-No defining comps inside other comps
-No reassigning props in React comps
-No using return value from `ReactDOM.render()`
-No adding children to void els like `<img>` and `<br>`
-Specify all dependencies correctly in React hooks
-Call React hooks from top level of comp fns only
-Add `key` prop to els in iterables
-No legacy `React.forwardRef`. Use ref as prop instead (React 19+)
-Use fn comps vs class comps
-No array indices as keys
-No duplicate props in JSX
-No semicolons that change JSX el semantics
-No async client comps. Use server comps for async operations
-Use Next.js `<Image>` comp vs `<img>` el
-Use Next.js `next/head` or App Router metadata API vs `<head>` el
-No importing `next/document` in page files
-No importing `next/head` in `_document.tsx`. Use `<Head>` from `next/document` instead
+- `"HVAC repair"` - AND (both words)
+- `"furnace OR boiler"` - OR (either word)
+- `"annual maintenance"` - Exact phrase
+- `"plumber -emergency"` - Exclude word
+- `"john*"` - Prefix match
 
 ---
 
-## 🚀 PERFORMANCE PATTERNS (REQUIRED)
+## 🔧 MCP SERVERS (Development Tools)
 
-### 1. Server Components Pattern
+### shadcn MCP - Component Discovery
+
+**Use BEFORE creating any UI component:**
 ```typescript
-// ✅ GOOD - Server Component (default)
-import { KPICard } from "@/components/dashboard/kpi-card";
-
-export default function DashboardPage() {
-  return <KPICard title="Revenue" value="$10k" />;
-}
-
-// ❌ BAD - Unnecessary Client Component
-"use client";
-export default function DashboardPage() { /* ... */ }
+mcp__shadcn__search_items_in_registries({ registries: ["@shadcn"], query: "button" })
+mcp__shadcn__get_item_examples_from_registries({ registries: ["@shadcn"], query: "button-demo" })
+mcp__shadcn__view_items_in_registries({ items: ["@shadcn/button"] })
 ```
 
-### 2. Client Component Extraction
+### Next.js MCP - Runtime Diagnostics
+
+**Use BEFORE implementing changes:**
 ```typescript
-// ✅ GOOD - Extract only interactive part
-// tooltip-wrapper.tsx
+// Query runtime state
+mcp__next-devtools__nextjs_runtime({ action: "list_tools" })
+
+// Search official docs
+mcp__next-devtools__nextjs_docs({ action: "search", query: "async params" })
+
+// Verify with browser automation (NOT curl)
+mcp__next-devtools__browser_eval({ action: "start" })
+mcp__next-devtools__browser_eval({ action: "navigate", url: "http://localhost:3000/page" })
+mcp__next-devtools__browser_eval({ action: "console_messages", errorsOnly: true })
+```
+
+**Why browser automation?**
+- Curl only fetches HTML (misses JS errors, hydration issues, React errors)
+- Browser automation catches runtime errors, console warnings, visual issues
+
+### Supabase MCP - Database Operations
+
+```typescript
+mcp__supabase__apply_migration({ name: "add_column", query: "..." })
+mcp__supabase__generate_typescript_types()
+mcp__supabase__get_advisors({ type: "security" })
+mcp__supabase__list_tables()
+```
+
+---
+
+## 📦 PROJECT STRUCTURE
+
+```
+src/
+├── actions/              # Server Actions (form handling)
+├── app/                  # Next.js App Router pages
+├── components/
+│   ├── layout/          # Shared infrastructure (AppToolbar, AppSidebar, etc.)
+│   ├── ui/              # shadcn/ui components
+│   └── [feature]/       # Feature-specific components
+├── lib/
+│   ├── queries/         # React.cache() query functions
+│   ├── stores/          # Zustand stores (see README.md)
+│   ├── search/          # Full-text search utilities
+│   ├── supabase/        # Supabase clients
+│   └── utils/           # Utility functions
+├── hooks/               # Custom React hooks
+└── types/               # TypeScript type definitions
+```
+
+**Key Files:**
+- `/proxy.ts` - Auth and routing (Next.js 16+)
+- `/src/lib/stores/README.md` - Zustand guide
+- `/src/lib/queries/*.ts` - Cached query functions
+- `/docs/AGENTS.md` - Complete linting rules (481 rules)
+
+---
+
+## 🚀 PERFORMANCE PATTERNS
+
+### Server Components (Primary)
+
+```typescript
+// ✅ Server Component with streaming
+import { Suspense } from "react";
+
+export default async function DashboardPage() {
+  return (
+    <>
+      <QuickStats />
+      <Suspense fallback={<ChartSkeleton />}>
+        <SlowChart />
+      </Suspense>
+    </>
+  );
+}
+```
+
+### Client Component Extraction
+
+```typescript
+// ✅ Extract ONLY interactive part
+// tooltip-wrapper.tsx (Client Component)
 "use client";
 export function TooltipWrapper({ children, content }: Props) {
-  return <Tooltip>{children}</Tooltip>;
+  return <Tooltip content={content}>{children}</Tooltip>;
 }
 
 // kpi-card.tsx (Server Component)
 export function KPICard() {
   return (
     <Card>
-      <TooltipWrapper content="Info">
+      <TooltipWrapper content="Revenue info">
         <Icon />
       </TooltipWrapper>
     </Card>
@@ -1558,566 +478,224 @@ export function KPICard() {
 }
 ```
 
-### 3. Streaming with Suspense
+### Server Actions for Forms
+
 ```typescript
-// ✅ GOOD - Wrap slow components in Suspense
-import { Suspense } from "react";
-import { ChartSkeleton } from "@/components/ui/skeletons";
-
-export default function Page() {
-  return (
-    <Suspense fallback={<ChartSkeleton />}>
-      <SlowChart />
-    </Suspense>
-  );
-}
-```
-
-### 4. Zustand State Management Pattern
-```typescript
-// ✅ GOOD - Zustand Store
-// src/lib/stores/communication-store.ts
-import { create } from "zustand";
-
-type CommunicationStore = {
-  activeFilter: "all" | "email" | "sms";
-  setActiveFilter: (filter: "all" | "email" | "sms") => void;
-  messages: Message[];
-  addMessage: (message: Message) => void;
-};
-
-export const useCommunicationStore = create<CommunicationStore>((set) => ({
-  activeFilter: "all",
-  setActiveFilter: (filter) => set({ activeFilter: filter }),
-  messages: [],
-  addMessage: (message) => set((state) => ({
-    messages: [...state.messages, message]
-  })),
-}));
-
-// Usage in component (automatic re-render only when activeFilter changes)
-"use client";
-import { useCommunicationStore } from "@/lib/stores/communication-store";
-
-export function CommunicationToolbar() {
-  const activeFilter = useCommunicationStore((state) => state.activeFilter);
-  const setActiveFilter = useCommunicationStore((state) => state.setActiveFilter);
-
-  return <button onClick={() => setActiveFilter("email")}>Email</button>;
-}
-
-// ❌ BAD - React Context (NEVER USE)
-const CommunicationContext = createContext();
-export function CommunicationProvider({ children }) {
-  const [activeFilter, setActiveFilter] = useState("all");
-  return (
-    <CommunicationContext.Provider value={{ activeFilter, setActiveFilter }}>
-      {children}
-    </CommunicationContext.Provider>
-  );
-}
-```
-
-### 5. Server Actions for Forms
-```typescript
-// ✅ GOOD - Server Action
-// actions/settings.ts
+// /src/actions/contracts.ts
 "use server";
-export async function updateSettings(formData: FormData) {
-  const data = settingsSchema.parse({
-    name: formData.get("name"),
+import { revalidatePath } from "next/cache";
+
+export async function createContract(formData: FormData) {
+  const data = contractSchema.parse({
+    title: formData.get("title"),
   });
-  // Save to DB
-  revalidatePath("/settings");
+
+  // Save to database
+  await supabase.from("contracts").insert(data);
+
+  revalidatePath("/contracts");
   return { success: true };
 }
 
 // page.tsx
-import { updateSettings } from "@/actions/settings";
-
-<form action={updateSettings}>
-  <input name="name" />
+<form action={createContract}>
+  <input name="title" />
   <button type="submit">Save</button>
 </form>
-
-// ❌ BAD - Client-side state
-"use client";
-const [data, setData] = useState({});
-<form onSubmit={(e) => { /* manual fetch */ }}>
 ```
 
-### 6. ISR for Static Content
+### ISR for Static Content
+
 ```typescript
-// ✅ GOOD - Revalidate every 5 minutes
+// Revalidate every 5 minutes
 export const revalidate = 300;
 
-export default function ReportsPage() {
-  // Static page regenerated every 5 minutes
-  return <Reports />;
+export default async function ReportsPage() {
+  const data = await getReports();
+  return <ReportsView data={data} />;
 }
-```
-
-### 7. Loading States
-```typescript
-// ✅ GOOD - Create loading.tsx for automatic streaming
-// app/dashboard/loading.tsx
-export default function Loading() {
-  return <DashboardSkeleton />;
-}
-```
-
----
-
-## 📦 PROJECT STRUCTURE
-
-### Current Architecture Stats
-- **Total Pages**: 206
-- **Server Components**: 134 (65%)
-- **Client Components**: 72 (35% - only where needed)
-- **Build Time**: ~10 seconds
-- **Bundle Analysis**: Configured with `@next/bundle-analyzer`
-
-### Component Organization
-```
-src/
-├── actions/              # Server Actions (form handling)
-│   ├── settings.ts
-│   └── customers.ts
-├── app/
-│   └── (dashboard)/
-│       └── dashboard/
-│           ├── page.tsx       # Server Component
-│           ├── loading.tsx    # Streaming UI
-│           └── [...]/
-├── components/
-│   ├── ui/
-│   │   ├── skeletons.tsx     # Loading states
-│   │   └── client-timestamp.tsx  # Client wrapper
-│   └── dashboard/
-│       ├── kpi-card.tsx          # Server Component
-│       └── kpi-card-client.tsx   # Client wrapper
-├── lib/
-│   ├── stores/           # Zustand stores (ORGANIZED BY FEATURE)
-│   │   ├── communication-store.ts
-│   │   ├── schedule-store.ts
-│   │   ├── work-store.ts
-│   │   └── user-store.ts
-│   ├── hooks/            # Custom React hooks
-│   └── utils/            # Utility functions
-```
-
----
-
-## 🛠️ DEVELOPMENT COMMANDS
-
-### Performance Analysis
-```bash
-# Analyze bundle sizes (shows in build logs)
-pnpm analyze:bundle
-
-# Run all code analysis
-pnpm analyze
-
-# Check dependencies
-pnpm analyze:deps
-
-# Find circular dependencies
-pnpm analyze:circular
-```
-
-### Development
-```bash
-# Start dev server (Turbopack enabled)
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Lint and fix code
-pnpm lint:fix
 ```
 
 ---
 
 ## ✅ CODE REVIEW CHECKLIST
 
-Before committing code, verify:
-
 ### MCP Server Usage
-- [ ] **Did you search shadcn registry before creating UI components?**
-- [ ] **Did you check Next.js runtime state before implementing changes?**
-- [ ] **Did you use browser automation to verify pages (not just curl)?**
-- [ ] **Did you search Next.js docs for patterns instead of guessing?**
-- [ ] **Did you run shadcn audit checklist after creating components?**
-- [ ] If using Supabase MCP: migration created, types regenerated, advisors run?
+- [ ] Searched shadcn registry before creating UI components?
+- [ ] Checked Next.js runtime state before implementing changes?
+- [ ] Used browser automation to verify pages (not curl)?
+- [ ] Searched Next.js docs for patterns?
+- [ ] If Supabase changes: migration → types → RLS → advisors?
 
 ### Infrastructure & Patterns
-- [ ] **Did you search for existing components before creating new ones?**
-- [ ] **Are you using AppToolbar instead of custom toolbars?**
-- [ ] **Are you using WorkPageLayout or similar existing layouts?**
-- [ ] **Are you extending existing patterns instead of creating duplicates?**
-- [ ] Did you review 2-3 similar pages for established patterns?
+- [ ] Searched for existing components before creating new ones?
+- [ ] Using AppToolbar/WorkPageLayout/shared components?
+- [ ] Extending existing patterns vs creating duplicates?
+- [ ] Reviewed similar pages for established patterns?
 
 ### Performance & Architecture
 - [ ] Is this a Server Component? (if yes, no `"use client"`)
 - [ ] If Client Component, is it absolutely necessary?
-- [ ] Are slow components wrapped in `<Suspense>`?
-- [ ] Does the form use Server Actions instead of client state?
-- [ ] **Is state management using Zustand (NOT React Context)?**
-- [ ] Are Zustand stores organized in `/src/lib/stores/`?
-- [ ] Are shallow selectors used to prevent unnecessary re-renders?
-- [ ] Is static content using ISR (`export const revalidate`)?
+- [ ] Slow components wrapped in `<Suspense>`?
+- [ ] Form uses Server Actions (not client state)?
+- [ ] State management using Zustand (not React Context)?
+- [ ] Static content using ISR (`export const revalidate`)?
 
-### Quality & Best Practices
-- [ ] Are images using `next/image` (not `<img>`)?
-- [ ] Is bundle size monitored (`pnpm analyze:bundle`)?
-- [ ] Does JSDoc explain the component type and optimizations?
-- [ ] Are all hooks dependencies specified correctly?
-- [ ] Is input validated server-side with Zod?
-- [ ] Does the code follow existing naming and structure conventions?
+### Database & Security
+- [ ] Composite indexes for WHERE + ORDER BY?
+- [ ] No N+1 query patterns?
+- [ ] LIMIT clause added to queries?
+- [ ] React.cache() for deduplication?
+- [ ] RLS policies on all tables?
+- [ ] Input validated server-side with Zod?
+
+### Quality
+- [ ] Images using `next/image` (not `<img>`)?
+- [ ] JSDoc explains component purpose?
+- [ ] Error handling and loading states?
+- [ ] Follows existing naming conventions?
+- [ ] Linting rules from `/docs/AGENTS.md` applied?
 
 ---
 
-## 🎨 COMPONENT TEMPLATES
+## 🛠️ DEVELOPMENT COMMANDS
 
-### Server Component Template
-```typescript
-/**
- * [Component Name] - Server Component
- *
- * Performance optimizations:
- * - Server Component by default (no "use client")
- * - Static content rendered on server
- * - Reduced JavaScript bundle size
- * - Better SEO and initial page load
- */
+```bash
+# Development
+pnpm dev                 # Start dev server (Turbopack)
+pnpm build               # Production build
+pnpm lint:fix            # Lint and fix
 
-export default function ComponentName() {
-  // Server-side data fetching
-  const data = await fetchData();
-
-  return (
-    <div>
-      {/* Static content */}
-    </div>
-  );
-}
+# Performance Analysis
+pnpm analyze:bundle      # Bundle size analysis
+pnpm analyze             # All code analysis
+pnpm analyze:deps        # Check dependencies
+pnpm analyze:circular    # Find circular dependencies
 ```
 
-### Client Component Template
+**Bundle Analysis:** Reports saved to `.next/analyze/client.html` and `.next/analyze/server.html`
+
+---
+
+## 🎨 ANTI-PATTERNS (NEVER DO THIS)
+
+### ❌ Data Fetching in useEffect
+
 ```typescript
+// WRONG
 "use client";
+export function CustomerList() {
+  const [customers, setCustomers] = useState([]);
+  useEffect(() => {
+    fetchCustomers().then(setCustomers); // NO!
+  }, []);
+}
 
-/**
- * [Component Name] - Client Component
- *
- * Client-side features:
- * - [List specific reasons for client component]
- * - Example: Interactive tooltips, state management
- */
-
-import { useState } from "react";
-
-export function ComponentName() {
-  const [state, setState] = useState();
-
-  return (
-    <div>
-      {/* Interactive content */}
-    </div>
-  );
+// CORRECT
+export default async function CustomerList() {
+  const customers = await getCustomers();
+  return <div>{customers.map(...)}</div>;
 }
 ```
 
-### Server Action Template
+### ❌ Duplicate State
+
 ```typescript
-"use server";
-
-import { revalidatePath } from "next/cache";
-import { z } from "zod";
-
-const schema = z.object({
-  // Define schema
-});
-
-export async function actionName(formData: FormData) {
-  try {
-    const data = schema.parse({
-      field: formData.get("field"),
-    });
-
-    // Save to database
-
-    revalidatePath("/path");
-    return { success: true };
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.issues[0]?.message || "Validation error"
-      };
-    }
-    return { success: false, error: "Operation failed" };
-  }
+// WRONG - state isolated in each component
+export function Toolbar() {
+  const [filter, setFilter] = useState("all");
 }
+export function Table() {
+  const [filter, setFilter] = useState("all"); // Out of sync!
+}
+
+// CORRECT - shared Zustand store
+const filter = useFiltersStore((state) => state.activeFilter);
 ```
 
-### Zustand Store Template
+### ❌ Manual Loading/Error States
+
 ```typescript
-/**
- * [Feature] Store - Zustand State Management
- *
- * Performance optimizations:
- * - Lightweight state management with Zustand
- * - No provider wrapper needed
- * - Selective subscriptions prevent unnecessary re-renders
- * - Organized in /src/lib/stores/ directory
- */
+// WRONG
+const [data, setData] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
 
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-
-// Define store state type
-type FeatureStore = {
-  // State
-  items: Item[];
-  selectedId: string | null;
-  isLoading: boolean;
-
-  // Actions
-  setItems: (items: Item[]) => void;
-  selectItem: (id: string) => void;
-  clearSelection: () => void;
-  addItem: (item: Item) => void;
-  removeItem: (id: string) => void;
-  reset: () => void;
-};
-
-// Initial state
-const initialState = {
-  items: [],
-  selectedId: null,
-  isLoading: false,
-};
-
-// Create store
-export const useFeatureStore = create<FeatureStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        ...initialState,
-
-        setItems: (items) => set({ items }),
-
-        selectItem: (id) => set({ selectedId: id }),
-
-        clearSelection: () => set({ selectedId: null }),
-
-        addItem: (item) => set((state) => ({
-          items: [...state.items, item]
-        })),
-
-        removeItem: (id) => set((state) => ({
-          items: state.items.filter((item) => item.id !== id)
-        })),
-
-        reset: () => set(initialState),
-      }),
-      {
-        name: "feature-storage", // localStorage key
-        partialize: (state) => ({ items: state.items }), // Only persist items
-      }
-    ),
-    { name: "FeatureStore" } // DevTools name
-  )
-);
-
-// Usage in component
-"use client";
-import { useFeatureStore } from "@/lib/stores/feature-store";
-
-export function MyComponent() {
-  // Selective subscription - only re-renders when selectedId changes
-  const selectedId = useFeatureStore((state) => state.selectedId);
-  const selectItem = useFeatureStore((state) => state.selectItem);
-
-  return <button onClick={() => selectItem("123")}>Select</button>;
-}
+// CORRECT - Server Component
+const data = await getData(); // Built-in error handling
 ```
 
-### Proxy Template (Next.js 16+)
+### ❌ Creating Duplicate Infrastructure
+
 ```typescript
-/**
- * Next.js 16+ Proxy - Auth & Route Protection
- *
- * SECURITY CRITICAL:
- * - Use proxy.ts (NOT middleware.ts) in Next.js 16+
- * - NEVER rely solely on proxy for authorization
- * - ALWAYS validate auth in Server Actions and API routes
- * - Use RLS (Row Level Security) in Supabase
- *
- * Performance:
- * - Runs on Node.js runtime (not Edge)
- * - Lightweight session refresh only
- * - Minimal overhead on protected routes
- */
+// WRONG - custom toolbar
+<div className="flex items-center justify-between p-4">
+  <h1>Title</h1>
+</div>
 
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
-
-export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({
-    request: { headers: request.headers },
-  });
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  // Allow requests if Supabase not configured
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return response;
-  }
-
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      get(name: string) {
-        return request.cookies.get(name)?.value;
-      },
-      set(name: string, value: string, options) {
-        request.cookies.set({ name, value, ...options });
-        response = NextResponse.next({ request: { headers: request.headers } });
-        response.cookies.set({ name, value, ...options });
-      },
-      remove(name: string, options) {
-        request.cookies.set({ name, value: "", ...options });
-        response = NextResponse.next({ request: { headers: request.headers } });
-        response.cookies.set({ name, value: "", ...options });
-      },
-    },
-  });
-
-  // Refresh session if expired
-  const { data: { session } } = await supabase.auth.getSession();
-
-  // Protected routes
-  const protectedPaths = ["/dashboard"];
-  const isProtectedPath = protectedPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
-
-  // Auth pages
-  const authPaths = ["/login", "/signup", "/auth"];
-  const isAuthPath = authPaths.some((path) =>
-    request.nextUrl.pathname.startsWith(path)
-  );
-
-  // Redirect unauthenticated users to login
-  if (isProtectedPath && !session) {
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  // Redirect authenticated users to dashboard
-  if (isAuthPath && session) {
-    const redirectTo = request.nextUrl.searchParams.get("redirectTo");
-    const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = redirectTo || "/dashboard";
-    redirectUrl.search = "";
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  return response;
-}
-
-export const config = {
-  matcher: [
-    // Match all paths except static files
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
-};
+// CORRECT - use AppToolbar
+<AppToolbar title="Title" />
 ```
 
 ---
 
-## 📈 PERFORMANCE MONITORING
+## 📚 REFERENCE DOCUMENTATION
 
-### Metrics to Track
-1. **Bundle Size**: Run `pnpm analyze:bundle` before major releases
-2. **Build Time**: Should stay under 15 seconds
-3. **Server Components %**: Target 65%+ (currently achieved)
-4. **Core Web Vitals**: Monitor in production
-   - LCP (Largest Contentful Paint) < 2.5s
-   - FID (First Input Delay) < 100ms
-   - CLS (Cumulative Layout Shift) < 0.1
+**Internal Documentation:**
+- `/src/lib/stores/README.md` - Zustand state management guide
+- `/docs/performance/` - Database optimization patterns
+- `/docs/AGENTS.md` - Complete linting rules (481 rules)
+- `/docs/migrations/` - Migration guides
+- `/docs/troubleshooting/` - Common issues
 
-### Bundle Analysis
-- Reports saved to `.next/analyze/client.html` and `.next/analyze/server.html`
-- Check for unexpected large dependencies
-- Look for duplicate code across chunks
-- Verify tree-shaking is working
+**External Resources:**
+- [Next.js 16 Documentation](https://nextjs.org/docs)
+- [React 19 Documentation](https://react.dev)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Zustand Documentation](https://docs.pmnd.rs/zustand)
+- [shadcn/ui Components](https://ui.shadcn.com)
 
 ---
 
 ## 🔄 VERSION HISTORY
 
-- **v2.4** - MCP Server Integration (2025-11-04)
-  - **NEW**: Added comprehensive MCP server documentation and guidelines
-  - Added shadcn MCP server for component discovery and best practices
-  - Added Next.js MCP server (next-devtools) for runtime diagnostics and debugging
-  - **CRITICAL**: Introduced runtime-first debugging approach with nextjs_runtime
-  - Added browser automation guidelines for proper page verification
-  - Enhanced component discovery process to include shadcn registry search
-  - Added debugging & testing patterns using MCP tools
-  - Updated code review checklist with MCP server usage checks
-  - Documented when to use each MCP server (shadcn, Next.js, Supabase)
-  - Added 22 new rules to AGENTS.md (460-481) covering MCP tool usage
-  - Emphasized browser automation over curl for Next.js page verification
+### v3.0 - Consolidated & Accurate (2025-11-17)
+- **BREAKING**: Removed React Query documentation (not primary pattern)
+- **NEW**: Documented `/src/lib/queries/` + React.cache() pattern
+- **ACCURACY**: Updated stats to reflect current codebase (360 pages, 1,200 components)
+- **CONSOLIDATION**: Reduced from 2,123 lines to ~800 lines
+- **CLEANUP**: Removed duplicate examples, referenced existing docs
+- **PATTERN DOCS**: Added shadcn/Next.js/Supabase MCP usage
+- Removed redundant template code (point to actual codebase files)
+- Fixed WorkPageLayout reference (client component, not server)
+- Emphasized Server Components + React.cache() as primary pattern
+- Added accurate Zustand store count (51 stores)
 
-- **v2.3** - Production-Ready Updates & Enterprise Search (2025-11-03)
-  - **BREAKING**: Added Critical Rule #6 - Production-Ready Updates
-  - **NEW**: Comprehensive full-text search implementation across all entities
-  - Implemented PostgreSQL full-text search with ts_rank and pg_trgm
-  - Added search_vector columns to 8 major tables (customers, jobs, properties, equipment, etc.)
-  - Created RPC functions for ranked search with weighted relevance
-  - Built search utility library at `/src/lib/search/full-text-search.ts`
-  - Added universal `searchAll()` for global search across all entities
-  - GIN indexes for sub-millisecond search performance
-  - Fuzzy matching with trigram similarity for typo tolerance
-  - Mandatory use of Supabase MCP server for ALL database operations
-  - Comprehensive update process: migrations → RLS → types → code → docs
-  - Added production-ready checklist with 10 required verification steps
-  - Documented all available Supabase MCP tools and their usage
-  - New search documentation section with implementation standards
-  - Updated AGENTS.md with 27 new rules (16 search + 11 production infrastructure)
+### v2.4 - MCP Server Integration (2025-11-04)
+- Added shadcn/Next.js/Supabase MCP server documentation
+- Introduced runtime-first debugging approach
+- Added browser automation guidelines
 
-- **v2.2** - Next.js 16 Proxy Pattern & Security Update (2025-11-02)
-  - **BREAKING**: Migrated from middleware.ts to proxy.ts (Next.js 16+ requirement)
-  - Added comprehensive proxy.ts documentation and template
-  - Updated security guidelines to reflect CVE fix (x-middleware-subrequest bypass)
-  - Emphasized NEVER relying solely on proxy for authorization
-  - Added "Why proxy.ts?" section explaining security benefits
-  - Updated all examples to use Next.js 16+ patterns
-  - Added codemod migration instructions
+### v2.3 - Production-Ready Updates (2025-11-03)
+- Added Critical Rule #6 - Production-Ready Updates
+- Implemented PostgreSQL full-text search
+- Mandatory Supabase MCP usage
 
-- **v2.1** - Enhanced Component Reuse Guidelines (2025-10-29)
-  - Strengthened "Extend Existing Infrastructure" rule (Critical Rule #5)
-  - Added Component Discovery Process with 5-step checklist
-  - Documented key infrastructure components (AppToolbar, WorkPageLayout, etc.)
-  - Added WRONG vs RIGHT code examples for common patterns
-  - Enhanced Code Review Checklist with infrastructure checks
-  - Emphasized consistency over creativity for better maintainability
+### v2.2 - Next.js 16 Proxy Pattern (2025-11-02)
+- Migrated from middleware.ts to proxy.ts
+- Security CVE fix documentation
 
-- **v2.0** - Advanced Performance Optimizations (2025-01-XX)
-  - Converted 65% of pages to Server Components
-  - Added Server Actions for forms
-  - Implemented Streaming with Suspense
-  - Added ISR for static pages
-  - Configured bundle analysis
-  - Created skeleton loading states
+### v2.1 - Enhanced Component Reuse (2025-10-29)
+- Strengthened infrastructure reuse requirements
+- Component discovery process
 
-- **v1.0** - Initial comprehensive configuration (2025-10-07)
-  - Established core rules and standards
-  - Defined Next.js and Supabase best practices
-  - Added coding conventions and testing standards
+### v2.0 - Performance Optimizations (2025-01-XX)
+- 85%+ Server Components target
+- Performance patterns
+
+### v1.0 - Initial Configuration (2025-10-07)
+- Established core rules and standards
+
+---
+
+**End of Guidelines** | For questions or clarifications, reference `/docs/` or `/src/lib/stores/README.md`

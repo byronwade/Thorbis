@@ -11,7 +11,12 @@
 
 import { Grid3x3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { usePriceBookStore } from "@/lib/stores/pricebook-store";
 import { cn } from "@/lib/utils";
 

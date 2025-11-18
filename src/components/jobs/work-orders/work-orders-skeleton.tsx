@@ -17,7 +17,10 @@ export function WorkOrdersSkeleton() {
 
 				<div className="space-y-4">
 					{[...new Array(5)].map((_, i) => (
-						<div className="flex items-center gap-4 rounded-lg border p-4" key={i}>
+						<div
+							className="flex items-center gap-4 rounded-lg border p-4"
+							key={i}
+						>
 							<div className="bg-muted size-12 animate-pulse rounded-full" />
 							<div className="flex-1 space-y-2">
 								<div className="flex items-center gap-2">
@@ -46,7 +49,10 @@ export function WorkOrdersSkeleton() {
 
 				<div className="space-y-4">
 					{[...new Array(5)].map((_, i) => (
-						<div className="bg-accent flex items-center justify-between rounded-lg p-3" key={i}>
+						<div
+							className="bg-accent flex items-center justify-between rounded-lg p-3"
+							key={i}
+						>
 							<div className="space-y-1">
 								<div className="bg-muted h-4 w-32 animate-pulse rounded" />
 								<div className="bg-muted h-3 w-24 animate-pulse rounded" />

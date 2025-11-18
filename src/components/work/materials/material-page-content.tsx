@@ -1,6 +1,13 @@
 "use client";
 
-import { BadgeInfo, Boxes, DollarSign, MapPin, Package, Tag } from "lucide-react";
+import {
+	BadgeInfo,
+	Boxes,
+	DollarSign,
+	MapPin,
+	Package,
+	Tag,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -13,7 +20,12 @@ import {
 } from "@/components/ui/unified-accordion";
 import { formatCurrency } from "@/lib/formatters";
 
-type MaterialStatus = "in-stock" | "low-stock" | "out-of-stock" | "on-order" | "inactive";
+type MaterialStatus =
+	| "in-stock"
+	| "low-stock"
+	| "out-of-stock"
+	| "on-order"
+	| "inactive";
 
 type MaterialDetail = {
 	id: string;
@@ -96,7 +108,10 @@ type RelatedItem = {
 	};
 };
 
-const STATUS_CONFIG: Record<MaterialStatus, { label: string; className: string }> = {
+const STATUS_CONFIG: Record<
+	MaterialStatus,
+	{ label: string; className: string }
+> = {
 	"in-stock": {
 		label: "In Stock",
 		className: "bg-success text-white",
@@ -137,22 +152,28 @@ function formatUnitLabel(unit?: string | null): string {
 }
 
 export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
-	const { material, priceBookItem, activities, notes, attachments } = entityData;
+	const { material, priceBookItem, activities, notes, attachments } =
+		entityData;
 
 	const headerBadges = useMemo(() => {
 		const badges: React.ReactNode[] = [];
-		const statusConfig = STATUS_CONFIG[material.status] ?? STATUS_CONFIG["in-stock"];
+		const statusConfig =
+			STATUS_CONFIG[material.status] ?? STATUS_CONFIG["in-stock"];
 		badges.push(
 			<Badge className={statusConfig.className} key="status" variant="outline">
 				{statusConfig.label}
-			</Badge>
+			</Badge>,
 		);
 
 		if (material.isLowStock) {
 			badges.push(
-				<Badge className="bg-warning text-warning" key="low-stock" variant="outline">
+				<Badge
+					className="bg-warning text-warning"
+					key="low-stock"
+					variant="outline"
+				>
 					Low Stock Alert
-				</Badge>
+				</Badge>,
 			);
 		}
 
@@ -160,7 +181,7 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 			badges.push(
 				<Badge key="sku" variant="outline">
 					SKU: {priceBookItem.sku}
-				</Badge>
+				</Badge>,
 			);
 		}
 
@@ -173,9 +194,13 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
-								<h1 className="text-2xl font-semibold sm:text-3xl">{material.name}</h1>
+								<h1 className="text-2xl font-semibold sm:text-3xl">
+									{material.name}
+								</h1>
 								{material.description && (
 									<p className="text-muted-foreground text-sm sm:text-base">
 										{material.description}
@@ -188,16 +213,21 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 					<div className="flex flex-wrap items-center gap-3">
 						<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
 							<Boxes className="text-muted-foreground size-4" />
-							<span className="font-medium">{material.quantityAvailable} available</span>
+							<span className="font-medium">
+								{material.quantityAvailable} available
+							</span>
 						</div>
 						<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
 							<Package className="text-muted-foreground size-4" />
-							<span className="font-medium">Min {material.minimumQuantity}</span>
+							<span className="font-medium">
+								Min {material.minimumQuantity}
+							</span>
 						</div>
 						<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
 							<DollarSign className="text-muted-foreground size-4" />
 							<span className="font-medium">
-								{formatCurrency(material.costPerUnit)} per {formatUnitLabel(priceBookItem?.unit)}
+								{formatCurrency(material.costPerUnit)} per{" "}
+								{formatUnitLabel(priceBookItem?.unit)}
 							</span>
 						</div>
 					</div>
@@ -216,7 +246,9 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 				subtitle: priceBookItem.sku ? `SKU ${priceBookItem.sku}` : undefined,
 				href: `/dashboard/work/pricebook/${priceBookItem.id}`,
 				icon: <Tag className="size-4" />,
-				badge: priceBookItem.unit ? { label: priceBookItem.unit, variant: "outline" } : undefined,
+				badge: priceBookItem.unit
+					? { label: priceBookItem.unit, variant: "outline" }
+					: undefined,
 			});
 		}
 
@@ -240,7 +272,8 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 								{material.quantityOnHand} {formatUnitLabel(priceBookItem?.unit)}
 							</p>
 							<p className="text-muted-foreground text-sm">
-								{material.quantityReserved} reserved • {material.quantityAvailable} available
+								{material.quantityReserved} reserved •{" "}
+								{material.quantityAvailable} available
 							</p>
 						</div>
 						<div className="bg-background space-y-2 rounded-lg border p-4 shadow-sm">
@@ -258,7 +291,8 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 								{formatCurrency(material.totalCostValue)}
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Last purchase cost {formatCurrency(material.lastPurchaseCost ?? 0)}
+								Last purchase cost{" "}
+								{formatCurrency(material.lastPurchaseCost ?? 0)}
 							</p>
 						</div>
 					</div>
@@ -275,11 +309,17 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 					<div className="grid gap-4 md:grid-cols-2">
 						<div className="space-y-2">
 							<Label>Primary Location</Label>
-							<Input readOnly value={material.primaryLocation ?? "Not specified"} />
+							<Input
+								readOnly
+								value={material.primaryLocation ?? "Not specified"}
+							/>
 						</div>
 						<div className="space-y-2">
 							<Label>Warehouse / Bin</Label>
-							<Input readOnly value={material.warehouseLocation ?? "Not specified"} />
+							<Input
+								readOnly
+								value={material.warehouseLocation ?? "Not specified"}
+							/>
 						</div>
 						<div className="space-y-2 md:col-span-2">
 							<Label>Notes</Label>
@@ -302,7 +342,9 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 						<div className="space-y-4">
 							<div>
 								<Label>Item Name</Label>
-								<p className="text-foreground text-sm">{priceBookItem.name ?? "Unnamed item"}</p>
+								<p className="text-foreground text-sm">
+									{priceBookItem.name ?? "Unnamed item"}
+								</p>
 							</div>
 							<div>
 								<Label>Description</Label>
@@ -349,13 +391,17 @@ export function MaterialPageContent({ entityData }: MaterialPageContentProps) {
 						<div className="space-y-2">
 							<Label>Low Stock Alert</Label>
 							<p className="text-muted-foreground text-sm">
-								{material.isLowStock ? "Alert triggered" : "No alerts triggered"}
+								{material.isLowStock
+									? "Alert triggered"
+									: "No alerts triggered"}
 							</p>
 						</div>
 						<div className="space-y-2">
 							<Label>Alert Status</Label>
 							<p className="text-muted-foreground text-sm">
-								{material.lowStockAlertSent ? "Notification sent" : "No notifications sent"}
+								{material.lowStockAlertSent
+									? "Notification sent"
+									: "No notifications sent"}
 							</p>
 						</div>
 					</div>

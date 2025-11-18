@@ -13,7 +13,10 @@ const suggestions = [
 
 export function SuggestedActions({ onSelect }: SuggestedActionsProps) {
 	return (
-		<div className="grid w-full gap-2 sm:grid-cols-2" data-testid="suggested-actions">
+		<div
+			className="grid w-full gap-2 sm:grid-cols-2"
+			data-testid="suggested-actions"
+		>
 			{suggestions.map((suggestion, index) => (
 				<div key={index} style={{ opacity: 1, transform: "none" }}>
 					<button

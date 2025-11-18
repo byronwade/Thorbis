@@ -1,4 +1,11 @@
-import { Clock, DollarSign, History, Package, TrendingUp, Wrench } from "lucide-react";
+import {
+	Clock,
+	DollarSign,
+	History,
+	Package,
+	TrendingUp,
+	Wrench,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -74,7 +81,8 @@ function getItemTypeBadge(type: string) {
 			label: "Service",
 		},
 		material: {
-			className: "bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
+			className:
+				"bg-accent text-accent-foreground dark:bg-accent/20 dark:text-accent-foreground",
 			label: "Material",
 		},
 		package: {
@@ -129,7 +137,9 @@ function formatDateTime(dateString: string) {
  *
  * TODO: Replace mock data with real database queries
  */
-export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDataProps) {
+export async function PriceBookItemDetailData({
+	itemId,
+}: PriceBookItemDetailDataProps) {
 	// TODO: Fetch from database
 	// const supabase = await createClient();
 	// const { data: item, error: itemError } = await supabase
@@ -145,7 +155,8 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 
 	const item = mockItem;
 	const history = mockPriceHistory;
-	const IconComponent = categoryIcons[item.category as keyof typeof categoryIcons] || Package;
+	const IconComponent =
+		categoryIcons[item.category as keyof typeof categoryIcons] || Package;
 
 	const revenue = item.price - item.cost;
 	const marginPercent = ((revenue / item.price) * 100).toFixed(1);
@@ -178,17 +189,27 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 						<CardContent>
 							<div className="grid gap-6 sm:grid-cols-3">
 								<div className="bg-muted/30 space-y-2 rounded-lg border p-4">
-									<p className="text-muted-foreground text-xs font-medium uppercase">Cost</p>
-									<p className="text-2xl font-semibold">{formatCurrency(item.cost)}</p>
-									<p className="text-muted-foreground text-xs">Per {item.unit}</p>
+									<p className="text-muted-foreground text-xs font-medium uppercase">
+										Cost
+									</p>
+									<p className="text-2xl font-semibold">
+										{formatCurrency(item.cost)}
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Per {item.unit}
+									</p>
 								</div>
 
 								<div className="bg-primary/5 space-y-2 rounded-lg border p-4">
-									<p className="text-muted-foreground text-xs font-medium uppercase">Price</p>
+									<p className="text-muted-foreground text-xs font-medium uppercase">
+										Price
+									</p>
 									<p className="text-primary text-2xl font-semibold">
 										{formatCurrency(item.price)}
 									</p>
-									<p className="text-muted-foreground text-xs">Per {item.unit}</p>
+									<p className="text-muted-foreground text-xs">
+										Per {item.unit}
+									</p>
 								</div>
 
 								<div className="bg-success/50 dark:bg-success/20 space-y-2 rounded-lg border p-4">
@@ -208,11 +229,15 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 
 							<div className="space-y-3">
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">Markup Percentage</span>
+									<span className="text-muted-foreground text-sm">
+										Markup Percentage
+									</span>
 									<span className="font-medium">{item.markupPercent}%</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">Minimum Quantity</span>
+									<span className="text-muted-foreground text-sm">
+										Minimum Quantity
+									</span>
 									<span className="font-medium">{item.minimumQuantity}</span>
 								</div>
 								<div className="flex items-center justify-between">
@@ -232,7 +257,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 								<CardTitle>Description</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<p className="text-muted-foreground leading-relaxed">{item.description}</p>
+								<p className="text-muted-foreground leading-relaxed">
+									{item.description}
+								</p>
 							</CardContent>
 						</Card>
 					)}
@@ -248,7 +275,10 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 						<CardContent>
 							<div className="space-y-4">
 								{history.map((change) => (
-									<div className="bg-muted/30 flex gap-4 rounded-lg border p-4" key={change.id}>
+									<div
+										className="bg-muted/30 flex gap-4 rounded-lg border p-4"
+										key={change.id}
+									>
 										<div className="bg-background flex size-10 shrink-0 items-center justify-center rounded-full">
 											<TrendingUp className="text-muted-foreground size-5" />
 										</div>
@@ -263,7 +293,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 																: "Supplier Sync"}
 													</p>
 													{change.changeReason && (
-														<p className="text-muted-foreground text-xs">{change.changeReason}</p>
+														<p className="text-muted-foreground text-xs">
+															{change.changeReason}
+														</p>
 													)}
 												</div>
 												<p className="text-muted-foreground text-xs text-nowrap">
@@ -272,7 +304,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 											</div>
 											<div className="grid gap-3 text-sm sm:grid-cols-2">
 												<div>
-													<p className="text-muted-foreground text-xs">Cost Change</p>
+													<p className="text-muted-foreground text-xs">
+														Cost Change
+													</p>
 													<p className="font-medium">
 														{formatCurrency(change.oldCost)} →{" "}
 														<span className="text-success dark:text-success">
@@ -281,7 +315,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 													</p>
 												</div>
 												<div>
-													<p className="text-muted-foreground text-xs">Price Change</p>
+													<p className="text-muted-foreground text-xs">
+														Price Change
+													</p>
 													<p className="font-medium">
 														{formatCurrency(change.oldPrice)} →{" "}
 														<span className="text-success dark:text-success">
@@ -290,7 +326,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 													</p>
 												</div>
 											</div>
-											<p className="text-muted-foreground text-xs">Changed by {change.changedBy}</p>
+											<p className="text-muted-foreground text-xs">
+												Changed by {change.changedBy}
+											</p>
 										</div>
 									</div>
 								))}
@@ -326,7 +364,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 								<div className="flex-1">
 									<p className="text-sm font-medium">{item.category}</p>
 									{item.subcategory && (
-										<p className="text-muted-foreground text-xs">{item.subcategory}</p>
+										<p className="text-muted-foreground text-xs">
+											{item.subcategory}
+										</p>
 									)}
 								</div>
 							</div>
@@ -347,12 +387,16 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">Created</p>
-								<p className="text-sm font-medium">{formatDate(item.createdAt)}</p>
+								<p className="text-sm font-medium">
+									{formatDate(item.createdAt)}
+								</p>
 							</div>
 
 							<div className="space-y-1">
 								<p className="text-muted-foreground text-xs">Last Updated</p>
-								<p className="text-sm font-medium">{formatDate(item.updatedAt)}</p>
+								<p className="text-sm font-medium">
+									{formatDate(item.updatedAt)}
+								</p>
 							</div>
 						</CardContent>
 					</Card>
@@ -371,8 +415,12 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 
 								{item.supplierSku && (
 									<div className="space-y-1">
-										<p className="text-muted-foreground text-xs">Supplier SKU</p>
-										<p className="font-mono text-sm font-medium">{item.supplierSku}</p>
+										<p className="text-muted-foreground text-xs">
+											Supplier SKU
+										</p>
+										<p className="font-mono text-sm font-medium">
+											{item.supplierSku}
+										</p>
 									</div>
 								)}
 							</CardContent>
@@ -418,7 +466,9 @@ export async function PriceBookItemDetailData({ itemId }: PriceBookItemDetailDat
 									<TrendingUp className="text-muted-foreground size-4" />
 									<span className="text-sm">Markup</span>
 								</div>
-								<span className="text-sm font-semibold">{item.markupPercent}%</span>
+								<span className="text-sm font-semibold">
+									{item.markupPercent}%
+								</span>
 							</div>
 
 							<div className="flex items-center justify-between">

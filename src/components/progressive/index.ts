@@ -8,13 +8,15 @@
  */
 
 export {
-	ProgressiveTabs,
+	ProgressiveAccordion,
+	ProgressiveAccordionItem,
+} from "./progressive-accordion";
+export {
 	ProgressiveTab,
+	ProgressiveTabs,
+	TabsContent,
 	TabsList,
 	TabsTrigger,
-	TabsContent,
 } from "./progressive-tab";
-
-export { ProgressiveAccordion, ProgressiveAccordionItem } from "./progressive-accordion";
 
 export { ProgressiveWidget, WidgetSkeleton } from "./progressive-widget";

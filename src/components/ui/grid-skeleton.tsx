@@ -142,7 +142,10 @@ export function KanbanGridSkeleton({
 					{/* Column cards */}
 					<div className="space-y-3">
 						{[...new Array(cardsPerColumn)].map((_, cardIndex) => (
-							<div className="bg-card animate-pulse rounded-lg border p-4" key={cardIndex}>
+							<div
+								className="bg-card animate-pulse rounded-lg border p-4"
+								key={cardIndex}
+							>
 								<div className="bg-muted mb-2 h-4 w-3/4 rounded" />
 								<div className="bg-muted mb-3 h-3 w-full rounded" />
 								<div className="flex items-center gap-2">

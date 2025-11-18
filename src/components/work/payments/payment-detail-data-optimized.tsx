@@ -22,7 +22,9 @@ type PaymentDetailDataProps = {
 	paymentId: string;
 };
 
-export async function PaymentDetailDataOptimized({ paymentId }: PaymentDetailDataProps) {
+export async function PaymentDetailDataOptimized({
+	paymentId,
+}: PaymentDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -103,7 +105,7 @@ export async function PaymentDetailDataOptimized({ paymentId }: PaymentDetailDat
         contact_email,
         contact_phone
       )
-    `
+    `,
 		)
 		.eq("id", paymentId)
 		.is("deleted_at", null)
@@ -118,8 +120,12 @@ export async function PaymentDetailDataOptimized({ paymentId }: PaymentDetailDat
 	}
 
 	// Get related data
-	const customer = Array.isArray(payment.customer) ? payment.customer[0] : payment.customer;
-	const invoice = Array.isArray(payment.invoice) ? payment.invoice[0] : payment.invoice;
+	const customer = Array.isArray(payment.customer)
+		? payment.customer[0]
+		: payment.customer;
+	const invoice = Array.isArray(payment.invoice)
+		? payment.invoice[0]
+		: payment.invoice;
 	const job = Array.isArray(payment.job) ? payment.job[0] : payment.job;
 	const paymentPlanSchedule = Array.isArray(payment.payment_plan_schedule)
 		? payment.payment_plan_schedule[0]

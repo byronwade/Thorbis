@@ -22,7 +22,13 @@ import {
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -41,13 +47,15 @@ const statusConfig = {
 	connected: {
 		icon: CheckCircle2,
 		badge: "Connected",
-		badgeClassName: "border-success/50 bg-success/10 text-success dark:text-success",
+		badgeClassName:
+			"border-success/50 bg-success/10 text-success dark:text-success",
 		iconClassName: "text-success dark:text-success",
 	},
 	syncing: {
 		icon: RefreshCw,
 		badge: "Syncing...",
-		badgeClassName: "border-primary/50 bg-primary/10 text-primary dark:text-primary",
+		badgeClassName:
+			"border-primary/50 bg-primary/10 text-primary dark:text-primary",
 		iconClassName: "text-primary dark:text-primary animate-spin",
 	},
 	error: {
@@ -60,7 +68,8 @@ const statusConfig = {
 	warning: {
 		icon: AlertCircle,
 		badge: "Warning",
-		badgeClassName: "border-warning/50 bg-warning/10 text-warning dark:text-warning",
+		badgeClassName:
+			"border-warning/50 bg-warning/10 text-warning dark:text-warning",
 		iconClassName: "text-warning dark:text-warning",
 	},
 	disconnected: {
@@ -94,7 +103,9 @@ function formatLastSync(date: Date | null): string {
 	return `${diffDays}d ago`;
 }
 
-export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps) {
+export function SupplierConnectionCard({
+	supplier,
+}: SupplierConnectionCardProps) {
 	const [isSyncing, setIsSyncing] = useState(false);
 	const config = statusConfig[supplier.status];
 	const StatusIcon = config.icon;
@@ -121,13 +132,15 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 							className={cn(
 								"bg-muted flex h-10 w-10 items-center justify-center rounded-lg",
 								supplier.status === "connected" && "bg-success/10",
-								supplier.status === "error" && "bg-destructive/10"
+								supplier.status === "error" && "bg-destructive/10",
 							)}
 						>
 							<StatusIcon className={cn("h-5 w-5", config.iconClassName)} />
 						</div>
 						<div>
-							<CardTitle className="text-base">{supplier.displayName}</CardTitle>
+							<CardTitle className="text-base">
+								{supplier.displayName}
+							</CardTitle>
 							<CardDescription className="text-xs">
 								{supplier.apiEnabled ? "API Enabled" : "API Not Configured"}
 							</CardDescription>
@@ -135,7 +148,10 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 					</div>
 
 					<div className="flex items-center gap-2">
-						<Badge className={cn("text-xs font-medium", config.badgeClassName)} variant="outline">
+						<Badge
+							className={cn("text-xs font-medium", config.badgeClassName)}
+							variant="outline"
+						>
 							{config.badge}
 						</Badge>
 						<DropdownMenu>
@@ -165,7 +181,10 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 									</DropdownMenuItem>
 								)}
 								{supplier.status === "connected" && (
-									<DropdownMenuItem className="text-destructive" onClick={handleDisconnect}>
+									<DropdownMenuItem
+										className="text-destructive"
+										onClick={handleDisconnect}
+									>
 										<XCircle className="mr-2 h-4 w-4" />
 										Disconnect
 									</DropdownMenuItem>
@@ -195,12 +214,16 @@ export function SupplierConnectionCard({ supplier }: SupplierConnectionCardProps
 				<div className="grid grid-cols-2 gap-3">
 					<div className="bg-muted/30 rounded-lg border p-3">
 						<p className="text-muted-foreground text-xs">Items Imported</p>
-						<p className="text-lg font-semibold">{supplier.itemsImported.toLocaleString()}</p>
+						<p className="text-lg font-semibold">
+							{supplier.itemsImported.toLocaleString()}
+						</p>
 					</div>
 
 					<div className="bg-muted/30 rounded-lg border p-3">
 						<p className="text-muted-foreground text-xs">Last Sync</p>
-						<p className="text-lg font-semibold">{formatLastSync(supplier.lastSyncAt)}</p>
+						<p className="text-lg font-semibold">
+							{formatLastSync(supplier.lastSyncAt)}
+						</p>
 					</div>
 				</div>
 

@@ -4,7 +4,12 @@ import { MapPin, Maximize2, Store } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 type Supplier = {
@@ -45,7 +50,9 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 			return;
 		}
 
-		const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+		const existingScript = document.querySelector(
+			'script[src*="maps.googleapis.com"]',
+		);
 
 		if (existingScript) {
 			isMapScriptLoading = true;
@@ -278,9 +285,14 @@ export function ServiceLocationMap({
 							<div className="flex-1">
 								<div className="mb-1 flex items-center gap-2">
 									<MapPin className="h-4 w-4 text-white" />
-									<span className="text-sm font-semibold text-white">Service Location</span>
+									<span className="text-sm font-semibold text-white">
+										Service Location
+									</span>
 									{nearbySuppliers.length > 0 && (
-										<Badge className="bg-primary/80 h-5 text-[10px] text-white" variant="secondary">
+										<Badge
+											className="bg-primary/80 h-5 text-[10px] text-white"
+											variant="secondary"
+										>
 											<Store className="mr-1 h-3 w-3" />
 											{nearbySuppliers.length} suppliers
 										</Badge>

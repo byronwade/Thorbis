@@ -18,7 +18,13 @@ import { Clock, Menu, Phone, Settings, Users } from "lucide-react";
 import { getCallRoutingRules } from "@/actions/telnyx";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getUserCompanyId } from "@/lib/auth/user-data";
 import { CallRoutingRuleActions } from "./call-routing-rule-actions";
 
@@ -38,7 +44,9 @@ export async function CallRoutingRulesList() {
 	if (!(result.success && result.data)) {
 		return (
 			<div className="flex items-center justify-center p-12">
-				<p className="text-destructive">{result.error || "Failed to load routing rules"}</p>
+				<p className="text-destructive">
+					{result.error || "Failed to load routing rules"}
+				</p>
 			</div>
 		);
 	}
@@ -72,7 +80,9 @@ export async function CallRoutingRulesList() {
 									</Badge>
 									<RoutingTypeBadge type={rule.routing_type} />
 								</div>
-								{rule.description && <CardDescription>{rule.description}</CardDescription>}
+								{rule.description && (
+									<CardDescription>{rule.description}</CardDescription>
+								)}
 							</div>
 							<div className="flex items-center gap-2">
 								<Badge className="font-mono" variant="outline">
@@ -89,7 +99,9 @@ export async function CallRoutingRulesList() {
 							<RoutingDetails rule={rule} />
 
 							{/* Business Hours */}
-							{rule.routing_type === "business_hours" && <BusinessHoursInfo rule={rule} />}
+							{rule.routing_type === "business_hours" && (
+								<BusinessHoursInfo rule={rule} />
+							)}
 
 							{/* Team Members */}
 							{rule.routing_type === "round_robin" && rule.team_members && (
@@ -139,7 +151,9 @@ function RoutingDetails({ rule }: { rule: any }) {
 				{rule.routing_type === "direct" && rule.forward_to_number && (
 					<p>Forward to: {rule.forward_to_number}</p>
 				)}
-				{rule.routing_type === "round_robin" && <p>Ring timeout: {rule.ring_timeout}s</p>}
+				{rule.routing_type === "round_robin" && (
+					<p>Ring timeout: {rule.ring_timeout}s</p>
+				)}
 				{rule.routing_type === "ivr" && <p>IVR Menu configured</p>}
 				{rule.routing_type === "business_hours" && (
 					<>
@@ -175,7 +189,8 @@ function BusinessHoursInfo({ rule }: { rule: any }) {
 				{configuredDays.length > 0 && (
 					<p className="mt-1 text-xs">
 						{configuredDays.slice(0, 3).join(", ")}
-						{configuredDays.length > 3 && `, +${configuredDays.length - 3} more`}
+						{configuredDays.length > 3 &&
+							`, +${configuredDays.length - 3} more`}
 					</p>
 				)}
 			</div>

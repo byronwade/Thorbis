@@ -5,7 +5,13 @@
  */
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -93,13 +99,21 @@ export function CostBreakdownTable({
 									<TableCell>
 										<div>
 											<div className="font-medium">{row.service}</div>
-											<div className="text-muted-foreground text-xs">{row.description}</div>
+											<div className="text-muted-foreground text-xs">
+												{row.description}
+											</div>
 										</div>
 									</TableCell>
-									<TableCell className="text-muted-foreground text-xs">{row.rate}</TableCell>
-									<TableCell className="text-right font-medium">${row.cost.toFixed(2)}</TableCell>
+									<TableCell className="text-muted-foreground text-xs">
+										{row.rate}
+									</TableCell>
+									<TableCell className="text-right font-medium">
+										${row.cost.toFixed(2)}
+									</TableCell>
 									<TableCell className="text-right">
-										<Badge variant="outline">{row.percentage.toFixed(1)}%</Badge>
+										<Badge variant="outline">
+											{row.percentage.toFixed(1)}%
+										</Badge>
 									</TableCell>
 								</TableRow>
 							))}

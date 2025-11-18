@@ -57,9 +57,13 @@ function SupplierStatusIcon({ status }: { status: SyncStatus }) {
 		case "connected":
 			return <CheckCircle2 className="text-success dark:text-success size-4" />;
 		case "syncing":
-			return <Loader2 className="text-primary dark:text-primary size-4 animate-spin" />;
+			return (
+				<Loader2 className="text-primary dark:text-primary size-4 animate-spin" />
+			);
 		case "error":
-			return <AlertCircle className="text-destructive dark:text-destructive size-4" />;
+			return (
+				<AlertCircle className="text-destructive dark:text-destructive size-4" />
+			);
 		case "warning":
 			return <AlertCircle className="text-warning dark:text-warning size-4" />;
 		default:
@@ -104,7 +108,9 @@ function SupplierStatusCard({
 		}
 		if (status === "connected" && lastSyncAt) {
 			const now = new Date();
-			const diffHours = Math.floor((now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60));
+			const diffHours = Math.floor(
+				(now.getTime() - lastSyncAt.getTime()) / (1000 * 60 * 60),
+			);
 			if (diffHours < 1) {
 				return "Just now";
 			}
@@ -147,7 +153,9 @@ function SupplierStatusCard({
 			</div>
 			{status === "error" && errorMessage && (
 				<div className="bg-destructive dark:bg-destructive/20 mt-2 rounded-md p-2">
-					<p className="text-destructive dark:text-destructive text-xs">{errorMessage}</p>
+					<p className="text-destructive dark:text-destructive text-xs">
+						{errorMessage}
+					</p>
 				</div>
 			)}
 		</div>
@@ -163,25 +171,45 @@ function QuickActionsSection() {
 		<SidebarGroup>
 			<SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
 			<div className="space-y-2 px-2">
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/labor-calculator">
 						<Calculator className="size-3" />
 						Labor Calculator
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/mass-update">
 						<TrendingUp className="size-3" />
 						Mass Price Increase
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/import">
 						<Upload className="size-3" />
 						Bulk Import
 					</Link>
 				</Button>
-				<Button asChild className="w-full justify-start gap-2 text-xs" size="sm" variant="outline">
+				<Button
+					asChild
+					className="w-full justify-start gap-2 text-xs"
+					size="sm"
+					variant="outline"
+				>
 					<Link href="/dashboard/work/pricebook/export">
 						<Download className="size-3" />
 						Bulk Export
@@ -225,7 +253,11 @@ function CategoriesSection() {
 				type="button"
 			>
 				<SidebarGroupLabel>Categories</SidebarGroupLabel>
-				{collapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
+				{collapsed ? (
+					<ChevronRight className="size-4" />
+				) : (
+					<ChevronDown className="size-4" />
+				)}
 			</button>
 			{!collapsed && (
 				<div className="space-y-1 px-2 pt-2">
@@ -237,8 +269,14 @@ function CategoriesSection() {
 							type="button"
 						>
 							<span className="flex items-center gap-2">
-								{categories.includes(category.name) && <Check className="text-primary size-3" />}
-								<span className={categories.includes(category.name) ? "font-medium" : ""}>
+								{categories.includes(category.name) && (
+									<Check className="text-primary size-3" />
+								)}
+								<span
+									className={
+										categories.includes(category.name) ? "font-medium" : ""
+									}
+								>
 									{category.name}
 								</span>
 							</span>
@@ -285,7 +323,12 @@ function ActiveFiltersSection() {
 		<SidebarGroup>
 			<div className="flex items-center justify-between px-2">
 				<SidebarGroupLabel>Active Filters</SidebarGroupLabel>
-				<Button className="h-auto p-0 text-xs" onClick={resetFilters} size="sm" variant="link">
+				<Button
+					className="h-auto p-0 text-xs"
+					onClick={resetFilters}
+					size="sm"
+					variant="link"
+				>
 					Clear all
 				</Button>
 			</div>

@@ -4,9 +4,14 @@ import crypto from "node:crypto";
 
 const RESEND_API_BASE = "https://api.resend.com";
 
-type ResendResponse<T> = { success: true; data: T } | { success: false; error: string };
+type ResendResponse<T> =
+	| { success: true; data: T }
+	| { success: false; error: string };
 
-async function resendRequest<T>(path: string, init: RequestInit): Promise<ResendResponse<T>> {
+async function resendRequest<T>(
+	path: string,
+	init: RequestInit,
+): Promise<ResendResponse<T>> {
 	const apiKey = process.env.RESEND_API_KEY;
 	if (!apiKey) {
 		return {
@@ -25,7 +30,8 @@ async function resendRequest<T>(path: string, init: RequestInit): Promise<Resend
 	});
 
 	if (!response.ok) {
-		const message = (await response.json().catch(() => null))?.message || response.statusText;
+		const message =
+			(await response.json().catch(() => null))?.message || response.statusText;
 		return { success: false, error: message };
 	}
 

@@ -1,0 +1,49 @@
+File Path,useState Count,Form Type,Complexity,Priority,Refactoring Phase
+src/components/work/job-details/job-page-content.tsx,23,Multi-section job editor,VERY_COMPLEX,CRITICAL,Phase 3
+src/components/work/purchase-orders/purchase-order-form.tsx,22,Purchase order form,VERY_COMPLEX,CRITICAL,Phase 2
+src/components/communication/messages/messages-page-client.tsx,15,Multi-channel messaging,VERY_COMPLEX,CRITICAL,Phase 3
+src/components/work/materials/material-form.tsx,15,Material form,COMPLEX,HIGH,Phase 2
+src/components/payment/invoice-payment-form.tsx,11,Invoice payment,COMPLEX,HIGH,Phase 2
+src/components/work/vendors/work-vendor-form.tsx,11,Vendor form,COMPLEX,HIGH,Phase 2
+src/components/work/invoices/invoice-form.tsx,11,Invoice form,COMPLEX,HIGH,Phase 2
+src/components/work/appointments/appointment-form.tsx,11,Appointment form,COMPLEX,HIGH,Phase 2
+src/components/work/quick-customer-add.tsx,11,Quick customer,COMPLEX,HIGH,Phase 2
+src/components/layout/video-conference.tsx,10,Video conference,COMPLEX,MEDIUM,Phase 3
+src/components/features/auth/register-form.tsx,10,Registration form,COMPLEX,CRITICAL,Phase 1
+src/components/invoices/invoice-options-sidebar.tsx,9,Invoice options,MEDIUM_HIGH,MEDIUM,Phase 4
+src/components/work/estimates/estimate-form.tsx,9,Estimate form,COMPLEX,HIGH,Phase 2
+src/components/pricebook/bulk-import-form.tsx,9,Bulk import,COMPLEX,MEDIUM,Phase 3
+src/components/work/maintenance-plans/maintenance-plan-form.tsx,9,Maintenance plan,COMPLEX,MEDIUM,Phase 4
+src/components/work/job-form.tsx,9,Job creation,COMPLEX,HIGH,Phase 2
+src/components/work/payments/payment-form.tsx,7,Payment form,MEDIUM,MEDIUM,Phase 4
+src/components/work/equipment/equipment-form.tsx,7,Equipment form,MEDIUM,MEDIUM,Phase 4
+src/components/work/enhanced-scheduling.tsx,8,Scheduling,MEDIUM,MEDIUM,Phase 4
+src/components/customers/editor-blocks/documents-media-block.tsx,8,Document manager,MEDIUM,LOW_MEDIUM,Phase 5
+src/lib/ai/examples.tsx,8,AI examples,MEDIUM,LOW,Phase 5
+src/components/work/service-agreements/service-agreement-form.tsx,8,Service agreement,COMPLEX,MEDIUM,Phase 4
+src/app/(dashboard)/dashboard/settings/communications/email/email-client.tsx,4,Email settings,SIMPLE,LOW_MEDIUM,Phase 4
+src/components/features/auth/login-form.tsx,4,Login form,SIMPLE,CRITICAL,Phase 1
+src/components/features/auth/complete-profile-form.tsx,6,Profile completion,SIMPLE,CRITICAL,Phase 1
+src/components/work/job-details/PhotoUploader.tsx,5,Photo upload,MEDIUM,LOW_MEDIUM,Phase 5
+src/components/work/job-details/InlinePhotoUploader.tsx,4,Inline photo,MEDIUM,LOW_MEDIUM,Phase 5
+src/components/work/contract-signing-form.tsx,5,Contract signing,MEDIUM,MEDIUM,Phase 4
+src/components/kb/kb-search.tsx,5,Knowledge base search,MEDIUM,LOW,Phase 5
+src/components/customers/smart-address-input.tsx,5,Address input,MEDIUM,MEDIUM,Phase 4
+src/components/work/price-book-item-form.tsx,5,Price book item,MEDIUM,MEDIUM,Phase 4
+src/components/communication/messages/client/conversation/message-input.tsx,4,Message input,SIMPLE,MEDIUM,Phase 4
+src/components/work/multi-property-selector.tsx,3,Property selector,SIMPLE,LOW,Phase 5
+src/components/work/multi-customer-selector.tsx,3,Customer selector,SIMPLE,LOW,Phase 5
+src/components/data/export-workflow-client.tsx,3,Data export,SIMPLE,LOW,Phase 5
+src/components/work/contract-form.tsx,3,Contract form,SIMPLE,LOW,Phase 5
+src/components/work/job-creation/inline-customer-form.tsx,4,Inline customer,SIMPLE,MEDIUM,Phase 4
+src/components/work/job-creation/inline-property-form.tsx,4,Inline property,SIMPLE,MEDIUM,Phase 4
+src/components/work/add-property-dialog.tsx,4,Property dialog,SIMPLE,LOW_MEDIUM,Phase 5
+src/components/inventory/vendor-form.tsx,4,Inventory vendor,SIMPLE,LOW_MEDIUM,Phase 5
+src/components/chat/multimodal-input.tsx,2,Chat input,SIMPLE,LOW,Phase 5
+src/components/ui/submit-button.tsx,2,Submit button,SIMPLE,LOW,Phase 5
+src/components/layout/standard-sections/attachments-section.tsx,2,Attachments,SIMPLE,LOW,Phase 5
+src/components/telnyx/voicemail-settings.tsx,6,Voicemail settings,MEDIUM,LOW_MEDIUM,Phase 5
+src/components/billing/custom-payment-form.tsx,6,Payment form,MEDIUM,MEDIUM,Phase 4
+src/components/customers/customer-addresses-manager.tsx,6,Address manager,MEDIUM,MEDIUM,Phase 4
+src/components/customers/intelligent-customer-wizard.tsx,6,Customer wizard,MEDIUM,MEDIUM,Phase 4
+src/components/customers/customer-contacts-manager.tsx,6,Contact manager,MEDIUM,MEDIUM,Phase 4

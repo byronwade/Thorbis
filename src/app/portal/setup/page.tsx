@@ -12,7 +12,13 @@ import { AlertCircle, CheckCircle2, Lock, Mail, User } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/server";
@@ -70,7 +76,9 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 		.single();
 
 	if (!customer) {
-		return <InvalidTokenUI message="Customer not found or invitation has been revoked" />;
+		return (
+			<InvalidTokenUI message="Customer not found or invitation has been revoked" />
+		);
 	}
 
 	// Check if already set up
@@ -174,7 +182,8 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 					</div>
 					<CardTitle className="text-2xl">Set Up Your Portal Account</CardTitle>
 					<CardDescription>
-						Welcome, {customer.display_name}! Create a password to access your customer portal.
+						Welcome, {customer.display_name}! Create a password to access your
+						customer portal.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -231,7 +240,9 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 									type="password"
 								/>
 							</div>
-							<p className="text-muted-foreground text-xs">Must be at least 8 characters</p>
+							<p className="text-muted-foreground text-xs">
+								Must be at least 8 characters
+							</p>
 						</div>
 
 						{/* Confirm password */}
@@ -260,7 +271,8 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 								<div className="space-y-1">
 									<p className="text-sm font-medium">Secure & Private</p>
 									<p className="text-muted-foreground text-xs">
-										Your password is encrypted and secure. We never share your information.
+										Your password is encrypted and secure. We never share your
+										information.
 									</p>
 								</div>
 							</div>
@@ -274,7 +286,10 @@ export default async function PortalSetupPage({ searchParams }: PageProps) {
 						{/* Help text */}
 						<p className="text-muted-foreground text-center text-sm">
 							Need help?{" "}
-							<a className="text-primary underline" href="mailto:support@thorbis.com">
+							<a
+								className="text-primary underline"
+								href="mailto:support@thorbis.com"
+							>
 								Contact Support
 							</a>
 						</p>

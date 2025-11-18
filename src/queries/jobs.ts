@@ -30,7 +30,10 @@ export type ActionResult<T> = {
  * Get job by ID with all domain data (internal implementation)
  * This is a regular async function, NOT a Server Action
  */
-async function getJobInternal(jobId: string, companyId: string): Promise<ActionResult<any>> {
+async function getJobInternal(
+	jobId: string,
+	companyId: string,
+): Promise<ActionResult<any>> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -64,7 +67,7 @@ async function getJobInternal(jobId: string, companyId: string): Promise<ActionR
 					"quality",
 					"permit",
 					"multiEntity",
-				])
+				]),
 			)
 			.eq("id", jobId)
 			.eq("company_id", activeCompanyId)
@@ -132,7 +135,7 @@ export async function getJob(jobId: string): Promise<ActionResult<any>> {
 		{
 			revalidate: 60,
 			tags: [`job-${jobId}`, `company-${companyId}-jobs`],
-		}
+		},
 	);
 
 	return getCachedJob(jobId, companyId);

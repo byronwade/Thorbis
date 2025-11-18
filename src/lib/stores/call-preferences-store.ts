@@ -117,14 +117,16 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
 
 				setCardVisibility: (cardId, isVisible) => {
 					set((state) => ({
-						cards: state.cards.map((card) => (card.id === cardId ? { ...card, isVisible } : card)),
+						cards: state.cards.map((card) =>
+							card.id === cardId ? { ...card, isVisible } : card,
+						),
 					}));
 				},
 
 				setCardCollapsed: (cardId, isCollapsed) => {
 					set((state) => ({
 						cards: state.cards.map((card) =>
-							card.id === cardId ? { ...card, isCollapsed } : card
+							card.id === cardId ? { ...card, isCollapsed } : card,
 						),
 					}));
 				},
@@ -141,12 +143,14 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
 						card.order = newOrder;
 
 						// Reorder all cards
-						const reordered = [...cards.slice(0, newOrder), card, ...cards.slice(newOrder)].map(
-							(c, index) => ({
-								...c,
-								order: index,
-							})
-						);
+						const reordered = [
+							...cards.slice(0, newOrder),
+							card,
+							...cards.slice(newOrder),
+						].map((c, index) => ({
+							...c,
+							order: index,
+						}));
 
 						return { cards: reordered };
 					});
@@ -166,7 +170,9 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
 				toggleCard: (cardId) => {
 					set((state) => ({
 						cards: state.cards.map((card) =>
-							card.id === cardId ? { ...card, isCollapsed: !card.isCollapsed } : card
+							card.id === cardId
+								? { ...card, isCollapsed: !card.isCollapsed }
+								: card,
 						),
 					}));
 				},
@@ -177,13 +183,16 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
 
 				setAutoSaveNotes: (enabled) => set({ autoSaveNotes: enabled }),
 
-				setKeyboardShortcutsEnabled: (enabled) => set({ keyboardShortcutsEnabled: enabled }),
+				setKeyboardShortcutsEnabled: (enabled) =>
+					set({ keyboardShortcutsEnabled: enabled }),
 
 				resetToDefaults: () => set(initialState),
 
 				getVisibleCards: () => {
 					const { cards } = get();
-					return cards.filter((card) => card.isVisible).sort((a, b) => a.order - b.order);
+					return cards
+						.filter((card) => card.isVisible)
+						.sort((a, b) => a.order - b.order);
 				},
 			}),
 			{
@@ -200,8 +209,8 @@ export const useCallPreferencesStore = create<CallPreferencesStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "CallPreferencesStore" }
-	)
+		{ name: "CallPreferencesStore" },
+	),
 );

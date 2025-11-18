@@ -29,7 +29,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import {
 	DetailPageContentLayout,
 	type DetailPageHeaderConfig,
@@ -83,7 +89,10 @@ export type TeamMemberPageContentProps = {
 	metrics: any;
 };
 
-export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageContentProps) {
+export function TeamMemberPageContent({
+	entityData,
+	metrics,
+}: TeamMemberPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
@@ -115,11 +124,19 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 	};
 
 	const displayName = useMemo(
-		() => user?.name || localMember?.name || teamMember?.name || `${user?.email || "Unknown User"}`,
-		[user, localMember, teamMember]
+		() =>
+			user?.name ||
+			localMember?.name ||
+			teamMember?.name ||
+			`${user?.email || "Unknown User"}`,
+		[user, localMember, teamMember],
 	);
 
-	const memberStatus = (localMember?.status || teamMember?.status || "active")?.toLowerCase();
+	const memberStatus = (
+		localMember?.status ||
+		teamMember?.status ||
+		"active"
+	)?.toLowerCase();
 
 	const roleName =
 		localMember?.role?.name ||
@@ -128,7 +145,8 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		teamMember?.job_title ||
 		"Team Member";
 
-	const departmentName = localMember?.department?.name || teamMember?.department?.name || null;
+	const departmentName =
+		localMember?.department?.name || teamMember?.department?.name || null;
 
 	const memberSince =
 		localMember?.joined_at ??
@@ -137,7 +155,8 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		teamMember?.created_at ??
 		null;
 
-	const lastActive = localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
+	const lastActive =
+		localMember?.last_active_at ?? teamMember?.last_active_at ?? null;
 
 	// Save changes
 	const handleSave = async () => {
@@ -160,7 +179,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 	};
 
 	// Get status badge variant
-	const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" => {
+	const getStatusBadgeVariant = (
+		status: string,
+	): "default" | "secondary" | "destructive" => {
 		switch (status) {
 			case "active":
 				return "default";
@@ -178,7 +199,10 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 		<Badge className="font-mono" key="identifier" variant="outline">
 			#{teamMember?.id?.slice(0, 8).toUpperCase() || "MEMBER"}
 		</Badge>,
-		<Badge key="status" variant={getStatusBadgeVariant(memberStatus || "active")}>
+		<Badge
+			key="status"
+			variant={getStatusBadgeVariant(memberStatus || "active")}
+		>
 			{memberStatus === "active"
 				? "Active"
 				: memberStatus === "invited"
@@ -220,21 +244,24 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 			key: "assign-job",
 			label: "Assign Job",
 			icon: Wrench,
-			onClick: () => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "view-schedule",
 			label: "View Schedule",
 			icon: Calendar,
 			variant: "secondary" as const,
-			onClick: () => router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
+			onClick: () =>
+				router.push(`/dashboard/schedule?teamMemberId=${teamMember.id}`),
 		},
 		{
 			key: "edit-permissions",
 			label: "Edit Permissions",
 			icon: Shield,
 			variant: "outline" as const,
-			onClick: () => router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
+			onClick: () =>
+				router.push(`/dashboard/settings/team/${teamMember.id}#permissions`),
 		},
 	] as const;
 
@@ -243,7 +270,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 			const { key, label, icon: Icon, onClick } = config;
 			const variant = "variant" in config ? config.variant : undefined;
 			return (
-				<Button key={key} onClick={onClick} size="sm" variant={variant ?? "default"}>
+				<Button
+					key={key}
+					onClick={onClick}
+					size="sm"
+					variant={variant ?? "default"}
+				>
 					<Icon className="mr-2 h-4 w-4" />
 					{label}
 				</Button>
@@ -282,7 +314,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 						<DropdownMenuSeparator />
 
 						<DropdownMenuItem
-							onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)}
+							onClick={() =>
+								router.push(`/dashboard/settings/team/${teamMember.id}`)
+							}
 						>
 							<UserCog className="mr-2 size-3.5" />
 							Edit Full Profile
@@ -316,7 +350,15 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 				</DropdownMenu>
 			</div>
 		);
-	}, [hasChanges, isSaving, handleSave, handleCancel, renderQuickActions, router, teamMember.id]);
+	}, [
+		hasChanges,
+		isSaving,
+		handleSave,
+		handleCancel,
+		renderQuickActions,
+		router,
+		teamMember.id,
+	]);
 
 	// Update toolbar actions when hasChanges or isSaving changes
 	useEffect(() => {
@@ -475,21 +517,24 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 					</Label>
 					<Input
 						className={cn(
-							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl"
+							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl",
 						)}
 						onChange={(e) => handleFieldChange("name", e.target.value)}
 						placeholder="Enter member name..."
 						value={displayName}
 					/>
 					<p className="text-muted-foreground text-xs">
-						Update how this team member appears across Thorbis. Changes are saved when you select
-						Save changes.
+						Update how this team member appears across Thorbis. Changes are
+						saved when you select Save changes.
 					</p>
 				</div>
 
 				<div className="grid gap-3 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
-						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
+						<div
+							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
@@ -497,7 +542,10 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										{label}
 									</span>
 									{href ? (
-										<a className="text-sm font-semibold hover:underline" href={href}>
+										<a
+											className="text-sm font-semibold hover:underline"
+											href={href}
+										>
 											{value}
 										</a>
 									) : (
@@ -511,7 +559,10 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
-						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
+						<div
+							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
@@ -543,7 +594,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 									<div className="space-y-2">
 										<Label htmlFor="email">Email</Label>
 										<div className="flex gap-2">
-											<Input id="email" readOnly type="email" value={user?.email || ""} />
+											<Input
+												id="email"
+												readOnly
+												type="email"
+												value={user?.email || ""}
+											/>
 											{user?.email && (
 												<Button asChild size="icon" variant="outline">
 													<a href={`mailto:${user.email}`}>
@@ -558,7 +614,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<div className="flex gap-2">
 											<Input
 												id="phone"
-												onChange={(e) => handleFieldChange("phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("phone", e.target.value)
+												}
 												type="tel"
 												value={localMember.phone || ""}
 											/>
@@ -577,7 +635,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Label htmlFor="job_title">Job Title</Label>
 										<Input
 											id="job_title"
-											onChange={(e) => handleFieldChange("job_title", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("job_title", e.target.value)
+											}
 											value={localMember.job_title || ""}
 										/>
 									</div>
@@ -585,7 +645,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Label htmlFor="notes">Notes</Label>
 										<Textarea
 											id="notes"
-											onChange={(e) => handleFieldChange("notes", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("notes", e.target.value)
+											}
 											placeholder="Internal notes about this team member"
 											rows={3}
 											value={localMember.notes || ""}
@@ -634,15 +696,20 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 												<p
 													className={cn(
 														"text-muted-foreground",
-														new Date(cert.expiry_date) < new Date() && "text-destructive"
+														new Date(cert.expiry_date) < new Date() &&
+															"text-destructive",
 													)}
 												>
-													{new Date(cert.expiry_date) < new Date() ? "Expired" : "Expires"}:{" "}
-													{formatDate(cert.expiry_date, "short")}
+													{new Date(cert.expiry_date) < new Date()
+														? "Expired"
+														: "Expires"}
+													: {formatDate(cert.expiry_date, "short")}
 												</p>
 											)}
 											{cert.credential_id && (
-												<p className="text-muted-foreground">ID: {cert.credential_id}</p>
+												<p className="text-muted-foreground">
+													ID: {cert.credential_id}
+												</p>
 											)}
 										</div>
 									</div>
@@ -666,7 +733,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 				count: assignedJobs.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/new?teamMemberId=${teamMember.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -707,7 +776,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 
 										return (
 											<TableRow key={assignment.id}>
-												<TableCell className="font-mono">#{job.job_number}</TableCell>
+												<TableCell className="font-mono">
+													#{job.job_number}
+												</TableCell>
 												<TableCell>{job.title || "Untitled Job"}</TableCell>
 												<TableCell>{customerName}</TableCell>
 												<TableCell>
@@ -766,7 +837,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 								<TableBody>
 									{timeEntries.slice(0, 20).map((entry: any) => (
 										<TableRow key={entry.id}>
-											<TableCell>{formatDate(entry.clock_in, "short")}</TableCell>
+											<TableCell>
+												{formatDate(entry.clock_in, "short")}
+											</TableCell>
 											<TableCell>
 												{entry.job ? (
 													<Link
@@ -779,7 +852,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 													"No job"
 												)}
 											</TableCell>
-											<TableCell>{new Date(entry.clock_in).toLocaleTimeString()}</TableCell>
+											<TableCell>
+												{new Date(entry.clock_in).toLocaleTimeString()}
+											</TableCell>
 											<TableCell>
 												{entry.clock_out ? (
 													new Date(entry.clock_out).toLocaleTimeString()
@@ -788,7 +863,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 												)}
 											</TableCell>
 											<TableCell>
-												{entry.total_hours ? `${entry.total_hours.toFixed(2)}h` : "—"}
+												{entry.total_hours
+													? `${entry.total_hours.toFixed(2)}h`
+													: "—"}
 											</TableCell>
 										</TableRow>
 									))}
@@ -821,8 +898,12 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 										<Wrench className="text-primary h-4 w-4" />
 									</div>
 									<div>
-										<p className="text-muted-foreground text-sm">Jobs Completed</p>
-										<p className="mt-1 text-2xl font-bold">{metrics?.completedJobs ?? 0}</p>
+										<p className="text-muted-foreground text-sm">
+											Jobs Completed
+										</p>
+										<p className="mt-1 text-2xl font-bold">
+											{metrics?.completedJobs ?? 0}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -846,7 +927,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 									</div>
 									<div>
 										<p className="text-muted-foreground text-sm">Active Jobs</p>
-										<p className="mt-1 text-2xl font-bold">{metrics?.activeJobs ?? 0}</p>
+										<p className="mt-1 text-2xl font-bold">
+											{metrics?.activeJobs ?? 0}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -861,7 +944,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 				count: permissions?.length ?? 0,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/settings/team/${teamMember.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/settings/team/${teamMember.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -872,12 +957,13 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 					<UnifiedAccordionContent>
 						<div className="rounded-lg border p-4">
 							<p className="text-muted-foreground text-sm">
-								Permissions are managed at the role level. This team member has the{" "}
-								<strong>{roleName}</strong> role
+								Permissions are managed at the role level. This team member has
+								the <strong>{roleName}</strong> role
 								{departmentName ? (
 									<>
 										{" "}
-										and is assigned to the <strong>{departmentName}</strong> department
+										and is assigned to the <strong>{departmentName}</strong>{" "}
+										department
 									</>
 								) : (
 									""
@@ -896,7 +982,9 @@ export function TeamMemberPageContent({ entityData, metrics }: TeamMemberPageCon
 											</Badge>
 										))}
 										{permissions.length > 10 && (
-											<Badge variant="outline">+{permissions.length - 10} more</Badge>
+											<Badge variant="outline">
+												+{permissions.length - 10} more
+											</Badge>
 										)}
 									</div>
 								</div>

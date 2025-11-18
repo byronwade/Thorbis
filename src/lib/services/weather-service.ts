@@ -78,7 +78,10 @@ export type WeatherPeriod = z.infer<typeof WeatherPeriodSchema>;
 // ============================================================================
 
 export class WeatherService {
-	private readonly cache: Map<string, { data: WeatherData; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: WeatherData; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 30; // 30 minutes
 
 	/**
@@ -102,7 +105,7 @@ export class WeatherService {
 						"User-Agent": USER_AGENT,
 						Accept: "application/geo+json",
 					},
-				}
+				},
 			);
 
 			if (!pointsRes.ok) {
@@ -114,11 +117,15 @@ export class WeatherService {
 
 			// Step 2: Fetch forecast, hourly, and alerts in parallel
 			const [forecastData, hourlyData, alertsData] = await Promise.all([
-				properties.forecast ? this.fetchJson(properties.forecast) : Promise.resolve(null),
+				properties.forecast
+					? this.fetchJson(properties.forecast)
+					: Promise.resolve(null),
 				properties.forecastHourly
 					? this.fetchJson(properties.forecastHourly)
 					: Promise.resolve(null),
-				this.fetchJson(`https://api.weather.gov/alerts/active?point=${lat},${lon}`),
+				this.fetchJson(
+					`https://api.weather.gov/alerts/active?point=${lat},${lon}`,
+				),
 			]);
 
 			// Parse alerts
@@ -143,7 +150,8 @@ export class WeatherService {
 					// Track highest severity
 					if (
 						alert.severity !== "Unknown" &&
-						this.severityRank(alert.severity) > this.severityRank(highestSeverity)
+						this.severityRank(alert.severity) >
+							this.severityRank(highestSeverity)
 					) {
 						highestSeverity = alert.severity as WeatherData["highestSeverity"];
 					}
@@ -172,24 +180,30 @@ export class WeatherService {
 								startTime: p.startTime,
 								endTime: p.endTime,
 							})),
-							updated: forecastData.properties.updated || forecastData.properties.generatedAt,
+							updated:
+								forecastData.properties.updated ||
+								forecastData.properties.generatedAt,
 						}
 					: undefined,
 				hourly: hourlyData
 					? {
-							periods: hourlyData.properties.periods.slice(0, 24).map((p: any) => ({
-								number: p.number,
-								name: p.name,
-								temperature: p.temperature,
-								temperatureUnit: p.temperatureUnit,
-								windSpeed: p.windSpeed,
-								windDirection: p.windDirection,
-								shortForecast: p.shortForecast,
-								detailedForecast: p.detailedForecast,
-								startTime: p.startTime,
-								endTime: p.endTime,
-							})),
-							updated: hourlyData.properties.updated || hourlyData.properties.generatedAt,
+							periods: hourlyData.properties.periods
+								.slice(0, 24)
+								.map((p: any) => ({
+									number: p.number,
+									name: p.name,
+									temperature: p.temperature,
+									temperatureUnit: p.temperatureUnit,
+									windSpeed: p.windSpeed,
+									windDirection: p.windDirection,
+									shortForecast: p.shortForecast,
+									detailedForecast: p.detailedForecast,
+									startTime: p.startTime,
+									endTime: p.endTime,
+								})),
+							updated:
+								hourlyData.properties.updated ||
+								hourlyData.properties.generatedAt,
 						}
 					: undefined,
 				alerts,
@@ -213,7 +227,7 @@ export class WeatherService {
 	async getActiveAlerts(lat: number, lon: number): Promise<WeatherAlert[]> {
 		try {
 			const alertsData = await this.fetchJson(
-				`https://api.weather.gov/alerts/active?point=${lat},${lon}`
+				`https://api.weather.gov/alerts/active?point=${lat},${lon}`,
 			);
 
 			if (!alertsData?.features) {
@@ -243,7 +257,10 @@ export class WeatherService {
 		reason?: string;
 	} {
 		// Check for severe weather alerts
-		if (weather.highestSeverity === "Extreme" || weather.highestSeverity === "Severe") {
+		if (
+			weather.highestSeverity === "Extreme" ||
+			weather.highestSeverity === "Severe"
+		) {
 			return {
 				suitable: false,
 				reason: "Severe weather alert in effect",
@@ -306,7 +323,9 @@ export class WeatherService {
 	/**
 	 * Normalize severity values
 	 */
-	private normalizeSeverity(severity: string | undefined): WeatherAlert["severity"] {
+	private normalizeSeverity(
+		severity: string | undefined,
+	): WeatherAlert["severity"] {
 		if (!severity) {
 			return "Unknown";
 		}
@@ -329,7 +348,9 @@ export class WeatherService {
 	/**
 	 * Normalize urgency values
 	 */
-	private normalizeUrgency(urgency: string | undefined): WeatherAlert["urgency"] {
+	private normalizeUrgency(
+		urgency: string | undefined,
+	): WeatherAlert["urgency"] {
 		if (!urgency) {
 			return "Unknown";
 		}

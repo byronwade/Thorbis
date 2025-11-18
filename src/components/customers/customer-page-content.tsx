@@ -32,7 +32,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	type ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { updateEntityTags } from "@/actions/entity-tags";
 import { CustomerInvoicesTable } from "@/components/customers/customer-invoices-table";
 import { PaymentMethodCard } from "@/components/customers/payment-method-card";
@@ -78,7 +84,10 @@ type CustomerPageContentProps = {
 	metrics: any;
 };
 
-export function CustomerPageContent({ customerData, metrics }: CustomerPageContentProps) {
+export function CustomerPageContent({
+	customerData,
+	metrics,
+}: CustomerPageContentProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const pathname = usePathname();
@@ -115,7 +124,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		setHasChanges(true);
 	};
 
-	const customerStatus = (localCustomer?.status || customer?.status || "active")?.toLowerCase();
+	const customerStatus = (
+		localCustomer?.status ||
+		customer?.status ||
+		"active"
+	)?.toLowerCase();
 
 	const displayName = useMemo(() => {
 		const explicitName =
@@ -204,7 +217,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 	}, [properties]);
 
 	const customerSince =
-		localCustomer?.created_at ?? customer?.created_at ?? customer?.createdAt ?? null;
+		localCustomer?.created_at ??
+		customer?.created_at ??
+		customer?.createdAt ??
+		null;
 
 	const outstandingBalance =
 		metrics?.outstandingBalance ??
@@ -222,7 +238,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		null;
 
 	const portalEnabled =
-		localCustomer?.portal_enabled ?? customer?.portal_enabled ?? customer?.portalEnabled ?? false;
+		localCustomer?.portal_enabled ??
+		customer?.portal_enabled ??
+		customer?.portalEnabled ??
+		false;
 
 	// Save changes
 	const handleSave = async () => {
@@ -245,7 +264,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 	};
 
 	// Helper to determine badge type based on status
-	const _getStatusBadge = (status: string, entityType: "job" | "invoice" = "job") => {
+	const _getStatusBadge = (
+		status: string,
+		entityType: "job" | "invoice" = "job",
+	) => {
 		if (entityType === "invoice") {
 			return <InvoiceStatusBadge status={status} />;
 		}
@@ -274,21 +296,24 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 			key: "new-job",
 			label: "New Job",
 			icon: Plus,
-			onClick: () => router.push(`/dashboard/work/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/new?customerId=${customer.id}`),
 		},
 		{
 			key: "new-invoice",
 			label: "New Invoice",
 			icon: FileText,
 			variant: "secondary" as const,
-			onClick: () => router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`),
 		},
 		{
 			key: "add-property",
 			label: "Add Property",
 			icon: Building2,
 			variant: "outline" as const,
-			onClick: () => router.push(`/dashboard/work/properties/new?customerId=${customer.id}`),
+			onClick: () =>
+				router.push(`/dashboard/work/properties/new?customerId=${customer.id}`),
 		},
 	] as const;
 
@@ -297,7 +322,12 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 			const { key, label, icon: Icon, onClick } = config;
 			const variant = "variant" in config ? config.variant : undefined;
 			return (
-				<Button key={key} onClick={onClick} size="sm" variant={variant ?? "default"}>
+				<Button
+					key={key}
+					onClick={onClick}
+					size="sm"
+					variant={variant ?? "default"}
+				>
 					<Icon className="mr-2 h-4 w-4" />
 					{label}
 				</Button>
@@ -336,7 +366,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						<DropdownMenuSeparator />
 
 						<DropdownMenuItem
-							onClick={() => router.push(`/dashboard/customers/${customer.id}/edit`)}
+							onClick={() =>
+								router.push(`/dashboard/customers/${customer.id}/edit`)
+							}
 						>
 							<UserCog className="mr-2 size-3.5" />
 							Edit Full Profile
@@ -377,7 +409,15 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				</DropdownMenu>
 			</div>
 		);
-	}, [hasChanges, isSaving, handleSave, handleCancel, renderQuickActions, router, customer.id]);
+	}, [
+		hasChanges,
+		isSaving,
+		handleSave,
+		handleCancel,
+		renderQuickActions,
+		router,
+		customer.id,
+	]);
 
 	// Update toolbar actions when hasChanges or isSaving changes
 	useEffect(() => {
@@ -451,7 +491,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		metadata: metadataItems,
 		leadingVisual: (
 			<Avatar className="h-12 w-12">
-				<AvatarImage alt={displayName} src={customer?.avatar_url ?? undefined} />
+				<AvatarImage
+					alt={displayName}
+					src={customer?.avatar_url ?? undefined}
+				/>
 				<AvatarFallback>{avatarInitials || "CU"}</AvatarFallback>
 			</Avatar>
 		),
@@ -535,21 +578,24 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 					</Label>
 					<Input
 						className={cn(
-							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl"
+							"border-border/40 bg-background focus-visible:ring-primary/50 h-12 rounded-lg border px-4 text-xl font-semibold shadow-none focus-visible:ring-2 sm:text-2xl",
 						)}
 						onChange={(e) => handlePrimaryNameChange(e.target.value)}
 						placeholder="Enter customer name..."
 						value={displayName}
 					/>
 					<p className="text-muted-foreground text-xs">
-						Update how this customer appears across Thorbis. Changes are saved when you select Save
-						changes.
+						Update how this customer appears across Thorbis. Changes are saved
+						when you select Save changes.
 					</p>
 				</div>
 
 				<div className="grid gap-3 sm:grid-cols-2">
 					{contactTileData.map(({ key, icon: Icon, label, value, href }) => (
-						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
+						<div
+							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
@@ -557,7 +603,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										{label}
 									</span>
 									{href ? (
-										<a className="text-sm font-semibold hover:underline" href={href}>
+										<a
+											className="text-sm font-semibold hover:underline"
+											href={href}
+										>
 											{value}
 										</a>
 									) : (
@@ -571,7 +620,10 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 
 				<div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 					{metricTileData.map(({ key, icon: Icon, label, value }) => (
-						<div className="border-border/40 bg-background rounded-lg border px-3 py-3" key={key}>
+						<div
+							className="border-border/40 bg-background rounded-lg border px-3 py-3"
+							key={key}
+						>
 							<div className="flex items-center gap-3">
 								<Icon className="text-muted-foreground h-4 w-4" />
 								<div className="flex flex-col">
@@ -604,7 +656,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="first_name">First Name</Label>
 										<Input
 											id="first_name"
-											onChange={(e) => handleFieldChange("first_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("first_name", e.target.value)
+											}
 											value={localCustomer.first_name || ""}
 										/>
 									</div>
@@ -612,7 +666,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="last_name">Last Name</Label>
 										<Input
 											id="last_name"
-											onChange={(e) => handleFieldChange("last_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("last_name", e.target.value)
+											}
 											value={localCustomer.last_name || ""}
 										/>
 									</div>
@@ -620,7 +676,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="company_name">Company Name</Label>
 										<Input
 											id="company_name"
-											onChange={(e) => handleFieldChange("company_name", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("company_name", e.target.value)
+											}
 											value={localCustomer.company_name || ""}
 										/>
 									</div>
@@ -631,7 +689,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="email"
-												onChange={(e) => handleFieldChange("email", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("email", e.target.value)
+												}
 												type="email"
 												value={localCustomer.email || ""}
 											/>
@@ -649,7 +709,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="phone"
-												onChange={(e) => handleFieldChange("phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("phone", e.target.value)
+												}
 												type="tel"
 												value={localCustomer.phone || ""}
 											/>
@@ -667,7 +729,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<div className="flex gap-2">
 											<Input
 												id="mobile_phone"
-												onChange={(e) => handleFieldChange("mobile_phone", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("mobile_phone", e.target.value)
+												}
 												type="tel"
 												value={localCustomer.mobile_phone || ""}
 											/>
@@ -689,7 +753,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="address">Address</Label>
 										<Textarea
 											id="address"
-											onChange={(e) => handleFieldChange("address", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("address", e.target.value)
+											}
 											rows={3}
 											value={localCustomer.address || ""}
 										/>
@@ -699,7 +765,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="city">City</Label>
 											<Input
 												id="city"
-												onChange={(e) => handleFieldChange("city", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("city", e.target.value)
+												}
 												value={localCustomer.city || ""}
 											/>
 										</div>
@@ -707,7 +775,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="state">State</Label>
 											<Input
 												id="state"
-												onChange={(e) => handleFieldChange("state", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("state", e.target.value)
+												}
 												value={localCustomer.state || ""}
 											/>
 										</div>
@@ -715,7 +785,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="postal_code">Postal Code</Label>
 											<Input
 												id="postal_code"
-												onChange={(e) => handleFieldChange("postal_code", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("postal_code", e.target.value)
+												}
 												value={localCustomer.postal_code || ""}
 											/>
 										</div>
@@ -723,7 +795,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											<Label htmlFor="country">Country</Label>
 											<Input
 												id="country"
-												onChange={(e) => handleFieldChange("country", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("country", e.target.value)
+												}
 												value={localCustomer.country || ""}
 											/>
 										</div>
@@ -738,7 +812,7 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											onChange={(e) =>
 												handleFieldChange(
 													"tags",
-													e.target.value.split(",").map((tag) => tag.trim())
+													e.target.value.split(",").map((tag) => tag.trim()),
 												)
 											}
 											placeholder="Comma separated tags"
@@ -749,7 +823,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										<Label htmlFor="notes">Notes</Label>
 										<Textarea
 											id="notes"
-											onChange={(e) => handleFieldChange("notes", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("notes", e.target.value)
+											}
 											placeholder="Internal notes about this customer"
 											rows={4}
 											value={localCustomer.notes || ""}
@@ -768,7 +844,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: properties.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/properties/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/properties/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -780,7 +860,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 						<div className="text-muted-foreground border-b px-6 py-4 text-sm">
 							Manage service locations for this customer.
 						</div>
-						<PropertiesTable customerId={customer.id} itemsPerPage={10} properties={properties} />
+						<PropertiesTable
+							customerId={customer.id}
+							itemsPerPage={10}
+							properties={properties}
+						/>
 					</UnifiedAccordionContent>
 				),
 			},
@@ -791,7 +875,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: jobs.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/work/new?customerId=${customer.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -813,7 +899,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				icon: <Receipt className="size-4" />,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/invoices/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/invoices/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -862,7 +952,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 										</div>
 										<div className="mt-3 space-y-1 text-sm">
 											{item.serial_number && (
-												<p className="text-muted-foreground">Serial: {item.serial_number}</p>
+												<p className="text-muted-foreground">
+													Serial: {item.serial_number}
+												</p>
 											)}
 											{item.manufacturer && (
 												<p className="text-muted-foreground flex items-center gap-2">
@@ -908,7 +1000,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								{paymentMethods.map((method: any) => {
 									// Determine payment method type
 									const type =
-										method.type === "ach" || method.type === "bank" ? method.type : "card";
+										method.type === "ach" || method.type === "bank"
+											? method.type
+											: "card";
 
 									return (
 										<PaymentMethodCard
@@ -917,7 +1011,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 											card_brand={method.brand || method.card_brand}
 											card_exp_month={method.exp_month || method.card_exp_month}
 											card_exp_year={method.exp_year || method.card_exp_year}
-											card_last4={method.last4 || method.card_last_four || method.card_last4}
+											card_last4={
+												method.last4 ||
+												method.card_last_four ||
+												method.card_last4
+											}
 											cardholder_name={method.cardholder_name || method.name}
 											id={method.id}
 											is_default={method.is_default}
@@ -953,7 +1051,11 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: estimates.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/work/estimates/new?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(
+								`/dashboard/work/estimates/new?customerId=${customer.id}`,
+							)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -970,16 +1072,29 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Estimate #</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Total</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Estimate #
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Total
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{estimates.map((estimate: any) => (
-											<tr className="hover:bg-muted/30 border-b" key={estimate.id}>
+											<tr
+												className="hover:bg-muted/30 border-b"
+												key={estimate.id}
+											>
 												<td className="px-6 py-4 text-sm">
 													#{estimate.estimate_number || estimate.id.slice(0, 8)}
 												</td>
@@ -987,10 +1102,14 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 													{formatDate(estimate.created_at, "short")}
 												</td>
 												<td className="px-6 py-4 text-sm font-medium">
-													{formatCurrencyFromDollars(estimate.total_amount / 100)}
+													{formatCurrencyFromDollars(
+														estimate.total_amount / 100,
+													)}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{estimate.status || "draft"}</Badge>
+													<Badge variant="outline">
+														{estimate.status || "draft"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1024,7 +1143,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 				count: appointments.length,
 				actions: (
 					<Button
-						onClick={() => router.push(`/dashboard/schedule?customerId=${customer.id}`)}
+						onClick={() =>
+							router.push(`/dashboard/schedule?customerId=${customer.id}`)
+						}
 						size="sm"
 						variant="outline"
 					>
@@ -1041,29 +1162,54 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Date & Time</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Type</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Property</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Job</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Date & Time
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Type
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Job
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{appointments.map((appointment: any) => (
-											<tr className="hover:bg-muted/30 border-b" key={appointment.id}>
+											<tr
+												className="hover:bg-muted/30 border-b"
+												key={appointment.id}
+											>
 												<td className="px-6 py-4 text-sm">
-													{new Date(appointment.scheduled_start).toLocaleString()}
-												</td>
-												<td className="px-6 py-4 text-sm">{appointment.type || "Service"}</td>
-												<td className="px-6 py-4 text-sm">
-													{appointment.property?.name || appointment.property?.address || "-"}
-												</td>
-												<td className="px-6 py-4 text-sm">
-													{appointment.job?.job_number ? `#${appointment.job.job_number}` : "-"}
+													{new Date(
+														appointment.scheduled_start,
+													).toLocaleString()}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{appointment.status || "scheduled"}</Badge>
+													{appointment.type || "Service"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													{appointment.property?.name ||
+														appointment.property?.address ||
+														"-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													{appointment.job?.job_number
+														? `#${appointment.job.job_number}`
+														: "-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{appointment.status || "scheduled"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1105,16 +1251,29 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Contract #</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Related To</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Contract #
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Related To
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{contracts.map((contract: any) => (
-											<tr className="hover:bg-muted/30 border-b" key={contract.id}>
+											<tr
+												className="hover:bg-muted/30 border-b"
+												key={contract.id}
+											>
 												<td className="px-6 py-4 text-sm">
 													#{contract.contract_number || contract.id.slice(0, 8)}
 												</td>
@@ -1131,7 +1290,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 																: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{contract.status || "draft"}</Badge>
+													<Badge variant="outline">
+														{contract.status || "draft"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1173,18 +1334,35 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Payment #</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Amount</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Method</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Invoice</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Payment #
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Date
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Amount
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Method
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Invoice
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{payments.map((payment: any) => (
-											<tr className="hover:bg-muted/30 border-b" key={payment.id}>
+											<tr
+												className="hover:bg-muted/30 border-b"
+												key={payment.id}
+											>
 												<td className="px-6 py-4 text-sm">
 													#{payment.payment_number || payment.id.slice(0, 8)}
 												</td>
@@ -1198,10 +1376,18 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 													{payment.payment_method?.replace("_", " ") || "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{payment.invoice ? `#${payment.invoice.invoice_number}` : "-"}
+													{payment.invoice
+														? `#${payment.invoice.invoice_number}`
+														: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant={payment.status === "completed" ? "default" : "outline"}>
+													<Badge
+														variant={
+															payment.status === "completed"
+																? "default"
+																: "outline"
+														}
+													>
 														{payment.status}
 													</Badge>
 												</td>
@@ -1245,11 +1431,21 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Plan Name</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Property</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Frequency</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Plan Name
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Frequency
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -1265,7 +1461,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 													{plan.frequency || "Monthly"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{plan.status || "active"}</Badge>
+													<Badge variant="outline">
+														{plan.status || "active"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1307,29 +1505,54 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 								<table className="w-full">
 									<thead className="bg-muted/50 border-b">
 										<tr>
-											<th className="px-6 py-3 text-left text-sm font-medium">Agreement #</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Property</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Start Date</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">End Date</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-											<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Agreement #
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Property
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Start Date
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												End Date
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Status
+											</th>
+											<th className="px-6 py-3 text-left text-sm font-medium">
+												Actions
+											</th>
 										</tr>
 									</thead>
 									<tbody>
 										{serviceAgreements.map((agreement: any) => (
-											<tr className="hover:bg-muted/30 border-b" key={agreement.id}>
-												<td className="px-6 py-4 text-sm">#{agreement.id.slice(0, 8)}</td>
+											<tr
+												className="hover:bg-muted/30 border-b"
+												key={agreement.id}
+											>
 												<td className="px-6 py-4 text-sm">
-													{agreement.property?.name || agreement.property?.address || "-"}
+													#{agreement.id.slice(0, 8)}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{agreement.start_date ? formatDate(agreement.start_date, "short") : "-"}
+													{agreement.property?.name ||
+														agreement.property?.address ||
+														"-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													{agreement.end_date ? formatDate(agreement.end_date, "short") : "-"}
+													{agreement.start_date
+														? formatDate(agreement.start_date, "short")
+														: "-"}
 												</td>
 												<td className="px-6 py-4 text-sm">
-													<Badge variant="outline">{agreement.status || "active"}</Badge>
+													{agreement.end_date
+														? formatDate(agreement.end_date, "short")
+														: "-"}
+												</td>
+												<td className="px-6 py-4 text-sm">
+													<Badge variant="outline">
+														{agreement.status || "active"}
+													</Badge>
 												</td>
 												<td className="px-6 py-4 text-sm">
 													<Link
@@ -1414,7 +1637,9 @@ export function CustomerPageContent({ customerData, metrics }: CustomerPageConte
 		<div className="w-full px-2 sm:px-0">
 			<div className="bg-muted/50 mx-auto max-w-7xl rounded-md shadow-sm">
 				<div className="flex flex-col gap-3 p-4 sm:p-6">
-					<span className="text-muted-foreground text-xs font-medium">Tags:</span>
+					<span className="text-muted-foreground text-xs font-medium">
+						Tags:
+					</span>
 					<EntityTags
 						entityId={customer.id}
 						entityType="customer"

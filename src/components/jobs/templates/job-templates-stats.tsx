@@ -39,7 +39,9 @@ export async function JobTemplatesStats() {
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">{stats.totalTemplates}</div>
-					<p className="text-muted-foreground text-xs">{stats.newThisMonth} this month</p>
+					<p className="text-muted-foreground text-xs">
+						{stats.newThisMonth} this month
+					</p>
 				</CardContent>
 			</Card>
 
@@ -50,7 +52,9 @@ export async function JobTemplatesStats() {
 				</CardHeader>
 				<CardContent>
 					<div className="text-2xl font-bold">{stats.mostUsed}</div>
-					<p className="text-muted-foreground text-xs">{stats.mostUsedCategory}</p>
+					<p className="text-muted-foreground text-xs">
+						{stats.mostUsedCategory}
+					</p>
 				</CardContent>
 			</Card>
 

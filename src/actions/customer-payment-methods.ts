@@ -12,7 +12,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 /**
  * Get payment methods for a customer
@@ -39,7 +42,10 @@ export async function getCustomerPaymentMethods(customerId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to fetch payment methods",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to fetch payment methods",
 			data: [],
 		};
 	}
@@ -48,7 +54,10 @@ export async function getCustomerPaymentMethods(customerId: string) {
 /**
  * Set a payment method as default for a customer
  */
-export async function setDefaultCustomerPaymentMethod(paymentMethodId: string, customerId: string) {
+export async function setDefaultCustomerPaymentMethod(
+	paymentMethodId: string,
+	customerId: string,
+) {
 	try {
 		const supabase = await getSupabaseServerClient();
 		const { companyId } = await getUserAndCompany(supabase);
@@ -89,7 +98,10 @@ export async function setDefaultCustomerPaymentMethod(paymentMethodId: string, c
 /**
  * Remove a customer payment method
  */
-export async function removeCustomerPaymentMethod(paymentMethodId: string, customerId: string) {
+export async function removeCustomerPaymentMethod(
+	paymentMethodId: string,
+	customerId: string,
+) {
 	try {
 		const supabase = await getSupabaseServerClient();
 		const { companyId } = await getUserAndCompany(supabase);
@@ -139,7 +151,10 @@ export async function removeCustomerPaymentMethod(paymentMethodId: string, custo
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to remove payment method",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to remove payment method",
 		};
 	}
 }
@@ -153,7 +168,7 @@ const getSupabaseServerClient = async (): Promise<SupabaseServerClient> => {
 };
 
 const getUserAndCompany = async (
-	supabase: SupabaseServerClient
+	supabase: SupabaseServerClient,
 ): Promise<{ userId: string; companyId: string }> => {
 	const {
 		data: { user },

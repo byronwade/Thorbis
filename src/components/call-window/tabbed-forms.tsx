@@ -59,7 +59,7 @@ export function TabbedForms() {
 						<TabsTrigger
 							className={cn(
 								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50"
+								"hover:bg-accent/50",
 							)}
 							value="customer"
 						>
@@ -72,7 +72,7 @@ export function TabbedForms() {
 						<TabsTrigger
 							className={cn(
 								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50"
+								"hover:bg-accent/50",
 							)}
 							value="job"
 						>
@@ -85,7 +85,7 @@ export function TabbedForms() {
 						<TabsTrigger
 							className={cn(
 								"data-[state=active]:border-primary relative gap-2 rounded-none border-b-2 border-transparent px-4 py-3 data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-								"hover:bg-accent/50"
+								"hover:bg-accent/50",
 							)}
 							value="appointment"
 						>

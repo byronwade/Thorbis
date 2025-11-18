@@ -28,7 +28,12 @@ export function ToolbarStats({ stats, className }: ToolbarStatsProps) {
 	}
 
 	return (
-		<div className={cn("ml-4 hidden items-center gap-4 overflow-x-auto md:flex", className)}>
+		<div
+			className={cn(
+				"ml-4 hidden items-center gap-4 overflow-x-auto md:flex",
+				className,
+			)}
+		>
 			{stats.map((stat, index) => {
 				const change = stat.change ?? null;
 				const numericChange = change ?? 0;
@@ -40,7 +45,7 @@ export function ToolbarStats({ stats, className }: ToolbarStatsProps) {
 					<div
 						className={cn(
 							"flex shrink-0 items-center gap-2",
-							index > 0 && "border-border/40 border-l pl-4"
+							index > 0 && "border-border/40 border-l pl-4",
 						)}
 						key={stat.label}
 					>
@@ -53,8 +58,10 @@ export function ToolbarStats({ stats, className }: ToolbarStatsProps) {
 									<span
 										className={cn(
 											"flex items-center gap-0.5 rounded px-1 py-0.5 text-xs font-medium tabular-nums",
-											isPositive && "bg-success/10 text-success dark:text-success",
-											isNegative && "bg-destructive/10 text-destructive dark:text-destructive"
+											isPositive &&
+												"bg-success/10 text-success dark:text-success",
+											isNegative &&
+												"bg-destructive/10 text-destructive dark:text-destructive",
 										)}
 									>
 										{isPositive && <TrendingUp className="h-3 w-3" />}
@@ -64,7 +71,9 @@ export function ToolbarStats({ stats, className }: ToolbarStatsProps) {
 									</span>
 								)}
 							</div>
-							<span className="text-muted-foreground text-xs">{stat.label}</span>
+							<span className="text-muted-foreground text-xs">
+								{stat.label}
+							</span>
 						</div>
 					</div>
 				);

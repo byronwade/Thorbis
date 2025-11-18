@@ -39,7 +39,10 @@ export function InvoiceOverdueBanner({
 
 	// Get icon based on urgency
 	const getIcon = () => {
-		if (overdueStatus.urgency === "severe" || overdueStatus.urgency === "critical") {
+		if (
+			overdueStatus.urgency === "severe" ||
+			overdueStatus.urgency === "critical"
+		) {
 			return <AlertTriangle className="h-6 w-6" />;
 		}
 		return <Clock className="h-6 w-6" />;
@@ -62,7 +65,9 @@ export function InvoiceOverdueBanner({
 		>
 			<div className="flex items-start gap-4">
 				{/* Icon */}
-				<div className={`shrink-0 ${overdueStatus.colors.text}`}>{getIcon()}</div>
+				<div className={`shrink-0 ${overdueStatus.colors.text}`}>
+					{getIcon()}
+				</div>
 
 				{/* Content */}
 				<div className="flex-1">
@@ -75,12 +80,16 @@ export function InvoiceOverdueBanner({
 							{overdueStatus.daysOverdue === 1 ? "" : "s"} overdue
 						</Badge>
 					</AlertTitle>
-					<AlertDescription className={`space-y-2 ${overdueStatus.colors.text}`}>
+					<AlertDescription
+						className={`space-y-2 ${overdueStatus.colors.text}`}
+					>
 						<p className="text-base">{overdueStatus.message}</p>
 						<div className="flex items-center gap-4">
 							<div>
 								<p className="text-sm font-medium">Amount Due:</p>
-								<p className="text-3xl font-bold">{formatCurrency(balanceAmount)}</p>
+								<p className="text-3xl font-bold">
+									{formatCurrency(balanceAmount)}
+								</p>
 							</div>
 						</div>
 					</AlertDescription>

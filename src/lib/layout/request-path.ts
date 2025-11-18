@@ -39,7 +39,11 @@ function sanitizePathCandidate(value: string | null | undefined) {
 
 	const pathOnly = candidate.split(/[?#]/)[0] || candidate;
 
-	if (!pathOnly.startsWith("/") || pathOnly.includes("[") || pathOnly.includes("]")) {
+	if (
+		!pathOnly.startsWith("/") ||
+		pathOnly.includes("[") ||
+		pathOnly.includes("]")
+	) {
 		return null;
 	}
 

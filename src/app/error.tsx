@@ -3,7 +3,13 @@
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 /**
  * Root Error Boundary
@@ -40,13 +46,17 @@ export default function RootError({
 				<CardContent className="space-y-4">
 					{process.env.NODE_ENV === "development" && (
 						<div className="bg-muted rounded-lg p-4">
-							<p className="text-muted-foreground font-mono text-sm">{error.message}</p>
+							<p className="text-muted-foreground font-mono text-sm">
+								{error.message}
+							</p>
 							{error.stack && (
 								<details className="mt-2">
 									<summary className="text-muted-foreground cursor-pointer text-xs">
 										Stack trace
 									</summary>
-									<pre className="mt-2 overflow-auto text-xs">{error.stack}</pre>
+									<pre className="mt-2 overflow-auto text-xs">
+										{error.stack}
+									</pre>
 								</details>
 							)}
 						</div>

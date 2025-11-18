@@ -108,9 +108,10 @@ export default function RoiPage() {
 						Quantify the ROI of switching to Thorbis
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Use your real numbers to project labor savings, net-new revenue, and net ROI after
-						Thorbis replaces your legacy field service stack. Thorbis pricing starts at $100/month
-						with pay-as-you-go usage—no per-user fees and absolutely no lock-in.
+						Use your real numbers to project labor savings, net-new revenue, and
+						net ROI after Thorbis replaces your legacy field service stack.
+						Thorbis pricing starts at $100/month with pay-as-you-go usage—no
+						per-user fees and absolutely no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -157,13 +158,18 @@ export default function RoiPage() {
 					</section>
 
 					<section className="mx-auto max-w-4xl space-y-4 text-center">
-						<h2 className="text-3xl font-semibold">Share your ROI analysis with stakeholders</h2>
+						<h2 className="text-3xl font-semibold">
+							Share your ROI analysis with stakeholders
+						</h2>
 						<p className="text-muted-foreground">
-							Export the numbers and pair them with our migration plan to prove the case for change.
+							Export the numbers and pair them with our migration plan to prove
+							the case for change.
 						</p>
 						<div className="flex flex-wrap justify-center gap-3">
 							<Button asChild>
-								<Link href="/templates?tag=migration">Download migration checklist</Link>
+								<Link href="/templates?tag=migration">
+									Download migration checklist
+								</Link>
 							</Button>
 							<Button asChild variant="outline">
 								<Link href="/vs">Compare Thorbis with your current system</Link>

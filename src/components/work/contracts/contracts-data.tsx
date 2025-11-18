@@ -1,31 +1,69 @@
-import { cache } from "react";
 import { notFound } from "next/navigation";
 import { ContractsKanban } from "@/components/work/contracts-kanban";
-import { type Contract, ContractsTable } from "@/components/work/contracts-table";
+import {
+	type Contract,
+	ContractsTable,
+} from "@/components/work/contracts-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/session";
+import {
+	CONTRACTS_PAGE_SIZE,
+	type ContractQueryResult,
+	getContractsPageData,
+} from "@/lib/queries/contracts";
 
-/**
- * Cached query function - prevents duplicate queries in same request
- */
-const getContracts = cache(async (companyId: string) => {
-	const supabase = await createClient();
-	if (!supabase) return null;
+type RelatedCustomer = {
+	display_name: string | null;
+	first_name: string | null;
+	last_name: string | null;
+	company_name: string | null;
+	email: string | null;
+};
 
-	// OPTIMIZED: Single query with JOIN instead of N+1 queries
-	// Reduces render time from 3-8s to 200-500ms
-	return await supabase
-		.from("contracts")
-		.select(
-			`
-			*,
-			customer:customers(id, display_name, first_name, last_name, email)
-		`
-		)
-		.eq("company_id", companyId)
-		.order("created_at", { ascending: false });
-});
+const formatDate = (value?: string | null) =>
+	value
+		? new Date(value).toLocaleDateString("en-US", {
+				month: "short",
+				day: "numeric",
+				year: "numeric",
+			})
+		: "";
+
+const resolveRelation = <T,>(
+	relation: T | T[] | null | undefined,
+): T | null => {
+	if (!relation) {
+		return null;
+	}
+	return Array.isArray(relation) ? (relation[0] ?? null) : relation;
+};
+
+const getCustomerLabel = (
+	customer: RelatedCustomer | null,
+	fallbackName?: string | null,
+	fallbackEmail?: string | null,
+) => {
+	if (customer?.display_name) {
+		return customer.display_name;
+	}
+
+	const fullName =
+		`${customer?.first_name ?? ""} ${customer?.last_name ?? ""}`.trim();
+	if (fullName) {
+		return fullName;
+	}
+
+	if (customer?.company_name) {
+		return customer.company_name;
+	}
+
+	if (customer?.email) {
+		return customer.email;
+	}
+
+	return fallbackName || fallbackEmail || "Unknown";
+};
 
 /**
  * ContractsData - Async Server Component
@@ -33,84 +71,82 @@ const getContracts = cache(async (companyId: string) => {
  * Fetches and displays contracts data.
  * This streams in after the stats render.
  */
-export async function ContractsData() {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+export async function ContractsData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
+	const [user, activeCompanyId] = await Promise.all([
+		getCurrentUser(),
+		getActiveCompanyId(),
+	]);
 
 	if (!user) {
 		return notFound();
 	}
 
-	const activeCompanyId = await getActiveCompanyId();
-
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Use cached query function
-	const result = await getContracts(activeCompanyId);
-	if (!result) {
-		return notFound();
-	}
+	const currentPage = Number(searchParams?.page) || 1;
+	const { contracts: contractsRaw, totalCount } = await getContractsPageData(
+		currentPage,
+		CONTRACTS_PAGE_SIZE,
+		activeCompanyId,
+	);
 
-	const { data: contractsRaw, error } = result;
+	const contracts: Contract[] = (contractsRaw ?? []).map(
+		(contract: ContractQueryResult) => {
+			const invoiceCustomer = resolveRelation(
+				contract.invoice?.customer,
+			) as RelatedCustomer | null;
+			const estimateCustomer = resolveRelation(
+				contract.estimate?.customer,
+			) as RelatedCustomer | null;
+			const jobCustomer = resolveRelation(
+				contract.job?.customer,
+			) as RelatedCustomer | null;
 
-	if (error) {
-		// TODO: Handle error case
-	}
-
-	let contracts: Contract[] = [];
-
-	// Only process if we have data
-	if (!error && contractsRaw) {
-		// Transform data for table component
-		contracts = contractsRaw.map((contract: any) => {
-			const customer = contract.customer;
+			const resolvedCustomer =
+				invoiceCustomer ?? estimateCustomer ?? jobCustomer ?? null;
+			const expiresAt =
+				(contract as { expires_at?: string | null }).expires_at ??
+				contract.valid_until;
 
 			return {
 				id: contract.id,
 				contractNumber: contract.contract_number,
-				customer:
-					customer?.display_name ||
-					`${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
-					customer?.email ||
-					contract.signer_email ||
-					contract.signer_name ||
-					"Unknown",
+				customer: getCustomerLabel(
+					resolvedCustomer,
+					contract.signer_name,
+					contract.signer_email,
+				),
 				title: contract.title,
-				date: new Date(contract.created_at).toLocaleDateString("en-US", {
-					month: "short",
-					day: "numeric",
-					year: "numeric",
-				}),
-				validUntil: contract.expires_at
-					? new Date(contract.expires_at).toLocaleDateString("en-US", {
-							month: "short",
-							day: "numeric",
-							year: "numeric",
-						})
-					: "",
-				status: contract.status as "signed" | "sent" | "draft" | "viewed" | "expired",
-				contractType: contract.contract_type || "custom",
+				date: formatDate(contract.created_at),
+				validUntil: formatDate(expiresAt),
+				status: (contract.status as Contract["status"]) || "draft",
+				contractType:
+					(contract.contract_type as Contract["contractType"]) || "custom",
 				signerName: contract.signer_name || null,
-				archived_at: contract.archived_at,
-				deleted_at: contract.deleted_at,
+				archived_at: contract.archived_at ?? null,
+				deleted_at: contract.deleted_at ?? null,
 			};
-		});
-	}
+		},
+	);
 
 	return (
 		<WorkDataView
 			kanban={<ContractsKanban contracts={contracts} />}
 			section="contracts"
-			table={<ContractsTable contracts={contracts} itemsPerPage={50} />}
+			table={
+				<ContractsTable
+					contracts={contracts}
+					currentPage={currentPage}
+					itemsPerPage={CONTRACTS_PAGE_SIZE}
+					totalCount={totalCount}
+				/>
+			}
 		/>
 	);
 }

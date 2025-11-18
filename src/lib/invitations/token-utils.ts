@@ -6,7 +6,8 @@
 
 import { createHmac, randomBytes } from "node:crypto";
 
-const INVITATION_SECRET = process.env.INVITATION_SECRET || "fallback-secret-change-in-production";
+const INVITATION_SECRET =
+	process.env.INVITATION_SECRET || "fallback-secret-change-in-production";
 const INVITATION_EXPIRY_DAYS = 7;
 
 /**
@@ -24,7 +25,9 @@ export function generateInvitationToken(payload: {
 	};
 
 	const encoded = Buffer.from(JSON.stringify(data)).toString("base64url");
-	const signature = createHmac("sha256", INVITATION_SECRET).update(encoded).digest("base64url");
+	const signature = createHmac("sha256", INVITATION_SECRET)
+		.update(encoded)
+		.digest("base64url");
 
 	return `${encoded}.${signature}`;
 }

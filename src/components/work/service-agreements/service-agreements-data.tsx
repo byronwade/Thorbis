@@ -6,49 +6,34 @@ import {
 } from "@/components/work/service-agreements-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import {
+	getServiceAgreementsPageData,
+	SERVICE_AGREEMENTS_PAGE_SIZE,
+	type ServiceAgreementRecord,
+} from "@/lib/queries/service-agreements";
 
-export async function ServiceAgreementsData() {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
-	if (!user) {
-		return notFound();
-	}
-
+export async function ServiceAgreementsData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
 	const activeCompanyId = await getActiveCompanyId();
 
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	const { data: agreementsRaw, error } = await supabase
-		.from("service_plans")
-		.select(
-			`
-      *,
-      customer:customers!customer_id(display_name, first_name, last_name)
-    `
-		)
-		.eq("company_id", activeCompanyId)
-		.eq("type", "contract")
-		.order("created_at", { ascending: false });
-
-	if (error) {
-		throw new Error(`Failed to fetch service agreements: ${error.message}`);
-	}
+	const currentPage = Number(searchParams?.page) || 1;
+	const { agreements: agreementsRaw, totalCount } =
+		await getServiceAgreementsPageData(
+			currentPage,
+			SERVICE_AGREEMENTS_PAGE_SIZE,
+			activeCompanyId,
+		);
 
 	// Normalize Supabase rows into the ServiceAgreement shape used by table/kanban
-	const agreements: ServiceAgreement[] =
-		// biome-ignore lint/suspicious/noExplicitAny: Supabase query result type
-		(agreementsRaw || []).map((agreement: any): ServiceAgreement => {
+	const agreements: ServiceAgreement[] = (agreementsRaw || []).map(
+		(agreement: ServiceAgreementRecord): ServiceAgreement => {
 			const customer = Array.isArray(agreement.customer)
 				? agreement.customer[0]
 				: agreement.customer;
@@ -76,7 +61,9 @@ export async function ServiceAgreementsData() {
 
 			// Map backend type (e.g. "contract", "sla") to UI-friendly label
 			let type: ServiceAgreement["type"] = "Maintenance Contract";
-			const rawType = String(agreement.plan_type || agreement.type || "").toLowerCase();
+			const rawType = String(
+				agreement.plan_type || agreement.type || "",
+			).toLowerCase();
 			if (rawType.includes("sla")) {
 				type = "Service Level Agreement";
 			} else if (rawType.includes("warranty")) {
@@ -97,13 +84,21 @@ export async function ServiceAgreementsData() {
 				archived_at: agreement.archived_at ?? null,
 				deleted_at: agreement.deleted_at ?? null,
 			};
-		});
+		},
+	);
 
 	return (
 		<WorkDataView
 			kanban={<ServiceAgreementsKanban agreements={agreements} />}
 			section="serviceAgreements"
-			table={<ServiceAgreementsTable agreements={agreements} itemsPerPage={50} />}
+			table={
+				<ServiceAgreementsTable
+					agreements={agreements}
+					currentPage={currentPage}
+					itemsPerPage={SERVICE_AGREEMENTS_PAGE_SIZE}
+					totalCount={totalCount}
+				/>
+			}
 		/>
 	);
 }

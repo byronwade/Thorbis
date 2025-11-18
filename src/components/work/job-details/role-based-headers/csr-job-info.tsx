@@ -5,9 +5,19 @@
 
 "use client";
 
-import { AlertCircle, Calendar, CheckCircle, Clock, MessageSquare } from "lucide-react";
+import {
+	AlertCircle,
+	Calendar,
+	CheckCircle,
+	Clock,
+	MessageSquare,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type CSRJobInfoProps = {
@@ -70,12 +80,19 @@ export function CSRJobInfo({
 			(s) =>
 				new Date(s.scheduled_start) >= new Date() &&
 				s.status !== "cancelled" &&
-				s.status !== "completed"
+				s.status !== "completed",
 		)
-		.sort((a, b) => new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime());
+		.sort(
+			(a, b) =>
+				new Date(a.scheduled_start).getTime() -
+				new Date(b.scheduled_start).getTime(),
+		);
 
 	const recentCommunications = communications
-		.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+		.sort(
+			(a, b) =>
+				new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+		)
 		.slice(0, 5);
 
 	return (
@@ -93,7 +110,9 @@ export function CSRJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Upcoming Appointments</h4>
-								<p className="text-muted-foreground text-xs">Scheduled visits for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Scheduled visits for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -117,7 +136,11 @@ export function CSRJobInfo({
 										</div>
 										<Badge
 											className="shrink-0 capitalize"
-											variant={schedule.status === "confirmed" ? "default" : "secondary"}
+											variant={
+												schedule.status === "confirmed"
+													? "default"
+													: "secondary"
+											}
 										>
 											{schedule.status}
 										</Badge>
@@ -142,7 +165,9 @@ export function CSRJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Recent Communications</h4>
-								<p className="text-muted-foreground text-xs">Latest interactions with customer</p>
+								<p className="text-muted-foreground text-xs">
+									Latest interactions with customer
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -156,7 +181,11 @@ export function CSRJobInfo({
 												{formatDate(comm.created_at)}
 											</span>
 										</div>
-										{comm.content && <p className="mt-1 line-clamp-2 text-sm">{comm.content}</p>}
+										{comm.content && (
+											<p className="mt-1 line-clamp-2 text-sm">
+												{comm.content}
+											</p>
+										)}
 									</div>
 								))}
 							</div>
@@ -184,12 +213,14 @@ export function CSRJobInfo({
 			)}
 
 			{/* Needs Follow-up */}
-			{lastContact && Date.now() - new Date(lastContact).getTime() > 7 * 24 * 60 * 60 * 1000 && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
-					<AlertCircle className="size-4" />
-					Follow-up Needed
-				</button>
-			)}
+			{lastContact &&
+				Date.now() - new Date(lastContact).getTime() >
+					7 * 24 * 60 * 60 * 1000 && (
+					<button className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-700 transition-colors hover:border-red-300 hover:bg-red-100 dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-400">
+						<AlertCircle className="size-4" />
+						Follow-up Needed
+					</button>
+				)}
 		</div>
 	);
 }

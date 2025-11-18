@@ -110,12 +110,18 @@ export function PurchaseOrderDetailSkeleton() {
 				<div className="space-y-4">
 					<div className="flex gap-4 border-b">
 						{[1, 2, 3].map((i) => (
-							<div className="bg-muted h-10 w-24 animate-pulse rounded-t" key={i} />
+							<div
+								className="bg-muted h-10 w-24 animate-pulse rounded-t"
+								key={i}
+							/>
 						))}
 					</div>
 					<div className="space-y-3">
 						{[1, 2, 3].map((i) => (
-							<div className="bg-muted h-20 w-full animate-pulse rounded" key={i} />
+							<div
+								className="bg-muted h-20 w-full animate-pulse rounded"
+								key={i}
+							/>
 						))}
 					</div>
 				</div>

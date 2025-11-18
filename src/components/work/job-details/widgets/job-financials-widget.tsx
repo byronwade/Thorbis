@@ -40,11 +40,15 @@ export function JobFinancialsWidget({ job }: JobFinancialsWidgetProps) {
 			<div className="space-y-2 text-sm">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground">Paid</span>
-					<span className="text-success font-medium">{formatCurrency(paidAmount)}</span>
+					<span className="text-success font-medium">
+						{formatCurrency(paidAmount)}
+					</span>
 				</div>
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground">Remaining</span>
-					<span className="text-warning font-medium">{formatCurrency(remainingAmount)}</span>
+					<span className="text-warning font-medium">
+						{formatCurrency(remainingAmount)}
+					</span>
 				</div>
 			</div>
 

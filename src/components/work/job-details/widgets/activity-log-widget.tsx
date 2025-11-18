@@ -95,7 +95,9 @@ export function ActivityLogWidget({
 				: activity.user
 			: null;
 
-		const userName = user ? `${user.first_name || ""} ${user.last_name || ""}`.trim() : "System";
+		const userName = user
+			? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+			: "System";
 
 		// Map activity_type from database to our widget types
 		let type: ActivityType = "work";
@@ -183,7 +185,9 @@ export function ActivityLogWidget({
 							<div className={`flex-1 pb-4 ${isLast ? "" : "border-b"}`}>
 								<div className="space-y-1">
 									<div className="flex items-start justify-between gap-2">
-										<h5 className="text-sm leading-tight font-medium">{activity.title}</h5>
+										<h5 className="text-sm leading-tight font-medium">
+											{activity.title}
+										</h5>
 										<span className="text-muted-foreground shrink-0 text-xs">
 											{formatTimestamp(activity.timestamp)}
 										</span>

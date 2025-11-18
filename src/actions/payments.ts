@@ -31,7 +31,9 @@ type CreatePaymentResult = {
 	paymentId?: string;
 };
 
-export async function createPayment(input: PaymentInsert | FormData): Promise<CreatePaymentResult> {
+export async function createPayment(
+	input: PaymentInsert | FormData,
+): Promise<CreatePaymentResult> {
 	if (input instanceof FormData) {
 		return createPaymentFromForm(input);
 	}
@@ -41,7 +43,7 @@ export async function createPayment(input: PaymentInsert | FormData): Promise<Cr
 
 async function createPaymentWithData(
 	data: PaymentInsert,
-	existingSupabase?: Awaited<ReturnType<typeof createClient>> | null
+	existingSupabase?: Awaited<ReturnType<typeof createClient>> | null,
 ): Promise<CreatePaymentResult> {
 	try {
 		const validated = paymentInsertSchema.parse(data);
@@ -116,7 +118,9 @@ async function createPaymentWithData(
 	}
 }
 
-async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentResult> {
+async function createPaymentFromForm(
+	formData: FormData,
+): Promise<CreatePaymentResult> {
 	try {
 		const supabase = await createClient();
 		if (!supabase) {
@@ -150,7 +154,8 @@ async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentR
 		} = await supabase.auth.getUser();
 
 		const paymentMethod =
-			(formData.get("paymentMethod") as PaymentInsert["payment_method"]) || "cash";
+			(formData.get("paymentMethod") as PaymentInsert["payment_method"]) ||
+			"cash";
 		const paymentDateValue = formData.get("paymentDate")?.toString();
 		const checkNumber = formData.get("checkNumber")?.toString() || null;
 		const notes = formData.get("notes")?.toString() || null;
@@ -192,7 +197,7 @@ async function createPaymentFromForm(formData: FormData): Promise<CreatePaymentR
 // ============================================================================
 
 export async function getPayment(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string; payment?: any }> {
 	try {
 		const supabase = await createClient();
@@ -283,7 +288,7 @@ export async function getPayments(filters?: {
 
 export async function updatePayment(
 	paymentId: string,
-	data: PaymentUpdate
+	data: PaymentUpdate,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const validated = paymentUpdateSchema.parse(data);
@@ -321,7 +326,7 @@ export async function updatePayment(
 export async function refundPayment(
 	paymentId: string,
 	refundAmount: number,
-	refundReason?: string
+	refundReason?: string,
 ): Promise<{ success: boolean; error?: string; refundId?: string }> {
 	try {
 		const supabase = await createClient();
@@ -381,7 +386,9 @@ export async function refundPayment(
 		// Update original payment
 		const newRefundedAmount = alreadyRefunded + refundAmount;
 		const newStatus =
-			newRefundedAmount === originalPayment.amount ? "refunded" : "partially_refunded";
+			newRefundedAmount === originalPayment.amount
+				? "refunded"
+				: "partially_refunded";
 
 		const { error: updateError } = await supabase
 			.from("payments")
@@ -411,7 +418,7 @@ export async function refundPayment(
 // ============================================================================
 
 export async function reconcilePayment(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -453,7 +460,7 @@ export async function reconcilePayment(
 }
 
 export async function unreconcilePayment(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -491,7 +498,7 @@ export async function unreconcilePayment(
 // ============================================================================
 
 export async function deletePayment(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -535,7 +542,7 @@ export async function deletePayment(
  * Archive payment (alias for deletePayment - uses soft delete)
  */
 export async function archivePayment(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	return deletePayment(paymentId);
 }
@@ -546,7 +553,7 @@ export async function archivePayment(
  * Bidirectional operation - updates both payment and job views
  */
 export async function unlinkPaymentFromJob(
-	paymentId: string
+	paymentId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();

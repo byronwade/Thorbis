@@ -3,7 +3,13 @@
 import { Save } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -17,12 +23,18 @@ export function ZapierSettings() {
 			<Card>
 				<CardHeader>
 					<CardTitle>Zapier Connection</CardTitle>
-					<CardDescription>Configure Zapier integration for workflow automation</CardDescription>
+					<CardDescription>
+						Configure Zapier integration for workflow automation
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
 						<Label htmlFor="api-key">API Key</Label>
-						<Input defaultValue="zap_live_••••••••••••••••••••" id="api-key" type="password" />
+						<Input
+							defaultValue="zap_live_••••••••••••••••••••"
+							id="api-key"
+							type="password"
+						/>
 					</div>
 
 					<Separator />
@@ -42,7 +54,9 @@ export function ZapierSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Real-time Updates</Label>
-							<p className="text-muted-foreground text-sm">Send updates to Zapier in real-time</p>
+							<p className="text-muted-foreground text-sm">
+								Send updates to Zapier in real-time
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>

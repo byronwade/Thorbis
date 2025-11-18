@@ -16,7 +16,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -42,7 +48,8 @@ export const metadata = generateSEOMetadata({
 export default function MarketingPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "Marketing Automation",
-		description: "Automated campaigns and review generation for service businesses",
+		description:
+			"Automated campaigns and review generation for service businesses",
 		offers: [
 			{
 				price: "100",
@@ -64,7 +71,7 @@ export default function MarketingPage() {
 								name: "Marketing Automation",
 								url: `${siteUrl}/features/marketing`,
 							},
-						])
+						]),
 					),
 				}}
 				id="marketing-breadcrumb-ld"
@@ -93,8 +100,9 @@ export default function MarketingPage() {
 							Marketing that runs itself
 						</h1>
 						<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
-							Stop losing customers to competitors. Automated campaigns that nurture leads, generate
-							5-star reviews, and bring customers back—all on autopilot.
+							Stop losing customers to competitors. Automated campaigns that
+							nurture leads, generate 5-star reviews, and bring customers
+							back—all on autopilot.
 						</p>
 						<div className="flex flex-wrap items-center justify-center gap-4">
 							<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
@@ -123,7 +131,9 @@ export default function MarketingPage() {
 												</div>
 												<div>
 													<div className="text-lg font-bold">New Lead</div>
-													<div className="text-muted-foreground text-sm">First contact</div>
+													<div className="text-muted-foreground text-sm">
+														First contact
+													</div>
 												</div>
 											</div>
 										</div>
@@ -133,7 +143,10 @@ export default function MarketingPage() {
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Mail className="size-4 text-purple-500" />
 													<span className="font-semibold">Welcome Email</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														Instant
 													</Badge>
 												</div>
@@ -145,7 +158,10 @@ export default function MarketingPage() {
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<MessageSquare className="size-4 text-purple-500" />
 													<span className="font-semibold">SMS Follow-Up</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+2 hours
 													</Badge>
 												</div>
@@ -172,7 +188,9 @@ export default function MarketingPage() {
 												</div>
 												<div>
 													<div className="text-lg font-bold">Estimate Sent</div>
-													<div className="text-muted-foreground text-sm">Proposal stage</div>
+													<div className="text-muted-foreground text-sm">
+														Proposal stage
+													</div>
 												</div>
 											</div>
 										</div>
@@ -181,8 +199,13 @@ export default function MarketingPage() {
 											<div className="bg-background/50 rounded-lg border p-3">
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Mail className="size-4 text-blue-500" />
-													<span className="font-semibold">Proposal Reminder</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<span className="font-semibold">
+														Proposal Reminder
+													</span>
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+3 days
 													</Badge>
 												</div>
@@ -193,8 +216,13 @@ export default function MarketingPage() {
 											<div className="bg-background/50 rounded-lg border p-3">
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Phone className="size-4 text-blue-500" />
-													<span className="font-semibold">Call Task Created</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<span className="font-semibold">
+														Call Task Created
+													</span>
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+7 days
 													</Badge>
 												</div>
@@ -221,7 +249,9 @@ export default function MarketingPage() {
 												</div>
 												<div>
 													<div className="text-lg font-bold">Job Completed</div>
-													<div className="text-muted-foreground text-sm">Service delivered</div>
+													<div className="text-muted-foreground text-sm">
+														Service delivered
+													</div>
 												</div>
 											</div>
 										</div>
@@ -231,24 +261,32 @@ export default function MarketingPage() {
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Star className="size-4 text-green-500" />
 													<span className="font-semibold">Review Request</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+1 day
 													</Badge>
 												</div>
 												<p className="text-muted-foreground text-xs">
-													"How did we do? Leave a review and get 10% off next service"
+													"How did we do? Leave a review and get 10% off next
+													service"
 												</p>
 											</div>
 											<div className="bg-background/50 rounded-lg border p-3">
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Mail className="size-4 text-green-500" />
 													<span className="font-semibold">Thank You Email</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+3 days
 													</Badge>
 												</div>
 												<p className="text-muted-foreground text-xs">
-													"Thanks for choosing us! Here are some maintenance tips..."
+													"Thanks for choosing us! Here are some maintenance
+													tips..."
 												</p>
 											</div>
 										</div>
@@ -269,8 +307,12 @@ export default function MarketingPage() {
 													<TrendingUp className="size-5 text-white" />
 												</div>
 												<div>
-													<div className="text-lg font-bold">Ongoing Customer</div>
-													<div className="text-muted-foreground text-sm">Retention mode</div>
+													<div className="text-lg font-bold">
+														Ongoing Customer
+													</div>
+													<div className="text-muted-foreground text-sm">
+														Retention mode
+													</div>
 												</div>
 											</div>
 										</div>
@@ -279,20 +321,31 @@ export default function MarketingPage() {
 											<div className="bg-background/50 rounded-lg border p-3">
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<MessageSquare className="size-4 text-orange-500" />
-													<span className="font-semibold">Seasonal Reminder</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<span className="font-semibold">
+														Seasonal Reminder
+													</span>
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+6 months
 													</Badge>
 												</div>
 												<p className="text-muted-foreground text-xs">
-													"Time for your spring AC tune-up! Book now and save 15%"
+													"Time for your spring AC tune-up! Book now and save
+													15%"
 												</p>
 											</div>
 											<div className="bg-background/50 rounded-lg border p-3">
 												<div className="mb-1 flex items-center gap-2 text-sm">
 													<Mail className="size-4 text-orange-500" />
-													<span className="font-semibold">Win-Back Campaign</span>
-													<Badge className="ml-auto h-5 text-[10px]" variant="secondary">
+													<span className="font-semibold">
+														Win-Back Campaign
+													</span>
+													<Badge
+														className="ml-auto h-5 text-[10px]"
+														variant="secondary"
+													>
 														+12 months
 													</Badge>
 												</div>
@@ -310,15 +363,21 @@ export default function MarketingPage() {
 						<div className="mt-8 grid gap-4 sm:grid-cols-3">
 							<div className="bg-background rounded-xl border p-4 text-center">
 								<div className="text-primary mb-1 text-2xl font-bold">3.2x</div>
-								<div className="text-muted-foreground text-sm">More Reviews</div>
+								<div className="text-muted-foreground text-sm">
+									More Reviews
+								</div>
 							</div>
 							<div className="bg-background rounded-xl border p-4 text-center">
 								<div className="text-primary mb-1 text-2xl font-bold">42%</div>
-								<div className="text-muted-foreground text-sm">Higher Conversion</div>
+								<div className="text-muted-foreground text-sm">
+									Higher Conversion
+								</div>
 							</div>
 							<div className="bg-background rounded-xl border p-4 text-center">
 								<div className="text-primary mb-1 text-2xl font-bold">28%</div>
-								<div className="text-muted-foreground text-sm">Repeat Business</div>
+								<div className="text-muted-foreground text-sm">
+									Repeat Business
+								</div>
 							</div>
 						</div>
 					</div>
@@ -331,7 +390,9 @@ export default function MarketingPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">4.8★</div>
-							<div className="text-muted-foreground text-sm font-medium">Avg. Review Rating</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Avg. Review Rating
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">3.2x</div>
@@ -386,9 +447,12 @@ export default function MarketingPage() {
 											1
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Smart Timing</div>
+											<div className="mb-1 text-sm font-semibold">
+												Smart Timing
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Requests sent 24 hours after job completion when satisfaction is highest
+												Requests sent 24 hours after job completion when
+												satisfaction is highest
 											</p>
 										</div>
 									</div>
@@ -397,9 +461,12 @@ export default function MarketingPage() {
 											2
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Multi-Platform</div>
+											<div className="mb-1 text-sm font-semibold">
+												Multi-Platform
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Direct links to Google, Yelp, Facebook, and your preferred platforms
+												Direct links to Google, Yelp, Facebook, and your
+												preferred platforms
 											</p>
 										</div>
 									</div>
@@ -408,9 +475,12 @@ export default function MarketingPage() {
 											3
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Incentive Offers</div>
+											<div className="mb-1 text-sm font-semibold">
+												Incentive Offers
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Optional discount codes to boost response rates (10-15% off next service)
+												Optional discount codes to boost response rates (10-15%
+												off next service)
 											</p>
 										</div>
 									</div>
@@ -419,9 +489,12 @@ export default function MarketingPage() {
 											4
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Negative Feedback Filter</div>
+											<div className="mb-1 text-sm font-semibold">
+												Negative Feedback Filter
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Unhappy customers routed to private feedback form instead of public reviews
+												Unhappy customers routed to private feedback form
+												instead of public reviews
 											</p>
 										</div>
 									</div>
@@ -430,12 +503,20 @@ export default function MarketingPage() {
 									<div className="mb-2 text-sm font-semibold">Results</div>
 									<div className="grid grid-cols-2 gap-4 text-center">
 										<div>
-											<div className="text-xl font-bold text-yellow-600">3.2x</div>
-											<div className="text-muted-foreground text-xs">More Reviews</div>
+											<div className="text-xl font-bold text-yellow-600">
+												3.2x
+											</div>
+											<div className="text-muted-foreground text-xs">
+												More Reviews
+											</div>
 										</div>
 										<div>
-											<div className="text-xl font-bold text-yellow-600">4.8★</div>
-											<div className="text-muted-foreground text-xs">Avg. Rating</div>
+											<div className="text-xl font-bold text-yellow-600">
+												4.8★
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Avg. Rating
+											</div>
 										</div>
 									</div>
 								</div>
@@ -449,7 +530,9 @@ export default function MarketingPage() {
 									<Target className="size-6 text-blue-600" />
 								</div>
 								<CardTitle>Lead Nurture Sequences</CardTitle>
-								<CardDescription>Convert more estimates into booked jobs</CardDescription>
+								<CardDescription>
+									Convert more estimates into booked jobs
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-3">
@@ -458,9 +541,12 @@ export default function MarketingPage() {
 											1
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Instant Welcome</div>
+											<div className="mb-1 text-sm font-semibold">
+												Instant Welcome
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Automated email/SMS within minutes of first contact with next steps
+												Automated email/SMS within minutes of first contact with
+												next steps
 											</p>
 										</div>
 									</div>
@@ -469,9 +555,12 @@ export default function MarketingPage() {
 											2
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Educational Content</div>
+											<div className="mb-1 text-sm font-semibold">
+												Educational Content
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Share helpful tips, FAQs, and case studies to build trust
+												Share helpful tips, FAQs, and case studies to build
+												trust
 											</p>
 										</div>
 									</div>
@@ -480,9 +569,12 @@ export default function MarketingPage() {
 											3
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Proposal Follow-Ups</div>
+											<div className="mb-1 text-sm font-semibold">
+												Proposal Follow-Ups
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Automatic reminders at 3, 7, and 14 days with urgency messaging
+												Automatic reminders at 3, 7, and 14 days with urgency
+												messaging
 											</p>
 										</div>
 									</div>
@@ -491,9 +583,12 @@ export default function MarketingPage() {
 											4
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Sales Team Handoff</div>
+											<div className="mb-1 text-sm font-semibold">
+												Sales Team Handoff
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Create tasks for personal outreach when automated touches don't convert
+												Create tasks for personal outreach when automated
+												touches don't convert
 											</p>
 										</div>
 									</div>
@@ -503,11 +598,17 @@ export default function MarketingPage() {
 									<div className="grid grid-cols-2 gap-4 text-center">
 										<div>
 											<div className="text-xl font-bold text-blue-600">42%</div>
-											<div className="text-muted-foreground text-xs">Higher Conversion</div>
+											<div className="text-muted-foreground text-xs">
+												Higher Conversion
+											</div>
 										</div>
 										<div>
-											<div className="text-xl font-bold text-blue-600">14 days</div>
-											<div className="text-muted-foreground text-xs">Shorter Cycle</div>
+											<div className="text-xl font-bold text-blue-600">
+												14 days
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Shorter Cycle
+											</div>
 										</div>
 									</div>
 								</div>
@@ -521,7 +622,9 @@ export default function MarketingPage() {
 									<TrendingUp className="size-6 text-purple-600" />
 								</div>
 								<CardTitle>Win-Back Campaigns</CardTitle>
-								<CardDescription>Reactivate dormant customers automatically</CardDescription>
+								<CardDescription>
+									Reactivate dormant customers automatically
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-3">
@@ -530,9 +633,12 @@ export default function MarketingPage() {
 											1
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Inactivity Detection</div>
+											<div className="mb-1 text-sm font-semibold">
+												Inactivity Detection
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Automatically identifies customers who haven't booked in 6-12 months
+												Automatically identifies customers who haven't booked in
+												6-12 months
 											</p>
 										</div>
 									</div>
@@ -541,9 +647,12 @@ export default function MarketingPage() {
 											2
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Personalized Offers</div>
+											<div className="mb-1 text-sm font-semibold">
+												Personalized Offers
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Special "we miss you" discounts based on their service history
+												Special "we miss you" discounts based on their service
+												history
 											</p>
 										</div>
 									</div>
@@ -552,7 +661,9 @@ export default function MarketingPage() {
 											3
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Multi-Touch Sequence</div>
+											<div className="mb-1 text-sm font-semibold">
+												Multi-Touch Sequence
+											</div>
 											<p className="text-muted-foreground text-xs">
 												Email, SMS, and postcard series over 30 days
 											</p>
@@ -563,9 +674,12 @@ export default function MarketingPage() {
 											4
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Urgency & Scarcity</div>
+											<div className="mb-1 text-sm font-semibold">
+												Urgency & Scarcity
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Limited-time offers and seasonal reminders to drive action
+												Limited-time offers and seasonal reminders to drive
+												action
 											</p>
 										</div>
 									</div>
@@ -574,12 +688,20 @@ export default function MarketingPage() {
 									<div className="mb-2 text-sm font-semibold">Results</div>
 									<div className="grid grid-cols-2 gap-4 text-center">
 										<div>
-											<div className="text-xl font-bold text-purple-600">28%</div>
-											<div className="text-muted-foreground text-xs">Reactivation Rate</div>
+											<div className="text-xl font-bold text-purple-600">
+												28%
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Reactivation Rate
+											</div>
 										</div>
 										<div>
-											<div className="text-xl font-bold text-purple-600">$8.2K</div>
-											<div className="text-muted-foreground text-xs">Avg. Recovered Revenue</div>
+											<div className="text-xl font-bold text-purple-600">
+												$8.2K
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Avg. Recovered Revenue
+											</div>
 										</div>
 									</div>
 								</div>
@@ -593,7 +715,9 @@ export default function MarketingPage() {
 									<Mail className="size-6 text-green-600" />
 								</div>
 								<CardTitle>Seasonal Campaigns</CardTitle>
-								<CardDescription>Fill your calendar during slow seasons</CardDescription>
+								<CardDescription>
+									Fill your calendar during slow seasons
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="pt-6">
 								<div className="mb-6 space-y-3">
@@ -602,9 +726,12 @@ export default function MarketingPage() {
 											1
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Smart Scheduling</div>
+											<div className="mb-1 text-sm font-semibold">
+												Smart Scheduling
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Campaigns auto-trigger based on calendar (spring AC, fall furnace, etc.)
+												Campaigns auto-trigger based on calendar (spring AC,
+												fall furnace, etc.)
 											</p>
 										</div>
 									</div>
@@ -613,9 +740,12 @@ export default function MarketingPage() {
 											2
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Service-Specific Targeting</div>
+											<div className="mb-1 text-sm font-semibold">
+												Service-Specific Targeting
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Only send to customers with relevant equipment (AC owners get AC reminders)
+												Only send to customers with relevant equipment (AC
+												owners get AC reminders)
 											</p>
 										</div>
 									</div>
@@ -624,9 +754,12 @@ export default function MarketingPage() {
 											3
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Early Bird Discounts</div>
+											<div className="mb-1 text-sm font-semibold">
+												Early Bird Discounts
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Incentivize booking before peak season with special pricing
+												Incentivize booking before peak season with special
+												pricing
 											</p>
 										</div>
 									</div>
@@ -635,9 +768,12 @@ export default function MarketingPage() {
 											4
 										</div>
 										<div>
-											<div className="mb-1 text-sm font-semibold">Maintenance Plans</div>
+											<div className="mb-1 text-sm font-semibold">
+												Maintenance Plans
+											</div>
 											<p className="text-muted-foreground text-xs">
-												Promote recurring service agreements during campaign touchpoints
+												Promote recurring service agreements during campaign
+												touchpoints
 											</p>
 										</div>
 									</div>
@@ -646,12 +782,20 @@ export default function MarketingPage() {
 									<div className="mb-2 text-sm font-semibold">Results</div>
 									<div className="grid grid-cols-2 gap-4 text-center">
 										<div>
-											<div className="text-xl font-bold text-green-600">35%</div>
-											<div className="text-muted-foreground text-xs">Booking Increase</div>
+											<div className="text-xl font-bold text-green-600">
+												35%
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Booking Increase
+											</div>
 										</div>
 										<div>
-											<div className="text-xl font-bold text-green-600">18%</div>
-											<div className="text-muted-foreground text-xs">Plan Conversions</div>
+											<div className="text-xl font-bold text-green-600">
+												18%
+											</div>
+											<div className="text-muted-foreground text-xs">
+												Plan Conversions
+											</div>
 										</div>
 									</div>
 								</div>
@@ -669,7 +813,8 @@ export default function MarketingPage() {
 							Marketing automation that feels personal
 						</h2>
 						<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-							Powerful features that make every customer feel like your only customer
+							Powerful features that make every customer feel like your only
+							customer
 						</p>
 					</div>
 
@@ -680,7 +825,9 @@ export default function MarketingPage() {
 									<Target className="text-primary size-6" />
 								</div>
 								<CardTitle>Smart Segmentation</CardTitle>
-								<CardDescription>Target the right customers with the right message</CardDescription>
+								<CardDescription>
+									Target the right customers with the right message
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -710,7 +857,9 @@ export default function MarketingPage() {
 									<Mail className="text-primary size-6" />
 								</div>
 								<CardTitle>Multi-Channel Delivery</CardTitle>
-								<CardDescription>Reach customers wherever they are</CardDescription>
+								<CardDescription>
+									Reach customers wherever they are
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -740,7 +889,9 @@ export default function MarketingPage() {
 									<Users className="text-primary size-6" />
 								</div>
 								<CardTitle>Personalization Engine</CardTitle>
-								<CardDescription>Dynamic content that adapts to each customer</CardDescription>
+								<CardDescription>
+									Dynamic content that adapts to each customer
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -770,7 +921,9 @@ export default function MarketingPage() {
 									<TrendingUp className="text-primary size-6" />
 								</div>
 								<CardTitle>Performance Analytics</CardTitle>
-								<CardDescription>Track what's working and optimize campaigns</CardDescription>
+								<CardDescription>
+									Track what's working and optimize campaigns
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -800,7 +953,9 @@ export default function MarketingPage() {
 									<Star className="text-primary size-6" />
 								</div>
 								<CardTitle>Review Management</CardTitle>
-								<CardDescription>Build your online reputation automatically</CardDescription>
+								<CardDescription>
+									Build your online reputation automatically
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -830,7 +985,9 @@ export default function MarketingPage() {
 									<Zap className="text-primary size-6" />
 								</div>
 								<CardTitle>Workflow Automation</CardTitle>
-								<CardDescription>Set it and forget it marketing</CardDescription>
+								<CardDescription>
+									Set it and forget it marketing
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -875,9 +1032,10 @@ export default function MarketingPage() {
 									</div>
 								</div>
 								<blockquote className="text-lg leading-relaxed">
-									"Our Google reviews went from 47 to 312 in six months. The automated campaigns
-									brought back $82K in dormant customers we thought were gone forever. Marketing
-									used to be an afterthought—now it's our best salesperson."
+									"Our Google reviews went from 47 to 312 in six months. The
+									automated campaigns brought back $82K in dormant customers we
+									thought were gone forever. Marketing used to be an
+									afterthought—now it's our best salesperson."
 								</blockquote>
 								<div className="mt-6 flex items-center gap-4">
 									<Badge className="bg-yellow-500">312 Reviews</Badge>
@@ -897,8 +1055,8 @@ export default function MarketingPage() {
 						Start marketing on autopilot
 					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-white/90">
-						Join service businesses generating 3.2x more reviews and 42% higher conversions with
-						Thorbis.
+						Join service businesses generating 3.2x more reviews and 42% higher
+						conversions with Thorbis.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Button

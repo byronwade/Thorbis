@@ -4,7 +4,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateOrganizationStructuredData,
@@ -116,7 +122,7 @@ export default function AboutPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "About", url: `${siteUrl}/about` },
-						])
+						]),
 					),
 				}}
 				id="about-breadcrumb-ld"
@@ -128,7 +134,7 @@ export default function AboutPage() {
 						generateOrganizationStructuredData({
 							name: "Thorbis",
 							contactEmail: "press@thorbis.com",
-						})
+						}),
 					),
 				}}
 				id="about-organization-ld"
@@ -144,11 +150,12 @@ export default function AboutPage() {
 							Powering the world’s most trusted service companies
 						</h1>
 						<p className="text-muted-foreground text-lg leading-relaxed">
-							Thorbis builds software that helps home service and commercial trades deliver elite
-							customer experiences. From the first phone call to final invoice, we use AI and
-							automation to remove friction and let people focus on what matters— delighting
-							customers. Pricing stays transparent: $100/month base subscription with pay-as-you-go
-							usage, unlimited users, and zero lock-in.
+							Thorbis builds software that helps home service and commercial
+							trades deliver elite customer experiences. From the first phone
+							call to final invoice, we use AI and automation to remove friction
+							and let people focus on what matters— delighting customers.
+							Pricing stays transparent: $100/month base subscription with
+							pay-as-you-go usage, unlimited users, and zero lock-in.
 						</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild>
@@ -180,7 +187,9 @@ export default function AboutPage() {
 									<CardTitle>{value.title}</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<CardDescription className="leading-relaxed">{value.description}</CardDescription>
+									<CardDescription className="leading-relaxed">
+										{value.description}
+									</CardDescription>
 								</CardContent>
 							</Card>
 						))}
@@ -191,10 +200,17 @@ export default function AboutPage() {
 					<h2 className="text-2xl font-semibold">Our story</h2>
 					<div className="grid gap-6 md:grid-cols-2">
 						{HISTORY.map((entry) => (
-							<div className="bg-muted/10 rounded-2xl border p-6" key={entry.year}>
-								<p className="text-primary text-sm font-semibold uppercase">{entry.year}</p>
+							<div
+								className="bg-muted/10 rounded-2xl border p-6"
+								key={entry.year}
+							>
+								<p className="text-primary text-sm font-semibold uppercase">
+									{entry.year}
+								</p>
 								<h3 className="text-lg font-semibold">{entry.milestone}</h3>
-								<p className="text-muted-foreground mt-2 text-sm leading-relaxed">{entry.detail}</p>
+								<p className="text-muted-foreground mt-2 text-sm leading-relaxed">
+									{entry.detail}
+								</p>
 							</div>
 						))}
 					</div>
@@ -219,7 +235,9 @@ export default function AboutPage() {
 									<CardDescription>{leader.role}</CardDescription>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground text-sm leading-relaxed">{leader.bio}</p>
+									<p className="text-muted-foreground text-sm leading-relaxed">
+										{leader.bio}
+									</p>
 								</CardContent>
 							</Card>
 						))}
@@ -228,9 +246,10 @@ export default function AboutPage() {
 
 				<section className="bg-secondary/10 mt-16 rounded-3xl border p-10 text-center">
 					<p className="text-muted-foreground text-lg">
-						Thorbis operates as a distributed-first company with teammates across North America. We
-						host quarterly onsites focused on customer empathy, product discovery, and celebrating
-						wins. Interested in joining us?
+						Thorbis operates as a distributed-first company with teammates
+						across North America. We host quarterly onsites focused on customer
+						empathy, product discovery, and celebrating wins. Interested in
+						joining us?
 					</p>
 					<Button asChild className="mt-6">
 						<a href="/careers">Explore opportunities</a>

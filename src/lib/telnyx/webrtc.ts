@@ -73,16 +73,22 @@ export async function generateWebRTCToken(params: {
 				? sanitizedUsername
 				: Buffer.from(params.username || "user").toString("hex");
 		const uniqueSuffix = Date.now().toString(36);
-		const prefixLength = Math.max(1, TELNYX_CREDENTIAL_NAME_MAX_LENGTH - uniqueSuffix.length);
+		const prefixLength = Math.max(
+			1,
+			TELNYX_CREDENTIAL_NAME_MAX_LENGTH - uniqueSuffix.length,
+		);
 		const credentialPrefix = baseName.slice(0, prefixLength);
 		const staticName = `${credentialPrefix}${uniqueSuffix}`;
-		const listResponse = await fetch("https://api.telnyx.com/v2/credential_connections", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${apiKey}`,
+		const listResponse = await fetch(
+			"https://api.telnyx.com/v2/credential_connections",
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${apiKey}`,
+				},
 			},
-		});
+		);
 
 		if (listResponse.ok) {
 			const listData = await listResponse.json();
@@ -90,17 +96,20 @@ export async function generateWebRTCToken(params: {
 			// Delete old credentials that match this user's sanitized username
 			if (listData.data && Array.isArray(listData.data)) {
 				const userCredentials = listData.data.filter((cred: any) =>
-					cred.connection_name?.startsWith(credentialPrefix)
+					cred.connection_name?.startsWith(credentialPrefix),
 				);
 
 				for (const cred of userCredentials) {
 					try {
-						await fetch(`https://api.telnyx.com/v2/credential_connections/${cred.id}`, {
-							method: "DELETE",
-							headers: {
-								Authorization: `Bearer ${apiKey}`,
+						await fetch(
+							`https://api.telnyx.com/v2/credential_connections/${cred.id}`,
+							{
+								method: "DELETE",
+								headers: {
+									Authorization: `Bearer ${apiKey}`,
+								},
 							},
-						});
+						);
 					} catch (_error) {
 						// Continue anyway - deletion errors shouldn't block new credential creation
 					}
@@ -112,26 +121,9 @@ export async function generateWebRTCToken(params: {
 
 		// Use Telnyx REST API to create WebRTC credentials
 		// Documentation: https://developers.telnyx.com/api/v2/webrtc/credentials
-		const response = await fetch("https://api.telnyx.com/v2/credential_connections", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${apiKey}`,
-			},
-			body: JSON.stringify({
-				connection_name: staticName,
-				user_name: staticName,
-				password: generatedPassword,
-				ttl: params.ttl || 86_400,
-			}),
-		});
-
-		if (!response.ok) {
-			const errorText = await response.text();
-
-			// If the API endpoint isn't available, try the simpler credentials endpoint
-			const altPassword = generateRandomPassword(32);
-			const altResponse = await fetch("https://api.telnyx.com/v2/texml_credentials", {
+		const response = await fetch(
+			"https://api.telnyx.com/v2/credential_connections",
+			{
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -139,10 +131,33 @@ export async function generateWebRTCToken(params: {
 				},
 				body: JSON.stringify({
 					connection_name: staticName,
-					user_name: staticName, // Both must be unique!
-					password: altPassword,
+					user_name: staticName,
+					password: generatedPassword,
+					ttl: params.ttl || 86_400,
 				}),
-			});
+			},
+		);
+
+		if (!response.ok) {
+			const errorText = await response.text();
+
+			// If the API endpoint isn't available, try the simpler credentials endpoint
+			const altPassword = generateRandomPassword(32);
+			const altResponse = await fetch(
+				"https://api.telnyx.com/v2/texml_credentials",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${apiKey}`,
+					},
+					body: JSON.stringify({
+						connection_name: staticName,
+						user_name: staticName, // Both must be unique!
+						password: altPassword,
+					}),
+				},
+			);
 
 			if (!altResponse.ok) {
 				const _altErrorText = await altResponse.text();
@@ -157,7 +172,10 @@ export async function generateWebRTCToken(params: {
 				expires_at: Date.now() + (params.ttl || 86_400) * 1000,
 				realm: "sip.telnyx.com",
 				sip_uri: `sip:${staticName}@sip.telnyx.com`,
-				stun_servers: ["stun:stun.telnyx.com:3478", "stun:stun.telnyx.com:3479"],
+				stun_servers: [
+					"stun:stun.telnyx.com:3478",
+					"stun:stun.telnyx.com:3479",
+				],
 				turn_servers: [
 					{
 						urls: [
@@ -207,7 +225,10 @@ export async function generateWebRTCToken(params: {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to generate WebRTC token",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to generate WebRTC token",
 		};
 	}
 }
@@ -230,7 +251,10 @@ export function getCredentialTimeToLive(credential: WebRTCCredential): number {
 /**
  * Format SIP URI for calling
  */
-export function formatSIPUri(phoneNumber: string, realm = "sip.telnyx.com"): string {
+export function formatSIPUri(
+	phoneNumber: string,
+	realm = "sip.telnyx.com",
+): string {
 	// Remove any non-digit characters
 	const cleanNumber = phoneNumber.replace(/\D/g, "");
 
@@ -242,11 +266,14 @@ export function formatSIPUri(phoneNumber: string, realm = "sip.telnyx.com"): str
  * Generate a random password for WebRTC credentials
  */
 function generateRandomPassword(length = 32): string {
-	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+	const characters =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 	let password = "";
 
 	for (let i = 0; i < length; i++) {
-		password += characters.charAt(Math.floor(Math.random() * characters.length));
+		password += characters.charAt(
+			Math.floor(Math.random() * characters.length),
+		);
 	}
 
 	return password;
@@ -268,7 +295,7 @@ export type WebRTCClientConfig = {
  */
 export function createWebRTCConfig(
 	credential: WebRTCCredential,
-	debug = false
+	debug = false,
 ): WebRTCClientConfig {
 	// Convert Telnyx credential format to RTCIceServer format
 	const iceServers: RTCIceServer[] = [
@@ -296,14 +323,18 @@ export function createWebRTCConfig(
  *
  * Provides configuration specific to React Native apps
  */
-export function createReactNativeWebRTCConfig(credential: WebRTCCredential): WebRTCClientConfig {
+export function createReactNativeWebRTCConfig(
+	credential: WebRTCCredential,
+): WebRTCClientConfig {
 	return createWebRTCConfig(credential, true); // Enable debug for mobile
 }
 
 /**
  * Web browser WebRTC configuration helper
  */
-export function createBrowserWebRTCConfig(credential: WebRTCCredential): WebRTCClientConfig {
+export function createBrowserWebRTCConfig(
+	credential: WebRTCCredential,
+): WebRTCClientConfig {
 	return createWebRTCConfig(credential, false);
 }
 
@@ -312,7 +343,9 @@ export function createBrowserWebRTCConfig(credential: WebRTCCredential): WebRTCC
  *
  * Checks if the browser/device can connect to STUN/TURN servers
  */
-export async function testWebRTCConnectivity(credential: WebRTCCredential): Promise<{
+export async function testWebRTCConnectivity(
+	credential: WebRTCCredential,
+): Promise<{
 	success: boolean;
 	stunReachable: boolean;
 	turnReachable: boolean;
@@ -376,7 +409,8 @@ export async function testWebRTCConnectivity(credential: WebRTCCredential): Prom
 			success: false,
 			stunReachable: false,
 			turnReachable: false,
-			error: error instanceof Error ? error.message : "Failed to test connectivity",
+			error:
+				error instanceof Error ? error.message : "Failed to test connectivity",
 		};
 	}
 }

@@ -36,13 +36,17 @@ export default function CSRDashboard() {
 			{/* Enhanced Header */}
 			<div className="flex flex-col gap-1">
 				<div className="flex items-center gap-3">
-					<h1 className="text-4xl font-bold tracking-tight">Customer Service Hub</h1>
+					<h1 className="text-4xl font-bold tracking-tight">
+						Customer Service Hub
+					</h1>
 					<Badge className="text-accent-foreground" variant="outline">
 						CSR View
 					</Badge>
 					<div className="border-border bg-muted/30 flex items-center gap-2 rounded-full border px-3 py-1">
 						<div className="bg-success size-2 animate-pulse rounded-full" />
-						<span className="text-muted-foreground text-xs font-medium">Available</span>
+						<span className="text-muted-foreground text-xs font-medium">
+							Available
+						</span>
 					</div>
 				</div>
 				<p className="text-muted-foreground text-lg">{currentDate}</p>
@@ -157,14 +161,19 @@ export default function CSRDashboard() {
 									time: "2 hours ago",
 								},
 							].map((callback, index) => (
-								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+								<div
+									className="bg-card flex items-start gap-3 rounded-lg border p-3"
+									key={index}
+								>
 									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 										<Phone className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<Badge variant="outline">Pending</Badge>
 										<p className="mt-1 text-sm font-bold">{callback.name}</p>
-										<p className="text-muted-foreground text-xs">{callback.phone}</p>
+										<p className="text-muted-foreground text-xs">
+											{callback.phone}
+										</p>
 										<p className="text-muted-foreground mt-1 text-xs">
 											{callback.reason} • {callback.time}
 										</p>
@@ -193,11 +202,18 @@ export default function CSRDashboard() {
 									<DollarSign className="size-5 text-white" />
 								</div>
 								<div className="flex-1">
-									<Badge className="border-success text-success" variant="outline">
+									<Badge
+										className="border-success text-success"
+										variant="outline"
+									>
 										High Value
 									</Badge>
-									<p className="mt-1 text-sm font-bold">HVAC System Replacement</p>
-									<p className="text-muted-foreground text-xs">Bob Anderson • Sent 2 days ago</p>
+									<p className="mt-1 text-sm font-bold">
+										HVAC System Replacement
+									</p>
+									<p className="text-muted-foreground text-xs">
+										Bob Anderson • Sent 2 days ago
+									</p>
 									<p className="text-success mt-1 text-sm font-bold">$8,500</p>
 								</div>
 								<Button size="sm" variant="outline">
@@ -226,7 +242,10 @@ export default function CSRDashboard() {
 									age: "1 week",
 								},
 							].map((estimate, index) => (
-								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+								<div
+									className="bg-card flex items-start gap-3 rounded-lg border p-3"
+									key={index}
+								>
 									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 										<FileText className="text-primary size-5" />
 									</div>
@@ -289,16 +308,25 @@ export default function CSRDashboard() {
 									status: "Confirmed",
 								},
 							].map((booking, index) => (
-								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+								<div
+									className="bg-card flex items-start gap-3 rounded-lg border p-3"
+									key={index}
+								>
 									<div className="bg-primary/10 flex size-10 flex-shrink-0 items-center justify-center rounded-full">
 										<Calendar className="text-primary size-5" />
 									</div>
 									<div className="flex-1">
 										<div className="flex items-center gap-2">
-											<Badge variant={booking.status === "Confirmed" ? "default" : "outline"}>
+											<Badge
+												variant={
+													booking.status === "Confirmed" ? "default" : "outline"
+												}
+											>
 												{booking.status}
 											</Badge>
-											<span className="text-muted-foreground text-xs">{booking.time}</span>
+											<span className="text-muted-foreground text-xs">
+												{booking.time}
+											</span>
 										</div>
 										<p className="mt-1 text-sm font-bold">{booking.customer}</p>
 										<p className="text-muted-foreground text-xs">
@@ -331,15 +359,21 @@ export default function CSRDashboard() {
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Calls Answered</span>
+										<span className="text-muted-foreground text-sm">
+											Calls Answered
+										</span>
 										<span className="font-bold">43</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Avg. Call Time</span>
+										<span className="text-muted-foreground text-sm">
+											Avg. Call Time
+										</span>
 										<span className="font-bold">4:32</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Missed Calls</span>
+										<span className="text-muted-foreground text-sm">
+											Missed Calls
+										</span>
 										<span className="font-bold">2</span>
 									</div>
 								</div>
@@ -353,15 +387,21 @@ export default function CSRDashboard() {
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Appointments Booked</span>
+										<span className="text-muted-foreground text-sm">
+											Appointments Booked
+										</span>
 										<span className="font-bold">12</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Conversion Rate</span>
+										<span className="text-muted-foreground text-sm">
+											Conversion Rate
+										</span>
 										<span className="text-success font-bold">73.9%</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Avg. Booking Value</span>
+										<span className="text-muted-foreground text-sm">
+											Avg. Booking Value
+										</span>
 										<span className="font-bold">$485</span>
 									</div>
 								</div>
@@ -375,15 +415,21 @@ export default function CSRDashboard() {
 								</div>
 								<div className="mt-3 space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Sent Today</span>
+										<span className="text-muted-foreground text-sm">
+											Sent Today
+										</span>
 										<span className="font-bold">8</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Total Value</span>
+										<span className="text-muted-foreground text-sm">
+											Total Value
+										</span>
 										<span className="font-bold">$12,400</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Pending Review</span>
+										<span className="text-muted-foreground text-sm">
+											Pending Review
+										</span>
 										<span className="text-warning font-bold">12</span>
 									</div>
 								</div>
@@ -394,9 +440,14 @@ export default function CSRDashboard() {
 								<div className="flex items-center justify-between">
 									<div>
 										<p className="text-sm font-bold">Today's Achievement</p>
-										<p className="text-muted-foreground text-xs">You're exceeding targets!</p>
+										<p className="text-muted-foreground text-xs">
+											You're exceeding targets!
+										</p>
 									</div>
-									<Badge className="border-success text-success" variant="outline">
+									<Badge
+										className="border-success text-success"
+										variant="outline"
+									>
 										⭐ Top Performer
 									</Badge>
 								</div>
@@ -463,22 +514,29 @@ export default function CSRDashboard() {
 								},
 								{
 									title: "Emergency Response",
-									preview: "I understand this is urgent. Let me get you scheduled...",
+									preview:
+										"I understand this is urgent. Let me get you scheduled...",
 								},
 								{
 									title: "Pricing Questions",
-									preview: "Our standard service call is $89, which includes...",
+									preview:
+										"Our standard service call is $89, which includes...",
 								},
 								{
 									title: "Booking Confirmation",
 									preview: "I have you scheduled for [time] on [date]...",
 								},
 							].map((script, index) => (
-								<div className="bg-card flex items-start gap-3 rounded-lg border p-3" key={index}>
+								<div
+									className="bg-card flex items-start gap-3 rounded-lg border p-3"
+									key={index}
+								>
 									<MessageSquare className="text-primary mt-0.5 size-5" />
 									<div className="flex-1">
 										<p className="text-sm font-bold">{script.title}</p>
-										<p className="text-muted-foreground text-xs">{script.preview}</p>
+										<p className="text-muted-foreground text-xs">
+											{script.preview}
+										</p>
 									</div>
 									<Button size="sm" variant="ghost">
 										View

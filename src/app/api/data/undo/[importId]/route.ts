@@ -25,7 +25,10 @@ export async function POST(_request: NextRequest, context: RouteContext) {
 
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Database not configured" },
+				{ status: 500 },
+			);
 		}
 
 		const { importId } = context.params;
@@ -45,17 +48,21 @@ export async function POST(_request: NextRequest, context: RouteContext) {
 		// Check if import can be undone (within 24 hours)
 		const importDate = new Date(importRecord.created_at);
 		const now = new Date();
-		const hoursSinceImport = (now.getTime() - importDate.getTime()) / (1000 * 60 * 60);
+		const hoursSinceImport =
+			(now.getTime() - importDate.getTime()) / (1000 * 60 * 60);
 
 		if (hoursSinceImport > 24) {
 			return NextResponse.json(
 				{ error: "Import can only be undone within 24 hours" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
 		if (importRecord.status !== "completed") {
-			return NextResponse.json({ error: "Only completed imports can be undone" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Only completed imports can be undone" },
+				{ status: 400 },
+			);
 		}
 
 		// TODO: Implement actual undo logic
@@ -70,7 +77,10 @@ export async function POST(_request: NextRequest, context: RouteContext) {
 			.eq("id", importId);
 
 		if (updateError) {
-			return NextResponse.json({ error: "Failed to undo import" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to undo import" },
+				{ status: 500 },
+			);
 		}
 
 		return NextResponse.json({
@@ -79,6 +89,9 @@ export async function POST(_request: NextRequest, context: RouteContext) {
 			importId,
 		});
 	} catch (_error) {
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

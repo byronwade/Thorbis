@@ -23,7 +23,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -53,7 +57,10 @@ type EntityTagsProps = {
 		| "material"
 		| "vendor";
 	tags: EntityTag[];
-	onUpdateTags: (entityId: string, tags: EntityTag[]) => Promise<ActionResult<unknown>>;
+	onUpdateTags: (
+		entityId: string,
+		tags: EntityTag[],
+	) => Promise<ActionResult<unknown>>;
 	readOnly?: boolean;
 };
 
@@ -134,7 +141,7 @@ const PRESET_COLORS = [
 
 const COLOR_CLASSES: Record<string, string> = PRESET_COLORS.reduce(
 	(acc, color) => ({ ...acc, [color.value]: color.class }),
-	{}
+	{},
 );
 
 export function EntityTags({
@@ -151,7 +158,8 @@ export function EntityTags({
 	const [isSaving, setIsSaving] = useState(false);
 	const [tagToRemove, setTagToRemove] = useState<EntityTag | null>(null);
 
-	const getTagLabel = (tag: EntityTag): string => (typeof tag === "string" ? tag : tag.label);
+	const getTagLabel = (tag: EntityTag): string =>
+		typeof tag === "string" ? tag : tag.label;
 
 	const getTagColor = (tag: EntityTag): string | undefined =>
 		typeof tag === "string" ? undefined : tag.color;
@@ -221,7 +229,9 @@ export function EntityTags({
 					const label = getTagLabel(tag);
 					const color = getTagColor(tag);
 					const colorClass =
-						color && COLOR_CLASSES[color] ? COLOR_CLASSES[color] : COLOR_CLASSES.blue;
+						color && COLOR_CLASSES[color]
+							? COLOR_CLASSES[color]
+							: COLOR_CLASSES.blue;
 
 					return (
 						<div
@@ -286,7 +296,9 @@ export function EntityTags({
 											<SelectValue>
 												{selectedColor && (
 													<div className="flex items-center gap-2">
-														<div className={`h-4 w-4 rounded-full ${selectedColor.class}`} />
+														<div
+															className={`h-4 w-4 rounded-full ${selectedColor.class}`}
+														/>
 														<span>{selectedColor.name}</span>
 													</div>
 												)}
@@ -296,7 +308,9 @@ export function EntityTags({
 											{PRESET_COLORS.map((color) => (
 												<SelectItem key={color.value} value={color.value}>
 													<div className="flex items-center gap-2">
-														<div className={`h-4 w-4 rounded-full ${color.class}`} />
+														<div
+															className={`h-4 w-4 rounded-full ${color.class}`}
+														/>
 														<span>{color.name}</span>
 													</div>
 												</SelectItem>
@@ -320,7 +334,11 @@ export function EntityTags({
 
 								{/* Action Buttons */}
 								<div className="flex gap-2">
-									<Button className="flex-1" onClick={() => setIsAddOpen(false)} variant="outline">
+									<Button
+										className="flex-1"
+										onClick={() => setIsAddOpen(false)}
+										variant="outline"
+									>
 										Cancel
 									</Button>
 									<Button
@@ -338,12 +356,16 @@ export function EntityTags({
 			</div>
 
 			{/* Remove Confirmation Dialog */}
-			<AlertDialog onOpenChange={() => setTagToRemove(null)} open={!!tagToRemove}>
+			<AlertDialog
+				onOpenChange={() => setTagToRemove(null)}
+				open={!!tagToRemove}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Remove Tag</AlertDialogTitle>
 						<AlertDialogDescription>
-							Are you sure you want to remove the tag "{tagToRemove ? getTagLabel(tagToRemove) : ""}
+							Are you sure you want to remove the tag "
+							{tagToRemove ? getTagLabel(tagToRemove) : ""}
 							"? This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>

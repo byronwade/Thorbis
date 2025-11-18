@@ -32,10 +32,16 @@ export const DemographicsSchema = z.object({
 export type Demographics = z.infer<typeof DemographicsSchema>;
 
 export class DemographicsService {
-	private readonly cache: Map<string, { data: Demographics; timestamp: number }> = new Map();
+	private readonly cache: Map<
+		string,
+		{ data: Demographics; timestamp: number }
+	> = new Map();
 	private readonly cacheTTL = 1000 * 60 * 60 * 24 * 90; // 90 days (census data updates quarterly)
 
-	async getDemographics(lat: number, lon: number): Promise<Demographics | null> {
+	async getDemographics(
+		lat: number,
+		lon: number,
+	): Promise<Demographics | null> {
 		const cacheKey = `demographics:${lat.toFixed(4)},${lon.toFixed(4)}`;
 		const cached = this.cache.get(cacheKey);
 
@@ -128,7 +134,8 @@ export class DemographicsService {
 			const laborForce = Number.parseInt(values[12], 10) || 1;
 
 			const educationPercent =
-				((bachelors + masters + professional + doctorate) / totalEducation) * 100;
+				((bachelors + masters + professional + doctorate) / totalEducation) *
+				100;
 			const povertyRate = (povertyCount / povertyTotal) * 100;
 			const unemploymentRate = (unemployed / laborForce) * 100;
 

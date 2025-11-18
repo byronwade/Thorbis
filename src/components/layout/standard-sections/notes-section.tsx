@@ -16,7 +16,12 @@ type NotesSectionProps = {
 	onAddNote?: (content: string) => Promise<void>;
 };
 
-export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSectionProps) {
+export function NotesSection({
+	notes,
+	entityType,
+	entityId,
+	onAddNote,
+}: NotesSectionProps) {
 	const { toast } = useToast();
 	const [isAdding, setIsAdding] = useState(false);
 	const [newNote, setNewNote] = useState("");
@@ -98,7 +103,9 @@ export function NotesSection({ notes, entityType, entityId, onAddNote }: NotesSe
 								<div className="flex gap-3">
 									<Avatar className="size-8 flex-shrink-0">
 										<AvatarImage src={note.user?.avatar} />
-										<AvatarFallback>{note.user?.name?.charAt(0) || "?"}</AvatarFallback>
+										<AvatarFallback>
+											{note.user?.name?.charAt(0) || "?"}
+										</AvatarFallback>
 									</Avatar>
 									<div className="min-w-0 flex-1">
 										<div className="flex items-center justify-between gap-2">

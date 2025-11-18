@@ -34,7 +34,13 @@ type CallSyncMessage = {
 	data?: unknown;
 };
 
-type CallAction = "mute" | "unmute" | "hold" | "unhold" | "record_start" | "record_stop";
+type CallAction =
+	| "mute"
+	| "unmute"
+	| "hold"
+	| "unhold"
+	| "record_start"
+	| "record_stop";
 
 const CHANNEL_NAME = "thorbis-call-sync";
 const STORAGE_KEY = "thorbis-call-sync-fallback";
@@ -186,7 +192,7 @@ export function useCrossTabSync() {
 				isProcessingSyncRef.current = false;
 			}
 		},
-		[] // ✅ No dependencies - uses refs to prevent channel recreation
+		[], // ✅ No dependencies - uses refs to prevent channel recreation
 	);
 
 	// Setup localStorage fallback for older browsers
@@ -214,7 +220,9 @@ export function useCrossTabSync() {
 			try {
 				channelRef.current = new BroadcastChannel(CHANNEL_NAME);
 
-				channelRef.current.onmessage = (event: MessageEvent<CallSyncMessage>) => {
+				channelRef.current.onmessage = (
+					event: MessageEvent<CallSyncMessage>,
+				) => {
 					handleSyncMessage(event.data);
 				};
 			} catch (_error) {
@@ -242,7 +250,10 @@ export function useCrossTabSync() {
 						actions.setPosition(newState.state.position);
 					}
 					// Update width if changed
-					if (newState.state?.popoverWidth && newState.state.popoverWidth !== popoverWidth) {
+					if (
+						newState.state?.popoverWidth &&
+						newState.state.popoverWidth !== popoverWidth
+					) {
 						actions.setPopoverWidth(newState.state.popoverWidth);
 					}
 				} catch (_error) {}
@@ -287,7 +298,7 @@ export function useCrossTabSync() {
 					data: { caller },
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastCallAnswered: useCallback(() => {
@@ -312,7 +323,7 @@ export function useCrossTabSync() {
 					data: action,
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastPositionUpdate: useCallback(
@@ -323,7 +334,7 @@ export function useCrossTabSync() {
 					data: { x, y },
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 
 		broadcastSizeUpdate: useCallback(
@@ -334,7 +345,7 @@ export function useCrossTabSync() {
 					data: width,
 				});
 			},
-			[broadcast]
+			[broadcast],
 		),
 	};
 }

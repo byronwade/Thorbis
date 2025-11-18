@@ -44,7 +44,10 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 	};
 
 	const getStatusVariant = (status: string) => {
-		const statusMap: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+		const statusMap: Record<
+			string,
+			"default" | "secondary" | "outline" | "destructive"
+		> = {
 			scheduled: "outline",
 			confirmed: "secondary",
 			in_progress: "default",
@@ -93,7 +96,9 @@ export function JobSchedules({ schedules }: JobSchedulesProps) {
 										{formatTime(schedule.start_time)}
 									</div>
 								</TableCell>
-								<TableCell>{schedule.duration ? `${schedule.duration} min` : "—"}</TableCell>
+								<TableCell>
+									{schedule.duration ? `${schedule.duration} min` : "—"}
+								</TableCell>
 								<TableCell className="capitalize">
 									{schedule.appointment_type || schedule.type || "—"}
 								</TableCell>

@@ -22,7 +22,10 @@ export async function POST(request: NextRequest) {
 		// Get authenticated user
 		const supabase = await createClient();
 		if (!supabase) {
-			return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
+			return NextResponse.json(
+				{ error: "Service unavailable" },
+				{ status: 503 },
+			);
 		}
 		const {
 			data: { user },
@@ -34,7 +37,10 @@ export async function POST(request: NextRequest) {
 		}
 
 		if (!stripe) {
-			return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+			return NextResponse.json(
+				{ error: "Payment service unavailable" },
+				{ status: 503 },
+			);
 		}
 
 		// Parse and validate request body
@@ -42,7 +48,9 @@ export async function POST(request: NextRequest) {
 		const data = saveMethodSchema.parse(body);
 
 		// Get payment method from Stripe
-		const paymentMethod = await stripe.paymentMethods.retrieve(data.paymentMethodId);
+		const paymentMethod = await stripe.paymentMethods.retrieve(
+			data.paymentMethodId,
+		);
 
 		// Extract payment method details
 		const type = paymentMethod.type;
@@ -70,7 +78,9 @@ export async function POST(request: NextRequest) {
 				}
 			}
 		} else {
-			displayName = type.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase());
+			displayName = type
+				.replace("_", " ")
+				.replace(/\b\w/g, (l) => l.toUpperCase());
 		}
 
 		// Check if payment method already exists
@@ -89,24 +99,29 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Save to database
-		const { error: insertError } = await supabase.from("payment_methods").insert({
-			user_id: user.id,
-			stripe_payment_method_id: data.paymentMethodId,
-			type: walletType || type,
-			brand,
-			last4,
-			exp_month: expMonth,
-			exp_year: expYear,
-			wallet_type: walletType,
-			display_name: displayName,
-			is_default: data.isDefault,
-			is_default_for_subscription: data.isDefaultForSubscription,
-			billing_details: paymentMethod.billing_details,
-			allow_redisplay: "always",
-		});
+		const { error: insertError } = await supabase
+			.from("payment_methods")
+			.insert({
+				user_id: user.id,
+				stripe_payment_method_id: data.paymentMethodId,
+				type: walletType || type,
+				brand,
+				last4,
+				exp_month: expMonth,
+				exp_year: expYear,
+				wallet_type: walletType,
+				display_name: displayName,
+				is_default: data.isDefault,
+				is_default_for_subscription: data.isDefaultForSubscription,
+				billing_details: paymentMethod.billing_details,
+				allow_redisplay: "always",
+			});
 
 		if (insertError) {
-			return NextResponse.json({ error: "Failed to save payment method" }, { status: 500 });
+			return NextResponse.json(
+				{ error: "Failed to save payment method" },
+				{ status: 500 },
+			);
 		}
 
 		// Attach payment method to Stripe customer if provided
@@ -134,10 +149,13 @@ export async function POST(request: NextRequest) {
 		if (error instanceof z.ZodError) {
 			return NextResponse.json(
 				{ error: error.issues[0]?.message || "Validation error" },
-				{ status: 400 }
+				{ status: 400 },
 			);
 		}
 
-		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
 	}
 }

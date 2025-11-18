@@ -4,10 +4,10 @@
 
 "use client";
 
-import { CreditCard, Check } from "lucide-react";
+import { Check, CreditCard } from "lucide-react";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerPaymentMethods } from "@/hooks/use-customer-360";
 
 type CustomerPaymentMethodsWidgetProps = {
@@ -64,10 +64,14 @@ export function CustomerPaymentMethodsWidget({
 											)}
 										</div>
 										{method.last4 && (
-											<p className="text-muted-foreground text-sm">•••• {method.last4}</p>
+											<p className="text-muted-foreground text-sm">
+												•••• {method.last4}
+											</p>
 										)}
 										{method.brand && (
-											<p className="text-muted-foreground text-xs">{method.brand}</p>
+											<p className="text-muted-foreground text-xs">
+												{method.brand}
+											</p>
 										)}
 									</div>
 								</div>

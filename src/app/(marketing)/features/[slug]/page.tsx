@@ -70,7 +70,7 @@ export default async function FeatureDetailPage({ params }: FeaturePageProps) {
 								name: feature.name,
 								url: `${siteUrl}/features/${feature.slug}`,
 							},
-						])
+						]),
 					),
 				}}
 				id="feature-breadcrumb-ld"

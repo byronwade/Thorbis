@@ -23,8 +23,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Profit Margins</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track profit margins by service, part, and category to identify most profitable
-							offerings
+							Track profit margins by service, part, and category to identify
+							most profitable offerings
 						</p>
 					</div>
 
@@ -34,7 +34,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Pricing Trends</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor pricing trends over time and identify opportunities for rate adjustments
+							Monitor pricing trends over time and identify opportunities for
+							rate adjustments
 						</p>
 					</div>
 
@@ -44,8 +45,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Revenue Mix</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze revenue distribution across services, parts, and labor to optimize your
-							offerings
+							Analyze revenue distribution across services, parts, and labor to
+							optimize your offerings
 						</p>
 					</div>
 
@@ -55,7 +56,8 @@ export async function PriceAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Competitive Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Compare your pricing to market rates and ensure competitive positioning
+							Compare your pricing to market rates and ensure competitive
+							positioning
 						</p>
 					</div>
 				</div>

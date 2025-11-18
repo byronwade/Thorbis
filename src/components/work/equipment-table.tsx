@@ -1,6 +1,14 @@
 "use client";
 
-import { Archive, Download, MoreHorizontal, Plus, Settings, Truck, Wrench } from "lucide-react";
+import {
+	Archive,
+	Download,
+	MoreHorizontal,
+	Plus,
+	Settings,
+	Truck,
+	Wrench,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,7 +57,8 @@ const EQUIPMENT_STATUS_CONFIG = {
 		label: "Maintenance",
 	},
 	retired: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Retired",
 	},
 	active: {
@@ -74,13 +83,19 @@ const EQUIPMENT_STATUS_CONFIG = {
 	},
 } as const;
 
+type EquipmentTableProps = {
+	equipment: Equipment[];
+	itemsPerPage?: number;
+	totalCount?: number;
+	currentPage?: number;
+};
+
 export function EquipmentTable({
 	equipment,
 	itemsPerPage = 50,
-}: {
-	equipment: Equipment[];
-	itemsPerPage?: number;
-}) {
+	totalCount,
+	currentPage = 1,
+}: EquipmentTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.equipment);
 
@@ -107,6 +122,7 @@ export function EquipmentTable({
 				<Link
 					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`/dashboard/work/equipment/${item.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{item.assetId}
@@ -122,6 +138,7 @@ export function EquipmentTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/equipment/${item.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
@@ -130,8 +147,12 @@ export function EquipmentTable({
 					<div className="text-muted-foreground mt-0.5 truncate text-xs leading-tight">
 						{item.classificationLabel}
 						{item.typeLabel &&
-							item.typeLabel.toLowerCase() !== item.classificationLabel.toLowerCase() && (
-								<span className="text-muted-foreground/80"> • {item.typeLabel}</span>
+							item.typeLabel.toLowerCase() !==
+								item.classificationLabel.toLowerCase() && (
+								<span className="text-muted-foreground/80">
+									{" "}
+									• {item.typeLabel}
+								</span>
 							)}
 					</div>
 				</Link>
@@ -144,7 +165,9 @@ export function EquipmentTable({
 			shrink: true,
 			hideOnMobile: true,
 			sortable: true,
-			render: (item) => <span className="text-foreground text-sm">{item.assignedTo}</span>,
+			render: (item) => (
+				<span className="text-foreground text-sm">{item.assignedTo}</span>
+			),
 		},
 		{
 			key: "lastService",
@@ -154,7 +177,9 @@ export function EquipmentTable({
 			hideOnMobile: true,
 			sortable: true,
 			render: (item) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{item.lastService}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{item.lastService}
+				</span>
 			),
 		},
 		{
@@ -165,7 +190,9 @@ export function EquipmentTable({
 			hideOnMobile: true,
 			sortable: true,
 			render: (item) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{item.nextService}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{item.nextService}
+				</span>
 			),
 		},
 		{
@@ -257,7 +284,12 @@ export function EquipmentTable({
 			columns={columns}
 			data={filteredEquipment}
 			emptyAction={
-				<Button onClick={() => (window.location.href = "/dashboard/work/equipment/new")} size="sm">
+				<Button
+					onClick={() =>
+						(window.location.href = "/dashboard/work/equipment/new")
+					}
+					size="sm"
+				>
 					<Plus className="mr-2 size-4" />
 					Add Equipment
 				</Button>
@@ -271,8 +303,13 @@ export function EquipmentTable({
 			isArchived={(item) => Boolean(item.archived_at || item.deleted_at)}
 			isHighlighted={(item) => item.status === "maintenance"}
 			itemsPerPage={itemsPerPage}
+			totalCount={totalCount ?? filteredEquipment.length}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => window.location.reload()}
-			onRowClick={(item) => (window.location.href = `/dashboard/work/equipment/${item.id}`)}
+			onRowClick={(item) =>
+				(window.location.href = `/dashboard/work/equipment/${item.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search equipment by asset ID, name, type, assigned to, or status..."
 			showArchived={archiveFilter !== "active"}

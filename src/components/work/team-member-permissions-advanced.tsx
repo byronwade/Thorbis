@@ -28,11 +28,20 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getTeamMemberPermissions, updateTeamMemberPermissions } from "@/actions/team";
+import {
+	getTeamMemberPermissions,
+	updateTeamMemberPermissions,
+} from "@/actions/team";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -107,11 +116,15 @@ export function TeamMemberPermissionsAdvanced() {
 
 	// Current state (from database)
 	const [currentRole, setCurrentRole] = useState<string>("");
-	const [currentPermissions, setCurrentPermissions] = useState<Record<string, boolean>>({});
+	const [currentPermissions, setCurrentPermissions] = useState<
+		Record<string, boolean>
+	>({});
 
 	// Working state (for editing)
 	const [selectedRole, setSelectedRole] = useState<string>("");
-	const [customPermissions, setCustomPermissions] = useState<Record<string, boolean>>({});
+	const [customPermissions, setCustomPermissions] = useState<
+		Record<string, boolean>
+	>({});
 	const [isCustomMode, setIsCustomMode] = useState(false);
 
 	useEffect(() => {
@@ -130,7 +143,8 @@ export function TeamMemberPermissionsAdvanced() {
 				// Check if permissions match role preset
 				const preset = getRolePreset(role);
 				const isCustom =
-					preset && JSON.stringify(result.data.permissions) !== JSON.stringify(preset);
+					preset &&
+					JSON.stringify(result.data.permissions) !== JSON.stringify(preset);
 				setIsCustomMode(isCustom ?? false);
 			} else {
 				toast.error("Failed to load permissions");
@@ -189,9 +203,9 @@ export function TeamMemberPermissionsAdvanced() {
 		JSON.stringify(customPermissions) !== JSON.stringify(currentPermissions);
 
 	const enabledCount = Object.values(customPermissions).filter(Boolean).length;
-	const criticalEnabled = PERMISSION_GROUPS.flatMap((g) => g.permissions).filter(
-		(p) => p.critical && customPermissions[p.key]
-	).length;
+	const criticalEnabled = PERMISSION_GROUPS.flatMap(
+		(g) => g.permissions,
+	).filter((p) => p.critical && customPermissions[p.key]).length;
 
 	if (isLoading) {
 		return (
@@ -252,7 +266,9 @@ export function TeamMemberPermissionsAdvanced() {
 					<ShieldAlert className="size-5" />
 					Advanced Permissions Manager
 				</CardTitle>
-				<CardDescription>Configure detailed access controls for this team member</CardDescription>
+				<CardDescription>
+					Configure detailed access controls for this team member
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				{/* Role Selector */}
@@ -280,7 +296,9 @@ export function TeamMemberPermissionsAdvanced() {
 												{role.badge}
 											</Badge>
 										</div>
-										<span className="text-muted-foreground text-xs">{role.description}</span>
+										<span className="text-muted-foreground text-xs">
+											{role.description}
+										</span>
 									</div>
 								</SelectItem>
 							))}
@@ -303,13 +321,16 @@ export function TeamMemberPermissionsAdvanced() {
 							<span className="text-muted-foreground text-sm">Disabled</span>
 						</div>
 						<p className="mt-1 text-2xl font-semibold">
-							{PERMISSION_GROUPS.flatMap((g) => g.permissions).length - enabledCount}
+							{PERMISSION_GROUPS.flatMap((g) => g.permissions).length -
+								enabledCount}
 						</p>
 					</div>
 					<div className="border-destructive bg-destructive dark:border-destructive dark:bg-destructive/20 rounded-lg border p-3">
 						<div className="flex items-center gap-2">
 							<AlertCircle className="text-destructive size-4" />
-							<span className="text-destructive dark:text-destructive text-sm">Critical</span>
+							<span className="text-destructive dark:text-destructive text-sm">
+								Critical
+							</span>
 						</div>
 						<p className="text-destructive dark:text-destructive mt-1 text-2xl font-semibold">
 							{criticalEnabled}
@@ -340,7 +361,11 @@ export function TeamMemberPermissionsAdvanced() {
 					{PERMISSION_GROUPS.map((group) => {
 						const Icon = CATEGORY_ICONS[group.category];
 						return (
-							<TabsContent className="space-y-4" key={group.category} value={group.category}>
+							<TabsContent
+								className="space-y-4"
+								key={group.category}
+								value={group.category}
+							>
 								<div>
 									<div className="mb-4 flex items-start gap-3">
 										<div className="bg-primary/10 flex size-10 shrink-0 items-center justify-center rounded-lg">
@@ -348,7 +373,9 @@ export function TeamMemberPermissionsAdvanced() {
 										</div>
 										<div>
 											<h3 className="font-semibold">{group.label}</h3>
-											<p className="text-muted-foreground text-sm">{group.description}</p>
+											<p className="text-muted-foreground text-sm">
+												{group.description}
+											</p>
 										</div>
 									</div>
 
@@ -364,7 +391,10 @@ export function TeamMemberPermissionsAdvanced() {
 											>
 												<div className="flex-1 space-y-1">
 													<div className="flex items-center gap-2">
-														<Label className="cursor-pointer font-medium" htmlFor={permission.key}>
+														<Label
+															className="cursor-pointer font-medium"
+															htmlFor={permission.key}
+														>
 															{permission.label}
 														</Label>
 														{permission.critical && (
@@ -373,13 +403,17 @@ export function TeamMemberPermissionsAdvanced() {
 															</Badge>
 														)}
 													</div>
-													<p className="text-muted-foreground text-sm">{permission.description}</p>
+													<p className="text-muted-foreground text-sm">
+														{permission.description}
+													</p>
 												</div>
 												<Switch
 													checked={customPermissions[permission.key]}
 													className="ml-4"
 													id={permission.key}
-													onCheckedChange={() => handlePermissionToggle(permission.key)}
+													onCheckedChange={() =>
+														handlePermissionToggle(permission.key)
+													}
 												/>
 											</div>
 										))}
@@ -397,8 +431,8 @@ export function TeamMemberPermissionsAdvanced() {
 						<AlertTitle>Critical Permissions Enabled</AlertTitle>
 						<AlertDescription>
 							This team member has {criticalEnabled} critical permission
-							{criticalEnabled !== 1 ? "s" : ""} that allow destructive actions. Ensure you trust
-							this user with these capabilities.
+							{criticalEnabled !== 1 ? "s" : ""} that allow destructive actions.
+							Ensure you trust this user with these capabilities.
 						</AlertDescription>
 					</Alert>
 				)}
@@ -406,7 +440,12 @@ export function TeamMemberPermissionsAdvanced() {
 				{/* Action Buttons */}
 				{hasChanges && (
 					<div className="flex items-center justify-end gap-2 border-t pt-4">
-						<Button disabled={isSaving} onClick={handleReset} size="default" variant="outline">
+						<Button
+							disabled={isSaving}
+							onClick={handleReset}
+							size="default"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button disabled={isSaving} onClick={handleSave} size="default">

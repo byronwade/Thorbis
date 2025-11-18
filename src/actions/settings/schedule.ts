@@ -8,7 +8,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -29,7 +33,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -50,11 +58,16 @@ const availabilitySettingsSchema = z.object({
 	lunchBreakDurationMinutes: z.coerce.number().default(60),
 });
 
-export async function updateAvailabilitySettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateAvailabilitySettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -66,38 +79,46 @@ export async function updateAvailabilitySettings(formData: FormData): Promise<Ac
 
 		const data = availabilitySettingsSchema.parse({
 			defaultWorkHours: formData.get("defaultWorkHours") as string,
-			defaultAppointmentDurationMinutes: formData.get("defaultAppointmentDurationMinutes") || "60",
+			defaultAppointmentDurationMinutes:
+				formData.get("defaultAppointmentDurationMinutes") || "60",
 			bufferTimeMinutes: formData.get("bufferTimeMinutes") || "15",
 			minBookingNoticeHours: formData.get("minBookingNoticeHours") || "24",
 			maxBookingAdvanceDays: formData.get("maxBookingAdvanceDays") || "90",
 			lunchBreakEnabled: formData.get("lunchBreakEnabled") !== "false",
 			lunchBreakStart: formData.get("lunchBreakStart") || "12:00",
-			lunchBreakDurationMinutes: formData.get("lunchBreakDurationMinutes") || "60",
+			lunchBreakDurationMinutes:
+				formData.get("lunchBreakDurationMinutes") || "60",
 		});
 
 		let workHoursJson;
 		try {
 			workHoursJson = JSON.parse(data.defaultWorkHours);
 		} catch (_e) {
-			throw new ActionError("Invalid work hours JSON", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"Invalid work hours JSON",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
-		const { error } = await supabase.from("schedule_availability_settings").upsert({
-			company_id: companyId,
-			default_work_hours: workHoursJson,
-			default_appointment_duration_minutes: data.defaultAppointmentDurationMinutes,
-			buffer_time_minutes: data.bufferTimeMinutes,
-			min_booking_notice_hours: data.minBookingNoticeHours,
-			max_booking_advance_days: data.maxBookingAdvanceDays,
-			lunch_break_enabled: data.lunchBreakEnabled,
-			lunch_break_start: data.lunchBreakStart,
-			lunch_break_duration_minutes: data.lunchBreakDurationMinutes,
-		});
+		const { error } = await supabase
+			.from("schedule_availability_settings")
+			.upsert({
+				company_id: companyId,
+				default_work_hours: workHoursJson,
+				default_appointment_duration_minutes:
+					data.defaultAppointmentDurationMinutes,
+				buffer_time_minutes: data.bufferTimeMinutes,
+				min_booking_notice_hours: data.minBookingNoticeHours,
+				max_booking_advance_days: data.maxBookingAdvanceDays,
+				lunch_break_enabled: data.lunchBreakEnabled,
+				lunch_break_start: data.lunchBreakStart,
+				lunch_break_duration_minutes: data.lunchBreakDurationMinutes,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update availability settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -110,7 +131,10 @@ export async function getAvailabilitySettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -129,7 +153,7 @@ export async function getAvailabilitySettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch availability settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -154,11 +178,16 @@ const calendarSettingsSchema = z.object({
 	syncWithOutlook: z.boolean().default(false),
 });
 
-export async function updateCalendarSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateCalendarSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -198,7 +227,7 @@ export async function updateCalendarSettings(formData: FormData): Promise<Action
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update calendar settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -211,7 +240,10 @@ export async function getCalendarSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -230,7 +262,7 @@ export async function getCalendarSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch calendar settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -255,11 +287,16 @@ const teamRulesSchema = z.object({
 	breakDurationMinutes: z.coerce.number().default(15),
 });
 
-export async function updateTeamSchedulingRules(formData: FormData): Promise<ActionResult<void>> {
+export async function updateTeamSchedulingRules(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -299,7 +336,7 @@ export async function updateTeamSchedulingRules(formData: FormData): Promise<Act
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update team scheduling rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -312,7 +349,10 @@ export async function getTeamSchedulingRules(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -331,7 +371,7 @@ export async function getTeamSchedulingRules(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch team scheduling rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -348,7 +388,13 @@ const dispatchRuleSchema = z.object({
 	priority: z.coerce.number().default(0),
 	isActive: z.boolean().default(true),
 	assignmentMethod: z
-		.enum(["auto", "manual", "round_robin", "closest_technician", "skill_based"])
+		.enum([
+			"auto",
+			"manual",
+			"round_robin",
+			"closest_technician",
+			"skill_based",
+		])
 		.default("auto"),
 	conditions: z.string().optional(),
 	actions: z.string().optional(),
@@ -361,15 +407,23 @@ function parseJsonField(value?: string | null) {
 	try {
 		return JSON.parse(value);
 	} catch (_error) {
-		throw new ActionError("Invalid JSON provided", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"Invalid JSON provided",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 }
 
-export async function createDispatchRule(formData: FormData): Promise<ActionResult<string>> {
+export async function createDispatchRule(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -405,7 +459,7 @@ export async function createDispatchRule(formData: FormData): Promise<ActionResu
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create dispatch rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -417,12 +471,15 @@ export async function createDispatchRule(formData: FormData): Promise<ActionResu
 
 export async function updateDispatchRule(
 	ruleId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -457,7 +514,7 @@ export async function updateDispatchRule(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update dispatch rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -466,11 +523,16 @@ export async function updateDispatchRule(
 	});
 }
 
-export async function deleteDispatchRule(ruleId: string): Promise<ActionResult<void>> {
+export async function deleteDispatchRule(
+	ruleId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -489,7 +551,7 @@ export async function deleteDispatchRule(ruleId: string): Promise<ActionResult<v
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete dispatch rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -502,7 +564,10 @@ export async function getDispatchRules(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -522,7 +587,7 @@ export async function getDispatchRules(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch dispatch rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -536,7 +601,9 @@ export async function getDispatchRules(): Promise<ActionResult<any[]>> {
 
 const serviceAreaSchema = z.object({
 	areaName: z.string().min(1, "Area name is required"),
-	areaType: z.enum(["zip_code", "radius", "polygon", "city", "state"]).default("zip_code"),
+	areaType: z
+		.enum(["zip_code", "radius", "polygon", "city", "state"])
+		.default("zip_code"),
 	zipCodes: z.string().optional(), // Comma-separated
 	centerLat: z.coerce.number().optional(),
 	centerLng: z.coerce.number().optional(),
@@ -548,11 +615,16 @@ const serviceAreaSchema = z.object({
 	isActive: z.boolean().default(true),
 });
 
-export async function createServiceArea(formData: FormData): Promise<ActionResult<string>> {
+export async function createServiceArea(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -572,12 +644,15 @@ export async function createServiceArea(formData: FormData): Promise<ActionResul
 			polygonCoordinates: formData.get("polygonCoordinates") || undefined,
 			serviceFee: formData.get("serviceFee") || "0",
 			minimumJobAmount: formData.get("minimumJobAmount") || undefined,
-			estimatedTravelTimeMinutes: formData.get("estimatedTravelTimeMinutes") || undefined,
+			estimatedTravelTimeMinutes:
+				formData.get("estimatedTravelTimeMinutes") || undefined,
 			isActive: formData.get("isActive") !== "false",
 		});
 
 		// Parse zip codes into array
-		const zipCodesArray = data.zipCodes ? data.zipCodes.split(",").map((z) => z.trim()) : null;
+		const zipCodesArray = data.zipCodes
+			? data.zipCodes.split(",").map((z) => z.trim())
+			: null;
 
 		// Parse polygon coordinates
 		let polygonJson = null;
@@ -585,7 +660,10 @@ export async function createServiceArea(formData: FormData): Promise<ActionResul
 			try {
 				polygonJson = JSON.parse(data.polygonCoordinates);
 			} catch (_e) {
-				throw new ActionError("Invalid polygon coordinates JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid polygon coordinates JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -611,7 +689,7 @@ export async function createServiceArea(formData: FormData): Promise<ActionResul
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create service area"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -623,12 +701,15 @@ export async function createServiceArea(formData: FormData): Promise<ActionResul
 
 export async function updateServiceArea(
 	areaId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -648,18 +729,24 @@ export async function updateServiceArea(
 			polygonCoordinates: formData.get("polygonCoordinates") || undefined,
 			serviceFee: formData.get("serviceFee") || "0",
 			minimumJobAmount: formData.get("minimumJobAmount") || undefined,
-			estimatedTravelTimeMinutes: formData.get("estimatedTravelTimeMinutes") || undefined,
+			estimatedTravelTimeMinutes:
+				formData.get("estimatedTravelTimeMinutes") || undefined,
 			isActive: formData.get("isActive") !== "false",
 		});
 
-		const zipCodesArray = data.zipCodes ? data.zipCodes.split(",").map((z) => z.trim()) : null;
+		const zipCodesArray = data.zipCodes
+			? data.zipCodes.split(",").map((z) => z.trim())
+			: null;
 
 		let polygonJson = null;
 		if (data.polygonCoordinates) {
 			try {
 				polygonJson = JSON.parse(data.polygonCoordinates);
 			} catch (_e) {
-				throw new ActionError("Invalid polygon coordinates JSON", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid polygon coordinates JSON",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
@@ -684,7 +771,7 @@ export async function updateServiceArea(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update service area"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -693,11 +780,16 @@ export async function updateServiceArea(
 	});
 }
 
-export async function deleteServiceArea(areaId: string): Promise<ActionResult<void>> {
+export async function deleteServiceArea(
+	areaId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -716,7 +808,7 @@ export async function deleteServiceArea(areaId: string): Promise<ActionResult<vo
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete service area"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -729,7 +821,10 @@ export async function getServiceAreas(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -748,7 +843,7 @@ export async function getServiceAreas(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch service areas"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -792,11 +887,16 @@ export type ScheduleOverviewSnapshot = {
 	};
 };
 
-export async function getScheduleOverview(): Promise<ActionResult<ScheduleOverviewSnapshot>> {
+export async function getScheduleOverview(): Promise<
+	ActionResult<ScheduleOverviewSnapshot>
+> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -825,10 +925,15 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 				.single(),
 			supabase
 				.from("schedule_team_rules")
-				.select("max_jobs_per_day, max_jobs_per_week, allow_overtime, require_breaks, updated_at")
+				.select(
+					"max_jobs_per_day, max_jobs_per_week, allow_overtime, require_breaks, updated_at",
+				)
 				.eq("company_id", companyId)
 				.single(),
-			supabase.from("schedule_service_areas").select("id, is_active").eq("company_id", companyId),
+			supabase
+				.from("schedule_service_areas")
+				.select("id, is_active")
+				.eq("company_id", companyId),
 			supabase
 				.from("schedule_dispatch_rules")
 				.select("id, is_active, updated_at")
@@ -840,7 +945,7 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 		if (availabilityError && availabilityError.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch availability settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -848,7 +953,7 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 		if (calendarError && calendarError.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch calendar settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -856,21 +961,21 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 		if (teamRulesError && teamRulesError.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch team scheduling rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
 		if (serviceAreasResult.error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch service areas"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
 		if (dispatchRulesResult.error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch dispatch rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -884,9 +989,13 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 		const calendarConfigured = Boolean(calendarData);
 		const teamRulesConfigured = Boolean(teamRulesData);
 		const serviceAreasTotal = serviceAreasData.length;
-		const serviceAreasActive = serviceAreasData.filter((area) => area.is_active).length;
+		const serviceAreasActive = serviceAreasData.filter(
+			(area) => area.is_active,
+		).length;
 		const dispatchRulesTotal = dispatchRulesData.length;
-		const dispatchRulesActive = dispatchRulesData.filter((rule) => rule.is_active).length;
+		const dispatchRulesActive = dispatchRulesData.filter(
+			(rule) => rule.is_active,
+		).length;
 
 		const latestDispatchUpdate =
 			dispatchRulesData.find((rule) => rule.updated_at)?.updated_at ?? null;
@@ -899,7 +1008,9 @@ export async function getScheduleOverview(): Promise<ActionResult<ScheduleOvervi
 			teamRulesConfigured,
 		];
 		const stepsCompleted = readinessSteps.filter(Boolean).length;
-		const readinessScore = Math.round((stepsCompleted / readinessSteps.length) * 100);
+		const readinessScore = Math.round(
+			(stepsCompleted / readinessSteps.length) * 100,
+		);
 
 		return {
 			generatedAt: new Date().toISOString(),

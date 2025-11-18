@@ -11,7 +11,13 @@
 
 import { AlertCircle, DollarSign, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -59,7 +65,9 @@ export default function CommissionCalculator() {
 		tieredCommission = tier1Num * rate1 + (salesNum - tier1Num) * rate2;
 	} else {
 		tieredCommission =
-			tier1Num * rate1 + (tier2Num - tier1Num) * rate2 + (salesNum - tier2Num) * rate3;
+			tier1Num * rate1 +
+			(tier2Num - tier1Num) * rate2 +
+			(salesNum - tier2Num) * rate3;
 	}
 
 	// Technician calculation
@@ -88,7 +96,9 @@ export default function CommissionCalculator() {
 						<Users className="text-primary size-6" />
 					</div>
 					<div>
-						<h1 className="text-3xl font-bold tracking-tight">Commission Calculator</h1>
+						<h1 className="text-3xl font-bold tracking-tight">
+							Commission Calculator
+						</h1>
 						<p className="text-muted-foreground mt-1">
 							Calculate sales commissions and technician incentive pay
 						</p>
@@ -111,10 +121,12 @@ export default function CommissionCalculator() {
 							<strong>Flat Rate:</strong> Simple percentage of all sales
 						</li>
 						<li>
-							<strong>Tiered:</strong> Higher rates as sales increase (motivates high performers)
+							<strong>Tiered:</strong> Higher rates as sales increase (motivates
+							high performers)
 						</li>
 						<li>
-							<strong>Technician:</strong> Base pay plus performance bonuses per job
+							<strong>Technician:</strong> Base pay plus performance bonuses per
+							job
 						</li>
 					</ul>
 				</CardContent>
@@ -126,17 +138,24 @@ export default function CommissionCalculator() {
 					<Card>
 						<CardHeader>
 							<CardTitle>Commission Type</CardTitle>
-							<CardDescription>Select your commission structure</CardDescription>
+							<CardDescription>
+								Select your commission structure
+							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<Select onValueChange={setCalculationType} value={calculationType}>
+							<Select
+								onValueChange={setCalculationType}
+								value={calculationType}
+							>
 								<SelectTrigger>
 									<SelectValue placeholder="Select type" />
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="flat">Flat Rate Commission</SelectItem>
 									<SelectItem value="tiered">Tiered Commission</SelectItem>
-									<SelectItem value="technician">Technician Performance Pay</SelectItem>
+									<SelectItem value="technician">
+										Technician Performance Pay
+									</SelectItem>
 								</SelectContent>
 							</Select>
 						</CardContent>
@@ -149,7 +168,9 @@ export default function CommissionCalculator() {
 									<DollarSign className="size-5" />
 									Flat Rate Commission
 								</CardTitle>
-								<CardDescription>Simple percentage of total sales</CardDescription>
+								<CardDescription>
+									Simple percentage of total sales
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
@@ -184,7 +205,9 @@ export default function CommissionCalculator() {
 									<TrendingUp className="size-5" />
 									Tiered Commission
 								</CardTitle>
-								<CardDescription>Higher rates as performance increases</CardDescription>
+								<CardDescription>
+									Higher rates as performance increases
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
@@ -268,7 +291,9 @@ export default function CommissionCalculator() {
 									<Users className="size-5" />
 									Technician Performance Pay
 								</CardTitle>
-								<CardDescription>Base pay plus job completion bonuses</CardDescription>
+								<CardDescription>
+									Base pay plus job completion bonuses
+								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-4">
 								<div className="space-y-2">
@@ -323,21 +348,29 @@ export default function CommissionCalculator() {
 					<Card className="border-primary/20 from-primary/10 bg-gradient-to-br to-transparent">
 						<CardHeader>
 							<CardTitle>
-								{calculationType === "technician" ? "Total Compensation" : "Commission Earned"}
+								{calculationType === "technician"
+									? "Total Compensation"
+									: "Commission Earned"}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<div className="space-y-4">
 								<div>
 									<p className="text-muted-foreground text-sm">
-										{calculationType === "technician" ? "Monthly Pay" : "Total Commission"}
+										{calculationType === "technician"
+											? "Monthly Pay"
+											: "Total Commission"}
 									</p>
-									<p className="text-success text-5xl font-bold">${commission.toFixed(2)}</p>
+									<p className="text-success text-5xl font-bold">
+										${commission.toFixed(2)}
+									</p>
 								</div>
 								{calculationType !== "technician" && (
 									<div className="grid grid-cols-2 gap-4">
 										<div>
-											<p className="text-muted-foreground text-xs">Commission Rate</p>
+											<p className="text-muted-foreground text-xs">
+												Commission Rate
+											</p>
 											<p className="text-lg font-semibold">
 												{calculationType === "flat"
 													? `${flatRate}%`
@@ -345,8 +378,12 @@ export default function CommissionCalculator() {
 											</p>
 										</div>
 										<div>
-											<p className="text-muted-foreground text-xs">Total Sales</p>
-											<p className="text-lg font-semibold">${salesNum.toLocaleString()}</p>
+											<p className="text-muted-foreground text-xs">
+												Total Sales
+											</p>
+											<p className="text-lg font-semibold">
+												${salesNum.toLocaleString()}
+											</p>
 										</div>
 									</div>
 								)}
@@ -377,14 +414,19 @@ export default function CommissionCalculator() {
 											<span className="font-semibold">
 												$
 												{(
-													Math.min(Math.max(salesNum - tier1Num, 0), tier2Num - tier1Num) * rate2
+													Math.min(
+														Math.max(salesNum - tier1Num, 0),
+														tier2Num - tier1Num,
+													) * rate2
 												).toFixed(2)}
 											</span>
 										</div>
 									)}
 									{salesNum > tier2Num && (
 										<div className="flex justify-between text-sm">
-											<span className="text-muted-foreground">Tier 3 ({tier3Rate}%)</span>
+											<span className="text-muted-foreground">
+												Tier 3 ({tier3Rate}%)
+											</span>
 											<span className="font-semibold">
 												${(Math.max(salesNum - tier2Num, 0) * rate3).toFixed(2)}
 											</span>
@@ -392,7 +434,9 @@ export default function CommissionCalculator() {
 									)}
 									<div className="flex justify-between border-t pt-2">
 										<span className="font-bold">Total Commission</span>
-										<span className="text-lg font-bold">${tieredCommission.toFixed(2)}</span>
+										<span className="text-lg font-bold">
+											${tieredCommission.toFixed(2)}
+										</span>
 									</div>
 								</div>
 							</CardContent>
@@ -402,28 +446,44 @@ export default function CommissionCalculator() {
 					{calculationType === "technician" && (
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-lg">Compensation Breakdown</CardTitle>
+								<CardTitle className="text-lg">
+									Compensation Breakdown
+								</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-3">
 								<div className="flex justify-between text-sm">
-									<span className="text-muted-foreground">Base Pay (160 hrs)</span>
-									<span className="font-semibold">${(basePayNum * 40 * 4).toFixed(2)}</span>
+									<span className="text-muted-foreground">
+										Base Pay (160 hrs)
+									</span>
+									<span className="font-semibold">
+										${(basePayNum * 40 * 4).toFixed(2)}
+									</span>
 								</div>
 								<div className="flex justify-between text-sm">
-									<span className="text-muted-foreground">Performance Bonus</span>
-									<span className="font-semibold">${performanceBonus.toFixed(2)}</span>
+									<span className="text-muted-foreground">
+										Performance Bonus
+									</span>
+									<span className="font-semibold">
+										${performanceBonus.toFixed(2)}
+									</span>
 								</div>
 								<div className="flex justify-between text-sm">
 									<span className="text-muted-foreground">Jobs Completed</span>
 									<span className="font-semibold">{jobsNum} jobs</span>
 								</div>
 								<div className="flex justify-between text-sm">
-									<span className="text-muted-foreground">Revenue Generated</span>
-									<span className="font-semibold">${totalRevenue.toLocaleString()}</span>
+									<span className="text-muted-foreground">
+										Revenue Generated
+									</span>
+									<span className="font-semibold">
+										${totalRevenue.toLocaleString()}
+									</span>
 								</div>
 								<div className="flex justify-between border-t pt-2">
 									<span className="font-bold">Total Monthly Pay</span>
-									<span className="text-lg font-bold">${techTotal.toFixed(2)}</span>
+									<span className="text-lg font-bold">
+										${techTotal.toFixed(2)}
+									</span>
 								</div>
 							</CardContent>
 						</Card>

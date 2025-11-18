@@ -1,7 +1,13 @@
 import { CheckCircle2, Download, Home, Mail } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/metadata";
 // import { getSupabaseClient } from "@/lib/db";
 
@@ -41,7 +47,8 @@ export default async function ContractSignSuccessPage({
 							Contract Signed Successfully!
 						</h1>
 						<p className="text-success dark:text-success mt-3 text-center text-lg">
-							Thank you for signing the contract. You will receive a confirmation email shortly.
+							Thank you for signing the contract. You will receive a
+							confirmation email shortly.
 						</p>
 					</CardContent>
 				</Card>
@@ -50,7 +57,9 @@ export default async function ContractSignSuccessPage({
 				<Card className="mt-6">
 					<CardHeader>
 						<CardTitle>What's Next?</CardTitle>
-						<CardDescription>Here are some things you can do now</CardDescription>
+						<CardDescription>
+							Here are some things you can do now
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-3">
 						<Button asChild className="w-full" size="lg" variant="outline">
@@ -77,8 +86,9 @@ export default async function ContractSignSuccessPage({
 						<div className="flex-1">
 							<h3 className="font-semibold">Email Confirmation Sent</h3>
 							<p className="text-muted-foreground text-sm">
-								A copy of the signed contract has been sent to your email address. Please check your
-								inbox (and spam folder) for the confirmation.
+								A copy of the signed contract has been sent to your email
+								address. Please check your inbox (and spam folder) for the
+								confirmation.
 							</p>
 						</div>
 					</CardContent>
@@ -87,9 +97,10 @@ export default async function ContractSignSuccessPage({
 				{/* Legal Notice */}
 				<div className="mt-8 text-center">
 					<p className="text-muted-foreground text-xs">
-						This electronically signed document is legally binding. A copy has been recorded with a
-						timestamp and your IP address for verification purposes. If you have any questions,
-						please contact the service provider.
+						This electronically signed document is legally binding. A copy has
+						been recorded with a timestamp and your IP address for verification
+						purposes. If you have any questions, please contact the service
+						provider.
 					</p>
 				</div>
 			</div>
@@ -97,13 +108,18 @@ export default async function ContractSignSuccessPage({
 	);
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id } = await params;
 
 	return generateSEOMetadata({
 		title: "Contract Signed",
 		section: "Customer Portal",
-		description: "Confirmation page for your successfully signed Thorbis service agreement.",
+		description:
+			"Confirmation page for your successfully signed Thorbis service agreement.",
 		path: `/contracts/sign/${id}/success`,
 		imageAlt: "Thorbis contract signing confirmation",
 		keywords: ["contract signed", "thorbis confirmation"],

@@ -22,8 +22,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Drag & Drop Builder</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Create custom reports with an intuitive drag-and-drop interface - no technical skills
-							required
+							Create custom reports with an intuitive drag-and-drop interface -
+							no technical skills required
 						</p>
 					</div>
 
@@ -33,7 +33,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Advanced Filtering</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Filter data by date range, customer, technician, service type, and more
+							Filter data by date range, customer, technician, service type, and
+							more
 						</p>
 					</div>
 
@@ -43,7 +44,8 @@ export async function CustomReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Multiple Formats</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Export to PDF, Excel, CSV, or share interactive dashboards with your team
+							Export to PDF, Excel, CSV, or share interactive dashboards with
+							your team
 						</p>
 					</div>
 

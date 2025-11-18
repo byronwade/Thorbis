@@ -53,12 +53,16 @@ export type Customer = {
 type CustomersTableProps = {
 	customers: Customer[];
 	itemsPerPage?: number;
+	totalCount?: number;
+	currentPage?: number;
 	onCustomerClick?: (customer: Customer) => void;
 };
 
 export function CustomersTable({
 	customers,
 	itemsPerPage = 50,
+	totalCount,
+	currentPage = 1,
 	onCustomerClick,
 }: CustomersTableProps) {
 	// Archive filter state
@@ -86,6 +90,7 @@ export function CustomersTable({
 				<Link
 					className="flex items-center gap-3"
 					href={`/dashboard/customers/${customer.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<Avatar className="h-8 w-8">
@@ -139,16 +144,24 @@ export function CustomersTable({
 			hideable: true,
 			render: (customer) => {
 				if (!(customer.address || customer.city || customer.state)) {
-					return <span className="text-muted-foreground text-sm italic">No address</span>;
+					return (
+						<span className="text-muted-foreground text-sm italic">
+							No address
+						</span>
+					);
 				}
 				return (
 					<div className="space-y-1">
 						{customer.address && (
-							<div className="text-foreground truncate text-sm">{customer.address}</div>
+							<div className="text-foreground truncate text-sm">
+								{customer.address}
+							</div>
 						)}
 						{(customer.city || customer.state || customer.zipCode) && (
 							<div className="text-muted-foreground truncate text-xs">
-								{[customer.city, customer.state, customer.zipCode].filter(Boolean).join(", ")}
+								{[customer.city, customer.state, customer.zipCode]
+									.filter(Boolean)
+									.join(", ")}
 							</div>
 						)}
 					</div>
@@ -175,10 +188,16 @@ export function CustomersTable({
 			render: (customer) => (
 				<div className="space-y-1">
 					<div className="text-foreground text-sm">
-						Last: <span className="text-muted-foreground">{customer.lastService}</span>
+						Last:{" "}
+						<span className="text-muted-foreground">
+							{customer.lastService}
+						</span>
 					</div>
 					<div className="text-foreground text-sm">
-						Next: <span className="text-muted-foreground">{customer.nextService}</span>
+						Next:{" "}
+						<span className="text-muted-foreground">
+							{customer.nextService}
+						</span>
 					</div>
 				</div>
 			),
@@ -282,7 +301,10 @@ export function CustomersTable({
 			columns={columns}
 			data={filteredCustomers}
 			emptyAction={
-				<Button onClick={() => (window.location.href = "/dashboard/customers/new")} size="sm">
+				<Button
+					onClick={() => (window.location.href = "/dashboard/customers/new")}
+					size="sm"
+				>
 					<Users className="mr-2 size-4" />
 					Add Customer
 				</Button>
@@ -292,8 +314,13 @@ export function CustomersTable({
 			enableSelection={true}
 			entity="customers"
 			getItemId={(customer) => customer.id}
-			isArchived={(customer) => Boolean(customer.archived_at || customer.deleted_at)}
+			isArchived={(customer) =>
+				Boolean(customer.archived_at || customer.deleted_at)
+			}
 			itemsPerPage={itemsPerPage}
+			totalCount={totalCount ?? filteredCustomers.length}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => window.location.reload()}
 			onRowClick={handleRowClick}
 			searchFilter={searchFilter}

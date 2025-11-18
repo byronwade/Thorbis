@@ -2,7 +2,11 @@
 
 import type { JobCategory } from "./types";
 
-export default function SchedulerLegend({ categories }: { categories: JobCategory[] }) {
+export default function SchedulerLegend({
+	categories,
+}: {
+	categories: JobCategory[];
+}) {
 	return (
 		<div className="flex flex-wrap items-center gap-3 text-xs">
 			{categories.map((c) => (

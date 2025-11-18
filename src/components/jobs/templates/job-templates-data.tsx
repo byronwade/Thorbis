@@ -5,7 +5,13 @@
  * This component is wrapped in Suspense for PPR pattern.
  */
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 export async function JobTemplatesData() {
 	// Future: Fetch real job templates
@@ -64,12 +70,17 @@ export async function JobTemplatesData() {
 			<Card className="col-span-4">
 				<CardHeader>
 					<CardTitle>Job Templates</CardTitle>
-					<CardDescription>Available job templates and service packages</CardDescription>
+					<CardDescription>
+						Available job templates and service packages
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						{sampleTemplates.map((template, index) => (
-							<div className="flex items-center gap-4 rounded-lg border p-4" key={index}>
+							<div
+								className="flex items-center gap-4 rounded-lg border p-4"
+								key={index}
+							>
 								<div className="bg-accent flex size-12 items-center justify-center rounded-full">
 									<span className="text-sm font-medium">
 										{template.name
@@ -80,7 +91,9 @@ export async function JobTemplatesData() {
 								</div>
 								<div className="flex-1 space-y-1">
 									<div className="flex items-center gap-2">
-										<p className="text-sm leading-none font-medium">{template.name}</p>
+										<p className="text-sm leading-none font-medium">
+											{template.name}
+										</p>
 										<span
 											className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
 												template.status === "Active"
@@ -113,14 +126,18 @@ export async function JobTemplatesData() {
 			<Card className="col-span-3">
 				<CardHeader>
 					<CardTitle>Template Analytics</CardTitle>
-					<CardDescription>Template usage and performance metrics</CardDescription>
+					<CardDescription>
+						Template usage and performance metrics
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
 						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
 							<div>
 								<p className="text-sm font-medium">Most Popular</p>
-								<p className="text-muted-foreground text-xs">HVAC Maintenance</p>
+								<p className="text-muted-foreground text-xs">
+									HVAC Maintenance
+								</p>
 							</div>
 							<div className="text-right">
 								<p className="text-sm font-bold">45</p>
@@ -134,7 +151,9 @@ export async function JobTemplatesData() {
 							</div>
 							<div className="text-right">
 								<p className="text-sm font-bold">2.8h</p>
-								<p className="text-muted-foreground text-xs">across all templates</p>
+								<p className="text-muted-foreground text-xs">
+									across all templates
+								</p>
 							</div>
 						</div>
 						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
@@ -154,7 +173,9 @@ export async function JobTemplatesData() {
 							</div>
 							<div className="text-right">
 								<p className="text-sm font-bold">3</p>
-								<p className="text-muted-foreground text-xs">+1 from last month</p>
+								<p className="text-muted-foreground text-xs">
+									+1 from last month
+								</p>
 							</div>
 						</div>
 						<div className="bg-accent flex items-center justify-between rounded-lg p-3">
@@ -164,7 +185,9 @@ export async function JobTemplatesData() {
 							</div>
 							<div className="text-right">
 								<p className="text-sm font-bold">96%</p>
-								<p className="text-muted-foreground text-xs">+2% from last month</p>
+								<p className="text-muted-foreground text-xs">
+									+2% from last month
+								</p>
 							</div>
 						</div>
 					</div>

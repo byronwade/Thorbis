@@ -31,7 +31,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
 	deleteNotification as deleteNotificationAction,
-	getNotifications,
 	markAllAsRead as markAllAsReadAction,
 	markAsRead as markAsReadAction,
 } from "@/actions/notifications";
@@ -119,7 +118,9 @@ function EmptyState() {
 	return (
 		<div className="flex flex-col items-center justify-center py-12 text-center">
 			<Bell className="text-muted-foreground/30 mb-3 size-12" />
-			<p className="text-muted-foreground text-sm font-medium">All caught up!</p>
+			<p className="text-muted-foreground text-sm font-medium">
+				All caught up!
+			</p>
 			<p className="text-muted-foreground text-xs">No new notifications</p>
 		</div>
 	);
@@ -127,16 +128,23 @@ function EmptyState() {
 
 export function NotificationsDropdown() {
 	const [isOpen, setIsOpen] = useState(false);
-	const [isInitialized, setIsInitialized] = useState(false);
 	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	// Get notifications from Zustand store
 	const notifications = useNotificationsStore((state) => state.notifications);
 	const unreadCount = useNotificationsStore((state) => state.unreadCount);
-	const setNotifications = useNotificationsStore((state) => state.setNotifications);
-	const optimisticMarkAsRead = useNotificationsStore((state) => state.optimisticMarkAsRead);
-	const optimisticMarkAllAsRead = useNotificationsStore((state) => state.optimisticMarkAllAsRead);
-	const optimisticDelete = useNotificationsStore((state) => state.optimisticDelete);
+	const setNotifications = useNotificationsStore(
+		(state) => state.setNotifications,
+	);
+	const optimisticMarkAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAsRead,
+	);
+	const optimisticMarkAllAsRead = useNotificationsStore(
+		(state) => state.optimisticMarkAllAsRead,
+	);
+	const optimisticDelete = useNotificationsStore(
+		(state) => state.optimisticDelete,
+	);
 	const subscribe = useNotificationsStore((state) => state.subscribe);
 	const unsubscribe = useNotificationsStore((state) => state.unsubscribe);
 
@@ -146,20 +154,30 @@ export function NotificationsDropdown() {
 	const clearCompleted = useSyncStore((state) => state.clearCompleted);
 
 	// Filter for active operations
-	const activeOperations = operations.filter((op) => op.status === "in_progress");
+	const activeOperations = operations.filter(
+		(op) => op.status === "in_progress",
+	);
 	const recentOperations = operations.filter(
-		(op) => op.status === "completed" || op.status === "failed"
+		(op) => op.status === "completed" || op.status === "failed",
 	);
 
-	const hasSyncActivity = activeOperations.length > 0 || offlineQueue.length > 0;
+	const hasSyncActivity =
+		activeOperations.length > 0 || offlineQueue.length > 0;
 	const syncBadgeCount = activeOperations.length + offlineQueue.length;
 	const totalBadgeCount = unreadCount + syncBadgeCount;
 
 	// Load notifications and set up realtime subscription on mount
+	const hasInitializedRef = useRef(false);
+
 	useEffect(() => {
+		if (!isOpen || hasInitializedRef.current) {
+			return;
+		}
+
+		let cancelled = false;
+
 		async function initialize() {
 			try {
-				// Get current user
 				const supabase = createClient();
 
 				if (!supabase) {
@@ -174,33 +192,46 @@ export function NotificationsDropdown() {
 					return;
 				}
 
-				// Load initial notifications
-				const result = await getNotifications({ limit: 50 });
+				const { data, error } = await supabase
+					.from("notifications")
+					.select("*")
+					.eq("user_id", user.id)
+					.order("created_at", { ascending: false })
+					.range(0, 49);
 
-				if (result.success && result.data) {
-					setNotifications(result.data);
+				if (!cancelled && !error && data) {
+					setNotifications(data);
 				}
 
-				// Set up Supabase Realtime subscription
-				await subscribe(user.id);
-				setIsInitialized(true);
-			} catch (_error) {}
+				if (!cancelled) {
+					await subscribe(user.id);
+					hasInitializedRef.current = true;
+				}
+			} catch (_error) {
+				// Ignore initialization errors - component can retry later
+			}
 		}
 
-		if (!isInitialized) {
-			initialize();
-		}
+		initialize();
 
-		// Cleanup on unmount
+		return () => {
+			cancelled = true;
+		};
+	}, [isOpen, setNotifications, subscribe]);
+
+	useEffect(() => {
 		return () => {
 			unsubscribe();
 		};
-	}, [isInitialized, setNotifications, subscribe, unsubscribe]);
+	}, [unsubscribe]);
 
 	// Handle click outside to close dropdown
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		};
@@ -255,7 +286,9 @@ export function NotificationsDropdown() {
 			<button
 				className="hover-gradient hover:border-primary/20 hover:bg-primary/10 hover:text-primary focus-visible:ring-ring/50 relative flex h-8 w-8 items-center justify-center rounded-md border border-transparent transition-all outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50"
 				onClick={() => setIsOpen(!isOpen)}
-				title={hasSyncActivity ? "Notifications & Sync Status" : "Notifications"}
+				title={
+					hasSyncActivity ? "Notifications & Sync Status" : "Notifications"
+				}
 				type="button"
 			>
 				<div className="relative">
@@ -320,12 +353,19 @@ export function NotificationsDropdown() {
 										Active
 									</p>
 									{activeOperations.map((op) => (
-										<div className="bg-primary/5 flex items-start gap-2 rounded-md p-2" key={op.id}>
+										<div
+											className="bg-primary/5 flex items-start gap-2 rounded-md p-2"
+											key={op.id}
+										>
 											<Loader2 className="text-primary mt-0.5 size-3.5 shrink-0 animate-spin" />
 											<div className="min-w-0 flex-1">
-												<p className="text-sm leading-tight font-medium">{op.title}</p>
+												<p className="text-sm leading-tight font-medium">
+													{op.title}
+												</p>
 												{op.description && (
-													<p className="text-muted-foreground text-xs">{op.description}</p>
+													<p className="text-muted-foreground text-xs">
+														{op.description}
+													</p>
 												)}
 												{op.total && op.total > 0 && (
 													<div className="mt-1 space-y-0.5">
@@ -362,7 +402,9 @@ export function NotificationsDropdown() {
 										>
 											<Clock className="mt-0.5 size-3.5 shrink-0 text-orange-500" />
 											<div className="min-w-0 flex-1">
-												<p className="text-sm leading-tight font-medium">{op.action}</p>
+												<p className="text-sm leading-tight font-medium">
+													{op.action}
+												</p>
 												<p className="mt-0.5 text-[0.625rem] text-orange-600 dark:text-orange-400">
 													Will sync when online
 												</p>
@@ -402,9 +444,13 @@ export function NotificationsDropdown() {
 												<XCircle className="mt-0.5 size-3.5 shrink-0 text-red-600 dark:text-red-400" />
 											)}
 											<div className="min-w-0 flex-1">
-												<p className="text-sm leading-tight font-medium">{op.title}</p>
+												<p className="text-sm leading-tight font-medium">
+													{op.title}
+												</p>
 												{op.error && (
-													<p className="text-xs text-red-600 dark:text-red-400">{op.error}</p>
+													<p className="text-xs text-red-600 dark:text-red-400">
+														{op.error}
+													</p>
 												)}
 											</div>
 										</div>
@@ -436,13 +482,17 @@ export function NotificationsDropdown() {
 
 											<div className="flex gap-3">
 												{/* Icon */}
-												<div className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}>
+												<div
+													className={`mt-0.5 shrink-0 ${notificationColors[notification.type]}`}
+												>
 													<Icon className="size-4" />
 												</div>
 
 												{/* Content */}
 												<div className="min-w-0 flex-1 space-y-1">
-													<p className="text-sm leading-snug font-medium">{notification.title}</p>
+													<p className="text-sm leading-snug font-medium">
+														{notification.title}
+													</p>
 													<p className="text-muted-foreground text-xs leading-relaxed">
 														{notification.message}
 													</p>
@@ -451,7 +501,9 @@ export function NotificationsDropdown() {
 													<div className="flex items-center justify-between gap-2 pt-1">
 														<div className="text-muted-foreground flex items-center gap-1 text-xs">
 															<Clock className="size-3" />
-															{formatTimestamp(new Date(notification.created_at))}
+															{formatTimestamp(
+																new Date(notification.created_at),
+															)}
 														</div>
 
 														{/* Actions */}
@@ -480,7 +532,9 @@ export function NotificationsDropdown() {
 															)}
 															<button
 																className="hover:bg-destructive/10 hover:text-destructive flex h-6 w-6 items-center justify-center rounded transition-colors"
-																onClick={() => deleteNotification(notification.id)}
+																onClick={() =>
+																	deleteNotification(notification.id)
+																}
 																title="Delete"
 																type="button"
 															>

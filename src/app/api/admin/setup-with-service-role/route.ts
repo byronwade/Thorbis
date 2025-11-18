@@ -18,7 +18,7 @@ export async function POST() {
 					error: "Missing environment variables",
 					hint: "Set SUPABASE_SERVICE_ROLE_KEY in .env.local",
 				},
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -46,7 +46,7 @@ export async function POST() {
 		if (companyError) {
 			return NextResponse.json(
 				{ error: "Failed to create company", details: companyError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -65,7 +65,7 @@ export async function POST() {
 		if (teamMemberError) {
 			return NextResponse.json(
 				{ error: "Failed to create team member", details: teamMemberError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -88,7 +88,7 @@ export async function POST() {
 		if (customerError) {
 			return NextResponse.json(
 				{ error: "Failed to create customer", details: customerError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -114,7 +114,7 @@ export async function POST() {
 		if (propertyError) {
 			return NextResponse.json(
 				{ error: "Failed to create property", details: propertyError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -139,7 +139,7 @@ export async function POST() {
 		if (jobError) {
 			return NextResponse.json(
 				{ error: "Failed to create job", details: jobError },
-				{ status: 500 }
+				{ status: 500 },
 			);
 		}
 
@@ -172,7 +172,7 @@ export async function POST() {
 	} catch (error: any) {
 		return NextResponse.json(
 			{ error: "Internal server error", details: error.message },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

@@ -32,7 +32,7 @@ export async function geocodeAddress(
 	city: string,
 	state: string,
 	zipCode: string,
-	country = "USA"
+	country = "USA",
 ): Promise<GeocodeResponse> {
 	try {
 		// Build full address string
@@ -107,7 +107,7 @@ export async function geocodeAddressSilent(
 	city: string,
 	state: string,
 	zipCode: string,
-	country = "USA"
+	country = "USA",
 ): Promise<GeocodeResult | null> {
 	try {
 		const result = await geocodeAddress(address, city, state, zipCode, country);

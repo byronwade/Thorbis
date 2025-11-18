@@ -42,7 +42,10 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 		});
 	};
 
-	const calculateDuration = (startTime: string | null, endTime: string | null) => {
+	const calculateDuration = (
+		startTime: string | null,
+		endTime: string | null,
+	) => {
 		if (!(startTime && endTime)) {
 			return "—";
 		}
@@ -59,7 +62,9 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 			<div className="flex flex-col items-center justify-center py-12 text-center">
 				<Clock className="text-muted-foreground mb-4 size-12" />
 				<h3 className="mb-2 text-lg font-semibold">No Time Entries</h3>
-				<p className="text-muted-foreground text-sm">No time has been tracked for this job yet.</p>
+				<p className="text-muted-foreground text-sm">
+					No time has been tracked for this job yet.
+				</p>
 			</div>
 		);
 	}
@@ -139,7 +144,8 @@ export function JobTimeTracking({ timeEntries }: JobTimeTrackingProps) {
 									}
 									const start = new Date(entry.start_time);
 									const end = new Date(entry.end_time);
-									const hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+									const hours =
+										(end.getTime() - start.getTime()) / (1000 * 60 * 60);
 									return total + hours;
 								}, 0)
 								.toFixed(1)}

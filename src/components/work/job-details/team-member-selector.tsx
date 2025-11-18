@@ -1,12 +1,10 @@
 /**
- * Team Member Selector - React Query Refactored
+ * Team Member Selector - Server Actions + useOptimistic (React 19)
  *
  * Performance optimizations:
- * - Uses React Query for automatic caching and refetching
- * - Optimistic updates for instant assignment/removal
- * - Automatic background refetching
- * - Intelligent cache invalidation
- * - Eliminates manual loading state management
+ * - useOptimistic for instant assignment/removal
+ * - Server Actions for mutations with auto-revalidation
+ * - No external state management needed
  *
  * Client component for selecting and displaying multiple team members
  * with avatar display and role badges.
@@ -22,9 +20,15 @@
 
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Check, ChevronsUpDown, Loader2, UserPlus, Users, X } from "lucide-react";
-import { useState } from "react";
+import {
+	Check,
+	ChevronsUpDown,
+	Loader2,
+	UserPlus,
+	Users,
+	X,
+} from "lucide-react";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import { toast } from "sonner";
 import {
 	assignTeamMemberToJob,
@@ -44,13 +48,19 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 type TeamMemberSelectorProps = {
 	jobId: string;
 	isEditMode: boolean;
+	initialAssignments?: TeamMemberAssignment[];
+	initialAvailableMembers?: TeamMember[];
 };
 
 type TeamMember = {
@@ -67,129 +77,75 @@ type TeamMember = {
 };
 
 // eslint-disable-next-line complexity
-export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProps) {
-	const queryClient = useQueryClient();
-
+export function TeamMemberSelector({
+	jobId,
+	isEditMode,
+	initialAssignments = [],
+	initialAvailableMembers = [],
+}: TeamMemberSelectorProps) {
 	// Local UI state
 	const [open, setOpen] = useState(false);
 	const [showAll, setShowAll] = useState(false);
 	const [showAllEdit, setShowAllEdit] = useState(false);
 	const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
 
-	// React Query: Fetch available team members
-	const { data: availableMembers = [] } = useQuery({
-		queryKey: ["available-team-members"],
-		queryFn: async () => {
-			const result = await getAvailableTeamMembers();
-			if (!result.success) {
-				throw new Error(result.error || "Failed to fetch team members");
-			}
-			return result.data || [];
-		},
-		staleTime: 2 * 60 * 1000, // 2 minutes
-		refetchOnWindowFocus: false, // Disabled - Server Actions handle revalidation via revalidatePath()
-	});
+	// Data state
+	const [availableMembers, setAvailableMembers] = useState<TeamMember[]>(
+		initialAvailableMembers,
+	);
+	const [assignments, setAssignments] =
+		useState<TeamMemberAssignment[]>(initialAssignments);
+	const [isLoading, setIsLoading] = useState(
+		initialAssignments.length === 0 && initialAvailableMembers.length === 0,
+	);
+	const [error, setError] = useState<string | null>(null);
 
-	// React Query: Fetch job assignments
-	const {
-		data: assignments = [],
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["job-team-assignments", jobId],
-		queryFn: async () => {
-			const result = await getJobTeamAssignments(jobId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to fetch assignments");
+	const [isPending, startTransition] = useTransition();
+	const [optimisticAssignments, updateOptimisticAssignments] = useOptimistic(
+		assignments,
+		(
+			state,
+			update: TeamMemberAssignment | { id: string; action: "delete" },
+		) => {
+			if ("action" in update && update.action === "delete") {
+				return state.filter((assignment) => assignment.id !== update.id);
 			}
-			return result.data || [];
+			return [...state, update as TeamMemberAssignment];
 		},
-		staleTime: 30 * 1000, // 30 seconds
-		refetchOnWindowFocus: false, // Disabled - Server Actions handle revalidation via revalidatePath()
-	});
+	);
 
-	// React Query: Assign team member mutation
-	const assignMutation = useMutation({
-		mutationFn: async ({ teamMemberId, role }: { teamMemberId: string; role: string }) => {
-			const result = await assignTeamMemberToJob({
-				jobId,
-				teamMemberId,
-				role,
-			});
-			if (!result.success) {
-				throw new Error(result.error || "Failed to assign team member");
-			}
-			return result;
-		},
-		onMutate: ({ teamMemberId }) => {
-			setProcessingIds((prev) => new Set(prev).add(teamMemberId));
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({
-				queryKey: ["job-team-assignments", jobId],
-			});
-			setShowAll(false);
-			setShowAllEdit(false);
-			toast.success("Team member assigned");
-		},
-		onError: (error: Error) => {
-			toast.error(error.message);
-		},
-		onSettled: (_data, _error, { teamMemberId }) => {
-			setProcessingIds((prev) => {
-				const next = new Set(prev);
-				next.delete(teamMemberId);
-				return next;
-			});
-		},
-	});
+	// Load data on mount
+	useEffect(() => {
+		const loadData = async () => {
+			setIsLoading(true);
+			setError(null);
 
-	// React Query: Remove team member mutation
-	const removeMutation = useMutation({
-		mutationFn: async (teamMemberId: string) => {
-			const result = await removeTeamMemberFromJob({
-				jobId,
-				teamMemberId,
-			});
-			if (!result.success) {
-				throw new Error(result.error || "Failed to remove team member");
+			// Fetch available team members
+			const membersResult = await getAvailableTeamMembers();
+			if (!membersResult.success) {
+				setError(membersResult.error || "Failed to fetch team members");
+			} else {
+				setAvailableMembers(membersResult.data || []);
 			}
-			return result;
-		},
-		onMutate: (teamMemberId) => {
-			setProcessingIds((prev) => new Set(prev).add(teamMemberId));
-			// Optimistic update
-			const previousAssignments = queryClient.getQueryData(["job-team-assignments", jobId]);
-			queryClient.setQueryData(
-				["job-team-assignments", jobId],
-				(old: TeamMemberAssignment[] | undefined) =>
-					old ? old.filter((a) => a.teamMemberId !== teamMemberId) : old
-			);
-			return { previousAssignments };
-		},
-		onError: (error: Error, _teamMemberId, context) => {
-			// Rollback on error
-			if (context?.previousAssignments) {
-				queryClient.setQueryData(["job-team-assignments", jobId], context.previousAssignments);
+
+			// Fetch job assignments
+			const assignmentsResult = await getJobTeamAssignments(jobId);
+			if (!assignmentsResult.success) {
+				setError(assignmentsResult.error || "Failed to fetch assignments");
+			} else {
+				setAssignments(assignmentsResult.data || []);
 			}
-			toast.error(error.message);
-		},
-		onSuccess: () => {
-			setShowAll(false);
-			setShowAllEdit(false);
-			toast.success("Team member removed");
-		},
-		onSettled: (_data, _error, teamMemberId) => {
-			setProcessingIds((prev) => {
-				const next = new Set(prev);
-				next.delete(teamMemberId);
-				return next;
-			});
-			queryClient.invalidateQueries({
-				queryKey: ["job-team-assignments", jobId],
-			});
-		},
-	});
+
+			setIsLoading(false);
+		};
+
+		if (
+			initialAssignments.length === 0 &&
+			initialAvailableMembers.length === 0
+		) {
+			loadData();
+		}
+	}, [jobId, initialAssignments.length, initialAvailableMembers.length]);
 
 	// Helper functions
 	const getInitials = (firstName: string | null, lastName: string | null) => {
@@ -202,16 +158,109 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 		`${firstName || ""} ${lastName || ""}`.trim() || "Unknown";
 
 	const isAssigned = (teamMemberId: string) =>
-		assignments.some((a) => a.teamMemberId === teamMemberId);
+		optimisticAssignments.some((a) => a.teamMemberId === teamMemberId);
 
 	// Handlers
-	const handleAssign = (teamMemberId: string) => {
+	const handleAssign = async (teamMemberId: string) => {
 		const role = assignments.length === 0 ? "primary" : "crew";
-		assignMutation.mutate({ teamMemberId, role });
+
+		// Create temporary assignment for optimistic update
+		const tempAssignment: TeamMemberAssignment = {
+			id: `temp-${Date.now()}`,
+			jobId,
+			teamMemberId,
+			role,
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			teamMember: availableMembers.find((m) => m.id === teamMemberId) || {
+				id: teamMemberId,
+				userId: "",
+				jobTitle: null,
+				user: {
+					id: "",
+					email: "",
+					firstName: null,
+					lastName: null,
+					avatarUrl: null,
+				},
+			},
+		};
+
+		setProcessingIds((prev) => new Set(prev).add(teamMemberId));
+
+		startTransition(async () => {
+			updateOptimisticAssignments(tempAssignment);
+
+			const result = await assignTeamMemberToJob({
+				jobId,
+				teamMemberId,
+				role,
+			});
+
+			if (result.success) {
+				toast.success("Team member assigned");
+				setShowAll(false);
+				setShowAllEdit(false);
+				// Refresh assignments
+				const refreshResult = await getJobTeamAssignments(jobId);
+				if (refreshResult.success) {
+					setAssignments(refreshResult.data || []);
+				}
+			} else {
+				toast.error(result.error || "Failed to assign team member");
+				// Revert optimistic update
+				setAssignments((prev) =>
+					prev.filter((a) => a.id !== tempAssignment.id),
+				);
+			}
+
+			setProcessingIds((prev) => {
+				const next = new Set(prev);
+				next.delete(teamMemberId);
+				return next;
+			});
+		});
 	};
 
-	const handleRemove = (teamMemberId: string) => {
-		removeMutation.mutate(teamMemberId);
+	const handleRemove = async (teamMemberId: string) => {
+		const assignmentToRemove = assignments.find(
+			(a) => a.teamMemberId === teamMemberId,
+		);
+		if (!assignmentToRemove) return;
+
+		setProcessingIds((prev) => new Set(prev).add(teamMemberId));
+
+		startTransition(async () => {
+			updateOptimisticAssignments({
+				id: assignmentToRemove.id,
+				action: "delete",
+			});
+
+			const result = await removeTeamMemberFromJob({
+				jobId,
+				teamMemberId,
+			});
+
+			if (result.success) {
+				toast.success("Team member removed");
+				setShowAll(false);
+				setShowAllEdit(false);
+			} else {
+				toast.error(result.error || "Failed to remove team member");
+			}
+
+			// Refresh assignments
+			const refreshResult = await getJobTeamAssignments(jobId);
+			if (refreshResult.success) {
+				setAssignments(refreshResult.data || []);
+			}
+
+			setProcessingIds((prev) => {
+				const next = new Set(prev);
+				next.delete(teamMemberId);
+				return next;
+			});
+		});
 	};
 
 	const handleToggle = (teamMemberId: string) => {
@@ -238,14 +287,14 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 		return (
 			<div className="text-destructive flex items-center gap-2 text-sm">
 				<Users className="h-4 w-4" />
-				<span>Failed to load team members: {error.message}</span>
+				<span>Failed to load team members: {error}</span>
 			</div>
 		);
 	}
 
 	// Display mode: Show assigned members (compact avatar stack for many members)
 	if (!isEditMode) {
-		if (assignments.length === 0) {
+		if (optimisticAssignments.length === 0) {
 			return (
 				<div className="text-muted-foreground flex items-center gap-2 text-sm">
 					<Users className="h-4 w-4" />
@@ -255,8 +304,14 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 		}
 
 		const MAX_VISIBLE_AVATARS = 5;
-		const visibleAssignments = assignments.slice(0, MAX_VISIBLE_AVATARS);
-		const remainingCount = Math.max(0, assignments.length - MAX_VISIBLE_AVATARS);
+		const visibleAssignments = optimisticAssignments.slice(
+			0,
+			MAX_VISIBLE_AVATARS,
+		);
+		const remainingCount = Math.max(
+			0,
+			optimisticAssignments.length - MAX_VISIBLE_AVATARS,
+		);
 
 		return (
 			<div className="space-y-2">
@@ -269,20 +324,20 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 								key={assignment.id}
 								title={getFullName(
 									assignment.teamMember.user.firstName,
-									assignment.teamMember.user.lastName
+									assignment.teamMember.user.lastName,
 								)}
 							>
 								<AvatarImage
 									alt={getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName
+										assignment.teamMember.user.lastName,
 									)}
 									src={assignment.teamMember.user.avatarUrl || undefined}
 								/>
 								<AvatarFallback className="text-xs">
 									{getInitials(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName
+										assignment.teamMember.user.lastName,
 									)}
 								</AvatarFallback>
 							</Avatar>
@@ -298,14 +353,16 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 					</div>
 
 					{/* Team count and toggle */}
-					{assignments.length > 1 && (
+					{optimisticAssignments.length > 1 && (
 						<Button
 							className="text-muted-foreground hover:text-foreground h-auto p-1 text-xs"
 							onClick={() => setShowAll(!showAll)}
 							size="sm"
 							variant="ghost"
 						>
-							{showAll ? "Show less" : `View all ${assignments.length}`}
+							{showAll
+								? "Show less"
+								: `View all ${optimisticAssignments.length}`}
 						</Button>
 					)}
 				</div>
@@ -313,7 +370,7 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 				{/* Expanded List */}
 				{showAll && (
 					<div className="flex flex-wrap gap-2">
-						{assignments.map((assignment) => (
+						{optimisticAssignments.map((assignment) => (
 							<div
 								className="bg-muted/30 flex items-center gap-2 rounded-md border px-2 py-1"
 								key={assignment.id}
@@ -322,21 +379,21 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 									<AvatarImage
 										alt={getFullName(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 										src={assignment.teamMember.user.avatarUrl || undefined}
 									/>
 									<AvatarFallback className="text-[10px]">
 										{getInitials(
 											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
+											assignment.teamMember.user.lastName,
 										)}
 									</AvatarFallback>
 								</Avatar>
 								<span className="text-sm">
 									{getFullName(
 										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName
+										assignment.teamMember.user.lastName,
 									)}
 								</span>
 								{assignment.role === "primary" && (
@@ -354,77 +411,90 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 
 	// Edit mode: Show selector with assigned members (compact for many members)
 	const MAX_VISIBLE_IN_EDIT = 10;
-	const visibleInEdit = showAllEdit ? assignments : assignments.slice(0, MAX_VISIBLE_IN_EDIT);
-	const remainingInEdit = Math.max(0, assignments.length - MAX_VISIBLE_IN_EDIT);
+	const visibleInEdit = showAllEdit
+		? optimisticAssignments
+		: optimisticAssignments.slice(0, MAX_VISIBLE_IN_EDIT);
+	const remainingInEdit = Math.max(
+		0,
+		optimisticAssignments.length - MAX_VISIBLE_IN_EDIT,
+	);
 
 	return (
 		<div className="space-y-3">
 			{/* Assigned Members */}
-			{assignments.length > 0 && (
+			{optimisticAssignments.length > 0 && (
 				<div className="space-y-2">
 					<div className="flex items-center justify-between">
 						<span className="text-muted-foreground text-xs">
-							{assignments.length} team member
-							{assignments.length === 1 ? "" : "s"} assigned
+							{optimisticAssignments.length} team member
+							{optimisticAssignments.length === 1 ? "" : "s"} assigned
 						</span>
-						{assignments.length > MAX_VISIBLE_IN_EDIT && (
+						{optimisticAssignments.length > MAX_VISIBLE_IN_EDIT && (
 							<Button
 								className="text-muted-foreground hover:text-foreground h-auto p-1 text-xs"
 								onClick={() => setShowAllEdit(!showAllEdit)}
 								size="sm"
 								variant="ghost"
 							>
-								{showAllEdit ? "Show less" : `Show all ${assignments.length}`}
+								{showAllEdit
+									? "Show less"
+									: `Show all ${optimisticAssignments.length}`}
 							</Button>
 						)}
 					</div>
 
 					<div className="flex flex-wrap items-center gap-2">
-						{visibleInEdit.map((assignment) => (
-							<div
-								className="group bg-muted/30 hover:bg-muted/50 flex items-center gap-2 rounded-md border px-2 py-1 transition-colors"
-								key={assignment.id}
-							>
-								<Avatar className="h-6 w-6">
-									<AvatarImage
-										alt={getFullName(
-											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
-										)}
-										src={assignment.teamMember.user.avatarUrl || undefined}
-									/>
-									<AvatarFallback className="text-[10px]">
-										{getInitials(
-											assignment.teamMember.user.firstName,
-											assignment.teamMember.user.lastName
-										)}
-									</AvatarFallback>
-								</Avatar>
-								<span className="text-sm">
-									{getFullName(
-										assignment.teamMember.user.firstName,
-										assignment.teamMember.user.lastName
-									)}
-								</span>
-								{assignment.role === "primary" && (
-									<Badge className="text-xs" variant="secondary">
-										Lead
-									</Badge>
-								)}
-								<button
-									className="ml-1 opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50"
-									disabled={processingIds.has(assignment.teamMemberId)}
-									onClick={() => handleRemove(assignment.teamMemberId)}
-									type="button"
+						{visibleInEdit.map((assignment) => {
+							const isTemp = assignment.id.startsWith("temp-");
+							return (
+								<div
+									className="group bg-muted/30 hover:bg-muted/50 flex items-center gap-2 rounded-md border px-2 py-1 transition-colors"
+									key={assignment.id}
+									style={{ opacity: isTemp ? 0.5 : 1 }}
 								>
-									{processingIds.has(assignment.teamMemberId) ? (
-										<Loader2 className="h-3 w-3 animate-spin" />
-									) : (
-										<X className="text-muted-foreground hover:text-destructive h-3 w-3" />
+									<Avatar className="h-6 w-6">
+										<AvatarImage
+											alt={getFullName(
+												assignment.teamMember.user.firstName,
+												assignment.teamMember.user.lastName,
+											)}
+											src={assignment.teamMember.user.avatarUrl || undefined}
+										/>
+										<AvatarFallback className="text-[10px]">
+											{getInitials(
+												assignment.teamMember.user.firstName,
+												assignment.teamMember.user.lastName,
+											)}
+										</AvatarFallback>
+									</Avatar>
+									<span className="text-sm">
+										{getFullName(
+											assignment.teamMember.user.firstName,
+											assignment.teamMember.user.lastName,
+										)}
+									</span>
+									{assignment.role === "primary" && (
+										<Badge className="text-xs" variant="secondary">
+											Lead
+										</Badge>
 									)}
-								</button>
-							</div>
-						))}
+									<button
+										className="ml-1 opacity-0 transition-opacity group-hover:opacity-100 disabled:opacity-50"
+										disabled={
+											processingIds.has(assignment.teamMemberId) || isTemp
+										}
+										onClick={() => handleRemove(assignment.teamMemberId)}
+										type="button"
+									>
+										{processingIds.has(assignment.teamMemberId) ? (
+											<Loader2 className="h-3 w-3 animate-spin" />
+										) : (
+											<X className="text-muted-foreground hover:text-destructive h-3 w-3" />
+										)}
+									</button>
+								</div>
+							);
+						})}
 						{!showAllEdit && remainingInEdit > 0 && (
 							<div className="text-muted-foreground flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-xs">
 								+{remainingInEdit} more
@@ -454,7 +524,9 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 						<CommandInput placeholder="Search team members..." />
 						<CommandList className="max-h-[400px]">
 							<CommandEmpty>No team members found.</CommandEmpty>
-							<CommandGroup heading={`Available Team Members (${availableMembers.length})`}>
+							<CommandGroup
+								heading={`Available Team Members (${availableMembers.length})`}
+							>
 								{availableMembers.map((member) => {
 									const assigned = isAssigned(member.id);
 									const processing = processingIds.has(member.id);
@@ -462,7 +534,7 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 									return (
 										<CommandItem
 											className="flex items-center gap-2"
-											disabled={processing}
+											disabled={processing || isPending}
 											key={member.id}
 											onSelect={() => handleToggle(member.id)}
 											value={`${member.user.firstName} ${member.user.lastName} ${member.user.email}`}
@@ -473,7 +545,7 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 													"flex h-4 w-4 items-center justify-center rounded-sm border",
 													assigned
 														? "border-primary bg-primary text-primary-foreground"
-														: "border-muted-foreground"
+														: "border-muted-foreground",
 												)}
 											>
 												{assigned && <Check className="h-3 w-3" />}
@@ -482,26 +554,39 @@ export function TeamMemberSelector({ jobId, isEditMode }: TeamMemberSelectorProp
 											{/* Avatar */}
 											<Avatar className="h-6 w-6">
 												<AvatarImage
-													alt={getFullName(member.user.firstName, member.user.lastName)}
+													alt={getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 													src={member.user.avatarUrl || undefined}
 												/>
 												<AvatarFallback className="text-[10px]">
-													{getInitials(member.user.firstName, member.user.lastName)}
+													{getInitials(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 												</AvatarFallback>
 											</Avatar>
 
 											{/* Name and Title */}
 											<div className="flex flex-1 flex-col">
 												<span className="text-sm">
-													{getFullName(member.user.firstName, member.user.lastName)}
+													{getFullName(
+														member.user.firstName,
+														member.user.lastName,
+													)}
 												</span>
 												{member.jobTitle && (
-													<span className="text-muted-foreground text-xs">{member.jobTitle}</span>
+													<span className="text-muted-foreground text-xs">
+														{member.jobTitle}
+													</span>
 												)}
 											</div>
 
 											{/* Loading spinner */}
-											{processing && <Loader2 className="h-4 w-4 animate-spin" />}
+											{processing && (
+												<Loader2 className="h-4 w-4 animate-spin" />
+											)}
 										</CommandItem>
 									);
 								})}

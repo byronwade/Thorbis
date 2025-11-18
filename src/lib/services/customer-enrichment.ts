@@ -84,7 +84,9 @@ export class CustomerEnrichmentService {
 
 		// 1. Person enrichment
 		try {
-			const personData = await personEnrichmentService.enrichPerson(customer.email);
+			const personData = await personEnrichmentService.enrichPerson(
+				customer.email,
+			);
 			if (personData) {
 				enrichmentData.person = personData;
 				sources.push(personData.source);
@@ -98,7 +100,7 @@ export class CustomerEnrichmentService {
 					customer.companyName,
 					customer.address,
 					customer.city,
-					customer.state
+					customer.state,
 				);
 				if (businessData) {
 					enrichmentData.business = businessData;
@@ -109,7 +111,10 @@ export class CustomerEnrichmentService {
 
 		// 3. Social enrichment
 		try {
-			const socialData = await socialEnrichmentService.enrichSocial(customer.email, fullName);
+			const socialData = await socialEnrichmentService.enrichSocial(
+				customer.email,
+				fullName,
+			);
 			if (socialData) {
 				enrichmentData.social = socialData;
 				sources.push("social");
@@ -117,13 +122,18 @@ export class CustomerEnrichmentService {
 		} catch (_error) {}
 
 		// 4. Property enrichment (if address provided)
-		if (customer.address && customer.city && customer.state && customer.zipCode) {
+		if (
+			customer.address &&
+			customer.city &&
+			customer.state &&
+			customer.zipCode
+		) {
 			try {
 				const propertyData = await propertyEnrichmentService.enrichProperty(
 					customer.address,
 					customer.city,
 					customer.state,
-					customer.zipCode
+					customer.zipCode,
 				);
 				if (propertyData) {
 					enrichmentData.properties = [propertyData];
@@ -149,7 +159,8 @@ export class CustomerEnrichmentService {
 
 		const overallConfidence = confidenceScores.length
 			? Math.round(
-					confidenceScores.reduce((sum, score) => sum + score, 0) / confidenceScores.length
+					confidenceScores.reduce((sum, score) => sum + score, 0) /
+						confidenceScores.length,
 				)
 			: 0;
 

@@ -1,6 +1,12 @@
 "use client";
 
-import { Archive, Download, MoreHorizontal, Package, ShoppingCart } from "lucide-react";
+import {
+	Archive,
+	Download,
+	MoreHorizontal,
+	Package,
+	ShoppingCart,
+} from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,7 +64,9 @@ function renderStatusBadge(status: Material["status"]) {
 		className: "bg-muted text-muted-foreground",
 		label: status.replace(/[-_]/g, " "),
 	};
-	const config = MATERIAL_STATUS_CONFIG[status as keyof typeof MATERIAL_STATUS_CONFIG] ?? fallback;
+	const config =
+		MATERIAL_STATUS_CONFIG[status as keyof typeof MATERIAL_STATUS_CONFIG] ??
+		fallback;
 	return (
 		<Badge className={`text-xs ${config.className}`} variant="outline">
 			{config.label}
@@ -66,13 +74,19 @@ function renderStatusBadge(status: Material["status"]) {
 	);
 }
 
+type MaterialsTableProps = {
+	materials: Material[];
+	itemsPerPage?: number;
+	totalCount?: number;
+	currentPage?: number;
+};
+
 export function MaterialsTable({
 	materials,
 	itemsPerPage = 50,
-}: {
-	materials: Material[];
-	itemsPerPage?: number;
-}) {
+	totalCount,
+	currentPage = 1,
+}: MaterialsTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.materials);
 
@@ -99,6 +113,7 @@ export function MaterialsTable({
 				<Link
 					className="text-foreground text-sm leading-tight font-medium hover:underline"
 					href={`/dashboard/work/materials/${material.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{material.itemCode}
@@ -114,6 +129,7 @@ export function MaterialsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/materials/${material.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="text-foreground truncate text-sm leading-tight font-medium hover:underline">
@@ -158,7 +174,9 @@ export function MaterialsTable({
 			shrink: true,
 			align: "right",
 			render: (material) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(material.totalValue)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(material.totalValue)}
+				</span>
 			),
 		},
 		{
@@ -238,17 +256,26 @@ export function MaterialsTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredMaterials}
-			emptyIcon={<Package className="text-muted-foreground mx-auto h-12 w-12" />}
+			emptyIcon={
+				<Package className="text-muted-foreground mx-auto h-12 w-12" />
+			}
 			emptyMessage="No materials found"
 			enableSelection={true}
 			entity="materials"
 			getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
 			getItemId={(material) => material.id}
-			isArchived={(material) => Boolean(material.archived_at || material.deleted_at)}
+			isArchived={(material) =>
+				Boolean(material.archived_at || material.deleted_at)
+			}
 			isHighlighted={(material) => material.status === "out-of-stock"}
 			itemsPerPage={itemsPerPage}
+			totalCount={totalCount ?? filteredMaterials.length}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => window.location.reload()}
-			onRowClick={(material) => (window.location.href = `/dashboard/work/materials/${material.id}`)}
+			onRowClick={(material) =>
+				(window.location.href = `/dashboard/work/materials/${material.id}`)
+			}
 			searchFilter={searchFilter}
 			searchPlaceholder="Search materials by code, description, category, or status..."
 			showArchived={archiveFilter !== "active"}

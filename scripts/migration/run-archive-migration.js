@@ -15,7 +15,9 @@ async function runMigration() {
 
 	if (!(supabaseUrl && supabaseServiceKey)) {
 		console.error("❌ Error: Missing environment variables");
-		console.error("Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY");
+		console.error(
+			"Required: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY",
+		);
 		process.exit(1);
 	}
 
@@ -30,7 +32,7 @@ async function runMigration() {
 	// Read migration file
 	const migrationPath = path.join(
 		__dirname,
-		"../../supabase/migrations/20251110000000_add_archive_support.sql"
+		"../../supabase/migrations/20251110000000_add_archive_support.sql",
 	);
 	console.log("📖 Reading migration file...");
 	const migrationSQL = fs.readFileSync(migrationPath, "utf8");
@@ -52,7 +54,10 @@ async function runMigration() {
 
 			if (error) {
 				// Try direct query if RPC fails
-				const { error: queryError } = await supabase.from("_sql").select("*").limit(0);
+				const { error: queryError } = await supabase
+					.from("_sql")
+					.select("*")
+					.limit(0);
 
 				if (queryError) {
 					console.error("❌ Error executing statement:", error.message);
@@ -74,8 +79,12 @@ async function runMigration() {
 	console.log(`   Errors: ${errorCount} statements`);
 
 	if (errorCount > 0) {
-		console.log("\n⚠️  Some statements failed. You may need to run the migration manually.");
-		console.log("   Copy the SQL from: supabase/migrations/20251110000000_add_archive_support.sql");
+		console.log(
+			"\n⚠️  Some statements failed. You may need to run the migration manually.",
+		);
+		console.log(
+			"   Copy the SQL from: supabase/migrations/20251110000000_add_archive_support.sql",
+		);
 		console.log("   And execute it in your Supabase SQL Editor");
 	}
 

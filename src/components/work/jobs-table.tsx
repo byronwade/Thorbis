@@ -50,6 +50,7 @@ type JobsTableProps = {
 	currentPage?: number; // Current page from server (for hydration)
 	onJobClick?: (job: Job) => void;
 	showRefresh?: boolean;
+	initialSearchQuery?: string;
 };
 
 export function JobsTable({
@@ -59,6 +60,7 @@ export function JobsTable({
 	currentPage = 1,
 	onJobClick,
 	showRefresh = false,
+	initialSearchQuery = "",
 }: JobsTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.jobs);
@@ -66,7 +68,9 @@ export function JobsTable({
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
-	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(new Set());
+	const [selectedItemIds, setSelectedItemIds] = useState<Set<string>>(
+		new Set(),
+	);
 
 	// Filter jobs based on archive status
 	const filteredJobs = jobs.filter((job) => {
@@ -91,6 +95,7 @@ export function JobsTable({
 				<Link
 					className="text-foreground hover:text-primary text-sm font-medium transition-colors hover:underline"
 					href={`/dashboard/work/${job.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					{job.jobNumber ?? "—"}
@@ -105,6 +110,7 @@ export function JobsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/${job.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="truncate text-sm leading-tight font-medium hover:underline">
@@ -124,7 +130,9 @@ export function JobsTable({
 			width: "w-32",
 			shrink: true,
 			hideable: false, // CRITICAL: Status essential for workflow management
-			render: (job) => <JobStatusBadge status={(job.status ?? "quoted") as string} />,
+			render: (job) => (
+				<JobStatusBadge status={(job.status ?? "quoted") as string} />
+			),
 		},
 		{
 			key: "priority",
@@ -133,7 +141,9 @@ export function JobsTable({
 			shrink: true,
 			hideOnMobile: true,
 			hideable: true,
-			render: (job) => <PriorityBadge priority={(job.priority ?? "medium") as string} />,
+			render: (job) => (
+				<PriorityBadge priority={(job.priority ?? "medium") as string} />
+			),
 		},
 		{
 			key: "scheduledStart",
@@ -208,42 +218,6 @@ export function JobsTable({
 		},
 	];
 
-	// Search filter function with AI tags
-	const searchFilter = (job: Job, query: string) => {
-		const searchStr = query.toLowerCase();
-
-		// Parse AI tags for searching
-		const aiTags = job.aiTags
-			? typeof job.aiTags === "string"
-				? JSON.parse(job.aiTags)
-				: job.aiTags
-			: [];
-		const aiCategories = job.aiCategories
-			? typeof job.aiCategories === "string"
-				? JSON.parse(job.aiCategories)
-				: job.aiCategories
-			: [];
-		const aiEquipment = job.aiEquipment
-			? typeof job.aiEquipment === "string"
-				? JSON.parse(job.aiEquipment)
-				: job.aiEquipment
-			: [];
-
-		return (
-			String(job.jobNumber ?? "")
-				.toLowerCase()
-				.includes(searchStr) ||
-			(job.title ?? "").toLowerCase().includes(searchStr) ||
-			(job.status ?? "").toLowerCase().includes(searchStr) ||
-			(job.priority ?? "").toLowerCase().includes(searchStr) ||
-			(job.description?.toLowerCase() || "").includes(searchStr) ||
-			(job.aiServiceType?.toLowerCase() || "").includes(searchStr) ||
-			aiTags.some((tag: string) => tag.toLowerCase().includes(searchStr)) ||
-			aiCategories.some((cat: string) => cat.toLowerCase().includes(searchStr)) ||
-			aiEquipment.some((eq: string) => eq.toLowerCase().includes(searchStr))
-		);
-	};
-
 	const handleRowClick = (job: Job) => {
 		if (onJobClick) {
 			onJobClick(job);
@@ -268,6 +242,8 @@ export function JobsTable({
 				data={filteredJobs}
 				totalCount={totalCount}
 				currentPageFromServer={currentPage}
+				initialSearchQuery={initialSearchQuery}
+				serverPagination
 				emptyAction={
 					<Button onClick={handleAddJob} size="sm">
 						<Plus className="mr-2 size-4" />
@@ -286,14 +262,18 @@ export function JobsTable({
 				itemsPerPage={itemsPerPage}
 				onRefresh={handleRefresh}
 				onRowClick={handleRowClick}
-				searchFilter={searchFilter}
+				serverSearch
+				searchParamKey="search"
 				searchPlaceholder="Search jobs by customer, category, equipment, service type..."
 				showArchived={archiveFilter !== "active"}
 				showRefresh={showRefresh}
 			/>
 
 			{/* Archive Single Job Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Job?</AlertDialogTitle>
@@ -325,9 +305,12 @@ export function JobsTable({
 			<AlertDialog onOpenChange={setIsBulkArchiveOpen} open={isBulkArchiveOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Archive {selectedItemIds.size} Job(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Archive {selectedItemIds.size} Job(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							{selectedItemIds.size} job(s) will be archived and can be restored within 90 days.
+							{selectedItemIds.size} job(s) will be archived and can be restored
+							within 90 days.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

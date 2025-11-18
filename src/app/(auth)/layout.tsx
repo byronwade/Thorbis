@@ -7,6 +7,10 @@
  * - Full width on mobile
  */
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return <>{children}</>;
 }

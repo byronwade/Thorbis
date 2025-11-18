@@ -244,17 +244,20 @@ export function ModernHomepage() {
 		},
 		{
 			claim: "After-hours coverage",
-			thorbis: "Dispatch AI books no-heat calls overnight with scripts you control.",
+			thorbis:
+				"Dispatch AI books no-heat calls overnight with scripts you control.",
 			others: "Forwarding to voicemail and hoping for the best.",
 		},
 		{
 			claim: "Implementation",
-			thorbis: "Trade operators build your board, imports, and automations in 24 hours.",
+			thorbis:
+				"Trade operators build your board, imports, and automations in 24 hours.",
 			others: "Self-serve onboarding videos and weeks of DIY cleanup.",
 		},
 		{
 			claim: "Data ownership",
-			thorbis: "Export everything anytime—customers, jobs, invoices—no penalty.",
+			thorbis:
+				"Export everything anytime—customers, jobs, invoices—no penalty.",
 			others: "Lock-in contracts and paywalls around your own data.",
 		},
 	] as const;
@@ -262,7 +265,8 @@ export function ModernHomepage() {
 	const incumbentIntel = [
 		{
 			name: "ServiceTitan",
-			summary: "Enterprise-first bundles like Marketing Pro add heavy overhead.",
+			summary:
+				"Enterprise-first bundles like Marketing Pro add heavy overhead.",
 			takeaway:
 				"Thorbis includes lifecycle marketing, review boosts, and advanced reporting in the flat base so you are not upsold feature-by-feature.",
 			source: {
@@ -272,7 +276,8 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Housecall Pro",
-			summary: "Highlights 100M+ jobs and a 35% average revenue lift after year one.",
+			summary:
+				"Highlights 100M+ jobs and a 35% average revenue lift after year one.",
 			takeaway:
 				"Thorbis matches the growth focus but layers on 0% processing, Dispatch AI, and multi-division controls built for bigger crews.",
 			source: {
@@ -282,7 +287,8 @@ export function ModernHomepage() {
 		},
 		{
 			name: "Status quo tools",
-			summary: "Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
+			summary:
+				"Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
 			takeaway:
 				"Thorbis unifies quoting, dispatch, cash flow, and customer comms so information moves once and mirrors the field.",
 			source: {
@@ -308,7 +314,8 @@ export function ModernHomepage() {
 		{
 			metric: "3x",
 			label: "Faster cash collection",
-			description: "Instant payouts with 0% processing fees and auto reminders.",
+			description:
+				"Instant payouts with 0% processing fees and auto reminders.",
 			icon: DollarSign,
 		},
 		{
@@ -361,7 +368,8 @@ export function ModernHomepage() {
 		},
 		{
 			title: "Explore industries",
-			description: "Find HVAC, plumbing, electrical, roofing, and more playbooks.",
+			description:
+				"Find HVAC, plumbing, electrical, roofing, and more playbooks.",
 			icon: Globe,
 			href: "/industries",
 		},
@@ -429,7 +437,8 @@ export function ModernHomepage() {
 							>
 								<Sparkles className="text-primary size-4" />
 								<span className="font-medium">
-									Built with trade operators for HVAC, plumbing, electrical & more
+									Built with trade operators for HVAC, plumbing, electrical &
+									more
 								</span>
 							</Badge>
 						</div>
@@ -442,12 +451,14 @@ export function ModernHomepage() {
 								</span>
 							</h1>
 							<p className="text-foreground/80 mx-auto mb-3 max-w-3xl text-xl leading-relaxed md:text-2xl">
-								Thorbis runs dispatch, quoting, payments, and after-hours calls from one control
-								tower, so owners who still wear the tool belt can scale like a franchise.
+								Thorbis runs dispatch, quoting, payments, and after-hours calls
+								from one control tower, so owners who still wear the tool belt
+								can scale like a franchise.
 							</p>
 							<p className="text-muted-foreground mx-auto max-w-2xl text-base">
-								$100/month base plus pay-as-you-go usage. Unlimited users, AI-powered office staff,
-								and data you own. No contracts, no per-seat fees.
+								$100/month base plus pay-as-you-go usage. Unlimited users,
+								AI-powered office staff, and data you own. No contracts, no
+								per-seat fees.
 							</p>
 							<div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm">
 								{tradeBadges.map((trade) => (
@@ -474,11 +485,16 @@ export function ModernHomepage() {
 								<div className="ml-2">
 									<div className="flex items-center gap-1">
 										{[1, 2, 3, 4, 5].map((i) => (
-											<Star className="text-warning size-4 fill-yellow-500" key={i} />
+											<Star
+												className="text-warning size-4 fill-yellow-500"
+												key={i}
+											/>
 										))}
 										<span className="ml-2 font-bold">4.9/5</span>
 									</div>
-									<p className="text-muted-foreground text-xs">from 1,247+ trades reviews</p>
+									<p className="text-muted-foreground text-xs">
+										from 1,247+ trades reviews
+									</p>
 								</div>
 							</div>
 						</div>
@@ -494,7 +510,12 @@ export function ModernHomepage() {
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
+							<Button
+								asChild
+								className="h-14 border-2 px-8 text-lg"
+								size="lg"
+								variant="outline"
+							>
 								<Link href="/pricing">See trade pricing</Link>
 							</Button>
 						</div>
@@ -515,10 +536,16 @@ export function ModernHomepage() {
 										className="border-border/50 bg-background/80 rounded-2xl border p-5 shadow-sm backdrop-blur"
 										key={stat.label}
 									>
-										<p className="text-muted-foreground text-xs">{stat.label}</p>
+										<p className="text-muted-foreground text-xs">
+											{stat.label}
+										</p>
 										<p className="text-3xl font-bold">{stat.value}</p>
-										<p className="text-success dark:text-success text-xs">{stat.change}</p>
-										<p className="text-muted-foreground text-xs">{stat.detail}</p>
+										<p className="text-success dark:text-success text-xs">
+											{stat.change}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{stat.detail}
+										</p>
 									</div>
 								))}
 							</div>
@@ -540,8 +567,12 @@ export function ModernHomepage() {
 										<div className="grid gap-3 sm:grid-cols-2">
 											{heroCallouts.map((callout) => (
 												<div key={callout.label}>
-													<p className="text-muted-foreground text-xs">{callout.label}</p>
-													<p className="text-lg font-semibold">{callout.value}</p>
+													<p className="text-muted-foreground text-xs">
+														{callout.label}
+													</p>
+													<p className="text-lg font-semibold">
+														{callout.value}
+													</p>
 												</div>
 											))}
 										</div>
@@ -558,10 +589,12 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							FAQ
 						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">Answers for busy owners</h2>
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
+							Answers for busy owners
+						</h2>
 						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							We captured the top objections trade owners raise after evaluating ServiceTitan,
-							Housecall Pro, and generic CRMs.
+							We captured the top objections trade owners raise after evaluating
+							ServiceTitan, Housecall Pro, and generic CRMs.
 						</p>
 					</div>
 					<div className="mx-auto mt-12 max-w-4xl space-y-4">
@@ -571,7 +604,9 @@ export function ModernHomepage() {
 								key={item.question}
 							>
 								<p className="text-xl font-semibold">{item.question}</p>
-								<p className="text-muted-foreground mt-3 text-sm leading-relaxed">{item.answer}</p>
+								<p className="text-muted-foreground mt-3 text-sm leading-relaxed">
+									{item.answer}
+								</p>
 							</div>
 						))}
 					</div>
@@ -587,8 +622,9 @@ export function ModernHomepage() {
 							Everything a buying committee needs
 						</h2>
 						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							Compare pricing, study industry playbooks, or watch an on-demand walkthrough without
-							talking to sales. Each page was refreshed for trade owners doing serious diligence.
+							Compare pricing, study industry playbooks, or watch an on-demand
+							walkthrough without talking to sales. Each page was refreshed for
+							trade owners doing serious diligence.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -605,9 +641,13 @@ export function ModernHomepage() {
 									<h3 className="group-hover:text-primary mb-2 text-2xl font-semibold">
 										{destination.title}
 									</h3>
-									<p className="text-muted-foreground text-sm">{destination.description}</p>
+									<p className="text-muted-foreground text-sm">
+										{destination.description}
+									</p>
 								</div>
-								<p className="text-primary mt-6 text-sm font-semibold">Explore &rarr;</p>
+								<p className="text-primary mt-6 text-sm font-semibold">
+									Explore &rarr;
+								</p>
 							</Link>
 						))}
 					</div>
@@ -623,9 +663,9 @@ export function ModernHomepage() {
 							We studied the incumbents so you don&apos;t have to
 						</h2>
 						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							ServiceTitan leans enterprise, Housecall Pro leans DIY websites, and spreadsheets keep
-							you stuck reacting. Thorbis blends the best ideas—without the add-on upsells, per-seat
-							fees, or DIY headache.
+							ServiceTitan leans enterprise, Housecall Pro leans DIY websites,
+							and spreadsheets keep you stuck reacting. Thorbis blends the best
+							ideas—without the add-on upsells, per-seat fees, or DIY headache.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -637,7 +677,9 @@ export function ModernHomepage() {
 								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 									{intel.name}
 								</p>
-								<h3 className="mt-3 mb-2 text-xl font-semibold">{intel.summary}</h3>
+								<h3 className="mt-3 mb-2 text-xl font-semibold">
+									{intel.summary}
+								</h3>
 								<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
 									{intel.takeaway}
 								</p>
@@ -645,7 +687,9 @@ export function ModernHomepage() {
 									className="text-primary text-sm underline underline-offset-2"
 									href={intel.source.href}
 									rel="noopener noreferrer"
-									target={intel.source.href.startsWith("http") ? "_blank" : undefined}
+									target={
+										intel.source.href.startsWith("http") ? "_blank" : undefined
+									}
 								>
 									{intel.source.label}
 								</Link>
@@ -667,25 +711,26 @@ export function ModernHomepage() {
 										Automation you can actually trust
 									</h2>
 									<p className="text-foreground/70 mb-6 text-lg">
-										Housecall Pro talks about AI teams. ServiceTitan sells Marketing Pro bundles.
-										Thorbis bakes the same capabilities into the base platform so every shop, not
-										just enterprise, gets dispatch, marketing, and cash flow copilots on day one.
+										Housecall Pro talks about AI teams. ServiceTitan sells
+										Marketing Pro bundles. Thorbis bakes the same capabilities
+										into the base platform so every shop, not just enterprise,
+										gets dispatch, marketing, and cash flow copilots on day one.
 									</p>
 									<div className="text-muted-foreground space-y-3 text-sm">
 										<p className="flex items-start gap-3">
 											<Sparkles className="text-primary mt-0.5 size-4" />
-											Dispatch AI books urgent calls in the same board your humans use—no outside
-											integrations.
+											Dispatch AI books urgent calls in the same board your
+											humans use—no outside integrations.
 										</p>
 										<p className="flex items-start gap-3">
 											<ShieldCheck className="text-primary mt-0.5 size-4" />
-											Playbooks enforce safety checklists, permit tasks, and job costing guardrails
-											automatically.
+											Playbooks enforce safety checklists, permit tasks, and job
+											costing guardrails automatically.
 										</p>
 										<p className="flex items-start gap-3">
 											<TrendingUp className="text-primary mt-0.5 size-4" />
-											Revenue insights flag idle crews, low conversion zones, and cash delays so you
-											can course-correct live.
+											Revenue insights flag idle crews, low conversion zones,
+											and cash delays so you can course-correct live.
 										</p>
 									</div>
 								</div>
@@ -698,7 +743,9 @@ export function ModernHomepage() {
 											<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
 												<highlight.icon className="text-primary size-6" />
 											</div>
-											<h3 className="mb-2 text-xl font-semibold">{highlight.title}</h3>
+											<h3 className="mb-2 text-xl font-semibold">
+												{highlight.title}
+											</h3>
 											<p className="text-muted-foreground text-sm leading-relaxed">
 												{highlight.description}
 											</p>
@@ -718,10 +765,13 @@ export function ModernHomepage() {
 						<Badge className="mb-4" variant="secondary">
 							Psychology-backed proof
 						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">Owners Move When Risk Is Gone</h2>
+						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
+							Owners Move When Risk Is Gone
+						</h2>
 						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							We speak to the levers that matter: certainty on margins, total control of the board,
-							and trust that someone has your back if it doesn&apos;t work.
+							We speak to the levers that matter: certainty on margins, total
+							control of the board, and trust that someone has your back if it
+							doesn&apos;t work.
 						</p>
 					</div>
 					<div className="mt-12 grid gap-6 md:grid-cols-3">
@@ -761,8 +811,9 @@ export function ModernHomepage() {
 									See The Platform In The Field
 								</h2>
 								<p className="text-foreground/70 mb-8 text-lg">
-									Lifestyle proof sells: let owners see crews, dispatchers, and the product in
-									action—then show how those moments tie back to revenue and peace of mind.
+									Lifestyle proof sells: let owners see crews, dispatchers, and
+									the product in action—then show how those moments tie back to
+									revenue and peace of mind.
 								</p>
 								<div className="border-border/60 bg-muted/30 text-muted-foreground space-y-4 rounded-2xl border p-6 text-sm leading-relaxed">
 									<p className="flex items-start gap-3">
@@ -771,11 +822,13 @@ export function ModernHomepage() {
 									</p>
 									<p className="flex items-start gap-3">
 										<LineChart className="text-primary mt-1 size-4" />
-										Tie every scene to growth: faster calls, tighter routes, and cash collected.
+										Tie every scene to growth: faster calls, tighter routes, and
+										cash collected.
 									</p>
 									<p className="flex items-start gap-3">
 										<Handshake className="text-primary mt-1 size-4" />
-										Back it with guarantees and concierge humans, not just software.
+										Back it with guarantees and concierge humans, not just
+										software.
 									</p>
 								</div>
 							</div>
@@ -794,7 +847,9 @@ export function ModernHomepage() {
 										/>
 										<div className="border-border/60 bg-background/90 space-y-2 border-t p-6 backdrop-blur">
 											<Badge variant="secondary">{visual.badge}</Badge>
-											<p className="text-foreground font-semibold">{visual.caption}</p>
+											<p className="text-foreground font-semibold">
+												{visual.caption}
+											</p>
 										</div>
 									</div>
 								))}
@@ -815,8 +870,9 @@ export function ModernHomepage() {
 								Crew-Ready Tools For Owners On The Go
 							</h2>
 							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-								Replace paper, whiteboards, and stitched-together apps with one system designed
-								alongside HVAC, plumbing, electrical, and specialty contractors.
+								Replace paper, whiteboards, and stitched-together apps with one
+								system designed alongside HVAC, plumbing, electrical, and
+								specialty contractors.
 							</p>
 						</div>
 
@@ -831,7 +887,9 @@ export function ModernHomepage() {
 											className={`size-6 ${feature.color} transition-transform group-hover:scale-110`}
 										/>
 									</div>
-									<h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
+									<h3 className="mb-2 text-xl font-semibold">
+										{feature.title}
+									</h3>
 									<p className="text-muted-foreground text-sm leading-relaxed">
 										{feature.description}
 									</p>
@@ -852,8 +910,9 @@ export function ModernHomepage() {
 							Every Phase Of The Job, In One Place
 						</h2>
 						<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-							Whether you&apos;re in the truck or in the office, Thorbis keeps the same playbook
-							visible to everyone so nothing slips between estimate and final payment.
+							Whether you&apos;re in the truck or in the office, Thorbis keeps
+							the same playbook visible to everyone so nothing slips between
+							estimate and final payment.
 						</p>
 					</div>
 
@@ -897,8 +956,8 @@ export function ModernHomepage() {
 							Why Trade Owners Switch From Legacy Systems
 						</h2>
 						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							Strip away the marketing—here&apos;s how Thorbis wins when owners compare us against
-							the usual suspects.
+							Strip away the marketing—here&apos;s how Thorbis wins when owners
+							compare us against the usual suspects.
 						</p>
 					</div>
 					<div className="border-border/60 bg-card mt-12 overflow-hidden rounded-3xl border">
@@ -916,13 +975,17 @@ export function ModernHomepage() {
 											<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 												Thorbis
 											</p>
-											<p className="text-foreground text-base">{point.thorbis}</p>
+											<p className="text-foreground text-base">
+												{point.thorbis}
+											</p>
 										</div>
 										<div className="border-border/70 bg-background/70 rounded-2xl border p-4">
 											<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 												Other tools
 											</p>
-											<p className="text-muted-foreground text-base">{point.others}</p>
+											<p className="text-muted-foreground text-base">
+												{point.others}
+											</p>
 										</div>
 									</div>
 								</div>
@@ -943,8 +1006,8 @@ export function ModernHomepage() {
 								Numbers That Make Trade Owners Smile
 							</h2>
 							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-								See what happens when every truck, call, and invoice moves through the same
-								playbook.
+								See what happens when every truck, call, and invoice moves
+								through the same playbook.
 							</p>
 						</div>
 
@@ -959,9 +1022,13 @@ export function ModernHomepage() {
 											<win.icon className="text-primary size-6" />
 										</div>
 									</div>
-									<div className="text-primary mb-2 text-4xl font-bold">{win.metric}</div>
+									<div className="text-primary mb-2 text-4xl font-bold">
+										{win.metric}
+									</div>
 									<div className="mb-1 text-lg font-semibold">{win.label}</div>
-									<div className="text-muted-foreground text-sm">{win.description}</div>
+									<div className="text-muted-foreground text-sm">
+										{win.description}
+									</div>
 								</div>
 							))}
 						</div>
@@ -989,7 +1056,10 @@ export function ModernHomepage() {
 								>
 									<div className="mb-4 flex gap-1">
 										{[...new Array(testimonial.rating)].map((_, index) => (
-											<Star className="text-warning size-4 fill-yellow-500" key={index} />
+											<Star
+												className="text-warning size-4 fill-yellow-500"
+												key={index}
+											/>
 										))}
 									</div>
 									<p className="text-muted-foreground mb-6 leading-relaxed">
@@ -1018,8 +1088,9 @@ export function ModernHomepage() {
 							Give Your Crews A System That Works
 						</h2>
 						<p className="text-foreground/70 mx-auto mb-10 max-w-2xl text-xl">
-							HVAC, plumbing, electrical, roofing, and specialty contractors trust Thorbis to keep
-							phones answered, trucks dispatched, and cash collected without babysitting software.
+							HVAC, plumbing, electrical, roofing, and specialty contractors
+							trust Thorbis to keep phones answered, trucks dispatched, and cash
+							collected without babysitting software.
 						</p>
 						<div className="text-muted-foreground mb-10 space-y-3 text-left text-sm sm:text-base">
 							{guaranteeHighlights.map((highlight) => (
@@ -1040,13 +1111,18 @@ export function ModernHomepage() {
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button asChild className="h-14 border-2 px-8 text-lg" size="lg" variant="outline">
+							<Button
+								asChild
+								className="h-14 border-2 px-8 text-lg"
+								size="lg"
+								variant="outline"
+							>
 								<Link href="/pricing">Talk with a trade expert</Link>
 							</Button>
 						</div>
 						<p className="text-muted-foreground mt-6 text-sm">
-							Working system in 24 hours • Unlimited users • Trade-focused onboarding • Cancel
-							anytime
+							Working system in 24 hours • Unlimited users • Trade-focused
+							onboarding • Cancel anytime
 						</p>
 					</div>
 				</div>

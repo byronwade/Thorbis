@@ -85,23 +85,25 @@ export function generateMetadata(config: SEOConfig): Metadata {
 	} = config;
 
 	const fullTitle =
-		includeBrand || section ? buildTitle({ page: title, section, includeBrand }) : title;
+		includeBrand || section
+			? buildTitle({ page: title, section, includeBrand })
+			: title;
 	const url = canonical || buildCanonicalUrl({ path });
 	const fullImage = buildShareImageUrl(image ? { path: image } : undefined);
-	const combinedKeywords = Array.from(new Set([...(keywords ?? []), ...SEO_KEYWORDS])).filter(
-		Boolean
-	);
+	const combinedKeywords = Array.from(
+		new Set([...(keywords ?? []), ...SEO_KEYWORDS]),
+	).filter(Boolean);
 	const alternatesLanguages = languageAlternates
 		? Object.fromEntries(
 				Object.entries(languageAlternates).map(([lang, href]) => [
 					lang,
 					href.startsWith("http") ? href : buildCanonicalUrl({ path: href }),
-				])
+				]),
 			)
 		: undefined;
 	const alternateLocales = alternatesLanguages
 		? Object.keys(alternatesLanguages).filter(
-				(lang) => lang !== locale && lang !== SEO_LOCALES.default
+				(lang) => lang !== locale && lang !== SEO_LOCALES.default,
 			)
 		: undefined;
 	const resolvedAppName = appName ?? SEO_BRAND.short;
@@ -179,5 +181,6 @@ export const generateOrganizationStructuredData = createOrganizationSchema;
 export const generateWebSiteStructuredData = createWebsiteSchema;
 export const generateBreadcrumbStructuredData = createBreadcrumbSchema;
 export const generateFAQStructuredData = createFAQSchema;
-export const generateSoftwareApplicationStructuredData = createSoftwareApplicationSchema;
+export const generateSoftwareApplicationStructuredData =
+	createSoftwareApplicationSchema;
 export const generateServiceStructuredData = createServiceSchema;

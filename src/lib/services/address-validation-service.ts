@@ -106,7 +106,8 @@ export class AddressValidationService {
 			return {
 				isValid: false,
 				input: address,
-				error: error instanceof Error ? error.message : "Unknown validation error",
+				error:
+					error instanceof Error ? error.message : "Unknown validation error",
 				enrichedAt: new Date().toISOString(),
 			};
 		}
@@ -141,7 +142,10 @@ export class AddressValidationService {
 	/**
 	 * Parse USPS XML response
 	 */
-	private parseUSPSResponse(xml: string, input: any): Omit<AddressValidation, "enrichedAt"> {
+	private parseUSPSResponse(
+		xml: string,
+		input: any,
+	): Omit<AddressValidation, "enrichedAt"> {
 		// Check for error
 		if (xml.includes("<Error>")) {
 			const errorMatch = xml.match(/<Description>(.*?)<\/Description>/);
@@ -210,7 +214,10 @@ export class AddressValidationService {
 			suggestions.push("Verify ZIP code is correct for this city/state");
 		}
 
-		if (errorMsg.toLowerCase().includes("apartment") || errorMsg.toLowerCase().includes("unit")) {
+		if (
+			errorMsg.toLowerCase().includes("apartment") ||
+			errorMsg.toLowerCase().includes("unit")
+		) {
 			suggestions.push("Include apartment or unit number if applicable");
 		}
 

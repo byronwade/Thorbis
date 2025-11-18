@@ -46,6 +46,6 @@ export const useEstimatesFiltersStore = create<EstimatesFiltersStore>()(
 		{
 			name: "estimates-filters",
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
-		}
-	)
+		},
+	),
 );

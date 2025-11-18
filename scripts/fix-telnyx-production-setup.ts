@@ -10,7 +10,10 @@
  * Run with: npx tsx scripts/fix-telnyx-production-setup.ts
  */
 
-import { ensureMessagingBranding, ensureMessagingCampaign } from "@/actions/messaging-branding";
+import {
+	ensureMessagingBranding,
+	ensureMessagingCampaign,
+} from "@/actions/messaging-branding";
 import { createClient } from "@/lib/supabase/server";
 
 async function main() {
@@ -69,10 +72,12 @@ async function main() {
 			const campaignResult = await ensureMessagingCampaign(
 				company.id,
 				{ id: phoneNumber.id, e164: phoneNumber.phone_number },
-				{ supabase }
+				{ supabase },
 			);
 			if (!campaignResult.success) {
-				console.error(`  ❌ Failed to ensure campaign: ${campaignResult.error}`);
+				console.error(
+					`  ❌ Failed to ensure campaign: ${campaignResult.error}`,
+				);
 				continue;
 			}
 			console.log(`  ✅ Campaign ensured for ${phoneNumber.phone_number}`);

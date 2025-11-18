@@ -22,7 +22,9 @@ type CustomerDetailDataProps = {
 	customerId: string;
 };
 
-export async function CustomerDetailDataOptimized({ customerId }: CustomerDetailDataProps) {
+export async function CustomerDetailDataOptimized({
+	customerId,
+}: CustomerDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -109,8 +111,8 @@ export async function CustomerDetailDataOptimized({ customerId }: CustomerDetail
 							This customer belongs to a different company.
 						</p>
 						<p className="text-muted-foreground mb-6 text-sm">
-							If you need to access this customer, please switch to the correct company using the
-							company selector in the header.
+							If you need to access this customer, please switch to the correct
+							company using the company selector in the header.
 						</p>
 						<a
 							className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium"
@@ -163,7 +165,10 @@ export async function CustomerDetailDataOptimized({ customerId }: CustomerDetail
 	return (
 		<ToolbarStatsProvider stats={stats}>
 			<ToolbarActionsProvider>
-				<CustomerPageContentOptimized customerData={customerData} metrics={metrics} />
+				<CustomerPageContentOptimized
+					customerData={customerData}
+					metrics={metrics}
+				/>
 			</ToolbarActionsProvider>
 		</ToolbarStatsProvider>
 	);

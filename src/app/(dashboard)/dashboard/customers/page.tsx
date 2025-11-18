@@ -22,17 +22,24 @@ export const revalidate = 60;
 // This export is no longer needed but kept for documentation
 // export const experimental_ppr = true;
 
-export default function CustomersPage() {
+export default async function CustomersPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<>
 			{/* Statistics - Streams in first */}
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<CustomersStats />
 			</Suspense>
 
 			{/* Table/Kanban - Streams in second */}
 			<Suspense fallback={<CustomersSkeleton />}>
-				<CustomersData />
+				<CustomersData searchParams={params} />
 			</Suspense>
 		</>
 	);

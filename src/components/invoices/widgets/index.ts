@@ -8,9 +8,9 @@
  * import { InvoiceJobWidget, InvoicePaymentsWidget } from "@/components/invoices/widgets";
  */
 
+export { InvoiceCommunicationsWidget } from "./invoice-communications-widget";
 export { InvoiceJobWidget } from "./invoice-job-widget";
+export { InvoicePaymentMethodsWidget } from "./invoice-payment-methods-widget";
+export { InvoicePaymentsWidget } from "./invoice-payments-widget";
 export { InvoicePropertyWidget } from "./invoice-property-widget";
 export { InvoiceWorkflowWidget } from "./invoice-workflow-widget";
-export { InvoicePaymentsWidget } from "./invoice-payments-widget";
-export { InvoicePaymentMethodsWidget } from "./invoice-payment-methods-widget";
-export { InvoiceCommunicationsWidget } from "./invoice-communications-widget";

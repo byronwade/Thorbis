@@ -45,8 +45,9 @@ export function ArchiveConfirmDialog({
 					</div>
 					<AlertDialogDescription className="space-y-3 pt-4">
 						<p>
-							{itemCount === 1 ? "This item" : "These items"} will be moved to the archive and{" "}
-							{itemCount === 1 ? "will" : "will"} no longer appear in your active lists.
+							{itemCount === 1 ? "This item" : "These items"} will be moved to
+							the archive and {itemCount === 1 ? "will" : "will"} no longer
+							appear in your active lists.
 						</p>
 						<div className="border-warning bg-warning dark:border-warning dark:bg-warning/30 flex items-start gap-2 rounded-lg border p-3">
 							<AlertTriangle className="text-warning dark:text-warning mt-0.5 h-4 w-4 shrink-0" />

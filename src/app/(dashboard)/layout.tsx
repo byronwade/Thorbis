@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { DashboardAuthWrapper } from "@/components/layout/dashboard-auth-wrapper";
 import { IncomingCallNotificationWrapper } from "@/components/layout/incoming-call-notification-wrapper";
+import { NotificationsInitializer } from "@/components/layout/notifications-initializer";
 
 /**
  * Dashboard Layout - Server Component with PPR
@@ -27,6 +28,9 @@ export default function DashboardLayout({
 			<Suspense fallback={<HeaderSkeleton />}>
 				<AppHeader />
 			</Suspense>
+
+			{/* Desktop + toast notifications bootstrap */}
+			<NotificationsInitializer />
 
 			{/* Incoming call notifications */}
 			<IncomingCallNotificationWrapper />

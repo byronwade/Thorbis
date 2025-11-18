@@ -16,7 +16,12 @@
 import type { StatCard } from "@/components/ui/status-pipeline";
 import { createClient } from "@/lib/supabase/server";
 
-export type StatsMetric = "count" | "revenue" | "avgValue" | "completion" | "growth";
+export type StatsMetric =
+	| "count"
+	| "revenue"
+	| "avgValue"
+	| "completion"
+	| "growth";
 
 export type StatsConfig = {
 	groupBy?: string;
@@ -47,7 +52,7 @@ type EntityTable =
 export async function createEntityStats(
 	table: EntityTable,
 	companyId: string,
-	config: StatsConfig = {}
+	config: StatsConfig = {},
 ): Promise<StatCard[]> {
 	const supabase = await createClient();
 
@@ -85,7 +90,7 @@ export async function createEntityStats(
 				acc[status].records.push(record);
 				return acc;
 			},
-			{} as Record<string, { count: number; total: number; records: any[] }>
+			{} as Record<string, { count: number; total: number; records: any[] }>,
 		);
 
 		// Convert to StatCard format
@@ -109,7 +114,7 @@ export async function createEntityStats(
 export async function getEntityCount(
 	table: EntityTable,
 	companyId: string,
-	filters: Record<string, any> = {}
+	filters: Record<string, any> = {},
 ): Promise<number> {
 	const supabase = await createClient();
 
@@ -138,7 +143,7 @@ export async function getEntityCount(
 export async function calculateGrowth(
 	table: EntityTable,
 	companyId: string,
-	period: "day" | "week" | "month" = "month"
+	period: "day" | "week" | "month" = "month",
 ): Promise<number> {
 	const supabase = await createClient();
 
@@ -192,7 +197,9 @@ export async function calculateGrowth(
 			return 0;
 		}
 
-		const growth = ((Number(currentCount) - Number(previousCount)) / Number(previousCount)) * 100;
+		const growth =
+			((Number(currentCount) - Number(previousCount)) / Number(previousCount)) *
+			100;
 		return Math.round(growth);
 	} catch (error) {
 		console.error("Error calculating growth:", error);
@@ -209,7 +216,9 @@ function formatStatusLabel(status: string): string {
 		.join(" ");
 }
 
-function mapStatusToVariant(status: string): "default" | "success" | "warning" | "destructive" {
+function mapStatusToVariant(
+	status: string,
+): "default" | "success" | "warning" | "destructive" {
 	const statusLower = status.toLowerCase();
 
 	if (

@@ -72,7 +72,7 @@ export function SlideCarousel({
 		(slideId: string, widgets: Widget[]) => {
 			onWidgetsChange?.(slideId, widgets);
 		},
-		[onWidgetsChange]
+		[onWidgetsChange],
 	);
 
 	if (slides.length === 0) {
@@ -80,7 +80,9 @@ export function SlideCarousel({
 			<div className="flex h-full items-center justify-center">
 				<div className="text-center">
 					<p className="text-muted-foreground">No widgets to display</p>
-					<p className="text-muted-foreground text-sm">Add widgets to get started</p>
+					<p className="text-muted-foreground text-sm">
+						Add widgets to get started
+					</p>
 				</div>
 			</div>
 		);

@@ -2,7 +2,13 @@ import { ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function PhotoGalleryWidget({ photos, jobId }: { photos: unknown[]; jobId: string }) {
+export function PhotoGalleryWidget({
+	photos,
+	jobId,
+}: {
+	photos: unknown[];
+	jobId: string;
+}) {
 	return (
 		<div className="space-y-3">
 			<p className="text-sm">

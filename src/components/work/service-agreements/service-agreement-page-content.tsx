@@ -36,7 +36,8 @@ const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
 const MINUTES_PER_HOUR = 60;
 const HOURS_PER_DAY = 24;
-const MS_PER_DAY = MS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
+const MS_PER_DAY =
+	MS_PER_SECOND * SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY;
 const RENEWAL_SOON_THRESHOLD_DAYS = 30;
 const SHORT_ID_LENGTH = 8;
 
@@ -162,7 +163,9 @@ function InfoBlock({ label, value, helper }: InfoBlockProps) {
 				{label}
 			</span>
 			<div className="text-foreground text-sm font-medium">{value}</div>
-			{helper ? <div className="text-muted-foreground text-xs">{helper}</div> : null}
+			{helper ? (
+				<div className="text-muted-foreground text-xs">{helper}</div>
+			) : null}
 		</div>
 	);
 }
@@ -175,7 +178,7 @@ function quickInfoBadgeClass(tone: QuickInfoTone = "default") {
 		tone === "destructive" &&
 			"border-destructive/40 bg-destructive/10 text-destructive hover:border-destructive/60 hover:bg-destructive/15 dark:text-destructive",
 		tone === "success" &&
-			"border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300"
+			"border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300 hover:bg-emerald-100 dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300",
 	);
 }
 
@@ -240,7 +243,9 @@ function formatBillingFrequency(value: string): string {
 	return value.replaceAll("_", " ");
 }
 
-function buildContractSection(agreement: ServiceAgreementRecord): UnifiedAccordionSection {
+function buildContractSection(
+	agreement: ServiceAgreementRecord,
+): UnifiedAccordionSection {
 	const contractValue = agreement.contract_value ?? 0;
 	const hasContractValue = contractValue > 0;
 
@@ -267,7 +272,10 @@ function buildContractSection(agreement: ServiceAgreementRecord): UnifiedAccordi
 						/>
 					) : null}
 					{hasContractValue ? (
-						<InfoBlock label="Contract Value" value={formatCurrency(contractValue)} />
+						<InfoBlock
+							label="Contract Value"
+							value={formatCurrency(contractValue)}
+						/>
 					) : null}
 					{agreement.payment_terms ? (
 						<InfoBlock label="Payment Terms" value={agreement.payment_terms} />
@@ -278,7 +286,9 @@ function buildContractSection(agreement: ServiceAgreementRecord): UnifiedAccordi
 						<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
 							Terms & Conditions
 						</span>
-						<p className="text-muted-foreground text-sm whitespace-pre-wrap">{agreement.terms}</p>
+						<p className="text-muted-foreground text-sm whitespace-pre-wrap">
+							{agreement.terms}
+						</p>
 					</div>
 				) : null}
 			</UnifiedAccordionContent>
@@ -286,7 +296,9 @@ function buildContractSection(agreement: ServiceAgreementRecord): UnifiedAccordi
 	};
 }
 
-function buildServiceLevelsSection(levels: ServiceLevelDisplay[]): UnifiedAccordionSection | null {
+function buildServiceLevelsSection(
+	levels: ServiceLevelDisplay[],
+): UnifiedAccordionSection | null {
 	if (levels.length === 0) {
 		return null;
 	}
@@ -306,7 +318,9 @@ function buildServiceLevelsSection(levels: ServiceLevelDisplay[]): UnifiedAccord
 						>
 							<CheckCircle2 className="text-success size-4" />
 							<div className="flex flex-col">
-								<span className="text-foreground text-sm font-medium">{level.label}</span>
+								<span className="text-foreground text-sm font-medium">
+									{level.label}
+								</span>
 								{level.responseTime ? (
 									<span className="text-muted-foreground text-xs">
 										Response: {level.responseTime}
@@ -321,8 +335,16 @@ function buildServiceLevelsSection(levels: ServiceLevelDisplay[]): UnifiedAccord
 	};
 }
 
-function buildRenewalSection(agreement: ServiceAgreementRecord): UnifiedAccordionSection | null {
-	if (!(agreement.renewal_type || agreement.renewal_date || agreement.renewal_notice_days)) {
+function buildRenewalSection(
+	agreement: ServiceAgreementRecord,
+): UnifiedAccordionSection | null {
+	if (
+		!(
+			agreement.renewal_type ||
+			agreement.renewal_date ||
+			agreement.renewal_notice_days
+		)
+	) {
 		return null;
 	}
 
@@ -346,7 +368,10 @@ function buildRenewalSection(agreement: ServiceAgreementRecord): UnifiedAccordio
 						/>
 					) : null}
 					{agreement.renewal_notice_days ? (
-						<InfoBlock label="Notice Window" value={`${agreement.renewal_notice_days} days`} />
+						<InfoBlock
+							label="Notice Window"
+							value={`${agreement.renewal_notice_days} days`}
+						/>
 					) : null}
 				</div>
 			</UnifiedAccordionContent>
@@ -354,7 +379,9 @@ function buildRenewalSection(agreement: ServiceAgreementRecord): UnifiedAccordio
 	};
 }
 
-function buildCustomerSection(customer?: CustomerRecord | null): UnifiedAccordionSection | null {
+function buildCustomerSection(
+	customer?: CustomerRecord | null,
+): UnifiedAccordionSection | null {
 	if (!customer) {
 		return null;
 	}
@@ -378,7 +405,9 @@ function buildCustomerSection(customer?: CustomerRecord | null): UnifiedAccordio
 						<InfoBlock label="Email" value={customer.email || "N/A"} />
 					</div>
 					<Button asChild size="sm" variant="ghost">
-						<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+						<Link href={`/dashboard/customers/${customer.id}`}>
+							View Full Profile
+						</Link>
 					</Button>
 				</div>
 			</UnifiedAccordionContent>
@@ -386,7 +415,9 @@ function buildCustomerSection(customer?: CustomerRecord | null): UnifiedAccordio
 	};
 }
 
-function buildInvoicesSection(invoices: InvoiceRecord[]): UnifiedAccordionSection | null {
+function buildInvoicesSection(
+	invoices: InvoiceRecord[],
+): UnifiedAccordionSection | null {
 	if (invoices.length === 0) {
 		return null;
 	}
@@ -405,13 +436,27 @@ function buildInvoicesSection(invoices: InvoiceRecord[]): UnifiedAccordionSectio
 					<table className="w-full">
 						<thead className="bg-muted/50 border-b">
 							<tr>
-								<th className="px-6 py-3 text-left text-sm font-medium">Invoice #</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Title</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Total</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Balance</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Invoice #
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Title
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Date
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Total
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Balance
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Status
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Actions
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -431,7 +476,11 @@ function buildInvoicesSection(invoices: InvoiceRecord[]): UnifiedAccordionSectio
 										{formatCurrency(invoice.balance_amount)}
 									</td>
 									<td className="px-6 py-4 text-sm">
-										<Badge variant={invoice.status === "paid" ? "default" : "outline"}>
+										<Badge
+											variant={
+												invoice.status === "paid" ? "default" : "outline"
+											}
+										>
 											{invoice.status || "pending"}
 										</Badge>
 									</td>
@@ -472,19 +521,35 @@ function buildJobsSection(jobs: JobRecord[]): UnifiedAccordionSection | null {
 					<table className="w-full">
 						<thead className="bg-muted/50 border-b">
 							<tr>
-								<th className="px-6 py-3 text-left text-sm font-medium">Job #</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Title</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Date</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Status</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Completed</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Job #
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Title
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Date
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Status
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Completed
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Actions
+								</th>
 							</tr>
 						</thead>
 						<tbody>
 							{jobs.map((job) => (
 								<tr className="hover:bg-muted/30 border-b" key={job.id}>
-									<td className="px-6 py-4 text-sm">#{job.job_number || formatShortId(job.id)}</td>
-									<td className="px-6 py-4 text-sm font-medium">{job.title || "—"}</td>
+									<td className="px-6 py-4 text-sm">
+										#{job.job_number || formatShortId(job.id)}
+									</td>
+									<td className="px-6 py-4 text-sm font-medium">
+										{job.title || "—"}
+									</td>
 									<td className="px-6 py-4 text-sm">
 										{formatDate(job.created_at, { preset: "medium" })}
 									</td>
@@ -492,7 +557,9 @@ function buildJobsSection(jobs: JobRecord[]): UnifiedAccordionSection | null {
 										<Badge variant="outline">{job.status || "scheduled"}</Badge>
 									</td>
 									<td className="px-6 py-4 text-sm">
-										{job.completed_at ? formatDate(job.completed_at, { preset: "medium" }) : "—"}
+										{job.completed_at
+											? formatDate(job.completed_at, { preset: "medium" })
+											: "—"}
 									</td>
 									<td className="px-6 py-4 text-sm">
 										<Link
@@ -512,7 +579,9 @@ function buildJobsSection(jobs: JobRecord[]): UnifiedAccordionSection | null {
 	};
 }
 
-function buildEquipmentSection(equipment: EquipmentRecord[]): UnifiedAccordionSection | null {
+function buildEquipmentSection(
+	equipment: EquipmentRecord[],
+): UnifiedAccordionSection | null {
 	if (equipment.length === 0) {
 		return null;
 	}
@@ -531,11 +600,21 @@ function buildEquipmentSection(equipment: EquipmentRecord[]): UnifiedAccordionSe
 					<table className="w-full">
 						<thead className="bg-muted/50 border-b">
 							<tr>
-								<th className="px-6 py-3 text-left text-sm font-medium">Equipment #</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Name</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Type</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Manufacturer</th>
-								<th className="px-6 py-3 text-left text-sm font-medium">Actions</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Equipment #
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Name
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Type
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Manufacturer
+								</th>
+								<th className="px-6 py-3 text-left text-sm font-medium">
+									Actions
+								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -544,9 +623,13 @@ function buildEquipmentSection(equipment: EquipmentRecord[]): UnifiedAccordionSe
 									<td className="px-6 py-4 text-sm">
 										#{item.equipment_number || formatShortId(item.id)}
 									</td>
-									<td className="px-6 py-4 text-sm font-medium">{item.name || "—"}</td>
+									<td className="px-6 py-4 text-sm font-medium">
+										{item.name || "—"}
+									</td>
 									<td className="px-6 py-4 text-sm">{item.type || "—"}</td>
-									<td className="px-6 py-4 text-sm">{item.manufacturer || "—"}</td>
+									<td className="px-6 py-4 text-sm">
+										{item.manufacturer || "—"}
+									</td>
 									<td className="px-6 py-4 text-sm">
 										<Link
 											className="text-primary hover:underline"
@@ -565,7 +648,9 @@ function buildEquipmentSection(equipment: EquipmentRecord[]): UnifiedAccordionSe
 	};
 }
 
-function createStartBadge(agreement: ServiceAgreementRecord): QuickInfoBadge | null {
+function createStartBadge(
+	agreement: ServiceAgreementRecord,
+): QuickInfoBadge | null {
 	if (!agreement.start_date) {
 		return null;
 	}
@@ -578,7 +663,9 @@ function createStartBadge(agreement: ServiceAgreementRecord): QuickInfoBadge | n
 	};
 }
 
-function createRenewalBadge(agreement: ServiceAgreementRecord): QuickInfoBadge | null {
+function createRenewalBadge(
+	agreement: ServiceAgreementRecord,
+): QuickInfoBadge | null {
 	const renewalDate = agreement.renewal_date || agreement.end_date;
 	if (!renewalDate) {
 		return null;
@@ -616,8 +703,11 @@ function createRenewalBadge(agreement: ServiceAgreementRecord): QuickInfoBadge |
 	};
 }
 
-function createContractValueBadge(agreement: ServiceAgreementRecord): QuickInfoBadge | null {
-	const contractValue = agreement.contract_value ?? agreement.price ?? agreement.value ?? 0;
+function createContractValueBadge(
+	agreement: ServiceAgreementRecord,
+): QuickInfoBadge | null {
+	const contractValue =
+		agreement.contract_value ?? agreement.price ?? agreement.value ?? 0;
 	if (contractValue <= 0) {
 		return null;
 	}
@@ -630,7 +720,9 @@ function createContractValueBadge(agreement: ServiceAgreementRecord): QuickInfoB
 	};
 }
 
-function createBillingBadge(agreement: ServiceAgreementRecord): QuickInfoBadge | null {
+function createBillingBadge(
+	agreement: ServiceAgreementRecord,
+): QuickInfoBadge | null {
 	if (!agreement.billing_frequency) {
 		return null;
 	}
@@ -648,8 +740,14 @@ function createInvoicesBadge(invoices: InvoiceRecord[]): QuickInfoBadge | null {
 		return null;
 	}
 
-	const invoiceTotal = invoices.reduce((sum, invoice) => sum + (invoice.total_amount ?? 0), 0);
-	const outstanding = invoices.reduce((sum, invoice) => sum + (invoice.balance_amount ?? 0), 0);
+	const invoiceTotal = invoices.reduce(
+		(sum, invoice) => sum + (invoice.total_amount ?? 0),
+		0,
+	);
+	const outstanding = invoices.reduce(
+		(sum, invoice) => sum + (invoice.balance_amount ?? 0),
+		0,
+	);
 
 	return {
 		key: "invoices",
@@ -680,7 +778,9 @@ function createJobsBadge(jobs: JobRecord[]): QuickInfoBadge | null {
 	};
 }
 
-function createEquipmentBadge(equipment: EquipmentRecord[]): QuickInfoBadge | null {
+function createEquipmentBadge(
+	equipment: EquipmentRecord[],
+): QuickInfoBadge | null {
 	if (equipment.length === 0) {
 		return null;
 	}
@@ -696,7 +796,8 @@ function createEquipmentBadge(equipment: EquipmentRecord[]): QuickInfoBadge | nu
 function getStatusBadge(status: string, key?: string) {
 	const variants: Record<string, { className: string; label: string }> = {
 		draft: {
-			className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+			className:
+				"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 			label: "Draft",
 		},
 		active: {
@@ -725,7 +826,9 @@ function getStatusBadge(status: string, key?: string) {
 	);
 }
 
-export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPageContentProps) {
+export function ServiceAgreementPageContent({
+	entityData,
+}: ServiceAgreementPageContentProps) {
 	const {
 		agreement,
 		customer,
@@ -758,7 +861,7 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 			badges.push(
 				<Badge className="capitalize" key="billing" variant="outline">
 					{formatBillingFrequency(String(agreement.billing_frequency))}
-				</Badge>
+				</Badge>,
 			);
 		}
 
@@ -770,12 +873,17 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 					variant="outline"
 				>
 					Auto-Renew
-				</Badge>
+				</Badge>,
 			);
 		}
 
 		return badges;
-	}, [agreementNumber, agreement.status, agreement.billing_frequency, agreement.auto_renew]);
+	}, [
+		agreementNumber,
+		agreement.status,
+		agreement.billing_frequency,
+		agreement.auto_renew,
+	]);
 
 	const quickInfoBadges = useMemo<QuickInfoBadge[]>(
 		() =>
@@ -788,7 +896,7 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 				createJobsBadge(generatedJobs),
 				createEquipmentBadge(equipment),
 			].filter(Boolean) as QuickInfoBadge[],
-		[agreement, equipment, generatedInvoices, generatedJobs]
+		[agreement, equipment, generatedInvoices, generatedJobs],
 	);
 
 	const quickLinkClassName =
@@ -800,10 +908,14 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="text-2xl font-semibold sm:text-3xl">
-									{agreement.name || agreement.title || `Agreement ${agreementNumber}`}
+									{agreement.name ||
+										agreement.title ||
+										`Agreement ${agreementNumber}`}
 								</h1>
 								{agreement.description ? (
 									<p className="text-muted-foreground text-sm sm:text-base">
@@ -817,7 +929,10 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 					{(customer || property) && (
 						<div className="flex flex-wrap items-center gap-2">
 							{customer ? (
-								<Link className={quickLinkClassName} href={`/dashboard/customers/${customer.id}`}>
+								<Link
+									className={quickLinkClassName}
+									href={`/dashboard/customers/${customer.id}`}
+								>
 									<User className="size-4" />
 									{customer.display_name ||
 										`${customer.first_name || ""} ${customer.last_name || ""}`.trim() ||
@@ -832,7 +947,9 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 									<MapPin className="size-4" />
 									{property.address ||
 										property.name ||
-										[property.city, property.state].filter(Boolean).join(", ") ||
+										[property.city, property.state]
+											.filter(Boolean)
+											.join(", ") ||
 										"Property"}
 								</Link>
 							) : null}
@@ -841,20 +958,26 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 
 					{quickInfoBadges.length > 0 ? (
 						<div className="flex flex-wrap items-center gap-2">
-							{quickInfoBadges.map(({ key, icon: Icon, label, value, helper, tone }) => (
-								<div className={quickInfoBadgeClass(tone)} key={key}>
-									<Icon className="text-muted-foreground size-4" />
-									<div className="flex flex-col">
-										<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-											{label}
-										</span>
-										<span className="text-foreground text-sm font-medium">{value}</span>
-										{helper ? (
-											<span className="text-muted-foreground text-xs">{helper}</span>
-										) : null}
+							{quickInfoBadges.map(
+								({ key, icon: Icon, label, value, helper, tone }) => (
+									<div className={quickInfoBadgeClass(tone)} key={key}>
+										<Icon className="text-muted-foreground size-4" />
+										<div className="flex flex-col">
+											<span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+												{label}
+											</span>
+											<span className="text-foreground text-sm font-medium">
+												{value}
+											</span>
+											{helper ? (
+												<span className="text-muted-foreground text-xs">
+													{helper}
+												</span>
+											) : null}
+										</div>
 									</div>
-								</div>
-							))}
+								),
+							)}
 						</div>
 					) : null}
 				</div>
@@ -864,7 +987,7 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 
 	const serviceLevels = useMemo<ServiceLevelDisplay[]>(
 		() => normalizeServiceLevels(agreement.service_levels),
-		[agreement.service_levels]
+		[agreement.service_levels],
 	);
 
 	const customSections = useMemo<UnifiedAccordionSection[]>(
@@ -878,7 +1001,14 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 				buildJobsSection(generatedJobs),
 				buildEquipmentSection(equipment),
 			].filter(Boolean) as UnifiedAccordionSection[],
-		[agreement, customer, equipment, generatedInvoices, generatedJobs, serviceLevels]
+		[
+			agreement,
+			customer,
+			equipment,
+			generatedInvoices,
+			generatedJobs,
+			serviceLevels,
+		],
 	);
 
 	const relatedItems = useMemo<RelatedItem[]>(() => {
@@ -902,7 +1032,8 @@ export function ServiceAgreementPageContent({ entityData }: ServiceAgreementPage
 				id: `property-${property.id}`,
 				type: "property",
 				title: property.address || property.name || "Property",
-				subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+				subtitle:
+					`${property.city || ""}, ${property.state || ""}`.trim() || undefined,
 				href: `/dashboard/work/properties/${property.id}`,
 			});
 		}

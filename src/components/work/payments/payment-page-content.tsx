@@ -140,7 +140,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="text-2xl font-semibold sm:text-3xl">
 									Payment {payment.payment_number || payment.id.slice(0, 8)}
@@ -182,7 +184,10 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
 								<Label>Payment Number</Label>
-								<Input readOnly value={payment.payment_number || payment.id.slice(0, 8)} />
+								<Input
+									readOnly
+									value={payment.payment_number || payment.id.slice(0, 8)}
+								/>
 							</div>
 							<div>
 								<Label>Amount</Label>
@@ -190,7 +195,12 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							</div>
 							<div>
 								<Label>Payment Method</Label>
-								<Input readOnly value={getPaymentMethodLabel(payment.payment_method || "other")} />
+								<Input
+									readOnly
+									value={getPaymentMethodLabel(
+										payment.payment_method || "other",
+									)}
+								/>
 							</div>
 							<div>
 								<Label>Status</Label>
@@ -199,13 +209,19 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							{payment.processed_at && (
 								<div>
 									<Label>Processed At</Label>
-									<Input readOnly value={new Date(payment.processed_at).toLocaleString()} />
+									<Input
+										readOnly
+										value={new Date(payment.processed_at).toLocaleString()}
+									/>
 								</div>
 							)}
 							{payment.completed_at && (
 								<div>
 									<Label>Completed At</Label>
-									<Input readOnly value={new Date(payment.completed_at).toLocaleString()} />
+									<Input
+										readOnly
+										value={new Date(payment.completed_at).toLocaleString()}
+									/>
 								</div>
 							)}
 							{payment.reference_number && (
@@ -255,18 +271,26 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 									<Input readOnly value={payment.processor_transaction_id} />
 								</div>
 							)}
-							{payment.processor_fee !== null && payment.processor_fee !== undefined && (
-								<div>
-									<Label>Processor Fee</Label>
-									<Input readOnly value={formatCurrency(payment.processor_fee)} />
-								</div>
-							)}
-							{payment.net_amount !== null && payment.net_amount !== undefined && (
-								<div>
-									<Label>Net Amount</Label>
-									<Input readOnly value={formatCurrency(payment.net_amount)} />
-								</div>
-							)}
+							{payment.processor_fee !== null &&
+								payment.processor_fee !== undefined && (
+									<div>
+										<Label>Processor Fee</Label>
+										<Input
+											readOnly
+											value={formatCurrency(payment.processor_fee)}
+										/>
+									</div>
+								)}
+							{payment.net_amount !== null &&
+								payment.net_amount !== undefined && (
+									<div>
+										<Label>Net Amount</Label>
+										<Input
+											readOnly
+											value={formatCurrency(payment.net_amount)}
+										/>
+									</div>
+								)}
 						</div>
 					</UnifiedAccordionContent>
 				),
@@ -283,7 +307,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 						<div className="space-y-3">
 							<div>
 								<Label>Refunded Amount</Label>
-								<p className="text-sm font-semibold">{formatCurrency(payment.refunded_amount)}</p>
+								<p className="text-sm font-semibold">
+									{formatCurrency(payment.refunded_amount)}
+								</p>
 							</div>
 							{payment.refund_reason && (
 								<div>
@@ -294,7 +320,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							{payment.refunded_at && (
 								<div>
 									<Label>Refunded At</Label>
-									<p className="text-sm">{new Date(payment.refunded_at).toLocaleString()}</p>
+									<p className="text-sm">
+										{new Date(payment.refunded_at).toLocaleString()}
+									</p>
 								</div>
 							)}
 						</div>
@@ -330,7 +358,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>
+									View Full Profile
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -349,11 +379,15 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							<div className="grid flex-1 gap-4 md:grid-cols-2">
 								<div>
 									<Label>Invoice Number</Label>
-									<p className="text-sm">#{invoice.invoice_number || invoice.id.slice(0, 8)}</p>
+									<p className="text-sm">
+										#{invoice.invoice_number || invoice.id.slice(0, 8)}
+									</p>
 								</div>
 								<div>
 									<Label>Invoice Amount</Label>
-									<p className="text-sm">{formatCurrency(invoice.total_amount)}</p>
+									<p className="text-sm">
+										{formatCurrency(invoice.total_amount)}
+									</p>
 								</div>
 								<div>
 									<Label>Status</Label>
@@ -361,7 +395,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/work/invoices/${invoice.id}`}>View Invoice</Link>
+								<Link href={`/dashboard/work/invoices/${invoice.id}`}>
+									View Invoice
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -380,7 +416,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							<div className="grid flex-1 gap-4 md:grid-cols-2">
 								<div>
 									<Label>Job Number</Label>
-									<p className="text-sm">#{job.job_number || job.id.slice(0, 8)}</p>
+									<p className="text-sm">
+										#{job.job_number || job.id.slice(0, 8)}
+									</p>
 								</div>
 								<div>
 									<Label>Title</Label>
@@ -413,30 +451,47 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 								<Label className="mb-2 block text-xs">Plan Details</Label>
 								<div className="space-y-2">
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Plan Name:</span>
-										<span className="text-sm font-medium">{plan?.name || "Payment Plan"}</span>
+										<span className="text-muted-foreground text-sm">
+											Plan Name:
+										</span>
+										<span className="text-sm font-medium">
+											{plan?.name || "Payment Plan"}
+										</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Total Amount:</span>
+										<span className="text-muted-foreground text-sm">
+											Total Amount:
+										</span>
 										<span className="text-sm font-medium">
 											{formatCurrency(plan?.total_amount)}
 										</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Total Payments:</span>
-										<span className="text-sm font-medium">{plan?.number_of_payments || 0}</span>
-									</div>
-									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">This Payment:</span>
+										<span className="text-muted-foreground text-sm">
+											Total Payments:
+										</span>
 										<span className="text-sm font-medium">
-											#{paymentPlanSchedule.installment_number} of {plan?.number_of_payments}
+											{plan?.number_of_payments || 0}
 										</span>
 									</div>
 									<div className="flex items-center justify-between">
-										<span className="text-muted-foreground text-sm">Due Date:</span>
+										<span className="text-muted-foreground text-sm">
+											This Payment:
+										</span>
+										<span className="text-sm font-medium">
+											#{paymentPlanSchedule.installment_number} of{" "}
+											{plan?.number_of_payments}
+										</span>
+									</div>
+									<div className="flex items-center justify-between">
+										<span className="text-muted-foreground text-sm">
+											Due Date:
+										</span>
 										<span className="text-sm font-medium">
 											{paymentPlanSchedule.due_date
-												? new Date(paymentPlanSchedule.due_date).toLocaleDateString()
+												? new Date(
+														paymentPlanSchedule.due_date,
+													).toLocaleDateString()
 												: "-"}
 										</span>
 									</div>
@@ -467,7 +522,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 							<div className="space-y-3">
 								<div>
 									<Label className="text-xs">Provider Name</Label>
-									<p className="text-sm font-medium">{financingProvider.name}</p>
+									<p className="text-sm font-medium">
+										{financingProvider.name}
+									</p>
 								</div>
 								<div>
 									<Label className="text-xs">Type</Label>
@@ -530,7 +587,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 				title: `Invoice #${invoice.invoice_number || invoice.id.slice(0, 8)}`,
 				subtitle: formatCurrency(invoice.total_amount),
 				href: `/dashboard/work/invoices/${invoice.id}`,
-				badge: invoice.status ? { label: invoice.status, variant: "outline" as const } : undefined,
+				badge: invoice.status
+					? { label: invoice.status, variant: "outline" as const }
+					: undefined,
 			});
 		}
 
@@ -541,7 +600,9 @@ export function PaymentPageContent({ entityData }: PaymentPageContentProps) {
 				title: job.title || `Job #${job.job_number || job.id.slice(0, 8)}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
+				badge: job.status
+					? { label: job.status, variant: "outline" as const }
+					: undefined,
 			});
 		}
 

@@ -13,7 +13,10 @@ type KBArticleContentProps = {
 	className?: string;
 };
 
-export async function KBArticleContent({ content, className }: KBArticleContentProps) {
+export async function KBArticleContent({
+	content,
+	className,
+}: KBArticleContentProps) {
 	const html = await markdownToHtml(content);
 
 	return (
@@ -30,7 +33,7 @@ export async function KBArticleContent({ content, className }: KBArticleContentP
 				"prose-img:rounded-lg prose-img:border prose-img:border-border",
 				"prose-table:border-collapse prose-th:bg-muted prose-th:font-semibold",
 				"prose-ol:list-decimal prose-ul:list-disc",
-				className
+				className,
 			)}
 			dangerouslySetInnerHTML={{ __html: html }}
 		/>

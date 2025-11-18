@@ -20,12 +20,18 @@ const MINUTES_PER_HOUR = 60;
 const SECONDS_PER_MINUTE = 60;
 const MILLISECONDS_PER_SECOND = 1000;
 const MILLISECONDS_PER_DAY =
-	HOURS_PER_DAY * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+	HOURS_PER_DAY *
+	MINUTES_PER_HOUR *
+	SECONDS_PER_MINUTE *
+	MILLISECONDS_PER_SECOND;
 const SOFT_DELETE_WINDOW_DAYS = 30;
 const SOFT_DELETE_WINDOW_MS = SOFT_DELETE_WINDOW_DAYS * MILLISECONDS_PER_DAY;
 const FAILED_UPLOAD_WINDOW_HOURS = 24;
 const FAILED_UPLOAD_WINDOW_MS =
-	FAILED_UPLOAD_WINDOW_HOURS * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+	FAILED_UPLOAD_WINDOW_HOURS *
+	MINUTES_PER_HOUR *
+	SECONDS_PER_MINUTE *
+	MILLISECONDS_PER_SECOND;
 
 type CleanupResult = {
 	orphanedFiles: number;
@@ -121,7 +127,7 @@ serve(async (req) => {
 				result,
 				timestamp: new Date().toISOString(),
 			}),
-			{ status: 200, headers: { "Content-Type": "application/json" } }
+			{ status: 200, headers: { "Content-Type": "application/json" } },
 		);
 	} catch (error) {
 		logError("Cleanup job error:", error);
@@ -131,7 +137,7 @@ serve(async (req) => {
 				error: "Cleanup job failed",
 				details: getErrorMessage(error),
 			}),
-			{ status: 500, headers: { "Content-Type": "application/json" } }
+			{ status: 500, headers: { "Content-Type": "application/json" } },
 		);
 	}
 });
@@ -141,7 +147,7 @@ serve(async (req) => {
  */
 async function cleanupSoftDeletedFiles(
 	supabase: SupabaseClientType,
-	result: CleanupResult
+	result: CleanupResult,
 ): Promise<void> {
 	const thirtyDaysAgo = new Date(Date.now() - SOFT_DELETE_WINDOW_MS);
 
@@ -154,7 +160,9 @@ async function cleanupSoftDeletedFiles(
 			.lt("deleted_at", thirtyDaysAgo.toISOString());
 
 		if (fetchError) {
-			result.errors.push(`Failed to fetch deleted files: ${fetchError.message}`);
+			result.errors.push(
+				`Failed to fetch deleted files: ${fetchError.message}`,
+			);
 			return;
 		}
 
@@ -179,7 +187,10 @@ async function cleanupSoftDeletedFiles(
 				}
 
 				// Delete database record
-				const { error: dbError } = await supabase.from("attachments").delete().eq("id", file.id);
+				const { error: dbError } = await supabase
+					.from("attachments")
+					.delete()
+					.eq("id", file.id);
 
 				if (dbError) {
 					logError(`Failed to delete DB record ${file.id}:`, dbError);
@@ -195,7 +206,9 @@ async function cleanupSoftDeletedFiles(
 			}
 		}
 	} catch (error) {
-		result.errors.push(`Soft-deleted cleanup failed: ${getErrorMessage(error)}`);
+		result.errors.push(
+			`Soft-deleted cleanup failed: ${getErrorMessage(error)}`,
+		);
 	}
 }
 
@@ -204,7 +217,7 @@ async function cleanupSoftDeletedFiles(
  */
 async function cleanupExpiredFiles(
 	supabase: SupabaseClientType,
-	result: CleanupResult
+	result: CleanupResult,
 ): Promise<void> {
 	try {
 		const now = new Date().toISOString();
@@ -218,7 +231,9 @@ async function cleanupExpiredFiles(
 			.is("deleted_at", null);
 
 		if (fetchError) {
-			result.errors.push(`Failed to fetch expired files: ${fetchError.message}`);
+			result.errors.push(
+				`Failed to fetch expired files: ${fetchError.message}`,
+			);
 			return;
 		}
 
@@ -231,7 +246,9 @@ async function cleanupExpiredFiles(
 		for (const file of expiredFiles) {
 			try {
 				// Delete from storage
-				await supabase.storage.from(file.storage_bucket).remove([file.storage_path]);
+				await supabase.storage
+					.from(file.storage_bucket)
+					.remove([file.storage_path]);
 
 				// Soft delete in database
 				await supabase
@@ -250,7 +267,9 @@ async function cleanupExpiredFiles(
 			}
 		}
 	} catch (error) {
-		result.errors.push(`Expired files cleanup failed: ${getErrorMessage(error)}`);
+		result.errors.push(
+			`Expired files cleanup failed: ${getErrorMessage(error)}`,
+		);
 	}
 }
 
@@ -259,7 +278,7 @@ async function cleanupExpiredFiles(
  */
 async function cleanupOrphanedFiles(
 	supabase: SupabaseClientType,
-	result: CleanupResult
+	result: CleanupResult,
 ): Promise<void> {
 	const buckets = [
 		"company-files",
@@ -276,12 +295,18 @@ async function cleanupOrphanedFiles(
 	}
 }
 
-async function processBucket(supabase: SupabaseClientType, bucket: string, result: CleanupResult) {
+async function processBucket(
+	supabase: SupabaseClientType,
+	bucket: string,
+	result: CleanupResult,
+) {
 	try {
-		const { data: storageFiles, error: listError } = await supabase.storage.from(bucket).list("", {
-			limit: 1000,
-			sortBy: { column: "created_at", order: "asc" },
-		});
+		const { data: storageFiles, error: listError } = await supabase.storage
+			.from(bucket)
+			.list("", {
+				limit: 1000,
+				sortBy: { column: "created_at", order: "asc" },
+			});
 
 		if (listError) {
 			result.errors.push(`Failed to list ${bucket}: ${listError.message}`);
@@ -298,7 +323,9 @@ async function processBucket(supabase: SupabaseClientType, bucket: string, resul
 			await handleStorageFile(supabase, bucket, storageFile, result);
 		}
 	} catch (error) {
-		result.errors.push(`Bucket ${bucket} cleanup failed: ${getErrorMessage(error)}`);
+		result.errors.push(
+			`Bucket ${bucket} cleanup failed: ${getErrorMessage(error)}`,
+		);
 	}
 }
 
@@ -306,7 +333,7 @@ async function handleStorageFile(
 	supabase: SupabaseClientType,
 	bucket: string,
 	storageFile: StorageFileObject,
-	result: CleanupResult
+	result: CleanupResult,
 ) {
 	try {
 		const fullPath = storageFile.name;
@@ -329,7 +356,9 @@ async function handleStorageFile(
 
 		logInfo(`Orphaned file found: ${bucket}/${fullPath}`);
 
-		const { error: deleteError } = await supabase.storage.from(bucket).remove([fullPath]);
+		const { error: deleteError } = await supabase.storage
+			.from(bucket)
+			.remove([fullPath]);
 
 		if (deleteError) {
 			logError("Failed to delete orphaned file:", deleteError);
@@ -350,7 +379,7 @@ async function handleStorageFile(
  */
 async function cleanupFailedUploads(
 	supabase: SupabaseClientType,
-	result: CleanupResult
+	result: CleanupResult,
 ): Promise<void> {
 	const failedUploadThreshold = new Date(Date.now() - FAILED_UPLOAD_WINDOW_MS);
 
@@ -364,7 +393,9 @@ async function cleanupFailedUploads(
 			.is("deleted_at", null);
 
 		if (fetchError) {
-			result.errors.push(`Failed to fetch failed uploads: ${fetchError.message}`);
+			result.errors.push(
+				`Failed to fetch failed uploads: ${fetchError.message}`,
+			);
 			return;
 		}
 
@@ -377,7 +408,9 @@ async function cleanupFailedUploads(
 		for (const file of failedUploads) {
 			try {
 				// Delete from storage
-				await supabase.storage.from(file.storage_bucket).remove([file.storage_path]);
+				await supabase.storage
+					.from(file.storage_bucket)
+					.remove([file.storage_path]);
 
 				// Soft delete in database
 				await supabase
@@ -396,6 +429,8 @@ async function cleanupFailedUploads(
 			}
 		}
 	} catch (error) {
-		result.errors.push(`Failed uploads cleanup failed: ${getErrorMessage(error)}`);
+		result.errors.push(
+			`Failed uploads cleanup failed: ${getErrorMessage(error)}`,
+		);
 	}
 }

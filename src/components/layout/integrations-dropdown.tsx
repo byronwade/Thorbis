@@ -26,14 +26,14 @@ export function IntegrationsDropdown() {
 	const filteredIntegrations = integrations.filter(
 		(integration) =>
 			integration.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			integration.description.toLowerCase().includes(searchQuery.toLowerCase())
+			integration.description.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
 	const connectedIntegrations = filteredIntegrations.filter(
-		(integration) => integration.isConnected
+		(integration) => integration.isConnected,
 	);
 	const availableIntegrations = filteredIntegrations.filter(
-		(integration) => !integration.isConnected
+		(integration) => !integration.isConnected,
 	);
 
 	// Prevent SSR hydration mismatch with Radix UI IDs
@@ -108,7 +108,7 @@ export function IntegrationsDropdown() {
 											<AvatarFallback
 												className={cn(
 													"rounded-lg text-sm font-semibold text-white",
-													integration.color
+													integration.color,
 												)}
 											>
 												{integration.name.slice(0, 2).toUpperCase()}
@@ -128,7 +128,9 @@ export function IntegrationsDropdown() {
 					{/* Available Integrations */}
 					{availableIntegrations.length > 0 && (
 						<div>
-							{connectedIntegrations.length > 0 && <div className="bg-border mb-4 h-px" />}
+							{connectedIntegrations.length > 0 && (
+								<div className="bg-border mb-4 h-px" />
+							)}
 							<h3 className="text-muted-foreground mb-3 px-1 text-xs font-medium tracking-wider uppercase">
 								Available ({availableIntegrations.length})
 							</h3>
@@ -145,7 +147,7 @@ export function IntegrationsDropdown() {
 											<AvatarFallback
 												className={cn(
 													"rounded-lg text-sm font-semibold text-white",
-													integration.color
+													integration.color,
 												)}
 											>
 												{integration.name.slice(0, 2).toUpperCase()}
@@ -171,7 +173,9 @@ export function IntegrationsDropdown() {
 					{filteredIntegrations.length === 0 && (
 						<div className="flex flex-col items-center justify-center py-12 text-center">
 							<Zap className="text-muted-foreground/50 mb-3 size-10" />
-							<p className="text-muted-foreground text-sm">No integrations found</p>
+							<p className="text-muted-foreground text-sm">
+								No integrations found
+							</p>
 						</div>
 					)}
 				</div>

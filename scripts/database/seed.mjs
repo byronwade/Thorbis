@@ -21,7 +21,9 @@ config({ path: join(rootDir, ".env.local") });
 
 // Use non-pooling connection for DDL operations
 const DATABASE_URL =
-	process.env.POSTGRES_URL_NON_POOLING || process.env.POSTGRES_URL || process.env.DATABASE_URL;
+	process.env.POSTGRES_URL_NON_POOLING ||
+	process.env.POSTGRES_URL ||
+	process.env.DATABASE_URL;
 
 console.log("========================================");
 console.log("🌱 Thorbis Database Seeding");
@@ -29,9 +31,11 @@ console.log("========================================\n");
 
 if (!DATABASE_URL) {
 	console.error("❌ DATABASE_URL not found in .env.local");
-	console.error("Please add DATABASE_URL or POSTGRES_URL_NON_POOLING to your .env.local");
 	console.error(
-		"Get it from: Supabase Dashboard > Project Settings > Database > Connection string > URI\n"
+		"Please add DATABASE_URL or POSTGRES_URL_NON_POOLING to your .env.local",
+	);
+	console.error(
+		"Get it from: Supabase Dashboard > Project Settings > Database > Connection string > URI\n",
 	);
 	process.exit(1);
 }
@@ -58,7 +62,9 @@ const seedFiles = [
 
 async function runSQLFile(filepath) {
 	try {
-		const { stdout, stderr } = await execAsync(`psql "${DATABASE_URL}" -f "${filepath}"`);
+		const { stdout, stderr } = await execAsync(
+			`psql "${DATABASE_URL}" -f "${filepath}"`,
+		);
 		if (stderr?.includes("ERROR")) {
 			console.error("  ❌ Error:", stderr);
 			throw new Error(stderr);
@@ -82,7 +88,9 @@ async function seed() {
 		const setupEndIndex = mainSeed.indexOf(setupEndMarker);
 
 		if (setupEndIndex === -1) {
-			throw new Error("Could not find end of setup section in seed-minimal.sql");
+			throw new Error(
+				"Could not find end of setup section in seed-minimal.sql",
+			);
 		}
 
 		const setupSQL = mainSeed.substring(0, setupEndIndex).trim();

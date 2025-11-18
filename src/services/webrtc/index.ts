@@ -14,11 +14,16 @@
  * @module WebRTCService
  */
 
-import { Worker } from "node:worker_threads";
 import { EventEmitter } from "node:events";
 import path from "node:path";
+import { Worker } from "node:worker_threads";
 
-export type WebRTCServiceStatus = "idle" | "starting" | "ready" | "error" | "stopped";
+export type WebRTCServiceStatus =
+	| "idle"
+	| "starting"
+	| "ready"
+	| "error"
+	| "stopped";
 
 export type WebRTCServiceMessage =
 	| { type: "status"; status: WebRTCServiceStatus }
@@ -93,7 +98,9 @@ export class WebRTCService extends EventEmitter {
 			// Handle worker exit
 			this.worker.on("exit", (code) => {
 				if (code !== 0) {
-					console.error(`[WebRTC Service] Worker stopped with exit code ${code}`);
+					console.error(
+						`[WebRTC Service] Worker stopped with exit code ${code}`,
+					);
 					this.setStatus("error");
 					this.attemptRestart();
 				} else {
@@ -208,7 +215,10 @@ export class WebRTCService extends EventEmitter {
 		}
 
 		try {
-			const result = await this.sendCommandAndWait({ type: "health_check" }, 5000);
+			const result = await this.sendCommandAndWait(
+				{ type: "health_check" },
+				5000,
+			);
 			return result?.healthy ?? false;
 		} catch {
 			return false;
@@ -230,7 +240,10 @@ export class WebRTCService extends EventEmitter {
 	/**
 	 * Private: Send command and wait for response
 	 */
-	private async sendCommandAndWait(command: WebRTCServiceCommand, timeout = 10000): Promise<any> {
+	private async sendCommandAndWait(
+		command: WebRTCServiceCommand,
+		timeout = 10000,
+	): Promise<any> {
 		return new Promise((resolve, reject) => {
 			if (!this.worker) {
 				reject(new Error("WebRTC service not running"));
@@ -242,10 +255,16 @@ export class WebRTCService extends EventEmitter {
 			}, timeout);
 
 			const handler = (message: WebRTCServiceMessage) => {
-				if (message.type === "credential_ready" && command.type === "generate_credential") {
+				if (
+					message.type === "credential_ready" &&
+					command.type === "generate_credential"
+				) {
 					clearTimeout(timer);
 					resolve(message.credential);
-				} else if (message.type === "health_check" && command.type === "health_check") {
+				} else if (
+					message.type === "health_check" &&
+					command.type === "health_check"
+				) {
 					clearTimeout(timer);
 					resolve({ healthy: message.healthy });
 				} else if (message.type === "error") {
@@ -294,7 +313,10 @@ export class WebRTCService extends EventEmitter {
 				break;
 
 			default:
-				console.warn("[WebRTC Service] Unknown message type:", (message as any).type);
+				console.warn(
+					"[WebRTC Service] Unknown message type:",
+					(message as any).type,
+				);
 		}
 	}
 
@@ -344,14 +366,16 @@ export class WebRTCService extends EventEmitter {
 	 */
 	private async attemptRestart(): Promise<void> {
 		if (this.restartAttempts >= this.maxRestartAttempts) {
-			console.error("[WebRTC Service] Max restart attempts reached - giving up");
+			console.error(
+				"[WebRTC Service] Max restart attempts reached - giving up",
+			);
 			this.emit("fatal_error", new Error("Max restart attempts reached"));
 			return;
 		}
 
 		this.restartAttempts++;
 		console.log(
-			`[WebRTC Service] Attempting restart (${this.restartAttempts}/${this.maxRestartAttempts})`
+			`[WebRTC Service] Attempting restart (${this.restartAttempts}/${this.maxRestartAttempts})`,
 		);
 
 		// Wait before restarting

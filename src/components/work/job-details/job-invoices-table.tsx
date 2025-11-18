@@ -1,6 +1,14 @@
 "use client";
 
-import { CreditCard, Download, Eye, FileText, Link2Off, MoreHorizontal, Send } from "lucide-react";
+import {
+	CreditCard,
+	Download,
+	Eye,
+	FileText,
+	Link2Off,
+	MoreHorizontal,
+	Send,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -21,7 +29,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { InvoiceStatusBadge } from "@/components/ui/status-badge";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 
@@ -51,7 +62,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
-		[]
+		[],
 	);
 
 	const handleUnlinkInvoice = useCallback(async () => {
@@ -122,7 +133,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				align: "right",
 				render: (invoice) => (
-					<span className="font-medium">{formatCurrencyCents(invoice.total_amount)}</span>
+					<span className="font-medium">
+						{formatCurrencyCents(invoice.total_amount)}
+					</span>
 				),
 			},
 			{
@@ -132,9 +145,13 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				align: "right",
 				render: (invoice) => {
-					const balance = invoice.balance_amount ?? invoice.total_amount - invoice.paid_amount;
+					const balance =
+						invoice.balance_amount ??
+						invoice.total_amount - invoice.paid_amount;
 					return balance > 0 ? (
-						<span className="text-destructive font-medium">{formatCurrencyCents(balance)}</span>
+						<span className="text-destructive font-medium">
+							{formatCurrencyCents(balance)}
+						</span>
 					) : (
 						<span className="text-muted-foreground text-sm">Paid</span>
 					);
@@ -147,7 +164,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				hideOnMobile: true,
 				render: (invoice) => (
-					<span className="text-sm">{formatDate(invoice.due_date, "short")}</span>
+					<span className="text-sm">
+						{formatDate(invoice.due_date, "short")}
+					</span>
 				),
 			},
 			{
@@ -157,7 +176,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				shrink: true,
 				align: "right",
 				render: (invoice) => {
-					const balance = invoice.balance_amount ?? invoice.total_amount - invoice.paid_amount;
+					const balance =
+						invoice.balance_amount ??
+						invoice.total_amount - invoice.paid_amount;
 					const canPay = invoice.status !== "paid" && balance > 0;
 
 					return (
@@ -201,7 +222,7 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 				},
 			},
 		],
-		[formatCurrencyCents]
+		[formatCurrencyCents],
 	);
 
 	return (
@@ -233,8 +254,9 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 					<DialogHeader>
 						<DialogTitle>Unlink Invoice from Job?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this invoice. The invoice will remain in the
-							system but will no longer appear on this job's page.
+							This will remove the job association from this invoice. The
+							invoice will remain in the system but will no longer appear on
+							this job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -245,7 +267,11 @@ export function JobInvoicesTable({ invoices }: JobInvoicesTableProps) {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isUnlinking} onClick={handleUnlinkInvoice} variant="destructive">
+						<Button
+							disabled={isUnlinking}
+							onClick={handleUnlinkInvoice}
+							variant="destructive"
+						>
 							{isUnlinking ? "Unlinking..." : "Unlink Invoice"}
 						</Button>
 					</DialogFooter>

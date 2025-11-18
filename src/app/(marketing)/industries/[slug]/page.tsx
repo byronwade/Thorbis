@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 
 import { IndustryPage } from "@/components/marketing/industry-page";
-import { getAllIndustries, getIndustryBySlug } from "@/lib/marketing/industries";
+import {
+	getAllIndustries,
+	getIndustryBySlug,
+} from "@/lib/marketing/industries";
 import {
 	generateBreadcrumbStructuredData,
 	generateFAQStructuredData,
@@ -37,7 +40,9 @@ export async function generateMetadata({ params }: IndustryPageProps) {
 	});
 }
 
-export default async function IndustryDetailPage({ params }: IndustryPageProps) {
+export default async function IndustryDetailPage({
+	params,
+}: IndustryPageProps) {
 	const { slug } = await params;
 	const industry = getIndustryBySlug(slug);
 
@@ -71,7 +76,7 @@ export default async function IndustryDetailPage({ params }: IndustryPageProps) 
 								name: industry.name,
 								url: `${siteUrl}/industries/${industry.slug}`,
 							},
-						])
+						]),
 					),
 				}}
 				id="industry-breadcrumb-ld"

@@ -20,17 +20,24 @@ import { WorkPageLayout } from "@/components/work/work-page-layout";
 // This export is no longer needed but kept for documentation
 // export const experimental_ppr = true;
 
-export default function InvoicesPage() {
+export default async function InvoicesPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<WorkPageLayout
 			stats={
-				<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+				<Suspense
+					fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+				>
 					<InvoicesStats />
 				</Suspense>
 			}
 		>
 			<Suspense fallback={<InvoicesSkeleton />}>
-				<InvoicesData />
+				<InvoicesData searchParams={params} />
 			</Suspense>
 		</WorkPageLayout>
 	);

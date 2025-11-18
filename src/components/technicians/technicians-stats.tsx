@@ -30,13 +30,17 @@ export async function TechniciansStats() {
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<div className="bg-card rounded-lg border p-6">
-				<h3 className="text-muted-foreground text-sm font-medium">Total Technicians</h3>
+				<h3 className="text-muted-foreground text-sm font-medium">
+					Total Technicians
+				</h3>
 				<p className="mt-2 text-2xl font-bold">{stats.totalTechnicians}</p>
 				<p className="text-muted-foreground mt-1 text-xs">Team members</p>
 			</div>
 
 			<div className="bg-card rounded-lg border p-6">
-				<h3 className="text-muted-foreground text-sm font-medium">Active Today</h3>
+				<h3 className="text-muted-foreground text-sm font-medium">
+					Active Today
+				</h3>
 				<p className="mt-2 text-2xl font-bold">{stats.activeToday}</p>
 				<p className="text-muted-foreground mt-1 text-xs">Currently working</p>
 			</div>

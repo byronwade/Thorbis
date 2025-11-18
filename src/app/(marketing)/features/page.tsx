@@ -3,7 +3,13 @@ import Script from "next/script";
 import { getMarketingIcon } from "@/components/marketing/marketing-icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getAllFeatures } from "@/lib/marketing/features";
 import {
 	generateBreadcrumbStructuredData,
@@ -35,7 +41,7 @@ export default function FeaturesOverviewPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Features", url: `${siteUrl}/features` },
-						])
+						]),
 					),
 				}}
 				id="features-breadcrumb-ld"
@@ -50,10 +56,11 @@ export default function FeaturesOverviewPage() {
 						Everything you need to run a modern service company
 					</h1>
 					<p className="text-muted-foreground mt-4 text-lg">
-						Select a module to explore deep-dive pages for dispatching, CRM, inventory, mobile
-						workflows, and more. Build a connected tech stack designed for high-growth field
-						operations with transparent pricing—$100/month base plus pay-as-you-go usage, unlimited
-						users, and no lock-in contracts.
+						Select a module to explore deep-dive pages for dispatching, CRM,
+						inventory, mobile workflows, and more. Build a connected tech stack
+						designed for high-growth field operations with transparent
+						pricing—$100/month base plus pay-as-you-go usage, unlimited users,
+						and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
 						<Button asChild>
@@ -67,7 +74,9 @@ export default function FeaturesOverviewPage() {
 
 				<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 					{features.map((feature) => {
-						const Icon = getMarketingIcon(feature.valueProps[0]?.icon ?? "sparkles");
+						const Icon = getMarketingIcon(
+							feature.valueProps[0]?.icon ?? "sparkles",
+						);
 						return (
 							<Card
 								className="flex h-full flex-col justify-between transition-shadow hover:shadow-md"
@@ -78,7 +87,9 @@ export default function FeaturesOverviewPage() {
 										<Icon aria-hidden="true" className="size-8" />
 										<Badge variant="secondary">{feature.name}</Badge>
 									</div>
-									<CardTitle className="text-2xl">{feature.heroTitle}</CardTitle>
+									<CardTitle className="text-2xl">
+										{feature.heroTitle}
+									</CardTitle>
 									<CardDescription>{feature.summary}</CardDescription>
 								</CardHeader>
 								<CardContent className="flex flex-col gap-4">
@@ -99,10 +110,14 @@ export default function FeaturesOverviewPage() {
 										<p className="text-muted-foreground text-sm font-medium">
 											Highlighted capability
 										</p>
-										<p className="text-muted-foreground text-sm">{feature.valueProps[0]?.title}</p>
+										<p className="text-muted-foreground text-sm">
+											{feature.valueProps[0]?.title}
+										</p>
 									</div>
 									<Button asChild>
-										<Link href={`/features/${feature.slug}`}>Explore {feature.name}</Link>
+										<Link href={`/features/${feature.slug}`}>
+											Explore {feature.name}
+										</Link>
 									</Button>
 								</CardContent>
 							</Card>

@@ -8,7 +8,13 @@ import { Calendar, Eye, Tag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { KBArticleWithRelations } from "@/lib/kb/types";
 import { cn } from "@/lib/utils";
 
@@ -18,14 +24,23 @@ type KBArticleCardProps = {
 	className?: string;
 };
 
-export function KBArticleCard({ article, featured = false, className }: KBArticleCardProps) {
+export function KBArticleCard({
+	article,
+	featured = false,
+	className,
+}: KBArticleCardProps) {
 	const url = `/kb/${article.category.slug}/${article.slug}`;
-	const publishedDate = article.published_at ? new Date(String(article.published_at)) : null;
+	const publishedDate = article.published_at
+		? new Date(String(article.published_at))
+		: null;
 
 	return (
 		<Link className={cn("block", className)} href={url}>
 			<Card
-				className={cn("h-full transition-all hover:shadow-md", featured && "border-primary/50")}
+				className={cn(
+					"h-full transition-all hover:shadow-md",
+					featured && "border-primary/50",
+				)}
 			>
 				{article.featured_image ? (
 					<div className="relative h-48 w-full overflow-hidden rounded-t-xl">
@@ -40,7 +55,9 @@ export function KBArticleCard({ article, featured = false, className }: KBArticl
 				) : null}
 				<CardHeader>
 					<div className="flex items-start justify-between gap-2">
-						<CardTitle className="line-clamp-2">{String(article.title)}</CardTitle>
+						<CardTitle className="line-clamp-2">
+							{String(article.title)}
+						</CardTitle>
 						{featured ? (
 							<Badge className="shrink-0" variant="default">
 								Featured
@@ -48,7 +65,9 @@ export function KBArticleCard({ article, featured = false, className }: KBArticl
 						) : null}
 					</div>
 					{article.excerpt ? (
-						<CardDescription className="line-clamp-2">{String(article.excerpt)}</CardDescription>
+						<CardDescription className="line-clamp-2">
+							{String(article.excerpt)}
+						</CardDescription>
 					) : null}
 				</CardHeader>
 				<CardContent>

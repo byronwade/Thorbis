@@ -10,7 +10,15 @@
  * - Minimal JavaScript to client
  */
 
-import { AlertCircle, Calendar, CheckCircle2, Clock, MapPin, Users, XCircle } from "lucide-react";
+import {
+	AlertCircle,
+	Calendar,
+	CheckCircle2,
+	Clock,
+	MapPin,
+	Users,
+	XCircle,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +38,12 @@ type ScheduleDetails = {
 	estimatedDuration: number; // minutes
 	actualStart?: Date;
 	actualEnd?: Date;
-	status: "scheduled" | "in_progress" | "completed" | "rescheduled" | "cancelled";
+	status:
+		| "scheduled"
+		| "in_progress"
+		| "completed"
+		| "rescheduled"
+		| "cancelled";
 	technicians: {
 		id: string;
 		name: string;
@@ -165,7 +178,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 		}
 		const diffMs = date.getTime() - Date.now();
 		const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-		const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		const diffHours = Math.floor(
+			(diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+		);
 
 		if (diffDays > 1) {
 			return `in ${diffDays} days`;
@@ -189,7 +204,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<Calendar className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-					<p className="text-muted-foreground mb-2 text-sm">Not scheduled yet</p>
+					<p className="text-muted-foreground mb-2 text-sm">
+						Not scheduled yet
+					</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/schedule?jobId=${job.id}`}>
 							<Clock className="mr-2 size-4" />
@@ -224,7 +241,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				{/* Start Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">Start</p>
-					<p className="text-base font-semibold">{formatDateTime(schedule.scheduledStart)}</p>
+					<p className="text-base font-semibold">
+						{formatDateTime(schedule.scheduledStart)}
+					</p>
 					<Badge className="text-xs" variant="outline">
 						{getTimeUntilStart(schedule.scheduledStart)}
 					</Badge>
@@ -235,13 +254,17 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				{/* End Time */}
 				<div className="mb-2 space-y-1">
 					<p className="text-muted-foreground text-xs">End (Estimated)</p>
-					<p className="text-sm font-medium">{formatTime(schedule.scheduledEnd)}</p>
+					<p className="text-sm font-medium">
+						{formatTime(schedule.scheduledEnd)}
+					</p>
 				</div>
 
 				{/* Duration */}
 				<div className="bg-background/50 mt-3 flex items-center justify-between rounded-lg p-2 text-xs">
 					<span className="text-muted-foreground">Duration</span>
-					<span className="font-semibold">{formatDuration(schedule.estimatedDuration)}</span>
+					<span className="font-semibold">
+						{formatDuration(schedule.estimatedDuration)}
+					</span>
 				</div>
 			</div>
 
@@ -256,12 +279,16 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 						<div className="space-y-1.5 text-xs">
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">Started:</span>
-								<span className="font-medium">{formatTime(schedule.actualStart)}</span>
+								<span className="font-medium">
+									{formatTime(schedule.actualStart)}
+								</span>
 							</div>
 							{schedule.actualEnd && (
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Completed:</span>
-									<span className="font-medium">{formatTime(schedule.actualEnd)}</span>
+									<span className="font-medium">
+										{formatTime(schedule.actualEnd)}
+									</span>
 								</div>
 							)}
 						</div>
@@ -279,7 +306,10 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 				</div>
 				<div className="space-y-2">
 					{schedule.technicians.map((tech) => (
-						<div className="flex items-center justify-between rounded-lg border p-2" key={tech.id}>
+						<div
+							className="flex items-center justify-between rounded-lg border p-2"
+							key={tech.id}
+						>
 							<div className="flex items-center gap-2">
 								<div className="bg-primary/10 text-primary flex size-8 items-center justify-center rounded-full text-xs font-semibold">
 									{tech.name
@@ -306,9 +336,15 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 											: "destructive"
 								}
 							>
-								{tech.availability === "available" && <CheckCircle2 className="mr-1 size-3" />}
-								{tech.availability === "conflict" && <AlertCircle className="mr-1 size-3" />}
-								{tech.availability === "unavailable" && <XCircle className="mr-1 size-3" />}
+								{tech.availability === "available" && (
+									<CheckCircle2 className="mr-1 size-3" />
+								)}
+								{tech.availability === "conflict" && (
+									<AlertCircle className="mr-1 size-3" />
+								)}
+								{tech.availability === "unavailable" && (
+									<XCircle className="mr-1 size-3" />
+								)}
 								{tech.availability}
 							</Badge>
 						</div>
@@ -327,7 +363,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 									<MapPin className="text-muted-foreground size-3" />
 									<span className="text-muted-foreground">Travel Time</span>
 								</div>
-								<p className="font-semibold">{formatDuration(schedule.travelTime)}</p>
+								<p className="font-semibold">
+									{formatDuration(schedule.travelTime)}
+								</p>
 							</div>
 						)}
 						{schedule.bufferTime && (
@@ -336,7 +374,9 @@ export function ScheduleWidget({ job }: ScheduleWidgetProps) {
 									<Clock className="text-muted-foreground size-3" />
 									<span className="text-muted-foreground">Buffer Time</span>
 								</div>
-								<p className="font-semibold">{formatDuration(schedule.bufferTime)}</p>
+								<p className="font-semibold">
+									{formatDuration(schedule.bufferTime)}
+								</p>
 							</div>
 						)}
 					</div>

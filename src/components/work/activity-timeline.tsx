@@ -51,7 +51,10 @@ import {
 	useActivityTimelineStore,
 } from "@/lib/stores/activity-timeline-store";
 import { cn } from "@/lib/utils";
-import { formatActivityTimestamp, groupActivitiesByDate } from "@/lib/utils/activity-tracker";
+import {
+	formatActivityTimestamp,
+	groupActivitiesByDate,
+} from "@/lib/utils/activity-tracker";
 import type { Activity, ActivityCategory } from "@/types/activity";
 
 type ActivityTimelineProps = {
@@ -59,8 +62,13 @@ type ActivityTimelineProps = {
 	isLoading?: boolean;
 };
 
-export function ActivityTimeline({ activities, isLoading = false }: ActivityTimelineProps) {
-	const [filterCategory, setFilterCategory] = useState<ActivityCategory | "all">("all");
+export function ActivityTimeline({
+	activities,
+	isLoading = false,
+}: ActivityTimelineProps) {
+	const [filterCategory, setFilterCategory] = useState<
+		ActivityCategory | "all"
+	>("all");
 
 	// Get density settings from store
 	const density = useActivityTimelineStore((state) => state.density);
@@ -68,7 +76,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 	const _itemSpacing = useActivityTimelineStore((state) => state.itemSpacing);
 	const _showIcons = useActivityTimelineStore((state) => state.showIcons);
 	const _showAvatars = useActivityTimelineStore((state) => state.showAvatars);
-	const showAttachmentPreviews = useActivityTimelineStore((state) => state.showAttachmentPreviews);
+	const showAttachmentPreviews = useActivityTimelineStore(
+		(state) => state.showAttachmentPreviews,
+	);
 	const showMetadata = useActivityTimelineStore((state) => state.showMetadata);
 	const _iconSize = useActivityTimelineStore((state) => state.iconSize);
 	const textSize = useActivityTimelineStore((state) => state.textSize);
@@ -124,7 +134,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 			<div className="flex shrink-0 items-center justify-between gap-2 border-b p-4">
 				<div className="flex flex-1 items-center gap-2">
 					<Select
-						onValueChange={(value) => setFilterCategory(value as ActivityCategory | "all")}
+						onValueChange={(value) =>
+							setFilterCategory(value as ActivityCategory | "all")
+						}
 						value={filterCategory}
 					>
 						<SelectTrigger className="h-8 w-[140px]">
@@ -149,23 +161,41 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>View Density</DropdownMenuLabel>
 							<DropdownMenuSeparator />
-							<DropdownMenuItem onClick={() => handleDensityChange("text-only")}>
-								<span className={cn(density === "text-only" && "text-primary font-semibold")}>
+							<DropdownMenuItem
+								onClick={() => handleDensityChange("text-only")}
+							>
+								<span
+									className={cn(
+										density === "text-only" && "text-primary font-semibold",
+									)}
+								>
 									Text Only
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("small")}>
-								<span className={cn(density === "small" && "text-primary font-semibold")}>
+								<span
+									className={cn(
+										density === "small" && "text-primary font-semibold",
+									)}
+								>
 									Small
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("medium")}>
-								<span className={cn(density === "medium" && "text-primary font-semibold")}>
+								<span
+									className={cn(
+										density === "medium" && "text-primary font-semibold",
+									)}
+								>
 									Medium
 								</span>
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => handleDensityChange("large")}>
-								<span className={cn(density === "large" && "text-primary font-semibold")}>
+								<span
+									className={cn(
+										density === "large" && "text-primary font-semibold",
+									)}
+								>
 									Large
 								</span>
 							</DropdownMenuItem>
@@ -200,7 +230,10 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 										</div>
 
 										{/* Date badge */}
-										<Badge className="mb-3 rounded-xl px-3 py-2 text-sm" variant="secondary">
+										<Badge
+											className="mb-3 rounded-xl px-3 py-2 text-sm"
+											variant="secondary"
+										>
 											{dateKey}
 										</Badge>
 
@@ -231,7 +264,9 @@ export function ActivityTimeline({ activities, isLoading = false }: ActivityTime
 									<Sparkles className="text-muted-foreground/70 size-7" />
 								</div>
 								<div>
-									<p className="text-foreground text-lg font-semibold">Start of Timeline</p>
+									<p className="text-foreground text-lg font-semibold">
+										Start of Timeline
+									</p>
 									<p className="text-muted-foreground mt-2 text-sm">
 										You've reached the beginning of this activity history
 									</p>
@@ -267,14 +302,16 @@ function ActivityTimelineItem({
 			{/* Content */}
 			<div className="flex-1 space-y-2">
 				<div className="flex flex-wrap items-center gap-2">
-					<span className={cn("text-foreground leading-relaxed", textSize)}>{activity.action}</span>
+					<span className={cn("text-foreground leading-relaxed", textSize)}>
+						{activity.action}
+					</span>
 
 					{/* Actor metadata inline */}
 					{showMetadata && activity.actorName && (
 						<span
 							className={cn(
 								"text-muted-foreground",
-								textSize === "text-lg" ? "text-base" : "text-sm"
+								textSize === "text-lg" ? "text-base" : "text-sm",
 							)}
 						>
 							by {activity.actorName}
@@ -285,14 +322,16 @@ function ActivityTimelineItem({
 					<span
 						className={cn(
 							"text-muted-foreground",
-							textSize === "text-lg" ? "text-base" : "text-sm"
+							textSize === "text-lg" ? "text-base" : "text-sm",
 						)}
 					>
 						{formatActivityTimestamp(activity.occurredAt)}
 					</span>
 
 					{/* AI Model badge inline */}
-					{showMetadata && activity.aiModel && <Badge variant="outline">{activity.aiModel}</Badge>}
+					{showMetadata && activity.aiModel && (
+						<Badge variant="outline">{activity.aiModel}</Badge>
+					)}
 
 					{/* Important badge inline */}
 					{showMetadata && activity.isImportant && (
@@ -308,7 +347,7 @@ function ActivityTimelineItem({
 					<p
 						className={cn(
 							"text-muted-foreground mt-1",
-							textSize === "text-lg" ? "text-base" : "text-sm"
+							textSize === "text-lg" ? "text-base" : "text-sm",
 						)}
 					>
 						{activity.description}
@@ -316,29 +355,35 @@ function ActivityTimelineItem({
 				)}
 
 				{/* Field change details */}
-				{showMetadata && activity.fieldName && (activity.oldValue || activity.newValue) && (
-					<div
-						className={cn(
-							"bg-muted/50 mt-2 rounded-lg border p-2",
-							textSize === "text-lg" ? "text-base" : "text-sm"
-						)}
-					>
-						<div className="flex items-center gap-2">
-							{activity.oldValue && (
-								<div className="flex-1">
-									<span className="text-muted-foreground">From: </span>
-									<span className="font-medium line-through">{activity.oldValue}</span>
-								</div>
+				{showMetadata &&
+					activity.fieldName &&
+					(activity.oldValue || activity.newValue) && (
+						<div
+							className={cn(
+								"bg-muted/50 mt-2 rounded-lg border p-2",
+								textSize === "text-lg" ? "text-base" : "text-sm",
 							)}
-							{activity.newValue && (
-								<div className="flex-1">
-									<span className="text-muted-foreground">To: </span>
-									<span className="text-primary font-medium">{activity.newValue}</span>
-								</div>
-							)}
+						>
+							<div className="flex items-center gap-2">
+								{activity.oldValue && (
+									<div className="flex-1">
+										<span className="text-muted-foreground">From: </span>
+										<span className="font-medium line-through">
+											{activity.oldValue}
+										</span>
+									</div>
+								)}
+								{activity.newValue && (
+									<div className="flex-1">
+										<span className="text-muted-foreground">To: </span>
+										<span className="text-primary font-medium">
+											{activity.newValue}
+										</span>
+									</div>
+								)}
+							</div>
 						</div>
-					</div>
-				)}
+					)}
 
 				{/* Attachments */}
 				{showAttachmentPreviews &&
@@ -361,7 +406,7 @@ function ActivityTimelineItem({
 								<p
 									className={cn(
 										"text-muted-foreground mt-1",
-										textSize === "text-lg" ? "text-base" : "text-sm"
+										textSize === "text-lg" ? "text-base" : "text-sm",
 									)}
 								>
 									{activity.attachmentName}
@@ -377,7 +422,7 @@ function ActivityTimelineItem({
 							<a
 								className={cn(
 									"hover:bg-muted flex items-center gap-2 rounded-lg border p-3 transition-colors",
-									textSize === "text-lg" ? "text-base" : "text-sm"
+									textSize === "text-lg" ? "text-base" : "text-sm",
 								)}
 								href={activity.attachmentUrl}
 								rel="noopener noreferrer"

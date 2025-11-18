@@ -13,7 +13,10 @@
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { type DataType, ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import {
+	type DataType,
+	ImportExportDropdownLazy as ImportExportDropdown,
+} from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import { WorkViewSwitcher } from "@/components/work/work-view-switcher";
 import type { WorkSection } from "@/lib/stores/work-view-store";
@@ -52,7 +55,9 @@ export function BaseToolbarActions({
 }: BaseToolbarActionsProps) {
 	return (
 		<div className="flex items-center gap-1.5">
-			{viewSwitcherSection && <WorkViewSwitcher section={viewSwitcherSection} />}
+			{viewSwitcherSection && (
+				<WorkViewSwitcher section={viewSwitcherSection} />
+			)}
 			{beforePrimaryAction}
 			{primaryAction && (
 				<Button asChild className="font-medium" size="sm" variant="default">
@@ -63,7 +68,9 @@ export function BaseToolbarActions({
 				</Button>
 			)}
 			{afterPrimaryAction}
-			{importExportDataType && <ImportExportDropdown dataType={importExportDataType} />}
+			{importExportDataType && (
+				<ImportExportDropdown dataType={importExportDataType} />
+			)}
 			{children}
 		</div>
 	);

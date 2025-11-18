@@ -26,12 +26,18 @@ const RIGHT_SIDEBAR_COMPONENTS = {
  *
  * This is a pure server component - no client JS needed.
  */
-export function SectionLayout({ children, config, pathname }: SectionLayoutProps) {
+export function SectionLayout({
+	children,
+	config,
+	pathname,
+}: SectionLayoutProps) {
 	const { structure, toolbar, sidebar, rightSidebar } = config;
 
 	// Compute layout classes based on structure config
 	const maxWidthClass =
-		structure.maxWidth === "full" ? "w-full" : `mx-auto w-full max-w-${structure.maxWidth}`;
+		structure.maxWidth === "full"
+			? "w-full"
+			: `mx-auto w-full max-w-${structure.maxWidth}`;
 
 	const paddingMap = {
 		none: "",
@@ -57,12 +63,13 @@ export function SectionLayout({ children, config, pathname }: SectionLayoutProps
 		muted: "bg-muted/50",
 		card: "bg-card",
 	};
-	const backgroundClass = backgroundMap[structure.background || "default"] ?? backgroundMap.default;
+	const backgroundClass =
+		backgroundMap[structure.background || "default"] ?? backgroundMap.default;
 
 	const insetClassName = cn(
 		"relative w-full",
 		backgroundClass,
-		variant === "detail" && "flex flex-col gap-0"
+		variant === "detail" && "flex flex-col gap-0",
 	);
 
 	const mainBaseClass = "flex w-full flex-1 flex-col overflow-y-auto";
@@ -79,12 +86,14 @@ export function SectionLayout({ children, config, pathname }: SectionLayoutProps
 		gapClass,
 		paddingClass,
 		variant === "detail" && "pb-24",
-		variant === "detail" ? cn("px-0", detailTopPadding) : undefined
+		variant === "detail" ? cn("px-0", detailTopPadding) : undefined,
 	);
 
 	const RightSidebarComponent =
 		rightSidebar?.component &&
-		RIGHT_SIDEBAR_COMPONENTS[rightSidebar.component as keyof typeof RIGHT_SIDEBAR_COMPONENTS];
+		RIGHT_SIDEBAR_COMPONENTS[
+			rightSidebar.component as keyof typeof RIGHT_SIDEBAR_COMPONENTS
+		];
 
 	return (
 		<SidebarProvider
@@ -113,6 +122,7 @@ export function SectionLayout({ children, config, pathname }: SectionLayoutProps
 						<AppToolbar
 							config={toolbar}
 							pathname={pathname}
+							scope="layout"
 							showLeftSidebar={sidebar.show}
 							showRightSidebar={rightSidebar?.show}
 						/>
@@ -135,7 +145,7 @@ export function SectionLayout({ children, config, pathname }: SectionLayoutProps
 							"border-border/50",
 							"bg-muted/20",
 							"xl:flex",
-							"xl:w-80"
+							"xl:w-80",
 						)}
 					>
 						<RightSidebarComponent />

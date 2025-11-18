@@ -16,7 +16,9 @@ export function ActivityLogSection({ activities }: ActivityLogSectionProps) {
 				<div className="flex h-32 items-center justify-center">
 					<div className="text-center">
 						<Activity className="text-muted-foreground/50 mx-auto size-8" />
-						<p className="text-muted-foreground mt-2 text-sm">No activity yet</p>
+						<p className="text-muted-foreground mt-2 text-sm">
+							No activity yet
+						</p>
 					</div>
 				</div>
 			</UnifiedAccordionContent>
@@ -33,7 +35,9 @@ export function ActivityLogSection({ activities }: ActivityLogSectionProps) {
 					>
 						<Avatar className="size-8 flex-shrink-0">
 							<AvatarImage src={activity.user?.avatar} />
-							<AvatarFallback>{activity.user?.name?.charAt(0) || "?"}</AvatarFallback>
+							<AvatarFallback>
+								{activity.user?.name?.charAt(0) || "?"}
+							</AvatarFallback>
 						</Avatar>
 						<div className="min-w-0 flex-1">
 							<p className="text-sm break-words">{activity.description}</p>

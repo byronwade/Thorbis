@@ -2,7 +2,10 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { SettingsOverviewSection } from "@/lib/settings/overview-data";
-import { describeHealthStatus, getStatusColorClasses } from "@/lib/settings/status-utils";
+import {
+	describeHealthStatus,
+	getStatusColorClasses,
+} from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
 type SettingsShellProps = {
@@ -28,7 +31,10 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 						</p>
 					</div>
 				</div>
-				<nav aria-label="Settings clusters" className="mt-4 flex gap-3 overflow-x-auto pb-2">
+				<nav
+					aria-label="Settings clusters"
+					className="mt-4 flex gap-3 overflow-x-auto pb-2"
+				>
 					{sections.map((section) => {
 						const statusColors = getStatusColorClasses(section.status);
 						return (
@@ -54,7 +60,7 @@ export function SettingsShell({ sections, children }: SettingsShellProps) {
 											"text-xs font-semibold",
 											statusColors.text,
 											statusColors.background,
-											statusColors.border
+											statusColors.border,
 										)}
 										variant="outline"
 									>

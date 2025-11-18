@@ -65,7 +65,8 @@ const SHORTCUTS = [
 ];
 
 export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
-	const isMac = typeof navigator !== "undefined" && navigator.platform.includes("Mac");
+	const isMac =
+		typeof navigator !== "undefined" && navigator.platform.includes("Mac");
 
 	const formatKey = (key: string) => {
 		if (key === "⌘" && !isMac) {
@@ -93,8 +94,13 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 							<h4 className="text-sm font-semibold">{category.category}</h4>
 							<div className="space-y-2">
 								{category.shortcuts.map((shortcut, index) => (
-									<div className="flex items-center justify-between text-sm" key={index}>
-										<span className="text-muted-foreground">{shortcut.description}</span>
+									<div
+										className="flex items-center justify-between text-sm"
+										key={index}
+									>
+										<span className="text-muted-foreground">
+											{shortcut.description}
+										</span>
 										<div className="flex items-center gap-1">
 											{shortcut.keys.map((key, keyIndex) => (
 												<span className="flex items-center" key={keyIndex}>
@@ -102,7 +108,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 														{formatKey(key)}
 													</kbd>
 													{keyIndex < shortcut.keys.length - 1 && (
-														<span className="text-muted-foreground mx-1">+</span>
+														<span className="text-muted-foreground mx-1">
+															+
+														</span>
 													)}
 												</span>
 											))}
@@ -116,9 +124,9 @@ export function ShortcutsHelp({ isOpen, onClose }: ShortcutsHelpProps) {
 
 				<div className="bg-muted mt-4 rounded-lg p-4">
 					<p className="text-muted-foreground text-sm">
-						<strong>Pro tip:</strong> Use Tab to quickly move between fields. Press{" "}
-						{isMac ? "⌘" : "Ctrl"} + K to instantly jump to customer search from anywhere in the
-						form.
+						<strong>Pro tip:</strong> Use Tab to quickly move between fields.
+						Press {isMac ? "⌘" : "Ctrl"} + K to instantly jump to customer
+						search from anywhere in the form.
 					</p>
 				</div>
 			</DialogContent>

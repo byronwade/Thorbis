@@ -66,7 +66,10 @@ export type NearbySupplier = z.infer<typeof NearbySupplierSchema>;
 
 export class RoutingService {
 	private readonly orsApiKey: string | undefined;
-	private overpassCache: Map<string, { data: NearbySupplier[]; timestamp: number }>;
+	private overpassCache: Map<
+		string,
+		{ data: NearbySupplier[]; timestamp: number }
+	>;
 	private overpassRequestTimestamps: number[] = [];
 	private currentOverpassInstanceIndex = 0;
 
@@ -80,28 +83,31 @@ export class RoutingService {
 	 */
 	async getRoute(
 		from: { lat: number; lon: number },
-		to: { lat: number; lon: number }
+		to: { lat: number; lon: number },
 	): Promise<Route | null> {
 		if (!this.orsApiKey) {
 			return this.getStraightLineRoute(from, to);
 		}
 
 		try {
-			const res = await fetch("https://api.openrouteservice.org/v2/directions/driving-car", {
-				method: "POST",
-				headers: {
-					Authorization: this.orsApiKey,
-					"Content-Type": "application/json",
-					"User-Agent": USER_AGENT,
+			const res = await fetch(
+				"https://api.openrouteservice.org/v2/directions/driving-car",
+				{
+					method: "POST",
+					headers: {
+						Authorization: this.orsApiKey,
+						"Content-Type": "application/json",
+						"User-Agent": USER_AGENT,
+					},
+					body: JSON.stringify({
+						coordinates: [
+							[from.lon, from.lat],
+							[to.lon, to.lat],
+						],
+						preference: "fastest",
+					}),
 				},
-				body: JSON.stringify({
-					coordinates: [
-						[from.lon, from.lat],
-						[to.lon, to.lat],
-					],
-					preference: "fastest",
-				}),
-			});
+			);
 
 			if (!res.ok) {
 				return this.getStraightLineRoute(from, to);
@@ -130,7 +136,7 @@ export class RoutingService {
 	 */
 	async getRouteMatrix(
 		origins: Array<{ lat: number; lon: number }>,
-		destinations: Array<{ lat: number; lon: number }>
+		destinations: Array<{ lat: number; lon: number }>,
 	): Promise<{
 		durations: number[][]; // seconds
 		distances: number[][]; // meters
@@ -149,20 +155,23 @@ export class RoutingService {
 			const sources = origins.map((_, i) => i);
 			const dests = destinations.map((_, i) => origins.length + i);
 
-			const res = await fetch("https://api.openrouteservice.org/v2/matrix/driving-car", {
-				method: "POST",
-				headers: {
-					Authorization: this.orsApiKey,
-					"Content-Type": "application/json",
-					"User-Agent": USER_AGENT,
+			const res = await fetch(
+				"https://api.openrouteservice.org/v2/matrix/driving-car",
+				{
+					method: "POST",
+					headers: {
+						Authorization: this.orsApiKey,
+						"Content-Type": "application/json",
+						"User-Agent": USER_AGENT,
+					},
+					body: JSON.stringify({
+						locations,
+						sources,
+						destinations: dests,
+						metrics: ["duration", "distance"],
+					}),
 				},
-				body: JSON.stringify({
-					locations,
-					sources,
-					destinations: dests,
-					metrics: ["duration", "distance"],
-				}),
-			});
+			);
 
 			if (!res.ok) {
 				return null;
@@ -186,11 +195,13 @@ export class RoutingService {
 		const now = Date.now();
 		// Remove timestamps outside the window
 		this.overpassRequestTimestamps = this.overpassRequestTimestamps.filter(
-			(timestamp) => timestamp > now - OVERPASS_RATE_LIMIT.windowMs
+			(timestamp) => timestamp > now - OVERPASS_RATE_LIMIT.windowMs,
 		);
 
 		// Check if we're within the rate limit
-		return this.overpassRequestTimestamps.length < OVERPASS_RATE_LIMIT.maxRequests;
+		return (
+			this.overpassRequestTimestamps.length < OVERPASS_RATE_LIMIT.maxRequests
+		);
 	}
 
 	/**
@@ -214,7 +225,8 @@ export class RoutingService {
 		}
 
 		const oldestRequest = Math.min(...this.overpassRequestTimestamps);
-		const waitTime = oldestRequest + OVERPASS_RATE_LIMIT.windowMs - Date.now() + 1000; // Add 1s buffer
+		const waitTime =
+			oldestRequest + OVERPASS_RATE_LIMIT.windowMs - Date.now() + 1000; // Add 1s buffer
 
 		if (waitTime > 0) {
 			await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -224,7 +236,10 @@ export class RoutingService {
 	/**
 	 * Make Overpass API request with retry logic
 	 */
-	private async makeOverpassRequest(query: string, maxRetries = 3): Promise<Response> {
+	private async makeOverpassRequest(
+		query: string,
+		maxRetries = 3,
+	): Promise<Response> {
 		let lastError: Error | undefined;
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -233,7 +248,8 @@ export class RoutingService {
 
 			// Try each instance in round-robin fashion
 			const instanceIndex =
-				(this.currentOverpassInstanceIndex + attempt) % OVERPASS_INSTANCES.length;
+				(this.currentOverpassInstanceIndex + attempt) %
+				OVERPASS_INSTANCES.length;
 			const instanceUrl = OVERPASS_INSTANCES[instanceIndex];
 
 			try {
@@ -259,18 +275,22 @@ export class RoutingService {
 					if (attempt < maxRetries) {
 						await new Promise((resolve) => setTimeout(resolve, waitTime));
 						// Switch to next instance for next attempt
-						this.currentOverpassInstanceIndex = (instanceIndex + 1) % OVERPASS_INSTANCES.length;
+						this.currentOverpassInstanceIndex =
+							(instanceIndex + 1) % OVERPASS_INSTANCES.length;
 						continue;
 					}
 				}
 
 				// Handle other errors
 				if (!res.ok) {
-					throw new Error(`Overpass API returned ${res.status} from ${instanceUrl}`);
+					throw new Error(
+						`Overpass API returned ${res.status} from ${instanceUrl}`,
+					);
 				}
 
 				// Success - update instance index for next request
-				this.currentOverpassInstanceIndex = (instanceIndex + 1) % OVERPASS_INSTANCES.length;
+				this.currentOverpassInstanceIndex =
+					(instanceIndex + 1) % OVERPASS_INSTANCES.length;
 				return res;
 			} catch (error) {
 				lastError = error instanceof Error ? error : new Error(String(error));
@@ -280,7 +300,8 @@ export class RoutingService {
 					const waitTime = 2 ** attempt * 1000;
 					await new Promise((resolve) => setTimeout(resolve, waitTime));
 					// Try next instance
-					this.currentOverpassInstanceIndex = (instanceIndex + 1) % OVERPASS_INSTANCES.length;
+					this.currentOverpassInstanceIndex =
+						(instanceIndex + 1) % OVERPASS_INSTANCES.length;
 				}
 			}
 		}
@@ -294,7 +315,7 @@ export class RoutingService {
 	async findNearbySuppliers(
 		lat: number,
 		lon: number,
-		radiusMeters = 8000
+		radiusMeters = 8000,
 	): Promise<NearbySupplier[]> {
 		// Create cache key based on location and radius
 		const cacheKey = `${lat.toFixed(4)}_${lon.toFixed(4)}_${radiusMeters}`;
@@ -336,7 +357,12 @@ export class RoutingService {
 						return null;
 					}
 
-					const distance = this.calculateDistance(lat, lon, supplierLat, supplierLon);
+					const distance = this.calculateDistance(
+						lat,
+						lon,
+						supplierLat,
+						supplierLon,
+					);
 
 					return {
 						id: e.id,
@@ -351,7 +377,9 @@ export class RoutingService {
 				.sort((a: any, b: any) => (a.distance || 0) - (b.distance || 0))
 				.slice(0, 10); // Top 10 closest
 
-			const parsedSuppliers = suppliers.map((s) => NearbySupplierSchema.parse(s));
+			const parsedSuppliers = suppliers.map((s) =>
+				NearbySupplierSchema.parse(s),
+			);
 
 			// Cache the result
 			this.overpassCache.set(cacheKey, {
@@ -382,7 +410,7 @@ export class RoutingService {
 	 */
 	private getStraightLineRoute(
 		from: { lat: number; lon: number },
-		to: { lat: number; lon: number }
+		to: { lat: number; lon: number },
 	): Route {
 		const distance = this.calculateDistance(from.lat, from.lon, to.lat, to.lon);
 		// Rough estimate: 40 km/h average speed in city
@@ -399,7 +427,12 @@ export class RoutingService {
 	/**
 	 * Calculate distance between two points using Haversine formula
 	 */
-	private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+	private calculateDistance(
+		lat1: number,
+		lon1: number,
+		lat2: number,
+		lon2: number,
+	): number {
 		const R = 6371e3; // Earth radius in meters
 		const φ1 = (lat1 * Math.PI) / 180;
 		const φ2 = (lat2 * Math.PI) / 180;

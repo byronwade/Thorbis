@@ -29,27 +29,45 @@ export async function InventoryStats() {
 	return (
 		<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 			<div className="bg-card rounded-lg border p-6">
-				<h3 className="text-muted-foreground text-sm font-medium">Total Items</h3>
+				<h3 className="text-muted-foreground text-sm font-medium">
+					Total Items
+				</h3>
 				<p className="mt-2 text-2xl font-bold">{stats.totalItems}</p>
-				<p className="text-muted-foreground mt-1 text-xs">Inventory items tracked</p>
+				<p className="text-muted-foreground mt-1 text-xs">
+					Inventory items tracked
+				</p>
 			</div>
 
 			<div className="bg-card rounded-lg border p-6">
 				<h3 className="text-muted-foreground text-sm font-medium">Low Stock</h3>
-				<p className="mt-2 text-2xl font-bold text-yellow-600">{stats.lowStock}</p>
-				<p className="text-muted-foreground mt-1 text-xs">Items need reordering</p>
+				<p className="mt-2 text-2xl font-bold text-yellow-600">
+					{stats.lowStock}
+				</p>
+				<p className="text-muted-foreground mt-1 text-xs">
+					Items need reordering
+				</p>
 			</div>
 
 			<div className="bg-card rounded-lg border p-6">
-				<h3 className="text-muted-foreground text-sm font-medium">Out of Stock</h3>
-				<p className="mt-2 text-2xl font-bold text-red-600">{stats.outOfStock}</p>
+				<h3 className="text-muted-foreground text-sm font-medium">
+					Out of Stock
+				</h3>
+				<p className="mt-2 text-2xl font-bold text-red-600">
+					{stats.outOfStock}
+				</p>
 				<p className="text-muted-foreground mt-1 text-xs">Items unavailable</p>
 			</div>
 
 			<div className="bg-card rounded-lg border p-6">
-				<h3 className="text-muted-foreground text-sm font-medium">Total Value</h3>
-				<p className="mt-2 text-2xl font-bold">${stats.totalValue.toLocaleString()}</p>
-				<p className="text-muted-foreground mt-1 text-xs">Inventory asset value</p>
+				<h3 className="text-muted-foreground text-sm font-medium">
+					Total Value
+				</h3>
+				<p className="mt-2 text-2xl font-bold">
+					${stats.totalValue.toLocaleString()}
+				</p>
+				<p className="text-muted-foreground mt-1 text-xs">
+					Inventory asset value
+				</p>
 			</div>
 		</div>
 	);

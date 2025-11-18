@@ -12,29 +12,57 @@ import { addDays, subDays } from "date-fns";
 import { Suspense } from "react";
 import { CompanyGate } from "@/components/company/company-gate";
 import { SchedulePageClient } from "@/components/schedule/schedule-page-client";
-import { getActiveCompanyId, getUserCompanies } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	getUserCompanies,
+} from "@/lib/auth/company-context";
 import type { ScheduleBootstrapSerialized } from "@/lib/schedule-bootstrap";
 import { serializeScheduleBootstrap } from "@/lib/schedule-bootstrap";
 import { fetchScheduleData } from "@/lib/schedule-data";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
+
+async function getSchedulingSupabaseClient() {
+	try {
+		// Try service role client first (bypasses RLS for full company visibility)
+		const serviceClient = await createServiceSupabaseClient();
+		if (serviceClient) {
+			return serviceClient;
+		}
+		// Service role key not configured - fall back to auth client
+		console.warn(
+			"SUPABASE_SERVICE_ROLE_KEY not configured – falling back to authenticated client",
+		);
+		return await createClient();
+	} catch (error) {
+		// Service client creation failed - fall back to auth client
+		console.warn(
+			"Supabase service role client failed to initialize – falling back to authenticated client:",
+			error instanceof Error ? error.message : String(error),
+		);
+		return await createClient();
+	}
+}
 
 // Schedule data component (async, streams in)
 async function ScheduleData() {
 	let initialData: ScheduleBootstrapSerialized | undefined;
 	let bootstrapError: string | null = null;
-	const supabase = await createClient();
-	const companyId = await getActiveCompanyId();
 
+	const companyId = await getActiveCompanyId();
 	if (!companyId) {
 		const companies = await getUserCompanies();
-		return <CompanyGate context="scheduling" hasCompanies={(companies ?? []).length > 0} />;
-	}
-
-	if (!supabase) {
-		return <CompanyGate context="scheduling" hasCompanies />;
+		return (
+			<CompanyGate
+				context="scheduling"
+				hasCompanies={(companies ?? []).length > 0}
+			/>
+		);
 	}
 
 	try {
+		const supabase = await getSchedulingSupabaseClient();
+
 		const now = new Date();
 		const defaultRange = {
 			start: subDays(now, 7),
@@ -55,6 +83,12 @@ async function ScheduleData() {
 			lastSync: new Date(),
 		});
 	} catch (error) {
+		// Log the full error details to help debug
+		console.error("Schedule data fetch failed:", error);
+		if (error instanceof Error) {
+			console.error("Error stack:", error.stack);
+		}
+
 		bootstrapError =
 			error instanceof Error
 				? error.message
@@ -63,7 +97,12 @@ async function ScheduleData() {
 					: "Unable to load schedule data";
 	}
 
-	return <SchedulePageClient bootstrapError={bootstrapError} initialData={initialData} />;
+	return (
+		<SchedulePageClient
+			bootstrapError={bootstrapError}
+			initialData={initialData}
+		/>
+	);
 }
 
 // Loading skeleton

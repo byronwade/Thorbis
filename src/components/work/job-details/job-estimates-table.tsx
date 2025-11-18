@@ -67,7 +67,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
-		[]
+		[],
 	);
 
 	const handleArchive = useCallback(async () => {
@@ -81,7 +81,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 
 			if (result.success && result.data) {
 				toast.success(
-					`Successfully archived ${result.data.archived} estimate${result.data.archived === 1 ? "" : "s"}`
+					`Successfully archived ${result.data.archived} estimate${result.data.archived === 1 ? "" : "s"}`,
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
@@ -182,7 +182,9 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				hideOnMobile: true,
 				render: (estimate) => (
 					<span className="text-muted-foreground text-sm tabular-nums">
-						{estimate.valid_until ? formatDate(estimate.valid_until, "short") : "—"}
+						{estimate.valid_until
+							? formatDate(estimate.valid_until, "short")
+							: "—"}
 					</span>
 				),
 			},
@@ -232,7 +234,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				),
 			},
 		],
-		[formatCurrencyCents]
+		[formatCurrencyCents],
 	);
 
 	const bulkActions: BulkAction[] = useMemo(
@@ -247,7 +249,7 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 				},
 			},
 		],
-		[]
+		[],
 	);
 
 	return (
@@ -290,8 +292,9 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 					<DialogHeader>
 						<DialogTitle>Unlink Estimate from Job?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this estimate. The estimate will remain in
-							the system but will no longer appear on this job's page.
+							This will remove the job association from this estimate. The
+							estimate will remain in the system but will no longer appear on
+							this job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -302,7 +305,11 @@ export function JobEstimatesTable({ estimates }: JobEstimatesTableProps) {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isUnlinking} onClick={handleUnlinkEstimate} variant="destructive">
+						<Button
+							disabled={isUnlinking}
+							onClick={handleUnlinkEstimate}
+							variant="destructive"
+						>
 							{isUnlinking ? "Unlinking..." : "Unlink Estimate"}
 						</Button>
 					</DialogFooter>

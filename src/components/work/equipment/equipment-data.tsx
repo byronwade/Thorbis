@@ -3,7 +3,10 @@ import { EquipmentKanban } from "@/components/work/equipment-kanban";
 import { EquipmentTable } from "@/components/work/equipment-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import {
+	EQUIPMENT_PAGE_SIZE,
+	getEquipmentPageData,
+} from "@/lib/queries/equipment";
 
 const classificationLabelMap: Record<string, string> = {
 	equipment: "Equipment",
@@ -41,7 +44,16 @@ const inferClassification = (type?: string | null) => {
 	if (["vehicle", "fleet_vehicle", "truck", "van"].includes(type)) {
 		return "vehicle";
 	}
-	if (["tool", "hand_tool", "power_tool", "equipment_tool", "pipe_tool", "jetter"].includes(type)) {
+	if (
+		[
+			"tool",
+			"hand_tool",
+			"power_tool",
+			"equipment_tool",
+			"pipe_tool",
+			"jetter",
+		].includes(type)
+	) {
 		return "tool";
 	}
 	return "equipment";
@@ -66,7 +78,8 @@ const getCustomerName = (customer: any) => {
 	if (customer.display_name) {
 		return customer.display_name;
 	}
-	const fullName = `${customer.first_name || ""} ${customer.last_name || ""}`.trim();
+	const fullName =
+		`${customer.first_name || ""} ${customer.last_name || ""}`.trim();
 	return fullName || "Unknown";
 };
 
@@ -83,8 +96,10 @@ const transformEquipmentData = (eq: any) => {
 	const customer = Array.isArray(eq.customer) ? eq.customer[0] : eq.customer;
 	const property = Array.isArray(eq.property) ? eq.property[0] : eq.property;
 
-	const classification = eq.classification || inferClassification(eq.type || undefined);
-	const classificationLabel = classificationLabelMap[classification] || formatLabel(classification);
+	const classification =
+		eq.classification || inferClassification(eq.type || undefined);
+	const classificationLabel =
+		classificationLabelMap[classification] || formatLabel(classification);
 	const typeLabel = typeLabelMap[eq.type] || formatLabel(eq.type);
 
 	return {
@@ -97,7 +112,7 @@ const transformEquipmentData = (eq: any) => {
 		typeLabel,
 		manufacturer: eq.manufacturer || "",
 		model: eq.model || "",
-		assetId: eq.asset_id || eq.id,
+		assetId: eq.equipment_number || eq.id,
 		assignedTo: eq.assigned_to || "Unassigned",
 		customer: getCustomerName(customer),
 		location: getLocation(property, eq.location),
@@ -112,49 +127,37 @@ const transformEquipmentData = (eq: any) => {
 	};
 };
 
-export async function UequipmentData() {
-	const supabase = await createClient();
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	if (!user) {
-		return notFound();
-	}
-
+export async function UequipmentData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
 	const activeCompanyId = await getActiveCompanyId();
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Fetch equipment from database
-	const { data: equipmentRaw, error } = await supabase
-		.from("equipment")
-		.select(
-			`
-      *,
-      customer:customers!customer_id(display_name, first_name, last_name),
-      property:properties!property_id(address, city, state)
-    `
-		)
-		.eq("company_id", activeCompanyId)
-		.order("created_at", { ascending: false });
+	const currentPage = Number(searchParams?.page) || 1;
+	const { equipment: equipmentRaw, totalCount } = await getEquipmentPageData(
+		currentPage,
+		EQUIPMENT_PAGE_SIZE,
+		activeCompanyId,
+	);
 
-	if (error) {
-		throw new Error(`Failed to load equipment: ${error.message}`);
-	}
-
-	// Transform data for table component
-	const equipment = (equipmentRaw || []).map((eq) => transformEquipmentData(eq));
+	const equipment = equipmentRaw.map((eq) => transformEquipmentData(eq));
 
 	return (
 		<WorkDataView
 			kanban={<EquipmentKanban equipment={equipment} />}
 			section="equipment"
-			table={<EquipmentTable equipment={equipment} itemsPerPage={50} />}
+			table={
+				<EquipmentTable
+					equipment={equipment}
+					currentPage={currentPage}
+					itemsPerPage={EQUIPMENT_PAGE_SIZE}
+					totalCount={totalCount}
+				/>
+			}
 		/>
 	);
 }

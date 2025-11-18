@@ -97,7 +97,7 @@ export class ActionError extends Error {
 		message: string,
 		public readonly code: ErrorCode = ERROR_CODES.UNKNOWN_ERROR,
 		public readonly statusCode: number = 400,
-		public readonly details?: Record<string, any>
+		public readonly details?: Record<string, any>,
 	) {
 		super(message);
 		this.name = "ActionError";
@@ -130,10 +130,18 @@ export class ActionError extends Error {
 		}
 
 		if (error instanceof Error) {
-			return new ActionError(error.message, ERROR_CODES.INTERNAL_SERVER_ERROR, 500);
+			return new ActionError(
+				error.message,
+				ERROR_CODES.INTERNAL_SERVER_ERROR,
+				500,
+			);
 		}
 
-		return new ActionError("An unexpected error occurred", ERROR_CODES.UNKNOWN_ERROR, 500);
+		return new ActionError(
+			"An unexpected error occurred",
+			ERROR_CODES.UNKNOWN_ERROR,
+			500,
+		);
 	}
 }
 
@@ -145,7 +153,8 @@ export class ActionError extends Error {
 export const ERROR_MESSAGES = {
 	// Authentication
 	unauthorized: () => "You must be logged in to perform this action",
-	forbidden: (resource: string) => `You don't have permission to access this ${resource}`,
+	forbidden: (resource: string) =>
+		`You don't have permission to access this ${resource}`,
 	emailNotVerified: () => "Please verify your email before continuing",
 
 	// Validation
@@ -157,14 +166,17 @@ export const ERROR_MESSAGES = {
 	// Database
 	notFound: (resource: string) => `${resource} not found`,
 	alreadyExists: (resource: string) => `${resource} already exists`,
-	cannotDelete: (resource: string, reason: string) => `Cannot delete ${resource}: ${reason}`,
+	cannotDelete: (resource: string, reason: string) =>
+		`Cannot delete ${resource}: ${reason}`,
 
 	// Business Logic
 	insufficientFunds: () => "Insufficient funds for this transaction",
 	cannotRefund: (reason: string) => `Cannot process refund: ${reason}`,
-	resourceLocked: (resource: string) => `${resource} is currently being modified by another user`,
+	resourceLocked: (resource: string) =>
+		`${resource} is currently being modified by another user`,
 
 	// Generic
 	operationFailed: (operation: string) => `Failed to ${operation}`,
-	serviceUnavailable: (service: string) => `${service} is currently unavailable`,
+	serviceUnavailable: (service: string) =>
+		`${service} is currently unavailable`,
 } as const;

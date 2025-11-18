@@ -21,7 +21,10 @@
  * ```
  */
 
-import type { NotificationPriority, NotificationType } from "@/lib/notifications/types";
+import type {
+	NotificationPriority,
+	NotificationType,
+} from "@/lib/notifications/types";
 import { createClient } from "@/lib/supabase/server";
 
 // =====================================================================================
@@ -85,7 +88,7 @@ async function createNotification(
 	priority: NotificationPriority = "medium",
 	actionUrl?: string,
 	actionLabel?: string,
-	metadata?: Record<string, any>
+	metadata?: Record<string, any>,
 ) {
 	try {
 		const supabase = await createClient();
@@ -130,7 +133,7 @@ async function createNotification(
 async function isNotificationEnabled(
 	userId: string,
 	companyId: string,
-	eventType: string
+	eventType: string,
 ): Promise<boolean> {
 	try {
 		const supabase = await createClient();
@@ -168,7 +171,11 @@ async function isNotificationEnabled(
  * Notify user when a new job is created/assigned
  */
 export async function notifyJobCreated(params: JobNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "job_created");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"job_created",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -186,7 +193,7 @@ export async function notifyJobCreated(params: JobNotificationParams) {
 		{
 			job_id: params.jobId,
 			address: params.address,
-		}
+		},
 	);
 }
 
@@ -194,7 +201,11 @@ export async function notifyJobCreated(params: JobNotificationParams) {
  * Notify user when a job is updated
  */
 export async function notifyJobUpdated(params: JobNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "job_updated");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"job_updated",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -211,7 +222,7 @@ export async function notifyJobUpdated(params: JobNotificationParams) {
 		"View Job",
 		{
 			job_id: params.jobId,
-		}
+		},
 	);
 }
 
@@ -219,7 +230,11 @@ export async function notifyJobUpdated(params: JobNotificationParams) {
  * Notify user when a job is completed
  */
 export async function notifyJobCompleted(params: JobNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "job_completed");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"job_completed",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -237,7 +252,7 @@ export async function notifyJobCompleted(params: JobNotificationParams) {
 		{
 			job_id: params.jobId,
 			status: "completed",
-		}
+		},
 	);
 }
 
@@ -249,7 +264,11 @@ export async function notifyJobCompleted(params: JobNotificationParams) {
  * Notify user when a payment is received
  */
 export async function notifyPaymentReceived(params: PaymentNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "payment_received");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"payment_received",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -268,7 +287,7 @@ export async function notifyPaymentReceived(params: PaymentNotificationParams) {
 			amount: params.amount,
 			customer: params.customerName,
 			invoice_id: params.invoiceId,
-		}
+		},
 	);
 }
 
@@ -276,9 +295,13 @@ export async function notifyPaymentReceived(params: PaymentNotificationParams) {
  * Notify user when an invoice payment is due soon
  */
 export async function notifyPaymentDue(
-	params: PaymentNotificationParams & { daysUntilDue: number }
+	params: PaymentNotificationParams & { daysUntilDue: number },
 ) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "payment_due");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"payment_due",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -298,7 +321,7 @@ export async function notifyPaymentDue(
 			customer: params.customerName,
 			invoice_id: params.invoiceId,
 			days_until_due: params.daysUntilDue,
-		}
+		},
 	);
 }
 
@@ -310,7 +333,11 @@ export async function notifyPaymentDue(
  * Notify user when they receive a new message
  */
 export async function notifyNewMessage(params: MessageNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "new_message");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"new_message",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -328,7 +355,7 @@ export async function notifyNewMessage(params: MessageNotificationParams) {
 		{
 			from: params.from,
 			message_id: params.messageId,
-		}
+		},
 	);
 }
 
@@ -336,7 +363,11 @@ export async function notifyNewMessage(params: MessageNotificationParams) {
  * Notify user when they miss a call
  */
 export async function notifyMissedCall(params: MessageNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "missed_call");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"missed_call",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -354,7 +385,7 @@ export async function notifyMissedCall(params: MessageNotificationParams) {
 		{
 			from: params.from,
 			call_id: params.messageId,
-		}
+		},
 	);
 }
 
@@ -366,7 +397,11 @@ export async function notifyMissedCall(params: MessageNotificationParams) {
  * Notify user when a new team member joins
  */
 export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "team_member_added");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"team_member_added",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -384,7 +419,7 @@ export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
 		{
 			member_name: params.memberName,
 			role: params.role,
-		}
+		},
 	);
 }
 
@@ -392,7 +427,11 @@ export async function notifyTeamMemberAdded(params: TeamNotificationParams) {
  * Notify user when they're assigned to a team
  */
 export async function notifyTeamAssignment(params: TeamNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "team_assignment");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"team_assignment",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -409,7 +448,7 @@ export async function notifyTeamAssignment(params: TeamNotificationParams) {
 		"View Details",
 		{
 			member_name: params.memberName,
-		}
+		},
 	);
 }
 
@@ -421,7 +460,11 @@ export async function notifyTeamAssignment(params: TeamNotificationParams) {
  * Notify user with a custom alert
  */
 export async function notifyAlert(params: AlertNotificationParams) {
-	const enabled = await isNotificationEnabled(params.userId, params.companyId, "system_alert");
+	const enabled = await isNotificationEnabled(
+		params.userId,
+		params.companyId,
+		"system_alert",
+	);
 
 	if (!enabled) {
 		return { success: true, skipped: true };
@@ -435,7 +478,7 @@ export async function notifyAlert(params: AlertNotificationParams) {
 		params.alertMessage,
 		params.priority || "medium",
 		params.actionUrl,
-		"View Details"
+		"View Details",
 	);
 }
 
@@ -455,6 +498,6 @@ export async function notifySystem(params: SystemNotificationParams) {
 		params.systemMessage,
 		params.priority || "low",
 		params.actionUrl,
-		"View Details"
+		"View Details",
 	);
 }

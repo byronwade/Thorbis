@@ -299,6 +299,7 @@ Comprehensive documentation is available in the `/docs` directory, organized by 
 - **📁 Organized Topics**
   - [**Migrations**](docs/migrations/) - Next.js 16 upgrade, PPR conversion, PPR architecture
   - [**Performance**](docs/performance/) - Optimization strategies, dashboards, audits
+  - [**Optimization**](docs/optimization/) - ⭐ **795KB bundle reduction**, lazy loading, error/loading states
   - [**Architecture**](docs/architecture/) - Layout system, routing, offline architecture
   - [**Status**](docs/status/) - Implementation status, rollout notes, setup completion
   - [**Troubleshooting**](docs/troubleshooting/) - Runtime errors, webhooks, WebRTC issues

@@ -59,13 +59,21 @@ export function JobEquipment({ equipment }: JobEquipmentProps) {
 								<TableCell>{item.type || item.equipment_type || "—"}</TableCell>
 								<TableCell>{item.manufacturer || "—"}</TableCell>
 								<TableCell>{item.model || item.model_number || "—"}</TableCell>
-								<TableCell className="font-mono text-xs">{item.serial_number || "—"}</TableCell>
+								<TableCell className="font-mono text-xs">
+									{item.serial_number || "—"}
+								</TableCell>
 								<TableCell className="max-w-[240px] align-top">
 									<EntityTags
 										entityId={item.id}
 										entityType="equipment"
-										onUpdateTags={(id, tags) => updateEntityTags("equipment", id, tags)}
-										tags={Array.isArray(item?.metadata?.tags) ? (item.metadata.tags as any[]) : []}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("equipment", id, tags)
+										}
+										tags={
+											Array.isArray(item?.metadata?.tags)
+												? (item.metadata.tags as any[])
+												: []
+										}
 									/>
 								</TableCell>
 								<TableCell>

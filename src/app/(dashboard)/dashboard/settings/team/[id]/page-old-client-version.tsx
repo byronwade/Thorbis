@@ -36,7 +36,13 @@ import { PermissionsEditor } from "@/components/team/permissions-editor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -101,7 +107,11 @@ type EmployeeProfile = {
 	routingNumber?: string;
 
 	// Tax Information
-	federalFilingStatus: "single" | "married" | "married-separate" | "head-of-household";
+	federalFilingStatus:
+		| "single"
+		| "married"
+		| "married-separate"
+		| "head-of-household";
 	federalAllowances: number;
 	stateFilingStatus: string;
 	stateAllowances: number;
@@ -179,7 +189,9 @@ export default function EmployeeProfilePage() {
 
 	// Role and permissions state
 	const [currentRole, setCurrentRole] = useState<UserRole>("technician");
-	const [customPermissions, setCustomPermissions] = useState<Record<string, boolean>>({});
+	const [customPermissions, setCustomPermissions] = useState<
+		Record<string, boolean>
+	>({});
 
 	const [employee, setEmployee] = useState<EmployeeProfile>({
 		// Personal Information
@@ -330,7 +342,7 @@ export default function EmployeeProfilePage() {
 
 	const handleFieldChange = <K extends keyof EmployeeProfile>(
 		field: K,
-		value: EmployeeProfile[K]
+		value: EmployeeProfile[K],
 	) => {
 		setEmployee((prev) => ({ ...prev, [field]: value }));
 		setHasUnsavedChanges(true);
@@ -383,7 +395,7 @@ export default function EmployeeProfilePage() {
 	};
 
 	const getEmploymentStatusBadgeVariant = (
-		status: EmploymentStatus
+		status: EmploymentStatus,
 	): "default" | "secondary" | "destructive" | "outline" => {
 		switch (status) {
 			case "active":
@@ -423,11 +435,17 @@ export default function EmployeeProfilePage() {
 							</h1>
 							<p className="text-muted-foreground mt-1">{employee.jobTitle}</p>
 							<div className="mt-2 flex items-center gap-2">
-								<Badge variant={getEmploymentStatusBadgeVariant(employee.employmentStatus)}>
+								<Badge
+									variant={getEmploymentStatusBadgeVariant(
+										employee.employmentStatus,
+									)}
+								>
 									{employee.employmentStatus}
 								</Badge>
 								<Badge variant="outline">{employee.employmentType}</Badge>
-								<span className="text-muted-foreground text-sm">ID: {employee.employeeId}</span>
+								<span className="text-muted-foreground text-sm">
+									ID: {employee.employeeId}
+								</span>
 							</div>
 						</div>
 					</div>
@@ -493,7 +511,7 @@ export default function EmployeeProfilePage() {
 								<p className="font-semibold">
 									{Math.floor(
 										(Date.now() - new Date(employee.hireDate).getTime()) /
-											(1000 * 60 * 60 * 24 * 365)
+											(1000 * 60 * 60 * 24 * 365),
 									)}{" "}
 									years
 								</p>
@@ -511,7 +529,9 @@ export default function EmployeeProfilePage() {
 							<div>
 								<p className="text-muted-foreground text-xs">Performance</p>
 								<p className="font-semibold">
-									{employee.performanceRating ? `${employee.performanceRating}/5.0` : "N/A"}
+									{employee.performanceRating
+										? `${employee.performanceRating}/5.0`
+										: "N/A"}
 								</p>
 							</div>
 						</div>
@@ -544,7 +564,9 @@ export default function EmployeeProfilePage() {
 								<User className="text-primary h-5 w-5" />
 								Personal Information
 							</CardTitle>
-							<CardDescription>Basic personal details and contact information</CardDescription>
+							<CardDescription>
+								Basic personal details and contact information
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid gap-6 md:grid-cols-2">
@@ -552,7 +574,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="firstName">First Name</Label>
 									<Input
 										id="firstName"
-										onChange={(e) => handleFieldChange("firstName", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("firstName", e.target.value)
+										}
 										value={employee.firstName}
 									/>
 								</div>
@@ -561,7 +585,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="lastName">Last Name</Label>
 									<Input
 										id="lastName"
-										onChange={(e) => handleFieldChange("lastName", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("lastName", e.target.value)
+										}
 										value={employee.lastName}
 									/>
 								</div>
@@ -573,7 +599,9 @@ export default function EmployeeProfilePage() {
 										<Input
 											className="pl-9"
 											id="email"
-											onChange={(e) => handleFieldChange("email", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("email", e.target.value)
+											}
 											type="email"
 											value={employee.email}
 										/>
@@ -587,7 +615,9 @@ export default function EmployeeProfilePage() {
 										<Input
 											className="pl-9"
 											id="phone"
-											onChange={(e) => handleFieldChange("phone", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("phone", e.target.value)
+											}
 											type="tel"
 											value={employee.phone}
 										/>
@@ -601,7 +631,9 @@ export default function EmployeeProfilePage() {
 										<Input
 											className="pl-9"
 											id="alternatePhone"
-											onChange={(e) => handleFieldChange("alternatePhone", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("alternatePhone", e.target.value)
+											}
 											type="tel"
 											value={employee.alternatePhone}
 										/>
@@ -612,7 +644,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="dateOfBirth">Date of Birth</Label>
 									<Input
 										id="dateOfBirth"
-										onChange={(e) => handleFieldChange("dateOfBirth", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("dateOfBirth", e.target.value)
+										}
 										type="date"
 										value={employee.dateOfBirth}
 									/>
@@ -620,7 +654,12 @@ export default function EmployeeProfilePage() {
 
 								<div className="space-y-2">
 									<Label htmlFor="ssn">Social Security Number (Last 4)</Label>
-									<Input disabled id="ssn" placeholder="****-5678" value={employee.ssn} />
+									<Input
+										disabled
+										id="ssn"
+										placeholder="****-5678"
+										value={employee.ssn}
+									/>
 								</div>
 							</div>
 
@@ -636,7 +675,9 @@ export default function EmployeeProfilePage() {
 											<Input
 												className="pl-9"
 												id="address"
-												onChange={(e) => handleFieldChange("address", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange("address", e.target.value)
+												}
 												value={employee.address}
 											/>
 										</div>
@@ -646,7 +687,9 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="city">City</Label>
 										<Input
 											id="city"
-											onChange={(e) => handleFieldChange("city", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("city", e.target.value)
+											}
 											value={employee.city}
 										/>
 									</div>
@@ -654,7 +697,9 @@ export default function EmployeeProfilePage() {
 									<div className="space-y-2">
 										<Label htmlFor="state">State</Label>
 										<Select
-											onValueChange={(value) => handleFieldChange("state", value)}
+											onValueChange={(value) =>
+												handleFieldChange("state", value)
+											}
 											value={employee.state}
 										>
 											<SelectTrigger id="state">
@@ -673,7 +718,9 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="zipCode">ZIP Code</Label>
 										<Input
 											id="zipCode"
-											onChange={(e) => handleFieldChange("zipCode", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("zipCode", e.target.value)
+											}
 											value={employee.zipCode}
 										/>
 									</div>
@@ -689,7 +736,12 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="emergencyName">Contact Name</Label>
 										<Input
 											id="emergencyName"
-											onChange={(e) => handleFieldChange("emergencyContactName", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange(
+													"emergencyContactName",
+													e.target.value,
+												)
+											}
 											value={employee.emergencyContactName}
 										/>
 									</div>
@@ -698,7 +750,12 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="emergencyPhone">Contact Phone</Label>
 										<Input
 											id="emergencyPhone"
-											onChange={(e) => handleFieldChange("emergencyContactPhone", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange(
+													"emergencyContactPhone",
+													e.target.value,
+												)
+											}
 											type="tel"
 											value={employee.emergencyContactPhone}
 										/>
@@ -709,7 +766,10 @@ export default function EmployeeProfilePage() {
 										<Input
 											id="emergencyRelationship"
 											onChange={(e) =>
-												handleFieldChange("emergencyContactRelationship", e.target.value)
+												handleFieldChange(
+													"emergencyContactRelationship",
+													e.target.value,
+												)
 											}
 											value={employee.emergencyContactRelationship}
 										/>
@@ -725,13 +785,19 @@ export default function EmployeeProfilePage() {
 					<div className="space-y-6">
 						<div className="flex items-center justify-between">
 							<div>
-								<h2 className="text-2xl font-bold tracking-tight">Role & Permissions</h2>
+								<h2 className="text-2xl font-bold tracking-tight">
+									Role & Permissions
+								</h2>
 								<p className="text-muted-foreground">
 									Manage this team member's role and custom permissions
 								</p>
 							</div>
 							{hasUnsavedChanges && (
-								<Button disabled={isSavingPermissions} onClick={handleSavePermissions} size="lg">
+								<Button
+									disabled={isSavingPermissions}
+									onClick={handleSavePermissions}
+									size="lg"
+								>
 									{isSavingPermissions ? (
 										<>
 											<Save className="mr-2 size-4 animate-spin" />
@@ -765,7 +831,9 @@ export default function EmployeeProfilePage() {
 								<Briefcase className="text-primary h-5 w-5" />
 								Employment Details
 							</CardTitle>
-							<CardDescription>Job title, department, and work information</CardDescription>
+							<CardDescription>
+								Job title, department, and work information
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid gap-6 md:grid-cols-2">
@@ -778,7 +846,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="hireDate">Hire Date</Label>
 									<Input
 										id="hireDate"
-										onChange={(e) => handleFieldChange("hireDate", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("hireDate", e.target.value)
+										}
 										type="date"
 										value={employee.hireDate}
 									/>
@@ -788,7 +858,10 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="employmentType">Employment Type</Label>
 									<Select
 										onValueChange={(value) =>
-											handleFieldChange("employmentType", value as EmploymentType)
+											handleFieldChange(
+												"employmentType",
+												value as EmploymentType,
+											)
 										}
 										value={employee.employmentType}
 									>
@@ -808,7 +881,10 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="employmentStatus">Employment Status</Label>
 									<Select
 										onValueChange={(value) =>
-											handleFieldChange("employmentStatus", value as EmploymentStatus)
+											handleFieldChange(
+												"employmentStatus",
+												value as EmploymentStatus,
+											)
 										}
 										value={employee.employmentStatus}
 									>
@@ -828,7 +904,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="jobTitle">Job Title</Label>
 									<Input
 										id="jobTitle"
-										onChange={(e) => handleFieldChange("jobTitle", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("jobTitle", e.target.value)
+										}
 										value={employee.jobTitle}
 									/>
 								</div>
@@ -837,7 +915,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="workLocation">Work Location</Label>
 									<Input
 										id="workLocation"
-										onChange={(e) => handleFieldChange("workLocation", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("workLocation", e.target.value)
+										}
 										value={employee.workLocation}
 									/>
 								</div>
@@ -846,7 +926,9 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="workSchedule">Work Schedule</Label>
 									<Input
 										id="workSchedule"
-										onChange={(e) => handleFieldChange("workSchedule", e.target.value)}
+										onChange={(e) =>
+											handleFieldChange("workSchedule", e.target.value)
+										}
 										placeholder="e.g., Monday-Friday, 8:00 AM - 5:00 PM"
 										value={employee.workSchedule}
 									/>
@@ -863,10 +945,17 @@ export default function EmployeeProfilePage() {
 											</h3>
 											<div className="grid gap-4 md:grid-cols-2">
 												<div className="space-y-2">
-													<Label htmlFor="terminationDate">Termination Date</Label>
+													<Label htmlFor="terminationDate">
+														Termination Date
+													</Label>
 													<Input
 														id="terminationDate"
-														onChange={(e) => handleFieldChange("terminationDate", e.target.value)}
+														onChange={(e) =>
+															handleFieldChange(
+																"terminationDate",
+																e.target.value,
+															)
+														}
 														type="date"
 														value={employee.terminationDate}
 													/>
@@ -875,7 +964,12 @@ export default function EmployeeProfilePage() {
 													<Label htmlFor="terminationReason">Reason</Label>
 													<Textarea
 														id="terminationReason"
-														onChange={(e) => handleFieldChange("terminationReason", e.target.value)}
+														onChange={(e) =>
+															handleFieldChange(
+																"terminationReason",
+																e.target.value,
+															)
+														}
 														value={employee.terminationReason}
 													/>
 												</div>
@@ -896,14 +990,18 @@ export default function EmployeeProfilePage() {
 								<DollarSign className="text-primary h-5 w-5" />
 								Payroll Information
 							</CardTitle>
-							<CardDescription>Compensation and payment details</CardDescription>
+							<CardDescription>
+								Compensation and payment details
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid gap-6 md:grid-cols-2">
 								<div className="space-y-2">
 									<Label htmlFor="payType">Pay Type</Label>
 									<Select
-										onValueChange={(value) => handleFieldChange("payType", value as PayType)}
+										onValueChange={(value) =>
+											handleFieldChange("payType", value as PayType)
+										}
 										value={employee.payType}
 									>
 										<SelectTrigger id="payType">
@@ -918,14 +1016,18 @@ export default function EmployeeProfilePage() {
 									</Select>
 								</div>
 
-								{(employee.payType === "hourly" || employee.payType === "hybrid") && (
+								{(employee.payType === "hourly" ||
+									employee.payType === "hybrid") && (
 									<div className="space-y-2">
 										<Label htmlFor="hourlyRate">Hourly Rate ($/hour)</Label>
 										<Input
 											id="hourlyRate"
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("hourlyRate", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"hourlyRate",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={0.25}
 											type="number"
@@ -934,14 +1036,18 @@ export default function EmployeeProfilePage() {
 									</div>
 								)}
 
-								{(employee.payType === "salary" || employee.payType === "hybrid") && (
+								{(employee.payType === "salary" ||
+									employee.payType === "hybrid") && (
 									<div className="space-y-2">
 										<Label htmlFor="annualSalary">Annual Salary ($/year)</Label>
 										<Input
 											id="annualSalary"
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("annualSalary", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"annualSalary",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={1000}
 											type="number"
@@ -950,7 +1056,8 @@ export default function EmployeeProfilePage() {
 									</div>
 								)}
 
-								{(employee.payType === "commission" || employee.payType === "hybrid") && (
+								{(employee.payType === "commission" ||
+									employee.payType === "hybrid") && (
 									<div className="space-y-2">
 										<Label htmlFor="commissionRate">Commission Rate (%)</Label>
 										<Input
@@ -958,7 +1065,10 @@ export default function EmployeeProfilePage() {
 											max={100}
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("commissionRate", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"commissionRate",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={0.5}
 											type="number"
@@ -970,12 +1080,16 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between space-y-2 md:col-span-2">
 									<div className="space-y-0.5">
 										<Label htmlFor="overtimeEligible">Overtime Eligible</Label>
-										<p className="text-muted-foreground text-sm">Eligible for overtime pay</p>
+										<p className="text-muted-foreground text-sm">
+											Eligible for overtime pay
+										</p>
 									</div>
 									<Switch
 										checked={employee.overtimeEligible}
 										id="overtimeEligible"
-										onCheckedChange={(checked) => handleFieldChange("overtimeEligible", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("overtimeEligible", checked)
+										}
 									/>
 								</div>
 
@@ -985,7 +1099,7 @@ export default function EmployeeProfilePage() {
 										onValueChange={(value) =>
 											handleFieldChange(
 												"payrollSchedule",
-												value as EmployeeProfile["payrollSchedule"]
+												value as EmployeeProfile["payrollSchedule"],
 											)
 										}
 										value={employee.payrollSchedule}
@@ -1006,7 +1120,10 @@ export default function EmployeeProfilePage() {
 									<Label htmlFor="paymentMethod">Payment Method</Label>
 									<Select
 										onValueChange={(value) =>
-											handleFieldChange("paymentMethod", value as EmployeeProfile["paymentMethod"])
+											handleFieldChange(
+												"paymentMethod",
+												value as EmployeeProfile["paymentMethod"],
+											)
 										}
 										value={employee.paymentMethod}
 									>
@@ -1014,7 +1131,9 @@ export default function EmployeeProfilePage() {
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="direct-deposit">Direct Deposit</SelectItem>
+											<SelectItem value="direct-deposit">
+												Direct Deposit
+											</SelectItem>
 											<SelectItem value="check">Paper Check</SelectItem>
 											<SelectItem value="cash">Cash</SelectItem>
 										</SelectContent>
@@ -1032,7 +1151,9 @@ export default function EmployeeProfilePage() {
 												<Label htmlFor="bankName">Bank Name</Label>
 												<Input
 													id="bankName"
-													onChange={(e) => handleFieldChange("bankName", e.target.value)}
+													onChange={(e) =>
+														handleFieldChange("bankName", e.target.value)
+													}
 													value={employee.bankName}
 												/>
 											</div>
@@ -1041,14 +1162,22 @@ export default function EmployeeProfilePage() {
 												<Label htmlFor="routingNumber">Routing Number</Label>
 												<Input
 													id="routingNumber"
-													onChange={(e) => handleFieldChange("routingNumber", e.target.value)}
+													onChange={(e) =>
+														handleFieldChange("routingNumber", e.target.value)
+													}
 													value={employee.routingNumber}
 												/>
 											</div>
 
 											<div className="space-y-2">
-												<Label htmlFor="accountNumber">Account Number (Last 4)</Label>
-												<Input disabled id="accountNumber" value={employee.accountNumber} />
+												<Label htmlFor="accountNumber">
+													Account Number (Last 4)
+												</Label>
+												<Input
+													disabled
+													id="accountNumber"
+													value={employee.accountNumber}
+												/>
 											</div>
 										</div>
 									</div>
@@ -1066,7 +1195,9 @@ export default function EmployeeProfilePage() {
 								<Percent className="text-primary h-5 w-5" />
 								Tax Information
 							</CardTitle>
-							<CardDescription>Tax withholding and compliance documents</CardDescription>
+							<CardDescription>
+								Tax withholding and compliance documents
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="space-y-4">
@@ -1078,7 +1209,7 @@ export default function EmployeeProfilePage() {
 											onValueChange={(value) =>
 												handleFieldChange(
 													"federalFilingStatus",
-													value as EmployeeProfile["federalFilingStatus"]
+													value as EmployeeProfile["federalFilingStatus"],
 												)
 											}
 											value={employee.federalFilingStatus}
@@ -1088,9 +1219,15 @@ export default function EmployeeProfilePage() {
 											</SelectTrigger>
 											<SelectContent>
 												<SelectItem value="single">Single</SelectItem>
-												<SelectItem value="married">Married Filing Jointly</SelectItem>
-												<SelectItem value="married-separate">Married Filing Separately</SelectItem>
-												<SelectItem value="head-of-household">Head of Household</SelectItem>
+												<SelectItem value="married">
+													Married Filing Jointly
+												</SelectItem>
+												<SelectItem value="married-separate">
+													Married Filing Separately
+												</SelectItem>
+												<SelectItem value="head-of-household">
+													Head of Household
+												</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>
@@ -1102,7 +1239,10 @@ export default function EmployeeProfilePage() {
 											max={20}
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("federalAllowances", Number.parseInt(e.target.value, 10))
+												handleFieldChange(
+													"federalAllowances",
+													Number.parseInt(e.target.value, 10),
+												)
 											}
 											type="number"
 											value={employee.federalAllowances}
@@ -1119,7 +1259,7 @@ export default function EmployeeProfilePage() {
 											onChange={(e) =>
 												handleFieldChange(
 													"additionalWithholding",
-													Number.parseFloat(e.target.value)
+													Number.parseFloat(e.target.value),
 												)
 											}
 											step={1}
@@ -1138,7 +1278,9 @@ export default function EmployeeProfilePage() {
 										<Switch
 											checked={employee.taxExempt}
 											id="taxExempt"
-											onCheckedChange={(checked) => handleFieldChange("taxExempt", checked)}
+											onCheckedChange={(checked) =>
+												handleFieldChange("taxExempt", checked)
+											}
 										/>
 									</div>
 								</div>
@@ -1153,7 +1295,9 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="stateFilingStatus">Filing Status</Label>
 										<Input
 											id="stateFilingStatus"
-											onChange={(e) => handleFieldChange("stateFilingStatus", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("stateFilingStatus", e.target.value)
+											}
 											value={employee.stateFilingStatus}
 										/>
 									</div>
@@ -1165,7 +1309,10 @@ export default function EmployeeProfilePage() {
 											max={20}
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("stateAllowances", Number.parseInt(e.target.value, 10))
+												handleFieldChange(
+													"stateAllowances",
+													Number.parseInt(e.target.value, 10),
+												)
 											}
 											type="number"
 											value={employee.stateAllowances}
@@ -1204,7 +1351,9 @@ export default function EmployeeProfilePage() {
 												<IdCard className="text-muted-foreground h-5 w-5" />
 												<div>
 													<p className="text-sm font-medium">I-9 Form</p>
-													<p className="text-muted-foreground text-xs">Employment eligibility</p>
+													<p className="text-muted-foreground text-xs">
+														Employment eligibility
+													</p>
 												</div>
 											</div>
 											{employee.i9OnFile ? (
@@ -1228,7 +1377,9 @@ export default function EmployeeProfilePage() {
 								<Shield className="text-primary h-5 w-5" />
 								Benefits & Deductions
 							</CardTitle>
-							<CardDescription>Insurance, retirement, and other benefits</CardDescription>
+							<CardDescription>
+								Insurance, retirement, and other benefits
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							{/* Health Insurance */}
@@ -1236,12 +1387,16 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between">
 									<div className="space-y-0.5">
 										<Label htmlFor="healthInsurance">Health Insurance</Label>
-										<p className="text-muted-foreground text-sm">Medical insurance coverage</p>
+										<p className="text-muted-foreground text-sm">
+											Medical insurance coverage
+										</p>
 									</div>
 									<Switch
 										checked={employee.healthInsurance}
 										id="healthInsurance"
-										onCheckedChange={(checked) => handleFieldChange("healthInsurance", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("healthInsurance", checked)
+										}
 									/>
 								</div>
 
@@ -1251,19 +1406,26 @@ export default function EmployeeProfilePage() {
 											<Label htmlFor="healthPlan">Plan Type</Label>
 											<Input
 												id="healthPlan"
-												onChange={(e) => handleFieldChange("healthInsurancePlan", e.target.value)}
+												onChange={(e) =>
+													handleFieldChange(
+														"healthInsurancePlan",
+														e.target.value,
+													)
+												}
 												value={employee.healthInsurancePlan}
 											/>
 										</div>
 										<div className="space-y-2">
-											<Label htmlFor="healthDeduction">Deduction ($/pay period)</Label>
+											<Label htmlFor="healthDeduction">
+												Deduction ($/pay period)
+											</Label>
 											<Input
 												id="healthDeduction"
 												min={0}
 												onChange={(e) =>
 													handleFieldChange(
 														"healthInsuranceDeduction",
-														Number.parseFloat(e.target.value)
+														Number.parseFloat(e.target.value),
 													)
 												}
 												step={0.01}
@@ -1282,19 +1444,25 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between">
 									<div className="space-y-0.5">
 										<Label htmlFor="dentalInsurance">Dental Insurance</Label>
-										<p className="text-muted-foreground text-sm">Dental coverage</p>
+										<p className="text-muted-foreground text-sm">
+											Dental coverage
+										</p>
 									</div>
 									<Switch
 										checked={employee.dentalInsurance}
 										id="dentalInsurance"
-										onCheckedChange={(checked) => handleFieldChange("dentalInsurance", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("dentalInsurance", checked)
+										}
 									/>
 								</div>
 
 								{employee.dentalInsurance && (
 									<div className="ml-6 border-l-2 pl-4">
 										<div className="space-y-2">
-											<Label htmlFor="dentalDeduction">Deduction ($/pay period)</Label>
+											<Label htmlFor="dentalDeduction">
+												Deduction ($/pay period)
+											</Label>
 											<Input
 												className="max-w-xs"
 												id="dentalDeduction"
@@ -1302,7 +1470,7 @@ export default function EmployeeProfilePage() {
 												onChange={(e) =>
 													handleFieldChange(
 														"dentalInsuranceDeduction",
-														Number.parseFloat(e.target.value)
+														Number.parseFloat(e.target.value),
 													)
 												}
 												step={0.01}
@@ -1321,19 +1489,25 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between">
 									<div className="space-y-0.5">
 										<Label htmlFor="visionInsurance">Vision Insurance</Label>
-										<p className="text-muted-foreground text-sm">Vision coverage</p>
+										<p className="text-muted-foreground text-sm">
+											Vision coverage
+										</p>
 									</div>
 									<Switch
 										checked={employee.visionInsurance}
 										id="visionInsurance"
-										onCheckedChange={(checked) => handleFieldChange("visionInsurance", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("visionInsurance", checked)
+										}
 									/>
 								</div>
 
 								{employee.visionInsurance && (
 									<div className="ml-6 border-l-2 pl-4">
 										<div className="space-y-2">
-											<Label htmlFor="visionDeduction">Deduction ($/pay period)</Label>
+											<Label htmlFor="visionDeduction">
+												Deduction ($/pay period)
+											</Label>
 											<Input
 												className="max-w-xs"
 												id="visionDeduction"
@@ -1341,7 +1515,7 @@ export default function EmployeeProfilePage() {
 												onChange={(e) =>
 													handleFieldChange(
 														"visionInsuranceDeduction",
-														Number.parseFloat(e.target.value)
+														Number.parseFloat(e.target.value),
 													)
 												}
 												step={0.01}
@@ -1360,19 +1534,25 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between">
 									<div className="space-y-0.5">
 										<Label htmlFor="retirement401k">401(k) Retirement</Label>
-										<p className="text-muted-foreground text-sm">Retirement savings plan</p>
+										<p className="text-muted-foreground text-sm">
+											Retirement savings plan
+										</p>
 									</div>
 									<Switch
 										checked={employee.retirement401k}
 										id="retirement401k"
-										onCheckedChange={(checked) => handleFieldChange("retirement401k", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("retirement401k", checked)
+										}
 									/>
 								</div>
 
 								{employee.retirement401k && (
 									<div className="ml-6 grid gap-4 border-l-2 pl-4 md:grid-cols-2">
 										<div className="space-y-2">
-											<Label htmlFor="retirement401kPercent">Contribution (%)</Label>
+											<Label htmlFor="retirement401kPercent">
+												Contribution (%)
+											</Label>
 											<Input
 												id="retirement401kPercent"
 												max={100}
@@ -1380,7 +1560,7 @@ export default function EmployeeProfilePage() {
 												onChange={(e) =>
 													handleFieldChange(
 														"retirement401kPercent",
-														Number.parseFloat(e.target.value)
+														Number.parseFloat(e.target.value),
 													)
 												}
 												step={0.5}
@@ -1409,19 +1589,25 @@ export default function EmployeeProfilePage() {
 								<div className="flex items-center justify-between">
 									<div className="space-y-0.5">
 										<Label htmlFor="lifeInsurance">Life Insurance</Label>
-										<p className="text-muted-foreground text-sm">Life insurance coverage</p>
+										<p className="text-muted-foreground text-sm">
+											Life insurance coverage
+										</p>
 									</div>
 									<Switch
 										checked={employee.lifeInsurance}
 										id="lifeInsurance"
-										onCheckedChange={(checked) => handleFieldChange("lifeInsurance", checked)}
+										onCheckedChange={(checked) =>
+											handleFieldChange("lifeInsurance", checked)
+										}
 									/>
 								</div>
 
 								{employee.lifeInsurance && (
 									<div className="ml-6 border-l-2 pl-4">
 										<div className="space-y-2">
-											<Label htmlFor="lifeInsuranceCoverage">Coverage Amount ($)</Label>
+											<Label htmlFor="lifeInsuranceCoverage">
+												Coverage Amount ($)
+											</Label>
 											<Input
 												className="max-w-xs"
 												id="lifeInsuranceCoverage"
@@ -1429,7 +1615,7 @@ export default function EmployeeProfilePage() {
 												onChange={(e) =>
 													handleFieldChange(
 														"lifeInsuranceCoverage",
-														Number.parseFloat(e.target.value)
+														Number.parseFloat(e.target.value),
 													)
 												}
 												step={10_000}
@@ -1452,7 +1638,9 @@ export default function EmployeeProfilePage() {
 								<Calendar className="text-primary h-5 w-5" />
 								Time Off & Leave
 							</CardTitle>
-							<CardDescription>PTO, sick leave, and vacation tracking</CardDescription>
+							<CardDescription>
+								PTO, sick leave, and vacation tracking
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							<div className="grid gap-6 md:grid-cols-2">
@@ -1463,9 +1651,13 @@ export default function EmployeeProfilePage() {
 											<div className="flex items-center justify-between">
 												<div>
 													<p className="text-sm font-medium">PTO Balance</p>
-													<p className="text-muted-foreground text-xs">Paid Time Off</p>
+													<p className="text-muted-foreground text-xs">
+														Paid Time Off
+													</p>
 												</div>
-												<p className="text-2xl font-bold">{employee.ptoBalance}</p>
+												<p className="text-2xl font-bold">
+													{employee.ptoBalance}
+												</p>
 											</div>
 											<div className="space-y-1">
 												<div className="flex justify-between text-xs">
@@ -1487,15 +1679,23 @@ export default function EmployeeProfilePage() {
 										<div className="space-y-4">
 											<div className="flex items-center justify-between">
 												<div>
-													<p className="text-sm font-medium">Sick Leave Balance</p>
-													<p className="text-muted-foreground text-xs">Sick Days</p>
+													<p className="text-sm font-medium">
+														Sick Leave Balance
+													</p>
+													<p className="text-muted-foreground text-xs">
+														Sick Days
+													</p>
 												</div>
-												<p className="text-2xl font-bold">{employee.sickLeaveBalance}</p>
+												<p className="text-2xl font-bold">
+													{employee.sickLeaveBalance}
+												</p>
 											</div>
 											<div className="space-y-1">
 												<div className="flex justify-between text-xs">
 													<span>Accrual Rate</span>
-													<span>{employee.sickLeaveAccrualRate} hrs/period</span>
+													<span>
+														{employee.sickLeaveAccrualRate} hrs/period
+													</span>
 												</div>
 												<div className="flex justify-between text-xs">
 													<span>Used This Year</span>
@@ -1513,12 +1713,17 @@ export default function EmployeeProfilePage() {
 								<h3 className="font-medium">Accrual Settings</h3>
 								<div className="grid gap-6 md:grid-cols-2">
 									<div className="space-y-2">
-										<Label htmlFor="ptoAccrual">PTO Accrual (hours/pay period)</Label>
+										<Label htmlFor="ptoAccrual">
+											PTO Accrual (hours/pay period)
+										</Label>
 										<Input
 											id="ptoAccrual"
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("ptoAccrualRate", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"ptoAccrualRate",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={0.01}
 											type="number"
@@ -1527,12 +1732,17 @@ export default function EmployeeProfilePage() {
 									</div>
 
 									<div className="space-y-2">
-										<Label htmlFor="sickLeaveAccrual">Sick Leave Accrual (hours/pay period)</Label>
+										<Label htmlFor="sickLeaveAccrual">
+											Sick Leave Accrual (hours/pay period)
+										</Label>
 										<Input
 											id="sickLeaveAccrual"
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("sickLeaveAccrualRate", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"sickLeaveAccrualRate",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={0.01}
 											type="number"
@@ -1553,7 +1763,9 @@ export default function EmployeeProfilePage() {
 								<Shield className="text-primary h-5 w-5" />
 								Skills & Certifications
 							</CardTitle>
-							<CardDescription>Professional skills, certifications, and licenses</CardDescription>
+							<CardDescription>
+								Professional skills, certifications, and licenses
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
 							{/* Skills */}
@@ -1589,7 +1801,8 @@ export default function EmployeeProfilePage() {
 														</p>
 														{cert.expiryDate && (
 															<p className="text-muted-foreground text-xs">
-																Expires: {new Date(cert.expiryDate).toLocaleDateString()}
+																Expires:{" "}
+																{new Date(cert.expiryDate).toLocaleDateString()}
 															</p>
 														)}
 														{cert.certificationNumber && (
@@ -1625,8 +1838,12 @@ export default function EmployeeProfilePage() {
 															{license.state} • #{license.number}
 														</p>
 														<p className="text-muted-foreground text-xs">
-															Issued: {new Date(license.issueDate).toLocaleDateString()} • Expires:{" "}
-															{new Date(license.expiryDate).toLocaleDateString()}
+															Issued:{" "}
+															{new Date(license.issueDate).toLocaleDateString()}{" "}
+															• Expires:{" "}
+															{new Date(
+																license.expiryDate,
+															).toLocaleDateString()}
 														</p>
 													</div>
 													<CheckCircle2 className="text-success h-5 w-5" />
@@ -1647,13 +1864,18 @@ export default function EmployeeProfilePage() {
 								<h3 className="font-medium">Performance</h3>
 								<div className="grid gap-4 md:grid-cols-3">
 									<div className="space-y-2">
-										<Label htmlFor="performanceRating">Performance Rating</Label>
+										<Label htmlFor="performanceRating">
+											Performance Rating
+										</Label>
 										<Input
 											id="performanceRating"
 											max={5}
 											min={0}
 											onChange={(e) =>
-												handleFieldChange("performanceRating", Number.parseFloat(e.target.value))
+												handleFieldChange(
+													"performanceRating",
+													Number.parseFloat(e.target.value),
+												)
 											}
 											step={0.1}
 											type="number"
@@ -1665,7 +1887,9 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="lastReviewDate">Last Review</Label>
 										<Input
 											id="lastReviewDate"
-											onChange={(e) => handleFieldChange("lastReviewDate", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("lastReviewDate", e.target.value)
+											}
 											type="date"
 											value={employee.lastReviewDate}
 										/>
@@ -1675,7 +1899,9 @@ export default function EmployeeProfilePage() {
 										<Label htmlFor="nextReviewDate">Next Review</Label>
 										<Input
 											id="nextReviewDate"
-											onChange={(e) => handleFieldChange("nextReviewDate", e.target.value)}
+											onChange={(e) =>
+												handleFieldChange("nextReviewDate", e.target.value)
+											}
 											type="date"
 											value={employee.nextReviewDate}
 										/>

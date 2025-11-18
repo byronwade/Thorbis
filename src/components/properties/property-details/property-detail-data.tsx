@@ -24,16 +24,24 @@
 import { notFound, redirect } from "next/navigation";
 import { ToolbarStatsProvider } from "@/components/layout/toolbar-stats-provider";
 import { PropertyPageContent } from "@/components/properties/property-details/property-page-content";
-import { getActiveCompanyId, isActiveCompanyOnboardingComplete } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	isActiveCompanyOnboardingComplete,
+} from "@/lib/auth/company-context";
 import { generatePropertyStats } from "@/lib/stats/utils";
-import { hasReportableError, isMissingColumnError } from "@/lib/supabase/error-helpers";
+import {
+	hasReportableError,
+	isMissingColumnError,
+} from "@/lib/supabase/error-helpers";
 import { createClient } from "@/lib/supabase/server";
 
 type PropertyDetailDataProps = {
 	propertyId: string;
 };
 
-export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps) {
+export async function PropertyDetailData({
+	propertyId,
+}: PropertyDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -122,7 +130,7 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
           name,
           avatar
         )
-      `
+      `,
 			)
 			.eq("property_id", propertyId)
 			.eq("company_id", activeCompanyId)
@@ -138,7 +146,7 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 
 		// 4. Upcoming schedules/appointments
 		supabase
-			.from("schedules")
+			.from("appointments")
 			.select(
 				`
         id,
@@ -154,7 +162,7 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
           job_number,
           title
         )
-      `
+      `,
 			)
 			.eq("property_id", propertyId)
 			.gte("start_time", new Date().toISOString())
@@ -164,7 +172,9 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 		// 5. Estimates for this property
 		supabase
 			.from("estimates")
-			.select("id, estimate_number, title, total_amount, status, created_at, job_id, property_id")
+			.select(
+				"id, estimate_number, title, total_amount, status, created_at, job_id, property_id",
+			)
 			.eq("company_id", activeCompanyId)
 			.is("deleted_at", null)
 			.eq("property_id", propertyId)
@@ -175,7 +185,7 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 		supabase
 			.from("invoices")
 			.select(
-				"id, invoice_number, title, total_amount, balance_amount, status, created_at, job_id, property_id"
+				"id, invoice_number, title, total_amount, balance_amount, status, created_at, job_id, property_id",
 			)
 			.eq("company_id", activeCompanyId)
 			.or(`property_id.eq.${propertyId}`)
@@ -185,7 +195,9 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 		// 7. Maintenance plans for this property
 		supabase
 			.from("service_plans")
-			.select("id, name, description, frequency, status, created_at, next_service_date")
+			.select(
+				"id, name, description, frequency, status, created_at, next_service_date",
+			)
 			.eq("property_id", propertyId)
 			.is("deleted_at", null)
 			.order("created_at", { ascending: false }),
@@ -252,7 +264,7 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 				`
           *,
           customer:customers!customer_id(id, first_name, last_name)
-        `
+        `,
 			)
 			.eq("company_id", activeCompanyId)
 			.order("created_at", { ascending: false })
@@ -273,7 +285,8 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 		await buildPropertyCommunicationsQuery(filtersWithProperty);
 
 	const shouldFallbackToFiltersWithoutProperty =
-		propertyFilter && isMissingColumnError(propertyCommunicationsError, "property_id");
+		propertyFilter &&
+		isMissingColumnError(propertyCommunicationsError, "property_id");
 
 	if (shouldFallbackToFiltersWithoutProperty) {
 		if (propertyCommunicationFilters.length > 0) {
@@ -299,16 +312,22 @@ export async function PropertyDetailData({ propertyId }: PropertyDetailDataProps
 	// Calculate metrics for stats bar
 	const totalJobs = jobs.length;
 	const activeJobs = jobs.filter(
-		(job: any) => job.status && !["completed", "cancelled"].includes(job.status.toLowerCase())
+		(job: any) =>
+			job.status &&
+			!["completed", "cancelled"].includes(job.status.toLowerCase()),
 	).length;
 	// Access financial domain with optional chaining
 	const totalRevenue = jobs.reduce(
 		(sum: number, job: any) => sum + (job.financial?.total_amount ?? 0),
-		0
+		0,
 	);
-	const completedJobs = jobs.filter((job: any) => job.status?.toLowerCase() === "completed");
-	const lastServiceDate = completedJobs.length > 0 ? completedJobs[0]?.created_at || null : null;
-	const nextScheduledDate = schedules.length > 0 ? schedules[0]?.start_time || null : null;
+	const completedJobs = jobs.filter(
+		(job: any) => job.status?.toLowerCase() === "completed",
+	);
+	const lastServiceDate =
+		completedJobs.length > 0 ? completedJobs[0]?.created_at || null : null;
+	const nextScheduledDate =
+		schedules.length > 0 ? schedules[0]?.start_time || null : null;
 	const equipmentCount = equipment.length;
 
 	const metrics = {

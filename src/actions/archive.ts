@@ -477,7 +477,7 @@ export async function getArchiveStats(): Promise<
 			equipment: Number(result.equipment_count) || 0,
 			purchase_order: Number(result.purchase_order_count) || 0,
 		};
-
+	});
 }
 
 /**

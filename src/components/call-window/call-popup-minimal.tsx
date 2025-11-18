@@ -116,24 +116,39 @@ export function CallPopupMinimal({
 		customerData?.customer &&
 		typeof customerData.customer === "object" &&
 		"avatar_url" in customerData.customer
-			? ((customerData.customer as { avatar_url?: string }).avatar_url ?? undefined)
+			? ((customerData.customer as { avatar_url?: string }).avatar_url ??
+				undefined)
 			: undefined;
 
 	return (
 		<div
 			className={cn(
 				"bg-card fixed right-4 bottom-4 z-50 w-80 rounded-lg border shadow-2xl transition-all duration-300",
-				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+				isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
 			)}
 		>
 			{/* Header */}
 			<div className="bg-card/50 flex items-center justify-between border-b p-3">
 				<div className="flex items-center gap-2">
-					<div className={cn("h-2 w-2 animate-pulse rounded-full", getStatusColor())} />
+					<div
+						className={cn(
+							"h-2 w-2 animate-pulse rounded-full",
+							getStatusColor(),
+						)}
+					/>
 					<span className="text-sm font-medium capitalize">{status}</span>
-					{duration && <span className="text-muted-foreground font-mono text-xs">{duration}</span>}
+					{duration && (
+						<span className="text-muted-foreground font-mono text-xs">
+							{duration}
+						</span>
+					)}
 				</div>
-				<Button className="h-6 w-6" onClick={onClose} size="icon" variant="ghost">
+				<Button
+					className="h-6 w-6"
+					onClick={onClose}
+					size="icon"
+					variant="ghost"
+				>
 					<X className="h-3 w-3" />
 				</Button>
 			</div>
@@ -157,7 +172,9 @@ export function CallPopupMinimal({
 								</Badge>
 							)}
 						</div>
-						<p className="text-muted-foreground font-mono text-xs">{callerNumber}</p>
+						<p className="text-muted-foreground font-mono text-xs">
+							{callerNumber}
+						</p>
 						{customerData?.customer?.email && (
 							<p className="text-muted-foreground truncate text-xs">
 								{customerData.customer.email}
@@ -188,7 +205,11 @@ export function CallPopupMinimal({
 							size="icon"
 							variant={isMuted ? "destructive" : "ghost"}
 						>
-							{isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+							{isMuted ? (
+								<MicOff className="h-4 w-4" />
+							) : (
+								<Mic className="h-4 w-4" />
+							)}
 						</Button>
 
 						<Button

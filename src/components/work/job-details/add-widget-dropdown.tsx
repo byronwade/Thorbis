@@ -44,7 +44,7 @@ export function AddWidgetDropdown() {
 
 	// Get available widgets (not already added)
 	const availableWidgets = Object.entries(WIDGET_METADATA).filter(
-		([widgetType]) => !widgets.some((w) => w.type === widgetType)
+		([widgetType]) => !widgets.some((w) => w.type === widgetType),
 	);
 
 	// Group widgets by category
@@ -118,7 +118,7 @@ export function AddWidgetDropdown() {
 			items: category.items.filter(
 				(item) =>
 					item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					item.description.toLowerCase().includes(searchQuery.toLowerCase())
+					item.description.toLowerCase().includes(searchQuery.toLowerCase()),
 			),
 		}))
 		.filter((category) => category.items.length > 0);
@@ -129,7 +129,10 @@ export function AddWidgetDropdown() {
 		setSearchQuery("");
 	};
 
-	const totalAvailable = widgetsByCategory.reduce((sum, cat) => sum + cat.items.length, 0);
+	const totalAvailable = widgetsByCategory.reduce(
+		(sum, cat) => sum + cat.items.length,
+		0,
+	);
 
 	return (
 		<DropdownMenu onOpenChange={setOpen} open={open}>
@@ -139,7 +142,7 @@ export function AddWidgetDropdown() {
 						"flex w-full items-center justify-between gap-2 rounded-md px-2 py-2",
 						"text-sm font-medium transition-colors",
 						"hover:bg-accent hover:text-accent-foreground",
-						"focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none"
+						"focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
 					)}
 					type="button"
 				>
@@ -147,7 +150,9 @@ export function AddWidgetDropdown() {
 						<Plus className="h-4 w-4" />
 						<span>Add Widget</span>
 					</div>
-					<ChevronRight className={cn("h-4 w-4 transition-transform", open && "rotate-90")} />
+					<ChevronRight
+						className={cn("h-4 w-4 transition-transform", open && "rotate-90")}
+					/>
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="start" className="w-[320px]" side="right">
@@ -174,7 +179,10 @@ export function AddWidgetDropdown() {
 					) : (
 						<div className="flex flex-col gap-2">
 							{filteredCategories.map((category) => (
-								<div className="relative flex w-full min-w-0 flex-col p-2" key={category.label}>
+								<div
+									className="relative flex w-full min-w-0 flex-col p-2"
+									key={category.label}
+								>
 									{/* Category Label - matches SidebarGroupLabel styling */}
 									<div className="text-muted-foreground flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium">
 										{category.label}
@@ -188,13 +196,15 @@ export function AddWidgetDropdown() {
 													"flex flex-col gap-1 rounded-md p-2 text-left outline-hidden transition-all",
 													"focus-visible:ring-ring focus-visible:ring-2",
 													"hover:bg-accent hover:text-accent-foreground",
-													"min-h-[44px] w-full border border-transparent"
+													"min-h-[44px] w-full border border-transparent",
 												)}
 												key={widget.type}
 												onClick={() => handleAddWidget(widget.type)}
 												type="button"
 											>
-												<span className="text-[0.8rem] font-medium">{widget.title}</span>
+												<span className="text-[0.8rem] font-medium">
+													{widget.title}
+												</span>
 												<span className="text-muted-foreground text-[0.7rem] leading-tight">
 													{widget.description}
 												</span>

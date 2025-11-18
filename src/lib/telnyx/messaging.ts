@@ -7,7 +7,54 @@
  * - Managing messaging profiles
  */
 
-import { telnyxClient } from "./client";
+const TELNYX_API_BASE = "https://api.telnyx.com/v2";
+
+function assertTelnyxApiKey() {
+	const apiKey = process.env.TELNYX_API_KEY;
+	if (!apiKey) {
+		throw new Error("TELNYX_API_KEY is not configured");
+	}
+	return apiKey;
+}
+
+async function telnyxRequest(
+	path: string,
+	init?: RequestInit & { query?: Record<string, string | number | undefined> },
+) {
+	const apiKey = assertTelnyxApiKey();
+	const url = new URL(`${TELNYX_API_BASE}${path}`);
+	if (init?.query) {
+		for (const [key, value] of Object.entries(init.query)) {
+			if (value !== undefined && value !== null) {
+				url.searchParams.set(key, String(value));
+			}
+		}
+	}
+
+	const response = await fetch(url, {
+		...init,
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${apiKey}`,
+			...(init?.headers || {}),
+		},
+	});
+
+	const data = await response.json();
+	if (!response.ok) {
+		const detail = data?.errors?.[0]?.detail || response.statusText;
+		throw new Error(`Telnyx ${response.status}: ${detail}`);
+	}
+
+	return data;
+}
+
+async function telnyxMessageRequest(body: Record<string, unknown>) {
+	return telnyxRequest("/messages", {
+		method: "POST",
+		body: JSON.stringify(body),
+	});
+}
 
 /**
  * Message types
@@ -38,7 +85,7 @@ export async function sendSMS(params: {
 	useProfileWebhooks?: boolean;
 }) {
 	try {
-		const message = await (telnyxClient.messages as any).create({
+		const message = await telnyxMessageRequest({
 			to: params.to,
 			from: params.from,
 			text: params.text,
@@ -73,7 +120,7 @@ export async function sendMMS(params: {
 	subject?: string;
 }) {
 	try {
-		const message = await (telnyxClient.messages as any).create({
+		const message = await telnyxMessageRequest({
 			to: params.to,
 			from: params.from,
 			text: params.text,
@@ -102,7 +149,7 @@ export async function sendMMS(params: {
  */
 export async function getMessage(messageId: string) {
 	try {
-		const message = await (telnyxClient.messages as any).retrieve(messageId);
+		const message = await telnyxRequest(`/messages/${messageId}`);
 
 		return {
 			success: true,
@@ -111,7 +158,8 @@ export async function getMessage(messageId: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to retrieve message",
+			error:
+				error instanceof Error ? error.message : "Failed to retrieve message",
 		};
 	}
 }
@@ -127,15 +175,13 @@ export async function listMessages(params?: {
 	filterDirection?: "inbound" | "outbound";
 }) {
 	try {
-		const messages = await (telnyxClient.messages as any).list({
-			page: {
-				size: params?.pageSize || 20,
-				number: params?.pageNumber || 1,
-			},
-			filter: {
-				from: params?.filterFrom,
-				to: params?.filterTo,
-				direction: params?.filterDirection,
+		const messages = await telnyxRequest("/messages", {
+			query: {
+				"page[size]": params?.pageSize ?? 20,
+				"page[number]": params?.pageNumber ?? 1,
+				"filter[from]": params?.filterFrom,
+				"filter[to]": params?.filterTo,
+				"filter[direction]": params?.filterDirection,
 			},
 		});
 
@@ -169,8 +215,8 @@ export async function sendBulkSMS(params: {
 					from: params.from,
 					text: params.text,
 					webhookUrl: params.webhookUrl,
-				})
-			)
+				}),
+			),
 		);
 
 		const successful = results.filter((r) => r.status === "fulfilled").length;
@@ -208,7 +254,9 @@ export async function validatePhoneNumber(phoneNumber: string) {
 		}
 
 		// Ensure it starts with + for international format
-		const formattedNumber = cleanNumber.startsWith("+") ? cleanNumber : `+${cleanNumber}`;
+		const formattedNumber = cleanNumber.startsWith("+")
+			? cleanNumber
+			: `+${cleanNumber}`;
 
 		return {
 			success: true,
@@ -217,7 +265,10 @@ export async function validatePhoneNumber(phoneNumber: string) {
 	} catch (error) {
 		return {
 			success: false,
-			error: error instanceof Error ? error.message : "Failed to validate phone number",
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to validate phone number",
 		};
 	}
 }

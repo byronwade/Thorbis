@@ -25,7 +25,9 @@ const CUSTOMER_COLUMNS: Array<{
 	{ id: "inactive", name: "Inactive", accentColor: "#6B7280" },
 ];
 
-const columnLabel = new Map(CUSTOMER_COLUMNS.map((column) => [column.id, column.name]));
+const columnLabel = new Map(
+	CUSTOMER_COLUMNS.map((column) => [column.id, column.name]),
+);
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
 	style: "currency",
@@ -39,7 +41,7 @@ export function CustomersKanban({ customers }: { customers: Customer[] }) {
 				const columnItems = items.filter((item) => item.columnId === columnId);
 				const total = columnItems.reduce(
 					(sum, item) => sum + (item.entity as Customer).totalValue,
-					0
+					0,
 				);
 				return { count: columnItems.length, total };
 			}}
@@ -54,11 +56,15 @@ export function CustomersKanban({ customers }: { customers: Customer[] }) {
 				customer,
 			})}
 			renderCard={(item) => (
-				<CustomerCard item={{ ...item, customer: item.entity } as CustomersKanbanItem} />
+				<CustomerCard
+					item={{ ...item, customer: item.entity } as CustomersKanbanItem}
+				/>
 			)}
 			renderDragOverlay={(item) => (
 				<div className="border-border/70 bg-background/95 w-[280px] rounded-xl border p-4 shadow-lg">
-					<CustomerCard item={{ ...item, customer: item.entity } as CustomersKanbanItem} />
+					<CustomerCard
+						item={{ ...item, customer: item.entity } as CustomersKanbanItem}
+					/>
 				</div>
 			)}
 			showTotals={true}
@@ -76,14 +82,16 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 		<div className="space-y-3">
 			<div className="flex items-start justify-between gap-3">
 				<div className="space-y-1">
-					<h3 className="text-foreground text-sm font-semibold">{customer.name}</h3>
+					<h3 className="text-foreground text-sm font-semibold">
+						{customer.name}
+					</h3>
 					<p className="text-muted-foreground text-xs">{customer.contact}</p>
 					<div className="flex flex-wrap items-center gap-2">
 						<Badge
 							className={cn(
 								"text-xs",
 								columnId === "active" && "bg-primary/10 text-primary",
-								columnId === "prospect" && "bg-primary/10 text-primary"
+								columnId === "prospect" && "bg-primary/10 text-primary",
 							)}
 							variant={
 								columnId === "active"
@@ -96,7 +104,10 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 							{columnLabel.get(columnId as CustomerStatus) ?? columnId}
 						</Badge>
 						{customer.totalValue > 0 && (
-							<Badge className="bg-muted/60 text-muted-foreground" variant="outline">
+							<Badge
+								className="bg-muted/60 text-muted-foreground"
+								variant="outline"
+							>
 								{currencyFormatter.format(customer.totalValue / 100)}
 							</Badge>
 						)}
@@ -121,7 +132,9 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 					<div className="flex items-center gap-2">
 						<Users className="text-primary size-4" />
 						<span className="truncate">
-							{[customer.address, customer.city, customer.state].filter(Boolean).join(", ")}
+							{[customer.address, customer.city, customer.state]
+								.filter(Boolean)
+								.join(", ")}
 						</span>
 					</div>
 				)}
@@ -129,9 +142,16 @@ function CustomerCard({ item }: { item: CustomersKanbanItem }) {
 
 			<div className="text-muted-foreground flex items-center justify-between pt-2 text-xs">
 				<span>
-					{customer.lastService !== "None" ? `Last: ${customer.lastService}` : "No services"}
+					{customer.lastService !== "None"
+						? `Last: ${customer.lastService}`
+						: "No services"}
 				</span>
-				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
+				<Button
+					asChild
+					className="text-primary gap-1 text-xs"
+					size="sm"
+					variant="ghost"
+				>
 					<Link href={`/dashboard/customers/${customer.id}`}>
 						View
 						<ArrowUpRight className="size-3.5" />

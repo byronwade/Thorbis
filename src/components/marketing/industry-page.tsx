@@ -27,14 +27,20 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 						<h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
 							{industry.heroTitle}
 						</h1>
-						<p className="text-muted-foreground text-lg">{industry.heroDescription}</p>
+						<p className="text-muted-foreground text-lg">
+							{industry.heroDescription}
+						</p>
 						<div className="flex flex-wrap gap-3">
 							<Button asChild size="lg">
-								<Link href={industry.primaryCta.href}>{industry.primaryCta.label}</Link>
+								<Link href={industry.primaryCta.href}>
+									{industry.primaryCta.label}
+								</Link>
 							</Button>
 							{industry.secondaryCta ? (
 								<Button asChild size="lg" variant="outline">
-									<Link href={industry.secondaryCta.href}>{industry.secondaryCta.label}</Link>
+									<Link href={industry.secondaryCta.href}>
+										{industry.secondaryCta.label}
+									</Link>
 								</Button>
 							) : null}
 						</div>
@@ -68,7 +74,9 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 			<section className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
 				<div className="bg-muted/20 rounded-2xl border p-8">
 					<h2 className="text-xl font-semibold">Operate with confidence</h2>
-					<p className="text-muted-foreground mt-4 leading-relaxed">{industry.summary}</p>
+					<p className="text-muted-foreground mt-4 leading-relaxed">
+						{industry.summary}
+					</p>
 				</div>
 				<div className="bg-background rounded-2xl border p-8">
 					<h3 className="text-lg font-semibold">Industry challenges</h3>
@@ -93,7 +101,10 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 								className="bg-muted/20 rounded-2xl border p-6 transition-shadow hover:shadow-md"
 								key={prop.title}
 							>
-								<Icon aria-hidden="true" className="text-secondary mb-4 size-8" />
+								<Icon
+									aria-hidden="true"
+									className="text-secondary mb-4 size-8"
+								/>
 								<h3 className="text-lg font-semibold">{prop.title}</h3>
 								<p className="text-muted-foreground mt-2 text-sm leading-relaxed">
 									{prop.description}
@@ -111,7 +122,9 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 						{industry.playbook.map((item) => (
 							<div className="space-y-2" key={item.title}>
 								<h3 className="text-lg font-semibold">{item.title}</h3>
-								<p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+								<p className="text-muted-foreground text-sm leading-relaxed">
+									{item.description}
+								</p>
 							</div>
 						))}
 					</div>
@@ -124,9 +137,15 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 								className="border-secondary/30 bg-background/80 rounded-xl border border-dashed p-4"
 								key={stat.label}
 							>
-								<dt className="text-muted-foreground text-sm font-medium">{stat.label}</dt>
-								<dd className="text-secondary text-2xl font-semibold">{stat.value}</dd>
-								<p className="text-muted-foreground mt-1 text-xs">{stat.description}</p>
+								<dt className="text-muted-foreground text-sm font-medium">
+									{stat.label}
+								</dt>
+								<dd className="text-secondary text-2xl font-semibold">
+									{stat.value}
+								</dd>
+								<p className="text-muted-foreground mt-1 text-xs">
+									{stat.description}
+								</p>
 							</div>
 						))}
 					</dl>
@@ -135,10 +154,14 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 
 			{industry.testimonial ? (
 				<section className="bg-secondary/10 rounded-3xl border p-10 text-center">
-					<p className="text-secondary text-2xl font-semibold">“{industry.testimonial.quote}”</p>
+					<p className="text-secondary text-2xl font-semibold">
+						“{industry.testimonial.quote}”
+					</p>
 					<p className="text-muted-foreground mt-4">
 						— {industry.testimonial.attribution}
-						{industry.testimonial.role ? `, ${industry.testimonial.role}` : null}
+						{industry.testimonial.role
+							? `, ${industry.testimonial.role}`
+							: null}
 					</p>
 				</section>
 			) : null}
@@ -148,7 +171,9 @@ export function IndustryPage({ industry }: IndustryPageProps) {
 				<Accordion className="w-full" collapsible type="single">
 					{industry.faq.map((item, index) => (
 						<AccordionItem key={item.question} value={`industry-faq-${index}`}>
-							<AccordionTrigger className="text-left">{item.question}</AccordionTrigger>
+							<AccordionTrigger className="text-left">
+								{item.question}
+							</AccordionTrigger>
 							<AccordionContent className="text-muted-foreground text-sm leading-relaxed">
 								{item.answer}
 							</AccordionContent>

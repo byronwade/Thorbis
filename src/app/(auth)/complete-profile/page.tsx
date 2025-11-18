@@ -44,7 +44,10 @@ export default async function CompleteProfilePage() {
 
 	// Get OAuth avatar from user metadata if available
 	const oauthAvatar =
-		user.user_metadata?.avatar_url || user.user_metadata?.picture || profile?.avatar || null;
+		user.user_metadata?.avatar_url ||
+		user.user_metadata?.picture ||
+		profile?.avatar ||
+		null;
 
 	return (
 		<div className="bg-background relative flex min-h-screen flex-col overflow-hidden md:items-center md:justify-center">

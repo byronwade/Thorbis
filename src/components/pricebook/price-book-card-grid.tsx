@@ -35,7 +35,10 @@ export function PriceBookCardGrid({
 		return (
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 				{Array.from({ length: 8 }).map((_, i) => (
-					<div className="bg-muted aspect-square animate-pulse rounded-lg" key={i} />
+					<div
+						className="bg-muted aspect-square animate-pulse rounded-lg"
+						key={i}
+					/>
 				))}
 			</div>
 		);
@@ -46,7 +49,9 @@ export function PriceBookCardGrid({
 			<div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
 				<Package className="text-muted-foreground/50 mb-4 h-12 w-12" />
 				<h3 className="mb-2 text-lg font-semibold">{emptyMessage}</h3>
-				<p className="text-muted-foreground text-sm">Try adjusting your filters or search term</p>
+				<p className="text-muted-foreground text-sm">
+					Try adjusting your filters or search term
+				</p>
 			</div>
 		);
 	}

@@ -1,6 +1,13 @@
 "use client";
 
-import { Archive, Download, Eye, MoreHorizontal, Package, Send } from "lucide-react";
+import {
+	Archive,
+	Download,
+	Eye,
+	MoreHorizontal,
+	Package,
+	Send,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -40,7 +47,9 @@ type JobPurchaseOrdersTableProps = {
 	purchaseOrders: PurchaseOrder[];
 };
 
-export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTableProps) {
+export function JobPurchaseOrdersTable({
+	purchaseOrders,
+}: JobPurchaseOrdersTableProps) {
 	const [showArchiveDialog, setShowArchiveDialog] = useState(false);
 	const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 	const [isArchiving, setIsArchiving] = useState(false);
@@ -51,7 +60,7 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				minimumFractionDigits: 0,
 				maximumFractionDigits: 0,
 			}),
-		[]
+		[],
 	);
 
 	const handleArchive = useCallback(async () => {
@@ -61,11 +70,14 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 
 		setIsArchiving(true);
 		try {
-			const result = await bulkArchive(Array.from(selectedIds), "purchase_order");
+			const result = await bulkArchive(
+				Array.from(selectedIds),
+				"purchase_order",
+			);
 
 			if (result.success && result.data) {
 				toast.success(
-					`Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`
+					`Successfully archived ${result.data.archived} purchase order${result.data.archived === 1 ? "" : "s"}`,
 				);
 				setShowArchiveDialog(false);
 				setSelectedIds(new Set());
@@ -128,7 +140,10 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				width: "w-48",
 				shrink: true,
 				render: (po) => (
-					<span className="text-foreground block truncate text-sm" title={po.vendor}>
+					<span
+						className="text-foreground block truncate text-sm"
+						title={po.vendor}
+					>
 						{po.vendor}
 					</span>
 				),
@@ -138,7 +153,9 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				header: "Status",
 				width: "w-32",
 				shrink: true,
-				render: (po) => <StatusBadge status={po.status} type="purchase_order" />,
+				render: (po) => (
+					<StatusBadge status={po.status} type="purchase_order" />
+				),
 			},
 			{
 				key: "total_amount",
@@ -160,7 +177,9 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				hideOnMobile: true,
 				render: (po) => (
 					<span className="text-muted-foreground text-sm tabular-nums">
-						{po.expected_delivery ? formatDate(po.expected_delivery, "short") : "—"}
+						{po.expected_delivery
+							? formatDate(po.expected_delivery, "short")
+							: "—"}
 					</span>
 				),
 			},
@@ -196,7 +215,7 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				),
 			},
 		],
-		[formatCurrencyCents]
+		[formatCurrencyCents],
 	);
 
 	const bulkActions: BulkAction[] = useMemo(
@@ -211,7 +230,7 @@ export function JobPurchaseOrdersTable({ purchaseOrders }: JobPurchaseOrdersTabl
 				},
 			},
 		],
-		[]
+		[],
 	);
 
 	return (

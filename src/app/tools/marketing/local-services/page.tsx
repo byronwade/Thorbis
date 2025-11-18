@@ -15,7 +15,13 @@ import {
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 export default function LocalServicesAdsPage() {
 	return (
@@ -28,7 +34,9 @@ export default function LocalServicesAdsPage() {
 					</div>
 					<div>
 						<div className="flex items-center gap-2">
-							<h1 className="text-3xl font-bold tracking-tight">Google Local Services Ads</h1>
+							<h1 className="text-3xl font-bold tracking-tight">
+								Google Local Services Ads
+							</h1>
 							<Badge variant="secondary">Recommended</Badge>
 						</div>
 						<p className="text-muted-foreground mt-1">
@@ -48,8 +56,9 @@ export default function LocalServicesAdsPage() {
 				</CardHeader>
 				<CardContent className="space-y-3">
 					<p className="text-sm">
-						Google Local Services Ads (LSA) appear ABOVE regular Google Ads and organic results. You
-						get the coveted "Google Screened" or "Google Guaranteed" badge.
+						Google Local Services Ads (LSA) appear ABOVE regular Google Ads and
+						organic results. You get the coveted "Google Screened" or "Google
+						Guaranteed" badge.
 					</p>
 					<div className="grid gap-3 sm:grid-cols-2">
 						<div className="flex items-start gap-2">
@@ -106,8 +115,9 @@ export default function LocalServicesAdsPage() {
 							<div className="space-y-2">
 								<h3 className="font-semibold">Customer Searches</h3>
 								<p className="text-muted-foreground text-sm">
-									When someone searches "plumber near me" or "emergency electrician [city]", your ad
-									appears at the top with your photo, reviews, and "Google Screened" badge.
+									When someone searches "plumber near me" or "emergency
+									electrician [city]", your ad appears at the top with your
+									photo, reviews, and "Google Screened" badge.
 								</p>
 							</div>
 						</div>
@@ -119,8 +129,8 @@ export default function LocalServicesAdsPage() {
 							<div className="space-y-2">
 								<h3 className="font-semibold">Customer Contacts You</h3>
 								<p className="text-muted-foreground text-sm">
-									They can call directly, message you, or book an appointment. You receive instant
-									notifications on your phone.
+									They can call directly, message you, or book an appointment.
+									You receive instant notifications on your phone.
 								</p>
 							</div>
 						</div>
@@ -132,8 +142,9 @@ export default function LocalServicesAdsPage() {
 							<div className="space-y-2">
 								<h3 className="font-semibold">You Pay Per Lead</h3>
 								<p className="text-muted-foreground text-sm">
-									Only charged when a customer contacts you (not for impressions or clicks). Typical
-									costs: $15-$50 per lead depending on trade and location.
+									Only charged when a customer contacts you (not for impressions
+									or clicks). Typical costs: $15-$50 per lead depending on trade
+									and location.
 								</p>
 							</div>
 						</div>
@@ -145,8 +156,9 @@ export default function LocalServicesAdsPage() {
 							<div className="space-y-2">
 								<h3 className="font-semibold">Dispute Invalid Leads</h3>
 								<p className="text-muted-foreground text-sm">
-									If a lead is spam, wrong service, or outside your area, you can dispute it and get
-									a credit. Google typically approves 70-80% of disputes.
+									If a lead is spam, wrong service, or outside your area, you
+									can dispute it and get a credit. Google typically approves
+									70-80% of disputes.
 								</p>
 							</div>
 						</div>
@@ -169,17 +181,20 @@ export default function LocalServicesAdsPage() {
 							<h4 className="text-sm font-semibold">Required Documentation:</h4>
 							<ul className="text-muted-foreground ml-4 list-disc space-y-1 text-sm">
 								<li>
-									<strong>Business license:</strong> Current state/city contractor license
+									<strong>Business license:</strong> Current state/city
+									contractor license
 								</li>
 								<li>
-									<strong>Insurance:</strong> General liability ($1-2M) and workers compensation
+									<strong>Insurance:</strong> General liability ($1-2M) and
+									workers compensation
 								</li>
 								<li>
-									<strong>Background check:</strong> Owner and key employees (takes 3-5 business
-									days)
+									<strong>Background check:</strong> Owner and key employees
+									(takes 3-5 business days)
 								</li>
 								<li>
-									<strong>Business verification:</strong> EIN, business documents
+									<strong>Business verification:</strong> EIN, business
+									documents
 								</li>
 							</ul>
 						</div>
@@ -246,8 +261,8 @@ export default function LocalServicesAdsPage() {
 							</div>
 						</div>
 						<p className="text-muted-foreground mt-4 text-xs">
-							Prices vary by location. Urban areas typically cost more. Emergency/24-7 leads cost
-							20-30% more.
+							Prices vary by location. Urban areas typically cost more.
+							Emergency/24-7 leads cost 20-30% more.
 						</p>
 					</CardContent>
 				</Card>
@@ -278,8 +293,8 @@ export default function LocalServicesAdsPage() {
 							<div>
 								<p className="text-sm font-semibold">Response Time Impact</p>
 								<p className="text-muted-foreground text-xs">
-									Responding within 5 minutes increases booking rate by 400%. Use auto-responders
-									and phone forwarding.
+									Responding within 5 minutes increases booking rate by 400%.
+									Use auto-responders and phone forwarding.
 								</p>
 							</div>
 						</div>
@@ -300,43 +315,45 @@ export default function LocalServicesAdsPage() {
 						<div className="space-y-2">
 							<h4 className="text-sm font-semibold">Set Your Budget Wisely</h4>
 							<p className="text-muted-foreground text-sm">
-								Start with $500-1000/week. Google will pause ads when budget is reached. Increase
-								based on ROI.
+								Start with $500-1000/week. Google will pause ads when budget is
+								reached. Increase based on ROI.
 							</p>
 						</div>
 						<div className="space-y-2">
 							<h4 className="text-sm font-semibold">Respond FAST</h4>
 							<p className="text-muted-foreground text-sm">
-								Within 5 minutes if possible. Set up call forwarding to your cell phone. Use text
-								auto-responders.
+								Within 5 minutes if possible. Set up call forwarding to your
+								cell phone. Use text auto-responders.
 							</p>
 						</div>
 						<div className="space-y-2">
 							<h4 className="text-sm font-semibold">Get More Reviews</h4>
 							<p className="text-muted-foreground text-sm">
-								Your Google reviews from Business Profile show in LSA. 4.5+ stars with 50+ reviews
-								performs best.
+								Your Google reviews from Business Profile show in LSA. 4.5+
+								stars with 50+ reviews performs best.
 							</p>
 						</div>
 						<div className="space-y-2">
 							<h4 className="text-sm font-semibold">Dispute Invalid Leads</h4>
 							<p className="text-muted-foreground text-sm">
-								Spam, wrong service area, wrong service type - dispute within 30 days. Be honest but
-								don't abuse it.
+								Spam, wrong service area, wrong service type - dispute within 30
+								days. Be honest but don't abuse it.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h4 className="text-sm font-semibold">Optimize Your Service Area</h4>
+							<h4 className="text-sm font-semibold">
+								Optimize Your Service Area
+							</h4>
 							<p className="text-muted-foreground text-sm">
-								Target profitable zip codes. Exclude areas too far away. Adjust weekly based on lead
-								quality.
+								Target profitable zip codes. Exclude areas too far away. Adjust
+								weekly based on lead quality.
 							</p>
 						</div>
 						<div className="space-y-2">
 							<h4 className="text-sm font-semibold">Track Everything</h4>
 							<p className="text-muted-foreground text-sm">
-								Use a CRM or spreadsheet. Track lead cost, booking rate, average ticket, ROI per
-								service area.
+								Use a CRM or spreadsheet. Track lead cost, booking rate, average
+								ticket, ROI per service area.
 							</p>
 						</div>
 					</div>
@@ -348,7 +365,8 @@ export default function LocalServicesAdsPage() {
 				<CardHeader>
 					<CardTitle>Ready to Get Google Screened?</CardTitle>
 					<CardDescription>
-						Application takes 20-30 minutes. Approval typically within 2-3 weeks.
+						Application takes 20-30 minutes. Approval typically within 2-3
+						weeks.
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="flex flex-wrap gap-3">
@@ -363,7 +381,9 @@ export default function LocalServicesAdsPage() {
 						</Link>
 					</Button>
 					<Button asChild variant="outline">
-						<Link href="/tools/marketing/facebook">Next: Facebook Business →</Link>
+						<Link href="/tools/marketing/facebook">
+							Next: Facebook Business →
+						</Link>
 					</Button>
 				</CardContent>
 			</Card>

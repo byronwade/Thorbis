@@ -16,37 +16,49 @@ export async function FinanceData() {
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Total Cash on Hand</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Total Cash on Hand
+						</CardTitle>
 						<Wallet className="text-muted-foreground h-4 w-4" />
 					</CardHeader>
 					<CardContent>
 						<div className="text-2xl font-bold">$243,250</div>
 						<p className="text-muted-foreground flex items-center gap-1 text-xs">
 							<TrendingUp className="text-success dark:text-success h-3 w-3" />
-							<span className="text-success dark:text-success">+5.8% from last month</span>
+							<span className="text-success dark:text-success">
+								+5.8% from last month
+							</span>
 						</p>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Allocated in Buckets</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Allocated in Buckets
+						</CardTitle>
 						<DollarSign className="text-muted-foreground h-4 w-4" />
 					</CardHeader>
 					<CardContent>
 						<div className="text-2xl font-bold">$166,000</div>
-						<p className="text-muted-foreground text-xs">68% of total balance</p>
+						<p className="text-muted-foreground text-xs">
+							68% of total balance
+						</p>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Unallocated Funds</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Unallocated Funds
+						</CardTitle>
 						<DollarSign className="text-muted-foreground h-4 w-4" />
 					</CardHeader>
 					<CardContent>
 						<div className="text-2xl font-bold">$76,750</div>
-						<p className="text-muted-foreground text-xs">Available to allocate</p>
+						<p className="text-muted-foreground text-xs">
+							Available to allocate
+						</p>
 					</CardContent>
 				</Card>
 
@@ -57,7 +69,9 @@ export async function FinanceData() {
 					</CardHeader>
 					<CardContent>
 						<div className="text-2xl font-bold">$45,200</div>
-						<p className="text-muted-foreground text-xs">Average monthly expenses</p>
+						<p className="text-muted-foreground text-xs">
+							Average monthly expenses
+						</p>
 					</CardContent>
 				</Card>
 			</div>

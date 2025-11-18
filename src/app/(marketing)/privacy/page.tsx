@@ -79,7 +79,7 @@ export default function PrivacyPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Privacy Policy", url: `${siteUrl}/privacy` },
-						])
+						]),
 					),
 				}}
 				id="privacy-breadcrumb-ld"
@@ -87,10 +87,12 @@ export default function PrivacyPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Thorbis Privacy Policy</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+						Thorbis Privacy Policy
+					</h1>
 					<p className="text-muted-foreground">
-						Effective date: January 1, 2025. Thorbis is committed to protecting your data and
-						empowering you with transparency and control.
+						Effective date: January 1, 2025. Thorbis is committed to protecting
+						your data and empowering you with transparency and control.
 					</p>
 				</header>
 				<article className="space-y-8">

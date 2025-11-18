@@ -6,7 +6,13 @@
  * allowing future expansion to data-driven call history.
  */
 
-import { BarChart2, Download, Phone, Search, VoicemailIcon } from "lucide-react";
+import {
+	BarChart2,
+	Download,
+	Phone,
+	Search,
+	VoicemailIcon,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function CallLogsData() {
@@ -30,8 +36,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Complete Call History</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							View all incoming, outgoing, and missed calls with timestamps, duration, and caller
-							information
+							View all incoming, outgoing, and missed calls with timestamps,
+							duration, and caller information
 						</p>
 					</div>
 
@@ -42,7 +48,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Call Recordings</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Automatically record calls for quality assurance, training, and compliance purposes
+							Automatically record calls for quality assurance, training, and
+							compliance purposes
 						</p>
 					</div>
 
@@ -53,8 +60,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Advanced Search</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Find specific calls quickly with powerful search filters by date, customer,
-							technician, or outcome
+							Find specific calls quickly with powerful search filters by date,
+							customer, technician, or outcome
 						</p>
 					</div>
 
@@ -65,7 +72,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Call Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze call volume, duration, peak times, and conversion rates to optimize your team
+							Analyze call volume, duration, peak times, and conversion rates to
+							optimize your team
 						</p>
 					</div>
 
@@ -76,8 +84,8 @@ export async function CallLogsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Export & Reports</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Export call logs and generate detailed reports for accounting, compliance, and
-							business intelligence
+							Export call logs and generate detailed reports for accounting,
+							compliance, and business intelligence
 						</p>
 					</div>
 				</div>

@@ -17,7 +17,10 @@ type InvoiceJobWidgetProps = {
 	loadImmediately?: boolean;
 };
 
-export function InvoiceJobWidget({ jobId, loadImmediately = false }: InvoiceJobWidgetProps) {
+export function InvoiceJobWidget({
+	jobId,
+	loadImmediately = false,
+}: InvoiceJobWidgetProps) {
 	if (!jobId) {
 		return (
 			<ProgressiveWidget
@@ -49,7 +52,11 @@ export function InvoiceJobWidget({ jobId, loadImmediately = false }: InvoiceJobW
 						</div>
 					);
 				if (!job)
-					return <div className="text-muted-foreground text-center text-sm">Job not found</div>;
+					return (
+						<div className="text-muted-foreground text-center text-sm">
+							Job not found
+						</div>
+					);
 
 				return (
 					<Link
@@ -58,11 +65,17 @@ export function InvoiceJobWidget({ jobId, loadImmediately = false }: InvoiceJobW
 					>
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
-								<span className="text-sm font-medium">Job #{job.job_number}</span>
-								<span className="text-muted-foreground text-xs">View Details →</span>
+								<span className="text-sm font-medium">
+									Job #{job.job_number}
+								</span>
+								<span className="text-muted-foreground text-xs">
+									View Details →
+								</span>
 							</div>
 							{job.title && (
-								<p className="text-muted-foreground line-clamp-2 text-sm">{job.title}</p>
+								<p className="text-muted-foreground line-clamp-2 text-sm">
+									{job.title}
+								</p>
 							)}
 						</div>
 					</Link>

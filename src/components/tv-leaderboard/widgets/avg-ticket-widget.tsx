@@ -9,7 +9,11 @@
  */
 
 import { DollarSign, TrendingDown, TrendingUp } from "lucide-react";
-import { formatCurrency, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatCurrency,
+	formatPercentage,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveFlex,
@@ -46,7 +50,10 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
 				{/* COMFORTABLE Stage: Abbreviated title */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="text-muted-foreground font-medium" variant="body">
+						<ResponsiveText
+							className="text-muted-foreground font-medium"
+							variant="body"
+						>
 							Avg Ticket
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -71,7 +78,9 @@ export function AvgTicketWidget({ data }: AvgTicketWidgetProps) {
 						<span className="hidden @[120px]:inline">
 							{formatCurrency(data.value, "comfortable")}
 						</span>
-						<span className="@[120px]:hidden">{formatCurrency(data.value, "tiny")}</span>
+						<span className="@[120px]:hidden">
+							{formatCurrency(data.value, "tiny")}
+						</span>
 					</ResponsiveText>
 
 					{/* Trend indicator */}

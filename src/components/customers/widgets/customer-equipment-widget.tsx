@@ -27,7 +27,11 @@ export function CustomerEquipmentWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: equipment, isLoading, error } = useCustomerEquipment(customerId, isVisible);
+				const {
+					data: equipment,
+					isLoading,
+					error,
+				} = useCustomerEquipment(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
@@ -38,7 +42,9 @@ export function CustomerEquipmentWidget({
 					);
 				if (!equipment || equipment.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No equipment found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No equipment found
+						</div>
 					);
 
 				return (
@@ -53,14 +59,20 @@ export function CustomerEquipmentWidget({
 									<p className="text-sm font-medium">
 										{item.name || item.equipment_number || "Unnamed Equipment"}
 									</p>
-									{item.type && <p className="text-muted-foreground text-xs">Type: {item.type}</p>}
+									{item.type && (
+										<p className="text-muted-foreground text-xs">
+											Type: {item.type}
+										</p>
+									)}
 									{item.manufacturer && item.model && (
 										<p className="text-muted-foreground text-xs">
 											{item.manufacturer} {item.model}
 										</p>
 									)}
 									{item.serial_number && (
-										<p className="text-muted-foreground text-xs">S/N: {item.serial_number}</p>
+										<p className="text-muted-foreground text-xs">
+											S/N: {item.serial_number}
+										</p>
 									)}
 									<p className="text-muted-foreground text-xs">
 										Added: {formatDate(item.created_at)}

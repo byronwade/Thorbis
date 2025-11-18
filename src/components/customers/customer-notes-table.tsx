@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Customer Notes Table - React Query Refactored
+ * Customer Notes Table - Server Actions + useOptimistic (React 19)
  *
  * Performance optimizations:
- * - Uses React Query for automatic caching and refetching
- * - Optimistic updates for instant UI feedback
- * - Automatic background refetching
- * - Intelligent cache invalidation
+ * - Server Components for data fetching (when possible)
+ * - useOptimistic for instant UI feedback
+ * - Server Actions for mutations with auto-revalidation
+ * - No external state management needed
  *
  * Displays customer notes in a paginated table with:
  * - Customer notes (visible to all)
@@ -17,11 +17,20 @@
  * - Filter by type
  */
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { Archive, FileText, Lock, Pin, User } from "lucide-react";
-import { useEffect, useState } from "react";
-import { createCustomerNote, deleteCustomerNote, getCustomerNotes } from "@/actions/customer-notes";
+import {
+	useActionState,
+	useEffect,
+	useOptimistic,
+	useState,
+	useTransition,
+} from "react";
+import {
+	createCustomerNote,
+	deleteCustomerNote,
+	getCustomerNotes,
+} from "@/actions/customer-notes";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -55,127 +64,74 @@ import type { CustomerNote } from "@/types/customer-notes";
 
 type CustomerNotesTableProps = {
 	customerId: string;
-	triggerAdd?: number; // Trigger to show add note form from external button
+	initialNotes?: CustomerNote[];
+	initialCount?: number;
+	triggerAdd?: number;
 };
 
-export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTableProps) {
-	const queryClient = useQueryClient();
-
-	// Local UI state (not data state)
-	const [filterType, setFilterType] = useState<"all" | "customer" | "internal">("all");
+export function CustomerNotesTable({
+	customerId,
+	initialNotes = [],
+	initialCount = 0,
+	triggerAdd,
+}: CustomerNotesTableProps) {
+	// Local UI state
+	const [filterType, setFilterType] = useState<"all" | "customer" | "internal">(
+		"all",
+	);
 	const [page, setPage] = useState(0);
 	const [showAddNote, setShowAddNote] = useState(false);
 	const [newNoteContent, setNewNoteContent] = useState("");
-	const [newNoteType, setNewNoteType] = useState<"customer" | "internal">("customer");
+	const [newNoteType, setNewNoteType] = useState<"customer" | "internal">(
+		"customer",
+	);
 	const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
 	const [itemToArchive, setItemToArchive] = useState<string | null>(null);
 
+	// Data state
+	const [notes, setNotes] = useState<CustomerNote[]>(initialNotes);
+	const [totalCount, setTotalCount] = useState(initialCount);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	const [isPending, startTransition] = useTransition();
+	const [optimisticNotes, addOptimisticNote] = useOptimistic(
+		notes,
+		(state, newNote: CustomerNote | { id: string; action: "delete" }) => {
+			if ("action" in newNote && newNote.action === "delete") {
+				return state.filter((note) => note.id !== newNote.id);
+			}
+			return [newNote as CustomerNote, ...state];
+		},
+	);
+
 	const pageSize = 20;
 
-	// React Query: Fetch notes with automatic caching and refetching
-	const {
-		data: notesData,
-		isLoading,
-		error,
-	} = useQuery({
-		queryKey: ["customer-notes", customerId, filterType, page, pageSize],
-		queryFn: async () => {
+	// Fetch notes when filters/page change
+	useEffect(() => {
+		const loadNotes = async () => {
+			setIsLoading(true);
+			setError(null);
+
 			const result = await getCustomerNotes({
 				customerId,
 				noteType: filterType,
 				limit: pageSize,
 				offset: page * pageSize,
 			});
+
 			if (!result.success) {
-				throw new Error(result.error || "Failed to fetch notes");
+				setError(result.error || "Failed to fetch notes");
+			} else {
+				setNotes(result.data || []);
+				setTotalCount(result.count || 0);
 			}
-			return {
-				notes: result.data || [],
-				count: result.count || 0,
-			};
-		},
-		staleTime: 30 * 1000, // Consider data fresh for 30 seconds
-		refetchOnWindowFocus: true, // Refetch when user returns to tab
-	});
 
-	// React Query: Add note mutation with optimistic update
-	const addNoteMutation = useMutation({
-		mutationFn: async (data: { content: string; noteType: "customer" | "internal" }) => {
-			const result = await createCustomerNote({
-				customerId,
-				content: data.content,
-				noteType: data.noteType,
-			});
-			if (!result.success) {
-				throw new Error(result.error || "Failed to create note");
-			}
-			return result;
-		},
-		onSuccess: () => {
-			// Invalidate and refetch notes
-			queryClient.invalidateQueries({
-				queryKey: ["customer-notes", customerId],
-			});
-			setNewNoteContent("");
-			setShowAddNote(false);
-		},
-	});
+			setIsLoading(false);
+		};
 
-	// React Query: Archive note mutation with optimistic update
-	const archiveNoteMutation = useMutation({
-		mutationFn: async (noteId: string) => {
-			const result = await deleteCustomerNote(noteId);
-			if (!result.success) {
-				throw new Error(result.error || "Failed to archive note");
-			}
-			return result;
-		},
-		onMutate: async (noteId) => {
-			// Cancel outgoing refetches
-			await queryClient.cancelQueries({
-				queryKey: ["customer-notes", customerId],
-			});
-
-			// Snapshot previous value
-			const previousNotes = queryClient.getQueryData([
-				"customer-notes",
-				customerId,
-				filterType,
-				page,
-				pageSize,
-			]);
-
-			// Optimistically update (remove note from UI immediately)
-			queryClient.setQueryData(
-				["customer-notes", customerId, filterType, page, pageSize],
-				(old: any) =>
-					old
-						? {
-								...old,
-								notes: old.notes.filter((note: CustomerNote) => note.id !== noteId),
-								count: old.count - 1,
-							}
-						: old
-			);
-
-			return { previousNotes };
-		},
-		onError: (_err, _noteId, context) => {
-			// Rollback on error
-			if (context?.previousNotes) {
-				queryClient.setQueryData(
-					["customer-notes", customerId, filterType, page, pageSize],
-					context.previousNotes
-				);
-			}
-		},
-		onSettled: () => {
-			// Always refetch after mutation
-			queryClient.invalidateQueries({
-				queryKey: ["customer-notes", customerId],
-			});
-		},
-	});
+		loadNotes();
+	}, [customerId, filterType, page]);
 
 	// Respond to external trigger
 	useEffect(() => {
@@ -185,24 +141,75 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 	}, [triggerAdd]);
 
 	// Handlers
-	const handleAddNote = () => {
+	const handleAddNote = async () => {
 		if (!newNoteContent.trim()) return;
-		addNoteMutation.mutate({
+
+		const tempNote: CustomerNote = {
+			id: `temp-${Date.now()}`,
+			customer_id: customerId,
 			content: newNoteContent,
-			noteType: newNoteType,
+			note_type: newNoteType,
+			is_pinned: false,
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString(),
+			user_id: "",
+			company_id: "",
+			deleted_at: null,
+			user: null,
+		};
+
+		startTransition(async () => {
+			addOptimisticNote(tempNote);
+
+			const result = await createCustomerNote({
+				customerId,
+				content: newNoteContent,
+				noteType: newNoteType,
+			});
+
+			if (result.success) {
+				setNewNoteContent("");
+				setShowAddNote(false);
+				// Refresh data
+				const refreshResult = await getCustomerNotes({
+					customerId,
+					noteType: filterType,
+					limit: pageSize,
+					offset: page * pageSize,
+				});
+				if (refreshResult.success) {
+					setNotes(refreshResult.data || []);
+					setTotalCount(refreshResult.count || 0);
+				}
+			}
 		});
 	};
 
 	const handleArchiveNote = async (noteId: string) => {
-		archiveNoteMutation.mutate(noteId);
+		startTransition(async () => {
+			addOptimisticNote({ id: noteId, action: "delete" });
+
+			await deleteCustomerNote(noteId);
+
+			// Refresh data
+			const result = await getCustomerNotes({
+				customerId,
+				noteType: filterType,
+				limit: pageSize,
+				offset: page * pageSize,
+			});
+
+			if (result.success) {
+				setNotes(result.data || []);
+				setTotalCount(result.count || 0);
+			}
+		});
 	};
 
-	const notes = notesData?.notes || [];
-	const totalCount = notesData?.count || 0;
 	const totalPages = Math.ceil(totalCount / pageSize);
 
 	// Loading skeleton
-	if (isLoading) {
+	if (isLoading && notes.length === 0) {
 		return (
 			<div className="space-y-4">
 				<div className="flex items-center justify-between gap-4 p-4">
@@ -219,12 +226,14 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 	}
 
 	// Error state
-	if (error) {
+	if (error && notes.length === 0) {
 		return (
 			<div className="border-destructive/50 bg-destructive/10 flex min-h-[400px] items-center justify-center rounded-lg border p-8">
 				<div className="text-center">
-					<p className="text-destructive mb-2 font-semibold">Failed to load notes</p>
-					<p className="text-muted-foreground text-sm">{error.message}</p>
+					<p className="text-destructive mb-2 font-semibold">
+						Failed to load notes
+					</p>
+					<p className="text-muted-foreground text-sm">{error}</p>
 				</div>
 			</div>
 		);
@@ -235,7 +244,10 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 			{/* Toolbar */}
 			<div className="flex items-center justify-between gap-4 p-4">
 				<div className="flex items-center gap-2">
-					<Select onValueChange={(v: any) => setFilterType(v)} value={filterType}>
+					<Select
+						onValueChange={(v: any) => setFilterType(v)}
+						value={filterType}
+					>
 						<SelectTrigger className="w-[180px]">
 							<SelectValue />
 						</SelectTrigger>
@@ -252,7 +264,10 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 			{showAddNote && (
 				<div className="bg-muted/30 mx-4 space-y-3 rounded-lg border p-4">
 					<div className="flex items-center gap-2">
-						<Select onValueChange={(v: any) => setNewNoteType(v)} value={newNoteType}>
+						<Select
+							onValueChange={(v: any) => setNewNoteType(v)}
+							value={newNoteType}
+						>
 							<SelectTrigger className="w-[180px]">
 								<SelectValue />
 							</SelectTrigger>
@@ -289,8 +304,8 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 						>
 							Cancel
 						</Button>
-						<Button disabled={addNoteMutation.isPending} onClick={handleAddNote} size="sm">
-							{addNoteMutation.isPending ? "Saving..." : "Save Note"}
+						<Button disabled={isPending} onClick={handleAddNote} size="sm">
+							{isPending ? "Saving..." : "Save Note"}
 						</Button>
 					</div>
 				</div>
@@ -309,18 +324,23 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{notes.length === 0 ? (
+						{optimisticNotes.length === 0 ? (
 							<TableRow>
 								<TableCell className="h-24 text-center" colSpan={5}>
 									<div className="flex flex-col items-center gap-2">
 										<FileText className="text-muted-foreground/50 size-8" />
-										<p className="text-muted-foreground text-sm">No notes found</p>
+										<p className="text-muted-foreground text-sm">
+											No notes found
+										</p>
 									</div>
 								</TableCell>
 							</TableRow>
 						) : (
-							notes.map((note) => (
-								<TableRow key={note.id}>
+							optimisticNotes.map((note) => (
+								<TableRow
+									key={note.id}
+									style={{ opacity: note.id.startsWith("temp-") ? 0.5 : 1 }}
+								>
 									<TableCell>
 										{note.note_type === "internal" ? (
 											<Badge className="gap-1 text-xs" variant="secondary">
@@ -337,7 +357,10 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 									<TableCell className="max-w-md">
 										<div className="flex items-start gap-2">
 											{note.is_pinned && (
-												<Pin className="text-primary mt-1 size-4" fill="currentColor" />
+												<Pin
+													className="text-primary mt-1 size-4"
+													fill="currentColor"
+												/>
 											)}
 											<p className="text-sm">{note.content}</p>
 										</div>
@@ -346,8 +369,12 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 										<div className="flex items-center gap-2">
 											<User className="text-muted-foreground size-4" />
 											<div className="text-sm">
-												<p className="font-medium">{note.user?.name || "Unknown"}</p>
-												<p className="text-muted-foreground text-xs">{note.user?.email}</p>
+												<p className="font-medium">
+													{note.user?.name || "Unknown"}
+												</p>
+												<p className="text-muted-foreground text-xs">
+													{note.user?.email}
+												</p>
 											</div>
 										</div>
 									</TableCell>
@@ -361,7 +388,7 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 									<TableCell>
 										<Button
 											className="size-8 p-0"
-											disabled={archiveNoteMutation.isPending}
+											disabled={isPending || note.id.startsWith("temp-")}
 											onClick={() => {
 												setItemToArchive(note.id);
 												setIsArchiveDialogOpen(true);
@@ -384,8 +411,8 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 			{totalPages > 1 && (
 				<div className="flex items-center justify-between">
 					<p className="text-muted-foreground text-sm">
-						Showing {page * pageSize + 1}-{Math.min((page + 1) * pageSize, totalCount)} of{" "}
-						{totalCount}
+						Showing {page * pageSize + 1}-
+						{Math.min((page + 1) * pageSize, totalCount)} of {totalCount}
 					</p>
 					<div className="flex gap-2">
 						<Button
@@ -409,12 +436,16 @@ export function CustomerNotesTable({ customerId, triggerAdd }: CustomerNotesTabl
 			)}
 
 			{/* Archive Note Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Note?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This note will be archived and can be restored within 90 days from the archive page.
+							This note will be archived and can be restored within 90 days from
+							the archive page.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

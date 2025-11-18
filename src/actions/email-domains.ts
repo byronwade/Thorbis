@@ -22,7 +22,10 @@ const domainSchema = z.object({
 	domain: z.string().min(DOMAIN_MIN_LENGTH).max(DOMAIN_MAX_LENGTH),
 });
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 const HTTP_STATUS = {
 	forbidden: 403,
@@ -43,18 +46,23 @@ async function getCompanyId(supabase: SupabaseServerClient, userId: string) {
 		throw new ActionError(
 			"You must be part of a company",
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS.forbidden
+			HTTP_STATUS.forbidden,
 		);
 	}
 
 	return teamMember.company_id;
 }
 
-export async function provisionEmailDomain(formData: FormData): Promise<ActionResult<void>> {
+export async function provisionEmailDomain(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -76,7 +84,10 @@ export async function provisionEmailDomain(formData: FormData): Promise<ActionRe
 			.maybeSingle();
 
 		if (existing.data) {
-			throw new ActionError("Domain already exists", ERROR_CODES.VALIDATION_ERROR);
+			throw new ActionError(
+				"Domain already exists",
+				ERROR_CODES.VALIDATION_ERROR,
+			);
 		}
 
 		const result = await createResendDomain(domain);
@@ -95,11 +106,16 @@ export async function provisionEmailDomain(formData: FormData): Promise<ActionRe
 	});
 }
 
-export async function refreshEmailDomain(domainId: string): Promise<ActionResult<void>> {
+export async function refreshEmailDomain(
+	domainId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -119,7 +135,11 @@ export async function refreshEmailDomain(domainId: string): Promise<ActionResult
 			.maybeSingle();
 
 		if (!domain?.resend_domain_id) {
-			throw new ActionError("Domain not found", ERROR_CODES.NOT_FOUND, HTTP_STATUS.notFound);
+			throw new ActionError(
+				"Domain not found",
+				ERROR_CODES.NOT_FOUND,
+				HTTP_STATUS.notFound,
+			);
 		}
 
 		const result = await getResendDomain(domain.resend_domain_id);
@@ -134,17 +154,24 @@ export async function refreshEmailDomain(domainId: string): Promise<ActionResult
 				dns_records: result.data.records || [],
 				last_synced_at: new Date().toISOString(),
 				last_verified_at:
-					result.data.status === "verified" ? new Date().toISOString() : domain.last_verified_at,
+					result.data.status === "verified"
+						? new Date().toISOString()
+						: domain.last_verified_at,
 			})
 			.eq("id", domainId);
 	});
 }
 
-export async function verifyEmailDomain(domainId: string): Promise<ActionResult<void>> {
+export async function verifyEmailDomain(
+	domainId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -164,7 +191,11 @@ export async function verifyEmailDomain(domainId: string): Promise<ActionResult<
 			.maybeSingle();
 
 		if (!domain?.resend_domain_id) {
-			throw new ActionError("Domain not found", ERROR_CODES.NOT_FOUND, HTTP_STATUS.notFound);
+			throw new ActionError(
+				"Domain not found",
+				ERROR_CODES.NOT_FOUND,
+				HTTP_STATUS.notFound,
+			);
 		}
 
 		const result = await verifyResendDomain(domain.resend_domain_id);
@@ -178,7 +209,10 @@ export async function ensureInboundRoute(): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -203,7 +237,7 @@ export async function ensureInboundRoute(): Promise<ActionResult<void>> {
 		if (!inboundDomain) {
 			throw new ActionError(
 				"RESEND_INBOUND_DOMAIN is not configured",
-				ERROR_CODES.VALIDATION_ERROR
+				ERROR_CODES.VALIDATION_ERROR,
 			);
 		}
 

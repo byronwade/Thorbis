@@ -8,11 +8,11 @@
 
 "use client";
 
-import { MessageSquare, Mail, Phone } from "lucide-react";
+import { Mail, MessageSquare, Phone } from "lucide-react";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
+import { Button } from "@/components/ui/button";
 import { useInvoiceCommunications } from "@/hooks/use-invoice-360";
 import { formatDate } from "@/lib/formatters";
-import { Button } from "@/components/ui/button";
 
 type InvoiceCommunicationsWidgetProps = {
 	invoiceId: string;
@@ -40,7 +40,13 @@ export function InvoiceCommunicationsWidget({
 					data: communications,
 					isLoading,
 					error,
-				} = useInvoiceCommunications(invoiceId, customerId, jobId, companyId, isVisible);
+				} = useInvoiceCommunications(
+					invoiceId,
+					customerId,
+					jobId,
+					companyId,
+					isVisible,
+				);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
@@ -51,7 +57,9 @@ export function InvoiceCommunicationsWidget({
 					);
 				if (!communications || communications.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No communications found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No communications found
+						</div>
 					);
 
 				const getCommIcon = (type: string) => {
@@ -97,9 +105,13 @@ export function InvoiceCommunicationsWidget({
 												{formatDate(comm.created_at)}
 											</span>
 										</div>
-										{comm.subject && <p className="text-sm font-medium">{comm.subject}</p>}
+										{comm.subject && (
+											<p className="text-sm font-medium">{comm.subject}</p>
+										)}
 										{comm.message && (
-											<p className="text-muted-foreground line-clamp-2 text-sm">{comm.message}</p>
+											<p className="text-muted-foreground line-clamp-2 text-sm">
+												{comm.message}
+											</p>
 										)}
 										{comm.customer && (
 											<p className="text-muted-foreground text-xs">

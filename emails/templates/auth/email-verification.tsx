@@ -26,15 +26,18 @@ export default function EmailVerificationEmail({
 			<Text style={paragraph}>Hi {name},</Text>
 
 			<Text style={paragraph}>
-				Thanks for signing up for Thorbis! To complete your registration and start using your
-				account, please verify your email address by clicking the button below.
+				Thanks for signing up for Thorbis! To complete your registration and
+				start using your account, please verify your email address by clicking
+				the button below.
 			</Text>
 
 			<div style={buttonContainer}>
 				<Button href={verificationUrl}>Verify Email Address</Button>
 			</div>
 
-			<Text style={paragraph}>Or copy and paste this URL into your browser:</Text>
+			<Text style={paragraph}>
+				Or copy and paste this URL into your browser:
+			</Text>
 
 			<Card style={urlCard}>
 				<Text style={urlText}>{verificationUrl}</Text>
@@ -43,8 +46,9 @@ export default function EmailVerificationEmail({
 			<Card style={securityCard}>
 				<Heading level={3}>Security Note</Heading>
 				<Text style={securityText}>
-					This verification link will expire in 24 hours for security reasons. If you didn't create
-					an account with Thorbis, you can safely ignore this email.
+					This verification link will expire in 24 hours for security reasons.
+					If you didn't create an account with Thorbis, you can safely ignore
+					this email.
 				</Text>
 			</Card>
 		</BaseLayout>

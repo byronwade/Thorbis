@@ -24,14 +24,17 @@ export default function MagicLinkEmail({
 			<Heading level={1}>Sign in to Thorbis</Heading>
 
 			<Text style={paragraph}>
-				Click the button below to sign in to your Thorbis account. No password required!
+				Click the button below to sign in to your Thorbis account. No password
+				required!
 			</Text>
 
 			<div style={buttonContainer}>
 				<Button href={loginUrl}>Sign In to Thorbis</Button>
 			</div>
 
-			<Text style={paragraph}>Or copy and paste this URL into your browser:</Text>
+			<Text style={paragraph}>
+				Or copy and paste this URL into your browser:
+			</Text>
 
 			<Card style={urlCard}>
 				<Text style={urlText}>{loginUrl}</Text>
@@ -40,7 +43,9 @@ export default function MagicLinkEmail({
 			<Card style={infoCard}>
 				<Heading level={3}>Security Information</Heading>
 				<ul style={list}>
-					<li style={listItem}>This link will expire in {expiresInMinutes} minutes</li>
+					<li style={listItem}>
+						This link will expire in {expiresInMinutes} minutes
+					</li>
 					<li style={listItem}>The link can only be used once</li>
 					<li style={listItem}>
 						If you didn't request this link, you can safely ignore this email

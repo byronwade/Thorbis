@@ -71,10 +71,14 @@ function getPerformanceLevel(score: number): { level: string; color: string } {
 	return { level: "Needs Work", color: "text-destructive" };
 }
 
-export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScaleWidgetProps) {
+export function PerformanceScaleWidget({
+	data = DEFAULT_DATA,
+}: PerformanceScaleWidgetProps) {
 	const scoreChange = data.currentScore - data.previousScore;
 	const scoreColor = getScoreColor(data.currentScore);
-	const { level: performanceLevel, color: levelColor } = getPerformanceLevel(data.currentScore);
+	const { level: performanceLevel, color: levelColor } = getPerformanceLevel(
+		data.currentScore,
+	);
 	const targetDiff = data.target - data.currentScore;
 	const _progressPercent = (data.currentScore / data.target) * 100;
 
@@ -90,7 +94,10 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 						<ShowAt stage="full">
 							<div>
 								<ResponsiveText variant="title">{data.label}</ResponsiveText>
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									{data.metric}
 								</ResponsiveText>
 							</div>
@@ -111,7 +118,9 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 									: "bg-destructive/20 text-destructive"
 							}`}
 						>
-							<TrendingUp className={`size-3 ${scoreChange < 0 ? "rotate-180" : ""}`} />
+							<TrendingUp
+								className={`size-3 ${scoreChange < 0 ? "rotate-180" : ""}`}
+							/>
 							{scoreChange >= 0 ? "+" : ""}
 							{scoreChange}
 						</div>
@@ -123,10 +132,16 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 					<div className="flex min-h-0 flex-1 flex-col justify-center gap-3">
 						{/* Large score display */}
 						<div className="text-center">
-							<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
+							<ResponsiveText
+								className={cn("font-bold", scoreColor)}
+								variant="display"
+							>
 								{data.currentScore}
 							</ResponsiveText>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								out of 100
 							</ResponsiveText>
 						</div>
@@ -151,10 +166,16 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 
 						{/* Performance level */}
 						<div className="bg-background/50 rounded-lg p-2 text-center">
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								Level
 							</ResponsiveText>
-							<ResponsiveText className={`font-bold ${levelColor}`} variant="body">
+							<ResponsiveText
+								className={`font-bold ${levelColor}`}
+								variant="body"
+							>
 								{performanceLevel}
 							</ResponsiveText>
 						</div>
@@ -163,9 +184,14 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 						<div className="bg-warning/10 flex items-center justify-between rounded-lg p-1.5">
 							<div className="flex items-center gap-1.5">
 								<Target className="text-warning size-3.5" />
-								<ResponsiveText variant="caption">Target: {data.target}</ResponsiveText>
+								<ResponsiveText variant="caption">
+									Target: {data.target}
+								</ResponsiveText>
 							</div>
-							<ResponsiveText className="text-warning font-bold" variant="caption">
+							<ResponsiveText
+								className="text-warning font-bold"
+								variant="caption"
+							>
 								{targetDiff > 0 ? `${targetDiff} to go` : "Met!"}
 							</ResponsiveText>
 						</div>
@@ -177,7 +203,10 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 					<div className="flex flex-1 flex-col justify-center gap-2">
 						{/* Score */}
 						<div className="text-center">
-							<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
+							<ResponsiveText
+								className={cn("font-bold", scoreColor)}
+								variant="display"
+							>
 								{data.currentScore}
 							</ResponsiveText>
 							<ResponsiveText className={levelColor} variant="caption">
@@ -198,7 +227,10 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 				{/* COMPACT Stage: Score with level only */}
 				<ShowAt stage="compact">
 					<div className="flex flex-1 flex-col items-center justify-center gap-1 text-center">
-						<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
+						<ResponsiveText
+							className={cn("font-bold", scoreColor)}
+							variant="display"
+						>
 							{data.currentScore}
 						</ResponsiveText>
 						<ResponsiveText className={levelColor} variant="caption">
@@ -210,7 +242,10 @@ export function PerformanceScaleWidget({ data = DEFAULT_DATA }: PerformanceScale
 				{/* TINY Stage: Just the score number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className={cn("font-bold", scoreColor)} variant="display">
+						<ResponsiveText
+							className={cn("font-bold", scoreColor)}
+							variant="display"
+						>
 							{data.currentScore}
 						</ResponsiveText>
 					</div>

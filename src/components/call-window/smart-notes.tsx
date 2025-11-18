@@ -69,7 +69,12 @@ export function SmartNotes() {
 						</span>
 					) : null}
 				</div>
-				<Button disabled={isSaving} onClick={saveNotes} size="sm" variant="ghost">
+				<Button
+					disabled={isSaving}
+					onClick={saveNotes}
+					size="sm"
+					variant="ghost"
+				>
 					<Save className="h-3 w-3" />
 				</Button>
 			</div>

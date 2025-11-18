@@ -28,7 +28,10 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function POST(request: NextRequest) {
 	if (!stripe) {
-		return NextResponse.json({ error: "Stripe not configured" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Stripe not configured" },
+			{ status: 500 },
+		);
 	}
 
 	const body = await request.text();
@@ -41,11 +44,17 @@ export async function POST(request: NextRequest) {
 
 	const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 	if (!webhookSecret) {
-		return NextResponse.json({ error: "Webhook secret not configured" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Webhook secret not configured" },
+			{ status: 500 },
+		);
 	}
 
 	if (!stripe) {
-		return NextResponse.json({ error: "Payment service unavailable" }, { status: 503 });
+		return NextResponse.json(
+			{ error: "Payment service unavailable" },
+			{ status: 503 },
+		);
 	}
 
 	let event: Stripe.Event;
@@ -56,9 +65,12 @@ export async function POST(request: NextRequest) {
 	} catch (error) {
 		return NextResponse.json(
 			{
-				error: error instanceof Error ? error.message : "Signature verification failed",
+				error:
+					error instanceof Error
+						? error.message
+						: "Signature verification failed",
 			},
-			{ status: 400 }
+			{ status: 400 },
 		);
 	}
 
@@ -66,7 +78,10 @@ export async function POST(request: NextRequest) {
 	try {
 		// Validate event structure
 		if (!event.data?.object) {
-			return NextResponse.json({ error: "Invalid event structure" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Invalid event structure" },
+				{ status: 400 },
+			);
 		}
 
 		switch (event.type) {
@@ -120,7 +135,10 @@ export async function POST(request: NextRequest) {
 
 		return NextResponse.json({ received: true });
 	} catch (_error) {
-		return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
+		return NextResponse.json(
+			{ error: "Webhook processing failed" },
+			{ status: 500 },
+		);
 	}
 }
 
@@ -129,7 +147,9 @@ export async function POST(request: NextRequest) {
  *
  * Creates or updates subscription record in database
  */
-async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) {
+async function handleCheckoutSessionCompleted(
+	session: Stripe.Checkout.Session,
+) {
 	const supabase = await createClient();
 	if (!supabase) {
 		return NextResponse.json({ error: "Service unavailable" }, { status: 503 });
@@ -154,7 +174,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 	if (!stripe) {
 		return;
 	}
-	const subscriptionData: any = await stripe.subscriptions.retrieve(subscriptionId);
+	const subscriptionData: any =
+		await stripe.subscriptions.retrieve(subscriptionId);
 
 	// Update company with subscription details
 	await supabase
@@ -163,10 +184,10 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 			stripe_subscription_id: subscriptionData.id,
 			stripe_subscription_status: subscriptionData.status,
 			subscription_current_period_start: new Date(
-				subscriptionData.current_period_start * 1000
+				subscriptionData.current_period_start * 1000,
 			).toISOString(),
 			subscription_current_period_end: new Date(
-				subscriptionData.current_period_end * 1000
+				subscriptionData.current_period_end * 1000,
 			).toISOString(),
 			subscription_cancel_at_period_end: subscriptionData.cancel_at_period_end,
 			trial_ends_at: subscriptionData.trial_end
@@ -194,7 +215,9 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 
 	// Send team member invitations after payment is complete
 	try {
-		const { sendTeamMemberInvitations } = await import("@/actions/team-invitations");
+		const { sendTeamMemberInvitations } = await import(
+			"@/actions/team-invitations"
+		);
 		const invitationResult = await sendTeamMemberInvitations(companyId);
 
 		if (invitationResult.success && invitationResult.data) {
@@ -236,10 +259,10 @@ async function handleSubscriptionUpdated(subscription: any) {
 		.update({
 			stripe_subscription_status: subscription.status,
 			subscription_current_period_start: new Date(
-				subscription.current_period_start * 1000
+				subscription.current_period_start * 1000,
 			).toISOString(),
 			subscription_current_period_end: new Date(
-				subscription.current_period_end * 1000
+				subscription.current_period_end * 1000,
 			).toISOString(),
 			subscription_cancel_at_period_end: subscription.cancel_at_period_end,
 			trial_ends_at: subscription.trial_end

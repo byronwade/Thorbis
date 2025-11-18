@@ -12,7 +12,10 @@ export async function POST(req: Request) {
 		const { code, language, context } = body;
 
 		if (!(code && language)) {
-			return Response.json({ error: "Code and language are required" }, { status: 400 });
+			return Response.json(
+				{ error: "Code and language are required" },
+				{ status: 400 },
+			);
 		}
 
 		// Execute workflow
@@ -26,7 +29,7 @@ export async function POST(req: Request) {
 	} catch (error) {
 		return Response.json(
 			{ error: error instanceof Error ? error.message : "Unknown error" },
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

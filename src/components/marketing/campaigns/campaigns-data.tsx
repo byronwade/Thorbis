@@ -6,7 +6,13 @@
  * allowing future expansion to data-driven content.
  */
 
-import { Calendar, Mail, Megaphone, MessageSquare, TrendingUp } from "lucide-react";
+import {
+	Calendar,
+	Mail,
+	Megaphone,
+	MessageSquare,
+	TrendingUp,
+} from "lucide-react";
 import { ComingSoonShell } from "@/components/ui/coming-soon-shell";
 
 export async function CampaignsData() {
@@ -30,7 +36,8 @@ export async function CampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Email Campaigns</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Design beautiful emails, automate follow-ups, and track open rates and clicks
+							Design beautiful emails, automate follow-ups, and track open rates
+							and clicks
 						</p>
 					</div>
 
@@ -41,7 +48,8 @@ export async function CampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">SMS Campaigns</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Send targeted text messages with appointment reminders and promotional offers
+							Send targeted text messages with appointment reminders and
+							promotional offers
 						</p>
 					</div>
 
@@ -52,7 +60,8 @@ export async function CampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Direct Mail</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Send postcards and flyers to targeted neighborhoods and customer segments
+							Send postcards and flyers to targeted neighborhoods and customer
+							segments
 						</p>
 					</div>
 
@@ -63,16 +72,20 @@ export async function CampaignsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Campaign Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track ROI, conversion rates, and customer engagement across all your marketing
-							campaigns
+							Track ROI, conversion rates, and customer engagement across all
+							your marketing campaigns
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Ready to Grow Your Business?</h3>
-					<p className="text-muted-foreground mb-6">Start running profitable marketing campaigns</p>
+					<h3 className="mb-3 text-xl font-semibold">
+						Ready to Grow Your Business?
+					</h3>
+					<p className="text-muted-foreground mb-6">
+						Start running profitable marketing campaigns
+					</p>
 					<div className="flex justify-center gap-4">
 						<button
 							className="border-primary/20 bg-background hover:bg-primary/5 rounded-lg border px-6 py-2 font-medium transition-colors"

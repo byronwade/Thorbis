@@ -45,7 +45,10 @@ export function PriceBookItemDetailSkeleton() {
 						<div className="space-y-4">
 							<div className="bg-muted h-6 w-32 animate-pulse rounded" />
 							{[1, 2].map((i) => (
-								<div className="bg-muted h-32 animate-pulse rounded-lg" key={i} />
+								<div
+									className="bg-muted h-32 animate-pulse rounded-lg"
+									key={i}
+								/>
 							))}
 						</div>
 					</div>
@@ -69,7 +72,10 @@ export function PriceBookItemDetailSkeleton() {
 							<div className="bg-muted h-6 w-24 animate-pulse rounded" />
 							<div className="flex flex-wrap gap-2">
 								{[1, 2, 3, 4].map((i) => (
-									<div className="bg-muted h-6 w-20 animate-pulse rounded" key={i} />
+									<div
+										className="bg-muted h-6 w-20 animate-pulse rounded"
+										key={i}
+									/>
 								))}
 							</div>
 						</div>

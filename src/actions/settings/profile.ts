@@ -8,7 +8,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -42,16 +46,21 @@ const notificationPreferencesSchema = z.object({
 
 	// Digest Settings
 	digestEnabled: z.boolean().default(false),
-	digestFrequency: z.enum(["realtime", "hourly", "daily", "weekly"]).default("daily"),
+	digestFrequency: z
+		.enum(["realtime", "hourly", "daily", "weekly"])
+		.default("daily"),
 });
 
 export async function updateNotificationPreferences(
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -75,27 +84,29 @@ export async function updateNotificationPreferences(
 			digestFrequency: formData.get("digestFrequency") || "daily",
 		});
 
-		const { error } = await supabase.from("user_notification_preferences").upsert({
-			user_id: user.id,
-			email_new_jobs: data.emailNewJobs,
-			email_job_updates: data.emailJobUpdates,
-			email_mentions: data.emailMentions,
-			email_messages: data.emailMessages,
-			push_new_jobs: data.pushNewJobs,
-			push_job_updates: data.pushJobUpdates,
-			push_mentions: data.pushMentions,
-			push_messages: data.pushMessages,
-			sms_urgent_jobs: data.smsUrgentJobs,
-			sms_schedule_changes: data.smsScheduleChanges,
-			in_app_all: data.inAppAll,
-			digest_enabled: data.digestEnabled,
-			digest_frequency: data.digestFrequency,
-		});
+		const { error } = await supabase
+			.from("user_notification_preferences")
+			.upsert({
+				user_id: user.id,
+				email_new_jobs: data.emailNewJobs,
+				email_job_updates: data.emailJobUpdates,
+				email_mentions: data.emailMentions,
+				email_messages: data.emailMessages,
+				push_new_jobs: data.pushNewJobs,
+				push_job_updates: data.pushJobUpdates,
+				push_mentions: data.pushMentions,
+				push_messages: data.pushMessages,
+				sms_urgent_jobs: data.smsUrgentJobs,
+				sms_schedule_changes: data.smsScheduleChanges,
+				in_app_all: data.inAppAll,
+				digest_enabled: data.digestEnabled,
+				digest_frequency: data.digestFrequency,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update notification preferences"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -107,7 +118,10 @@ export async function getNotificationPreferences(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -124,7 +138,7 @@ export async function getNotificationPreferences(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch notification preferences"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -156,11 +170,16 @@ const userPreferencesSchema = z.object({
 	calendarStartDay: z.coerce.number().min(0).max(6).default(0),
 });
 
-export async function updateUserPreferences(formData: FormData): Promise<ActionResult<void>> {
+export async function updateUserPreferences(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -198,7 +217,7 @@ export async function updateUserPreferences(formData: FormData): Promise<ActionR
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update user preferences"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -210,7 +229,10 @@ export async function getUserPreferences(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -227,7 +249,7 @@ export async function getUserPreferences(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch user preferences"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -246,11 +268,16 @@ const personalInfoSchema = z.object({
 	avatar: z.string().optional(),
 });
 
-export async function updatePersonalInfo(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePersonalInfo(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -279,7 +306,7 @@ export async function updatePersonalInfo(formData: FormData): Promise<ActionResu
 		if (userError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update personal information"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -292,7 +319,7 @@ export async function updatePersonalInfo(formData: FormData): Promise<ActionResu
 			if (authError) {
 				throw new ActionError(
 					"Failed to update authentication email",
-					ERROR_CODES.AUTH_UNAUTHORIZED
+					ERROR_CODES.AUTH_UNAUTHORIZED,
 				);
 			}
 		}
@@ -305,7 +332,10 @@ export async function getPersonalInfo(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -322,7 +352,7 @@ export async function getPersonalInfo(): Promise<ActionResult<any>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch personal information"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -338,18 +368,25 @@ const passwordUpdateSchema = z
 	.object({
 		currentPassword: z.string().min(1, "Current password is required"),
 		newPassword: z.string().min(8, "Password must be at least 8 characters"),
-		confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+		confirmPassword: z
+			.string()
+			.min(8, "Password must be at least 8 characters"),
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: "Passwords don't match",
 		path: ["confirmPassword"],
 	});
 
-export async function updatePassword(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePassword(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -369,7 +406,10 @@ export async function updatePassword(formData: FormData): Promise<ActionResult<v
 		});
 
 		if (error) {
-			throw new ActionError("Failed to update password", ERROR_CODES.AUTH_UNAUTHORIZED);
+			throw new ActionError(
+				"Failed to update password",
+				ERROR_CODES.AUTH_UNAUTHORIZED,
+			);
 		}
 
 		revalidatePath("/dashboard/settings/profile/security/password");

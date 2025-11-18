@@ -62,7 +62,7 @@ export async function getJobNotes({
         *,
         user:users!user_id(name, email, avatar)
       `,
-				{ count: "exact" }
+				{ count: "exact" },
 			)
 			.eq("job_id", jobId)
 			.eq("company_id", teamMember.company_id)

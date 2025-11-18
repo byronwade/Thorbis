@@ -18,8 +18,16 @@ import { GripVertical, Maximize2, Minimize2, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { type JobWidget, useJobDetailsLayoutStore } from "@/lib/stores/job-details-layout-store";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+	type JobWidget,
+	useJobDetailsLayoutStore,
+} from "@/lib/stores/job-details-layout-store";
 import { cn } from "@/lib/utils";
 
 // ============================================================================
@@ -94,7 +102,8 @@ export function WidgetContainer({
 				"bg-card flex h-full flex-col rounded-lg border transition-all duration-200",
 				isEditMode && "ring-primary/20 hover:ring-primary/40 ring-2",
 				isDragging && "shadow-2xl",
-				isSortableDragging && "ring-dashed ring-primary/50 scale-95 opacity-30 ring-2"
+				isSortableDragging &&
+					"ring-dashed ring-primary/50 scale-95 opacity-30 ring-2",
 			)}
 			ref={setNodeRef}
 			style={style}
@@ -126,11 +135,16 @@ export function WidgetContainer({
 						<div className="min-w-0 flex-1">
 							<h3 className="truncate text-sm font-semibold">{widget.title}</h3>
 							{widget.description ? (
-								<p className="text-muted-foreground truncate text-xs">{widget.description}</p>
+								<p className="text-muted-foreground truncate text-xs">
+									{widget.description}
+								</p>
 							) : null}
 						</div>
 						{isEditMode ? (
-							<Badge className="shrink-0 text-xs" variant={isFullWidth ? "default" : "secondary"}>
+							<Badge
+								className="shrink-0 text-xs"
+								variant={isFullWidth ? "default" : "secondary"}
+							>
 								{isFullWidth ? "Full" : "Half"}
 							</Badge>
 						) : null}
@@ -158,7 +172,11 @@ export function WidgetContainer({
 									</Button>
 								</TooltipTrigger>
 								<TooltipContent>
-									<p>{isFullWidth ? "Resize to half width" : "Resize to full width"}</p>
+									<p>
+										{isFullWidth
+											? "Resize to half width"
+											: "Resize to full width"}
+									</p>
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>

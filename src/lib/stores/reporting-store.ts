@@ -29,7 +29,9 @@ type ReportingStore = {
 
 	// Actions
 	setCustomReports: (reports: CustomReport[]) => void;
-	addCustomReport: (report: Omit<CustomReport, "id" | "createdAt" | "updatedAt">) => void;
+	addCustomReport: (
+		report: Omit<CustomReport, "id" | "createdAt" | "updatedAt">,
+	) => void;
 	updateCustomReport: (id: string, updates: Partial<CustomReport>) => void;
 	deleteCustomReport: (id: string) => void;
 	setActiveReport: (id: string | null) => void;
@@ -93,21 +95,27 @@ export const useReportingStore = create<ReportingStore>()(
 				updateCustomReport: (id, updates) => {
 					set((state) => ({
 						customReports: state.customReports.map((report) =>
-							report.id === id ? { ...report, ...updates, updatedAt: new Date() } : report
+							report.id === id
+								? { ...report, ...updates, updatedAt: new Date() }
+								: report,
 						),
 					}));
 				},
 
 				deleteCustomReport: (id) => {
 					set((state) => ({
-						customReports: state.customReports.filter((report) => report.id !== id),
-						activeReportId: state.activeReportId === id ? null : state.activeReportId,
+						customReports: state.customReports.filter(
+							(report) => report.id !== id,
+						),
+						activeReportId:
+							state.activeReportId === id ? null : state.activeReportId,
 					}));
 				},
 
 				setActiveReport: (id) => set({ activeReportId: id }),
 
-				setIsCreatingReport: (isCreating) => set({ isCreatingReport: isCreating }),
+				setIsCreatingReport: (isCreating) =>
+					set({ isCreatingReport: isCreating }),
 
 				reset: () => set(initialState),
 			}),
@@ -119,10 +127,10 @@ export const useReportingStore = create<ReportingStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "ReportingStore" }
-	)
+		{ name: "ReportingStore" },
+	),
 );
 
 // Selectors for optimized subscriptions

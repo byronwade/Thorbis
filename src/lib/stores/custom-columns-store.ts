@@ -30,7 +30,11 @@ type CustomColumnsStore = {
 	// Actions
 	addColumn: (entity: string, column: CustomColumn) => void;
 	removeColumn: (entity: string, columnId: string) => void;
-	updateColumn: (entity: string, columnId: string, updates: Partial<CustomColumn>) => void;
+	updateColumn: (
+		entity: string,
+		columnId: string,
+		updates: Partial<CustomColumn>,
+	) => void;
 	reorderColumns: (entity: string, fromIndex: number, toIndex: number) => void;
 	getColumns: (entity: string) => CustomColumn[];
 	clearEntity: (entity: string) => void;
@@ -60,7 +64,9 @@ export const useCustomColumnsStore = create<CustomColumnsStore>()(
 				set((state) => ({
 					columns: {
 						...state.columns,
-						[entity]: (state.columns[entity] || []).filter((col) => col.id !== columnId),
+						[entity]: (state.columns[entity] || []).filter(
+							(col) => col.id !== columnId,
+						),
 					},
 				})),
 
@@ -69,7 +75,7 @@ export const useCustomColumnsStore = create<CustomColumnsStore>()(
 					columns: {
 						...state.columns,
 						[entity]: (state.columns[entity] || []).map((col) =>
-							col.id === columnId ? { ...col, ...updates } : col
+							col.id === columnId ? { ...col, ...updates } : col,
 						),
 					},
 				})),
@@ -105,6 +111,6 @@ export const useCustomColumnsStore = create<CustomColumnsStore>()(
 			name: "custom-columns-storage", // localStorage key
 			skipHydration: true, // CRITICAL: Prevents hydration mismatch with Next.js 16
 			version: 1,
-		}
-	)
+		},
+	),
 );

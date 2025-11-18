@@ -68,8 +68,12 @@ export async function CustomersSettingsData() {
 											<Icon className={`size-6 ${section.color}`} />
 										</div>
 										<div className="flex-1 space-y-1">
-											<h3 className="group-hover:text-primary font-semibold">{section.title}</h3>
-											<p className="text-muted-foreground text-sm">{section.description}</p>
+											<h3 className="group-hover:text-primary font-semibold">
+												{section.title}
+											</h3>
+											<p className="text-muted-foreground text-sm">
+												{section.description}
+											</p>
 										</div>
 									</div>
 								</CardContent>
@@ -86,10 +90,11 @@ export async function CustomersSettingsData() {
 						<div className="space-y-1">
 							<p className="text-sm font-medium">Customer Settings Overview</p>
 							<p className="text-muted-foreground text-sm">
-								These settings control how customer data is managed, stored, and used throughout the
-								system. Configure default preferences, set up loyalty programs, manage
-								notifications, ensure privacy compliance, and customize customer profile fields to
-								match your business needs.
+								These settings control how customer data is managed, stored, and
+								used throughout the system. Configure default preferences, set
+								up loyalty programs, manage notifications, ensure privacy
+								compliance, and customize customer profile fields to match your
+								business needs.
 							</p>
 						</div>
 					</div>

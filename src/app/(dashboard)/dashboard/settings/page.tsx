@@ -16,7 +16,13 @@ import { SettingsSearch } from "@/components/settings/settings-search";
 import { SettingsSection } from "@/components/settings/settings-section";
 import { SettingsShell } from "@/components/settings/settings-shell";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getSettingsOverviewData } from "@/lib/settings/overview-data";
 
 type PageProps = {
@@ -31,24 +37,35 @@ async function SettingsData({ searchParams }: PageProps) {
 	const normalizedQuery = searchQuery.trim().toLowerCase();
 	const sections = normalizedQuery
 		? overview.sections.filter((section) => {
-				const matchesTitle = section.title.toLowerCase().includes(normalizedQuery);
-				const matchesDescription = section.description.toLowerCase().includes(normalizedQuery);
+				const matchesTitle = section.title
+					.toLowerCase()
+					.includes(normalizedQuery);
+				const matchesDescription = section.description
+					.toLowerCase()
+					.includes(normalizedQuery);
 				const matchesLink = section.links.some(
 					(link) =>
 						link.title.toLowerCase().includes(normalizedQuery) ||
-						link.description.toLowerCase().includes(normalizedQuery)
+						link.description.toLowerCase().includes(normalizedQuery),
 				);
 				return matchesTitle || matchesDescription || matchesLink;
 			})
 		: overview.sections;
 
-	const generatedAtLabel = formatDistanceToNow(new Date(overview.meta.generatedAt), {
-		addSuffix: true,
-	});
+	const generatedAtLabel = formatDistanceToNow(
+		new Date(overview.meta.generatedAt),
+		{
+			addSuffix: true,
+		},
+	);
 	const planStatus = overview.meta.subscriptionStatus ?? "unknown";
 	const planBadgeVariant =
-		planStatus === "active" || planStatus === "trialing" ? "default" : "destructive";
-	const analyticsSection = overview.sections.find((section) => section.slug === "analytics");
+		planStatus === "active" || planStatus === "trialing"
+			? "default"
+			: "destructive";
+	const analyticsSection = overview.sections.find(
+		(section) => section.slug === "analytics",
+	);
 
 	return (
 		<div className="space-y-12">
@@ -85,7 +102,11 @@ async function SettingsData({ searchParams }: PageProps) {
 								<CardTitle className="text-base">Alerts</CardTitle>
 								<CardDescription>Clusters needing attention</CardDescription>
 							</div>
-							<Badge variant={overview.meta.alerts.length ? "destructive" : "secondary"}>
+							<Badge
+								variant={
+									overview.meta.alerts.length ? "destructive" : "secondary"
+								}
+							>
 								{overview.meta.alerts.length}
 							</Badge>
 						</CardHeader>
@@ -139,9 +160,13 @@ async function SettingsData({ searchParams }: PageProps) {
 									<p className="text-primary text-xs font-semibold tracking-wide uppercase">
 										{metric.label}
 									</p>
-									<p className="mt-1 text-2xl font-semibold tracking-tight">{metric.value}</p>
+									<p className="mt-1 text-2xl font-semibold tracking-tight">
+										{metric.value}
+									</p>
 									{metric.helper && (
-										<p className="text-muted-foreground text-sm">{metric.helper}</p>
+										<p className="text-muted-foreground text-sm">
+											{metric.helper}
+										</p>
 									)}
 								</div>
 							))}
@@ -154,7 +179,9 @@ async function SettingsData({ searchParams }: PageProps) {
 				{sections.length === 0 ? (
 					<Card className="py-12">
 						<CardContent className="flex flex-col items-center gap-3 text-center">
-							<p className="text-lg font-semibold">No settings match “{searchQuery}”.</p>
+							<p className="text-lg font-semibold">
+								No settings match “{searchQuery}”.
+							</p>
 							<p className="text-muted-foreground text-sm">
 								Try another query or clear the search bar.
 							</p>

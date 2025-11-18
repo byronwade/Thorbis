@@ -3,7 +3,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -16,7 +22,12 @@ export const metadata = generateSEOMetadata({
 		"Connect with Thorbis sales, support, or partnerships. Our team responds within one business day.",
 	path: "/contact",
 	section: "Company",
-	keywords: ["contact thorbis", "thorbis support", "thorbis sales", "thorbis partnerships"],
+	keywords: [
+		"contact thorbis",
+		"thorbis support",
+		"thorbis sales",
+		"thorbis partnerships",
+	],
 });
 
 const CONTACT_OPTIONS = [
@@ -52,7 +63,7 @@ export default function ContactPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Contact", url: `${siteUrl}/contact` },
-						])
+						]),
 					),
 				}}
 				id="contact-breadcrumb-ld"
@@ -63,11 +74,14 @@ export default function ContactPage() {
 					<Badge className="tracking-wide uppercase" variant="secondary">
 						Contact Thorbis
 					</Badge>
-					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">We’re here to help</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+						We’re here to help
+					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Whether you’re exploring Thorbis, need support, or want to partner, our team responds
-						quickly. Pricing stays simple—$100/month base subscription with pay-as-you-go usage,
-						unlimited users, no contracts, no lock-in. Choose the option that fits and we’ll get
+						Whether you’re exploring Thorbis, need support, or want to partner,
+						our team responds quickly. Pricing stays simple—$100/month base
+						subscription with pay-as-you-go usage, unlimited users, no
+						contracts, no lock-in. Choose the option that fits and we’ll get
 						back within one business day.
 					</p>
 					<div className="flex flex-wrap gap-3">
@@ -108,8 +122,9 @@ export default function ContactPage() {
 				<section className="bg-muted/20 mt-16 rounded-3xl border p-10">
 					<h2 className="text-2xl font-semibold">Office locations</h2>
 					<p className="text-muted-foreground mt-2 text-sm leading-relaxed">
-						Thorbis operates remotely with hubs in Austin, Denver, and Toronto. All visits are by
-						appointment—reach out to coordinate an onsite workshop.
+						Thorbis operates remotely with hubs in Austin, Denver, and Toronto.
+						All visits are by appointment—reach out to coordinate an onsite
+						workshop.
 					</p>
 				</section>
 			</div>

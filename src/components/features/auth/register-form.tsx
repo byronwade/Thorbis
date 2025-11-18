@@ -1,6 +1,13 @@
 "use client";
 
-import { AlertCircle, CheckCircle2, Eye, EyeOff, ImageUp, Loader2 } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Eye,
+	EyeOff,
+	ImageUp,
+	Loader2,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -33,7 +40,7 @@ export function RegisterForm() {
 				URL.revokeObjectURL(avatarPreview);
 			}
 		},
-		[avatarPreview]
+		[avatarPreview],
 	);
 
 	const passwordScore = useMemo(() => {
@@ -111,13 +118,16 @@ export function RegisterForm() {
 				setIsLoading(false);
 			}
 		} catch (caughtError) {
-			if (caughtError instanceof Error && caughtError.message === "NEXT_REDIRECT") {
+			if (
+				caughtError instanceof Error &&
+				caughtError.message === "NEXT_REDIRECT"
+			) {
 				return;
 			}
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Unable to start OAuth signup right now."
+					: "Unable to start OAuth signup right now.",
 			);
 			setIsLoading(false);
 		}
@@ -163,7 +173,7 @@ export function RegisterForm() {
 			setError(
 				caughtError instanceof Error
 					? caughtError.message
-					: "Something went wrong. Please try again."
+					: "Something went wrong. Please try again.",
 			);
 			setIsLoading(false);
 		}
@@ -332,8 +342,14 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-							<span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+							{showPassword ? (
+								<EyeOff className="h-4 w-4" />
+							) : (
+								<Eye className="h-4 w-4" />
+							)}
+							<span className="sr-only">
+								{showPassword ? "Hide password" : "Show password"}
+							</span>
 						</Button>
 					</div>
 					<div className="flex items-center justify-between text-xs">
@@ -345,7 +361,7 @@ export function RegisterForm() {
 									? "text-green-600"
 									: passwordScore >= 60
 										? "text-amber-500"
-										: "text-red-500"
+										: "text-red-500",
 							)}
 						>
 							{passwordStrengthLabel}
@@ -359,7 +375,7 @@ export function RegisterForm() {
 									? "bg-green-500"
 									: passwordScore >= 60
 										? "bg-amber-500"
-										: "bg-red-500"
+										: "bg-red-500",
 							)}
 							style={{ width: `${passwordScore}%` }}
 						/>
@@ -390,7 +406,11 @@ export function RegisterForm() {
 							type="button"
 							variant="ghost"
 						>
-							{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+							{showConfirmPassword ? (
+								<EyeOff className="h-4 w-4" />
+							) : (
+								<Eye className="h-4 w-4" />
+							)}
 							<span className="sr-only">
 								{showConfirmPassword ? "Hide password" : "Show password"}
 							</span>

@@ -64,7 +64,7 @@ export function InlineText({
 					"-mx-1",
 				],
 				!value && "text-muted-foreground italic",
-				className
+				className,
 			)}
 			contentEditable={isEditable}
 			onBlur={handleBlur}

@@ -10,9 +10,18 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
 
@@ -23,11 +32,13 @@ const jobTypeLegend = [
 	},
 	{
 		label: "Callback / Follow Up",
-		classes: "border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
+		classes:
+			"border-orange-400 bg-orange-50 text-orange-700 dark:bg-orange-950",
 	},
 	{
 		label: "Meetings / Events",
-		classes: "border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
+		classes:
+			"border-purple-400 bg-purple-50 text-purple-700 dark:bg-purple-950",
 	},
 	{
 		label: "Install / New Work",
@@ -151,7 +162,9 @@ export function ScheduleToolbarActions() {
 									className="bg-card/70 flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs"
 									key={item.label}
 								>
-									<span className={cn("h-4 w-4 rounded-full border", item.classes)} />
+									<span
+										className={cn("h-4 w-4 rounded-full border", item.classes)}
+									/>
 									<span className="text-foreground">{item.label}</span>
 								</div>
 							))}
@@ -165,7 +178,9 @@ export function ScheduleToolbarActions() {
 						<div className="grid grid-cols-2 gap-2 text-xs">
 							{statusLegend.map((item) => (
 								<div className="flex items-center gap-2" key={item.label}>
-									<span className={cn("h-2.5 w-2.5 rounded-full", item.classes)} />
+									<span
+										className={cn("h-2.5 w-2.5 rounded-full", item.classes)}
+									/>
 									<span>{item.label}</span>
 								</div>
 							))}

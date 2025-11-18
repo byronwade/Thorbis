@@ -30,7 +30,7 @@ export function TeamAvatar({
 				className={cn(
 					sizeClasses,
 					"border-card border-2 transition-all",
-					isHovered && "ring-primary ring-2"
+					isHovered && "ring-primary ring-2",
 				)}
 				title={assignment.displayName}
 			>
@@ -41,7 +41,9 @@ export function TeamAvatar({
 						src={assignment.avatar}
 					/>
 				)}
-				<AvatarFallback className={cn("bg-muted text-foreground font-bold", textSize)}>
+				<AvatarFallback
+					className={cn("bg-muted text-foreground font-bold", textSize)}
+				>
 					{assignment.displayName
 						.split(" ")
 						.map((n) => n[0])
@@ -83,7 +85,9 @@ export function TeamAvatarGroup({
 	jobId?: string;
 }) {
 	const [showAll, setShowAll] = useState(false);
-	const visibleAssignments = showAll ? assignments : assignments.slice(0, maxVisible);
+	const visibleAssignments = showAll
+		? assignments
+		: assignments.slice(0, maxVisible);
 	const remainingCount = assignments.length - maxVisible;
 
 	return (
@@ -93,7 +97,11 @@ export function TeamAvatarGroup({
 					<TeamAvatar
 						assignment={assignment}
 						key={idx}
-						onRemove={onRemove ? () => onRemove(assignment.technicianId || "") : undefined}
+						onRemove={
+							onRemove
+								? () => onRemove(assignment.technicianId || "")
+								: undefined
+						}
 						size={size}
 					/>
 				))}

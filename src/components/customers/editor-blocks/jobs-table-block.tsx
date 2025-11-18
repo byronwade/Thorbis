@@ -28,9 +28,15 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 	};
 
 	// Calculate job summary
-	const inProgressJobs = (jobs || []).filter((job: any) => job.status === "in_progress");
-	const scheduledJobs = (jobs || []).filter((job: any) => job.status === "scheduled");
-	const completedJobs = (jobs || []).filter((job: any) => job.status === "completed");
+	const inProgressJobs = (jobs || []).filter(
+		(job: any) => job.status === "in_progress",
+	);
+	const scheduledJobs = (jobs || []).filter(
+		(job: any) => job.status === "scheduled",
+	);
+	const completedJobs = (jobs || []).filter(
+		(job: any) => job.status === "completed",
+	);
 
 	let summary = "";
 	if (jobs.length === 0) {
@@ -60,8 +66,12 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 		scheduledStart: job.scheduled_start ? new Date(job.scheduled_start) : null,
 		scheduledEnd: job.scheduled_end ? new Date(job.scheduled_end) : null,
 		// Time Tracking Domain fields
-		actualStart: job.timeTracking?.actual_start ? new Date(job.timeTracking.actual_start) : null,
-		actualEnd: job.timeTracking?.actual_end ? new Date(job.timeTracking.actual_end) : null,
+		actualStart: job.timeTracking?.actual_start
+			? new Date(job.timeTracking.actual_start)
+			: null,
+		actualEnd: job.timeTracking?.actual_end
+			? new Date(job.timeTracking.actual_end)
+			: null,
 		// Financial Domain fields
 		totalAmount: job.financial?.total_amount ?? 0,
 		paidAmount: job.financial?.paid_amount ?? 0,
@@ -84,7 +94,10 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 		<NodeViewWrapper className="jobs-table-block">
 			<CollapsibleDataSection
 				actions={
-					<CollapsibleActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
+					<CollapsibleActionButton
+						icon={<Plus className="size-4" />}
+						onClick={handleAddJob}
+					>
 						Add Job
 					</CollapsibleActionButton>
 				}
@@ -98,7 +111,10 @@ export function JobsTableBlockComponent({ node, editor }: any) {
 								title: "No jobs found",
 								description: "Get started by creating your first job.",
 								action: (
-									<EmptyStateActionButton icon={<Plus className="size-4" />} onClick={handleAddJob}>
+									<EmptyStateActionButton
+										icon={<Plus className="size-4" />}
+										onClick={handleAddJob}
+									>
 										Add Job
 									</EmptyStateActionButton>
 								),
@@ -150,7 +166,11 @@ export const JobsTableBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "jobs-table-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "jobs-table-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

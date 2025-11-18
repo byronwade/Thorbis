@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import type { Job, Technician } from "@/components/schedule/schedule-types";
+import type { UnassignedJobsMeta } from "@/lib/schedule/types";
 import type { ScheduleHydrationPayload } from "@/lib/schedule-bootstrap";
+import { deserializeJob } from "@/lib/schedule-bootstrap";
 import { fetchScheduleData } from "@/lib/schedule-data";
 import { createClient } from "@/lib/supabase/client";
+
+const DEFAULT_UNASSIGNED_LIMIT = 50;
 
 type ScheduleState = {
 	// Data
@@ -16,10 +20,18 @@ type ScheduleState = {
 	isLoading: boolean;
 	error: string | null;
 	lastSync: Date | null;
+	isLoadingUnassigned: boolean;
 
 	// Selection
 	selectedJobId: string | null;
 	selectedTechnicianId: string | null;
+
+	// Unassigned jobs state
+	unassignedSearch: string;
+	unassignedHasMore: boolean;
+	unassignedNextOffset: number;
+	unassignedLimit: number;
+	unassignedTotalCount: number;
 
 	// Actions - Technicians
 	setTechnicians: (technicians: Technician[]) => void;
@@ -31,7 +43,12 @@ type ScheduleState = {
 	setJobs: (jobs: Job[]) => void;
 	addJob: (job: Job) => void;
 	updateJob: (jobId: string, updates: Partial<Job>) => void;
-	moveJob: (jobId: string, newTechnicianId: string, newStartTime: Date, newEndTime: Date) => void;
+	moveJob: (
+		jobId: string,
+		newTechnicianId: string,
+		newStartTime: Date,
+		newEndTime: Date,
+	) => void;
 	deleteJob: (jobId: string) => void;
 	duplicateJob: (jobId: string, newStartTime: Date) => void;
 
@@ -40,7 +57,9 @@ type ScheduleState = {
 	selectTechnician: (technicianId: string | null) => void;
 
 	// Actions - Bulk operations
-	bulkUpdateJobs: (updates: Array<{ jobId: string; updates: Partial<Job> }>) => void;
+	bulkUpdateJobs: (
+		updates: Array<{ jobId: string; updates: Partial<Job> }>,
+	) => void;
 	bulkDeleteJobs: (jobIds: string[]) => void;
 
 	// Actions - Sync
@@ -50,6 +69,14 @@ type ScheduleState = {
 	setLastSync: (timestamp: Date | null) => void;
 	setCompanyId: (companyId: string | null) => void;
 	setLastFetchedRange: (range: { start: Date; end: Date } | null) => void;
+	setUnassignedMeta: (
+		meta?: UnassignedJobsMeta,
+		fallbackCount?: number,
+	) => void;
+	loadMoreUnassignedJobs: (options?: {
+		reset?: boolean;
+		search?: string;
+	}) => Promise<void>;
 
 	// Helpers
 	getJobsByTechnician: (technicianId: string) => Job[];
@@ -60,7 +87,7 @@ type ScheduleState = {
 		technicianId: string,
 		startTime: Date,
 		endTime: Date,
-		excludeJobId?: string
+		excludeJobId?: string,
 	) => boolean;
 	getUnassignedJobs: () => Job[];
 	getJobsGroupedByTechnician: () => Record<string, Job[]>;
@@ -79,6 +106,12 @@ export const useScheduleStore = create<ScheduleState>()(
 				isLoading: false,
 				error: null,
 				lastSync: null,
+				isLoadingUnassigned: false,
+				unassignedSearch: "",
+				unassignedHasMore: false,
+				unassignedNextOffset: 0,
+				unassignedLimit: DEFAULT_UNASSIGNED_LIMIT,
+				unassignedTotalCount: 0,
 				selectedJobId: null,
 				selectedTechnicianId: null,
 
@@ -115,7 +148,7 @@ export const useScheduleStore = create<ScheduleState>()(
 						const newJobs = new Map(state.jobs);
 						for (const [jobId, job] of newJobs) {
 							const filteredAssignments = job.assignments.filter(
-								(assignment) => assignment.technicianId !== id
+								(assignment) => assignment.technicianId !== id,
 							);
 
 							if (filteredAssignments.length !== job.assignments.length) {
@@ -123,8 +156,9 @@ export const useScheduleStore = create<ScheduleState>()(
 									...job,
 									assignments: filteredAssignments,
 									technicianId:
-										filteredAssignments.find((assignment) => assignment.role === "primary")
-											?.technicianId ?? "",
+										filteredAssignments.find(
+											(assignment) => assignment.role === "primary",
+										)?.technicianId ?? "",
 									isUnassigned: filteredAssignments.length === 0,
 								});
 							}
@@ -134,7 +168,9 @@ export const useScheduleStore = create<ScheduleState>()(
 							technicians: newTechnicians,
 							jobs: newJobs,
 							selectedTechnicianId:
-								state.selectedTechnicianId === id ? null : state.selectedTechnicianId,
+								state.selectedTechnicianId === id
+									? null
+									: state.selectedTechnicianId,
 						};
 					});
 				},
@@ -178,12 +214,14 @@ export const useScheduleStore = create<ScheduleState>()(
 														...assignment,
 														technicianId: newTechnicianId,
 														teamMemberId: technician?.teamMemberId,
-														displayName: technician?.name || assignment.displayName,
-														avatar: technician?.avatar ?? assignment.avatar ?? null,
+														displayName:
+															technician?.name || assignment.displayName,
+														avatar:
+															technician?.avatar ?? assignment.avatar ?? null,
 														status: technician?.status ?? assignment.status,
 														isActive: technician?.isActive ?? true,
 													}
-												: assignment
+												: assignment,
 										)
 									: [
 											{
@@ -216,7 +254,8 @@ export const useScheduleStore = create<ScheduleState>()(
 						newJobs.delete(jobId);
 						return {
 							jobs: newJobs,
-							selectedJobId: state.selectedJobId === jobId ? null : state.selectedJobId,
+							selectedJobId:
+								state.selectedJobId === jobId ? null : state.selectedJobId,
 						};
 					});
 				},
@@ -248,7 +287,8 @@ export const useScheduleStore = create<ScheduleState>()(
 
 				// Selection actions
 				selectJob: (jobId) => set({ selectedJobId: jobId }),
-				selectTechnician: (technicianId) => set({ selectedTechnicianId: technicianId }),
+				selectTechnician: (technicianId) =>
+					set({ selectedTechnicianId: technicianId }),
 
 				// Bulk operations
 				bulkUpdateJobs: (updates) => {
@@ -280,7 +320,9 @@ export const useScheduleStore = create<ScheduleState>()(
 				hydrateFromServer: (payload) => {
 					set((state) => {
 						const jobMap = new Map(payload.jobs.map((job) => [job.id, job]));
-						const technicianMap = new Map(payload.technicians.map((tech) => [tech.id, tech]));
+						const technicianMap = new Map(
+							payload.technicians.map((tech) => [tech.id, tech]),
+						);
 
 						return {
 							...state,
@@ -298,6 +340,10 @@ export const useScheduleStore = create<ScheduleState>()(
 							selectedJobId: null,
 						};
 					});
+					const unassignedCount = payload.jobs.filter(
+						(job) => job.isUnassigned,
+					).length;
+					get().setUnassignedMeta(payload.unassignedMeta, unassignedCount);
 				},
 
 				// Sync
@@ -323,11 +369,17 @@ export const useScheduleStore = create<ScheduleState>()(
 								end: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
 							} as { start: Date; end: Date });
 
-						const { jobs, technicians } = await fetchScheduleData({
-							supabase,
-							companyId,
-							range,
-						});
+						const { unassignedLimit, unassignedSearch } = get();
+
+						const { jobs, technicians, unassignedMeta } =
+							await fetchScheduleData({
+								supabase,
+								companyId,
+								range,
+								unscheduledLimit: unassignedLimit,
+								unscheduledOffset: 0,
+								unscheduledSearch: unassignedSearch,
+							});
 
 						get().setTechnicians(technicians);
 						get().setJobs(jobs);
@@ -338,6 +390,10 @@ export const useScheduleStore = create<ScheduleState>()(
 								end: new Date(range.end),
 							},
 						});
+						const unassignedCount = jobs.filter(
+							(job) => job.isUnassigned,
+						).length;
+						get().setUnassignedMeta(unassignedMeta, unassignedCount);
 					} catch (error) {
 						set({
 							error: error instanceof Error ? error.message : "Unknown error",
@@ -352,16 +408,116 @@ export const useScheduleStore = create<ScheduleState>()(
 				setLastSync: (timestamp) => set({ lastSync: timestamp }),
 				setCompanyId: (companyId) => set({ companyId }),
 				setLastFetchedRange: (range) => set({ lastFetchedRange: range }),
+				setUnassignedMeta: (meta, fallbackCount = 0) =>
+					set((state) => {
+						const currentUnassigned = Array.from(state.jobs.values()).filter(
+							(job) => job.isUnassigned,
+						).length;
+						const derivedCount = Math.max(fallbackCount, currentUnassigned);
+						return {
+							unassignedSearch:
+								meta && typeof meta.search === "string"
+									? meta.search
+									: (state.unassignedSearch ?? ""),
+							unassignedHasMore:
+								typeof meta?.hasMore === "boolean"
+									? meta.hasMore
+									: (state.unassignedHasMore ?? false),
+							unassignedNextOffset: meta?.nextOffset ?? derivedCount,
+							unassignedLimit:
+								meta?.limit ??
+								state.unassignedLimit ??
+								DEFAULT_UNASSIGNED_LIMIT,
+							unassignedTotalCount: meta?.totalCount ?? derivedCount,
+							isLoadingUnassigned: false,
+						};
+					}),
+				loadMoreUnassignedJobs: async ({
+					reset = false,
+					search,
+				}: {
+					reset?: boolean;
+					search?: string;
+				} = {}) => {
+					const { unassignedLimit } = get();
+					const searchTerm =
+						typeof search === "string" ? search : get().unassignedSearch;
+					const offset = reset ? 0 : get().unassignedNextOffset;
+
+					set({
+						isLoadingUnassigned: true,
+						error: null,
+						unassignedSearch: searchTerm,
+					});
+
+					try {
+						const response = await fetch("/api/schedule/unscheduled", {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({
+								search: searchTerm,
+								offset,
+								limit: unassignedLimit,
+							}),
+						});
+
+						const payload = await response.json();
+						if (!response.ok) {
+							throw new Error(
+								payload?.error || "Failed to load unscheduled jobs",
+							);
+						}
+
+						const newJobs = Array.isArray(payload?.jobs)
+							? payload.jobs.map(deserializeJob)
+							: [];
+						const meta: UnassignedJobsMeta | undefined = payload?.meta;
+
+						set((state) => {
+							const jobMap = new Map(state.jobs);
+							if (reset) {
+								for (const [id, job] of jobMap) {
+									if (job.isUnassigned) {
+										jobMap.delete(id);
+									}
+								}
+							}
+							newJobs.forEach((job) => {
+								jobMap.set(job.id, job);
+							});
+
+							return {
+								jobs: jobMap,
+							};
+						});
+						const unassignedCount = Array.from(get().jobs.values()).filter(
+							(job) => job.isUnassigned,
+						).length;
+						get().setUnassignedMeta(meta, unassignedCount);
+					} catch (error) {
+						set({
+							error:
+								error instanceof Error
+									? error.message
+									: "Failed to load unscheduled jobs",
+						});
+						throw error;
+					} finally {
+						set({ isLoadingUnassigned: false });
+					}
+				},
 
 				// Helpers
 				getJobsByTechnician: (technicianId) =>
 					Array.from(get().jobs.values()).filter((job) =>
-						job.assignments.some((assignment) => assignment.technicianId === technicianId)
+						job.assignments.some(
+							(assignment) => assignment.technicianId === technicianId,
+						),
 					),
 
 				getJobsByDateRange: (startDate, endDate) =>
 					Array.from(get().jobs.values()).filter(
-						(job) => job.startTime <= endDate && job.endTime >= startDate
+						(job) => job.startTime <= endDate && job.endTime >= startDate,
 					),
 
 				getTechnicianById: (id) => get().technicians.get(id),
@@ -385,7 +541,8 @@ export const useScheduleStore = create<ScheduleState>()(
 					});
 				},
 
-				getUnassignedJobs: () => Array.from(get().jobs.values()).filter((job) => job.isUnassigned),
+				getUnassignedJobs: () =>
+					Array.from(get().jobs.values()).filter((job) => job.isUnassigned),
 
 				getJobsGroupedByTechnician: () => {
 					const grouped: Record<string, Job[]> = {};
@@ -415,7 +572,9 @@ export const useScheduleStore = create<ScheduleState>()(
 				// Rehydrate arrays back to Maps
 				merge: (persistedState: any, currentState) => {
 					const technicians = persistedState?.technicians
-						? new Map(persistedState.technicians.map((t: Technician) => [t.id, t]))
+						? new Map(
+								persistedState.technicians.map((t: Technician) => [t.id, t]),
+							)
 						: currentState.technicians;
 
 					const jobs = persistedState?.jobs
@@ -429,7 +588,7 @@ export const useScheduleStore = create<ScheduleState>()(
 						jobs,
 					};
 				},
-			}
-		)
-	)
+			},
+		),
+	),
 );

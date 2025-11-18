@@ -12,12 +12,14 @@
  */
 
 import { MessageSquare, Pencil, Phone, Plus, Ticket } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
 export function CommunicationToolbarActions() {
 	const activeFilter = useCommunicationStore((state) => state.activeFilter);
 	const openComposer = useCommunicationStore((state) => state.openComposer);
+	const router = useRouter();
 
 	// Return appropriate button based on active filter
 	let buttonContent;
@@ -45,10 +47,7 @@ export function CommunicationToolbarActions() {
 			buttonContent = (
 				<Button
 					onClick={() =>
-						openComposer("sms", {
-							customerName: "Customer",
-							phone: "",
-						})
+						router.push("/dashboard/communication/messages?compose=1")
 					}
 					size="sm"
 					variant="default"
@@ -61,7 +60,11 @@ export function CommunicationToolbarActions() {
 			break;
 		case "phone":
 			buttonContent = (
-				<Button onClick={() => openComposer("call")} size="sm" variant="default">
+				<Button
+					onClick={() => openComposer("call")}
+					size="sm"
+					variant="default"
+				>
 					<Phone className="mr-2 size-4" />
 					<span className="hidden sm:inline">New Call</span>
 					<span className="sm:hidden">Call</span>
@@ -79,7 +82,11 @@ export function CommunicationToolbarActions() {
 			break;
 		default:
 			buttonContent = (
-				<Button onClick={() => openComposer("email")} size="sm" variant="default">
+				<Button
+					onClick={() => openComposer("email")}
+					size="sm"
+					variant="default"
+				>
 					<Plus className="mr-2 size-4" />
 					<span className="hidden sm:inline">New Message</span>
 					<span className="sm:hidden">New</span>

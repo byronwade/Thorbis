@@ -42,20 +42,21 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 	const isNeutral = numericChange === 0;
 
 	// Format value if it's a number with commas
-	const formattedValue = typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
+	const formattedValue =
+		typeof stat.value === "number" ? stat.value.toLocaleString() : stat.value;
 
 	return (
 		<div
 			className={cn(
 				"group hover:bg-muted/10 dark:hover:bg-muted/5 cursor-default transition-all duration-200",
-				compact ? "px-4 py-2" : "px-5 py-3"
+				compact ? "px-4 py-2" : "px-5 py-3",
 			)}
 		>
 			<div className="flex items-baseline gap-2">
 				<div
 					className={cn(
 						"text-foreground font-semibold tracking-tight tabular-nums transition-all duration-200",
-						compact ? "text-base leading-tight" : "text-xl leading-tight"
+						compact ? "text-base leading-tight" : "text-xl leading-tight",
 					)}
 				>
 					{formattedValue}
@@ -65,8 +66,10 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 						className={cn(
 							"flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-medium tabular-nums shadow-sm",
 							isPositive && "bg-success/10 text-success ring-success/20 ring-1",
-							isNegative && "bg-destructive/10 text-destructive ring-destructive/20 ring-1",
-							isNeutral && "bg-muted/50 text-muted-foreground ring-border/50 ring-1"
+							isNegative &&
+								"bg-destructive/10 text-destructive ring-destructive/20 ring-1",
+							isNeutral &&
+								"bg-muted/50 text-muted-foreground ring-border/50 ring-1",
 						)}
 					>
 						{isPositive && <TrendingUp className="h-2.5 w-2.5" />}
@@ -80,7 +83,9 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 			<div
 				className={cn(
 					"text-muted-foreground/70 font-medium tracking-wide uppercase transition-all duration-200",
-					compact ? "mt-0.5 text-[10px] leading-tight" : "mt-1 text-xs leading-tight"
+					compact
+						? "mt-0.5 text-[10px] leading-tight"
+						: "mt-1 text-xs leading-tight",
 				)}
 			>
 				{stat.label}
@@ -94,7 +99,11 @@ function TickerStat({ stat, compact }: { stat: StatCard; compact: boolean }) {
 	);
 }
 
-export function StatsCards({ stats, variant = "ticker", compact = false }: StatsCardsProps) {
+export function StatsCards({
+	stats,
+	variant = "ticker",
+	compact = false,
+}: StatsCardsProps) {
 	// Dynamically determine grid columns based on number of stats
 	const gridColsClass =
 		{
@@ -110,7 +119,9 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 		return (
 			<div className="border-border/30 bg-background dark:bg-background w-full border-b">
 				{/* Stats Grid - Stock ticker style */}
-				<div className={cn("divide-border/30 grid w-full divide-x", gridColsClass)}>
+				<div
+					className={cn("divide-border/30 grid w-full divide-x", gridColsClass)}
+				>
 					{stats.map((stat) => (
 						<TickerStat compact={compact} key={stat.label} stat={stat} />
 					))}
@@ -133,10 +144,14 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 									{stat.value}
 								</div>
 								{stat.percentage !== undefined && (
-									<div className="text-muted-foreground text-xs">{stat.percentage}%</div>
+									<div className="text-muted-foreground text-xs">
+										{stat.percentage}%
+									</div>
 								)}
 							</div>
-							<div className="text-muted-foreground mt-0.5 text-sm">{stat.label}</div>
+							<div className="text-muted-foreground mt-0.5 text-sm">
+								{stat.label}
+							</div>
 						</div>
 
 						{/* Full-width chart positioned absolutely */}
@@ -151,11 +166,28 @@ export function StatsCards({ stats, variant = "ticker", compact = false }: Stats
 										},
 									}}
 								>
-									<LazyAreaChart data={stat.data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+									<LazyAreaChart
+										data={stat.data}
+										margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+									>
 										<defs>
-											<linearGradient id={`gradient-${stat.label}`} x1="0" x2="0" y1="0" y2="1">
-												<stop offset="0%" stopColor={stat.color} stopOpacity={0.4} />
-												<stop offset="100%" stopColor={stat.color} stopOpacity={0.05} />
+											<linearGradient
+												id={`gradient-${stat.label}`}
+												x1="0"
+												x2="0"
+												y1="0"
+												y2="1"
+											>
+												<stop
+													offset="0%"
+													stopColor={stat.color}
+													stopOpacity={0.4}
+												/>
+												<stop
+													offset="100%"
+													stopColor={stat.color}
+													stopOpacity={0.05}
+												/>
 											</linearGradient>
 										</defs>
 										<Area

@@ -5,7 +5,10 @@ import Link from "next/link";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
+import type {
+	KanbanItemBase,
+	KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 
 type PaymentStatus =
@@ -57,7 +60,9 @@ const PAYMENT_STATUS_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#6B7280" },
 ];
 
-const COLUMN_LABEL = new Map(PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+	PAYMENT_STATUS_COLUMNS.map((column) => [column.id, column.name]),
+);
 const DEFAULT_STATUS: PaymentStatus = "pending";
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
@@ -124,6 +129,7 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 					<Link
 						className="text-muted-foreground hover:text-primary block text-xs font-semibold tracking-wide uppercase"
 						href={`/dashboard/work/payments/${payment.id}`}
+						prefetch={false}
 					>
 						{payment.payment_number}
 					</Link>
@@ -136,7 +142,9 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
 					<User className="text-primary size-4" />
-					<span className="text-foreground font-medium">{getCustomerName(payment)}</span>
+					<span className="text-foreground font-medium">
+						{getCustomerName(payment)}
+					</span>
 				</div>
 
 				<div className="flex items-center gap-2">
@@ -153,7 +161,8 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 
 			<div className="text-muted-foreground flex items-center justify-between pt-2 text-[11px] tracking-wide">
 				<span>
-					{payment.processed_at && fullDateFormatter.format(new Date(payment.processed_at))}
+					{payment.processed_at &&
+						fullDateFormatter.format(new Date(payment.processed_at))}
 				</span>
 				<span className="uppercase">
 					{columnId ? (COLUMN_LABEL.get(columnId) ?? columnId) : "—"}
@@ -161,8 +170,16 @@ function PaymentCardContent({ item }: { item: PaymentsKanbanItem }) {
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
-					<Link href={`/dashboard/work/payments/${payment.id}`}>
+				<Button
+					asChild
+					className="text-primary gap-1 text-xs"
+					size="sm"
+					variant="ghost"
+				>
+					<Link
+						href={`/dashboard/work/payments/${payment.id}`}
+						prefetch={false}
+					>
 						View
 						<ArrowUpRight className="size-3.5" />
 					</Link>
@@ -198,7 +215,9 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 				//   return;
 				// }
 
-				toast.success(`Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`);
+				toast.success(
+					`Payment moved to ${COLUMN_LABEL.get(toColumnId as PaymentStatus)}`,
+				);
 			})();
 		});
 	};
@@ -207,7 +226,10 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 		<EntityKanban<Payment, PaymentStatus>
 			calculateColumnMeta={(columnId, items) => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce((sum, item) => sum + (item.entity.amount ?? 0), 0);
+				const total = columnItems.reduce(
+					(sum, item) => sum + (item.entity.amount ?? 0),
+					0,
+				);
 				return { count: columnItems.length, total };
 			}}
 			columns={PAYMENT_STATUS_COLUMNS}
@@ -220,7 +242,9 @@ export function PaymentsKanban({ payments }: PaymentsKanbanProps) {
 				entity: payment,
 			})}
 			onItemMove={handleItemMove}
-			renderCard={(item) => <PaymentCardContent item={item as PaymentsKanbanItem} />}
+			renderCard={(item) => (
+				<PaymentCardContent item={item as PaymentsKanbanItem} />
+			)}
 			renderDragOverlay={(item) => (
 				<div className="border-border/70 bg-background/95 w-[280px] rounded-md border p-3 shadow-lg">
 					<PaymentCardContent item={item as PaymentsKanbanItem} />

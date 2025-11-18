@@ -25,7 +25,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { type TeamFilters, useTeamFiltersStore } from "@/lib/stores/team-filters-store";
+import {
+	type TeamFilters,
+	useTeamFiltersStore,
+} from "@/lib/stores/team-filters-store";
 
 type TeamFilterDropdownProps = {
 	activeCount?: number;
@@ -53,15 +56,17 @@ export function TeamFilterDropdown({
 	}, [isOpen, globalFilters]);
 
 	// Count active filters
-	const activeFilterCount = Object.entries(globalFilters).filter(([key, value]) => {
-		if (key === "archiveStatus") {
-			return value !== "active";
-		}
-		if (key === "role" || key === "status") {
-			return value !== "all";
-		}
-		return value !== "";
-	}).length;
+	const activeFilterCount = Object.entries(globalFilters).filter(
+		([key, value]) => {
+			if (key === "archiveStatus") {
+				return value !== "active";
+			}
+			if (key === "role" || key === "status") {
+				return value !== "all";
+			}
+			return value !== "";
+		},
+	).length;
 
 	const handleApplyFilters = () => {
 		setFilters(localFilters);
@@ -81,7 +86,10 @@ export function TeamFilterDropdown({
 					Filters
 					<ChevronDown className="ml-2 size-4" />
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 size-5 rounded-full p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 size-5 rounded-full p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -122,7 +130,8 @@ export function TeamFilterDropdown({
 									Active Only {activeCount !== undefined && `(${activeCount})`}
 								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 								<SelectItem value="all">
 									All Members {totalCount !== undefined && `(${totalCount})`}
@@ -135,7 +144,9 @@ export function TeamFilterDropdown({
 					<div className="space-y-2">
 						<Label className="text-xs">Role</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, role: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, role: value })
+							}
 							value={localFilters.role}
 						>
 							<SelectTrigger className="h-9">
@@ -157,7 +168,9 @@ export function TeamFilterDropdown({
 					<div className="space-y-2">
 						<Label className="text-xs">Member Status</Label>
 						<Select
-							onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
+							onValueChange={(value) =>
+								setLocalFilters({ ...localFilters, status: value })
+							}
 							value={localFilters.status}
 						>
 							<SelectTrigger className="h-9">
@@ -177,7 +190,9 @@ export function TeamFilterDropdown({
 						<Label className="text-xs">Member Name</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, name: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, name: e.target.value })
+							}
 							placeholder="Search by name..."
 							value={localFilters.name}
 						/>
@@ -188,7 +203,9 @@ export function TeamFilterDropdown({
 						<Label className="text-xs">Email</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, email: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, email: e.target.value })
+							}
 							placeholder="Search by email..."
 							value={localFilters.email}
 						/>
@@ -199,7 +216,9 @@ export function TeamFilterDropdown({
 						<Label className="text-xs">Department</Label>
 						<Input
 							className="h-9"
-							onChange={(e) => setLocalFilters({ ...localFilters, department: e.target.value })}
+							onChange={(e) =>
+								setLocalFilters({ ...localFilters, department: e.target.value })
+							}
 							placeholder="Filter by department..."
 							value={localFilters.department}
 						/>
@@ -209,7 +228,12 @@ export function TeamFilterDropdown({
 
 					{/* Actions */}
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => setIsOpen(false)}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
 						<Button className="flex-1" onClick={handleApplyFilters} size="sm">

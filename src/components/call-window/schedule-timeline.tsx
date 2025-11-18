@@ -75,9 +75,13 @@ export function ScheduleTimeline({
 		});
 	};
 
-	const hourMarkers = Array.from({ length: totalHours + 1 }, (_, i) => workStart + i);
+	const hourMarkers = Array.from(
+		{ length: totalHours + 1 },
+		(_, i) => workStart + i,
+	);
 	const currentTimePosition = getCurrentTimePosition();
-	const isWithinWorkingHours = currentTimePosition > 0 && currentTimePosition < 100;
+	const isWithinWorkingHours =
+		currentTimePosition > 0 && currentTimePosition < 100;
 
 	return (
 		<div className="space-y-3">
@@ -103,7 +107,7 @@ export function ScheduleTimeline({
 								className={cn(
 									"absolute top-1 h-10 rounded border-2 p-1 transition-all hover:z-10 hover:scale-105",
 									statusColor,
-									appointment.status === "in_progress" && "animate-pulse"
+									appointment.status === "in_progress" && "animate-pulse",
 								)}
 								key={appointment.id}
 								style={style}
@@ -116,7 +120,9 @@ export function ScheduleTimeline({
 									{appointment.assigned_technicians.length > 1 && (
 										<div className="flex items-center gap-0.5 text-white/80">
 											<Users className="h-2.5 w-2.5" />
-											<span className="text-[8px]">{appointment.assigned_technicians.length}</span>
+											<span className="text-[8px]">
+												{appointment.assigned_technicians.length}
+											</span>
 										</div>
 									)}
 								</div>

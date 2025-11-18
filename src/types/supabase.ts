@@ -1,4 +1,10 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json =
+	| string
+	| number
+	| boolean
+	| null
+	| { [key: string]: Json | undefined }
+	| Json[];
 
 export type Database = {
 	// Allows to automatically instantiate createClient with right options
@@ -192,137 +198,242 @@ export type Database = {
 			};
 			appointments: {
 				Row: {
-					actual_end: string | null;
-					actual_start: string | null;
-					appointment_number: string;
+					access_instructions: string | null;
+					actual_duration: number | null;
+					actual_end_time: string | null;
+					actual_start_time: string | null;
+					all_day: boolean;
+					archived_at: string | null;
 					assigned_to: string | null;
 					cancellation_reason: string | null;
+					cancelled_at: string | null;
+					cancelled_by: string | null;
+					color: string | null;
 					company_id: string;
-					confirmation_sent: boolean | null;
-					created_at: string | null;
-					created_by: string | null;
+					completed_by: string | null;
+					confirmed_at: string | null;
+					confirmed_by: string | null;
+					created_at: string;
 					customer_id: string;
+					customer_notes: string | null;
+					deleted_at: string | null;
+					deleted_by: string | null;
 					description: string | null;
-					duration_minutes: number | null;
+					duration: number;
+					end_time: string;
+					estimated_cost: number | null;
 					id: string;
+					is_recurring: boolean;
 					job_id: string | null;
+					location: string | null;
+					metadata: Json | null;
 					notes: string | null;
-					priority: string | null;
-					property_id: string | null;
-					reminder_sent: boolean | null;
-					scheduled_end: string;
-					scheduled_start: string;
-					search_vector: unknown;
+					parent_appointment_id: string | null;
+					property_id: string;
+					recurrence_end_date: string | null;
+					recurrence_rule: Json | null;
+					reminder_hours_before: number | null;
+					reminder_method: string | null;
+					reminder_sent: boolean;
+					reminder_sent_at: string | null;
+					rescheduled_from_id: string | null;
+					rescheduled_to_id: string | null;
+					service_plan_id: string | null;
+					service_types: Json | null;
+					start_time: string;
 					status: string;
 					title: string;
-					travel_time_minutes: number | null;
-					type: string | null;
-					updated_at: string | null;
+					type: string;
+					updated_at: string;
 				};
 				Insert: {
-					actual_end?: string | null;
-					actual_start?: string | null;
-					appointment_number: string;
+					access_instructions?: string | null;
+					actual_duration?: number | null;
+					actual_end_time?: string | null;
+					actual_start_time?: string | null;
+					all_day?: boolean;
+					archived_at?: string | null;
 					assigned_to?: string | null;
 					cancellation_reason?: string | null;
+					cancelled_at?: string | null;
+					cancelled_by?: string | null;
+					color?: string | null;
 					company_id: string;
-					confirmation_sent?: boolean | null;
-					created_at?: string | null;
-					created_by?: string | null;
+					completed_by?: string | null;
+					confirmed_at?: string | null;
+					confirmed_by?: string | null;
+					created_at?: string;
 					customer_id: string;
+					customer_notes?: string | null;
+					deleted_at?: string | null;
+					deleted_by?: string | null;
 					description?: string | null;
-					duration_minutes?: number | null;
+					duration: number;
+					end_time: string;
+					estimated_cost?: number | null;
 					id?: string;
+					is_recurring?: boolean;
 					job_id?: string | null;
+					location?: string | null;
+					metadata?: Json | null;
 					notes?: string | null;
-					priority?: string | null;
-					property_id?: string | null;
-					reminder_sent?: boolean | null;
-					scheduled_end: string;
-					scheduled_start: string;
-					search_vector?: unknown;
+					parent_appointment_id?: string | null;
+					property_id: string;
+					recurrence_end_date?: string | null;
+					recurrence_rule?: Json | null;
+					reminder_hours_before?: number | null;
+					reminder_method?: string | null;
+					reminder_sent?: boolean;
+					reminder_sent_at?: string | null;
+					rescheduled_from_id?: string | null;
+					rescheduled_to_id?: string | null;
+					service_plan_id?: string | null;
+					service_types?: Json | null;
+					start_time: string;
 					status?: string;
 					title: string;
-					travel_time_minutes?: number | null;
-					type?: string | null;
-					updated_at?: string | null;
+					type?: string;
+					updated_at?: string;
 				};
 				Update: {
-					actual_end?: string | null;
-					actual_start?: string | null;
-					appointment_number?: string;
+					access_instructions?: string | null;
+					actual_duration?: number | null;
+					actual_end_time?: string | null;
+					actual_start_time?: string | null;
+					all_day?: boolean;
+					archived_at?: string | null;
 					assigned_to?: string | null;
 					cancellation_reason?: string | null;
+					cancelled_at?: string | null;
+					cancelled_by?: string | null;
+					color?: string | null;
 					company_id?: string;
-					confirmation_sent?: boolean | null;
-					created_at?: string | null;
-					created_by?: string | null;
+					completed_by?: string | null;
+					confirmed_at?: string | null;
+					confirmed_by?: string | null;
+					created_at?: string;
 					customer_id?: string;
+					customer_notes?: string | null;
+					deleted_at?: string | null;
+					deleted_by?: string | null;
 					description?: string | null;
-					duration_minutes?: number | null;
+					duration?: number;
+					end_time?: string;
+					estimated_cost?: number | null;
 					id?: string;
+					is_recurring?: boolean;
 					job_id?: string | null;
+					location?: string | null;
+					metadata?: Json | null;
 					notes?: string | null;
-					priority?: string | null;
-					property_id?: string | null;
-					reminder_sent?: boolean | null;
-					scheduled_end?: string;
-					scheduled_start?: string;
-					search_vector?: unknown;
+					parent_appointment_id?: string | null;
+					property_id?: string;
+					recurrence_end_date?: string | null;
+					recurrence_rule?: Json | null;
+					reminder_hours_before?: number | null;
+					reminder_method?: string | null;
+					reminder_sent?: boolean;
+					reminder_sent_at?: string | null;
+					rescheduled_from_id?: string | null;
+					rescheduled_to_id?: string | null;
+					service_plan_id?: string | null;
+					service_types?: Json | null;
+					start_time?: string;
 					status?: string;
 					title?: string;
-					travel_time_minutes?: number | null;
-					type?: string | null;
-					updated_at?: string | null;
+					type?: string;
+					updated_at?: string;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "appointments_assigned_to_fkey";
+						foreignKeyName: "appointments_assigned_to_users_id_fk";
 						columns: ["assigned_to"];
 						isOneToOne: false;
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "appointments_company_id_fkey";
+						foreignKeyName: "appointments_cancelled_by_users_id_fk";
+						columns: ["cancelled_by"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_company_id_companies_id_fk";
 						columns: ["company_id"];
 						isOneToOne: false;
 						referencedRelation: "companies";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "appointments_company_id_fkey";
+						foreignKeyName: "appointments_company_id_companies_id_fk";
 						columns: ["company_id"];
 						isOneToOne: false;
 						referencedRelation: "company_owners";
 						referencedColumns: ["company_id"];
 					},
 					{
-						foreignKeyName: "appointments_created_by_fkey";
-						columns: ["created_by"];
+						foreignKeyName: "appointments_completed_by_users_id_fk";
+						columns: ["completed_by"];
 						isOneToOne: false;
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "appointments_customer_id_fkey";
+						foreignKeyName: "appointments_customer_id_customers_id_fk";
 						columns: ["customer_id"];
 						isOneToOne: false;
 						referencedRelation: "customers";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "appointments_job_id_fkey";
+						foreignKeyName: "appointments_deleted_by_users_id_fk";
+						columns: ["deleted_by"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_job_id_jobs_id_fk";
 						columns: ["job_id"];
 						isOneToOne: false;
 						referencedRelation: "jobs";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "appointments_property_id_fkey";
+						foreignKeyName: "appointments_parent_appointment_id_appointments_id_fk";
+						columns: ["parent_appointment_id"];
+						isOneToOne: false;
+						referencedRelation: "appointments";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_property_id_properties_id_fk";
 						columns: ["property_id"];
 						isOneToOne: false;
 						referencedRelation: "properties";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_rescheduled_from_id_appointments_id_fk";
+						columns: ["rescheduled_from_id"];
+						isOneToOne: false;
+						referencedRelation: "appointments";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_rescheduled_to_id_appointments_id_fk";
+						columns: ["rescheduled_to_id"];
+						isOneToOne: false;
+						referencedRelation: "appointments";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "appointments_service_plan_id_service_plans_id_fk";
+						columns: ["service_plan_id"];
+						isOneToOne: false;
+						referencedRelation: "service_plans";
 						referencedColumns: ["id"];
 					},
 				];
@@ -372,7 +483,9 @@ export type Database = {
 					uploaded_by: string;
 					version: number | null;
 					virus_scan_result: Json | null;
-					virus_scan_status: Database["public"]["Enums"]["virus_scan_status"] | null;
+					virus_scan_status:
+						| Database["public"]["Enums"]["virus_scan_status"]
+						| null;
 					virus_scanned_at: string | null;
 					width: number | null;
 				};
@@ -420,7 +533,9 @@ export type Database = {
 					uploaded_by: string;
 					version?: number | null;
 					virus_scan_result?: Json | null;
-					virus_scan_status?: Database["public"]["Enums"]["virus_scan_status"] | null;
+					virus_scan_status?:
+						| Database["public"]["Enums"]["virus_scan_status"]
+						| null;
 					virus_scanned_at?: string | null;
 					width?: number | null;
 				};
@@ -468,7 +583,9 @@ export type Database = {
 					uploaded_by?: string;
 					version?: number | null;
 					virus_scan_result?: Json | null;
-					virus_scan_status?: Database["public"]["Enums"]["virus_scan_status"] | null;
+					virus_scan_status?:
+						| Database["public"]["Enums"]["virus_scan_status"]
+						| null;
 					virus_scanned_at?: string | null;
 					width?: number | null;
 				};
@@ -1808,6 +1925,7 @@ export type Database = {
 					scheduled_for: string | null;
 					sent_at: string | null;
 					sent_by: string | null;
+					snoozed_until: string | null;
 					status: string;
 					subject: string | null;
 					tags: Json | null;
@@ -1877,6 +1995,7 @@ export type Database = {
 					scheduled_for?: string | null;
 					sent_at?: string | null;
 					sent_by?: string | null;
+					snoozed_until?: string | null;
 					status?: string;
 					subject?: string | null;
 					tags?: Json | null;
@@ -1946,6 +2065,7 @@ export type Database = {
 					scheduled_for?: string | null;
 					sent_at?: string | null;
 					sent_by?: string | null;
+					snoozed_until?: string | null;
 					status?: string;
 					subject?: string | null;
 					tags?: Json | null;
@@ -9240,6 +9360,187 @@ export type Database = {
 					},
 				];
 			};
+			message_assignments: {
+				Row: {
+					assigned_at: string;
+					assigned_by_user_id: string | null;
+					assigned_to_user_id: string | null;
+					company_id: string;
+					created_at: string;
+					id: string;
+					thread_id: string;
+					updated_at: string;
+				};
+				Insert: {
+					assigned_at?: string;
+					assigned_by_user_id?: string | null;
+					assigned_to_user_id?: string | null;
+					company_id: string;
+					created_at?: string;
+					id?: string;
+					thread_id: string;
+					updated_at?: string;
+				};
+				Update: {
+					assigned_at?: string;
+					assigned_by_user_id?: string | null;
+					assigned_to_user_id?: string | null;
+					company_id?: string;
+					created_at?: string;
+					id?: string;
+					thread_id?: string;
+					updated_at?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "message_assignments_assigned_by_user_id_fkey";
+						columns: ["assigned_by_user_id"];
+						isOneToOne: false;
+						referencedRelation: "team_members";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "message_assignments_assigned_to_user_id_fkey";
+						columns: ["assigned_to_user_id"];
+						isOneToOne: false;
+						referencedRelation: "team_members";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "message_assignments_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "companies";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "message_assignments_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "company_owners";
+						referencedColumns: ["company_id"];
+					},
+				];
+			};
+			message_notes: {
+				Row: {
+					company_id: string;
+					created_at: string;
+					id: string;
+					mentions: Json | null;
+					note: string;
+					thread_id: string;
+					updated_at: string;
+					user_id: string;
+				};
+				Insert: {
+					company_id: string;
+					created_at?: string;
+					id?: string;
+					mentions?: Json | null;
+					note: string;
+					thread_id: string;
+					updated_at?: string;
+					user_id: string;
+				};
+				Update: {
+					company_id?: string;
+					created_at?: string;
+					id?: string;
+					mentions?: Json | null;
+					note?: string;
+					thread_id?: string;
+					updated_at?: string;
+					user_id?: string;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "message_notes_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "companies";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "message_notes_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "company_owners";
+						referencedColumns: ["company_id"];
+					},
+					{
+						foreignKeyName: "message_notes_user_id_fkey";
+						columns: ["user_id"];
+						isOneToOne: false;
+						referencedRelation: "team_members";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			message_templates: {
+				Row: {
+					category: string | null;
+					company_id: string;
+					content: string;
+					created_at: string;
+					created_by: string | null;
+					id: string;
+					is_active: boolean;
+					name: string;
+					shortcut: string | null;
+					updated_at: string;
+					variables: Json | null;
+				};
+				Insert: {
+					category?: string | null;
+					company_id: string;
+					content: string;
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					is_active?: boolean;
+					name: string;
+					shortcut?: string | null;
+					updated_at?: string;
+					variables?: Json | null;
+				};
+				Update: {
+					category?: string | null;
+					company_id?: string;
+					content?: string;
+					created_at?: string;
+					created_by?: string | null;
+					id?: string;
+					is_active?: boolean;
+					name?: string;
+					shortcut?: string | null;
+					updated_at?: string;
+					variables?: Json | null;
+				};
+				Relationships: [
+					{
+						foreignKeyName: "message_templates_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "companies";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "message_templates_company_id_fkey";
+						columns: ["company_id"];
+						isOneToOne: false;
+						referencedRelation: "company_owners";
+						referencedColumns: ["company_id"];
+					},
+					{
+						foreignKeyName: "message_templates_created_by_fkey";
+						columns: ["created_by"];
+						isOneToOne: false;
+						referencedRelation: "team_members";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			messages_v2: {
 				Row: {
 					attachments: Json;
@@ -12685,248 +12986,6 @@ export type Database = {
 					},
 				];
 			};
-			schedules: {
-				Row: {
-					access_instructions: string | null;
-					actual_duration: number | null;
-					actual_end_time: string | null;
-					actual_start_time: string | null;
-					all_day: boolean;
-					archived_at: string | null;
-					assigned_to: string | null;
-					cancellation_reason: string | null;
-					cancelled_at: string | null;
-					cancelled_by: string | null;
-					color: string | null;
-					company_id: string;
-					completed_by: string | null;
-					confirmed_at: string | null;
-					confirmed_by: string | null;
-					created_at: string;
-					customer_id: string;
-					customer_notes: string | null;
-					deleted_at: string | null;
-					deleted_by: string | null;
-					description: string | null;
-					duration: number;
-					end_time: string;
-					estimated_cost: number | null;
-					id: string;
-					is_recurring: boolean;
-					job_id: string | null;
-					location: string | null;
-					metadata: Json | null;
-					notes: string | null;
-					parent_schedule_id: string | null;
-					property_id: string;
-					recurrence_end_date: string | null;
-					recurrence_rule: Json | null;
-					reminder_hours_before: number | null;
-					reminder_method: string | null;
-					reminder_sent: boolean;
-					reminder_sent_at: string | null;
-					rescheduled_from_id: string | null;
-					rescheduled_to_id: string | null;
-					service_plan_id: string | null;
-					service_types: Json | null;
-					start_time: string;
-					status: string;
-					title: string;
-					type: string;
-					updated_at: string;
-				};
-				Insert: {
-					access_instructions?: string | null;
-					actual_duration?: number | null;
-					actual_end_time?: string | null;
-					actual_start_time?: string | null;
-					all_day?: boolean;
-					archived_at?: string | null;
-					assigned_to?: string | null;
-					cancellation_reason?: string | null;
-					cancelled_at?: string | null;
-					cancelled_by?: string | null;
-					color?: string | null;
-					company_id: string;
-					completed_by?: string | null;
-					confirmed_at?: string | null;
-					confirmed_by?: string | null;
-					created_at?: string;
-					customer_id: string;
-					customer_notes?: string | null;
-					deleted_at?: string | null;
-					deleted_by?: string | null;
-					description?: string | null;
-					duration: number;
-					end_time: string;
-					estimated_cost?: number | null;
-					id?: string;
-					is_recurring?: boolean;
-					job_id?: string | null;
-					location?: string | null;
-					metadata?: Json | null;
-					notes?: string | null;
-					parent_schedule_id?: string | null;
-					property_id: string;
-					recurrence_end_date?: string | null;
-					recurrence_rule?: Json | null;
-					reminder_hours_before?: number | null;
-					reminder_method?: string | null;
-					reminder_sent?: boolean;
-					reminder_sent_at?: string | null;
-					rescheduled_from_id?: string | null;
-					rescheduled_to_id?: string | null;
-					service_plan_id?: string | null;
-					service_types?: Json | null;
-					start_time: string;
-					status?: string;
-					title: string;
-					type?: string;
-					updated_at?: string;
-				};
-				Update: {
-					access_instructions?: string | null;
-					actual_duration?: number | null;
-					actual_end_time?: string | null;
-					actual_start_time?: string | null;
-					all_day?: boolean;
-					archived_at?: string | null;
-					assigned_to?: string | null;
-					cancellation_reason?: string | null;
-					cancelled_at?: string | null;
-					cancelled_by?: string | null;
-					color?: string | null;
-					company_id?: string;
-					completed_by?: string | null;
-					confirmed_at?: string | null;
-					confirmed_by?: string | null;
-					created_at?: string;
-					customer_id?: string;
-					customer_notes?: string | null;
-					deleted_at?: string | null;
-					deleted_by?: string | null;
-					description?: string | null;
-					duration?: number;
-					end_time?: string;
-					estimated_cost?: number | null;
-					id?: string;
-					is_recurring?: boolean;
-					job_id?: string | null;
-					location?: string | null;
-					metadata?: Json | null;
-					notes?: string | null;
-					parent_schedule_id?: string | null;
-					property_id?: string;
-					recurrence_end_date?: string | null;
-					recurrence_rule?: Json | null;
-					reminder_hours_before?: number | null;
-					reminder_method?: string | null;
-					reminder_sent?: boolean;
-					reminder_sent_at?: string | null;
-					rescheduled_from_id?: string | null;
-					rescheduled_to_id?: string | null;
-					service_plan_id?: string | null;
-					service_types?: Json | null;
-					start_time?: string;
-					status?: string;
-					title?: string;
-					type?: string;
-					updated_at?: string;
-				};
-				Relationships: [
-					{
-						foreignKeyName: "schedules_assigned_to_users_id_fk";
-						columns: ["assigned_to"];
-						isOneToOne: false;
-						referencedRelation: "users";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_cancelled_by_users_id_fk";
-						columns: ["cancelled_by"];
-						isOneToOne: false;
-						referencedRelation: "users";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_company_id_companies_id_fk";
-						columns: ["company_id"];
-						isOneToOne: false;
-						referencedRelation: "companies";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_company_id_companies_id_fk";
-						columns: ["company_id"];
-						isOneToOne: false;
-						referencedRelation: "company_owners";
-						referencedColumns: ["company_id"];
-					},
-					{
-						foreignKeyName: "schedules_completed_by_users_id_fk";
-						columns: ["completed_by"];
-						isOneToOne: false;
-						referencedRelation: "users";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_customer_id_customers_id_fk";
-						columns: ["customer_id"];
-						isOneToOne: false;
-						referencedRelation: "customers";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_deleted_by_users_id_fk";
-						columns: ["deleted_by"];
-						isOneToOne: false;
-						referencedRelation: "users";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_job_id_jobs_id_fk";
-						columns: ["job_id"];
-						isOneToOne: false;
-						referencedRelation: "jobs";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_parent_schedule_id_schedules_id_fk";
-						columns: ["parent_schedule_id"];
-						isOneToOne: false;
-						referencedRelation: "schedules";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_property_id_properties_id_fk";
-						columns: ["property_id"];
-						isOneToOne: false;
-						referencedRelation: "properties";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_rescheduled_from_id_schedules_id_fk";
-						columns: ["rescheduled_from_id"];
-						isOneToOne: false;
-						referencedRelation: "schedules";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_rescheduled_to_id_schedules_id_fk";
-						columns: ["rescheduled_to_id"];
-						isOneToOne: false;
-						referencedRelation: "schedules";
-						referencedColumns: ["id"];
-					},
-					{
-						foreignKeyName: "schedules_service_plan_id_service_plans_id_fk";
-						columns: ["service_plan_id"];
-						isOneToOne: false;
-						referencedRelation: "service_plans";
-						referencedColumns: ["id"];
-					},
-				];
-			};
 			service_agreements: {
 				Row: {
 					agreement_number: string;
@@ -14822,6 +14881,21 @@ export type Database = {
 			};
 		};
 		Functions: {
+			batch_decrement_category_counts:
+				| {
+						Args: { p_company_id: string; p_decrements: Json };
+						Returns: number;
+				  }
+				| { Args: { categories: string[] }; Returns: undefined };
+			batch_update_price_book_items:
+				| {
+						Args: { p_company_id: string; p_updates: Json };
+						Returns: {
+							error_count: number;
+							updated_count: number;
+						}[];
+				  }
+				| { Args: { item_ids: string[]; updates: Json }; Returns: undefined };
 			calculate_agreement_term_months: {
 				Args: { p_end_date: string; p_start_date: string };
 				Returns: number;
@@ -14845,6 +14919,13 @@ export type Database = {
 			cleanup_expired_attachments: { Args: never; Returns: number };
 			cleanup_expired_payment_tokens: { Args: never; Returns: number };
 			cleanup_old_notifications: { Args: never; Returns: number };
+			count_all_archived: {
+				Args: { p_company_id: string };
+				Returns: {
+					archived_count: number;
+					table_name: string;
+				}[];
+			};
 			create_phone_porting_notification: {
 				Args: {
 					p_company_id: string;
@@ -14854,6 +14935,15 @@ export type Database = {
 					p_user_id: string;
 				};
 				Returns: string;
+			};
+			customer_dashboard_metrics: {
+				Args: { p_company_id: string };
+				Returns: {
+					active_customers: number;
+					prospect_customers: number;
+					total_customers: number;
+					total_revenue_cents: number;
+				}[];
 			};
 			ensure_owner_team_member: { Args: never; Returns: undefined };
 			generate_appointment_number: {
@@ -14883,6 +14973,54 @@ export type Database = {
 				Args: { p_company_id: string };
 				Returns: string;
 			};
+			generate_random_city: { Args: never; Returns: string };
+			generate_random_company_name: { Args: never; Returns: string };
+			generate_random_contracts: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_customers: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_email: {
+				Args: { first_name: string; last_name: string };
+				Returns: string;
+			};
+			generate_random_equipment: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_estimates: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_first_name: { Args: never; Returns: string };
+			generate_random_invoices: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_jobs: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_last_name: { Args: never; Returns: string };
+			generate_random_payments: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_phone: { Args: never; Returns: string };
+			generate_random_properties: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_purchase_orders: {
+				Args: { p_company_id: string; p_count?: number };
+				Returns: undefined;
+			};
+			generate_random_state: { Args: never; Returns: string };
+			generate_random_street: { Args: never; Returns: string };
+			generate_random_zip: { Args: never; Returns: string };
 			generate_service_agreement_number: {
 				Args: { p_company_id: string };
 				Returns: string;
@@ -14911,31 +15049,9 @@ export type Database = {
 					scheduled_start: string;
 				}[];
 			};
-			get_customers_with_stats: {
-				Args: { company_id_param: string };
-				Returns: {
-					address: string;
-					archived_at: string;
-					city: string;
-					company_id: string;
-					company_name: string;
-					created_at: string;
-					deleted_at: string;
-					display_name: string;
-					email: string;
-					first_name: string;
-					id: string;
-					last_job_date: string;
-					last_name: string;
-					next_scheduled_job: string;
-					phone: string;
-					state: string;
-					status: string;
-					total_jobs: number;
-					total_revenue: number;
-					updated_at: string;
-					zip_code: string;
-				}[];
+			get_enriched_customers_rpc: {
+				Args: { p_company_id: string };
+				Returns: Json;
 			};
 			get_folder_breadcrumbs: {
 				Args: { p_folder_id: string };
@@ -14950,7 +15066,10 @@ export type Database = {
 				Args: { p_user_id: string };
 				Returns: number;
 			};
-			get_user_company_id: { Args: { input_user_id?: string }; Returns: string };
+			get_user_company_id: {
+				Args: { input_user_id?: string };
+				Returns: string;
+			};
 			get_user_role:
 				| { Args: { check_company_id: string }; Returns: string }
 				| {
@@ -15327,9 +15446,21 @@ export type Database = {
 				| "guide"
 				| "community"
 				| "status_update";
-			user_role: "owner" | "admin" | "manager" | "dispatcher" | "technician" | "csr";
+			user_role:
+				| "owner"
+				| "admin"
+				| "manager"
+				| "dispatcher"
+				| "technician"
+				| "csr";
 			user_status: "online" | "available" | "busy";
-			virus_scan_status: "pending" | "scanning" | "clean" | "infected" | "failed" | "skipped";
+			virus_scan_status:
+				| "pending"
+				| "scanning"
+				| "clean"
+				| "infected"
+				| "failed"
+				| "skipped";
 		};
 		CompositeTypes: {
 			[_ in never]: never;
@@ -15339,7 +15470,10 @@ export type Database = {
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
+type DefaultSchema = DatabaseWithoutInternals[Extract<
+	keyof Database,
+	"public"
+>];
 
 export type Tables<
 	DefaultSchemaTableNameOrOptions extends
@@ -15360,8 +15494,10 @@ export type Tables<
 		}
 		? R
 		: never
-	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-		? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+	: DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+				DefaultSchema["Views"])
+		? (DefaultSchema["Tables"] &
+				DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
 				Row: infer R;
 			}
 			? R
@@ -15457,10 +15593,31 @@ export const Constants = {
 		Enums: {
 			content_status: ["draft", "scheduled", "published", "archived"],
 			equipment_classification: ["equipment", "tool", "vehicle"],
-			resource_type: ["case_study", "webinar", "template", "guide", "community", "status_update"],
-			user_role: ["owner", "admin", "manager", "dispatcher", "technician", "csr"],
+			resource_type: [
+				"case_study",
+				"webinar",
+				"template",
+				"guide",
+				"community",
+				"status_update",
+			],
+			user_role: [
+				"owner",
+				"admin",
+				"manager",
+				"dispatcher",
+				"technician",
+				"csr",
+			],
 			user_status: ["online", "available", "busy"],
-			virus_scan_status: ["pending", "scanning", "clean", "infected", "failed", "skipped"],
+			virus_scan_status: [
+				"pending",
+				"scanning",
+				"clean",
+				"infected",
+				"failed",
+				"skipped",
+			],
 		},
 	},
 } as const;

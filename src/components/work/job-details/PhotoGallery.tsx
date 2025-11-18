@@ -1,12 +1,31 @@
 "use client";
 
-import { Camera, Download, MapPin, Trash2, User, ZoomIn, ZoomOut } from "lucide-react";
+import {
+	Camera,
+	Download,
+	MapPin,
+	Trash2,
+	User,
+	ZoomIn,
+	ZoomOut,
+} from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { PhotoUploader } from "./PhotoUploader";
 import type { JobPhoto, PhotoCategory } from "./photo-types";
@@ -31,7 +50,9 @@ export function PhotoGallery({
 	className,
 }: PhotoGalleryProps) {
 	const [selectedPhoto, setSelectedPhoto] = useState<JobPhoto | null>(null);
-	const [selectedCategory, setSelectedCategory] = useState<PhotoCategory | "all">("all");
+	const [selectedCategory, setSelectedCategory] = useState<
+		PhotoCategory | "all"
+	>("all");
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const [showUploader, setShowUploader] = useState(false);
 
@@ -106,7 +127,9 @@ export function PhotoGallery({
 							<Camera className="size-5" />
 							Photo Gallery ({photos.length})
 						</CardTitle>
-						<CardDescription>Job site photos organized by stage</CardDescription>
+						<CardDescription>
+							Job site photos organized by stage
+						</CardDescription>
 					</div>
 					<div className="flex gap-2">
 						{onDownloadAll && photos.length > 0 && (
@@ -132,7 +155,9 @@ export function PhotoGallery({
 							key={category.value}
 							onClick={() => setSelectedCategory(category.value)}
 							size="sm"
-							variant={selectedCategory === category.value ? "default" : "outline"}
+							variant={
+								selectedCategory === category.value ? "default" : "outline"
+							}
 						>
 							{category.label}
 							{category.value !== "all" && (
@@ -149,7 +174,8 @@ export function PhotoGallery({
 					<div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
 						<Camera className="text-muted-foreground mb-2 size-8" />
 						<p className="text-muted-foreground text-sm">
-							No photos {selectedCategory !== "all" && `in ${selectedCategory}`} category
+							No photos {selectedCategory !== "all" && `in ${selectedCategory}`}{" "}
+							category
 						</p>
 						{onUpload && (
 							<Button
@@ -180,10 +206,17 @@ export function PhotoGallery({
 								<div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
 									<div className="flex h-full flex-col justify-between p-3">
 										<div className="flex justify-between">
-											<Badge className={cn("text-xs", getCategoryColor(photo.category))}>
+											<Badge
+												className={cn(
+													"text-xs",
+													getCategoryColor(photo.category),
+												)}
+											>
 												{photo.category}
 											</Badge>
-											{photo.gpsCoords && <MapPin className="size-4 text-white" />}
+											{photo.gpsCoords && (
+												<MapPin className="size-4 text-white" />
+											)}
 										</div>
 										<div className="text-xs text-white">
 											<div className="flex items-center gap-1">
@@ -215,7 +248,9 @@ export function PhotoGallery({
 								<DialogHeader>
 									<DialogTitle className="flex items-center justify-between">
 										<div className="flex items-center gap-2">
-											<Badge className={getCategoryColor(selectedPhoto.category)}>
+											<Badge
+												className={getCategoryColor(selectedPhoto.category)}
+											>
 												{selectedPhoto.category}
 											</Badge>
 											{selectedPhoto.caption && (
@@ -286,14 +321,18 @@ export function PhotoGallery({
 											<User className="size-4" />
 											<span>Uploaded by</span>
 										</div>
-										<p className="mt-1 font-medium">{selectedPhoto.uploadedByName}</p>
+										<p className="mt-1 font-medium">
+											{selectedPhoto.uploadedByName}
+										</p>
 									</div>
 									<div>
 										<div className="text-muted-foreground flex items-center gap-2">
 											<Camera className="size-4" />
 											<span>Date & Time</span>
 										</div>
-										<p className="mt-1 font-medium">{formatDate(selectedPhoto.uploadedAt)}</p>
+										<p className="mt-1 font-medium">
+											{formatDate(selectedPhoto.uploadedAt)}
+										</p>
 									</div>
 									{selectedPhoto.gpsCoords && (
 										<div>
@@ -312,7 +351,8 @@ export function PhotoGallery({
 											<div className="text-muted-foreground">File Info</div>
 											<p className="mt-1 font-medium">
 												{formatFileSize(selectedPhoto.metadata.fileSize)} •{" "}
-												{selectedPhoto.metadata.width}x{selectedPhoto.metadata.height}
+												{selectedPhoto.metadata.width}x
+												{selectedPhoto.metadata.height}
 											</p>
 										</div>
 									)}

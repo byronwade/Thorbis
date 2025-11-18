@@ -7,7 +7,17 @@
 
 "use client";
 
-import { Bell, Calendar, Clock, Mail, MapPin, Phone, Repeat, User, Wrench } from "lucide-react";
+import {
+	Bell,
+	Calendar,
+	Clock,
+	Mail,
+	MapPin,
+	Phone,
+	Repeat,
+	User,
+	Wrench,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
@@ -42,7 +52,9 @@ export type AppointmentPageContentProps = {
 	entityData: AppointmentData;
 };
 
-export function AppointmentPageContent({ entityData }: AppointmentPageContentProps) {
+export function AppointmentPageContent({
+	entityData,
+}: AppointmentPageContentProps) {
 	const {
 		appointment,
 		customer,
@@ -55,13 +67,20 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 	} = entityData;
 
 	// Compute values used in hooks - must be before hooks
-	const appointmentStart = appointment.start_time ? new Date(appointment.start_time) : null;
-	const appointmentEnd = appointment.end_time ? new Date(appointment.end_time) : null;
+	const appointmentStart = appointment.start_time
+		? new Date(appointment.start_time)
+		: null;
+	const appointmentEnd = appointment.end_time
+		? new Date(appointment.end_time)
+		: null;
 	const durationMinutes =
 		appointmentStart && appointmentEnd
 			? Math.max(
 					0,
-					Math.floor((appointmentEnd.getTime() - appointmentStart.getTime()) / (1000 * 60))
+					Math.floor(
+						(appointmentEnd.getTime() - appointmentStart.getTime()) /
+							(1000 * 60),
+					),
 				)
 			: 0;
 
@@ -81,7 +100,11 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								<Input
 									readOnly
 									type="datetime-local"
-									value={appointmentStart ? appointmentStart.toISOString().slice(0, 16) : ""}
+									value={
+										appointmentStart
+											? appointmentStart.toISOString().slice(0, 16)
+											: ""
+									}
 								/>
 							</div>
 							<div>
@@ -89,7 +112,11 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								<Input
 									readOnly
 									type="datetime-local"
-									value={appointmentEnd ? appointmentEnd.toISOString().slice(0, 16) : ""}
+									value={
+										appointmentEnd
+											? appointmentEnd.toISOString().slice(0, 16)
+											: ""
+									}
 								/>
 							</div>
 							<div>
@@ -121,7 +148,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 							{appointment.access_instructions && (
 								<div className="md:col-span-2">
 									<Label>Access Instructions</Label>
-									<p className="text-sm whitespace-pre-wrap">{appointment.access_instructions}</p>
+									<p className="text-sm whitespace-pre-wrap">
+										{appointment.access_instructions}
+									</p>
 								</div>
 							)}
 						</div>
@@ -150,7 +179,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								<div>
 									<Label>Recurrence End Date</Label>
 									<p className="text-sm">
-										{new Date(appointment.recurrence_end_date).toLocaleDateString()}
+										{new Date(
+											appointment.recurrence_end_date,
+										).toLocaleDateString()}
 									</p>
 								</div>
 							)}
@@ -224,7 +255,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								</div>
 							</div>
 							<Button asChild size="sm" variant="ghost">
-								<Link href={`/dashboard/customers/${customer.id}`}>View Full Profile</Link>
+								<Link href={`/dashboard/customers/${customer.id}`}>
+									View Full Profile
+								</Link>
 							</Button>
 						</div>
 					</UnifiedAccordionContent>
@@ -253,7 +286,7 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 							<Button asChild size="sm" variant="outline">
 								<a
 									href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-										`${property.address}, ${property.city}, ${property.state}`
+										`${property.address}, ${property.city}, ${property.state}`,
 									)}`}
 									rel="noopener noreferrer"
 									target="_blank"
@@ -279,7 +312,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 							<div className="grid flex-1 gap-4 md:grid-cols-2">
 								<div>
 									<Label>Job Number</Label>
-									<p className="text-sm">#{job.job_number || job.id.slice(0, 8)}</p>
+									<p className="text-sm">
+										#{job.job_number || job.id.slice(0, 8)}
+									</p>
 								</div>
 								<div>
 									<Label>Title</Label>
@@ -304,7 +339,15 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 		}
 
 		return sections;
-	}, [appointment, customer, property, job, durationMinutes, appointmentStart, appointmentEnd]);
+	}, [
+		appointment,
+		customer,
+		property,
+		job,
+		durationMinutes,
+		appointmentStart,
+		appointmentEnd,
+	]);
 
 	const relatedItems = useMemo(() => {
 		const items: any[] = [];
@@ -327,7 +370,8 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 				id: `property-${property.id}`,
 				type: "property",
 				title: property.address || property.name || "Property",
-				subtitle: `${property.city || ""}, ${property.state || ""}`.trim() || undefined,
+				subtitle:
+					`${property.city || ""}, ${property.state || ""}`.trim() || undefined,
 				href: `/dashboard/work/properties/${property.id}`,
 			});
 		}
@@ -339,7 +383,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 				title: job.title || `Job #${job.job_number || job.id.slice(0, 8)}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
+				badge: job.status
+					? { label: job.status, variant: "outline" as const }
+					: undefined,
 			});
 		}
 
@@ -370,7 +416,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{appointment.title || "Appointment"}
@@ -443,7 +491,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 						{assigned_user && (
 							<div className="bg-muted inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm">
 								<User className="text-muted-foreground size-4" />
-								<span className="font-medium">{assigned_user.name || "Unassigned"}</span>
+								<span className="font-medium">
+									{assigned_user.name || "Unassigned"}
+								</span>
 							</div>
 						)}
 
@@ -453,7 +503,9 @@ export function AppointmentPageContent({ entityData }: AppointmentPageContentPro
 								href={`/dashboard/work/${job.id}`}
 							>
 								<Wrench className="text-muted-foreground size-4" />
-								<span className="font-medium">Job #{job.job_number || job.id.slice(0, 8)}</span>
+								<span className="font-medium">
+									Job #{job.job_number || job.id.slice(0, 8)}
+								</span>
 							</Link>
 						)}
 					</div>

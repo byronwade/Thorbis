@@ -40,7 +40,8 @@ const GET_STARTED_STEPS = [
 const ONBOARDING_RESOURCES = [
 	{
 		title: "Migration checklist",
-		description: "Step-by-step guide covering exports, data cleanup, and go-live validation.",
+		description:
+			"Step-by-step guide covering exports, data cleanup, and go-live validation.",
 		href: "/templates?tag=migration",
 		cta: "Download checklist",
 	},
@@ -69,7 +70,7 @@ export default function DemoPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Get Started", url: `${siteUrl}/demo` },
-						])
+						]),
 					),
 				}}
 				id="demo-breadcrumb-ld"
@@ -84,9 +85,10 @@ export default function DemoPage() {
 						Spin up your Thorbis account today
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Choose your plan, invite your team, and start automating operations without waiting for
-						a sales call. Thorbis costs $100/month for the base platform with pay-as-you-go
-						usage—unlimited users, no contracts, no lock-in.
+						Choose your plan, invite your team, and start automating operations
+						without waiting for a sales call. Thorbis costs $100/month for the
+						base platform with pay-as-you-go usage—unlimited users, no
+						contracts, no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -99,7 +101,9 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center text-2xl font-semibold">Three simple steps</h2>
+					<h2 className="text-center text-2xl font-semibold">
+						Three simple steps
+					</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{GET_STARTED_STEPS.map((step) => (
 							<Card className="bg-muted/40" key={step.title}>
@@ -117,7 +121,9 @@ export default function DemoPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-center text-2xl font-semibold">Resources to guide your rollout</h2>
+					<h2 className="text-center text-2xl font-semibold">
+						Resources to guide your rollout
+					</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{ONBOARDING_RESOURCES.map((resource) => (
 							<Card key={resource.title}>
@@ -137,8 +143,8 @@ export default function DemoPage() {
 
 				<section className="bg-primary/10 mt-16 rounded-3xl border p-10 text-center">
 					<p className="text-muted-foreground text-lg">
-						Already a customer? Visit the Help Center for training resources, live webinars, and
-						office hours with our success team.
+						Already a customer? Visit the Help Center for training resources,
+						live webinars, and office hours with our success team.
 					</p>
 					<Button asChild className="mt-6" variant="secondary">
 						<Link href="/help">Visit the Help Center</Link>

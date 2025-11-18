@@ -131,7 +131,9 @@ export function TransferCallModal({
 					)}
 
 					<div className="bg-muted/50 rounded-lg border p-3">
-						<p className="text-sm font-medium">What happens when you transfer?</p>
+						<p className="text-sm font-medium">
+							What happens when you transfer?
+						</p>
 						<ul className="text-muted-foreground mt-2 space-y-1 text-xs">
 							<li>• The caller will be connected to the destination number</li>
 							<li>• You will be disconnected from the call</li>
@@ -142,10 +144,17 @@ export function TransferCallModal({
 				</div>
 
 				<DialogFooter className="sm:space-x-2">
-					<Button disabled={isTransferring} onClick={handleClose} variant="outline">
+					<Button
+						disabled={isTransferring}
+						onClick={handleClose}
+						variant="outline"
+					>
 						Cancel
 					</Button>
-					<Button disabled={isTransferring || !destinationNumber} onClick={handleTransfer}>
+					<Button
+						disabled={isTransferring || !destinationNumber}
+						onClick={handleTransfer}
+					>
 						{isTransferring ? (
 							<>
 								<div className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />

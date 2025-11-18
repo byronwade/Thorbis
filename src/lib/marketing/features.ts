@@ -79,17 +79,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Call coverage",
 				value: "98%",
-				description: "of inbound calls answered across business hours and after-hours.",
+				description:
+					"of inbound calls answered across business hours and after-hours.",
 			},
 			{
 				label: "Booking speed",
 				value: "3 min",
-				description: "average time to log, qualify, and schedule a job from new leads.",
+				description:
+					"average time to log, qualify, and schedule a job from new leads.",
 			},
 			{
 				label: "CSR efficiency",
 				value: "40%",
-				description: "reduction in manual intake and follow-up tasks for your office staff.",
+				description:
+					"reduction in manual intake and follow-up tasks for your office staff.",
 			},
 		],
 		integrations: ["OpenAI", "Twilio Voice", "Stripe", "Google Calendar"],
@@ -193,17 +196,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Duplicate records",
 				value: "-92%",
-				description: "reduction after migrating to Thorbis automated import tools.",
+				description:
+					"reduction after migrating to Thorbis automated import tools.",
 			},
 			{
 				label: "Technician prep time",
 				value: "-15 min",
-				description: "saved before each visit thanks to consolidated job history.",
+				description:
+					"saved before each visit thanks to consolidated job history.",
 			},
 			{
 				label: "Campaign ROI",
 				value: "3.4x",
-				description: "increase from targeted upsell segments built in Thorbis CRM.",
+				description:
+					"increase from targeted upsell segments built in Thorbis CRM.",
 			},
 		],
 		integrations: ["QuickBooks Online", "HubSpot", "Mailchimp", "Zapier"],
@@ -235,7 +241,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		kind: "feature",
 		slug: "online-booking",
 		name: "Online Booking",
-		heroEyebrow: "Self-Service Scheduling • Smart Capacity • Instant Confirmation",
+		heroEyebrow:
+			"Self-Service Scheduling • Smart Capacity • Instant Confirmation",
 		heroTitle: "Turn website visitors into scheduled jobs 24/7",
 		heroDescription:
 			"Embed a branded scheduler that lets homeowners pick times, attach photos, and pay deposits without calling the office.",
@@ -302,17 +309,20 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Conversion rate",
 				value: "+38%",
-				description: "increase in scheduled jobs after enabling self-service booking.",
+				description:
+					"increase in scheduled jobs after enabling self-service booking.",
 			},
 			{
 				label: "Call volume",
 				value: "-27%",
-				description: "reduction in manual scheduling calls handled by office staff.",
+				description:
+					"reduction in manual scheduling calls handled by office staff.",
 			},
 			{
 				label: "Deposit capture",
 				value: "68%",
-				description: "of bookings secure a pre-visit deposit through the portal.",
+				description:
+					"of bookings secure a pre-visit deposit through the portal.",
 			},
 		],
 		integrations: ["WordPress", "Webflow", "Squarespace", "Zapier"],
@@ -416,12 +426,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Review response rate",
 				value: "74%",
-				description: "of completed jobs generate a public review within 24 hours.",
+				description:
+					"of completed jobs generate a public review within 24 hours.",
 			},
 			{
 				label: "Dormant customer reactivation",
 				value: "32%",
-				description: "of dormant accounts rebook within 60 days of an automation journey.",
+				description:
+					"of dormant accounts rebook within 60 days of an automation journey.",
 			},
 		],
 		integrations: ["Mailchimp", "Constant Contact", "Meta Ads", "Google Ads"],
@@ -748,7 +760,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Photo documentation",
 				value: "12",
-				description: "average rich media files captured per job for proof and training.",
+				description:
+					"average rich media files captured per job for proof and training.",
 			},
 		],
 		integrations: ["Stripe Terminal", "Sunbit", "GreenSky", "CompanyCam"],
@@ -956,7 +969,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Stockouts",
 				value: "-60%",
-				description: "reduction after implementing Thorbis inventory automation.",
+				description:
+					"reduction after implementing Thorbis inventory automation.",
 			},
 			{
 				label: "Truck roll-backs",
@@ -966,7 +980,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Inventory reconciliation",
 				value: "2 hrs",
-				description: "average weekly time to validate counts across all locations.",
+				description:
+					"average weekly time to validate counts across all locations.",
 			},
 		],
 		integrations: ["QuickBooks", "SOS Inventory", "Unleashed", "Ferguson"],
@@ -999,7 +1014,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		slug: "team-management",
 		name: "Team Management & Scheduling",
 		heroEyebrow: "Availability • Certifications • Performance Insights",
-		heroTitle: "Manage every technician, apprentice, and coordinator in one hub",
+		heroTitle:
+			"Manage every technician, apprentice, and coordinator in one hub",
 		heroDescription:
 			"Thorbis team management keeps credentials current, tracks availability, and highlights coaching opportunities.",
 		heroImage:
@@ -1065,7 +1081,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Compliance violations",
 				value: "-95%",
-				description: "reduction in missed license renewals with automated reminders.",
+				description:
+					"reduction in missed license renewals with automated reminders.",
 			},
 			{
 				label: "Technician retention",
@@ -1075,7 +1092,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Leadership visibility",
 				value: "100%",
-				description: "of managers review technician scorecards weekly inside Thorbis.",
+				description:
+					"of managers review technician scorecards weekly inside Thorbis.",
 			},
 		],
 		integrations: ["BambooHR", "ADP Workforce Now", "Gusto", "Trainual"],
@@ -1233,7 +1251,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			href: "/kb/user-guides",
 		},
 		seo: {
-			title: "QuickBooks Integration for Thorbis | Field Service Accounting Sync",
+			title:
+				"QuickBooks Integration for Thorbis | Field Service Accounting Sync",
 			description:
 				"Sync customers, invoices, payments, and items between Thorbis and QuickBooks. Maintain accurate books without manual entry.",
 			keywords: [
@@ -1288,12 +1307,14 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Posting accuracy",
 				value: "99.8%",
-				description: "accuracy rate across payments and invoices after go-live.",
+				description:
+					"accuracy rate across payments and invoices after go-live.",
 			},
 			{
 				label: "Job costing speed",
 				value: "Same day",
-				description: "visibility into job profitability without waiting for month-end.",
+				description:
+					"visibility into job profitability without waiting for month-end.",
 			},
 		],
 		integrations: ["QuickBooks Online", "QuickBooks Desktop (connector)"],
@@ -1359,7 +1380,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		valueProps: [
 			{
 				title: "Tiered proposals",
-				description: "Offer good-better-best packages with dynamic pricing tied to your pricebook.",
+				description:
+					"Offer good-better-best packages with dynamic pricing tied to your pricebook.",
 				icon: "layers",
 			},
 			{
@@ -1510,7 +1532,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			{
 				label: "Team adoption",
 				value: "95%",
-				description: "of technicians present financing in Thorbis without additional training.",
+				description:
+					"of technicians present financing in Thorbis without additional training.",
 			},
 		],
 		integrations: ["Sunbit", "GreenSky", "GoodLeap", "Synchrony"],
@@ -1632,7 +1655,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 		faq: [
 			{
 				question: "Can we export to our payroll provider?",
-				answer: "Yes. Thorbis produces mapped CSV exports for ADP, Gusto, Paychex, UKG, and more.",
+				answer:
+					"Yes. Thorbis produces mapped CSV exports for ADP, Gusto, Paychex, UKG, and more.",
 			},
 			{
 				question: "Do you support union rules?",
@@ -1641,7 +1665,8 @@ export const FEATURE_CONTENT: MarketingFeatureContent[] = [
 			},
 			{
 				question: "How are edits handled?",
-				answer: "All edits require approvals and leave an audit trail for compliance.",
+				answer:
+					"All edits require approvals and leave an audit trail for compliance.",
 			},
 		],
 	},
@@ -1651,6 +1676,8 @@ export function getAllFeatures(): MarketingFeatureContent[] {
 	return FEATURE_CONTENT;
 }
 
-export function getFeatureBySlug(slug: string): MarketingFeatureContent | undefined {
+export function getFeatureBySlug(
+	slug: string,
+): MarketingFeatureContent | undefined {
 	return FEATURE_CONTENT.find((feature) => feature.slug === slug);
 }

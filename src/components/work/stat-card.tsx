@@ -18,7 +18,9 @@ export function StatCard({ label, value, subtext, trend }: StatCardProps) {
 			<div className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
 				{label}
 			</div>
-			<div className="text-2xl font-semibold tracking-tight tabular-nums">{value}</div>
+			<div className="text-2xl font-semibold tracking-tight tabular-nums">
+				{value}
+			</div>
 			<div className={`text-xs ${trendColor}`}>{subtext}</div>
 		</div>
 	);

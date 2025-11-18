@@ -23,8 +23,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="text-lg font-semibold">Service Catalog</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Maintain a complete catalog of services with descriptions, durations, and pricing
-							tiers
+							Maintain a complete catalog of services with descriptions,
+							durations, and pricing tiers
 						</p>
 					</div>
 
@@ -34,7 +34,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="text-lg font-semibold">Dynamic Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Adjust pricing based on time of day, urgency, location, and customer type
+							Adjust pricing based on time of day, urgency, location, and
+							customer type
 						</p>
 					</div>
 
@@ -44,7 +45,8 @@ export async function ServicesData() {
 						</div>
 						<h3 className="text-lg font-semibold">Customer-Specific Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Set custom rates for VIP customers, contracts, and service agreements
+							Set custom rates for VIP customers, contracts, and service
+							agreements
 						</p>
 					</div>
 
@@ -54,13 +56,16 @@ export async function ServicesData() {
 						</div>
 						<h3 className="text-lg font-semibold">Seasonal Pricing</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Implement seasonal rates and promotional pricing for peak and off-peak periods
+							Implement seasonal rates and promotional pricing for peak and
+							off-peak periods
 						</p>
 					</div>
 				</div>
 
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Price Smarter, Not Harder</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Price Smarter, Not Harder
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Maximize revenue with intelligent pricing strategies
 					</p>

@@ -81,7 +81,7 @@ async function upsertBrandRecord(
 	supabase: TypedSupabaseClient,
 	data: Partial<Database["public"]["Tables"]["messaging_brands"]["Insert"]> & {
 		company_id: string;
-	}
+	},
 ) {
 	const { data: existing } = await supabase
 		.from("messaging_brands")
@@ -97,16 +97,20 @@ async function upsertBrandRecord(
 	} else {
 		await supabase
 			.from("messaging_brands")
-			.insert(data as Database["public"]["Tables"]["messaging_brands"]["Insert"]);
+			.insert(
+				data as Database["public"]["Tables"]["messaging_brands"]["Insert"],
+			);
 	}
 }
 
 async function upsertCampaignRecord(
 	supabase: TypedSupabaseClient,
-	data: Partial<Database["public"]["Tables"]["messaging_campaigns"]["Insert"]> & {
+	data: Partial<
+		Database["public"]["Tables"]["messaging_campaigns"]["Insert"]
+	> & {
 		messaging_brand_id: string;
 		usecase: string;
-	}
+	},
 ) {
 	const { data: existing } = await supabase
 		.from("messaging_campaigns")
@@ -135,7 +139,7 @@ async function upsertCampaignRecord(
 // Telnyx onboarding requires multiple guarded steps
 export async function ensureMessagingBranding(
 	companyId: string,
-	options?: { supabase?: TypedSupabaseClient | null }
+	options?: { supabase?: TypedSupabaseClient | null },
 ) {
 	const supabase = options?.supabase ?? (await createClient());
 	if (!supabase) {
@@ -145,7 +149,7 @@ export async function ensureMessagingBranding(
 	const { data: company, error } = await supabase
 		.from("companies")
 		.select(
-			"id, name, legal_name, doing_business_as, phone, support_email, support_phone, website, website_url, brand_color, industry, address, city, state, zip_code, owner_id, ein, tax_id"
+			"id, name, legal_name, doing_business_as, phone, support_email, support_phone, website, website_url, brand_color, industry, address, city, state, zip_code, owner_id, ein, tax_id",
 		)
 		.eq("id", companyId)
 		.single();
@@ -164,7 +168,8 @@ export async function ensureMessagingBranding(
 		.maybeSingle<OwnerContactRow>();
 
 	const contactName = splitName(ownerContact?.full_name);
-	const contactEmail = ownerContact?.email || company.support_email || "support@example.com";
+	const contactEmail =
+		ownerContact?.email || company.support_email || "support@example.com";
 	const contactPhone =
 		formatPhone(ownerContact?.phone) ||
 		formatPhone(company.support_phone) ||
@@ -194,7 +199,11 @@ export async function ensureMessagingBranding(
 		const brandPayload = {
 			customer_reference: companyId,
 			brand_name: company.legal_name || company.name,
-			ein: company.ein || company.tax_id || process.env.FALLBACK_TEST_EIN || "00-0000000",
+			ein:
+				company.ein ||
+				company.tax_id ||
+				process.env.FALLBACK_TEST_EIN ||
+				"00-0000000",
 			ein_issuing_country: "US",
 			vertical: mapIndustryToVertical(company.industry),
 			website: company.website || company.website_url || null,
@@ -252,7 +261,7 @@ export async function ensureMessagingBranding(
 export async function ensureMessagingCampaign(
 	companyId: string,
 	phoneNumber: { id: string; e164: string },
-	options?: { supabase?: TypedSupabaseClient | null }
+	options?: { supabase?: TypedSupabaseClient | null },
 ) {
 	const supabase = options?.supabase ?? (await createClient());
 	if (!supabase) {
@@ -285,7 +294,9 @@ export async function ensureMessagingCampaign(
 		.maybeSingle();
 
 	if (campaignRow?.telnyx_campaign_id) {
-		const campaignStatus = await getTenDlcCampaign(campaignRow.telnyx_campaign_id);
+		const campaignStatus = await getTenDlcCampaign(
+			campaignRow.telnyx_campaign_id,
+		);
 		if (campaignStatus.success && campaignStatus.data) {
 			await supabase
 				.from("messaging_campaigns")
@@ -321,7 +332,8 @@ export async function ensureMessagingCampaign(
 			sample_messages: [sampleMessage],
 			message_flow:
 				"Customers opt in during onboarding or by texting our business line. They receive service updates and can opt out by replying STOP.",
-			terms_and_conditions: "Msg & data rates may apply. Reply STOP to opt out, HELP for help.",
+			terms_and_conditions:
+				"Msg & data rates may apply. Reply STOP to opt out, HELP for help.",
 			help_message: `Thanks for contacting ${brand.doing_business_as || brand.legal_name}. Reply STOP to unsubscribe.`,
 			help_phone_number: brand.support_phone || "+18314280176",
 			help_email: brand.support_email || "support@example.com",
@@ -329,7 +341,8 @@ export async function ensureMessagingCampaign(
 			message_fee_credits: 0,
 			opt_in_keywords: ["START", "YES"],
 			opt_out_keywords: ["STOP", "UNSUBSCRIBE"],
-			opt_in_message: "Thanks for opting in to receive messages from us. Reply STOP to opt out.",
+			opt_in_message:
+				"Thanks for opting in to receive messages from us. Reply STOP to opt out.",
 			opt_out_message:
 				"You have successfully been unsubscribed and will no longer receive messages. Reply START to opt in again.",
 		};
@@ -372,7 +385,10 @@ export async function ensureMessagingCampaign(
 		.maybeSingle();
 
 	if (!linkRecord?.telnyx_relationship_id) {
-		const attachResult = await attachNumberToCampaign(telnyxCampaignId, phoneNumber.e164);
+		const attachResult = await attachNumberToCampaign(
+			telnyxCampaignId,
+			phoneNumber.e164,
+		);
 		if (!(attachResult.success && attachResult.data)) {
 			return {
 				success: false,

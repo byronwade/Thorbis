@@ -1,16 +1,16 @@
 /**
- * useCustomerLookup - React Query Hook
+ * useCustomerLookup - React 19 Hook
  *
  * Performance optimizations:
- * - Uses React Query for automatic caching
- * - Caches customer lookups by phone number
- * - Avoids redundant API calls for same phone number
- * - Automatic garbage collection of stale data
+ * - Uses useState + useEffect for client-side data fetching
+ * - Fetches customer data by phone number for incoming call identification
  *
  * Fetches customer data by phone number for incoming call identification.
  */
 
-import { useQuery } from "@tanstack/react-query";
+"use client";
+
+import { useEffect, useState } from "react";
 import { getCustomerByPhone } from "@/actions/customers";
 
 // AI Trust Scores
@@ -63,18 +63,28 @@ const getDefaultCustomerData = (callerNumber?: string): CustomerData => ({
 		callHistory: [],
 		similarCallers: 0,
 		riskLevel: "medium",
-		aiNotes: ["First-time caller", "No prior history", "Standard verification recommended"],
+		aiNotes: [
+			"First-time caller",
+			"No prior history",
+			"Standard verification recommended",
+		],
 	},
 });
 
 export function useCustomerLookup(callerNumber?: string, companyId?: string) {
-	return useQuery({
-		queryKey: ["customer-lookup", callerNumber, companyId],
-		queryFn: async (): Promise<CustomerData> => {
-			// If no caller number or company ID, return default
-			if (!callerNumber || !companyId) {
-				return getDefaultCustomerData(callerNumber);
-			}
+	const [data, setData] = useState<CustomerData | null>(null);
+	const [error, setError] = useState<Error | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
+
+	useEffect(() => {
+		if (!callerNumber || !companyId) {
+			setData(getDefaultCustomerData(callerNumber));
+			return;
+		}
+
+		const fetchCustomer = async () => {
+			setIsLoading(true);
+			setError(null);
 
 			try {
 				const result = await getCustomerByPhone(callerNumber, companyId);
@@ -83,7 +93,7 @@ export function useCustomerLookup(callerNumber?: string, companyId?: string) {
 					const customer = result.data;
 
 					// Customer found - return enriched data
-					return {
+					setData({
 						name: `${customer.first_name} ${customer.last_name}`,
 						email: customer.email || "",
 						phone: customer.phone || callerNumber,
@@ -94,7 +104,10 @@ export function useCustomerLookup(callerNumber?: string, companyId?: string) {
 							: "Unknown",
 						totalCalls: customer.total_interactions || 0,
 						openTickets: 0, // Would need to query jobs/tickets table
-						priority: (customer.priority_level || "medium") as "low" | "medium" | "high",
+						priority: (customer.priority_level || "medium") as
+							| "low"
+							| "medium"
+							| "high",
 						tags: customer.tags || [],
 						recentIssues: [], // Would need to query jobs table
 						aiData: {
@@ -112,20 +125,26 @@ export function useCustomerLookup(callerNumber?: string, companyId?: string) {
 								"Account in good standing",
 							],
 						},
-					};
+					});
+				} else {
+					// Customer not found - return default
+					setData(getDefaultCustomerData(callerNumber));
 				}
-
-				// Customer not found - return default
-				return getDefaultCustomerData(callerNumber);
-			} catch (error) {
+			} catch (err) {
 				// Error fetching - return default with error note
 				const defaultData = getDefaultCustomerData(callerNumber);
 				defaultData.aiData.aiNotes = ["Error loading customer data"];
-				return defaultData;
+				setData(defaultData);
+				setError(
+					err instanceof Error ? err : new Error("Failed to fetch customer"),
+				);
+			} finally {
+				setIsLoading(false);
 			}
-		},
-		enabled: !!callerNumber, // Only run query if callerNumber exists
-		staleTime: 5 * 60 * 1000, // 5 minutes (customer data doesn't change often during a call)
-		gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-	});
+		};
+
+		fetchCustomer();
+	}, [callerNumber, companyId]);
+
+	return { data, error, isLoading };
 }

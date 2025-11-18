@@ -31,7 +31,7 @@ export function MapView() {
 		tech.jobs.map((job) => ({
 			...job,
 			technician: tech,
-		}))
+		})),
 	);
 
 	return (
@@ -95,7 +95,7 @@ export function MapView() {
 							<button
 								className={cn(
 									"absolute size-12 -translate-x-1/2 -translate-y-1/2 transition-transform hover:scale-110",
-									selectedJob?.id === job.id && "z-20 scale-125"
+									selectedJob?.id === job.id && "z-20 scale-125",
 								)}
 								key={job.id}
 								onClick={() => setSelectedJob(job)}
@@ -107,7 +107,7 @@ export function MapView() {
 									<div
 										className={cn(
 											"border-background flex size-10 items-center justify-center rounded-full border-4 shadow-lg",
-											statusColors[job.status]
+											statusColors[job.status],
 										)}
 									>
 										<span className="text-xs font-bold text-white">
@@ -121,7 +121,7 @@ export function MapView() {
 									<div
 										className={cn(
 											"absolute top-full left-1/2 size-0 -translate-x-1/2 border-8 border-transparent",
-											`border-t-${job.status === "in-progress" ? "amber" : job.status === "completed" ? "green" : "blue"}-500`
+											`border-t-${job.status === "in-progress" ? "amber" : job.status === "completed" ? "green" : "blue"}-500`,
 										)}
 									/>
 								</div>
@@ -143,7 +143,7 @@ export function MapView() {
 							<div
 								className={cn(
 									"absolute top-0 bottom-0 left-0 w-1",
-									priorityColors[selectedJob.priority]
+									priorityColors[selectedJob.priority],
 								)}
 							/>
 
@@ -157,8 +157,12 @@ export function MapView() {
 												.join("")}
 										</div>
 										<div>
-											<h4 className="text-base font-semibold">{selectedJob.title}</h4>
-											<p className="text-muted-foreground text-sm">{selectedJob.customer}</p>
+											<h4 className="text-base font-semibold">
+												{selectedJob.title}
+											</h4>
+											<p className="text-muted-foreground text-sm">
+												{selectedJob.customer}
+											</p>
 										</div>
 									</div>
 									<button
@@ -171,7 +175,9 @@ export function MapView() {
 								</div>
 
 								{selectedJob.description && (
-									<p className="text-muted-foreground mb-3 text-sm">{selectedJob.description}</p>
+									<p className="text-muted-foreground mb-3 text-sm">
+										{selectedJob.description}
+									</p>
 								)}
 
 								<div className="space-y-2 text-sm">
@@ -188,7 +194,9 @@ export function MapView() {
 											{selectedJob.startTime} - {selectedJob.endTime}
 										</span>
 										{selectedJob.estimatedDuration && (
-											<span className="text-xs">({selectedJob.estimatedDuration})</span>
+											<span className="text-xs">
+												({selectedJob.estimatedDuration})
+											</span>
 										)}
 									</div>
 									<div className="text-muted-foreground flex items-start gap-2">
@@ -206,22 +214,24 @@ export function MapView() {
 											selectedJob.status === "in-progress" &&
 												"border-warning/20 bg-warning/10 text-warning dark:text-warning",
 											selectedJob.status === "completed" &&
-												"border-success/20 bg-success/10 text-success dark:text-success"
+												"border-success/20 bg-success/10 text-success dark:text-success",
 										)}
 										variant="secondary"
 									>
 										{selectedJob.status === "in-progress"
 											? "In Progress"
-											: selectedJob.status.charAt(0).toUpperCase() + selectedJob.status.slice(1)}
+											: selectedJob.status.charAt(0).toUpperCase() +
+												selectedJob.status.slice(1)}
 									</Badge>
 									<Badge className="text-xs" variant="outline">
 										<div
 											className={cn(
 												"mr-1.5 size-1.5 rounded-full",
-												priorityColors[selectedJob.priority]
+												priorityColors[selectedJob.priority],
 											)}
 										/>
-										{selectedJob.priority.charAt(0).toUpperCase() + selectedJob.priority.slice(1)}{" "}
+										{selectedJob.priority.charAt(0).toUpperCase() +
+											selectedJob.priority.slice(1)}{" "}
 										Priority
 									</Badge>
 								</div>
@@ -242,14 +252,19 @@ export function MapView() {
 			<div className="bg-background w-80 border-l">
 				<div className="border-b p-4">
 					<h3 className="text-lg font-semibold">Jobs Today</h3>
-					<p className="text-muted-foreground text-sm">{allJobs.length} locations</p>
+					<p className="text-muted-foreground text-sm">
+						{allJobs.length} locations
+					</p>
 				</div>
-				<div className="divide-y overflow-auto" style={{ height: "calc(100% - 73px)" }}>
+				<div
+					className="divide-y overflow-auto"
+					style={{ height: "calc(100% - 73px)" }}
+				>
 					{allJobs.map((job) => (
 						<button
 							className={cn(
 								"hover:bg-accent w-full p-4 text-left transition-colors",
-								selectedJob?.id === job.id && "bg-accent"
+								selectedJob?.id === job.id && "bg-accent",
 							)}
 							key={job.id}
 							onClick={() => setSelectedJob(job)}
@@ -257,9 +272,16 @@ export function MapView() {
 						>
 							<div className="mb-2 flex items-start justify-between gap-2">
 								<h4 className="text-sm font-semibold">{job.title}</h4>
-								<div className={cn("size-2 shrink-0 rounded-full", statusColors[job.status])} />
+								<div
+									className={cn(
+										"size-2 shrink-0 rounded-full",
+										statusColors[job.status],
+									)}
+								/>
 							</div>
-							<p className="text-muted-foreground mb-1 text-xs">{job.customer}</p>
+							<p className="text-muted-foreground mb-1 text-xs">
+								{job.customer}
+							</p>
 							<div className="text-muted-foreground flex items-center gap-1 text-xs">
 								<Clock className="size-3" />
 								<span>

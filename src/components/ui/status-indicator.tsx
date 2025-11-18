@@ -50,7 +50,14 @@ export function StatusIndicator({
 	if (showLabel) {
 		return (
 			<div className={cn("flex items-center gap-2", className)}>
-				<div className={cn("rounded-full ring-2", config.color, config.ring, sizeClass)} />
+				<div
+					className={cn(
+						"rounded-full ring-2",
+						config.color,
+						config.ring,
+						sizeClass,
+					)}
+				/>
 				<span className="text-muted-foreground text-sm">{config.label}</span>
 			</div>
 		);
@@ -58,7 +65,13 @@ export function StatusIndicator({
 
 	return (
 		<div
-			className={cn("rounded-full ring-2", config.color, config.ring, sizeClass, className)}
+			className={cn(
+				"rounded-full ring-2",
+				config.color,
+				config.ring,
+				sizeClass,
+				className,
+			)}
 			title={config.label}
 		/>
 	);

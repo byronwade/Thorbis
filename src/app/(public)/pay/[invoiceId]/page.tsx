@@ -11,13 +11,27 @@
  */
 
 import { format } from "date-fns";
-import { Building2, Calendar, CreditCard, FileText, Mail, Phone, User } from "lucide-react";
+import {
+	Building2,
+	Calendar,
+	CreditCard,
+	FileText,
+	Mail,
+	Phone,
+	User,
+} from "lucide-react";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { InvoicePaymentForm } from "@/components/payment/invoice-payment-form";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency } from "@/lib/formatters";
 import { validatePaymentToken } from "@/lib/payments/payment-tokens";
@@ -37,7 +51,10 @@ type PageProps = {
 	}>;
 };
 
-export default async function InvoicePaymentPage({ params, searchParams }: PageProps) {
+export default async function InvoicePaymentPage({
+	params,
+	searchParams,
+}: PageProps) {
 	const { invoiceId } = await params;
 	const { token } = await searchParams;
 
@@ -47,9 +64,12 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-destructive">Invalid Payment Link</CardTitle>
+						<CardTitle className="text-destructive">
+							Invalid Payment Link
+						</CardTitle>
 						<CardDescription>
-							No payment token was provided. Please use the link from your email.
+							No payment token was provided. Please use the link from your
+							email.
 						</CardDescription>
 					</CardHeader>
 				</Card>
@@ -72,13 +92,15 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-destructive">Invalid Payment Link</CardTitle>
+						<CardTitle className="text-destructive">
+							Invalid Payment Link
+						</CardTitle>
 						<CardDescription>{validation.message}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<p className="text-muted-foreground text-sm">
-							This payment link may have expired or already been used. Please contact the company
-							for a new payment link.
+							This payment link may have expired or already been used. Please
+							contact the company for a new payment link.
 						</p>
 					</CardContent>
 				</Card>
@@ -123,7 +145,7 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
         state,
         postal_code
       )
-    `
+    `,
 		)
 		.eq("id", invoiceId)
 		.single();
@@ -138,7 +160,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 			<div className="container mx-auto max-w-2xl py-16">
 				<Card>
 					<CardHeader>
-						<CardTitle className="text-green-600">Invoice Already Paid</CardTitle>
+						<CardTitle className="text-green-600">
+							Invoice Already Paid
+						</CardTitle>
 						<CardDescription>
 							This invoice has already been paid. Thank you for your payment!
 						</CardDescription>
@@ -146,8 +170,12 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 					<CardContent>
 						<div className="space-y-2">
 							<div className="flex justify-between">
-								<span className="text-muted-foreground text-sm">Invoice Number:</span>
-								<span className="text-sm font-medium">{invoice.invoice_number}</span>
+								<span className="text-muted-foreground text-sm">
+									Invoice Number:
+								</span>
+								<span className="text-sm font-medium">
+									{invoice.invoice_number}
+								</span>
 							</div>
 							<div className="flex justify-between">
 								<span className="text-muted-foreground text-sm">Amount:</span>
@@ -157,7 +185,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 							</div>
 							{invoice.paid_at && (
 								<div className="flex justify-between">
-									<span className="text-muted-foreground text-sm">Paid On:</span>
+									<span className="text-muted-foreground text-sm">
+										Paid On:
+									</span>
 									<span className="text-sm font-medium">
 										{format(new Date(invoice.paid_at), "MMM dd, yyyy")}
 									</span>
@@ -171,8 +201,12 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 	}
 
 	// Normalize customer data
-	const customer = Array.isArray(invoice.customer) ? invoice.customer[0] : invoice.customer;
-	const company = Array.isArray(invoice.company) ? invoice.company[0] : invoice.company;
+	const customer = Array.isArray(invoice.customer)
+		? invoice.customer[0]
+		: invoice.customer;
+	const company = Array.isArray(invoice.company)
+		? invoice.company[0]
+		: invoice.company;
 
 	if (!(customer && company)) {
 		return notFound();
@@ -201,7 +235,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 							</div>
 							<Badge
 								className="text-sm"
-								variant={invoice.status === "overdue" ? "destructive" : "secondary"}
+								variant={
+									invoice.status === "overdue" ? "destructive" : "secondary"
+								}
 							>
 								{invoice.status}
 							</Badge>
@@ -217,10 +253,14 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 							<div className="space-y-1 text-sm">
 								<p className="font-medium">{company.name}</p>
 								{company.address_line1 && (
-									<p className="text-muted-foreground">{company.address_line1}</p>
+									<p className="text-muted-foreground">
+										{company.address_line1}
+									</p>
 								)}
 								{company.address_line2 && (
-									<p className="text-muted-foreground">{company.address_line2}</p>
+									<p className="text-muted-foreground">
+										{company.address_line2}
+									</p>
 								)}
 								{company.city && (
 									<p className="text-muted-foreground">
@@ -252,10 +292,13 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 							</h3>
 							<div className="space-y-1 text-sm">
 								<p className="font-medium">
-									{customer.display_name || `${customer.first_name} ${customer.last_name}`}
+									{customer.display_name ||
+										`${customer.first_name} ${customer.last_name}`}
 								</p>
 								{customer.company_name && (
-									<p className="text-muted-foreground">{customer.company_name}</p>
+									<p className="text-muted-foreground">
+										{customer.company_name}
+									</p>
 								)}
 								{customer.email && (
 									<p className="text-muted-foreground flex items-center gap-1.5">
@@ -310,7 +353,9 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 								<Separator />
 								<div>
 									<h3 className="mb-2 text-sm font-semibold">Notes</h3>
-									<p className="text-muted-foreground text-sm">{invoice.notes}</p>
+									<p className="text-muted-foreground text-sm">
+										{invoice.notes}
+									</p>
 								</div>
 							</>
 						)}
@@ -318,13 +363,18 @@ export default async function InvoicePaymentPage({ params, searchParams }: PageP
 				</Card>
 
 				{/* Payment Form */}
-				<InvoicePaymentForm company={company} customer={customer} invoice={invoice} token={token} />
+				<InvoicePaymentForm
+					company={company}
+					customer={customer}
+					invoice={invoice}
+					token={token}
+				/>
 
 				{/* Security Notice */}
 				<div className="text-muted-foreground text-center text-xs">
 					<p>
-						Your payment is secure and encrypted. By submitting payment, you agree to pay the amount
-						shown above.
+						Your payment is secure and encrypted. By submitting payment, you
+						agree to pay the amount shown above.
 					</p>
 				</div>
 			</div>

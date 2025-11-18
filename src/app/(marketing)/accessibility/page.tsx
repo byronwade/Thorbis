@@ -45,7 +45,7 @@ export default function AccessibilityPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Accessibility", url: `${siteUrl}/accessibility` },
-						])
+						]),
 					),
 				}}
 				id="accessibility-breadcrumb-ld"
@@ -53,10 +53,12 @@ export default function AccessibilityPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Accessibility Statement</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+						Accessibility Statement
+					</h1>
 					<p className="text-muted-foreground">
-						Thorbis strives to deliver inclusive experiences across our platform and customer
-						touchpoints. Accessibility is an ongoing priority.
+						Thorbis strives to deliver inclusive experiences across our platform
+						and customer touchpoints. Accessibility is an ongoing priority.
 					</p>
 				</header>
 				<article className="space-y-8">

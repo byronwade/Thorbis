@@ -8,7 +8,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -29,7 +33,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -60,11 +68,16 @@ const emailSettingsSchema = z.object({
 		.default("#3b82f6"),
 });
 
-export async function updateEmailSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateEmailSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -97,29 +110,31 @@ export async function updateEmailSettings(formData: FormData): Promise<ActionRes
 			? Buffer.from(data.smtpPassword).toString("base64")
 			: null;
 
-		const { error } = await supabase.from("communication_email_settings").upsert({
-			company_id: companyId,
-			smtp_enabled: data.smtpEnabled,
-			smtp_host: data.smtpHost,
-			smtp_port: data.smtpPort,
-			smtp_username: data.smtpUsername,
-			smtp_password_encrypted: encryptedPassword,
-			smtp_from_email: data.smtpFromEmail,
-			smtp_from_name: data.smtpFromName,
-			smtp_use_tls: data.smtpUseTls,
-			default_signature: data.defaultSignature,
-			auto_cc_enabled: data.autoCcEnabled,
-			auto_cc_email: data.autoCcEmail,
-			track_opens: data.trackOpens,
-			track_clicks: data.trackClicks,
-			email_logo_url: data.emailLogoUrl,
-			primary_color: data.primaryColor,
-		});
+		const { error } = await supabase
+			.from("communication_email_settings")
+			.upsert({
+				company_id: companyId,
+				smtp_enabled: data.smtpEnabled,
+				smtp_host: data.smtpHost,
+				smtp_port: data.smtpPort,
+				smtp_username: data.smtpUsername,
+				smtp_password_encrypted: encryptedPassword,
+				smtp_from_email: data.smtpFromEmail,
+				smtp_from_name: data.smtpFromName,
+				smtp_use_tls: data.smtpUseTls,
+				default_signature: data.defaultSignature,
+				auto_cc_enabled: data.autoCcEnabled,
+				auto_cc_email: data.autoCcEmail,
+				track_opens: data.trackOpens,
+				track_clicks: data.trackClicks,
+				email_logo_url: data.emailLogoUrl,
+				primary_color: data.primaryColor,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update email settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -131,7 +146,10 @@ export async function getEmailSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -151,7 +169,7 @@ export async function getEmailSettings(): Promise<ActionResult<any>> {
 			// PGRST116 = no rows returned
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch email settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -168,7 +186,10 @@ export async function getEmailInfrastructure(): Promise<
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -214,11 +235,16 @@ const smsSettingsSchema = z.object({
 	consentRequired: z.boolean().default(true),
 });
 
-export async function updateSmsSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateSmsSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -234,7 +260,8 @@ export async function updateSmsSettings(formData: FormData): Promise<ActionResul
 			senderNumber: formData.get("senderNumber") || undefined,
 			autoReplyEnabled: formData.get("autoReplyEnabled") === "true",
 			autoReplyMessage: formData.get("autoReplyMessage") || undefined,
-			optOutMessage: formData.get("optOutMessage") || "Reply STOP to unsubscribe",
+			optOutMessage:
+				formData.get("optOutMessage") || "Reply STOP to unsubscribe",
 			includeOptOut: formData.get("includeOptOut") !== "false",
 			consentRequired: formData.get("consentRequired") !== "false",
 		});
@@ -259,7 +286,7 @@ export async function updateSmsSettings(formData: FormData): Promise<ActionResul
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update SMS settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -271,7 +298,10 @@ export async function getSmsSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -290,7 +320,7 @@ export async function getSmsSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch SMS settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -313,17 +343,24 @@ const phoneSettingsSchema = z.object({
 	voicemailEmailNotifications: z.boolean().default(true),
 	voicemailTranscriptionEnabled: z.boolean().default(false),
 	recordingEnabled: z.boolean().default(false),
-	recordingAnnouncement: z.string().default("This call may be recorded for quality assurance"),
+	recordingAnnouncement: z
+		.string()
+		.default("This call may be recorded for quality assurance"),
 	recordingConsentRequired: z.boolean().default(true),
 	ivrEnabled: z.boolean().default(false),
 	ivrMenu: z.string().optional(),
 });
 
-export async function updatePhoneSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePhoneSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -349,36 +386,42 @@ export async function updatePhoneSettings(formData: FormData): Promise<ActionRes
 			businessHoursOnly: formData.get("businessHoursOnly") === "true",
 			voicemailEnabled: formData.get("voicemailEnabled") !== "false",
 			voicemailGreetingUrl: formData.get("voicemailGreetingUrl") || undefined,
-			voicemailEmailNotifications: formData.get("voicemailEmailNotifications") !== "false",
-			voicemailTranscriptionEnabled: formData.get("voicemailTranscriptionEnabled") === "true",
+			voicemailEmailNotifications:
+				formData.get("voicemailEmailNotifications") !== "false",
+			voicemailTranscriptionEnabled:
+				formData.get("voicemailTranscriptionEnabled") === "true",
 			recordingEnabled: formData.get("recordingEnabled") === "true",
 			recordingAnnouncement:
-				formData.get("recordingAnnouncement") || "This call may be recorded for quality assurance",
-			recordingConsentRequired: formData.get("recordingConsentRequired") !== "false",
+				formData.get("recordingAnnouncement") ||
+				"This call may be recorded for quality assurance",
+			recordingConsentRequired:
+				formData.get("recordingConsentRequired") !== "false",
 			ivrEnabled: formData.get("ivrEnabled") === "true",
 			ivrMenu: ivrMenuStr || undefined,
 		});
 
-		const { error } = await supabase.from("communication_phone_settings").upsert({
-			company_id: companyId,
-			routing_strategy: data.routingStrategy,
-			fallback_number: data.fallbackNumber,
-			business_hours_only: data.businessHoursOnly,
-			voicemail_enabled: data.voicemailEnabled,
-			voicemail_greeting_url: data.voicemailGreetingUrl,
-			voicemail_email_notifications: data.voicemailEmailNotifications,
-			voicemail_transcription_enabled: data.voicemailTranscriptionEnabled,
-			recording_enabled: data.recordingEnabled,
-			recording_announcement: data.recordingAnnouncement,
-			recording_consent_required: data.recordingConsentRequired,
-			ivr_enabled: data.ivrEnabled,
-			ivr_menu: ivrMenuJson,
-		});
+		const { error } = await supabase
+			.from("communication_phone_settings")
+			.upsert({
+				company_id: companyId,
+				routing_strategy: data.routingStrategy,
+				fallback_number: data.fallbackNumber,
+				business_hours_only: data.businessHoursOnly,
+				voicemail_enabled: data.voicemailEnabled,
+				voicemail_greeting_url: data.voicemailGreetingUrl,
+				voicemail_email_notifications: data.voicemailEmailNotifications,
+				voicemail_transcription_enabled: data.voicemailTranscriptionEnabled,
+				recording_enabled: data.recordingEnabled,
+				recording_announcement: data.recordingAnnouncement,
+				recording_consent_required: data.recordingConsentRequired,
+				ivr_enabled: data.ivrEnabled,
+				ivr_menu: ivrMenuJson,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update phone settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -390,7 +433,10 @@ export async function getPhoneSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -409,7 +455,7 @@ export async function getPhoneSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch phone settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -452,11 +498,16 @@ const notificationSettingsSchema = z.object({
 	inAppNotifications: z.boolean().default(true),
 });
 
-export async function updateNotificationSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateNotificationSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -476,41 +527,45 @@ export async function updateNotificationSettings(formData: FormData): Promise<Ac
 			notifyInvoicePaid: formData.get("notifyInvoicePaid") !== "false",
 			notifyInvoiceOverdue: formData.get("notifyInvoiceOverdue") !== "false",
 			notifyEstimateSent: formData.get("notifyEstimateSent") !== "false",
-			notifyEstimateApproved: formData.get("notifyEstimateApproved") !== "false",
+			notifyEstimateApproved:
+				formData.get("notifyEstimateApproved") !== "false",
 			notifyEstimateDeclined: formData.get("notifyEstimateDeclined") === "true",
 			notifyScheduleChanges: formData.get("notifyScheduleChanges") !== "false",
-			notifyTechnicianAssigned: formData.get("notifyTechnicianAssigned") !== "false",
+			notifyTechnicianAssigned:
+				formData.get("notifyTechnicianAssigned") !== "false",
 			emailNotifications: formData.get("emailNotifications") !== "false",
 			smsNotifications: formData.get("smsNotifications") === "true",
 			pushNotifications: formData.get("pushNotifications") !== "false",
 			inAppNotifications: formData.get("inAppNotifications") !== "false",
 		});
 
-		const { error } = await supabase.from("communication_notification_settings").upsert({
-			company_id: companyId,
-			notify_new_jobs: data.notifyNewJobs,
-			notify_job_updates: data.notifyJobUpdates,
-			notify_job_completions: data.notifyJobCompletions,
-			notify_new_customers: data.notifyNewCustomers,
-			notify_customer_updates: data.notifyCustomerUpdates,
-			notify_invoice_sent: data.notifyInvoiceSent,
-			notify_invoice_paid: data.notifyInvoicePaid,
-			notify_invoice_overdue: data.notifyInvoiceOverdue,
-			notify_estimate_sent: data.notifyEstimateSent,
-			notify_estimate_approved: data.notifyEstimateApproved,
-			notify_estimate_declined: data.notifyEstimateDeclined,
-			notify_schedule_changes: data.notifyScheduleChanges,
-			notify_technician_assigned: data.notifyTechnicianAssigned,
-			email_notifications: data.emailNotifications,
-			sms_notifications: data.smsNotifications,
-			push_notifications: data.pushNotifications,
-			in_app_notifications: data.inAppNotifications,
-		});
+		const { error } = await supabase
+			.from("communication_notification_settings")
+			.upsert({
+				company_id: companyId,
+				notify_new_jobs: data.notifyNewJobs,
+				notify_job_updates: data.notifyJobUpdates,
+				notify_job_completions: data.notifyJobCompletions,
+				notify_new_customers: data.notifyNewCustomers,
+				notify_customer_updates: data.notifyCustomerUpdates,
+				notify_invoice_sent: data.notifyInvoiceSent,
+				notify_invoice_paid: data.notifyInvoicePaid,
+				notify_invoice_overdue: data.notifyInvoiceOverdue,
+				notify_estimate_sent: data.notifyEstimateSent,
+				notify_estimate_approved: data.notifyEstimateApproved,
+				notify_estimate_declined: data.notifyEstimateDeclined,
+				notify_schedule_changes: data.notifyScheduleChanges,
+				notify_technician_assigned: data.notifyTechnicianAssigned,
+				email_notifications: data.emailNotifications,
+				sms_notifications: data.smsNotifications,
+				push_notifications: data.pushNotifications,
+				in_app_notifications: data.inAppNotifications,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update notification settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -522,7 +577,10 @@ export async function getNotificationSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -541,7 +599,7 @@ export async function getNotificationSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch notification settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

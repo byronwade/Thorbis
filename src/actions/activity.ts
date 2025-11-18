@@ -10,9 +10,17 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { Activity, ActivityFilters, CreateActivityData, EntityType } from "@/types/activity";
+import type {
+	Activity,
+	ActivityFilters,
+	CreateActivityData,
+	EntityType,
+} from "@/types/activity";
 
-type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, null>;
+type SupabaseServerClient = Exclude<
+	Awaited<ReturnType<typeof createClient>>,
+	null
+>;
 
 /**
  * Log a new activity to the database
@@ -33,7 +41,7 @@ type SupabaseServerClient = Exclude<Awaited<ReturnType<typeof createClient>>, nu
  * });
  */
 export async function logActivity(
-	data: CreateActivityData
+	data: CreateActivityData,
 ): Promise<{ success: boolean; activityId?: string; error?: string }> {
 	try {
 		const supabase = await createSupabaseClient();
@@ -56,11 +64,14 @@ export async function logActivity(
  * });
  */
 export async function getActivities(
-	filters: ActivityFilters
+	filters: ActivityFilters,
 ): Promise<{ success: boolean; activities?: Activity[]; error?: string }> {
 	try {
 		const supabase = await createSupabaseClient();
-		const baseQuery = supabase.from("activities").select("*").eq("is_visible", true);
+		const baseQuery = supabase
+			.from("activities")
+			.select("*")
+			.eq("is_visible", true);
 		let query = applyActivityFilters(baseQuery, filters).order("occurred_at", {
 			ascending: false,
 		});
@@ -89,7 +100,7 @@ export async function getActivities(
  */
 export async function getActivityCount(
 	entityType: EntityType,
-	entityId: string
+	entityId: string,
 ): Promise<{ success: boolean; count?: number; error?: string }> {
 	try {
 		const supabase = await createSupabaseClient();
@@ -110,7 +121,7 @@ export async function getActivityCount(
  * Delete an activity (soft delete by setting isVisible to false)
  */
 export async function deleteActivity(
-	activityId: string
+	activityId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createSupabaseClient();
@@ -196,12 +207,14 @@ const mapActivityInsertPayload = (data: CreateActivityData) => ({
 	is_important: Boolean(data.isImportant),
 	is_system_generated: Boolean(data.isSystemGenerated),
 	is_visible: true,
-	occurred_at: data.occurredAt ? new Date(data.occurredAt).toISOString() : new Date().toISOString(),
+	occurred_at: data.occurredAt
+		? new Date(data.occurredAt).toISOString()
+		: new Date().toISOString(),
 });
 
 const insertActivityRecord = async (
 	supabase: SupabaseServerClient,
-	data: CreateActivityData
+	data: CreateActivityData,
 ): Promise<ActivityRow> => {
 	const payload = mapActivityInsertPayload(data);
 	const { data: activity, error } = await supabase
@@ -217,7 +230,10 @@ const insertActivityRecord = async (
 	return activity as ActivityRow;
 };
 
-const revalidateActivityPaths = (entityType: EntityType, entityId?: string | null) => {
+const revalidateActivityPaths = (
+	entityType: EntityType,
+	entityId?: string | null,
+) => {
 	if (!entityId) {
 		return;
 	}
@@ -232,7 +248,7 @@ type FilterableQuery<T> = {
 
 const applyActivityFilters = <T extends FilterableQuery<T>>(
 	query: T,
-	filters: ActivityFilters
+	filters: ActivityFilters,
 ): T => {
 	let nextQuery = query;
 	const filterMap: [string, string | undefined | null][] = [
@@ -399,7 +415,8 @@ const MOCK_ACTIVITIES: Activity[] = [
 		fieldName: null,
 		oldValue: null,
 		newValue: null,
-		description: "Confirmed installation date with customer. They're available all week.",
+		description:
+			"Confirmed installation date with customer. They're available all week.",
 		metadata: null,
 		relatedEntityType: null,
 		relatedEntityId: null,
@@ -434,7 +451,8 @@ const MOCK_ACTIVITIES: Activity[] = [
 		relatedEntityType: null,
 		relatedEntityId: null,
 		attachmentType: "photo",
-		attachmentUrl: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400",
+		attachmentUrl:
+			"https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400",
 		attachmentName: "hvac-before-1.jpg",
 		aiModel: null,
 		automationWorkflowId: null,
@@ -459,7 +477,8 @@ const MOCK_ACTIVITIES: Activity[] = [
 		fieldName: null,
 		oldValue: null,
 		newValue: null,
-		description: "Detected HVAC equipment: Carrier 3-ton AC unit, 80% efficiency furnace",
+		description:
+			"Detected HVAC equipment: Carrier 3-ton AC unit, 80% efficiency furnace",
 		metadata: {
 			confidence: 0.92,
 			equipmentDetected: ["AC Unit", "Furnace"],
@@ -553,7 +572,7 @@ const buildMockActivities = (filters: ActivityFilters): Activity[] =>
 
 const buildActivityErrorResponse = (
 	fallbackMessage: string,
-	error: unknown
+	error: unknown,
 ): { success: false; error: string } => ({
 	success: false,
 	error: error instanceof Error ? error.message : fallbackMessage,

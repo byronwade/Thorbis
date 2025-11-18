@@ -70,7 +70,9 @@ export function ComingSoonShell({
 
 				{/* Title and description */}
 				<div className="space-y-3">
-					<h1 className="text-4xl font-bold tracking-tight md:text-5xl">{title}</h1>
+					<h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+						{title}
+					</h1>
 					<p className="text-foreground/60 mx-auto max-w-3xl text-lg leading-relaxed">
 						{description}
 					</p>

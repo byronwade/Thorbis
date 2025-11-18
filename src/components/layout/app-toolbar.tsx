@@ -25,6 +25,7 @@ type AppToolbarProps = {
 	config: ToolbarConfig;
 	showLeftSidebar?: boolean;
 	showRightSidebar?: boolean;
+	scope?: "layout" | "page";
 };
 
 export function AppToolbar({
@@ -32,18 +33,25 @@ export function AppToolbar({
 	config,
 	showLeftSidebar = true,
 	showRightSidebar = false,
+	scope = "page",
 }: AppToolbarProps) {
 	const safePathname = pathname || "/dashboard";
 	const actionsJustify =
 		config.actionsJustify ??
-		(config.title || config.breadcrumbs || config.back ? "flex-end" : "space-between");
+		(config.title || config.breadcrumbs || config.back
+			? "flex-end"
+			: "space-between");
 	const actionsClassName =
 		actionsJustify === "space-between"
 			? "flex flex-1 items-center gap-1.5"
 			: "ml-auto flex items-center gap-1.5";
 
 	return (
-		<header className="border-border/50 bg-background/90 sticky top-0 z-40 flex w-full shrink-0 border-b backdrop-blur-md md:rounded-t-2xl">
+		<header
+			className="border-border/50 bg-background/90 sticky top-0 z-40 flex w-full shrink-0 border-b backdrop-blur-md md:rounded-t-2xl"
+			data-app-toolbar
+			data-app-toolbar-scope={scope}
+		>
 			<div className="flex h-14 w-full items-center gap-2 px-4 md:px-6">
 				{/* Left Sidebar Toggle */}
 				{showLeftSidebar && <SidebarTrigger className="-ml-1 shrink-0" />}
@@ -64,7 +72,9 @@ export function AppToolbar({
 									<div className="text-lg font-semibold">{config.title}</div>
 								))}
 							{config.subtitle && (
-								<p className="text-muted-foreground hidden text-sm md:block">{config.subtitle}</p>
+								<p className="text-muted-foreground hidden text-sm md:block">
+									{config.subtitle}
+								</p>
 							)}
 						</div>
 					)
@@ -85,7 +95,9 @@ export function AppToolbar({
 
 					{/* Custom Action Buttons */}
 					{config.actions && (
-						<div data-toolbar-default-actions={safePathname}>{config.actions}</div>
+						<div data-toolbar-default-actions={safePathname}>
+							{config.actions}
+						</div>
 					)}
 					<ToolbarClientActions pathname={safePathname} />
 

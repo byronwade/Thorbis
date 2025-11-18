@@ -85,30 +85,38 @@ export function JobStatisticsSheet({
 		const profit = metrics.totalAmount - totalCost;
 
 		// Profit margin
-		const profitMargin = metrics.totalAmount > 0 ? (profit / metrics.totalAmount) * 100 : 0;
+		const profitMargin =
+			metrics.totalAmount > 0 ? (profit / metrics.totalAmount) * 100 : 0;
 
 		// Labor variance
 		const laborVariance =
-			metrics.estimatedLaborHours > 0 ? metrics.totalLaborHours - metrics.estimatedLaborHours : 0;
+			metrics.estimatedLaborHours > 0
+				? metrics.totalLaborHours - metrics.estimatedLaborHours
+				: 0;
 
 		// Labor variance percentage
 		const laborVariancePercent =
-			metrics.estimatedLaborHours > 0 ? (laborVariance / metrics.estimatedLaborHours) * 100 : 0;
+			metrics.estimatedLaborHours > 0
+				? (laborVariance / metrics.estimatedLaborHours) * 100
+				: 0;
 
 		// Calculate travel time (time entries with type "travel")
-		const travelTimeEntries = timeEntries.filter((entry: any) => entry.entry_type === "travel");
+		const travelTimeEntries = timeEntries.filter(
+			(entry: any) => entry.entry_type === "travel",
+		);
 		const travelHours = travelTimeEntries.reduce(
 			(sum: number, entry: any) => sum + (entry.total_hours || 0),
-			0
+			0,
 		);
 
 		// Calculate on-site time (time entries with type "work" or "labor")
 		const onSiteTimeEntries = timeEntries.filter(
-			(entry: any) => entry.entry_type === "work" || entry.entry_type === "labor"
+			(entry: any) =>
+				entry.entry_type === "work" || entry.entry_type === "labor",
 		);
 		const onSiteHours = onSiteTimeEntries.reduce(
 			(sum: number, entry: any) => sum + (entry.total_hours || 0),
-			0
+			0,
 		);
 
 		// Team breakdown
@@ -228,7 +236,9 @@ export function JobStatisticsSheet({
 									<p className="text-muted-foreground mt-1 text-xs">
 										{metrics.totalAmount > 0
 											? `${Math.round(
-													((metrics.totalAmount - metrics.paidAmount) / metrics.totalAmount) * 100
+													((metrics.totalAmount - metrics.paidAmount) /
+														metrics.totalAmount) *
+														100,
 												)}% remaining`
 											: "N/A"}
 									</p>
@@ -273,13 +283,17 @@ export function JobStatisticsSheet({
 						<Card>
 							<CardContent className="space-y-4 p-6">
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">Labor Cost</span>
+									<span className="text-muted-foreground text-sm">
+										Labor Cost
+									</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(detailedMetrics.laborCost)}
 									</span>
 								</div>
 								<div className="flex items-center justify-between">
-									<span className="text-muted-foreground text-sm">Materials Cost</span>
+									<span className="text-muted-foreground text-sm">
+										Materials Cost
+									</span>
 									<span className="font-semibold tabular-nums">
 										{formatCurrency(detailedMetrics.materialsCost)}
 									</span>
@@ -386,7 +400,8 @@ export function JobStatisticsSheet({
 											</span>
 											<p className="text-muted-foreground mt-0.5 text-xs">
 												{detailedMetrics.laborVariancePercent >= 0 ? "+" : ""}
-												{detailedMetrics.laborVariancePercent.toFixed(1)}% vs estimate
+												{detailedMetrics.laborVariancePercent.toFixed(1)}% vs
+												estimate
 											</p>
 										</div>
 									</div>
@@ -406,42 +421,55 @@ export function JobStatisticsSheet({
 							<Card>
 								<CardContent className="p-6">
 									<div className="space-y-4">
-										{detailedMetrics.teamMembers.map((member: any, index: number) => (
-											<div key={member.id}>
-												<div className="flex items-center justify-between">
-													<div className="flex items-center gap-3">
-														<Avatar className="h-9 w-9">
-															<AvatarImage alt={member.name} src={member.avatar || undefined} />
-															<AvatarFallback className="text-xs">
-																{member.name
-																	.split(" ")
-																	.map((n: string) => n[0])
-																	.join("")
-																	.toUpperCase()
-																	.slice(0, 2)}
-															</AvatarFallback>
-														</Avatar>
-														<div>
-															<p className="text-sm font-medium">{member.name}</p>
+										{detailedMetrics.teamMembers.map(
+											(member: any, index: number) => (
+												<div key={member.id}>
+													<div className="flex items-center justify-between">
+														<div className="flex items-center gap-3">
+															<Avatar className="h-9 w-9">
+																<AvatarImage
+																	alt={member.name}
+																	src={member.avatar || undefined}
+																/>
+																<AvatarFallback className="text-xs">
+																	{member.name
+																		.split(" ")
+																		.map((n: string) => n[0])
+																		.join("")
+																		.toUpperCase()
+																		.slice(0, 2)}
+																</AvatarFallback>
+															</Avatar>
+															<div>
+																<p className="text-sm font-medium">
+																	{member.name}
+																</p>
+																<p className="text-muted-foreground text-xs">
+																	{member.entries}{" "}
+																	{member.entries === 1 ? "entry" : "entries"}
+																</p>
+															</div>
+														</div>
+														<div className="text-right">
+															<p className="font-semibold tabular-nums">
+																{formatHours(member.totalHours)}
+															</p>
 															<p className="text-muted-foreground text-xs">
-																{member.entries} {member.entries === 1 ? "entry" : "entries"}
+																{(
+																	(member.totalHours /
+																		metrics.totalLaborHours) *
+																	100
+																).toFixed(0)}
+																%
 															</p>
 														</div>
 													</div>
-													<div className="text-right">
-														<p className="font-semibold tabular-nums">
-															{formatHours(member.totalHours)}
-														</p>
-														<p className="text-muted-foreground text-xs">
-															{((member.totalHours / metrics.totalLaborHours) * 100).toFixed(0)}%
-														</p>
-													</div>
+													{index !== detailedMetrics.teamMembers.length - 1 && (
+														<Separator className="mt-4" />
+													)}
 												</div>
-												{index !== detailedMetrics.teamMembers.length - 1 && (
-													<Separator className="mt-4" />
-												)}
-											</div>
-										))}
+											),
+										)}
 									</div>
 								</CardContent>
 							</Card>
@@ -460,7 +488,9 @@ export function JobStatisticsSheet({
 								<div>
 									<div className="mb-3 flex items-center justify-between">
 										<p className="text-sm font-medium">Completion Progress</p>
-										<span className="font-bold tabular-nums">{metrics.completionPercentage}%</span>
+										<span className="font-bold tabular-nums">
+											{metrics.completionPercentage}%
+										</span>
 									</div>
 									<div className="bg-secondary relative h-2 w-full overflow-hidden rounded-full">
 										<div

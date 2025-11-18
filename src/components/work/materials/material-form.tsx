@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createInventory, reserveStock } from "@/actions/inventory";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -41,12 +47,16 @@ type MaterialFormProps = {
 	defaultPriceBookItemId?: string;
 };
 
-export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: MaterialFormProps) {
+export function MaterialForm({
+	priceBookItems,
+	jobs,
+	defaultPriceBookItemId,
+}: MaterialFormProps) {
 	const router = useRouter();
 	const { toast } = useToast();
 	const formRef = useRef<HTMLFormElement>(null);
 	const [selectedItemId, setSelectedItemId] = useState(
-		defaultPriceBookItemId || priceBookItems[0]?.id || ""
+		defaultPriceBookItemId || priceBookItems[0]?.id || "",
 	);
 	const [quantityOnHand, setQuantityOnHand] = useState("1");
 	const [minimumQuantity, setMinimumQuantity] = useState("0");
@@ -64,7 +74,7 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 
 	const selectedItem = useMemo(
 		() => priceBookItems.find((item) => item.id === selectedItemId),
-		[priceBookItems, selectedItemId]
+		[priceBookItems, selectedItemId],
 	);
 
 	useEffect(() => {
@@ -83,7 +93,8 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 		return () => window.removeEventListener("keydown", handler);
 	}, [router]);
 
-	const toCents = (value: string) => Math.round((Number.parseFloat(value || "0") || 0) * 100);
+	const toCents = (value: string) =>
+		Math.round((Number.parseFloat(value || "0") || 0) * 100);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -134,21 +145,26 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			router.push("/dashboard/work/materials");
 		} catch (err) {
 			setError(
-				err instanceof Error ? err.message : "Something went wrong while creating inventory."
+				err instanceof Error
+					? err.message
+					: "Something went wrong while creating inventory.",
 			);
 			setIsSubmitting(false);
 		}
 	};
 
 	const totalValue =
-		(Number.parseFloat(quantityOnHand || "0") || 0) * (Number.parseFloat(costPerUnit || "0") || 0);
+		(Number.parseFloat(quantityOnHand || "0") || 0) *
+		(Number.parseFloat(costPerUnit || "0") || 0);
 
 	return (
 		<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
 			<div className="bg-muted/30 flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
 				<div>
 					<p className="text-sm font-semibold">Keyboard Shortcuts</p>
-					<p className="text-muted-foreground text-xs">⌘/Ctrl + S to save • Esc to cancel</p>
+					<p className="text-muted-foreground text-xs">
+						⌘/Ctrl + S to save • Esc to cancel
+					</p>
 				</div>
 				<Button asChild size="sm" variant="ghost">
 					<Link href="/dashboard/work/materials">Back to Materials</Link>
@@ -292,7 +308,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 			<Card>
 				<CardHeader>
 					<CardTitle>Location & Notes</CardTitle>
-					<CardDescription>Where the item lives and any internal documentation</CardDescription>
+					<CardDescription>
+						Where the item lives and any internal documentation
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="grid gap-4 sm:grid-cols-2">
@@ -350,7 +368,9 @@ export function MaterialForm({ priceBookItems, jobs, defaultPriceBookItemId }: M
 													{job.jobNumber} • {job.title}
 												</span>
 												{job.customer && (
-													<span className="text-muted-foreground text-xs">{job.customer}</span>
+													<span className="text-muted-foreground text-xs">
+														{job.customer}
+													</span>
 												)}
 											</div>
 										</SelectItem>

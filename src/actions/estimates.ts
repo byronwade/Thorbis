@@ -9,7 +9,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -38,7 +42,9 @@ const JOB_NUMBER_REGEX = /JOB-\d{4}-(\d+)/;
 
 const lineItemSchema = z.object({
 	description: z.string().min(1, "Description is required"),
-	quantity: z.number().min(MIN_LINE_ITEM_QUANTITY, "Quantity must be greater than 0"),
+	quantity: z
+		.number()
+		.min(MIN_LINE_ITEM_QUANTITY, "Quantity must be greater than 0"),
 	unitPrice: z.number().min(0, "Price must be positive"),
 	total: z.number().min(0, "Total must be positive"),
 });
@@ -48,7 +54,9 @@ const createEstimateSchema = z.object({
 	propertyId: z.string().uuid("Invalid property ID").optional(),
 	title: z.string().min(1, "Estimate title is required"),
 	description: z.string().optional(),
-	lineItems: z.array(lineItemSchema).min(1, "At least one line item is required"),
+	lineItems: z
+		.array(lineItemSchema)
+		.min(1, "At least one line item is required"),
 	taxRate: z.number().min(0).max(MAX_TAX_RATE_PERCENT).default(0),
 	discountAmount: z.number().min(0).default(0),
 	validDays: z.number().min(1).default(DEFAULT_VALID_DAYS),
@@ -74,7 +82,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 async function generateEstimateNumber(
 	supabase: SupabaseClient,
-	companyId: string
+	companyId: string,
 ): Promise<string> {
 	const { data: latestEstimate } = await supabase
 		.from("estimates")
@@ -100,7 +108,11 @@ async function generateEstimateNumber(
 /**
  * Calculate estimate totals
  */
-function calculateTotals(lineItems: { total: number }[], taxRate: number, discountAmount: number) {
+function calculateTotals(
+	lineItems: { total: number }[],
+	taxRate: number,
+	discountAmount: number,
+) {
 	const subtotal = lineItems.reduce((sum, item) => sum + item.total, 0);
 	const taxAmount = Math.round((subtotal * taxRate) / PERCENT_DENOMINATOR);
 	const totalAmount = subtotal + taxAmount - discountAmount;
@@ -116,11 +128,16 @@ function calculateTotals(lineItems: { total: number }[], taxRate: number, discou
 /**
  * Create a new estimate
  */
-export async function createEstimate(formData: FormData): Promise<ActionResult<string>> {
+export async function createEstimate(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -132,7 +149,11 @@ export async function createEstimate(formData: FormData): Promise<ActionResult<s
 		const lineItems = parseEstimateLineItems(formData.get("lineItems")) || [];
 		const data = parseCreateEstimateFormData(formData, lineItems);
 
-		const totals = calculateTotals(data.lineItems, data.taxRate, data.discountAmount);
+		const totals = calculateTotals(
+			data.lineItems,
+			data.taxRate,
+			data.discountAmount,
+		);
 
 		const validUntilIso = calculateValidUntilIso(data.validDays);
 		const estimateNumber = await generateEstimateNumber(supabase, companyId);
@@ -154,7 +175,7 @@ export async function createEstimate(formData: FormData): Promise<ActionResult<s
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -168,12 +189,15 @@ export async function createEstimate(formData: FormData): Promise<ActionResult<s
  */
 export async function updateEstimate(
 	estimateId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -182,12 +206,16 @@ export async function updateEstimate(
 		assertAuthenticated(user?.id);
 
 		const companyId = await requireEstimateCompanyId(supabase, user.id);
-		const existingEstimate = await getEstimateForCompanyOrThrow(supabase, estimateId, companyId);
+		const existingEstimate = await getEstimateForCompanyOrThrow(
+			supabase,
+			estimateId,
+			companyId,
+		);
 
 		if (existingEstimate.status !== "draft") {
 			throw new ActionError(
 				"Only draft estimates can be edited",
-				ERROR_CODES.OPERATION_NOT_ALLOWED
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
 			);
 		}
 
@@ -205,7 +233,7 @@ export async function updateEstimate(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -219,7 +247,7 @@ type UpdateEstimateParsed = z.infer<typeof updateEstimateSchema>;
 
 async function requireEstimateCompanyId(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
-	userId: string
+	userId: string,
 ): Promise<string> {
 	const { data: teamMember } = await supabase
 		.from("team_members")
@@ -231,7 +259,7 @@ async function requireEstimateCompanyId(
 		throw new ActionError(
 			"You must be part of a company",
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN
+			HTTP_STATUS_FORBIDDEN,
 		);
 	}
 
@@ -240,7 +268,7 @@ async function requireEstimateCompanyId(
 
 function parseEstimateLineItems(
 	value: FormDataEntryValue | null,
-	optional = false
+	optional = false,
 ): { total: number }[] | undefined {
 	if (!value || typeof value !== "string") {
 		return optional ? undefined : [];
@@ -249,13 +277,16 @@ function parseEstimateLineItems(
 	try {
 		return JSON.parse(value) as { total: number }[];
 	} catch {
-		throw new ActionError("Invalid line items data", ERROR_CODES.VALIDATION_FAILED);
+		throw new ActionError(
+			"Invalid line items data",
+			ERROR_CODES.VALIDATION_FAILED,
+		);
 	}
 }
 
 function parseCreateEstimateFormData(
 	formData: FormData,
-	lineItems: { total: number }[]
+	lineItems: { total: number }[],
 ): CreateEstimateParsed {
 	return createEstimateSchema.parse({
 		customerId: formData.get("customerId"),
@@ -263,7 +294,9 @@ function parseCreateEstimateFormData(
 		title: formData.get("title"),
 		description: formData.get("description") || undefined,
 		lineItems,
-		taxRate: formData.get("taxRate") ? Number.parseFloat(formData.get("taxRate") as string) : 0,
+		taxRate: formData.get("taxRate")
+			? Number.parseFloat(formData.get("taxRate") as string)
+			: 0,
 		discountAmount: formData.get("discountAmount")
 			? Number.parseFloat(formData.get("discountAmount") as string)
 			: 0,
@@ -290,7 +323,7 @@ type CreateEstimateInsertParams = {
 };
 
 function buildCreateEstimateInsertPayload(
-	params: CreateEstimateInsertParams
+	params: CreateEstimateInsertParams,
 ): Record<string, unknown> {
 	const { companyId, data, totals, validUntilIso, estimateNumber } = params;
 
@@ -316,7 +349,7 @@ function buildCreateEstimateInsertPayload(
 async function getEstimateForCompanyOrThrow(
 	supabase: NonNullable<Awaited<ReturnType<typeof createClient>>>,
 	estimateId: string,
-	companyId: string
+	companyId: string,
 ) {
 	const { data: existingEstimate } = await supabase
 		.from("estimates")
@@ -330,7 +363,7 @@ async function getEstimateForCompanyOrThrow(
 		throw new ActionError(
 			ERROR_MESSAGES.forbidden("estimate"),
 			ERROR_CODES.AUTH_FORBIDDEN,
-			HTTP_STATUS_FORBIDDEN
+			HTTP_STATUS_FORBIDDEN,
 		);
 	}
 
@@ -339,7 +372,7 @@ async function getEstimateForCompanyOrThrow(
 
 function parseUpdateEstimateFormData(
 	formData: FormData,
-	lineItems: { total: number }[] | undefined
+	lineItems: { total: number }[] | undefined,
 ): UpdateEstimateParsed {
 	return updateEstimateSchema.parse({
 		title: formData.get("title") || undefined,
@@ -359,7 +392,9 @@ function parseUpdateEstimateFormData(
 	});
 }
 
-function buildUpdateEstimatePayload(data: UpdateEstimateParsed): Record<string, unknown> {
+function buildUpdateEstimatePayload(
+	data: UpdateEstimateParsed,
+): Record<string, unknown> {
 	const updateData: Record<string, unknown> = {};
 	if (data.title) {
 		updateData.title = data.title;
@@ -396,11 +431,16 @@ function buildUpdateEstimatePayload(data: UpdateEstimateParsed): Record<string, 
 /**
  * Send estimate to customer
  */
-export async function sendEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function sendEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -423,13 +463,19 @@ export async function sendEstimate(estimateId: string): Promise<ActionResult<voi
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("estimate"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN
+				HTTP_STATUS_FORBIDDEN,
 			);
 		}
 
 		// Can only send draft or rejected estimates
-		if (existingEstimate.status !== "draft" && existingEstimate.status !== "rejected") {
-			throw new ActionError("Estimate has already been sent", ERROR_CODES.OPERATION_NOT_ALLOWED);
+		if (
+			existingEstimate.status !== "draft" &&
+			existingEstimate.status !== "rejected"
+		) {
+			throw new ActionError(
+				"Estimate has already been sent",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// TODO: Send email to customer with estimate PDF
@@ -447,7 +493,7 @@ export async function sendEstimate(estimateId: string): Promise<ActionResult<voi
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("send estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -459,11 +505,16 @@ export async function sendEstimate(estimateId: string): Promise<ActionResult<voi
 /**
  * Mark estimate as viewed (customer opened it)
  */
-export async function markEstimateViewed(estimateId: string): Promise<ActionResult<void>> {
+export async function markEstimateViewed(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// This can be called publicly by customer, so no auth check
@@ -489,7 +540,7 @@ export async function markEstimateViewed(estimateId: string): Promise<ActionResu
 			if (updateError) {
 				throw new ActionError(
 					ERROR_MESSAGES.operationFailed("mark estimate as viewed"),
-					ERROR_CODES.DB_QUERY_ERROR
+					ERROR_CODES.DB_QUERY_ERROR,
 				);
 			}
 		}
@@ -502,11 +553,16 @@ export async function markEstimateViewed(estimateId: string): Promise<ActionResu
 /**
  * Accept estimate (customer approval)
  */
-export async function acceptEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function acceptEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify estimate exists and can be accepted
@@ -520,12 +576,18 @@ export async function acceptEstimate(estimateId: string): Promise<ActionResult<v
 
 		// Can only accept sent or viewed estimates
 		if (estimate.status !== "sent" && estimate.status !== "viewed") {
-			throw new ActionError("Estimate cannot be accepted", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Estimate cannot be accepted",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Check if estimate is expired
 		if (estimate.valid_until && new Date(estimate.valid_until) < new Date()) {
-			throw new ActionError("Estimate has expired", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Estimate has expired",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Update status to accepted
@@ -540,7 +602,7 @@ export async function acceptEstimate(estimateId: string): Promise<ActionResult<v
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("accept estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -554,12 +616,15 @@ export async function acceptEstimate(estimateId: string): Promise<ActionResult<v
  */
 export async function rejectEstimate(
 	estimateId: string,
-	reason?: string
+	reason?: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		// Verify estimate exists
@@ -573,7 +638,10 @@ export async function rejectEstimate(
 
 		// Can only reject sent or viewed estimates
 		if (estimate.status !== "sent" && estimate.status !== "viewed") {
-			throw new ActionError("Estimate cannot be rejected", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Estimate cannot be rejected",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Add rejection reason to notes
@@ -593,7 +661,7 @@ export async function rejectEstimate(
 		if (updateError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("reject estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -605,11 +673,16 @@ export async function rejectEstimate(
 /**
  * Convert estimate to job
  */
-export async function convertEstimateToJob(estimateId: string): Promise<ActionResult<string>> {
+export async function convertEstimateToJob(
+	estimateId: string,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -622,7 +695,9 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
 		// Get estimate
 		const { data: estimate } = await supabase
 			.from("estimates")
-			.select("company_id, customer_id, property_id, title, description, total_amount, status")
+			.select(
+				"company_id, customer_id, property_id, title, description, total_amount, status",
+			)
 			.eq("id", estimateId)
 			.single();
 
@@ -632,7 +707,7 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("estimate"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN
+				HTTP_STATUS_FORBIDDEN,
 			);
 		}
 
@@ -640,7 +715,7 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
 		if (estimate.status !== "accepted") {
 			throw new ActionError(
 				"Only accepted estimates can be converted to jobs",
-				ERROR_CODES.OPERATION_NOT_ALLOWED
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
 			);
 		}
 
@@ -695,7 +770,7 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
 		if (createError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create job from estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -709,7 +784,7 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
 			// Job created but linking failed - return error while keeping job
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("link estimate to job"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -725,11 +800,16 @@ export async function convertEstimateToJob(estimateId: string): Promise<ActionRe
  * Replaces deleteEstimate - now archives instead of permanently deleting.
  * Archived estimates can be restored within 90 days.
  */
-export async function archiveEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function archiveEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -752,7 +832,7 @@ export async function archiveEstimate(estimateId: string): Promise<ActionResult<
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("estimate"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN
+				HTTP_STATUS_FORBIDDEN,
 			);
 		}
 
@@ -760,14 +840,14 @@ export async function archiveEstimate(estimateId: string): Promise<ActionResult<
 		if (estimate.status === "accepted") {
 			throw new ActionError(
 				"Cannot archive accepted estimates. Accepted estimates must be retained for records.",
-				ERROR_CODES.OPERATION_NOT_ALLOWED
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
 			);
 		}
 
 		// Archive estimate (soft delete)
 		const now = new Date().toISOString();
 		const scheduledDeletion = new Date(
-			Date.now() + ARCHIVE_RETENTION_DAYS * MS_PER_DAY
+			Date.now() + ARCHIVE_RETENTION_DAYS * MS_PER_DAY,
 		).toISOString();
 
 		const { error: archiveError } = await supabase
@@ -784,7 +864,7 @@ export async function archiveEstimate(estimateId: string): Promise<ActionResult<
 		if (archiveError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("archive estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -796,11 +876,16 @@ export async function archiveEstimate(estimateId: string): Promise<ActionResult<
 /**
  * Restore archived estimate
  */
-export async function restoreEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function restoreEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -823,12 +908,15 @@ export async function restoreEstimate(estimateId: string): Promise<ActionResult<
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("estimate"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				HTTP_STATUS_FORBIDDEN
+				HTTP_STATUS_FORBIDDEN,
 			);
 		}
 
 		if (!estimate.deleted_at) {
-			throw new ActionError("Estimate is not archived", ERROR_CODES.OPERATION_NOT_ALLOWED);
+			throw new ActionError(
+				"Estimate is not archived",
+				ERROR_CODES.OPERATION_NOT_ALLOWED,
+			);
 		}
 
 		// Restore estimate
@@ -846,7 +934,7 @@ export async function restoreEstimate(estimateId: string): Promise<ActionResult<
 		if (restoreError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("restore estimate"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -860,7 +948,9 @@ export async function restoreEstimate(estimateId: string): Promise<ActionResult<
  * Removes the job association from the estimate (sets job_id to NULL)
  * This is a bidirectional operation - estimate no longer shows on job, job no longer shows on estimate
  */
-export async function unlinkEstimateFromJob(estimateId: string): Promise<ActionResult<void>> {
+export async function unlinkEstimateFromJob(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		assertSupabase(supabase);
@@ -873,7 +963,10 @@ export async function unlinkEstimateFromJob(estimateId: string): Promise<ActionR
 			.single();
 
 		if (fetchError || !estimate) {
-			throw new ActionError("Estimate not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"Estimate not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		const previousJobId = estimate.job_id;
@@ -885,7 +978,10 @@ export async function unlinkEstimateFromJob(estimateId: string): Promise<ActionR
 			.eq("id", estimateId);
 
 		if (unlinkError) {
-			throw new ActionError("Failed to unlink estimate from job", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to unlink estimate from job",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		// Revalidate both the estimate and the job pages
@@ -907,7 +1003,9 @@ export async function unlinkEstimateFromJob(estimateId: string): Promise<ActionR
  * @param estimateId - ID of the estimate to unlink from its job
  * @returns Promise<ActionResult<void>>
  */
-export async function unlinkJobFromEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function unlinkJobFromEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	// Just call the main function - same implementation
 	return unlinkEstimateFromJob(estimateId);
 }
@@ -916,6 +1014,8 @@ export async function unlinkJobFromEstimate(estimateId: string): Promise<ActionR
  * Delete estimate (legacy - deprecated)
  * @deprecated Use archiveEstimate() instead
  */
-export async function deleteEstimate(estimateId: string): Promise<ActionResult<void>> {
+export async function deleteEstimate(
+	estimateId: string,
+): Promise<ActionResult<void>> {
 	return archiveEstimate(estimateId);
 }

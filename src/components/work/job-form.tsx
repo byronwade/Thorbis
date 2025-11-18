@@ -1,11 +1,25 @@
 "use client";
 
-import { Briefcase, Calendar, Keyboard, Loader2, MapPin, User, Zap } from "lucide-react";
+import {
+	Briefcase,
+	Calendar,
+	Keyboard,
+	Loader2,
+	MapPin,
+	User,
+	Zap,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createJob } from "@/actions/jobs";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -19,7 +33,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { AddPropertyDialog } from "@/components/work/add-property-dialog";
 import { CustomerCombobox } from "@/components/work/customer-combobox";
 import { EnhancedScheduling } from "@/components/work/enhanced-scheduling";
-import { type JobTemplate, JobTemplates } from "@/components/work/job-templates";
+import {
+	type JobTemplate,
+	JobTemplates,
+} from "@/components/work/job-templates";
 import { QuickCustomerAdd } from "@/components/work/quick-customer-add";
 import { ShortcutsHelp } from "@/components/work/shortcuts-help";
 import { useKeyboardShortcuts } from "@/hooks/use-keyboard-shortcuts";
@@ -102,12 +119,12 @@ export function JobForm({
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		existingJob?.customer_id || preselectedCustomerId
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		existingJob?.property_id || preselectedPropertyId
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(existingJob?.customer_id || preselectedCustomerId);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(existingJob?.property_id || preselectedPropertyId);
 
 	// Local properties and customers state (combines server data + newly created)
 	const [localProperties, setLocalProperties] = useState(properties);
@@ -121,11 +138,17 @@ export function JobForm({
 	const titleInputRef = useRef<HTMLInputElement>(null);
 
 	// Recent customers tracking
-	const recentCustomerIds = useRecentCustomersStore((state) => state.recentCustomerIds);
-	const addRecentCustomer = useRecentCustomersStore((state) => state.addRecentCustomer);
+	const recentCustomerIds = useRecentCustomersStore(
+		(state) => state.recentCustomerIds,
+	);
+	const addRecentCustomer = useRecentCustomersStore(
+		(state) => state.addRecentCustomer,
+	);
 
 	// Get selected customer's address data
-	const selectedCustomer = localCustomers.find((c) => c.id === selectedCustomerId);
+	const selectedCustomer = localCustomers.find(
+		(c) => c.id === selectedCustomerId,
+	);
 	const customerAddress = selectedCustomer
 		? {
 				address: selectedCustomer.address,
@@ -139,7 +162,7 @@ export function JobForm({
 	const filteredProperties = selectedCustomerId
 		? (() => {
 				const customerProperties = localProperties.filter(
-					(p) => p.customer_id === selectedCustomerId
+					(p) => p.customer_id === selectedCustomerId,
 				);
 
 				// If customer has an address in their profile, add it as a virtual property option
@@ -184,20 +207,24 @@ export function JobForm({
 		}
 
 		// Set job type
-		const jobTypeInput = form.querySelector('select[name="jobType"]') as HTMLSelectElement;
+		const jobTypeInput = form.querySelector(
+			'select[name="jobType"]',
+		) as HTMLSelectElement;
 		if (jobTypeInput) {
 			jobTypeInput.value = template.jobType;
 		}
 
 		// Set priority
-		const priorityInput = form.querySelector('select[name="priority"]') as HTMLSelectElement;
+		const priorityInput = form.querySelector(
+			'select[name="priority"]',
+		) as HTMLSelectElement;
 		if (priorityInput) {
 			priorityInput.value = template.priority;
 		}
 
 		// Set description
 		const descriptionInput = form.querySelector(
-			'textarea[name="description"]'
+			'textarea[name="description"]',
 		) as HTMLTextAreaElement;
 		if (descriptionInput) {
 			descriptionInput.value = template.description;
@@ -331,7 +358,10 @@ export function JobForm({
 	return (
 		<>
 			{/* Shortcuts Help Dialog */}
-			<ShortcutsHelp isOpen={showShortcutsHelp} onClose={() => setShowShortcutsHelp(false)} />
+			<ShortcutsHelp
+				isOpen={showShortcutsHelp}
+				onClose={() => setShowShortcutsHelp(false)}
+			/>
 
 			<form onSubmit={handleSubmit} ref={formRef}>
 				<div className="space-y-6">
@@ -369,7 +399,9 @@ export function JobForm({
 								<MapPin className="text-primary size-5" />
 								<CardTitle>Location</CardTitle>
 							</div>
-							<CardDescription>Select the customer and property for this job</CardDescription>
+							<CardDescription>
+								Select the customer and property for this job
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
@@ -413,7 +445,11 @@ export function JobForm({
 											value={selectedCustomerId}
 										/>
 										{/* Hidden input for form submission */}
-										<input name="customerId" type="hidden" value={selectedCustomerId || ""} />
+										<input
+											name="customerId"
+											type="hidden"
+											value={selectedCustomerId || ""}
+										/>
 										{!selectedCustomerId && (
 											<p className="text-muted-foreground text-xs">
 												Search and select a customer to see their properties
@@ -459,7 +495,8 @@ export function JobForm({
 										) : (
 											filteredProperties.map((property) => (
 												<SelectItem key={property.id} value={property.id}>
-													{property.name || property.address} - {property.city}, {property.state}
+													{property.name || property.address} - {property.city},{" "}
+													{property.state}
 												</SelectItem>
 											))
 										)}
@@ -467,7 +504,9 @@ export function JobForm({
 								</Select>
 								{selectedCustomerId && selectedCustomer?.address && (
 									<div className="flex items-center gap-2">
-										<p className="text-muted-foreground text-xs">Need a different location?</p>
+										<p className="text-muted-foreground text-xs">
+											Need a different location?
+										</p>
 										<AddPropertyDialog
 											customerAddress={customerAddress}
 											customerId={selectedCustomerId}
@@ -501,7 +540,9 @@ export function JobForm({
 								<Briefcase className="text-primary size-5" />
 								<CardTitle>Job Details</CardTitle>
 							</div>
-							<CardDescription>Describe the work to be performed</CardDescription>
+							<CardDescription>
+								Describe the work to be performed
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
@@ -530,7 +571,10 @@ export function JobForm({
 							<div className="grid gap-4 md:grid-cols-2">
 								<div className="space-y-2">
 									<Label htmlFor="jobType">Job Type</Label>
-									<Select defaultValue={existingJob?.job_type || "service"} name="jobType">
+									<Select
+										defaultValue={existingJob?.job_type || "service"}
+										name="jobType"
+									>
 										<SelectTrigger id="jobType">
 											<SelectValue />
 										</SelectTrigger>
@@ -547,7 +591,11 @@ export function JobForm({
 
 								<div className="space-y-2">
 									<Label htmlFor="priority">Priority *</Label>
-									<Select defaultValue={existingJob?.priority || "medium"} name="priority" required>
+									<Select
+										defaultValue={existingJob?.priority || "medium"}
+										name="priority"
+										required
+									>
 										<SelectTrigger id="priority">
 											<SelectValue />
 										</SelectTrigger>
@@ -594,7 +642,10 @@ export function JobForm({
 						<CardContent className="space-y-4">
 							<div className="space-y-2">
 								<Label htmlFor="assignedTo">Assigned Technician</Label>
-								<Select defaultValue={existingJob?.assigned_to || undefined} name="assignedTo">
+								<Select
+									defaultValue={existingJob?.assigned_to || undefined}
+									name="assignedTo"
+								>
 									<SelectTrigger id="assignedTo">
 										<SelectValue placeholder="Select a team member" />
 									</SelectTrigger>
@@ -620,7 +671,9 @@ export function JobForm({
 					<Card>
 						<CardHeader>
 							<CardTitle>Internal Notes</CardTitle>
-							<CardDescription>Add any additional notes or instructions</CardDescription>
+							<CardDescription>
+								Add any additional notes or instructions
+							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4">
 							<div className="space-y-2">

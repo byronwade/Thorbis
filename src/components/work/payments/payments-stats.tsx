@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { StatCard } from "@/components/ui/stats-cards";
 import { StatusPipeline } from "@/components/ui/status-pipeline";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
 const MAX_PAYMENTS_PER_PAGE = 100;
 
@@ -14,17 +14,7 @@ const FAILED_CHANGE_NEGATIVE = -7.8;
 const FAILED_CHANGE_POSITIVE = 5.9;
 
 export async function UpaymentsStats() {
-	const supabase = await createClient();
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-	if (!user) {
-		return notFound();
-	}
+	const supabase = await createServiceSupabaseClient();
 
 	const activeCompanyId = await getActiveCompanyId();
 	if (!activeCompanyId) {
@@ -38,7 +28,7 @@ export async function UpaymentsStats() {
 			`
       *,
       customers!customer_id(first_name, last_name, display_name)
-    `
+    `,
 		)
 		.eq("company_id", activeCompanyId)
 		.order("processed_at", { ascending: false })
@@ -47,7 +37,10 @@ export async function UpaymentsStats() {
 
 	if (error) {
 		const errorMessage =
-			error.message || error.hint || JSON.stringify(error) || "Unknown database error";
+			error.message ||
+			error.hint ||
+			JSON.stringify(error) ||
+			"Unknown database error";
 		throw new Error(`Failed to load payments: ${errorMessage}`);
 	}
 
@@ -60,15 +53,23 @@ export async function UpaymentsStats() {
 	}));
 
 	// Filter to active payments for stats calculations
-	const activePayments = payments.filter((p) => !(p.archived_at || p.deleted_at));
+	const activePayments = payments.filter(
+		(p) => !(p.archived_at || p.deleted_at),
+	);
 
 	// Calculate payment stats (from active payments only)
-	const completedCount = activePayments.filter((p) => p.status === "completed").length;
-	const pendingCount = activePayments.filter((p) => p.status === "pending").length;
-	const refundedCount = activePayments.filter(
-		(p) => p.status === "refunded" || p.status === "partially_refunded"
+	const completedCount = activePayments.filter(
+		(p) => p.status === "completed",
 	).length;
-	const failedCount = activePayments.filter((p) => p.status === "failed").length;
+	const pendingCount = activePayments.filter(
+		(p) => p.status === "pending",
+	).length;
+	const refundedCount = activePayments.filter(
+		(p) => p.status === "refunded" || p.status === "partially_refunded",
+	).length;
+	const failedCount = activePayments.filter(
+		(p) => p.status === "failed",
+	).length;
 
 	const paymentStats: StatCard[] = [
 		{
@@ -86,7 +87,8 @@ export async function UpaymentsStats() {
 		{
 			label: "Refunded",
 			value: refundedCount,
-			change: refundedCount > 0 ? REFUNDED_CHANGE_NEGATIVE : REFUNDED_CHANGE_POSITIVE,
+			change:
+				refundedCount > 0 ? REFUNDED_CHANGE_NEGATIVE : REFUNDED_CHANGE_POSITIVE,
 			changeLabel: "vs last month",
 		},
 		{

@@ -22,7 +22,7 @@ import { JobsStats } from "@/components/work/jobs/jobs-stats";
 export default async function JobsPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ page?: string }>;
+	searchParams: Promise<{ page?: string; search?: string }>;
 }) {
 	const params = await searchParams;
 

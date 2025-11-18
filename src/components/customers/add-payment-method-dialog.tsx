@@ -69,13 +69,15 @@ export function AddPaymentMethodDialog({
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			alert(
-				"Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods."
+				"Payment method functionality coming soon! This will integrate with Stripe to securely save payment methods.",
 			);
 
 			onSuccess?.();
 			onOpenChange(false);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Failed to add payment method");
+			setError(
+				err instanceof Error ? err.message : "Failed to add payment method",
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -108,7 +110,8 @@ export function AddPaymentMethodDialog({
 						<Alert>
 							<AlertCircle className="size-4" />
 							<AlertDescription className="text-xs">
-								<strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC, future date)
+								<strong>Test Cards:</strong> Use 4242 4242 4242 4242 (any CVC,
+								future date)
 							</AlertDescription>
 						</Alert>
 
@@ -174,7 +177,11 @@ export function AddPaymentMethodDialog({
 							>
 								Cancel
 							</Button>
-							<Button className="flex-1" disabled={isLoading} onClick={handleAddTestCard}>
+							<Button
+								className="flex-1"
+								disabled={isLoading}
+								onClick={handleAddTestCard}
+							>
 								{isLoading ? "Adding..." : "Add Card"}
 							</Button>
 						</div>
@@ -212,7 +219,11 @@ export function AddPaymentMethodDialog({
 						)}
 
 						<div className="flex gap-2 pt-4">
-							<Button className="flex-1" onClick={() => onOpenChange(false)} variant="outline">
+							<Button
+								className="flex-1"
+								onClick={() => onOpenChange(false)}
+								variant="outline"
+							>
 								Cancel
 							</Button>
 							<Button className="flex-1" disabled>

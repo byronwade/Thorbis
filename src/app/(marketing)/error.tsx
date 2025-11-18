@@ -3,7 +3,13 @@
 import { AlertCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 /**
  * Marketing Pages Error Boundary - Client Component
@@ -25,12 +31,16 @@ export default function MarketingError({
 						<AlertCircle className="text-destructive h-5 w-5" />
 						<CardTitle>Something went wrong</CardTitle>
 					</div>
-					<CardDescription>An error occurred while loading this page</CardDescription>
+					<CardDescription>
+						An error occurred while loading this page
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{process.env.NODE_ENV === "development" && (
 						<div className="bg-muted rounded-lg p-4">
-							<p className="text-muted-foreground font-mono text-sm">{error.message}</p>
+							<p className="text-muted-foreground font-mono text-sm">
+								{error.message}
+							</p>
 						</div>
 					)}
 					<div className="flex gap-2">

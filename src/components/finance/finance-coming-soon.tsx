@@ -67,16 +67,18 @@ export function FinanceComingSoon() {
 						</span>
 					</h1>
 					<p className="text-foreground/60 mx-auto max-w-3xl text-lg leading-relaxed">
-						Manage your entire financial operation from a single, powerful platform. From banking
-						and payments to accounting and payroll - everything integrated seamlessly into your
-						workflow.
+						Manage your entire financial operation from a single, powerful
+						platform. From banking and payments to accounting and payroll -
+						everything integrated seamlessly into your workflow.
 					</p>
 				</div>
 
 				{/* Core Finance Features */}
 				<div className="mx-auto max-w-5xl space-y-8 pt-4">
 					<div>
-						<h2 className="mb-5 text-xl font-semibold">Complete Financial Control</h2>
+						<h2 className="mb-5 text-xl font-semibold">
+							Complete Financial Control
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 							<div className="group border-primary/10 hover:border-success/20 rounded-xl border bg-gradient-to-br from-green-500/5 to-transparent p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-green-500/10">
 								<div className="mb-4 flex justify-center">
@@ -84,10 +86,12 @@ export function FinanceComingSoon() {
 										<Building2 className="text-success dark:text-success size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Banking & Payments</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Banking & Payments
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Connect multiple bank accounts, process payments, manage cash flow with
-									intelligent virtual buckets
+									Connect multiple bank accounts, process payments, manage cash
+									flow with intelligent virtual buckets
 								</p>
 							</div>
 
@@ -97,10 +101,12 @@ export function FinanceComingSoon() {
 										<Calculator className="text-primary dark:text-primary size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Bookkeeping & Accounting</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Bookkeeping & Accounting
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Full chart of accounts, general ledger, AR/AP, automated reconciliation,
-									QuickBooks sync
+									Full chart of accounts, general ledger, AR/AP, automated
+									reconciliation, QuickBooks sync
 								</p>
 							</div>
 
@@ -110,10 +116,12 @@ export function FinanceComingSoon() {
 										<CreditCard className="text-accent-foreground dark:text-accent-foreground size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Business Financing</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Business Financing
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Access loans, lines of credit, equipment financing with integrated approval
-									workflows
+									Access loans, lines of credit, equipment financing with
+									integrated approval workflows
 								</p>
 							</div>
 
@@ -123,10 +131,12 @@ export function FinanceComingSoon() {
 										<Users className="text-warning dark:text-warning size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Payroll Management</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Payroll Management
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Complete payroll processing with automatic tax calculations, direct deposit,
-									compliance reporting
+									Complete payroll processing with automatic tax calculations,
+									direct deposit, compliance reporting
 								</p>
 							</div>
 
@@ -136,10 +146,12 @@ export function FinanceComingSoon() {
 										<Receipt className="text-accent-foreground dark:text-accent-foreground size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Invoicing & Estimates</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Invoicing & Estimates
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Create professional invoices, track payment status, automate reminders, accept
-									online payments
+									Create professional invoices, track payment status, automate
+									reminders, accept online payments
 								</p>
 							</div>
 
@@ -149,10 +161,12 @@ export function FinanceComingSoon() {
 										<Banknote className="size-6 text-teal-600 dark:text-teal-400" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Expense Tracking</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Expense Tracking
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Track all expenses, categorize automatically, capture receipts with mobile app,
-									generate reports
+									Track all expenses, categorize automatically, capture receipts
+									with mobile app, generate reports
 								</p>
 							</div>
 
@@ -164,8 +178,8 @@ export function FinanceComingSoon() {
 								</div>
 								<h3 className="mb-2 text-base font-semibold">Tax Compliance</h3>
 								<p className="text-muted-foreground text-sm">
-									Automated tax calculations, quarterly estimates, 1099 generation, sales tax
-									management
+									Automated tax calculations, quarterly estimates, 1099
+									generation, sales tax management
 								</p>
 							</div>
 
@@ -175,10 +189,12 @@ export function FinanceComingSoon() {
 										<Zap className="text-warning dark:text-warning size-6" />
 									</div>
 								</div>
-								<h3 className="mb-2 text-base font-semibold">Automated Workflows</h3>
+								<h3 className="mb-2 text-base font-semibold">
+									Automated Workflows
+								</h3>
 								<p className="text-muted-foreground text-sm">
-									Set up automated payment schedules, recurring invoices, expense approvals, smart
-									financial alerts
+									Set up automated payment schedules, recurring invoices,
+									expense approvals, smart financial alerts
 								</p>
 							</div>
 						</div>
@@ -186,7 +202,9 @@ export function FinanceComingSoon() {
 
 					{/* Smart Financial Intelligence */}
 					<div>
-						<h2 className="mb-5 text-xl font-semibold">Intelligent Financial Monitoring</h2>
+						<h2 className="mb-5 text-xl font-semibold">
+							Intelligent Financial Monitoring
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-2">
 							<div className="border-success/20 rounded-xl border bg-gradient-to-br from-green-500/10 to-transparent p-6 text-left">
 								<div className="mb-4 flex items-center gap-3">
@@ -195,13 +213,15 @@ export function FinanceComingSoon() {
 									</div>
 									<div>
 										<h3 className="text-lg font-semibold">Cash Flow Alerts</h3>
-										<p className="text-muted-foreground text-sm">Proactive cash management</p>
+										<p className="text-muted-foreground text-sm">
+											Proactive cash management
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground mb-3 text-sm">
-									&quot;Your checking account will drop below $5,000 next Tuesday based on scheduled
-									payments. Consider moving $10,000 from savings or delaying vendor payment
-									#234.&quot;
+									&quot;Your checking account will drop below $5,000 next
+									Tuesday based on scheduled payments. Consider moving $10,000
+									from savings or delaying vendor payment #234.&quot;
 								</p>
 								<div className="text-success dark:text-success flex items-center gap-1 text-xs">
 									<Bell className="size-3" />
@@ -216,12 +236,14 @@ export function FinanceComingSoon() {
 									</div>
 									<div>
 										<h3 className="text-lg font-semibold">Unusual Expenses</h3>
-										<p className="text-muted-foreground text-sm">Catches spending anomalies</p>
+										<p className="text-muted-foreground text-sm">
+											Catches spending anomalies
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground mb-3 text-sm">
-									&quot;Fuel expense for Truck #3 is 2.5x normal this week ($485 vs usual $195).
-									Would you like to review transactions?&quot;
+									&quot;Fuel expense for Truck #3 is 2.5x normal this week ($485
+									vs usual $195). Would you like to review transactions?&quot;
 								</p>
 								<div className="text-warning dark:text-warning flex items-center gap-1 text-xs">
 									<Zap className="size-3" />
@@ -236,12 +258,15 @@ export function FinanceComingSoon() {
 									</div>
 									<div>
 										<h3 className="text-lg font-semibold">Smart Transfers</h3>
-										<p className="text-muted-foreground text-sm">Optimizes account balances</p>
+										<p className="text-muted-foreground text-sm">
+											Optimizes account balances
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground mb-3 text-sm">
-									&quot;Your savings is getting low. Transferring $13,450 from checking account. We
-									noticed you had this to spare after reviewing bills and existing totals.&quot;
+									&quot;Your savings is getting low. Transferring $13,450 from
+									checking account. We noticed you had this to spare after
+									reviewing bills and existing totals.&quot;
 								</p>
 								<div className="text-primary dark:text-primary flex items-center gap-1 text-xs">
 									<CheckCircle2 className="size-3" />
@@ -256,12 +281,15 @@ export function FinanceComingSoon() {
 									</div>
 									<div>
 										<h3 className="text-lg font-semibold">Bill Reminders</h3>
-										<p className="text-muted-foreground text-sm">Never miss a payment</p>
+										<p className="text-muted-foreground text-sm">
+											Never miss a payment
+										</p>
 									</div>
 								</div>
 								<p className="text-muted-foreground mb-3 text-sm">
-									&quot;Insurance payment due in 3 days ($2,450). Rent due next week ($3,200).
-									QuickBooks subscription renews tomorrow ($79). Total upcoming: $5,729.&quot;
+									&quot;Insurance payment due in 3 days ($2,450). Rent due next
+									week ($3,200). QuickBooks subscription renews tomorrow ($79).
+									Total upcoming: $5,729.&quot;
 								</p>
 								<div className="text-accent-foreground dark:text-accent-foreground flex items-center gap-1 text-xs">
 									<TrendingUp className="size-3" />
@@ -273,7 +301,9 @@ export function FinanceComingSoon() {
 
 					{/* Powerful Integrations */}
 					<div>
-						<h2 className="mb-5 text-xl font-semibold">Seamless Integrations</h2>
+						<h2 className="mb-5 text-xl font-semibold">
+							Seamless Integrations
+						</h2>
 						<div className="grid gap-5 sm:grid-cols-3">
 							<div className="border-primary/10 from-primary/5 rounded-xl border bg-gradient-to-br to-transparent p-6 text-left">
 								<div className="bg-primary/10 mb-3 flex size-10 items-center justify-center rounded-lg">
@@ -281,7 +311,8 @@ export function FinanceComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">QuickBooks Sync</h3>
 								<p className="text-muted-foreground text-sm">
-									Two-way sync with QuickBooks Online and Desktop for seamless accounting
+									Two-way sync with QuickBooks Online and Desktop for seamless
+									accounting
 								</p>
 							</div>
 
@@ -291,7 +322,8 @@ export function FinanceComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Payment Processing</h3>
 								<p className="text-muted-foreground text-sm">
-									Accept credit cards, ACH, and digital payments with competitive rates
+									Accept credit cards, ACH, and digital payments with
+									competitive rates
 								</p>
 							</div>
 
@@ -301,7 +333,8 @@ export function FinanceComingSoon() {
 								</div>
 								<h3 className="mb-2 font-semibold">Financial Reports</h3>
 								<p className="text-muted-foreground text-sm">
-									Comprehensive P&L, balance sheet, cash flow, and custom financial analytics
+									Comprehensive P&L, balance sheet, cash flow, and custom
+									financial analytics
 								</p>
 							</div>
 						</div>
@@ -314,43 +347,58 @@ export function FinanceComingSoon() {
 								<DollarSign className="text-primary size-8" />
 							</div>
 						</div>
-						<h2 className="mb-4 text-2xl font-semibold">Complete Financial Visibility</h2>
+						<h2 className="mb-4 text-2xl font-semibold">
+							Complete Financial Visibility
+						</h2>
 						<div className="text-muted-foreground mx-auto max-w-3xl space-y-3 text-left">
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 								<p className="text-sm">
-									<span className="text-foreground font-medium">All-In-One Platform:</span> Manage
-									banking, accounting, payroll, and reporting from a single integrated system
+									<span className="text-foreground font-medium">
+										All-In-One Platform:
+									</span>{" "}
+									Manage banking, accounting, payroll, and reporting from a
+									single integrated system
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 								<p className="text-sm">
-									<span className="text-foreground font-medium">Real-Time Insights:</span> See your
-									financial position instantly with live dashboards and automated reporting
+									<span className="text-foreground font-medium">
+										Real-Time Insights:
+									</span>{" "}
+									See your financial position instantly with live dashboards and
+									automated reporting
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 								<p className="text-sm">
-									<span className="text-foreground font-medium">Intelligent Automation:</span>{" "}
-									Automate invoicing, payments, reconciliation, and financial workflows to save time
+									<span className="text-foreground font-medium">
+										Intelligent Automation:
+									</span>{" "}
+									Automate invoicing, payments, reconciliation, and financial
+									workflows to save time
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 								<p className="text-sm">
-									<span className="text-foreground font-medium">Proactive Monitoring:</span> Get
-									alerted to cash flow issues, unusual expenses, and opportunities before they
-									impact your business
+									<span className="text-foreground font-medium">
+										Proactive Monitoring:
+									</span>{" "}
+									Get alerted to cash flow issues, unusual expenses, and
+									opportunities before they impact your business
 								</p>
 							</div>
 							<div className="flex items-start gap-3">
 								<CheckCircle2 className="text-success dark:text-success mt-0.5 size-5 shrink-0" />
 								<p className="text-sm">
-									<span className="text-foreground font-medium">Seamless Integrations:</span>{" "}
-									Connect with QuickBooks, banks, payment processors, and other financial tools you
-									already use
+									<span className="text-foreground font-medium">
+										Seamless Integrations:
+									</span>{" "}
+									Connect with QuickBooks, banks, payment processors, and other
+									financial tools you already use
 								</p>
 							</div>
 						</div>
@@ -360,7 +408,9 @@ export function FinanceComingSoon() {
 				{/* Call to action */}
 				<div className="text-muted-foreground flex items-center justify-center gap-2 pt-4 text-sm">
 					<TrendingUp className="size-4" />
-					<p>In the meantime, explore the platform and reach out if you need help</p>
+					<p>
+						In the meantime, explore the platform and reach out if you need help
+					</p>
 				</div>
 			</div>
 		</div>

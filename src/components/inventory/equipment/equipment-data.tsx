@@ -30,7 +30,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Asset Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track all your tools, equipment, and vehicles with detailed records and serial numbers
+							Track all your tools, equipment, and vehicles with detailed
+							records and serial numbers
 						</p>
 					</div>
 
@@ -41,8 +42,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">GPS Location</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							See real-time location of trucks and equipment to optimize dispatching and prevent
-							theft
+							See real-time location of trucks and equipment to optimize
+							dispatching and prevent theft
 						</p>
 					</div>
 
@@ -53,7 +54,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">QR Code Tagging</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Tag equipment with QR codes for instant check-in/check-out and maintenance logs
+							Tag equipment with QR codes for instant check-in/check-out and
+							maintenance logs
 						</p>
 					</div>
 
@@ -64,8 +66,8 @@ export async function EquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Maintenance Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Schedule preventive maintenance, track repairs, and maintain service records for all
-							equipment
+							Schedule preventive maintenance, track repairs, and maintain
+							service records for all equipment
 						</p>
 					</div>
 				</div>

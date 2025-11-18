@@ -41,7 +41,10 @@ export function ServiceTicketToolbarActions({
 						archivedCount={archivedCount}
 						totalCount={totalCount}
 					/>
-					<ColumnVisibilityMenu columns={SERVICE_TICKETS_COLUMNS} entity="service_tickets" />
+					<ColumnVisibilityMenu
+						columns={SERVICE_TICKETS_COLUMNS}
+						entity="service_tickets"
+					/>
 				</div>
 			}
 			importExportDataType="service-tickets"

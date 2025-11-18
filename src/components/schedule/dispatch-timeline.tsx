@@ -39,7 +39,12 @@ import {
 	ContextMenuSeparator,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSchedule } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
@@ -72,7 +77,10 @@ const hasClientCoordinates = (event: unknown): event is ClientPointerEvent => {
 	}
 
 	const candidate = event as Record<string, unknown>;
-	return typeof candidate.clientX === "number" && typeof candidate.clientY === "number";
+	return (
+		typeof candidate.clientX === "number" &&
+		typeof candidate.clientY === "number"
+	);
 };
 
 // Get job type color based on title keywords
@@ -85,22 +93,38 @@ const getJobTypeColor = (job: Job) => {
 	}
 
 	// Callbacks/Follow-ups - Muted Orange
-	if (title.includes("callback") || title.includes("follow-up") || title.includes("followup")) {
+	if (
+		title.includes("callback") ||
+		title.includes("follow-up") ||
+		title.includes("followup")
+	) {
 		return "border-orange-400 dark:border-orange-700";
 	}
 
 	// Meetings/Events/Training - Muted Purple
-	if (title.includes("meeting") || title.includes("event") || title.includes("training")) {
+	if (
+		title.includes("meeting") ||
+		title.includes("event") ||
+		title.includes("training")
+	) {
 		return "border-purple-400 dark:border-purple-700";
 	}
 
 	// Installation/Setup/New - Muted Green
-	if (title.includes("install") || title.includes("setup") || title.includes("new")) {
+	if (
+		title.includes("install") ||
+		title.includes("setup") ||
+		title.includes("new")
+	) {
 		return "border-green-400 dark:border-green-700";
 	}
 
 	// Maintenance/Service/Inspection - Muted Blue
-	if (title.includes("maintenance") || title.includes("service") || title.includes("inspection")) {
+	if (
+		title.includes("maintenance") ||
+		title.includes("service") ||
+		title.includes("inspection")
+	) {
 		return "border-blue-400 dark:border-blue-700";
 	}
 
@@ -117,7 +141,9 @@ type JobWithPosition = {
 	hasOverlap: boolean;
 };
 
-function detectOverlaps(jobs: Array<{ job: Job; left: number; width: number }>): JobWithPosition[] {
+function detectOverlaps(
+	jobs: Array<{ job: Job; left: number; width: number }>,
+): JobWithPosition[] {
 	const positioned: JobWithPosition[] = [];
 
 	// Sort by start time
@@ -180,18 +206,24 @@ const JobCard = memo(function JobCard({
 	isSelected: boolean;
 	onSelect: () => void;
 	onHover: (isHovering: boolean) => void;
-	onResize: (jobId: string, direction: "start" | "end", deltaMinutes: number) => void;
+	onResize: (
+		jobId: string,
+		direction: "start" | "end",
+		deltaMinutes: number,
+	) => void;
 	onResizeComplete: (jobId: string, hasChanges: boolean) => void;
 }) {
 	const [isResizing, setIsResizing] = useState(false);
 	const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-		id: job.id,
-		data: { job },
-		disabled: isResizing,
-	});
+	const { attributes, listeners, setNodeRef, transform, isDragging } =
+		useDraggable({
+			id: job.id,
+			data: { job },
+			disabled: isResizing,
+		});
 
-	const topOffset = (top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top;
+	const topOffset =
+		(top > 0 || hasOverlap ? STACK_GAP : BASE_CENTER_OFFSET) + top;
 
 	const style = {
 		left: `${left}px`,
@@ -202,13 +234,20 @@ const JobCard = memo(function JobCard({
 		zIndex: isDragging ? 50 : isSelected ? 20 : 10 - top / JOB_STACK_OFFSET,
 	};
 
-	const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-	const endTime = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
-	const duration = Math.round((endTime.getTime() - startTime.getTime()) / (1000 * 60));
+	const startTime =
+		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+	const endTime =
+		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+	const duration = Math.round(
+		(endTime.getTime() - startTime.getTime()) / (1000 * 60),
+	);
 
 	const borderColor = getJobTypeColor(job);
 
-	const handleResizeStart = (e: React.MouseEvent, direction: "start" | "end") => {
+	const handleResizeStart = (
+		e: React.MouseEvent,
+		direction: "start" | "end",
+	) => {
 		e.stopPropagation();
 		setIsResizing(true);
 		onHover(true); // Keep hover state active during resize
@@ -271,7 +310,8 @@ const JobCard = memo(function JobCard({
 										job.isUnassigned && "!border-red-500",
 										isSelected && "ring-primary shadow-md ring-1",
 										isDragging && "shadow-lg",
-										(job.status === "completed" || job.status === "closed") && "opacity-50"
+										(job.status === "completed" || job.status === "closed") &&
+											"opacity-50",
 									)}
 									onClick={onSelect}
 								>
@@ -306,10 +346,11 @@ const JobCard = memo(function JobCard({
 											job.status === "scheduled" && "bg-blue-500",
 											job.status === "dispatched" && "bg-sky-500",
 											job.status === "arrived" && "bg-emerald-400",
-											job.status === "in-progress" && "animate-pulse bg-amber-500",
+											job.status === "in-progress" &&
+												"animate-pulse bg-amber-500",
 											job.status === "closed" && "bg-emerald-600",
 											job.status === "completed" && "bg-emerald-500",
-											job.status === "cancelled" && "bg-slate-400"
+											job.status === "cancelled" && "bg-slate-400",
 										)}
 									/>
 								</div>
@@ -330,7 +371,12 @@ const JobCard = memo(function JobCard({
 								<ContextMenuSeparator />
 
 								<ContextMenuItem
-									disabled={["dispatched", "arrived", "closed", "cancelled"].includes(job.status)}
+									disabled={[
+										"dispatched",
+										"arrived",
+										"closed",
+										"cancelled",
+									].includes(job.status)}
 									onClick={async () => {
 										const result = await dispatchAppointment(job.id);
 										if (result.success) {
@@ -344,7 +390,9 @@ const JobCard = memo(function JobCard({
 									Mark Dispatched
 								</ContextMenuItem>
 								<ContextMenuItem
-									disabled={["arrived", "closed", "cancelled"].includes(job.status)}
+									disabled={["arrived", "closed", "cancelled"].includes(
+										job.status,
+									)}
 									onClick={async () => {
 										const result = await arriveAppointment(job.id);
 										if (result.success) {
@@ -396,9 +444,14 @@ const JobCard = memo(function JobCard({
 									className="text-orange-600 focus:text-orange-600"
 									disabled={job.status === "cancelled"}
 									onClick={async () => {
-										const result = await cancelAppointment(job.id, "Appointment cancelled by user");
+										const result = await cancelAppointment(
+											job.id,
+											"Appointment cancelled by user",
+										);
 										if (result.success) {
-											toast.success("Appointment cancelled - job moved to unscheduled");
+											toast.success(
+												"Appointment cancelled - job moved to unscheduled",
+											);
 											window.location.reload();
 										} else {
 											toast.error(result.error || "Failed to cancel");
@@ -419,7 +472,7 @@ const JobCard = memo(function JobCard({
 										const result = await cancelJobAndAppointment(
 											job.id,
 											job.jobId,
-											"Job and appointment cancelled by user"
+											"Job and appointment cancelled by user",
 										);
 										if (result.success) {
 											toast.success("Job and appointment cancelled");
@@ -497,7 +550,8 @@ const JobCard = memo(function JobCard({
 										</p>
 										{job.location.address.city && (
 											<p className="text-muted-foreground text-xs">
-												{job.location.address.city}, {job.location.address.state}
+												{job.location.address.city},{" "}
+												{job.location.address.state}
 											</p>
 										)}
 									</div>
@@ -508,7 +562,9 @@ const JobCard = memo(function JobCard({
 							{job.customer?.phone && (
 								<div className="flex items-center gap-2.5">
 									<User className="text-muted-foreground size-4" />
-									<p className="text-foreground text-sm font-medium">{job.customer.phone}</p>
+									<p className="text-foreground text-sm font-medium">
+										{job.customer.phone}
+									</p>
 								</div>
 							)}
 
@@ -525,7 +581,7 @@ const JobCard = memo(function JobCard({
 													"size-1.5 rounded-full",
 													assignment.status === "available" && "bg-green-500",
 													assignment.status === "on-job" && "bg-amber-500",
-													assignment.status === "on-break" && "bg-slate-400"
+													assignment.status === "on-break" && "bg-slate-400",
 												)}
 											/>
 											<span className="text-foreground text-xs font-medium">
@@ -574,7 +630,11 @@ const TechnicianLane = memo(function TechnicianLane({
 	selectedJobId: string | null;
 	onSelectJob: (jobId: string) => void;
 	onJobHover: (isHovering: boolean) => void;
-	onResize: (jobId: string, direction: "start" | "end", deltaMinutes: number) => void;
+	onResize: (
+		jobId: string,
+		direction: "start" | "end",
+		deltaMinutes: number,
+	) => void;
 	onResizeComplete: (jobId: string, hasChanges: boolean) => void;
 	isDragActive: boolean;
 }) {
@@ -588,7 +648,7 @@ const TechnicianLane = memo(function TechnicianLane({
 			className={cn(
 				"relative border-b transition-all duration-200",
 				isDragActive && "bg-muted/20",
-				isOver && "bg-primary/10 ring-primary shadow-inner ring-2 ring-inset"
+				isOver && "bg-primary/10 ring-primary shadow-inner ring-2 ring-inset",
 			)}
 			ref={setNodeRef}
 			style={{ height, minHeight: height, maxHeight: height }}
@@ -660,12 +720,23 @@ export function DispatchTimeline() {
 		jobs,
 		isLoading,
 		error,
+		unassignedHasMore,
+		unassignedSearch,
+		isLoadingUnassigned,
+		unassignedTotalCount,
+		loadMoreUnassignedJobs,
 	} = useSchedule();
 	const { currentDate } = useScheduleViewStore();
 
 	// Get unassigned jobs
-	const unassignedJobs = useMemo(() => jobs.filter((job) => job.isUnassigned), [jobs]);
-	const hasUnassignedJobs = unassignedJobs.length > 0;
+	const unassignedJobs = useMemo(
+		() => jobs.filter((job) => job.isUnassigned),
+		[jobs],
+	);
+	const showUnassignedPanel =
+		unassignedJobs.length > 0 ||
+		unassignedHasMore ||
+		unassignedSearch.length > 0;
 
 	useEffect(() => {
 		setUnassignedOrder((prev) => {
@@ -691,9 +762,22 @@ export function DispatchTimeline() {
 		const ordered = unassignedOrder
 			.map((id) => lookup.get(id))
 			.filter((job): job is Job => Boolean(job));
-		const remaining = unassignedJobs.filter((job) => !unassignedOrder.includes(job.id));
+		const remaining = unassignedJobs.filter(
+			(job) => !unassignedOrder.includes(job.id),
+		);
 		return [...ordered, ...remaining];
 	}, [unassignedJobs, unassignedOrder]);
+
+	const handleUnassignedSearch = useCallback(
+		(value: string) => {
+			loadMoreUnassignedJobs({ reset: true, search: value });
+		},
+		[loadMoreUnassignedJobs],
+	);
+
+	const handleLoadMoreUnassigned = useCallback(() => {
+		loadMoreUnassignedJobs({ search: unassignedSearch });
+	}, [loadMoreUnassignedJobs, unassignedSearch]);
 
 	// Configure drag sensors
 	const mouseSensor = useSensor(MouseSensor, {
@@ -705,14 +789,14 @@ export function DispatchTimeline() {
 	const sensors = useSensors(mouseSensor, touchSensor);
 
 	useEffect(() => {
-		if (!hasUnassignedJobs && unassignedPanelOpen) {
+		if (!showUnassignedPanel && unassignedPanelOpen) {
 			setUnassignedPanelOpen(false);
 		}
-	}, [hasUnassignedJobs, unassignedPanelOpen]);
+	}, [showUnassignedPanel, unassignedPanelOpen]);
 
 	const dateObj = useMemo(
 		() => (currentDate instanceof Date ? currentDate : new Date(currentDate)),
-		[currentDate]
+		[currentDate],
 	);
 
 	const hourlySlots = useMemo(() => {
@@ -744,8 +828,10 @@ export function DispatchTimeline() {
 			return null;
 		}
 
-		const totalMinutes = (timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
-		const currentMinutes = (now.getTime() - timeRange.start.getTime()) / (1000 * 60);
+		const totalMinutes =
+			(timeRange.end.getTime() - timeRange.start.getTime()) / (1000 * 60);
+		const currentMinutes =
+			(now.getTime() - timeRange.start.getTime()) / (1000 * 60);
 		return (currentMinutes / totalMinutes) * totalWidth;
 	}, [timeRange, totalWidth, dateObj]);
 
@@ -753,17 +839,27 @@ export function DispatchTimeline() {
 		const lanes = technicians.map((tech) => {
 			const allJobs = getJobsForTechnician(tech.id);
 			const jobs = allJobs.filter((job) => {
-				const jobStart = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-				const jobEnd = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				const jobStart =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const jobEnd =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 				return jobStart <= timeRange.end && jobEnd >= timeRange.start;
 			});
 
 			const jobPositions = jobs.map((job) => {
-				const jobStart = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-				const jobEnd = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				const jobStart =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const jobEnd =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
-				const startMinutes = (jobStart.getTime() - timeRange.start.getTime()) / (1000 * 60);
-				const endMinutes = (jobEnd.getTime() - timeRange.start.getTime()) / (1000 * 60);
+				const startMinutes =
+					(jobStart.getTime() - timeRange.start.getTime()) / (1000 * 60);
+				const endMinutes =
+					(jobEnd.getTime() - timeRange.start.getTime()) / (1000 * 60);
 				const durationMinutes = endMinutes - startMinutes;
 
 				const left = (startMinutes / 60) * HOUR_WIDTH;
@@ -777,7 +873,7 @@ export function DispatchTimeline() {
 			// Calculate lane height to accommodate all stacked jobs
 			const laneHeight = Math.max(
 				LANE_HEIGHT,
-				(maxLane + 1) * (JOB_HEIGHT + STACK_GAP) + STACK_GAP * 2
+				(maxLane + 1) * (JOB_HEIGHT + STACK_GAP) + STACK_GAP * 2,
 			);
 
 			return {
@@ -794,7 +890,10 @@ export function DispatchTimeline() {
 	const totalContentHeight = useMemo(() => {
 		// h-11 = 2.75rem = 44px
 		const headerHeight = 44;
-		const lanesHeight = technicianLanes.reduce((sum, lane) => sum + lane.height, 0);
+		const lanesHeight = technicianLanes.reduce(
+			(sum, lane) => sum + lane.height,
+			0,
+		);
 		return headerHeight + lanesHeight;
 	}, [technicianLanes]);
 
@@ -817,8 +916,12 @@ export function DispatchTimeline() {
 				const job = jobData.job;
 				resizeStateRef.current = {
 					jobId,
-					originalStart: job.startTime instanceof Date ? job.startTime : new Date(job.startTime),
-					originalEnd: job.endTime instanceof Date ? job.endTime : new Date(job.endTime),
+					originalStart:
+						job.startTime instanceof Date
+							? job.startTime
+							: new Date(job.startTime),
+					originalEnd:
+						job.endTime instanceof Date ? job.endTime : new Date(job.endTime),
 				};
 			}
 
@@ -845,12 +948,13 @@ export function DispatchTimeline() {
 			}
 
 			const currentTechId =
-				technicianLanes.find((lane) => lane.jobs.some((j) => j.job.id === jobId))?.technician.id ||
-				"";
+				technicianLanes.find((lane) =>
+					lane.jobs.some((j) => j.job.id === jobId),
+				)?.technician.id || "";
 
 			moveJob(jobId, currentTechId, newStart, newEnd);
 		},
-		[technicianLanes, moveJob]
+		[technicianLanes, moveJob],
 	);
 
 	// Finalize resize and update database
@@ -865,7 +969,9 @@ export function DispatchTimeline() {
 				return;
 			}
 
-			const jobData = technicianLanes.flatMap((lane) => lane.jobs).find((j) => j.job.id === jobId);
+			const jobData = technicianLanes
+				.flatMap((lane) => lane.jobs)
+				.find((j) => j.job.id === jobId);
 
 			if (!jobData) {
 				resizeStateRef.current = null;
@@ -873,24 +979,29 @@ export function DispatchTimeline() {
 			}
 
 			const job = jobData.job;
-			const newStart = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-			const newEnd = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const newStart =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const newEnd =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 			// Update in database
 			const toastId = toast.loading("Saving appointment time...");
 			const result = await updateAppointmentTimes(jobId, newStart, newEnd);
 
 			if (result.success) {
-				toast.success(`Updated to ${format(newStart, "h:mm a")} - ${format(newEnd, "h:mm a")}`, {
-					id: toastId,
-				});
+				toast.success(
+					`Updated to ${format(newStart, "h:mm a")} - ${format(newEnd, "h:mm a")}`,
+					{
+						id: toastId,
+					},
+				);
 			} else {
 				toast.error(result.error || "Failed to update times", { id: toastId });
 			}
 
 			resizeStateRef.current = null;
 		},
-		[technicianLanes]
+		[technicianLanes],
 	);
 
 	const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -968,8 +1079,12 @@ export function DispatchTimeline() {
 					return;
 				}
 
-				const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-				const endTime = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				const startTime =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const endTime =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 				updateJob(jobId, {
 					technicianId: "",
@@ -1024,8 +1139,12 @@ export function DispatchTimeline() {
 				const deltaMinutes = Math.round((delta.x / HOUR_WIDTH) * 60);
 				const snappedMinutes = Math.round(deltaMinutes / 15) * 15;
 
-				const oldStart = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-				const oldEnd = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				const oldStart =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const oldEnd =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 				const duration = oldEnd.getTime() - oldStart.getTime();
 
 				newStart = new Date(oldStart.getTime() + snappedMinutes * 60 * 1000);
@@ -1046,7 +1165,11 @@ export function DispatchTimeline() {
 			const techIdForDb = targetTech?.userId || targetTechnicianId;
 
 			// Update technician assignment
-			const assignResult = await assignJobToTechnician(jobId, jobId, techIdForDb);
+			const assignResult = await assignJobToTechnician(
+				jobId,
+				jobId,
+				techIdForDb,
+			);
 
 			if (!assignResult.success) {
 				toast.error(assignResult.error || "Failed to assign job", {
@@ -1068,13 +1191,23 @@ export function DispatchTimeline() {
 				: `Moved to ${targetTech?.name} at ${format(newStart, "h:mm a")}`;
 			toast.success(successMsg, { id: toastId });
 		},
-		[technicianLanes, technicians, moveJob, updateJob, unassignedJobs, timeRange, totalWidth]
+		[
+			technicianLanes,
+			technicians,
+			moveJob,
+			updateJob,
+			unassignedJobs,
+			timeRange,
+			totalWidth,
+		],
 	);
 
 	const _handleDragMove = useCallback(
 		(event: DragMoveEvent) => {
 			const jobId = event.active.id as string;
-			const jobData = technicianLanes.flatMap((lane) => lane.jobs).find((j) => j.job.id === jobId);
+			const jobData = technicianLanes
+				.flatMap((lane) => lane.jobs)
+				.find((j) => j.job.id === jobId);
 
 			if (!jobData) {
 				setDragPreview(null);
@@ -1082,16 +1215,22 @@ export function DispatchTimeline() {
 			}
 
 			const job = jobData.job;
-			const targetTechnicianId = (event.over?.id as string | undefined) ?? job.technicianId;
-			const targetTech = technicians.find((tech) => tech.id === targetTechnicianId);
+			const targetTechnicianId =
+				(event.over?.id as string | undefined) ?? job.technicianId;
+			const targetTech = technicians.find(
+				(tech) => tech.id === targetTechnicianId,
+			);
 
-			const start = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-			const end = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const start =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const end =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 			const duration = end.getTime() - start.getTime();
 
 			const deltaMinutes = Math.round((event.delta.x / HOUR_WIDTH) * 60);
 			const snappedMinutes =
-				Math.round(deltaMinutes / SNAP_INTERVAL_MINUTES) * SNAP_INTERVAL_MINUTES;
+				Math.round(deltaMinutes / SNAP_INTERVAL_MINUTES) *
+				SNAP_INTERVAL_MINUTES;
 			const newStart = new Date(start.getTime() + snappedMinutes * 60 * 1000);
 			const newEnd = new Date(newStart.getTime() + duration);
 
@@ -1100,7 +1239,7 @@ export function DispatchTimeline() {
 				technician: targetTech?.name ?? "Unassigned",
 			});
 		},
-		[technicianLanes, technicians]
+		[technicianLanes, technicians],
 	);
 
 	const _handleDragCancel = useCallback(() => {
@@ -1114,7 +1253,9 @@ export function DispatchTimeline() {
 				return;
 			}
 
-			const jobData = technicianLanes.flatMap((lane) => lane.jobs).find((j) => j.job.id === jobId);
+			const jobData = technicianLanes
+				.flatMap((lane) => lane.jobs)
+				.find((j) => j.job.id === jobId);
 
 			if (!jobData) {
 				return;
@@ -1122,8 +1263,10 @@ export function DispatchTimeline() {
 
 			const job = jobData.job;
 			const currentTechId = job.technicianId;
-			const start = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-			const end = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const start =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const end =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 			const newStart = new Date(start.getTime() + deltaMinutes * 60 * 1000);
 			const newEnd = new Date(end.getTime() + deltaMinutes * 60 * 1000);
@@ -1134,24 +1277,31 @@ export function DispatchTimeline() {
 			const result = await updateAppointmentTimes(jobId, newStart, newEnd);
 
 			if (result.success) {
-				toast.success(`Updated to ${format(newStart, "h:mm a")} - ${format(newEnd, "h:mm a")}`, {
-					id: toastId,
-				});
+				toast.success(
+					`Updated to ${format(newStart, "h:mm a")} - ${format(newEnd, "h:mm a")}`,
+					{
+						id: toastId,
+					},
+				);
 			} else {
 				toast.error(result.error || "Failed to update times", { id: toastId });
 			}
 		},
-		[technicianLanes, moveJob]
+		[technicianLanes, moveJob],
 	);
 
 	const nudgeJobTechnician = useCallback(
 		async (jobId: string, direction: -1 | 1) => {
-			const jobData = technicianLanes.flatMap((lane) => lane.jobs).find((j) => j.job.id === jobId);
+			const jobData = technicianLanes
+				.flatMap((lane) => lane.jobs)
+				.find((j) => j.job.id === jobId);
 			if (!jobData) {
 				return;
 			}
 			const job = jobData.job;
-			const currentIndex = technicians.findIndex((tech) => tech.id === job.technicianId);
+			const currentIndex = technicians.findIndex(
+				(tech) => tech.id === job.technicianId,
+			);
 			if (currentIndex === -1) {
 				return;
 			}
@@ -1160,8 +1310,10 @@ export function DispatchTimeline() {
 				return;
 			}
 
-			const start = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-			const end = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const start =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const end =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 			moveJob(jobId, targetTech.id, start, end);
 
@@ -1174,7 +1326,7 @@ export function DispatchTimeline() {
 				toast.error(result.error || "Failed to assign job", { id: toastId });
 			}
 		},
-		[technicianLanes, technicians, moveJob]
+		[technicianLanes, technicians, moveJob],
 	);
 
 	useEffect(() => {
@@ -1206,9 +1358,15 @@ export function DispatchTimeline() {
 			let deltaX = 0;
 
 			if (pointer.x - rect.left < AUTO_SCROLL_EDGE) {
-				deltaX = -Math.min(AUTO_SCROLL_MAX_SPEED, AUTO_SCROLL_EDGE - (pointer.x - rect.left));
+				deltaX = -Math.min(
+					AUTO_SCROLL_MAX_SPEED,
+					AUTO_SCROLL_EDGE - (pointer.x - rect.left),
+				);
 			} else if (rect.right - pointer.x < AUTO_SCROLL_EDGE) {
-				deltaX = Math.min(AUTO_SCROLL_MAX_SPEED, AUTO_SCROLL_EDGE - (rect.right - pointer.x));
+				deltaX = Math.min(
+					AUTO_SCROLL_MAX_SPEED,
+					AUTO_SCROLL_EDGE - (rect.right - pointer.x),
+				);
 			}
 
 			if (deltaX !== 0) {
@@ -1222,12 +1380,12 @@ export function DispatchTimeline() {
 				if (pointer.y - timelineRect.top < AUTO_SCROLL_EDGE) {
 					deltaY = -Math.min(
 						AUTO_SCROLL_MAX_SPEED,
-						AUTO_SCROLL_EDGE - (pointer.y - timelineRect.top)
+						AUTO_SCROLL_EDGE - (pointer.y - timelineRect.top),
 					);
 				} else if (timelineRect.bottom - pointer.y < AUTO_SCROLL_EDGE) {
 					deltaY = Math.min(
 						AUTO_SCROLL_MAX_SPEED,
-						AUTO_SCROLL_EDGE - (timelineRect.bottom - pointer.y)
+						AUTO_SCROLL_EDGE - (timelineRect.bottom - pointer.y),
 					);
 				}
 				if (deltaY !== 0) {
@@ -1268,7 +1426,7 @@ export function DispatchTimeline() {
 			setHoverPosition(x);
 			setHoverTime(format(hoverDate, "h:mm a"));
 		},
-		[totalWidth, timeRange, isJobHovered]
+		[totalWidth, timeRange, isJobHovered],
 	);
 
 	const handleMouseLeave = useCallback(() => {
@@ -1280,7 +1438,9 @@ export function DispatchTimeline() {
 		if (!activeJobId) {
 			return null;
 		}
-		return technicianLanes.flatMap((lane) => lane.jobs).find((j) => j.job.id === activeJobId)?.job;
+		return technicianLanes
+			.flatMap((lane) => lane.jobs)
+			.find((j) => j.job.id === activeJobId)?.job;
 	}, [activeJobId, technicianLanes]);
 
 	useEffect(() => {
@@ -1305,7 +1465,10 @@ export function DispatchTimeline() {
 				void adjustJobTime(selectedJobId, delta);
 			} else if (event.key === "ArrowUp" || event.key === "ArrowDown") {
 				event.preventDefault();
-				void nudgeJobTechnician(selectedJobId, event.key === "ArrowUp" ? -1 : 1);
+				void nudgeJobTechnician(
+					selectedJobId,
+					event.key === "ArrowUp" ? -1 : 1,
+				);
 			}
 		};
 
@@ -1316,7 +1479,10 @@ export function DispatchTimeline() {
 	useEffect(() => {
 		if (currentTimePosition !== null && scrollContainerRef.current) {
 			const container = scrollContainerRef.current;
-			container.scrollLeft = Math.max(0, currentTimePosition - container.clientWidth / 2);
+			container.scrollLeft = Math.max(
+				0,
+				currentTimePosition - container.clientWidth / 2,
+			);
 		}
 	}, [currentTimePosition]);
 
@@ -1341,7 +1507,7 @@ export function DispatchTimeline() {
 			setCommandMenuDate(dateObj);
 			setCommandMenuOpen(true);
 		},
-		[dateObj]
+		[dateObj],
 	);
 
 	if (!mounted || isLoading) {
@@ -1373,7 +1539,7 @@ export function DispatchTimeline() {
 		>
 			<div className="bg-background m-0 flex h-full w-full overflow-hidden p-0">
 				{/* Unassigned Panel */}
-				{hasUnassignedJobs && (
+				{showUnassignedPanel && (
 					<div
 						className="h-full shrink-0"
 						style={{ width: unassignedPanelOpen ? "320px" : "48px" }}
@@ -1383,7 +1549,13 @@ export function DispatchTimeline() {
 							dropId={UNASSIGNED_DROP_ID}
 							isOpen={unassignedPanelOpen}
 							onToggle={() => setUnassignedPanelOpen(!unassignedPanelOpen)}
+							onSearchChange={handleUnassignedSearch}
+							onLoadMore={handleLoadMoreUnassigned}
 							unassignedJobs={orderedUnassignedJobs}
+							hasMore={unassignedHasMore}
+							isLoadingMore={isLoadingUnassigned}
+							totalCount={unassignedTotalCount}
+							searchQuery={unassignedSearch}
 						/>
 					</div>
 				)}
@@ -1406,7 +1578,9 @@ export function DispatchTimeline() {
 
 							{/* Team Members */}
 							{technicianLanes.map(({ technician, jobs, height }) => {
-								const isApprentice = technician.role?.toLowerCase().includes("apprentice");
+								const isApprentice = technician.role
+									?.toLowerCase()
+									.includes("apprentice");
 								const hasJobs = jobs.length > 0;
 
 								return (
@@ -1423,7 +1597,7 @@ export function DispatchTimeline() {
 															"text-xs font-semibold",
 															isApprentice
 																? "bg-amber-100 text-amber-700"
-																: "bg-primary/10 text-primary"
+																: "bg-primary/10 text-primary",
 														)}
 													>
 														{technician.name
@@ -1437,21 +1611,28 @@ export function DispatchTimeline() {
 												<div
 													className={cn(
 														"ring-card absolute -right-0.5 -bottom-0.5 size-3 rounded-full ring-2",
-														hasJobs ? "bg-warning" : "bg-success"
+														hasJobs ? "bg-warning" : "bg-success",
 													)}
 													title={hasJobs ? "Busy" : "Available"}
 												/>
 											</div>
 											<div className="min-w-0 flex-1">
 												<div className="flex items-center gap-1.5">
-													<p className="truncate text-sm font-semibold">{technician.name}</p>
+													<p className="truncate text-sm font-semibold">
+														{technician.name}
+													</p>
 													{isApprentice && (
-														<Badge className="px-1 py-0 text-[9px]" variant="outline">
+														<Badge
+															className="px-1 py-0 text-[9px]"
+															variant="outline"
+														>
 															Apprentice
 														</Badge>
 													)}
 												</div>
-												<p className="text-muted-foreground truncate text-xs">{technician.role}</p>
+												<p className="text-muted-foreground truncate text-xs">
+													{technician.role}
+												</p>
 											</div>
 										</div>
 									</div>
@@ -1460,7 +1641,10 @@ export function DispatchTimeline() {
 						</div>
 
 						{/* Timeline (Hours + Lanes) */}
-						<div className="flex flex-1 flex-col" style={{ minWidth: totalWidth }}>
+						<div
+							className="flex flex-1 flex-col"
+							style={{ minWidth: totalWidth }}
+						>
 							{/* Hour Header - sticky top, scrolls horizontally */}
 							<div className="bg-card sticky top-0 z-30 flex h-11 shrink-0 border-b">
 								{hourlySlots.map((slot, index) => {
@@ -1470,7 +1654,7 @@ export function DispatchTimeline() {
 										<div
 											className={cn(
 												"flex shrink-0 items-center justify-center border-r",
-												isBusinessHours ? "bg-card" : "bg-muted/30"
+												isBusinessHours ? "bg-card" : "bg-muted/30",
 											)}
 											key={index}
 											style={{ width: HOUR_WIDTH }}
@@ -1478,7 +1662,9 @@ export function DispatchTimeline() {
 											<span
 												className={cn(
 													"text-xs font-medium",
-													isBusinessHours ? "text-foreground" : "text-muted-foreground"
+													isBusinessHours
+														? "text-foreground"
+														: "text-muted-foreground",
 												)}
 											>
 												{format(slot, "h a")}
@@ -1510,7 +1696,7 @@ export function DispatchTimeline() {
 														? index % 2 === 0
 															? "bg-background"
 															: "bg-muted/5"
-														: "bg-muted/20"
+														: "bg-muted/20",
 												)}
 												key={index}
 												style={{

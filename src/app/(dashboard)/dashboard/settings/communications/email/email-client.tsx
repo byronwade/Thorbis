@@ -32,16 +32,31 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
 import { useToast } from "@/hooks/use-toast";
-import { DEFAULT_EMAIL_SETTINGS, type EmailSettingsState, mapEmailSettings } from "./email-config";
+import {
+	DEFAULT_EMAIL_SETTINGS,
+	type EmailSettingsState,
+	mapEmailSettings,
+} from "./email-config";
 
 type EmailSettingsClientProps = {
 	initialSettings: Partial<EmailSettingsState> | null;
@@ -57,36 +72,43 @@ export function EmailSettingsClient({
 	initialSettings,
 	initialInfrastructure,
 }: EmailSettingsClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<EmailSettingsState>({
-			getter: getEmailSettings,
-			setter: updateEmailSettings,
-			initialState: DEFAULT_EMAIL_SETTINGS,
-			settingsName: "email",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapEmailSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("smtpEnabled", state.smtpEnabled.toString());
-				formData.append("smtpHost", state.smtpHost);
-				formData.append("smtpPort", state.smtpPort);
-				formData.append("smtpUsername", state.smtpUsername);
-				if (state.smtpPassword) {
-					formData.append("smtpPassword", state.smtpPassword);
-				}
-				formData.append("smtpFromEmail", state.smtpFromEmail);
-				formData.append("smtpFromName", state.smtpFromName);
-				formData.append("smtpUseTls", state.smtpUseTls.toString());
-				formData.append("defaultSignature", state.defaultSignature);
-				formData.append("autoCcEnabled", state.autoCcEnabled.toString());
-				formData.append("autoCcEmail", state.autoCcEmail);
-				formData.append("trackOpens", state.trackOpens.toString());
-				formData.append("trackClicks", state.trackClicks.toString());
-				formData.append("emailLogoUrl", state.emailLogoUrl);
-				formData.append("primaryColor", state.primaryColor);
-				return formData;
-			},
-		});
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<EmailSettingsState>({
+		getter: getEmailSettings,
+		setter: updateEmailSettings,
+		initialState: DEFAULT_EMAIL_SETTINGS,
+		settingsName: "email",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapEmailSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("smtpEnabled", state.smtpEnabled.toString());
+			formData.append("smtpHost", state.smtpHost);
+			formData.append("smtpPort", state.smtpPort);
+			formData.append("smtpUsername", state.smtpUsername);
+			if (state.smtpPassword) {
+				formData.append("smtpPassword", state.smtpPassword);
+			}
+			formData.append("smtpFromEmail", state.smtpFromEmail);
+			formData.append("smtpFromName", state.smtpFromName);
+			formData.append("smtpUseTls", state.smtpUseTls.toString());
+			formData.append("defaultSignature", state.defaultSignature);
+			formData.append("autoCcEnabled", state.autoCcEnabled.toString());
+			formData.append("autoCcEmail", state.autoCcEmail);
+			formData.append("trackOpens", state.trackOpens.toString());
+			formData.append("trackClicks", state.trackClicks.toString());
+			formData.append("emailLogoUrl", state.emailLogoUrl);
+			formData.append("primaryColor", state.primaryColor);
+			return formData;
+		},
+	});
 	const { toast } = useToast();
 	const [infra, setInfra] = useState<{
 		domain: Record<string, any> | null;
@@ -94,7 +116,7 @@ export function EmailSettingsClient({
 	}>(initialInfrastructure ?? { domain: null, inboundRoute: null });
 	const [infraLoading, setInfraLoading] = useState(false);
 	const [domainInput, setDomainInput] = useState<string>(
-		(initialInfrastructure?.domain as any)?.domain || ""
+		(initialInfrastructure?.domain as any)?.domain || "",
 	);
 	const [isProvisioningDomain, startProvisionDomain] = useTransition();
 	const [isSyncingDomain, startSyncDomain] = useTransition();
@@ -143,7 +165,7 @@ export function EmailSettingsClient({
 				}
 			});
 		},
-		[domainInput, refreshInfrastructure, toast]
+		[domainInput, refreshInfrastructure, toast],
 	);
 
 	const handleRefreshDomain = useCallback(() => {
@@ -196,7 +218,7 @@ export function EmailSettingsClient({
 				toast.error("Failed to copy");
 			}
 		},
-		[toast]
+		[toast],
 	);
 
 	return (
@@ -223,7 +245,9 @@ export function EmailSettingsClient({
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/communications">Communications</Link>
+									<Link href="/dashboard/settings/communications">
+										Communications
+									</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -252,21 +276,28 @@ export function EmailSettingsClient({
 							)}
 						</CardTitle>
 						<CardDescription>
-							Thorbis provisions a dedicated Resend domain per company to maximize deliverability.
+							Thorbis provisions a dedicated Resend domain per company to
+							maximize deliverability.
 						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{infraLoading ? (
-							<p className="text-muted-foreground text-sm">Loading domain status...</p>
+							<p className="text-muted-foreground text-sm">
+								Loading domain status...
+							</p>
 						) : infra.domain ? (
 							<div className="space-y-4">
 								<div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
 									<div>
-										<p className="font-semibold">{(infra.domain as any)?.domain || ""}</p>
+										<p className="font-semibold">
+											{(infra.domain as any)?.domain || ""}
+										</p>
 										<p className="text-muted-foreground text-xs">
 											Last synced at{" "}
 											{(infra.domain as any)?.last_synced_at
-												? new Date((infra.domain as any).last_synced_at).toLocaleString()
+												? new Date(
+														(infra.domain as any).last_synced_at,
+													).toLocaleString()
 												: "pending"}
 										</p>
 									</div>
@@ -308,7 +339,7 @@ export function EmailSettingsClient({
 													host?: string;
 													value?: string;
 												},
-												index: number
+												index: number,
 											) => (
 												<div
 													className="bg-muted/40 rounded-lg border p-3"
@@ -316,16 +347,22 @@ export function EmailSettingsClient({
 												>
 													<div className="flex items-center justify-between">
 														<div>
-															<p className="text-sm font-semibold">{record.type || "Record"}</p>
+															<p className="text-sm font-semibold">
+																{record.type || "Record"}
+															</p>
 															<p className="text-muted-foreground text-xs">
 																{record.name || record.host || "Host"}
 															</p>
 														</div>
-														<Badge variant="secondary">{record.type || "TXT"}</Badge>
+														<Badge variant="secondary">
+															{record.type || "TXT"}
+														</Badge>
 													</div>
 													{record.value && (
 														<div className="bg-background mt-2 flex items-center justify-between rounded px-3 py-2 font-mono text-xs">
-															<span className="mr-4 flex-1 truncate">{record.value}</span>
+															<span className="mr-4 flex-1 truncate">
+																{record.value}
+															</span>
 															<Button
 																onClick={() => handleCopy(record.value!)}
 																size="sm"
@@ -338,7 +375,7 @@ export function EmailSettingsClient({
 														</div>
 													)}
 												</div>
-											)
+											),
 										)
 									) : (
 										<p className="text-muted-foreground text-xs">
@@ -382,11 +419,15 @@ export function EmailSettingsClient({
 							<ShieldCheck className="size-4" />
 							Inbound Automation
 						</CardTitle>
-						<CardDescription>Capture customer replies via Resend inbound routing.</CardDescription>
+						<CardDescription>
+							Capture customer replies via Resend inbound routing.
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{infraLoading ? (
-							<p className="text-muted-foreground text-sm">Loading inbound configuration...</p>
+							<p className="text-muted-foreground text-sm">
+								Loading inbound configuration...
+							</p>
 						) : infra.inboundRoute ? (
 							<div className="space-y-4">
 								<div className="flex items-center justify-between">
@@ -404,10 +445,14 @@ export function EmailSettingsClient({
 								</div>
 								<div className="bg-muted/40 rounded-lg px-3 py-2 font-mono text-xs">
 									<div className="flex items-center justify-between gap-3">
-										<span className="truncate">{infra.inboundRoute?.route_address || ""}</span>
+										<span className="truncate">
+											{infra.inboundRoute?.route_address || ""}
+										</span>
 										<Button
 											onClick={() =>
-												handleCopy((infra.inboundRoute?.route_address as string) || "")
+												handleCopy(
+													(infra.inboundRoute?.route_address as string) || "",
+												)
 											}
 											size="sm"
 											type="button"
@@ -421,10 +466,15 @@ export function EmailSettingsClient({
 								{infra.inboundRoute.signing_secret && (
 									<div className="bg-muted/40 rounded-lg px-3 py-2 font-mono text-xs">
 										<div className="flex items-center justify-between gap-3">
-											<span className="truncate">{infra.inboundRoute?.signing_secret || ""}</span>
+											<span className="truncate">
+												{infra.inboundRoute?.signing_secret || ""}
+											</span>
 											<Button
 												onClick={() =>
-													handleCopy((infra.inboundRoute?.signing_secret as string) || "")
+													handleCopy(
+														(infra.inboundRoute?.signing_secret as string) ||
+															"",
+													)
 												}
 												size="sm"
 												type="button"
@@ -440,10 +490,14 @@ export function EmailSettingsClient({
 						) : (
 							<div className="space-y-3">
 								<p className="text-muted-foreground text-sm">
-									Enable inbound routing to automatically capture replies and direct emails sent to
-									your support address.
+									Enable inbound routing to automatically capture replies and
+									direct emails sent to your support address.
 								</p>
-								<Button disabled={isEnsuringInbound} onClick={handleEnsureInbound} type="button">
+								<Button
+									disabled={isEnsuringInbound}
+									onClick={handleEnsureInbound}
+									type="button"
+								>
 									{isEnsuringInbound ? (
 										<>
 											<Loader2 className="mr-2 size-4 animate-spin" />
@@ -464,7 +518,9 @@ export function EmailSettingsClient({
 							<Mail className="size-4" />
 							Email Identity
 						</CardTitle>
-						<CardDescription>Addresses and names customers see in their inbox</CardDescription>
+						<CardDescription>
+							Addresses and names customers see in their inbox
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 md:grid-cols-2">
@@ -475,12 +531,16 @@ export function EmailSettingsClient({
 										<TooltipTrigger asChild>
 											<HelpCircle className="text-muted-foreground size-3" />
 										</TooltipTrigger>
-										<TooltipContent>Address shown to customers; must be verified.</TooltipContent>
+										<TooltipContent>
+											Address shown to customers; must be verified.
+										</TooltipContent>
 									</Tooltip>
 								</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => updateSetting("smtpFromEmail", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpFromEmail", event.target.value)
+									}
 									placeholder="info@yourcompany.com"
 									type="email"
 									value={settings.smtpFromEmail}
@@ -496,12 +556,16 @@ export function EmailSettingsClient({
 										<TooltipTrigger asChild>
 											<HelpCircle className="text-muted-foreground size-3" />
 										</TooltipTrigger>
-										<TooltipContent>Usually your company name or team name.</TooltipContent>
+										<TooltipContent>
+											Usually your company name or team name.
+										</TooltipContent>
 									</Tooltip>
 								</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => updateSetting("smtpFromName", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpFromName", event.target.value)
+									}
 									placeholder="Thorbis Field Services"
 									value={settings.smtpFromName}
 								/>
@@ -521,13 +585,17 @@ export function EmailSettingsClient({
 									</div>
 									<Switch
 										checked={settings.autoCcEnabled}
-										onCheckedChange={(checked) => updateSetting("autoCcEnabled", checked)}
+										onCheckedChange={(checked) =>
+											updateSetting("autoCcEnabled", checked)
+										}
 									/>
 								</div>
 								{settings.autoCcEnabled && (
 									<Input
 										className="mt-2"
-										onChange={(event) => updateSetting("autoCcEmail", event.target.value)}
+										onChange={(event) =>
+											updateSetting("autoCcEmail", event.target.value)
+										}
 										placeholder="support@yourcompany.com"
 										type="email"
 										value={settings.autoCcEmail}
@@ -541,13 +609,17 @@ export function EmailSettingsClient({
 										<TooltipTrigger asChild>
 											<HelpCircle className="text-muted-foreground size-3" />
 										</TooltipTrigger>
-										<TooltipContent>Used for buttons and highlights in emails.</TooltipContent>
+										<TooltipContent>
+											Used for buttons and highlights in emails.
+										</TooltipContent>
 									</Tooltip>
 								</Label>
 								<div className="mt-2 flex items-center gap-2">
 									<Input
 										className="w-20"
-										onChange={(event) => updateSetting("primaryColor", event.target.value)}
+										onChange={(event) =>
+											updateSetting("primaryColor", event.target.value)
+										}
 										type="color"
 										value={settings.primaryColor}
 									/>
@@ -564,7 +636,9 @@ export function EmailSettingsClient({
 							<Server className="size-4" />
 							SMTP Connection
 						</CardTitle>
-						<CardDescription>Use your own mail server or Thorbis default</CardDescription>
+						<CardDescription>
+							Use your own mail server or Thorbis default
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -576,7 +650,9 @@ export function EmailSettingsClient({
 							</div>
 							<Switch
 								checked={settings.smtpEnabled}
-								onCheckedChange={(checked) => updateSetting("smtpEnabled", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("smtpEnabled", checked)
+								}
 							/>
 						</div>
 
@@ -586,7 +662,9 @@ export function EmailSettingsClient({
 								<Input
 									className="mt-2"
 									disabled={!settings.smtpEnabled}
-									onChange={(event) => updateSetting("smtpHost", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpHost", event.target.value)
+									}
 									placeholder="smtp.gmail.com"
 									value={settings.smtpHost}
 								/>
@@ -596,7 +674,9 @@ export function EmailSettingsClient({
 								<Input
 									className="mt-2"
 									disabled={!settings.smtpEnabled}
-									onChange={(event) => updateSetting("smtpPort", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpPort", event.target.value)
+									}
 									placeholder="587"
 									type="number"
 									value={settings.smtpPort}
@@ -610,7 +690,9 @@ export function EmailSettingsClient({
 								<Input
 									className="mt-2"
 									disabled={!settings.smtpEnabled}
-									onChange={(event) => updateSetting("smtpUsername", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpUsername", event.target.value)
+									}
 									placeholder="you@yourcompany.com"
 									value={settings.smtpUsername}
 								/>
@@ -625,7 +707,9 @@ export function EmailSettingsClient({
 								<Input
 									className="mt-2"
 									disabled={!settings.smtpEnabled}
-									onChange={(event) => updateSetting("smtpPassword", event.target.value)}
+									onChange={(event) =>
+										updateSetting("smtpPassword", event.target.value)
+									}
 									placeholder="••••••••"
 									type="password"
 									value={settings.smtpPassword}
@@ -643,7 +727,9 @@ export function EmailSettingsClient({
 							<Switch
 								checked={settings.smtpUseTls}
 								disabled={!settings.smtpEnabled}
-								onCheckedChange={(checked) => updateSetting("smtpUseTls", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("smtpUseTls", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -652,7 +738,9 @@ export function EmailSettingsClient({
 				<Card>
 					<CardHeader>
 						<CardTitle>Signature & Branding</CardTitle>
-						<CardDescription>Content appended to all outbound emails</CardDescription>
+						<CardDescription>
+							Content appended to all outbound emails
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
@@ -662,18 +750,23 @@ export function EmailSettingsClient({
 									<TooltipTrigger asChild>
 										<HelpCircle className="text-muted-foreground size-3" />
 									</TooltipTrigger>
-									<TooltipContent>Plain text signature shown below every message.</TooltipContent>
+									<TooltipContent>
+										Plain text signature shown below every message.
+									</TooltipContent>
 								</Tooltip>
 							</Label>
 							<Textarea
 								className="mt-2 min-h-[140px] resize-none"
 								maxLength={MAX_SIGNATURE_LENGTH}
-								onChange={(event) => updateSetting("defaultSignature", event.target.value)}
+								onChange={(event) =>
+									updateSetting("defaultSignature", event.target.value)
+								}
 								placeholder="Thanks for choosing Thorbis..."
 								value={settings.defaultSignature}
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">
-								{settings.defaultSignature.length} / {MAX_SIGNATURE_LENGTH} characters
+								{settings.defaultSignature.length} / {MAX_SIGNATURE_LENGTH}{" "}
+								characters
 							</p>
 						</div>
 
@@ -682,7 +775,9 @@ export function EmailSettingsClient({
 						<div className="flex items-center justify-between">
 							<div>
 								<p className="text-sm font-medium">Include company logo</p>
-								<p className="text-muted-foreground text-xs">Adds your logo to the email header.</p>
+								<p className="text-muted-foreground text-xs">
+									Adds your logo to the email header.
+								</p>
 							</div>
 							<Switch
 								checked={Boolean(settings.emailLogoUrl)}
@@ -697,7 +792,9 @@ export function EmailSettingsClient({
 				<Card>
 					<CardHeader>
 						<CardTitle>Engagement Tracking</CardTitle>
-						<CardDescription>Monitor how customers interact with your emails</CardDescription>
+						<CardDescription>
+							Monitor how customers interact with your emails
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between">
@@ -709,7 +806,9 @@ export function EmailSettingsClient({
 							</div>
 							<Switch
 								checked={settings.trackOpens}
-								onCheckedChange={(checked) => updateSetting("trackOpens", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("trackOpens", checked)
+								}
 							/>
 						</div>
 
@@ -724,7 +823,9 @@ export function EmailSettingsClient({
 							</div>
 							<Switch
 								checked={settings.trackClicks}
-								onCheckedChange={(checked) => updateSetting("trackClicks", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("trackClicks", checked)
+								}
 							/>
 						</div>
 					</CardContent>

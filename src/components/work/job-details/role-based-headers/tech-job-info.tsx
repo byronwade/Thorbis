@@ -15,7 +15,11 @@ import {
 	Wrench,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TechJobInfoProps = {
@@ -94,7 +98,9 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Equipment on Site</h4>
-								<p className="text-muted-foreground text-xs">Units to service on this job</p>
+								<p className="text-muted-foreground text-xs">
+									Units to service on this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -108,7 +114,9 @@ export function TechJobInfo({
 												{eq.equipment_type || "Equipment"}
 											</span>
 											{eq.model && (
-												<span className="text-muted-foreground text-xs">Model: {eq.model}</span>
+												<span className="text-muted-foreground text-xs">
+													Model: {eq.model}
+												</span>
 											)}
 											{eq.serial_number && (
 												<span className="text-muted-foreground text-xs">
@@ -142,12 +150,17 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Materials List</h4>
-								<p className="text-muted-foreground text-xs">Items needed for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Items needed for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-1">
 								{materials.map((material) => (
-									<div className="flex items-center justify-between text-sm" key={material.id}>
+									<div
+										className="flex items-center justify-between text-sm"
+										key={material.id}
+									>
 										<span>{material.material_name}</span>
 										<span className="text-muted-foreground">
 											{material.quantity} {material.unit}
@@ -173,7 +186,9 @@ export function TechJobInfo({
 						<div className="space-y-3">
 							<div>
 								<h4 className="text-sm font-semibold">Important Notes</h4>
-								<p className="text-muted-foreground text-xs">Critical information for this job</p>
+								<p className="text-muted-foreground text-xs">
+									Critical information for this job
+								</p>
 							</div>
 							<Separator />
 							<div className="space-y-2">
@@ -221,12 +236,13 @@ export function TechJobInfo({
 			)}
 
 			{/* Completion Status */}
-			{jobEquipment.length > 0 && jobEquipment.every((je) => je.action === "completed") && (
-				<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
-					<CheckCircle className="size-4" />
-					All Tasks Complete
-				</button>
-			)}
+			{jobEquipment.length > 0 &&
+				jobEquipment.every((je) => je.action === "completed") && (
+					<button className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:border-green-300 hover:bg-green-100 dark:border-green-900/30 dark:bg-green-900/20 dark:text-green-400">
+						<CheckCircle className="size-4" />
+						All Tasks Complete
+					</button>
+				)}
 		</div>
 	);
 }

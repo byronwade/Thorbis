@@ -3,7 +3,11 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
 	SidebarGroup,
 	SidebarGroupLabel,
@@ -84,7 +88,11 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 			// Regular link item
 			return (
 				<SidebarMenuItem key={linkItem.url}>
-					<SidebarMenuButton asChild isActive={isActive} tooltip={linkItem.title}>
+					<SidebarMenuButton
+						asChild
+						isActive={isActive}
+						tooltip={linkItem.title}
+					>
 						<Link href={linkItem.url}>
 							{linkItem.icon && <linkItem.icon />}
 							<span>{linkItem.title}</span>
@@ -130,7 +138,8 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 			const filterItem = item as FilterSidebarItem;
 			const isActive =
 				activeValue === filterItem.value ||
-				(activeValue === undefined && config?.defaultValue === filterItem.value);
+				(activeValue === undefined &&
+					config?.defaultValue === filterItem.value);
 
 			return (
 				<SidebarMenuItem key={filterItem.value}>
@@ -142,7 +151,9 @@ export function NavFlexible({ config, groups, items }: NavFlexibleProps) {
 						{filterItem.icon && <filterItem.icon />}
 						<span>{filterItem.title}</span>
 						{filterItem.count !== undefined && (
-							<span className="text-muted-foreground ml-auto text-xs">{filterItem.count}</span>
+							<span className="text-muted-foreground ml-auto text-xs">
+								{filterItem.count}
+							</span>
 						)}
 					</SidebarMenuButton>
 				</SidebarMenuItem>

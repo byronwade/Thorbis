@@ -12,10 +12,19 @@ import { Button } from "@/components/ui/button";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-export type JobStatus = "quoted" | "scheduled" | "in_progress" | "completed" | "cancelled";
+export type JobStatus =
+	| "quoted"
+	| "scheduled"
+	| "in_progress"
+	| "completed"
+	| "cancelled";
 
 type JobProcessIndicatorEditableProps = {
 	currentStatus: JobStatus;
@@ -111,7 +120,12 @@ export function JobProcessIndicatorEditable({
 
 	if (isCancelled) {
 		return (
-			<div className={cn("border-destructive bg-destructive/10 rounded-lg border p-4", className)}>
+			<div
+				className={cn(
+					"border-destructive bg-destructive/10 rounded-lg border p-4",
+					className,
+				)}
+			>
 				<div className="flex items-center justify-center gap-2">
 					<div className="bg-destructive/20 flex size-8 items-center justify-center rounded-full">
 						<div className="bg-destructive size-2 rounded-full" />
@@ -137,14 +151,17 @@ export function JobProcessIndicatorEditable({
 							<button
 								className={cn(
 									"relative z-10 flex size-8 items-center justify-center rounded-full border transition-all hover:scale-110",
-									isCompleted || isCurrent ? "border-primary" : "border-muted"
+									isCompleted || isCurrent ? "border-primary" : "border-muted",
 								)}
 								onClick={() => onStatusChange?.(step.key as JobStatus)}
 								type="button"
 							>
 								{isCompleted ? (
 									<div className="bg-primary flex size-full items-center justify-center rounded-full">
-										<Check className="text-primary-foreground size-4" strokeWidth={2.5} />
+										<Check
+											className="text-primary-foreground size-4"
+											strokeWidth={2.5}
+										/>
 									</div>
 								) : isCurrent ? (
 									<div className="bg-primary relative flex size-full items-center justify-center rounded-full">
@@ -164,7 +181,7 @@ export function JobProcessIndicatorEditable({
 											? "text-foreground"
 											: isCompleted
 												? "text-muted-foreground"
-												: "text-muted-foreground/60"
+												: "text-muted-foreground/60",
 									)}
 								>
 									{step.label}
@@ -183,7 +200,7 @@ export function JobProcessIndicatorEditable({
 										<Button
 											className={cn(
 												"h-auto p-1 text-[10px]",
-												!currentDate && "text-muted-foreground/40"
+												!currentDate && "text-muted-foreground/40",
 											)}
 											onClick={() => openDateEditor(step.dateKey, currentDate)}
 											size="sm"
@@ -252,7 +269,7 @@ export function JobProcessIndicatorEditable({
 							<div
 								className={cn(
 									"h-[1px] flex-1 transition-all",
-									isCompleted ? "bg-primary" : "bg-muted"
+									isCompleted ? "bg-primary" : "bg-muted",
 								)}
 							/>
 						) : null}

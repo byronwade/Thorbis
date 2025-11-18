@@ -15,11 +15,20 @@ import {
 	VolumeX,
 } from "lucide-react";
 import Link from "next/link";
-import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
+import {
+	getNotificationPreferences,
+	updateNotificationPreferences,
+} from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/use-settings";
@@ -65,14 +74,19 @@ const connectedDevices: ConnectedDevice[] = [
 	},
 ];
 
-type PushNotificationSettings = Pick<NotificationPreferencesState, "pushNewJobs" | "pushMessages">;
+type PushNotificationSettings = Pick<
+	NotificationPreferencesState,
+	"pushNewJobs" | "pushMessages"
+>;
 
 const DEFAULT_PUSH_SETTINGS: PushNotificationSettings = {
 	pushNewJobs: true,
 	pushMessages: true,
 };
 
-const pickPushSettings = (prefs: NotificationPreferencesState): PushNotificationSettings => ({
+const pickPushSettings = (
+	prefs: NotificationPreferencesState,
+): PushNotificationSettings => ({
 	pushNewJobs: prefs.pushNewJobs,
 	pushMessages: prefs.pushMessages,
 });
@@ -84,33 +98,42 @@ type NotificationsPushClientProps = {
 export default function NotificationsPushClient({
 	initialPreferences,
 }: NotificationsPushClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<PushNotificationSettings>({
-			getter: getNotificationPreferences,
-			setter: updateNotificationPreferences,
-			initialState: DEFAULT_PUSH_SETTINGS,
-			settingsName: "push notifications",
-			prefetchedData: pickPushSettings(initialPreferences),
-			transformLoad: (data) =>
-				pickPushSettings(mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES),
-			transformSave: (s) => {
-				const fd = new FormData();
-				fd.append("pushNewJobs", s.pushNewJobs.toString());
-				fd.append("pushMessages", s.pushMessages.toString());
-				fd.append("pushJobUpdates", "true");
-				fd.append("pushMentions", "true");
-				fd.append("emailNewJobs", "true");
-				fd.append("emailJobUpdates", "true");
-				fd.append("emailMentions", "true");
-				fd.append("emailMessages", "true");
-				fd.append("smsUrgentJobs", "false");
-				fd.append("smsScheduleChanges", "false");
-				fd.append("inAppAll", "true");
-				fd.append("digestEnabled", "false");
-				fd.append("digestFrequency", "daily");
-				return fd;
-			},
-		});
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<PushNotificationSettings>({
+		getter: getNotificationPreferences,
+		setter: updateNotificationPreferences,
+		initialState: DEFAULT_PUSH_SETTINGS,
+		settingsName: "push notifications",
+		prefetchedData: pickPushSettings(initialPreferences),
+		transformLoad: (data) =>
+			pickPushSettings(
+				mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES,
+			),
+		transformSave: (s) => {
+			const fd = new FormData();
+			fd.append("pushNewJobs", s.pushNewJobs.toString());
+			fd.append("pushMessages", s.pushMessages.toString());
+			fd.append("pushJobUpdates", "true");
+			fd.append("pushMentions", "true");
+			fd.append("emailNewJobs", "true");
+			fd.append("emailJobUpdates", "true");
+			fd.append("emailMentions", "true");
+			fd.append("emailMessages", "true");
+			fd.append("smsUrgentJobs", "false");
+			fd.append("smsScheduleChanges", "false");
+			fd.append("inAppAll", "true");
+			fd.append("digestEnabled", "false");
+			fd.append("digestFrequency", "daily");
+			return fd;
+		},
+	});
 
 	if (isLoading) {
 		return (
@@ -154,7 +177,9 @@ export default function NotificationsPushClient({
 						<Smartphone className="h-5 w-5" />
 						Connected Devices
 					</CardTitle>
-					<CardDescription>Manage push notifications per device and browser.</CardDescription>
+					<CardDescription>
+						Manage push notifications per device and browser.
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-3">
@@ -171,14 +196,20 @@ export default function NotificationsPushClient({
 										</div>
 										<div>
 											<div className="font-medium">{device.name}</div>
-											<div className="text-muted-foreground text-sm">{device.subtitle}</div>
-											<div className="text-muted-foreground text-xs">{device.lastActive}</div>
+											<div className="text-muted-foreground text-sm">
+												{device.subtitle}
+											</div>
+											<div className="text-muted-foreground text-xs">
+												{device.lastActive}
+											</div>
 										</div>
 									</div>
 									<div className="flex items-center gap-3">
 										<div className="flex items-center gap-2">
 											<Switch defaultChecked={device.enabled} />
-											<span className="text-sm">{device.enabled ? "Enabled" : "Disabled"}</span>
+											<span className="text-sm">
+												{device.enabled ? "Enabled" : "Disabled"}
+											</span>
 										</div>
 										<Button size="sm" variant="outline">
 											<Trash2 className="size-4" />
@@ -212,7 +243,9 @@ export default function NotificationsPushClient({
 						<Bell className="h-5 w-5" />
 						Notification Types
 					</CardTitle>
-					<CardDescription>Choose which push alerts you want to receive.</CardDescription>
+					<CardDescription>
+						Choose which push alerts you want to receive.
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-3">
@@ -249,7 +282,9 @@ export default function NotificationsPushClient({
 							<div className="flex items-center gap-2">
 								<Switch
 									checked={settings.pushNewJobs}
-									onCheckedChange={(checked) => updateSetting("pushNewJobs", checked)}
+									onCheckedChange={(checked) =>
+										updateSetting("pushNewJobs", checked)
+									}
 								/>
 								<Badge variant="secondary">High</Badge>
 							</div>
@@ -270,7 +305,9 @@ export default function NotificationsPushClient({
 							<div className="flex items-center gap-2">
 								<Switch
 									checked={settings.pushMessages}
-									onCheckedChange={(checked) => updateSetting("pushMessages", checked)}
+									onCheckedChange={(checked) =>
+										updateSetting("pushMessages", checked)
+									}
 								/>
 								<Badge variant="secondary">High</Badge>
 							</div>
@@ -318,7 +355,9 @@ export default function NotificationsPushClient({
 			<Card>
 				<CardHeader>
 					<CardTitle>Sound & Appearance</CardTitle>
-					<CardDescription>Customize the look and sound of push notifications.</CardDescription>
+					<CardDescription>
+						Customize the look and sound of push notifications.
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					{[
@@ -340,13 +379,16 @@ export default function NotificationsPushClient({
 						},
 						{
 							label: "Auto-Hide",
-							description: "Automatically dismiss notifications after 5 seconds",
+							description:
+								"Automatically dismiss notifications after 5 seconds",
 						},
 					].map((item) => (
 						<div className="flex items-center justify-between" key={item.label}>
 							<div className="space-y-0.5">
 								<div className="font-medium">{item.label}</div>
-								<div className="text-muted-foreground text-sm">{item.description}</div>
+								<div className="text-muted-foreground text-sm">
+									{item.description}
+								</div>
 							</div>
 							<Switch defaultChecked />
 						</div>

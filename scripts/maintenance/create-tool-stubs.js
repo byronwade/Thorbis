@@ -11,7 +11,8 @@ const toolPages = [
 	{
 		path: "marketing/instagram",
 		title: "Instagram for Business",
-		subtitle: "Showcase your work and connect with customers through visual content",
+		subtitle:
+			"Showcase your work and connect with customers through visual content",
 		icon: "Camera",
 		description: [
 			"Instagram is a visual-first platform perfect for showcasing your work. With over 1 billion active users, it's an excellent way to attract new customers and build brand awareness.",
@@ -175,7 +176,8 @@ const toolPages = [
 	{
 		path: "training/certifications",
 		title: "Trade Certifications",
-		subtitle: "State licensing, master certifications, and specialty credentials",
+		subtitle:
+			"State licensing, master certifications, and specialty credentials",
 		icon: "BadgeCheck",
 		description: [
 			"Advance your career and business with professional certifications. From journeyman to master level, certifications demonstrate expertise and command higher rates.",
@@ -292,7 +294,10 @@ export default function Page() {
 
 // Create all stub pages
 function createStubPages() {
-	const baseDir = path.join(__dirname, "../src/app/(dashboard)/dashboard/tools");
+	const baseDir = path.join(
+		__dirname,
+		"../src/app/(dashboard)/dashboard/tools",
+	);
 
 	for (const page of toolPages) {
 		const fullPath = path.join(baseDir, page.path);

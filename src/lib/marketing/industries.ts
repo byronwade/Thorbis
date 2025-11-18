@@ -73,12 +73,14 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Maintenance renewals",
 				value: "92%",
-				description: "of agreements renewed automatically through Thorbis workflows.",
+				description:
+					"of agreements renewed automatically through Thorbis workflows.",
 			},
 			{
 				label: "Average ticket size",
 				value: "+19%",
-				description: "increase when proposals include financing and tiered options.",
+				description:
+					"increase when proposals include financing and tiered options.",
 			},
 			{
 				label: "Dispatch efficiency",
@@ -187,7 +189,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "First-time fix rate",
 				value: "94%",
-				description: "thanks to enforced truck stock templates and photo notes.",
+				description:
+					"thanks to enforced truck stock templates and photo notes.",
 			},
 			{
 				label: "Average project revenue",
@@ -204,7 +207,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 		faq: [
 			{
 				question: "Can I track jetter equipment maintenance?",
-				answer: "Yes. Log equipment hours, schedule maintenance, and attach service history.",
+				answer:
+					"Yes. Log equipment hours, schedule maintenance, and attach service history.",
 			},
 			{
 				question: "How do you handle permits?",
@@ -351,7 +355,11 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Handyman Business Software | Thorbis",
 			description:
 				"Dispatch crews, send estimates, and collect payments for handyman jobs with Thorbis. Build repeat business effortlessly.",
-			keywords: ["handyman software", "handyman scheduling app", "handyman invoicing software"],
+			keywords: [
+				"handyman software",
+				"handyman scheduling app",
+				"handyman invoicing software",
+			],
 		},
 		fieldTypes: ["Owner-Operator", "Multi-Crew", "Property Managers"],
 		painPoints: [
@@ -405,7 +413,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Evening admin time",
 				value: "-12 hrs",
-				description: "saved each week through automated invoicing and payments.",
+				description:
+					"saved each week through automated invoicing and payments.",
 			},
 		],
 		testimonial: {
@@ -427,7 +436,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			},
 			{
 				question: "Do you support tip tracking?",
-				answer: "Track tips separately and distribute automatically when closing out invoices.",
+				answer:
+					"Track tips separately and distribute automatically when closing out invoices.",
 			},
 		],
 	},
@@ -455,7 +465,11 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Landscaping Business Software | Thorbis",
 			description:
 				"Optimize lawn routes, manage crews, and automate seasonal upsells with Thorbis landscaping software.",
-			keywords: ["landscaping software", "lawn care scheduling", "landscaping route planning"],
+			keywords: [
+				"landscaping software",
+				"lawn care scheduling",
+				"landscaping route planning",
+			],
 		},
 		fieldTypes: ["Residential Maintenance", "Commercial Grounds", "Snow & Ice"],
 		painPoints: [
@@ -560,9 +574,17 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Pool Service Software | Thorbis",
 			description:
 				"Track pool routes, chemical readings, and equipment upgrades with Thorbis software built for pool and spa professionals.",
-			keywords: ["pool service software", "pool route management", "pool chemical log app"],
+			keywords: [
+				"pool service software",
+				"pool route management",
+				"pool chemical log app",
+			],
 		},
-		fieldTypes: ["Residential Weekly", "Commercial Aquatics", "Retail + Service"],
+		fieldTypes: [
+			"Residential Weekly",
+			"Commercial Aquatics",
+			"Retail + Service",
+		],
 		painPoints: [
 			"Route changes and stop skips create billing errors.",
 			"Chemical logs are managed on paper, risking compliance issues.",
@@ -665,7 +687,11 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Pest Control Business Software | Thorbis",
 			description:
 				"Optimize pest control routes, track chemical usage, and automate renewals with Thorbis software.",
-			keywords: ["pest control software", "pest route optimization", "pest control chemical logs"],
+			keywords: [
+				"pest control software",
+				"pest route optimization",
+				"pest control chemical logs",
+			],
 		},
 		fieldTypes: ["Residential Pest", "Commercial IPM", "Mosquito & Termite"],
 		painPoints: [
@@ -688,7 +714,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			},
 			{
 				title: "Renewal automation",
-				description: "Send renewal notices, capture signatures, and update billing with autopay.",
+				description:
+					"Send renewal notices, capture signatures, and update billing with autopay.",
 				icon: "rotate-cw",
 			},
 		],
@@ -718,7 +745,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Renewal rate",
 				value: "93%",
-				description: "of annual pest plans renewed through Thorbis automations.",
+				description:
+					"of annual pest plans renewed through Thorbis automations.",
 			},
 		],
 		testimonial: {
@@ -817,12 +845,14 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Callback rate",
 				value: "-31%",
-				description: "reduction thanks to proactive parts and warranty management.",
+				description:
+					"reduction thanks to proactive parts and warranty management.",
 			},
 			{
 				label: "Customer satisfaction",
 				value: "4.8★",
-				description: "average rating with ETA notifications and post-service updates.",
+				description:
+					"average rating with ETA notifications and post-service updates.",
 			},
 			{
 				label: "Claims processing time",
@@ -859,7 +889,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 		slug: "roofing",
 		name: "Roofing Contractors",
 		heroEyebrow: "Inspections • Production • Insurance",
-		heroTitle: "Deliver flawless roofing projects from inspection to final bill",
+		heroTitle:
+			"Deliver flawless roofing projects from inspection to final bill",
 		heroDescription:
 			"Thorbis manages inspections, crew scheduling, material deliveries, and insurance documentation for roofing companies.",
 		heroImage:
@@ -878,7 +909,11 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Roofing Business Management Software | Thorbis",
 			description:
 				"Coordinate inspections, crews, and insurance paperwork with Thorbis roofing software. Close more jobs faster.",
-			keywords: ["roofing software", "roofing project management", "roofing inspection app"],
+			keywords: [
+				"roofing software",
+				"roofing project management",
+				"roofing inspection app",
+			],
 		},
 		fieldTypes: ["Insurance Restoration", "Retail Roofing", "Commercial"],
 		painPoints: [
@@ -927,12 +962,14 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Supplement recovery",
 				value: "+18%",
-				description: "increase in approved supplements through structured documentation.",
+				description:
+					"increase in approved supplements through structured documentation.",
 			},
 			{
 				label: "Customer satisfaction",
 				value: "4.9★",
-				description: "average rating with proactive communication via the portal.",
+				description:
+					"average rating with proactive communication via the portal.",
 			},
 		],
 		testimonial: {
@@ -983,9 +1020,17 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Cleaning & Janitorial Software | Thorbis",
 			description:
 				"Schedule cleaning crews, enforce checklists, and share inspection reports with clients using Thorbis.",
-			keywords: ["cleaning business software", "janitorial scheduling", "cleaning inspection app"],
+			keywords: [
+				"cleaning business software",
+				"janitorial scheduling",
+				"cleaning inspection app",
+			],
 		},
-		fieldTypes: ["Commercial Nightly", "Residential Maid Service", "Post-Construction"],
+		fieldTypes: [
+			"Commercial Nightly",
+			"Residential Maid Service",
+			"Post-Construction",
+		],
 		painPoints: [
 			"Staff schedules change daily, making coverage difficult to manage.",
 			"Quality control relies on paper checklists and inconsistent follow-up.",
@@ -1006,7 +1051,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			},
 			{
 				title: "Client portal & dashboards",
-				description: "Clients view schedules, inspection history, and open issues in real time.",
+				description:
+					"Clients view schedules, inspection history, and open issues in real time.",
 				icon: "layout-dashboard",
 			},
 		],
@@ -1026,17 +1072,20 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Missed visits",
 				value: "-32%",
-				description: "reduction by enforcing digital scheduling and confirmations.",
+				description:
+					"reduction by enforcing digital scheduling and confirmations.",
 			},
 			{
 				label: "Inspection completion",
 				value: "96%",
-				description: "of required inspections completed on time with Thorbis mobile.",
+				description:
+					"of required inspections completed on time with Thorbis mobile.",
 			},
 			{
 				label: "Client retention",
 				value: "+15%",
-				description: "improvement from transparent reporting and communication.",
+				description:
+					"improvement from transparent reporting and communication.",
 			},
 		],
 		testimonial: {
@@ -1048,11 +1097,13 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 		faq: [
 			{
 				question: "Can employees clock in/out in Thorbis?",
-				answer: "Yes. Use geofenced time tracking or QR codes to verify on-site attendance.",
+				answer:
+					"Yes. Use geofenced time tracking or QR codes to verify on-site attendance.",
 			},
 			{
 				question: "Do clients get custom reporting?",
-				answer: "Build site-specific dashboards with SLA metrics, inspection scores, and tickets.",
+				answer:
+					"Build site-specific dashboards with SLA metrics, inspection scores, and tickets.",
 			},
 			{
 				question: "How do you manage supply inventory?",
@@ -1085,9 +1136,17 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Locksmith Business Software | Thorbis",
 			description:
 				"Dispatch locksmiths, manage access control work, and invoice quickly with Thorbis software.",
-			keywords: ["locksmith software", "locksmith dispatch app", "access control service software"],
+			keywords: [
+				"locksmith software",
+				"locksmith dispatch app",
+				"access control service software",
+			],
 		},
-		fieldTypes: ["Emergency Lockout", "Commercial Access Control", "Automotive"],
+		fieldTypes: [
+			"Emergency Lockout",
+			"Commercial Access Control",
+			"Automotive",
+		],
 		painPoints: [
 			"Emergency calls require rapid dispatch and communication.",
 			"Technicians need job history, key codes, and security protocols on-site.",
@@ -1134,7 +1193,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			{
 				label: "Commercial retention",
 				value: "97%",
-				description: "of access control clients retained through contract automation.",
+				description:
+					"of access control clients retained through contract automation.",
 			},
 			{
 				label: "Invoice turnaround",
@@ -1151,7 +1211,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 		faq: [
 			{
 				question: "Is sensitive data secure?",
-				answer: "Yes. Thorbis encrypts key codes and access details with role-based permissions.",
+				answer:
+					"Yes. Thorbis encrypts key codes and access details with role-based permissions.",
 			},
 			{
 				question: "Do you support after-hours answering?",
@@ -1189,7 +1250,11 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			title: "Garage Door Service Software | Thorbis",
 			description:
 				"Dispatch emergency repairs, manage installs, and automate maintenance plans for garage door companies with Thorbis.",
-			keywords: ["garage door software", "garage door dispatch", "garage door maintenance plans"],
+			keywords: [
+				"garage door software",
+				"garage door dispatch",
+				"garage door maintenance plans",
+			],
 		},
 		fieldTypes: ["Residential", "Commercial", "Rolling Steel"],
 		painPoints: [
@@ -1260,7 +1325,8 @@ export const INDUSTRY_CONTENT: MarketingIndustryContent[] = [
 			},
 			{
 				question: "Can customers finance installations?",
-				answer: "Yes. Offer financing at the proposal stage and track approvals inside Thorbis.",
+				answer:
+					"Yes. Offer financing at the proposal stage and track approvals inside Thorbis.",
 			},
 			{
 				question: "How do you manage maintenance plans?",
@@ -1275,6 +1341,8 @@ export function getAllIndustries(): MarketingIndustryContent[] {
 	return INDUSTRY_CONTENT;
 }
 
-export function getIndustryBySlug(slug: string): MarketingIndustryContent | undefined {
+export function getIndustryBySlug(
+	slug: string,
+): MarketingIndustryContent | undefined {
 	return INDUSTRY_CONTENT.find((industry) => industry.slug === slug);
 }

@@ -25,7 +25,7 @@ import {
 // ============================================================================
 
 export async function createSchedule(
-	data: ScheduleInsert
+	data: ScheduleInsert,
 ): Promise<{ success: boolean; error?: string; scheduleId?: string }> {
 	try {
 		const validated = scheduleInsertSchema.parse(data);
@@ -36,7 +36,7 @@ export async function createSchedule(
 		}
 
 		const { data: schedule, error } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.insert(validated)
 			.select("id")
 			.single();
@@ -60,7 +60,7 @@ export async function createSchedule(
 // ============================================================================
 
 export async function getSchedule(
-	scheduleId: string
+	scheduleId: string,
 ): Promise<{ success: boolean; error?: string; schedule?: any }> {
 	try {
 		const supabase = await createClient();
@@ -70,8 +70,10 @@ export async function getSchedule(
 		}
 
 		const { data: schedule, error } = await supabase
-			.from("schedules")
-			.select("*, customer:customers(first_name, last_name, phone), job:jobs(job_number, title)")
+			.from("appointments")
+			.select(
+				"*, customer:customers(first_name, last_name, phone), job:jobs(job_number, title)",
+			)
 			.eq("id", scheduleId)
 			.is("deleted_at", null)
 			.single();
@@ -106,8 +108,10 @@ export async function getSchedules(filters?: {
 		}
 
 		let query = supabase
-			.from("schedules")
-			.select("*, customer:customers(first_name, last_name), job:jobs(job_number)")
+			.from("appointments")
+			.select(
+				"*, customer:customers(first_name, last_name), job:jobs(job_number)",
+			)
 			.is("deleted_at", null)
 			.order("start_time", { ascending: true });
 
@@ -155,7 +159,7 @@ export async function getSchedules(filters?: {
 
 export async function updateSchedule(
 	scheduleId: string,
-	data: ScheduleUpdate
+	data: ScheduleUpdate,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		// Convert Date objects to ISO strings for Supabase
@@ -164,10 +168,12 @@ export async function updateSchedule(
 			processedData.dispatch_time = processedData.dispatch_time.toISOString();
 		}
 		if (processedData.actual_start_time instanceof Date) {
-			processedData.actual_start_time = processedData.actual_start_time.toISOString();
+			processedData.actual_start_time =
+				processedData.actual_start_time.toISOString();
 		}
 		if (processedData.actual_end_time instanceof Date) {
-			processedData.actual_end_time = processedData.actual_end_time.toISOString();
+			processedData.actual_end_time =
+				processedData.actual_end_time.toISOString();
 		}
 		if (processedData.start_time instanceof Date) {
 			processedData.start_time = processedData.start_time.toISOString();
@@ -184,7 +190,7 @@ export async function updateSchedule(
 		}
 
 		const { error } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.update(validated)
 			.eq("id", scheduleId)
 			.is("deleted_at", null);
@@ -208,7 +214,13 @@ export async function updateSchedule(
 
 export async function updateScheduleStatus(
 	scheduleId: string,
-	status: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled" | "no_show"
+	status:
+		| "scheduled"
+		| "confirmed"
+		| "in_progress"
+		| "completed"
+		| "cancelled"
+		| "no_show",
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -217,7 +229,10 @@ export async function updateScheduleStatus(
 			return { success: false, error: "Database connection not available" };
 		}
 
-		const { error } = await supabase.from("schedules").update({ status }).eq("id", scheduleId);
+		const { error } = await supabase
+			.from("appointments")
+			.update({ status })
+			.eq("id", scheduleId);
 
 		if (error) {
 			return { success: false, error: error.message };
@@ -245,7 +260,7 @@ export async function createRecurringSchedule(
 		count?: number;
 		until?: Date;
 		byDay?: number[];
-	}
+	},
 ): Promise<{ success: boolean; error?: string; scheduleIds?: string[] }> {
 	try {
 		const supabase = await createClient();
@@ -262,7 +277,7 @@ export async function createRecurringSchedule(
 		};
 
 		const { data: parentSchedule, error: parentError } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.insert(parentData)
 			.select("id")
 			.single();
@@ -282,14 +297,26 @@ export async function createRecurringSchedule(
 
 			// Calculate next occurrence based on frequency
 			if (recurrenceRule.frequency === "daily") {
-				instanceStart.setDate(instanceStart.getDate() + i * recurrenceRule.interval);
-				instanceEnd.setDate(instanceEnd.getDate() + i * recurrenceRule.interval);
+				instanceStart.setDate(
+					instanceStart.getDate() + i * recurrenceRule.interval,
+				);
+				instanceEnd.setDate(
+					instanceEnd.getDate() + i * recurrenceRule.interval,
+				);
 			} else if (recurrenceRule.frequency === "weekly") {
-				instanceStart.setDate(instanceStart.getDate() + i * recurrenceRule.interval * 7);
-				instanceEnd.setDate(instanceEnd.getDate() + i * recurrenceRule.interval * 7);
+				instanceStart.setDate(
+					instanceStart.getDate() + i * recurrenceRule.interval * 7,
+				);
+				instanceEnd.setDate(
+					instanceEnd.getDate() + i * recurrenceRule.interval * 7,
+				);
 			} else if (recurrenceRule.frequency === "monthly") {
-				instanceStart.setMonth(instanceStart.getMonth() + i * recurrenceRule.interval);
-				instanceEnd.setMonth(instanceEnd.getMonth() + i * recurrenceRule.interval);
+				instanceStart.setMonth(
+					instanceStart.getMonth() + i * recurrenceRule.interval,
+				);
+				instanceEnd.setMonth(
+					instanceEnd.getMonth() + i * recurrenceRule.interval,
+				);
 			}
 
 			// Check until date
@@ -308,7 +335,7 @@ export async function createRecurringSchedule(
 
 		// Insert all instances
 		const { data: createdInstances, error: instancesError } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.insert(instances)
 			.select("id");
 
@@ -319,7 +346,10 @@ export async function createRecurringSchedule(
 		revalidatePath("/dashboard/schedule");
 		return {
 			success: true,
-			scheduleIds: [parentSchedule.id, ...(createdInstances?.map((s) => s.id) || [])],
+			scheduleIds: [
+				parentSchedule.id,
+				...(createdInstances?.map((s) => s.id) || []),
+			],
 		};
 	} catch (error) {
 		if (error instanceof Error) {
@@ -334,7 +364,7 @@ export async function createRecurringSchedule(
 // ============================================================================
 
 export async function markReminderSent(
-	scheduleId: string
+	scheduleId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -344,7 +374,7 @@ export async function markReminderSent(
 		}
 
 		const { error } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.update({ reminder_sent: true })
 			.eq("id", scheduleId);
 
@@ -366,7 +396,7 @@ export async function markReminderSent(
 // ============================================================================
 
 export async function deleteSchedule(
-	scheduleId: string
+	scheduleId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -384,7 +414,7 @@ export async function deleteSchedule(
 		}
 
 		const { error } = await supabase
-			.from("schedules")
+			.from("appointments")
 			.update({
 				deleted_at: new Date().toISOString(),
 				deleted_by: user.id,

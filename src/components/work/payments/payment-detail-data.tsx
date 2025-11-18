@@ -91,7 +91,7 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
       customer:customers!customer_id(*),
       invoice:invoices!invoice_id(*),
       job:jobs!job_id(*)
-    `
+    `,
 		)
 		.eq("id", paymentId)
 		.is("deleted_at", null)
@@ -106,8 +106,12 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
 	}
 
 	// Get related data
-	const customer = Array.isArray(payment.customer) ? payment.customer[0] : payment.customer;
-	const invoice = Array.isArray(payment.invoice) ? payment.invoice[0] : payment.invoice;
+	const customer = Array.isArray(payment.customer)
+		? payment.customer[0]
+		: payment.customer;
+	const invoice = Array.isArray(payment.invoice)
+		? payment.invoice[0]
+		: payment.invoice;
 	const job = Array.isArray(payment.job) ? payment.job[0] : payment.job;
 
 	// Fetch all related data
@@ -132,7 +136,7 @@ export async function PaymentDetailData({ paymentId }: PaymentDetailDataProps) {
               number_of_payments,
               invoice:invoices!invoice_id(id, invoice_number)
             )
-          `
+          `,
 					)
 					.eq("id", payment.payment_plan_schedule_id)
 					.single()

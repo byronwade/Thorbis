@@ -3,7 +3,10 @@
 import { CalendarClock, Route, Sandwich, Timer } from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
-import { getAvailabilitySettings, updateAvailabilitySettings } from "@/actions/settings";
+import {
+	getAvailabilitySettings,
+	updateAvailabilitySettings,
+} from "@/actions/settings";
 import { SettingsPageLayout } from "@/components/settings/settings-page-layout";
 import {
 	Breadcrumb,
@@ -14,7 +17,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -32,40 +41,58 @@ type AvailabilityClientProps = {
 	initialSettings: Partial<AvailabilitySettingsState> | null;
 };
 
-export function AvailabilityClient({ initialSettings }: AvailabilityClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<AvailabilitySettingsState>({
-			getter: getAvailabilitySettings,
-			setter: updateAvailabilitySettings,
-			initialState: DEFAULT_AVAILABILITY_SETTINGS,
-			settingsName: "schedule availability",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapAvailabilitySettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("defaultWorkHours", serializeWorkHours(state.week));
-				formData.append(
-					"defaultAppointmentDurationMinutes",
-					state.defaultAppointmentDurationMinutes.toString()
-				);
-				formData.append("bufferTimeMinutes", state.bufferTimeMinutes.toString());
-				formData.append("minBookingNoticeHours", state.minBookingNoticeHours.toString());
-				formData.append("maxBookingAdvanceDays", state.maxBookingAdvanceDays.toString());
-				formData.append("lunchBreakEnabled", state.lunchBreakEnabled.toString());
-				formData.append("lunchBreakStart", state.lunchBreakStart);
-				formData.append("lunchBreakDurationMinutes", state.lunchBreakDurationMinutes.toString());
-				return formData;
-			},
-		});
+export function AvailabilityClient({
+	initialSettings,
+}: AvailabilityClientProps) {
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<AvailabilitySettingsState>({
+		getter: getAvailabilitySettings,
+		setter: updateAvailabilitySettings,
+		initialState: DEFAULT_AVAILABILITY_SETTINGS,
+		settingsName: "schedule availability",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapAvailabilitySettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("defaultWorkHours", serializeWorkHours(state.week));
+			formData.append(
+				"defaultAppointmentDurationMinutes",
+				state.defaultAppointmentDurationMinutes.toString(),
+			);
+			formData.append("bufferTimeMinutes", state.bufferTimeMinutes.toString());
+			formData.append(
+				"minBookingNoticeHours",
+				state.minBookingNoticeHours.toString(),
+			);
+			formData.append(
+				"maxBookingAdvanceDays",
+				state.maxBookingAdvanceDays.toString(),
+			);
+			formData.append("lunchBreakEnabled", state.lunchBreakEnabled.toString());
+			formData.append("lunchBreakStart", state.lunchBreakStart);
+			formData.append(
+				"lunchBreakDurationMinutes",
+				state.lunchBreakDurationMinutes.toString(),
+			);
+			return formData;
+		},
+	});
 
 	const updateDay = useCallback(
 		(index: number, updates: Partial<DayAvailability>) => {
 			const nextWeek = settings.week.map((day, idx) =>
-				idx === index ? { ...day, ...updates } : day
+				idx === index ? { ...day, ...updates } : day,
 			);
 			updateSetting("week", nextWeek);
 		},
-		[settings.week, updateSetting]
+		[settings.week, updateSetting],
 	);
 
 	const handleSave = useCallback(() => {
@@ -119,7 +146,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 						<CalendarClock className="size-4" />
 						Weekly hours
 					</CardTitle>
-					<CardDescription>Toggle standard operating hours for each day of week</CardDescription>
+					<CardDescription>
+						Toggle standard operating hours for each day of week
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{settings.week.map((day, index) => (
@@ -128,7 +157,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 								<div className="flex items-center gap-3">
 									<Switch
 										checked={day.enabled}
-										onCheckedChange={(checked) => updateDay(index, { enabled: checked })}
+										onCheckedChange={(checked) =>
+											updateDay(index, { enabled: checked })
+										}
 									/>
 									<p className="text-sm font-medium">{day.label}</p>
 								</div>
@@ -136,14 +167,18 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 									<div className="flex flex-wrap items-center gap-3">
 										<Input
 											className="w-28"
-											onChange={(event) => updateDay(index, { start: event.target.value })}
+											onChange={(event) =>
+												updateDay(index, { start: event.target.value })
+											}
 											type="time"
 											value={day.start}
 										/>
 										<span className="text-muted-foreground text-sm">to</span>
 										<Input
 											className="w-28"
-											onChange={(event) => updateDay(index, { end: event.target.value })}
+											onChange={(event) =>
+												updateDay(index, { end: event.target.value })
+											}
 											type="time"
 											value={day.end}
 										/>
@@ -152,7 +187,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 									<p className="text-muted-foreground text-sm">Marked closed</p>
 								)}
 							</div>
-							{index < settings.week.length - 1 && <Separator className="my-4" />}
+							{index < settings.week.length - 1 && (
+								<Separator className="my-4" />
+							)}
 						</div>
 					))}
 				</CardContent>
@@ -164,7 +201,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 						<Route className="size-4" />
 						Booking windows
 					</CardTitle>
-					<CardDescription>How far in advance customers can schedule work</CardDescription>
+					<CardDescription>
+						How far in advance customers can schedule work
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="grid gap-4 md:grid-cols-2">
 					<div>
@@ -173,7 +212,10 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 							className="mt-2"
 							min={0}
 							onChange={(event) =>
-								updateSetting("minBookingNoticeHours", Number(event.target.value))
+								updateSetting(
+									"minBookingNoticeHours",
+									Number(event.target.value),
+								)
 							}
 							type="number"
 							value={settings.minBookingNoticeHours}
@@ -185,7 +227,10 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 							className="mt-2"
 							min={0}
 							onChange={(event) =>
-								updateSetting("maxBookingAdvanceDays", Number(event.target.value))
+								updateSetting(
+									"maxBookingAdvanceDays",
+									Number(event.target.value),
+								)
 							}
 							type="number"
 							value={settings.maxBookingAdvanceDays}
@@ -211,7 +256,10 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 							className="mt-2"
 							min={15}
 							onChange={(event) =>
-								updateSetting("defaultAppointmentDurationMinutes", Number(event.target.value))
+								updateSetting(
+									"defaultAppointmentDurationMinutes",
+									Number(event.target.value),
+								)
 							}
 							type="number"
 							value={settings.defaultAppointmentDurationMinutes}
@@ -222,7 +270,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 						<Input
 							className="mt-2"
 							min={0}
-							onChange={(event) => updateSetting("bufferTimeMinutes", Number(event.target.value))}
+							onChange={(event) =>
+								updateSetting("bufferTimeMinutes", Number(event.target.value))
+							}
 							type="number"
 							value={settings.bufferTimeMinutes}
 						/>
@@ -236,7 +286,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 						<Sandwich className="size-4" />
 						Lunch break
 					</CardTitle>
-					<CardDescription>Apply a midday break across the schedule</CardDescription>
+					<CardDescription>
+						Apply a midday break across the schedule
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between rounded-lg border p-3">
@@ -248,7 +300,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 						</div>
 						<Switch
 							checked={settings.lunchBreakEnabled}
-							onCheckedChange={(checked) => updateSetting("lunchBreakEnabled", checked)}
+							onCheckedChange={(checked) =>
+								updateSetting("lunchBreakEnabled", checked)
+							}
 						/>
 					</div>
 
@@ -258,7 +312,9 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 								<Label>Start</Label>
 								<Input
 									className="mt-2 w-32"
-									onChange={(event) => updateSetting("lunchBreakStart", event.target.value)}
+									onChange={(event) =>
+										updateSetting("lunchBreakStart", event.target.value)
+									}
 									type="time"
 									value={settings.lunchBreakStart}
 								/>
@@ -269,7 +325,10 @@ export function AvailabilityClient({ initialSettings }: AvailabilityClientProps)
 									className="mt-2 w-32"
 									min={15}
 									onChange={(event) =>
-										updateSetting("lunchBreakDurationMinutes", Number(event.target.value))
+										updateSetting(
+											"lunchBreakDurationMinutes",
+											Number(event.target.value),
+										)
 									}
 									type="number"
 									value={settings.lunchBreakDurationMinutes}

@@ -70,7 +70,7 @@ function formatDate(value: any): string {
 export function renderCustomColumn(
 	item: any,
 	fieldPath: string,
-	columnFormat?: string
+	columnFormat?: string,
 ): React.ReactNode {
 	const value = getNestedValue(item, fieldPath);
 
@@ -84,15 +84,27 @@ export function renderCustomColumn(
 			return <span className="text-xs">{formatDate(value)}</span>;
 
 		case "currency":
-			return <span className="font-mono text-xs tabular-nums">{formatCurrency(value)}</span>;
+			return (
+				<span className="font-mono text-xs tabular-nums">
+					{formatCurrency(value)}
+				</span>
+			);
 
 		case "number":
-			return <span className="font-mono text-xs tabular-nums">{formatNumber(value)}</span>;
+			return (
+				<span className="font-mono text-xs tabular-nums">
+					{formatNumber(value)}
+				</span>
+			);
 
 		case "badge":
 			// Handle boolean values
 			if (typeof value === "boolean") {
-				return <Badge variant={value ? "default" : "secondary"}>{value ? "Yes" : "No"}</Badge>;
+				return (
+					<Badge variant={value ? "default" : "secondary"}>
+						{value ? "Yes" : "No"}
+					</Badge>
+				);
 			}
 			// Handle string values as badges
 			return (

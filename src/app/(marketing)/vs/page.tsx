@@ -2,7 +2,13 @@ import Link from "next/link";
 import Script from "next/script";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { getAllCompetitors } from "@/lib/marketing/competitors";
 import {
 	generateBreadcrumbStructuredData,
@@ -35,7 +41,7 @@ export default function CompetitorOverviewPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Comparisons", url: `${siteUrl}/vs` },
-						])
+						]),
 					),
 				}}
 				id="competitor-breadcrumb-ld"
@@ -50,9 +56,10 @@ export default function CompetitorOverviewPage() {
 						Choose a partner built for the next decade of field service
 					</h1>
 					<p className="text-muted-foreground mt-4 text-lg">
-						Thorbis delivers AI-powered automation, transparent pricing, and rapid innovation.
-						Explore detailed head-to-head comparisons to decide if now is the right time to upgrade.
-						Switching means a flat $100/month base subscription with pay-as-you-go usage—no per-user
+						Thorbis delivers AI-powered automation, transparent pricing, and
+						rapid innovation. Explore detailed head-to-head comparisons to
+						decide if now is the right time to upgrade. Switching means a flat
+						$100/month base subscription with pay-as-you-go usage—no per-user
 						fees and no lock-in contracts.
 					</p>
 					<div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -74,14 +81,20 @@ export default function CompetitorOverviewPage() {
 							<CardHeader className="space-y-4">
 								<div className="text-primary flex items-center gap-3">
 									<Badge variant="secondary">{competitor.competitorName}</Badge>
-									<span className="text-muted-foreground text-sm">vs Thorbis</span>
+									<span className="text-muted-foreground text-sm">
+										vs Thorbis
+									</span>
 								</div>
-								<CardTitle className="text-2xl">{competitor.heroTitle}</CardTitle>
+								<CardTitle className="text-2xl">
+									{competitor.heroTitle}
+								</CardTitle>
 								<CardDescription>{competitor.summary}</CardDescription>
 							</CardHeader>
 							<CardContent className="flex flex-col gap-4">
 								<div>
-									<p className="text-muted-foreground text-sm font-medium">Ideal for teams who:</p>
+									<p className="text-muted-foreground text-sm font-medium">
+										Ideal for teams who:
+									</p>
 									<ul className="text-muted-foreground mt-2 space-y-1 text-sm">
 										{competitor.idealCustomerProfile.slice(0, 2).map((item) => (
 											<li className="flex gap-2" key={item}>

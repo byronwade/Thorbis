@@ -78,7 +78,10 @@ export async function getCompanyWeather(): Promise<WeatherActionResult> {
 
 		if (!(company?.lat && company.lon)) {
 			// Default to San Francisco if no location set (for demo purposes)
-			const weatherData = await weatherService.getWeatherData(37.7749, -122.4194);
+			const weatherData = await weatherService.getWeatherData(
+				37.7749,
+				-122.4194,
+			);
 
 			if (!weatherData) {
 				return { success: false, error: "Failed to fetch weather data" };
@@ -88,7 +91,10 @@ export async function getCompanyWeather(): Promise<WeatherActionResult> {
 		}
 
 		// Fetch weather data for company location
-		const weatherData = await weatherService.getWeatherData(company.lat, company.lon);
+		const weatherData = await weatherService.getWeatherData(
+			company.lat,
+			company.lon,
+		);
 
 		if (!weatherData) {
 			return { success: false, error: "Failed to fetch weather data" };

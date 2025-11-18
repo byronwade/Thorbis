@@ -38,7 +38,10 @@ type InvoiceHeaderProps = {
 
 export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 	// Get overdue status
-	const overdueStatus = getOverdueStatus(invoice.due_date, invoice.balance_amount);
+	const overdueStatus = getOverdueStatus(
+		invoice.due_date,
+		invoice.balance_amount,
+	);
 	const isOverdue = overdueStatus.showBanner;
 
 	// Format dates for input
@@ -58,8 +61,12 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 				{/* Left Column */}
 				<div className="space-y-4">
 					<div>
-						<Label className="text-muted-foreground text-sm">Invoice Number</Label>
-						<div className="mt-1 font-mono text-2xl font-bold">{invoice.invoice_number}</div>
+						<Label className="text-muted-foreground text-sm">
+							Invoice Number
+						</Label>
+						<div className="mt-1 font-mono text-2xl font-bold">
+							{invoice.invoice_number}
+						</div>
 					</div>
 
 					<div>
@@ -75,7 +82,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 
 					{job && (
 						<div>
-							<Label className="text-muted-foreground text-sm">Linked Job</Label>
+							<Label className="text-muted-foreground text-sm">
+								Linked Job
+							</Label>
 							<div className="mt-1">
 								<Badge className="text-sm" variant="outline">
 									{job.job_number}: {job.title}
@@ -92,7 +101,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 							<Calendar className="h-4 w-4" />
 							Issue Date
 						</Label>
-						<div className="mt-1 text-sm">{formatDate(invoice.created_at, "long")}</div>
+						<div className="mt-1 text-sm">
+							{formatDate(invoice.created_at, "long")}
+						</div>
 					</div>
 
 					<div>
@@ -114,7 +125,9 @@ export function InvoiceHeader({ invoice, onUpdate, job }: InvoiceHeaderProps) {
 							value={formatDateForInput(invoice.due_date)}
 						/>
 						{isOverdue && (
-							<p className={`mt-1 text-sm font-medium ${overdueStatus.colors.text}`}>
+							<p
+								className={`mt-1 text-sm font-medium ${overdueStatus.colors.text}`}
+							>
 								{overdueStatus.message}
 							</p>
 						)}

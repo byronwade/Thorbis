@@ -56,7 +56,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 import { cn } from "@/lib/utils";
 
-export type MessageStatus = "sending" | "sent" | "delivered" | "read" | "failed";
+export type MessageStatus =
+	| "sending"
+	| "sent"
+	| "delivered"
+	| "read"
+	| "failed";
 export type MessageDirection = "sent" | "received";
 type MediaType = "image" | "video" | "file";
 
@@ -103,25 +108,33 @@ export function SMSThreadView({
 	companyPhones,
 	onMessageCreated,
 }: SMSThreadViewProps) {
-	const [selectedConversationId, setSelectedConversationId] = useState<string | null>(
-		threads[0]?.id ?? null
-	);
+	const [selectedConversationId, setSelectedConversationId] = useState<
+		string | null
+	>(threads[0]?.id ?? null);
 	const [messageText, setMessageText] = useState("");
 	const [conversationFilter, setConversationFilter] = useState("");
 	const [isTyping, setIsTyping] = useState(false);
-	const [selectedSender, setSelectedSender] = useState(companyPhones[0]?.number ?? "");
+	const [selectedSender, setSelectedSender] = useState(
+		companyPhones[0]?.number ?? "",
+	);
 	const [isSending, startSending] = useTransition();
 	const { toast } = useToast();
 	const messagesEndRef = useRef<HTMLDivElement>(null);
-	const addPendingMessage = useCommunicationStore((state) => state.addPendingMessage);
+	const addPendingMessage = useCommunicationStore(
+		(state) => state.addPendingMessage,
+	);
 	useEffect(() => {
 		if (!companyPhones.find((phone) => phone.number === selectedSender)) {
 			setSelectedSender(companyPhones[0]?.number ?? "");
 		}
 	}, [companyPhones, selectedSender]);
 
-	const resolvePendingMessage = useCommunicationStore((state) => state.resolvePendingMessage);
-	const setActiveThreadId = useCommunicationStore((state) => state.setActiveThreadId);
+	const resolvePendingMessage = useCommunicationStore(
+		(state) => state.resolvePendingMessage,
+	);
+	const setActiveThreadId = useCommunicationStore(
+		(state) => state.setActiveThreadId,
+	);
 
 	const filteredThreads = useMemo(() => {
 		if (!conversationFilter.trim()) {
@@ -131,7 +144,7 @@ export function SMSThreadView({
 		return threads.filter(
 			(thread) =>
 				thread.contactName.toLowerCase().includes(query) ||
-				thread.contactNumber.toLowerCase().includes(query)
+				thread.contactNumber.toLowerCase().includes(query),
 		);
 	}, [threads, conversationFilter]);
 
@@ -159,7 +172,10 @@ export function SMSThreadView({
 	}, [filteredThreads, selectedConversation]);
 
 	const handleSendMessage = () => {
-		if (!(selectedConversation && messageText.trim() && selectedSender) || isSending) {
+		if (
+			!(selectedConversation && messageText.trim() && selectedSender) ||
+			isSending
+		) {
 			return;
 		}
 
@@ -211,8 +227,8 @@ export function SMSThreadView({
 					mapOutboundCommunicationRecord(
 						result.data as Record<string, unknown>,
 						selectedConversation,
-						selectedSender
-					)
+						selectedSender,
+					),
 				);
 			} else {
 				resolvePendingMessage(selectedConversation.id, tempId);
@@ -251,7 +267,7 @@ export function SMSThreadView({
 							<button
 								className={cn(
 									"hover:bg-muted/50 flex w-full items-start gap-3 p-3 text-left transition-colors",
-									selectedConversation?.id === conv.id && "bg-muted"
+									selectedConversation?.id === conv.id && "bg-muted",
 								)}
 								key={conv.id}
 								onClick={() => setSelectedConversationId(conv.id)}
@@ -272,7 +288,9 @@ export function SMSThreadView({
 									</div>
 
 									<div className="flex items-center justify-between">
-										<p className="text-muted-foreground line-clamp-1 text-sm">{conv.lastMessage}</p>
+										<p className="text-muted-foreground line-clamp-1 text-sm">
+											{conv.lastMessage}
+										</p>
 										{conv.unreadCount > 0 && (
 											<Badge className="ml-2 size-5 rounded-full p-0 text-xs">
 												{conv.unreadCount}
@@ -293,10 +311,14 @@ export function SMSThreadView({
 					<div className="bg-background flex items-center justify-between border-b px-4 py-3">
 						<div className="flex items-center gap-3">
 							<Avatar>
-								<AvatarFallback>{selectedConversation.contactInitials}</AvatarFallback>
+								<AvatarFallback>
+									{selectedConversation.contactInitials}
+								</AvatarFallback>
 							</Avatar>
 							<div>
-								<div className="font-medium">{selectedConversation.contactName}</div>
+								<div className="font-medium">
+									{selectedConversation.contactName}
+								</div>
 								<div className="text-muted-foreground text-xs">
 									{selectedConversation.contactNumber}
 								</div>
@@ -333,7 +355,10 @@ export function SMSThreadView({
 									contactInitials={selectedConversation.contactInitials}
 									key={message.id}
 									message={message}
-									showAvatar={index === 0 || messages[index - 1].direction !== message.direction}
+									showAvatar={
+										index === 0 ||
+										messages[index - 1].direction !== message.direction
+									}
 								/>
 							))}
 
@@ -364,8 +389,8 @@ export function SMSThreadView({
 						<div className="mx-auto flex max-w-4xl flex-col gap-3">
 							{companyPhones.length === 0 && (
 								<div className="border-warning/40 bg-warning/10 text-warning dark:border-warning/60 dark:bg-warning/15 rounded-md border px-3 py-2 text-xs">
-									Add a company phone number in Settings → Communications → Phone Numbers to send
-									text messages.
+									Add a company phone number in Settings → Communications →
+									Phone Numbers to send text messages.
 								</div>
 							)}
 							<div className="flex items-center gap-2">
@@ -413,7 +438,11 @@ export function SMSThreadView({
 								<div className="flex flex-1 justify-end">
 									<Button
 										disabled={
-											!(messageText.trim() && selectedConversation && selectedSender) ||
+											!(
+												messageText.trim() &&
+												selectedConversation &&
+												selectedSender
+											) ||
 											companyPhones.length === 0 ||
 											isSending
 										}
@@ -467,7 +496,9 @@ function MessageBubble({
 			{!isSent && (
 				<Avatar className="size-8">
 					{showAvatar ? (
-						<AvatarFallback className="text-xs">{contactInitials}</AvatarFallback>
+						<AvatarFallback className="text-xs">
+							{contactInitials}
+						</AvatarFallback>
 					) : (
 						<div className="size-8" />
 					)}
@@ -490,11 +521,13 @@ function MessageBubble({
 					<Card
 						className={cn(
 							"relative",
-							isSent ? "bg-primary text-primary-foreground" : "bg-background"
+							isSent ? "bg-primary text-primary-foreground" : "bg-background",
 						)}
 					>
 						<CardContent className="p-3">
-							<p className="text-sm break-words whitespace-pre-wrap">{message.content}</p>
+							<p className="text-sm break-words whitespace-pre-wrap">
+								{message.content}
+							</p>
 						</CardContent>
 					</Card>
 				)}
@@ -503,7 +536,7 @@ function MessageBubble({
 				<div
 					className={cn(
 						"text-muted-foreground flex items-center gap-1 px-1 text-xs",
-						isSent && "justify-end"
+						isSent && "justify-end",
 					)}
 				>
 					<span>{formatMessageTime(message.timestamp)}</span>
@@ -517,7 +550,11 @@ function MessageBubble({
 	);
 }
 
-function MediaAttachment({ media }: { media: NonNullable<ThreadMessage["media"]>[0] }) {
+function MediaAttachment({
+	media,
+}: {
+	media: NonNullable<ThreadMessage["media"]>[0];
+}) {
 	if (media.type === "image") {
 		return (
 			<Card className="overflow-hidden">
@@ -541,9 +578,13 @@ function MediaAttachment({ media }: { media: NonNullable<ThreadMessage["media"]>
 					<File className="text-muted-foreground size-10" />
 				)}
 				<div className="min-w-0 flex-1">
-					<div className="truncate text-sm font-medium">{media.fileName || "Attachment"}</div>
+					<div className="truncate text-sm font-medium">
+						{media.fileName || "Attachment"}
+					</div>
 					{media.fileSize && (
-						<div className="text-muted-foreground text-xs">{formatFileSize(media.fileSize)}</div>
+						<div className="text-muted-foreground text-xs">
+							{formatFileSize(media.fileSize)}
+						</div>
 					)}
 				</div>
 			</CardContent>
@@ -616,17 +657,24 @@ function formatFileSize(bytes: number): string {
 function mapOutboundCommunicationRecord(
 	data: Record<string, unknown>,
 	thread: ConversationThread,
-	fromNumber: string
+	fromNumber: string,
 ): CommunicationRecord {
-	const createdAt = (data.created_at as string | undefined) ?? new Date().toISOString();
-	const fromAddress = (data.from_address as string | undefined) ?? fromNumber ?? null;
+	const createdAt =
+		(data.created_at as string | undefined) ?? new Date().toISOString();
+	const fromAddress =
+		(data.from_address as string | undefined) ?? fromNumber ?? null;
 	const toAddress =
-		(data.to_address as string | undefined) ?? thread.contactNumberRaw ?? thread.contactNumber;
+		(data.to_address as string | undefined) ??
+		thread.contactNumberRaw ??
+		thread.contactNumber;
 
 	return {
 		id: String(data.id),
 		type: (data.type as string) ?? "sms",
-		direction: ((data.direction as string) ?? "outbound") === "inbound" ? "inbound" : "outbound",
+		direction:
+			((data.direction as string) ?? "outbound") === "inbound"
+				? "inbound"
+				: "outbound",
 		status: (data.status as string) ?? "queued",
 		priority: ((data.priority as string) ?? null) as string | null,
 		subject: (data.subject as string) ?? null,
@@ -635,7 +683,8 @@ function mapOutboundCommunicationRecord(
 		read_at: (data.read_at as string | null) ?? null,
 		from_address: fromAddress,
 		to_address: toAddress,
-		customer_id: thread.customerId ?? (data.customer_id as string | null) ?? null,
+		customer_id:
+			thread.customerId ?? (data.customer_id as string | null) ?? null,
 		phone_number_id: (data.phone_number_id as string | null) ?? null,
 		job_id: (data.job_id as string | null) ?? null,
 		property_id: (data.property_id as string | null) ?? null,
@@ -649,9 +698,12 @@ function mapOutboundCommunicationRecord(
 					last_name: null,
 				}
 			: null,
-		telnyx_call_control_id: (data.telnyx_call_control_id as string | null) ?? null,
-		telnyx_call_session_id: (data.telnyx_call_session_id as string | null) ?? null,
+		telnyx_call_control_id:
+			(data.telnyx_call_control_id as string | null) ?? null,
+		telnyx_call_session_id:
+			(data.telnyx_call_session_id as string | null) ?? null,
 		call_recording_url: (data.call_recording_url as string | null) ?? null,
-		provider_metadata: (data.provider_metadata as Record<string, unknown> | null) ?? null,
+		provider_metadata:
+			(data.provider_metadata as Record<string, unknown> | null) ?? null,
 	};
 }

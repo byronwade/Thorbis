@@ -7,8 +7,8 @@
 import { Wrench } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerMaintenancePlans } from "@/hooks/use-customer-360";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
@@ -43,7 +43,9 @@ export function CustomerMaintenancePlansWidget({
 					);
 				if (!plans || plans.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No maintenance plans</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No maintenance plans
+						</div>
 					);
 
 				return (
@@ -56,7 +58,9 @@ export function CustomerMaintenancePlansWidget({
 							>
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
-										<span className="text-sm font-medium">{plan.name || "Unnamed Plan"}</span>
+										<span className="text-sm font-medium">
+											{plan.name || "Unnamed Plan"}
+										</span>
 										<Badge variant="outline" className="text-xs">
 											{plan.status || "active"}
 										</Badge>
@@ -76,7 +80,9 @@ export function CustomerMaintenancePlansWidget({
 
 						{plans.length >= 10 && (
 							<Button variant="outline" size="sm" className="w-full" asChild>
-								<Link href={`/dashboard/work/maintenance-plans?customer=${customerId}`}>
+								<Link
+									href={`/dashboard/work/maintenance-plans?customer=${customerId}`}
+								>
 									View All Plans
 								</Link>
 							</Button>

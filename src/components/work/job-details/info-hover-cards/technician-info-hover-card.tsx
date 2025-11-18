@@ -9,7 +9,11 @@ import { Check, Copy, Mail, Phone, User, Users } from "lucide-react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Separator } from "@/components/ui/separator";
 
 type TechnicianInfoHoverCardProps = {
@@ -50,10 +54,13 @@ export function TechnicianInfoHoverCard({
 
 	// If we have a primary technician, show them
 	const primaryTech = technician;
-	const additionalTeam = teamMembers.filter((member) => member.user_id !== technician?.id);
+	const additionalTeam = teamMembers.filter(
+		(member) => member.user_id !== technician?.id,
+	);
 
 	const displayName = primaryTech
-		? `${primaryTech.first_name || ""} ${primaryTech.last_name || ""}`.trim() || "Technician"
+		? `${primaryTech.first_name || ""} ${primaryTech.last_name || ""}`.trim() ||
+			"Technician"
 		: "Team";
 
 	const getInitials = (firstName?: string | null, lastName?: string | null) =>
@@ -67,7 +74,11 @@ export function TechnicianInfoHoverCard({
 	return (
 		<HoverCard openDelay={200}>
 			<HoverCardTrigger asChild>
-				<Button className="inline-flex items-center gap-2 rounded-full" size="sm" variant="outline">
+				<Button
+					className="inline-flex items-center gap-2 rounded-full"
+					size="sm"
+					variant="outline"
+				>
 					{primaryTech ? (
 						<>
 							<User className="size-4" />
@@ -76,7 +87,8 @@ export function TechnicianInfoHoverCard({
 					) : (
 						<>
 							<Users className="size-4" />
-							{teamMembers.length} Team {teamMembers.length === 1 ? "Member" : "Members"}
+							{teamMembers.length} Team{" "}
+							{teamMembers.length === 1 ? "Member" : "Members"}
 						</>
 					)}
 				</Button>
@@ -88,7 +100,10 @@ export function TechnicianInfoHoverCard({
 						<>
 							<div className="flex items-start gap-3">
 								<Avatar className="size-10">
-									<AvatarImage alt={displayName} src={primaryTech.avatar_url ?? undefined} />
+									<AvatarImage
+										alt={displayName}
+										src={primaryTech.avatar_url ?? undefined}
+									/>
 									<AvatarFallback>
 										{getInitials(primaryTech.first_name, primaryTech.last_name)}
 									</AvatarFallback>
@@ -96,7 +111,9 @@ export function TechnicianInfoHoverCard({
 								<div className="flex-1">
 									<h4 className="text-sm font-semibold">{displayName}</h4>
 									{primaryTech.role && (
-										<p className="text-muted-foreground text-xs capitalize">{primaryTech.role}</p>
+										<p className="text-muted-foreground text-xs capitalize">
+											{primaryTech.role}
+										</p>
 									)}
 								</div>
 							</div>
@@ -192,7 +209,10 @@ export function TechnicianInfoHoverCard({
 														src={member.users?.avatar_url ?? undefined}
 													/>
 													<AvatarFallback className="text-xs">
-														{getInitials(member.users?.first_name, member.users?.last_name)}
+														{getInitials(
+															member.users?.first_name,
+															member.users?.last_name,
+														)}
 													</AvatarFallback>
 												</Avatar>
 												<div className="flex-1">
@@ -222,18 +242,29 @@ export function TechnicianInfoHoverCard({
 								const memberPhone = member.users?.phone;
 
 								return (
-									<div className="space-y-2 rounded-md border p-3" key={member.id}>
+									<div
+										className="space-y-2 rounded-md border p-3"
+										key={member.id}
+									>
 										<div className="flex items-center gap-2">
 											<Avatar className="size-8">
-												<AvatarImage alt={memberName} src={member.users?.avatar_url ?? undefined} />
+												<AvatarImage
+													alt={memberName}
+													src={member.users?.avatar_url ?? undefined}
+												/>
 												<AvatarFallback className="text-xs">
-													{getInitials(member.users?.first_name, member.users?.last_name)}
+													{getInitials(
+														member.users?.first_name,
+														member.users?.last_name,
+													)}
 												</AvatarFallback>
 											</Avatar>
 											<div className="flex-1">
 												<p className="text-sm font-medium">{memberName}</p>
 												{member.role && (
-													<p className="text-muted-foreground text-xs capitalize">{member.role}</p>
+													<p className="text-muted-foreground text-xs capitalize">
+														{member.role}
+													</p>
 												)}
 											</div>
 										</div>

@@ -118,7 +118,9 @@ export function CustomPaymentForm({
 				setIsProcessing(false);
 			}
 		} catch (err) {
-			onError(err instanceof Error ? err.message : "An unexpected error occurred");
+			onError(
+				err instanceof Error ? err.message : "An unexpected error occurred",
+			);
 			setIsProcessing(false);
 		}
 	};

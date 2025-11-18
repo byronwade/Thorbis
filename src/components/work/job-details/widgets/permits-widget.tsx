@@ -10,7 +10,14 @@
  * - Minimal JavaScript to client
  */
 
-import { AlertCircle, CheckCircle2, Clock, FileCheck, FileText, XCircle } from "lucide-react";
+import {
+	AlertCircle,
+	CheckCircle2,
+	Clock,
+	FileCheck,
+	FileText,
+	XCircle,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +32,12 @@ type PermitsWidgetProps = {
 };
 
 // Permit status types
-type PermitStatus = "pending" | "submitted" | "approved" | "rejected" | "expired";
+type PermitStatus =
+	| "pending"
+	| "submitted"
+	| "approved"
+	| "rejected"
+	| "expired";
 
 // Mock permit type (in production, fetch from permits table)
 type Permit = {
@@ -130,7 +142,8 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 	// Calculate permit progress
 	const totalPermits = permits.length;
 	const approvedPermits = permits.filter((p) => p.status === "approved").length;
-	const progressPercentage = totalPermits > 0 ? (approvedPermits / totalPermits) * 100 : 0;
+	const progressPercentage =
+		totalPermits > 0 ? (approvedPermits / totalPermits) * 100 : 0;
 
 	function getDaysUntilExpiry(date?: Date): number | null {
 		if (!date) {
@@ -145,8 +158,12 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<FileCheck className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-					<p className="text-muted-foreground mb-2 text-sm">No permits required</p>
-					<p className="text-muted-foreground mb-3 text-xs">This job doesn't require any permits</p>
+					<p className="text-muted-foreground mb-2 text-sm">
+						No permits required
+					</p>
+					<p className="text-muted-foreground mb-3 text-xs">
+						This job doesn't require any permits
+					</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/work/${job.id}/permits`}>
 							<FileText className="mr-2 size-4" />
@@ -185,7 +202,8 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 					const config = statusConfig[permit.status];
 					const Icon = config.icon;
 					const daysUntilExpiry = getDaysUntilExpiry(permit.expiryDate);
-					const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 30;
+					const isExpiringSoon =
+						daysUntilExpiry !== null && daysUntilExpiry <= 30;
 
 					return (
 						<div className="space-y-2 rounded-lg border p-3" key={permit.id}>
@@ -197,7 +215,9 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 									</div>
 									<div>
 										<h5 className="text-sm font-medium">{permit.name}</h5>
-										<p className="text-muted-foreground text-xs">{permit.type}</p>
+										<p className="text-muted-foreground text-xs">
+											{permit.type}
+										</p>
 									</div>
 								</div>
 								<Badge className="text-xs" variant={config.variant}>
@@ -210,7 +230,9 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 								{permit.permitNumber && (
 									<div className="flex justify-between">
 										<span className="text-muted-foreground">Permit #:</span>
-										<span className="font-mono font-medium">{permit.permitNumber}</span>
+										<span className="font-mono font-medium">
+											{permit.permitNumber}
+										</span>
 									</div>
 								)}
 
@@ -222,7 +244,9 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 								{permit.submittedDate && (
 									<div className="flex justify-between">
 										<span className="text-muted-foreground">Submitted:</span>
-										<span className="font-medium">{formatDate(permit.submittedDate)}</span>
+										<span className="font-medium">
+											{formatDate(permit.submittedDate)}
+										</span>
 									</div>
 								)}
 
@@ -238,7 +262,9 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 								{permit.expiryDate && (
 									<div className="flex justify-between">
 										<span className="text-muted-foreground">Expires:</span>
-										<span className={`font-medium ${isExpiringSoon ? "text-warning" : ""}`}>
+										<span
+											className={`font-medium ${isExpiringSoon ? "text-warning" : ""}`}
+										>
 											{formatDate(permit.expiryDate)}
 											{isExpiringSoon && ` (${daysUntilExpiry}d)`}
 										</span>
@@ -248,13 +274,17 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 								{permit.fee && (
 									<div className="flex justify-between">
 										<span className="text-muted-foreground">Fee:</span>
-										<span className="font-medium">${permit.fee.toFixed(2)}</span>
+										<span className="font-medium">
+											${permit.fee.toFixed(2)}
+										</span>
 									</div>
 								)}
 
 								{permit.notes && (
 									<div className="bg-muted mt-2 rounded p-2">
-										<p className="text-muted-foreground text-xs leading-relaxed">{permit.notes}</p>
+										<p className="text-muted-foreground text-xs leading-relaxed">
+											{permit.notes}
+										</p>
 									</div>
 								)}
 							</div>
@@ -277,7 +307,8 @@ export function PermitsWidget({ job }: PermitsWidgetProps) {
 								Permits Expiring Soon
 							</p>
 							<p className="text-warning dark:text-warning text-xs">
-								Some permits will expire within 30 days. Renew them to avoid delays.
+								Some permits will expire within 30 days. Renew them to avoid
+								delays.
 							</p>
 						</div>
 					</div>

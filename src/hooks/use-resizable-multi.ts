@@ -41,7 +41,7 @@ const DEFAULT_SNAP_THRESHOLD = 30;
 export function useResizableMulti(
 	currentPosition: { x: number; y: number },
 	currentHeight: number,
-	options: UseResizableMultiOptions = {}
+	options: UseResizableMultiOptions = {},
 ) {
 	const {
 		minWidth = DEFAULT_MIN_WIDTH,
@@ -54,11 +54,14 @@ export function useResizableMulti(
 	} = options;
 
 	const width = useCallPreferencesStore((state) => state.popoverWidth);
-	const setPopoverWidth = useCallPreferencesStore((state) => state.setPopoverWidth);
+	const setPopoverWidth = useCallPreferencesStore(
+		(state) => state.setPopoverWidth,
+	);
 	const setPosition = useCallPreferencesStore((state) => state.setPosition);
 
 	const [isResizing, setIsResizing] = useState(false);
-	const [activeDirection, setActiveDirection] = useState<ResizeDirection | null>(null);
+	const [activeDirection, setActiveDirection] =
+		useState<ResizeDirection | null>(null);
 
 	// Local state for instant updates during resize (no store latency)
 	const [localState, setLocalState] = useState({
@@ -89,7 +92,7 @@ export function useResizableMulti(
 			}
 			return value;
 		},
-		[snapPoints, snapThreshold]
+		[snapPoints, snapThreshold],
 	);
 
 	// Sync local state with props when not resizing
@@ -126,7 +129,7 @@ export function useResizableMulti(
 				posY: localState.y,
 			};
 		},
-		[localState]
+		[localState],
 	);
 
 	// Calculate new dimensions based on direction
@@ -183,7 +186,7 @@ export function useResizableMulti(
 
 			return { width: newWidth, height: newHeight, x: newX, y: newY };
 		},
-		[minWidth, maxWidth, minHeight, maxHeight, applySnap]
+		[minWidth, maxWidth, minHeight, maxHeight, applySnap],
 	);
 
 	// Use refs for callbacks to prevent listener stacking (CRITICAL FIX)
@@ -226,14 +229,23 @@ export function useResizableMulti(
 				const deltaX = clientX - startRef.current.x;
 				const deltaY = clientY - startRef.current.y;
 
-				const newState = calculateResizeRef.current(deltaX, deltaY, activeDirection);
+				const newState = calculateResizeRef.current(
+					deltaX,
+					deltaY,
+					activeDirection,
+				);
 
 				// Update local state (no store update = fast)
 				setLocalState(newState);
 				localStateRef.current = newState;
 
 				// Trigger callback for other updates (like height state in parent)
-				onResizeRef.current?.(newState.width, newState.height, newState.x, newState.y);
+				onResizeRef.current?.(
+					newState.width,
+					newState.height,
+					newState.x,
+					newState.y,
+				);
 			});
 		};
 
@@ -281,7 +293,7 @@ export function useResizableMulti(
 			onMouseDown: (e: React.MouseEvent) => handleResizeStart(e, direction),
 			onTouchStart: (e: React.TouchEvent) => handleResizeStart(e, direction),
 		}),
-		[handleResizeStart]
+		[handleResizeStart],
 	);
 
 	return {

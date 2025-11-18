@@ -3,7 +3,13 @@
 import { DollarSign, FileText, Save, Users } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
 	Select,
@@ -56,7 +62,9 @@ export function QuickBooksSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Sync Payments</Label>
-							<p className="text-muted-foreground text-sm">Sync payment records and transactions</p>
+							<p className="text-muted-foreground text-sm">
+								Sync payment records and transactions
+							</p>
 						</div>
 						<Switch defaultChecked />
 					</div>
@@ -78,7 +86,9 @@ export function QuickBooksSettings() {
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<Label>Sync Expenses</Label>
-							<p className="text-muted-foreground text-sm">Sync business expenses and bills</p>
+							<p className="text-muted-foreground text-sm">
+								Sync business expenses and bills
+							</p>
 						</div>
 						<Switch />
 					</div>
@@ -110,7 +120,9 @@ export function QuickBooksSettings() {
 						<DollarSign className="size-5" />
 						Account Mapping
 					</CardTitle>
-					<CardDescription>Map Thorbis accounts to QuickBooks accounts</CardDescription>
+					<CardDescription>
+						Map Thorbis accounts to QuickBooks accounts
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="space-y-2">
@@ -164,7 +176,9 @@ export function QuickBooksSettings() {
 						<Users className="size-5" />
 						Customer Settings
 					</CardTitle>
-					<CardDescription>Configure how customers are managed in QuickBooks</CardDescription>
+					<CardDescription>
+						Configure how customers are managed in QuickBooks
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					<div className="flex items-center justify-between">

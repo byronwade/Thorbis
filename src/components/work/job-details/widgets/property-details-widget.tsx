@@ -21,13 +21,17 @@ type PropertyDetailsWidgetProps = {
 	property?: Property;
 };
 
-export function PropertyDetailsWidget({ property }: PropertyDetailsWidgetProps) {
+export function PropertyDetailsWidget({
+	property,
+}: PropertyDetailsWidgetProps) {
 	if (!property) {
 		return (
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<Building2 className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-					<p className="text-muted-foreground text-sm">No property information available</p>
+					<p className="text-muted-foreground text-sm">
+						No property information available
+					</p>
 				</div>
 			</div>
 		);
@@ -52,7 +56,9 @@ export function PropertyDetailsWidget({ property }: PropertyDetailsWidgetProps) 
 						<div>
 							{property.city}, {property.state} {property.zipCode}
 						</div>
-						{property.country && property.country !== "USA" && <div>{property.country}</div>}
+						{property.country && property.country !== "USA" && (
+							<div>{property.country}</div>
+						)}
 					</div>
 				</div>
 			</div>
@@ -65,7 +71,9 @@ export function PropertyDetailsWidget({ property }: PropertyDetailsWidgetProps) 
 					<div className="flex items-center gap-2 text-sm">
 						<Home className="text-muted-foreground size-4" />
 						<span className="text-muted-foreground">Type:</span>
-						<span className="font-medium capitalize">{property.propertyType}</span>
+						<span className="font-medium capitalize">
+							{property.propertyType}
+						</span>
 					</div>
 				)}
 
@@ -74,7 +82,9 @@ export function PropertyDetailsWidget({ property }: PropertyDetailsWidgetProps) 
 					<div className="flex items-center gap-2 text-sm">
 						<Ruler className="text-muted-foreground size-4" />
 						<span className="text-muted-foreground">Size:</span>
-						<span className="font-medium">{property.squareFootage.toLocaleString()} sq ft</span>
+						<span className="font-medium">
+							{property.squareFootage.toLocaleString()} sq ft
+						</span>
 					</div>
 				)}
 
@@ -94,7 +104,9 @@ export function PropertyDetailsWidget({ property }: PropertyDetailsWidgetProps) 
 					<Separator />
 					<div className="space-y-1">
 						<h5 className="text-sm font-medium">Notes</h5>
-						<p className="text-muted-foreground text-xs leading-relaxed">{property.notes}</p>
+						<p className="text-muted-foreground text-xs leading-relaxed">
+							{property.notes}
+						</p>
 					</div>
 				</>
 			)}

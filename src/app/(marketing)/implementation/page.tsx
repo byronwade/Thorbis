@@ -152,7 +152,8 @@ const serviceLd = generateServiceStructuredData({
 		{
 			price: "Custom",
 			currency: "USD",
-			description: "Growth Accelerator and Enterprise Elite tailored to your roadmap.",
+			description:
+				"Growth Accelerator and Enterprise Elite tailored to your roadmap.",
 		},
 	],
 });
@@ -190,10 +191,11 @@ export default function ImplementationPage() {
 						Launch Thorbis in 45 days with migration experts by your side
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Dedicated migration engineers, AI strategists, and customer success coaches guide your
-						team from day-one planning to long-term optimization. Implementation is included in the
-						$100/month base subscription with pay-as-you-go usage—no surprise onboarding fees and no
-						lock-in.
+						Dedicated migration engineers, AI strategists, and customer success
+						coaches guide your team from day-one planning to long-term
+						optimization. Implementation is included in the $100/month base
+						subscription with pay-as-you-go usage—no surprise onboarding fees
+						and no lock-in.
 					</p>
 					<div className="flex flex-wrap justify-center gap-3">
 						<Button asChild size="lg">
@@ -208,17 +210,23 @@ export default function ImplementationPage() {
 				<main className="mt-16 space-y-20">
 					<section className="space-y-8">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="text-3xl font-semibold">Three-phase onboarding blueprint</h2>
+							<h2 className="text-3xl font-semibold">
+								Three-phase onboarding blueprint
+							</h2>
 							<p className="text-muted-foreground">
-								A proven implementation methodology honed with hundreds of contractors moving from
-								ServiceTitan, Housecall Pro, Jobber, and custom tools.
+								A proven implementation methodology honed with hundreds of
+								contractors moving from ServiceTitan, Housecall Pro, Jobber, and
+								custom tools.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
 							{PHASES.map((phase) => {
 								const Icon = getMarketingIcon(phase.icon);
 								return (
-									<Card className="border-primary/30 bg-primary/5" key={phase.title}>
+									<Card
+										className="border-primary/30 bg-primary/5"
+										key={phase.title}
+									>
 										<CardHeader className="space-y-3">
 											<span className="bg-primary text-primary-foreground inline-flex size-12 items-center justify-center rounded-full">
 												<Icon aria-hidden="true" className="size-6" />
@@ -245,10 +253,13 @@ export default function ImplementationPage() {
 
 					<section className="space-y-6">
 						<div className="mx-auto max-w-3xl space-y-3 text-center">
-							<h2 className="text-3xl font-semibold">Enablement resources for every role</h2>
+							<h2 className="text-3xl font-semibold">
+								Enablement resources for every role
+							</h2>
 							<p className="text-muted-foreground">
-								Technicians, dispatchers, finance, and leadership receive tailored instruction
-								through live sessions and on-demand content.
+								Technicians, dispatchers, finance, and leadership receive
+								tailored instruction through live sessions and on-demand
+								content.
 							</p>
 						</div>
 
@@ -263,7 +274,8 @@ export default function ImplementationPage() {
 								},
 								{
 									title: "Thorbis University",
-									description: "Role-based training paths with quizzes and certifications.",
+									description:
+										"Role-based training paths with quizzes and certifications.",
 									href: "/templates?tag=training",
 									icon: "graduation-cap",
 								},
@@ -276,7 +288,8 @@ export default function ImplementationPage() {
 								},
 								{
 									title: "Community Forum",
-									description: "Share playbooks, ask peers, and access customer-only templates.",
+									description:
+										"Share playbooks, ask peers, and access customer-only templates.",
 									href: "/community",
 									icon: "users",
 								},
@@ -286,9 +299,14 @@ export default function ImplementationPage() {
 									<Card key={resource.title}>
 										<CardHeader className="space-y-3">
 											<span className="bg-muted inline-flex size-12 items-center justify-center rounded-full">
-												<Icon aria-hidden="true" className="text-primary size-6" />
+												<Icon
+													aria-hidden="true"
+													className="text-primary size-6"
+												/>
 											</span>
-											<CardTitle className="text-lg">{resource.title}</CardTitle>
+											<CardTitle className="text-lg">
+												{resource.title}
+											</CardTitle>
 										</CardHeader>
 										<CardContent className="text-muted-foreground space-y-4 text-sm leading-relaxed">
 											<p>{resource.description}</p>
@@ -308,8 +326,8 @@ export default function ImplementationPage() {
 								Success packages designed for every growth stage
 							</h2>
 							<p className="text-muted-foreground">
-								Choose the support level that matches your expansion plans. All packages include
-								proactive guidance and metrics reviews.
+								Choose the support level that matches your expansion plans. All
+								packages include proactive guidance and metrics reviews.
 							</p>
 						</div>
 						<div className="grid gap-6 lg:grid-cols-3">
@@ -346,21 +364,29 @@ export default function ImplementationPage() {
 									Customer spotlight
 								</p>
 								<p className="text-2xl font-semibold">
-									“Thorbis migrated our multi-branch ServiceTitan deployment in 42 days. Dispatchers
-									were live day one, and AI booking added 11% more jobs in the first month.”
+									“Thorbis migrated our multi-branch ServiceTitan deployment in
+									42 days. Dispatchers were live day one, and AI booking added
+									11% more jobs in the first month.”
 								</p>
-								<p className="text-muted-foreground">— Leslie Warren, COO, Elevate Mechanical</p>
+								<p className="text-muted-foreground">
+									— Leslie Warren, COO, Elevate Mechanical
+								</p>
 							</CardContent>
 						</Card>
 						<Card>
 							<CardHeader>
-								<CardTitle className="text-xl">Implementation KPI targets</CardTitle>
+								<CardTitle className="text-xl">
+									Implementation KPI targets
+								</CardTitle>
 							</CardHeader>
 							<CardContent className="text-muted-foreground space-y-3 text-sm">
 								<p>✔️ Go-live readiness checklist completed within 30 days</p>
 								<p>✔️ Dispatch adoption {">"} 90% within first week</p>
 								<p>✔️ AI assistant handling 40% of incoming calls by week six</p>
-								<p>✔️ Customer portal activation rate surpassing 60% after training campaign</p>
+								<p>
+									✔️ Customer portal activation rate surpassing 60% after
+									training campaign
+								</p>
 							</CardContent>
 						</Card>
 					</section>

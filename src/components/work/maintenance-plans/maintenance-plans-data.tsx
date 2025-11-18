@@ -6,87 +6,119 @@ import {
 } from "@/components/work/maintenance-plans-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth/session";
+import {
+	getMaintenancePlansPageData,
+	MAINTENANCE_PLANS_PAGE_SIZE,
+	type MaintenancePlanQueryResult,
+} from "@/lib/queries/maintenance-plans";
 
-export async function MaintenancePlansData() {
-	const supabase = await createClient();
+const FREQUENCY_LABELS: Record<string, MaintenancePlan["frequency"]> = {
+	monthly: "Monthly",
+	quarterly: "Quarterly",
+	"bi-annual": "Bi-Annual",
+	biannual: "Bi-Annual",
+	annual: "Annual",
+};
 
-	if (!supabase) {
-		return notFound();
+const STATUS_OPTIONS: MaintenancePlan["status"][] = [
+	"active",
+	"pending",
+	"paused",
+	"cancelled",
+];
+
+const formatDate = (value?: string | null) =>
+	value
+		? new Date(value).toLocaleDateString("en-US", {
+				month: "short",
+				day: "numeric",
+				year: "numeric",
+			})
+		: "";
+
+const resolveCustomer = (customer: MaintenancePlanQueryResult["customer"]) => {
+	if (!customer) {
+		return null;
 	}
+	return Array.isArray(customer) ? (customer[0] ?? null) : customer;
+};
 
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+export async function MaintenancePlansData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
+	const [user, activeCompanyId] = await Promise.all([
+		getCurrentUser(),
+		getActiveCompanyId(),
+	]);
 
 	if (!user) {
 		return notFound();
 	}
 
-	const activeCompanyId = await getActiveCompanyId();
-
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	const { data: plansRaw, error } = await supabase
-		.from("maintenance_plans")
-		.select(
-			`
-      *,
-      customer:customers!customer_id(display_name, first_name, last_name)
-    `
-		)
-		.eq("company_id", activeCompanyId)
-		.order("created_at", { ascending: false });
+	const currentPage = Number(searchParams?.page) || 1;
+	const { plans: plansRaw, totalCount } = await getMaintenancePlansPageData(
+		currentPage,
+		MAINTENANCE_PLANS_PAGE_SIZE,
+		activeCompanyId,
+	);
 
-	if (error) {
-		throw new Error(`Failed to fetch maintenance plans: ${error.message}`);
-	}
-
-	// Normalize Supabase rows into the MaintenancePlan shape used by table/kanban
-	const plans: MaintenancePlan[] =
-		// biome-ignore lint/suspicious/noExplicitAny: Supabase query result type
-		(plansRaw || []).map((plan: any): MaintenancePlan => {
-			const customer = Array.isArray(plan.customer) ? plan.customer[0] : plan.customer;
+	const plans: MaintenancePlan[] = (plansRaw || []).map(
+		(plan: MaintenancePlanQueryResult) => {
+			const customer = resolveCustomer(plan.customer);
 
 			const customerName =
 				customer?.display_name ||
-				`${customer?.first_name || ""} ${customer?.last_name || ""}`.trim() ||
+				`${customer?.first_name ?? ""} ${customer?.last_name ?? ""}`.trim() ||
 				"Unknown";
 
-			const nextVisit =
-				plan.next_service_date &&
-				new Date(plan.next_service_date).toLocaleDateString("en-US", {
-					month: "short",
-					day: "numeric",
-					year: "numeric",
-				});
+			const frequencyKey = plan.frequency?.toLowerCase() ?? "monthly";
+			const frequency = FREQUENCY_LABELS[frequencyKey] ?? "Monthly";
+
+			const normalizedStatus = (
+				plan.status ?? ""
+			).toLowerCase() as MaintenancePlan["status"];
+			const status = STATUS_OPTIONS.includes(normalizedStatus)
+				? normalizedStatus
+				: "pending";
 
 			return {
 				id: plan.id,
 				planName: plan.name || plan.plan_number || plan.id,
 				customer: customerName,
-				serviceType: plan.service_type || plan.name || "Service plan",
-				frequency: (plan.frequency || "Monthly") as MaintenancePlan["frequency"],
-				nextVisit: nextVisit || "",
-				monthlyFee:
-					typeof plan.monthly_fee === "number"
-						? plan.monthly_fee
-						: typeof plan.value === "number"
-							? plan.value
-							: 0,
-				status: (plan.status || "pending") as MaintenancePlan["status"],
-				archived_at: plan.archived_at ?? null,
-				deleted_at: plan.deleted_at ?? null,
+				serviceType:
+					(plan as { service_type?: string | null }).service_type ||
+					plan.name ||
+					"Service plan",
+				frequency,
+				nextVisit: formatDate(plan.next_service_date),
+				monthlyFee: typeof plan.amount === "number" ? plan.amount : 0,
+				status,
+				archived_at:
+					(plan as { archived_at?: string | null }).archived_at ?? null,
+				deleted_at: (plan as { deleted_at?: string | null }).deleted_at ?? null,
 			};
-		});
+		},
+	);
 
 	return (
 		<WorkDataView
 			kanban={<MaintenancePlansKanban plans={plans} />}
 			section="maintenancePlans"
-			table={<MaintenancePlansTable itemsPerPage={50} plans={plans} />}
+			table={
+				<MaintenancePlansTable
+					currentPage={currentPage}
+					itemsPerPage={MAINTENANCE_PLANS_PAGE_SIZE}
+					plans={plans}
+					totalCount={totalCount}
+				/>
+			}
 		/>
 	);
 }

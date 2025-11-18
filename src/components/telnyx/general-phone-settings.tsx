@@ -15,7 +15,13 @@ import { HelpCircle, Loader2, Phone, Save } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { getPhoneSettings, updatePhoneSettings } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -27,7 +33,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function GeneralPhoneSettings() {
@@ -62,13 +73,16 @@ export function GeneralPhoneSettings() {
 				setSettings({
 					businessPhoneNumber: result.data.fallback_number || "",
 					enableCallRecording: result.data.recording_enabled ?? false,
-					callRecordingDisclosure: result.data.recording_consent_required ?? true,
+					callRecordingDisclosure:
+						result.data.recording_consent_required ?? true,
 					enableVoicemail: result.data.voicemail_enabled ?? true,
 					voicemailGreeting: result.data.voicemail_greeting_url || "",
 					routingStrategy: result.data.routing_strategy || "round_robin",
 					businessHoursOnly: result.data.business_hours_only ?? false,
-					voicemailEmailNotifications: result.data.voicemail_email_notifications ?? true,
-					voicemailTranscription: result.data.voicemail_transcription_enabled ?? false,
+					voicemailEmailNotifications:
+						result.data.voicemail_email_notifications ?? true,
+					voicemailTranscription:
+						result.data.voicemail_transcription_enabled ?? false,
 					fallbackNumber: result.data.fallback_number || "",
 					maxConcurrentCalls: result.data.max_concurrent_calls || 3,
 				});
@@ -90,17 +104,32 @@ export function GeneralPhoneSettings() {
 			const formData = new FormData();
 			formData.append("routingStrategy", settings.routingStrategy);
 			formData.append("fallbackNumber", settings.fallbackNumber);
-			formData.append("businessHoursOnly", settings.businessHoursOnly.toString());
+			formData.append(
+				"businessHoursOnly",
+				settings.businessHoursOnly.toString(),
+			);
 			formData.append("voicemailEnabled", settings.enableVoicemail.toString());
 			formData.append("voicemailGreetingUrl", settings.voicemailGreeting);
 			formData.append(
 				"voicemailEmailNotifications",
-				settings.voicemailEmailNotifications.toString()
+				settings.voicemailEmailNotifications.toString(),
 			);
-			formData.append("voicemailTranscriptionEnabled", settings.voicemailTranscription.toString());
-			formData.append("recordingEnabled", settings.enableCallRecording.toString());
-			formData.append("recordingConsentRequired", settings.callRecordingDisclosure.toString());
-			formData.append("maxConcurrentCalls", settings.maxConcurrentCalls.toString());
+			formData.append(
+				"voicemailTranscriptionEnabled",
+				settings.voicemailTranscription.toString(),
+			);
+			formData.append(
+				"recordingEnabled",
+				settings.enableCallRecording.toString(),
+			);
+			formData.append(
+				"recordingConsentRequired",
+				settings.callRecordingDisclosure.toString(),
+			);
+			formData.append(
+				"maxConcurrentCalls",
+				settings.maxConcurrentCalls.toString(),
+			);
 
 			const result = await updatePhoneSettings(formData);
 
@@ -148,7 +177,9 @@ export function GeneralPhoneSettings() {
 							<Phone className="size-4" />
 							Business Phone Number
 						</CardTitle>
-						<CardDescription>Main business phone number and fallback settings</CardDescription>
+						<CardDescription>
+							Main business phone number and fallback settings
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
@@ -159,13 +190,17 @@ export function GeneralPhoneSettings() {
 										<HelpCircle className="text-muted-foreground h-3 w-3" />
 									</TooltipTrigger>
 									<TooltipContent>
-										<p className="max-w-xs">Main phone number for your business</p>
+										<p className="max-w-xs">
+											Main phone number for your business
+										</p>
 									</TooltipContent>
 								</Tooltip>
 							</Label>
 							<Input
 								className="mt-2"
-								onChange={(e) => updateSetting("businessPhoneNumber", e.target.value)}
+								onChange={(e) =>
+									updateSetting("businessPhoneNumber", e.target.value)
+								}
 								placeholder="+1 (555) 123-4567"
 								type="tel"
 								value={settings.businessPhoneNumber}
@@ -184,14 +219,17 @@ export function GeneralPhoneSettings() {
 									</TooltipTrigger>
 									<TooltipContent>
 										<p className="max-w-xs">
-											Number to forward calls when all team members are unavailable
+											Number to forward calls when all team members are
+											unavailable
 										</p>
 									</TooltipContent>
 								</Tooltip>
 							</Label>
 							<Input
 								className="mt-2"
-								onChange={(e) => updateSetting("fallbackNumber", e.target.value)}
+								onChange={(e) =>
+									updateSetting("fallbackNumber", e.target.value)
+								}
 								placeholder="+1 (555) 987-6543"
 								type="tel"
 								value={settings.fallbackNumber}
@@ -206,13 +244,17 @@ export function GeneralPhoneSettings() {
 				<Card>
 					<CardHeader>
 						<CardTitle>Routing Strategy</CardTitle>
-						<CardDescription>How incoming calls are distributed to team members</CardDescription>
+						<CardDescription>
+							How incoming calls are distributed to team members
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
 							<Label htmlFor="routing">Default Routing Method</Label>
 							<Select
-								onValueChange={(value) => updateSetting("routingStrategy", value)}
+								onValueChange={(value) =>
+									updateSetting("routingStrategy", value)
+								}
 								value={settings.routingStrategy}
 							>
 								<SelectTrigger className="mt-2" id="routing">
@@ -220,7 +262,9 @@ export function GeneralPhoneSettings() {
 								</SelectTrigger>
 								<SelectContent>
 									<SelectItem value="round_robin">Round Robin</SelectItem>
-									<SelectItem value="simultaneous">Simultaneous Ring</SelectItem>
+									<SelectItem value="simultaneous">
+										Simultaneous Ring
+									</SelectItem>
 									<SelectItem value="longest_idle">Longest Idle</SelectItem>
 									<SelectItem value="skills_based">Skills Based</SelectItem>
 								</SelectContent>
@@ -241,7 +285,10 @@ export function GeneralPhoneSettings() {
 							<Label htmlFor="concurrent">Max Concurrent Calls Per Agent</Label>
 							<Select
 								onValueChange={(value) =>
-									updateSetting("maxConcurrentCalls", Number.parseInt(value, 10))
+									updateSetting(
+										"maxConcurrentCalls",
+										Number.parseInt(value, 10),
+									)
 								}
 								value={settings.maxConcurrentCalls.toString()}
 							>
@@ -270,7 +317,9 @@ export function GeneralPhoneSettings() {
 											<HelpCircle className="text-muted-foreground h-3 w-3" />
 										</TooltipTrigger>
 										<TooltipContent>
-											<p className="max-w-xs">Only route calls during configured business hours</p>
+											<p className="max-w-xs">
+												Only route calls during configured business hours
+											</p>
 										</TooltipContent>
 									</Tooltip>
 								</Label>
@@ -280,7 +329,9 @@ export function GeneralPhoneSettings() {
 							</div>
 							<Switch
 								checked={settings.businessHoursOnly}
-								onCheckedChange={(checked) => updateSetting("businessHoursOnly", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("businessHoursOnly", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -289,7 +340,9 @@ export function GeneralPhoneSettings() {
 				<Card>
 					<CardHeader>
 						<CardTitle>Call Recording</CardTitle>
-						<CardDescription>Record calls for training and quality assurance</CardDescription>
+						<CardDescription>
+							Record calls for training and quality assurance
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between">
@@ -301,7 +354,9 @@ export function GeneralPhoneSettings() {
 											<HelpCircle className="text-muted-foreground h-3 w-3" />
 										</TooltipTrigger>
 										<TooltipContent>
-											<p className="max-w-xs">Record phone calls for training and quality</p>
+											<p className="max-w-xs">
+												Record phone calls for training and quality
+											</p>
 										</TooltipContent>
 									</Tooltip>
 								</Label>
@@ -311,7 +366,9 @@ export function GeneralPhoneSettings() {
 							</div>
 							<Switch
 								checked={settings.enableCallRecording}
-								onCheckedChange={(checked) => updateSetting("enableCallRecording", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("enableCallRecording", checked)
+								}
 							/>
 						</div>
 
@@ -328,8 +385,8 @@ export function GeneralPhoneSettings() {
 												</TooltipTrigger>
 												<TooltipContent>
 													<p className="max-w-xs">
-														Play "This call may be recorded" message (required by law in most
-														states)
+														Play "This call may be recorded" message (required
+														by law in most states)
 													</p>
 												</TooltipContent>
 											</Tooltip>
@@ -340,7 +397,9 @@ export function GeneralPhoneSettings() {
 									</div>
 									<Switch
 										checked={settings.callRecordingDisclosure}
-										onCheckedChange={(checked) => updateSetting("callRecordingDisclosure", checked)}
+										onCheckedChange={(checked) =>
+											updateSetting("callRecordingDisclosure", checked)
+										}
 									/>
 								</div>
 							</>
@@ -363,15 +422,21 @@ export function GeneralPhoneSettings() {
 											<HelpCircle className="text-muted-foreground h-3 w-3" />
 										</TooltipTrigger>
 										<TooltipContent>
-											<p className="max-w-xs">Allow callers to leave voicemail messages</p>
+											<p className="max-w-xs">
+												Allow callers to leave voicemail messages
+											</p>
 										</TooltipContent>
 									</Tooltip>
 								</Label>
-								<p className="text-muted-foreground text-xs">Allow callers to leave messages</p>
+								<p className="text-muted-foreground text-xs">
+									Allow callers to leave messages
+								</p>
 							</div>
 							<Switch
 								checked={settings.enableVoicemail}
-								onCheckedChange={(checked) => updateSetting("enableVoicemail", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("enableVoicemail", checked)
+								}
 							/>
 						</div>
 
@@ -380,7 +445,9 @@ export function GeneralPhoneSettings() {
 								<Separator />
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
-										<Label className="text-sm font-medium">Email Notifications</Label>
+										<Label className="text-sm font-medium">
+											Email Notifications
+										</Label>
 										<p className="text-muted-foreground text-xs">
 											Send email when voicemail received
 										</p>
@@ -395,14 +462,18 @@ export function GeneralPhoneSettings() {
 
 								<div className="flex items-center justify-between">
 									<div className="flex-1">
-										<Label className="text-sm font-medium">Voicemail Transcription</Label>
+										<Label className="text-sm font-medium">
+											Voicemail Transcription
+										</Label>
 										<p className="text-muted-foreground text-xs">
 											Auto-transcribe voicemail to text
 										</p>
 									</div>
 									<Switch
 										checked={settings.voicemailTranscription}
-										onCheckedChange={(checked) => updateSetting("voicemailTranscription", checked)}
+										onCheckedChange={(checked) =>
+											updateSetting("voicemailTranscription", checked)
+										}
 									/>
 								</div>
 							</>
@@ -418,9 +489,10 @@ export function GeneralPhoneSettings() {
 								Phone System Best Practices
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Always disclose call recording when enabled. Configure business hours in the Hours
-								tab for accurate routing. Set up team member extensions for direct dialing. Use the
-								fallback number for after-hours emergencies.
+								Always disclose call recording when enabled. Configure business
+								hours in the Hours tab for accurate routing. Set up team member
+								extensions for direct dialing. Use the fallback number for
+								after-hours emergencies.
 							</p>
 						</div>
 					</CardContent>

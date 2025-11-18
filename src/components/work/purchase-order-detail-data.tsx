@@ -29,7 +29,9 @@ type PurchaseOrderDetailDataProps = {
 	poId: string;
 };
 
-export async function PurchaseOrderDetailData({ poId }: PurchaseOrderDetailDataProps) {
+export async function PurchaseOrderDetailData({
+	poId,
+}: PurchaseOrderDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -96,7 +98,11 @@ export async function PurchaseOrderDetailData({ poId }: PurchaseOrderDetailDataP
 			.order("created_at", { ascending: true }),
 
 		po.job_id
-			? supabase.from("jobs").select("id, job_number, title, status").eq("id", po.job_id).single()
+			? supabase
+					.from("jobs")
+					.select("id, job_number, title, status")
+					.eq("id", po.job_id)
+					.single()
 			: Promise.resolve({ data: null, error: null }),
 
 		// Fetch source estimate (if PO was created from an estimate)
@@ -133,11 +139,19 @@ export async function PurchaseOrderDetailData({ poId }: PurchaseOrderDetailDataP
 			.order("created_at", { ascending: false }),
 
 		po.requested_by
-			? supabase.from("users").select("id, name, email").eq("id", po.requested_by).single()
+			? supabase
+					.from("users")
+					.select("id, name, email")
+					.eq("id", po.requested_by)
+					.single()
 			: Promise.resolve({ data: null, error: null }),
 
 		po.approved_by
-			? supabase.from("users").select("id, name, email").eq("id", po.approved_by).single()
+			? supabase
+					.from("users")
+					.select("id, name, email")
+					.eq("id", po.approved_by)
+					.single()
 			: Promise.resolve({ data: null, error: null }),
 	]);
 
@@ -145,7 +159,10 @@ export async function PurchaseOrderDetailData({ poId }: PurchaseOrderDetailDataP
 	const totalAmount = po.total_amount || 0;
 	const lineItemCount = lineItems?.length || 0;
 	const daysUntilDelivery = po.expected_delivery
-		? Math.ceil((new Date(po.expected_delivery).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+		? Math.ceil(
+				(new Date(po.expected_delivery).getTime() - Date.now()) /
+					(1000 * 60 * 60 * 24),
+			)
 		: undefined;
 
 	const metrics = {
@@ -174,7 +191,10 @@ export async function PurchaseOrderDetailData({ poId }: PurchaseOrderDetailDataP
 		<ToolbarStatsProvider stats={stats}>
 			<div className="flex h-full w-full flex-col overflow-auto">
 				<div className="mx-auto w-full max-w-7xl">
-					<PurchaseOrderPageContent entityData={purchaseOrderData} metrics={metrics} />
+					<PurchaseOrderPageContent
+						entityData={purchaseOrderData}
+						metrics={metrics}
+					/>
 				</div>
 			</div>
 		</ToolbarStatsProvider>

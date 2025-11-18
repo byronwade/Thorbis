@@ -18,7 +18,10 @@ type ToolbarActionsProviderProps = {
 	children: React.ReactNode;
 };
 
-export function ToolbarActionsProvider({ actions, children }: ToolbarActionsProviderProps) {
+export function ToolbarActionsProvider({
+	actions,
+	children,
+}: ToolbarActionsProviderProps) {
 	const pathname = usePathname();
 	const safePathname = pathname || "/dashboard";
 	const setActions = useToolbarActionsStore((state) => state.setActions);

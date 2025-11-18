@@ -19,7 +19,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -42,21 +48,23 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 	const { toast } = useToast();
 	const [isPending, startTransition] = useTransition();
 	const [serviceAreas, setServiceAreas] = useState<ServiceAreaForm[]>(
-		mapServiceAreaRows(initialAreas ?? [])
+		mapServiceAreaRows(initialAreas ?? []),
 	);
 
 	const hasUnsavedChanges = useMemo(
 		() => serviceAreas.some((area) => area.id.startsWith("temp-")),
-		[serviceAreas]
+		[serviceAreas],
 	);
 
 	const handleFieldChange = (
 		id: string,
 		field: keyof ServiceAreaForm,
-		value: string | number | boolean | null
+		value: string | number | boolean | null,
 	) => {
 		setServiceAreas((prev) =>
-			prev.map((area) => (area.id === id ? { ...area, [field]: value as never } : area))
+			prev.map((area) =>
+				area.id === id ? { ...area, [field]: value as never } : area,
+			),
 		);
 	};
 
@@ -76,7 +84,9 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 			const newId = result.data;
 			if (typeof newId === "string") {
 				setServiceAreas((prev) =>
-					prev.map((record) => (record.id === area.id ? { ...record, id: newId } : record))
+					prev.map((record) =>
+						record.id === area.id ? { ...record, id: newId } : record,
+					),
 				);
 			}
 		});
@@ -163,14 +173,22 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<MapPin className="size-4" />
 								{area.areaName || "Untitled Service Area"}
 							</CardTitle>
-							<CardDescription>Configure coverage and pricing logic for this zone.</CardDescription>
+							<CardDescription>
+								Configure coverage and pricing logic for this zone.
+							</CardDescription>
 						</div>
 						<div className="flex items-center gap-2">
 							<Switch
 								checked={area.isActive}
-								onCheckedChange={(checked) => handleFieldChange(area.id, "isActive", checked)}
+								onCheckedChange={(checked) =>
+									handleFieldChange(area.id, "isActive", checked)
+								}
 							/>
-							<Button onClick={() => handleDeleteArea(area.id)} size="icon" variant="ghost">
+							<Button
+								onClick={() => handleDeleteArea(area.id)}
+								size="icon"
+								variant="ghost"
+							>
 								<Trash2 className="size-4" />
 							</Button>
 						</div>
@@ -181,7 +199,9 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Label>Area name</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => handleFieldChange(area.id, "areaName", event.target.value)}
+									onChange={(event) =>
+										handleFieldChange(area.id, "areaName", event.target.value)
+									}
 									placeholder="Downtown Core"
 									value={area.areaName}
 								/>
@@ -190,7 +210,9 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 								<Label>ZIP codes / postal codes</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => handleFieldChange(area.id, "zipCodes", event.target.value)}
+									onChange={(event) =>
+										handleFieldChange(area.id, "zipCodes", event.target.value)
+									}
 									placeholder="12345, 12346"
 									value={area.zipCodes}
 								/>
@@ -204,7 +226,11 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 									className="mt-2"
 									min={0}
 									onChange={(event) =>
-										handleFieldChange(area.id, "minimumJobAmount", Number(event.target.value))
+										handleFieldChange(
+											area.id,
+											"minimumJobAmount",
+											Number(event.target.value),
+										)
 									}
 									type="number"
 									value={area.minimumJobAmount ?? 0}
@@ -216,7 +242,11 @@ export function ServiceAreasClient({ initialAreas }: ServiceAreasClientProps) {
 									className="mt-2"
 									min={0}
 									onChange={(event) =>
-										handleFieldChange(area.id, "serviceFee", Number(event.target.value))
+										handleFieldChange(
+											area.id,
+											"serviceFee",
+											Number(event.target.value),
+										)
 									}
 									type="number"
 									value={area.serviceFee}

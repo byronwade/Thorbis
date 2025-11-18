@@ -14,17 +14,24 @@ import { MaterialsData } from "@/components/work/materials/materials-data";
 import { MaterialsSkeleton } from "@/components/work/materials/materials-skeleton";
 import { MaterialsStats } from "@/components/work/materials/materials-stats";
 
-export default function MaterialsPage() {
+export default async function MaterialsPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
 	return (
 		<>
 			{/* Stats - Streams in first */}
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<MaterialsStats />
 			</Suspense>
 
 			{/* Table/Kanban - Streams in second */}
 			<Suspense fallback={<MaterialsSkeleton />}>
-				<MaterialsData />
+				<MaterialsData searchParams={params} />
 			</Suspense>
 		</>
 	);

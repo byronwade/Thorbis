@@ -58,7 +58,8 @@ type ActionResult<T = void> =
 
 type BaseButtonProps = React.ComponentProps<typeof Button>;
 
-export interface ActionButtonProps extends Omit<BaseButtonProps, "onClick" | "onError"> {
+export interface ActionButtonProps
+	extends Omit<BaseButtonProps, "onClick" | "onError"> {
 	/**
 	 * Async action to execute when button is clicked
 	 * Should return an ActionResult
@@ -162,7 +163,9 @@ export function ActionButton({
 			if (result.success) {
 				setShowSuccess(true);
 				if (showToast) {
-					toast.success(result.message || successText || "Action completed successfully");
+					toast.success(
+						result.message || successText || "Action completed successfully",
+					);
 				}
 				onSuccess?.(result.data);
 			} else {
@@ -174,7 +177,8 @@ export function ActionButton({
 			}
 		} catch (error) {
 			setShowError(true);
-			const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+			const errorMessage =
+				error instanceof Error ? error.message : "An unexpected error occurred";
 			if (showToast) {
 				toast.error(errorMessage);
 			}
@@ -190,9 +194,10 @@ export function ActionButton({
 		<Button
 			className={cn(
 				"transition-all duration-200",
-				showSuccess && "bg-success hover:bg-success dark:bg-success dark:hover:bg-success",
+				showSuccess &&
+					"bg-success hover:bg-success dark:bg-success dark:hover:bg-success",
 				showError && "animate-shake bg-destructive",
-				className
+				className,
 			)}
 			disabled={isDisabled}
 			onClick={handleClick}

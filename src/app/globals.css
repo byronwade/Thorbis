@@ -482,4 +482,12 @@
 	.haptic-heavy:active {
 		transform: scale(0.95);
 	}
+
+	/* Hide section toolbar when the messages experience provides its own */
+	[data-dashboard-layout][data-pathname="/dashboard/communication"]:has(
+			[data-communication-messages-page]
+		)
+		header[data-app-toolbar][data-app-toolbar-scope="layout"] {
+		display: none;
+	}
 }

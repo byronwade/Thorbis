@@ -64,11 +64,14 @@ export async function savePaymentMethod(formData: FormData) {
 		const data = savePaymentMethodSchema.parse({
 			paymentMethodId: formData.get("paymentMethodId"),
 			isDefault: formData.get("isDefault") === "true",
-			isDefaultForSubscription: formData.get("isDefaultForSubscription") === "true",
+			isDefaultForSubscription:
+				formData.get("isDefaultForSubscription") === "true",
 		});
 
 		// Get payment method from Stripe
-		const paymentMethod = await stripe.paymentMethods.retrieve(data.paymentMethodId);
+		const paymentMethod = await stripe.paymentMethods.retrieve(
+			data.paymentMethodId,
+		);
 
 		// Extract payment method details
 		const type = paymentMethod.type;
@@ -96,25 +99,29 @@ export async function savePaymentMethod(formData: FormData) {
 				}
 			}
 		} else {
-			displayName = type.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase());
+			displayName = type
+				.replace("_", " ")
+				.replace(/\b\w/g, (l) => l.toUpperCase());
 		}
 
 		// Save to database
-		const { error: insertError } = await supabase.from("payment_methods").insert({
-			user_id: user.id,
-			stripe_payment_method_id: data.paymentMethodId,
-			type: walletType || type,
-			brand,
-			last4,
-			exp_month: expMonth,
-			exp_year: expYear,
-			wallet_type: walletType,
-			display_name: displayName,
-			is_default: data.isDefault,
-			is_default_for_subscription: data.isDefaultForSubscription,
-			billing_details: paymentMethod.billing_details,
-			allow_redisplay: "always", // Allow prefilling for future purchases
-		});
+		const { error: insertError } = await supabase
+			.from("payment_methods")
+			.insert({
+				user_id: user.id,
+				stripe_payment_method_id: data.paymentMethodId,
+				type: walletType || type,
+				brand,
+				last4,
+				exp_month: expMonth,
+				exp_year: expYear,
+				wallet_type: walletType,
+				display_name: displayName,
+				is_default: data.isDefault,
+				is_default_for_subscription: data.isDefaultForSubscription,
+				billing_details: paymentMethod.billing_details,
+				allow_redisplay: "always", // Allow prefilling for future purchases
+			});
 
 		if (insertError) {
 			return { success: false, error: "Failed to save payment method" };
@@ -188,7 +195,9 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 		});
 
 		// Update database - the trigger will automatically unset others
-		const updateField = data.forSubscription ? "is_default_for_subscription" : "is_default";
+		const updateField = data.forSubscription
+			? "is_default_for_subscription"
+			: "is_default";
 
 		const { error: updateError } = await supabase
 			.from("payment_methods")
@@ -213,7 +222,10 @@ export async function setDefaultPaymentMethod(formData: FormData) {
 			.eq("id", user.id)
 			.single();
 
-		if (userData?.stripe_customer_id && paymentMethodData?.stripe_payment_method_id) {
+		if (
+			userData?.stripe_customer_id &&
+			paymentMethodData?.stripe_payment_method_id
+		) {
 			try {
 				await stripe.customers.update(userData.stripe_customer_id, {
 					invoice_settings: {
@@ -268,7 +280,9 @@ export async function removePaymentMethod(formData: FormData) {
 		// Get payment method details before deleting
 		const { data: paymentMethodData } = await supabase
 			.from("payment_methods")
-			.select("stripe_payment_method_id, is_default, is_default_for_subscription")
+			.select(
+				"stripe_payment_method_id, is_default, is_default_for_subscription",
+			)
 			.eq("id", data.paymentMethodId)
 			.eq("user_id", user.id)
 			.single();
@@ -285,7 +299,8 @@ export async function removePaymentMethod(formData: FormData) {
 
 		if (
 			count === 1 &&
-			(paymentMethodData.is_default || paymentMethodData.is_default_for_subscription)
+			(paymentMethodData.is_default ||
+				paymentMethodData.is_default_for_subscription)
 		) {
 			return {
 				success: false,
@@ -306,7 +321,9 @@ export async function removePaymentMethod(formData: FormData) {
 
 		// Detach from Stripe customer
 		try {
-			await stripe.paymentMethods.detach(paymentMethodData.stripe_payment_method_id);
+			await stripe.paymentMethods.detach(
+				paymentMethodData.stripe_payment_method_id,
+			);
 		} catch (_stripeError) {
 			// Don't fail - payment method is already removed from our DB
 		}

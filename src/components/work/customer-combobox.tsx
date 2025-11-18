@@ -12,7 +12,11 @@ import {
 	CommandList,
 	CommandSeparator,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 /**
@@ -74,7 +78,8 @@ export function CustomerCombobox({
 		}
 
 		const query = searchQuery.toLowerCase();
-		const fullName = `${customer.first_name} ${customer.last_name}`.toLowerCase();
+		const fullName =
+			`${customer.first_name} ${customer.last_name}`.toLowerCase();
 		const phone = customer.phone?.toLowerCase() || "";
 		const email = customer.email?.toLowerCase() || "";
 		const company = customer.company_name?.toLowerCase() || "";
@@ -88,8 +93,12 @@ export function CustomerCombobox({
 	});
 
 	// Split filtered customers into recent and others
-	const recentMatches = filteredCustomers.filter((c) => recentCustomerIds.includes(c.id));
-	const otherMatches = filteredCustomers.filter((c) => !recentCustomerIds.includes(c.id));
+	const recentMatches = filteredCustomers.filter((c) =>
+		recentCustomerIds.includes(c.id),
+	);
+	const otherMatches = filteredCustomers.filter(
+		(c) => !recentCustomerIds.includes(c.id),
+	);
 
 	// Limit to 50 results for performance
 	const displayedCustomers = [...recentMatches, ...otherMatches].slice(0, 50);
@@ -116,7 +125,9 @@ export function CustomerCombobox({
 							<User className="text-muted-foreground size-4" />
 							{selectedCustomer.first_name} {selectedCustomer.last_name}
 							{selectedCustomer.company_name && (
-								<span className="text-muted-foreground">({selectedCustomer.company_name})</span>
+								<span className="text-muted-foreground">
+									({selectedCustomer.company_name})
+								</span>
 							)}
 						</span>
 					) : (
@@ -135,7 +146,9 @@ export function CustomerCombobox({
 					<CommandList>
 						<CommandEmpty>
 							<div className="flex flex-col items-center gap-2 py-6">
-								<p className="text-muted-foreground text-sm">No customers found</p>
+								<p className="text-muted-foreground text-sm">
+									No customers found
+								</p>
 								{onAddNew && (
 									<Button
 										onClick={() => {
@@ -167,7 +180,7 @@ export function CustomerCombobox({
 											<Check
 												className={cn(
 													"mr-2 size-4",
-													value === customer.id ? "opacity-100" : "opacity-0"
+													value === customer.id ? "opacity-100" : "opacity-0",
 												)}
 											/>
 											<div className="flex flex-1 items-center justify-between gap-2">
@@ -177,7 +190,8 @@ export function CustomerCombobox({
 													</span>
 													<span className="text-muted-foreground text-xs">
 														{customer.phone}
-														{customer.company_name && ` • ${customer.company_name}`}
+														{customer.company_name &&
+															` • ${customer.company_name}`}
 													</span>
 												</div>
 												<Clock className="text-muted-foreground size-3" />
@@ -198,30 +212,33 @@ export function CustomerCombobox({
 										: `Customers (${Math.min(50, otherMatches.length)})`
 								}
 							>
-								{otherMatches.slice(0, 50 - recentMatches.length).map((customer) => (
-									<CommandItem
-										className="cursor-pointer"
-										key={customer.id}
-										onSelect={() => handleSelect(customer.id)}
-										value={customer.id}
-									>
-										<Check
-											className={cn(
-												"mr-2 size-4",
-												value === customer.id ? "opacity-100" : "opacity-0"
-											)}
-										/>
-										<div className="flex flex-col">
-											<span className="font-medium">
-												{customer.first_name} {customer.last_name}
-											</span>
-											<span className="text-muted-foreground text-xs">
-												{customer.phone}
-												{customer.company_name && ` • ${customer.company_name}`}
-											</span>
-										</div>
-									</CommandItem>
-								))}
+								{otherMatches
+									.slice(0, 50 - recentMatches.length)
+									.map((customer) => (
+										<CommandItem
+											className="cursor-pointer"
+											key={customer.id}
+											onSelect={() => handleSelect(customer.id)}
+											value={customer.id}
+										>
+											<Check
+												className={cn(
+													"mr-2 size-4",
+													value === customer.id ? "opacity-100" : "opacity-0",
+												)}
+											/>
+											<div className="flex flex-col">
+												<span className="font-medium">
+													{customer.first_name} {customer.last_name}
+												</span>
+												<span className="text-muted-foreground text-xs">
+													{customer.phone}
+													{customer.company_name &&
+														` • ${customer.company_name}`}
+												</span>
+											</div>
+										</CommandItem>
+									))}
 							</CommandGroup>
 						)}
 

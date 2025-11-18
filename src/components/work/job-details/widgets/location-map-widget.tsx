@@ -28,7 +28,9 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<MapPin className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-					<p className="text-muted-foreground text-sm">No location information available</p>
+					<p className="text-muted-foreground text-sm">
+						No location information available
+					</p>
 				</div>
 			</div>
 		);
@@ -91,7 +93,9 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 					<div className="text-center">
 						<MapPin className="text-primary mx-auto mb-2 size-12" />
 						<p className="text-sm font-medium">Map Preview</p>
-						<p className="text-muted-foreground text-xs">Click "Get Directions" to view in maps</p>
+						<p className="text-muted-foreground text-xs">
+							Click "Get Directions" to view in maps
+						</p>
 					</div>
 				</div>
 
@@ -137,21 +141,36 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 			<div className="space-y-2">
 				<h5 className="text-sm font-medium">Open in:</h5>
 				<div className="grid grid-cols-1 gap-2">
-					<Button asChild className="w-full justify-start" size="sm" variant="outline">
+					<Button
+						asChild
+						className="w-full justify-start"
+						size="sm"
+						variant="outline"
+					>
 						<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Google Maps
 						</a>
 					</Button>
 
-					<Button asChild className="w-full justify-start" size="sm" variant="outline">
+					<Button
+						asChild
+						className="w-full justify-start"
+						size="sm"
+						variant="outline"
+					>
 						<a href={appleMapsUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Apple Maps
 						</a>
 					</Button>
 
-					<Button asChild className="w-full justify-start" size="sm" variant="outline">
+					<Button
+						asChild
+						className="w-full justify-start"
+						size="sm"
+						variant="outline"
+					>
 						<a href={wazeUrl} rel="noopener noreferrer" target="_blank">
 							<ExternalLink className="mr-2 size-4" />
 							Waze
@@ -170,7 +189,9 @@ export function LocationMapWidget({ job, property }: LocationMapWidgetProps) {
 							<span className="text-sm font-medium">{property.name}</span>
 						</div>
 						<Button asChild className="mt-2 w-full" size="sm" variant="outline">
-							<Link href={`/dashboard/work/properties/${property.id}`}>View Property Details</Link>
+							<Link href={`/dashboard/work/properties/${property.id}`}>
+								View Property Details
+							</Link>
 						</Button>
 					</div>
 				</>

@@ -4,7 +4,7 @@ import { Archive, ClipboardList, Package, Wrench } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { archiveInventoryItem } from "@/actions/inventory";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -15,7 +15,12 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 export function MaterialDetailToolbarActions() {
@@ -84,7 +89,12 @@ export function MaterialDetailToolbarActions() {
 				<TooltipProvider>
 					<Tooltip>
 						<TooltipTrigger asChild>
-							<Button className="h-8 gap-1.5" onClick={handleReorder} size="sm" variant="outline">
+							<Button
+								className="h-8 gap-1.5"
+								onClick={handleReorder}
+								size="sm"
+								variant="outline"
+							>
 								<Package className="size-3.5" />
 								<span className="hidden lg:inline">Reorder</span>
 							</Button>
@@ -138,8 +148,8 @@ export function MaterialDetailToolbarActions() {
 					<DialogHeader>
 						<DialogTitle>Archive Material</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this material? Archived items can be restored within
-							90 days.
+							Are you sure you want to archive this material? Archived items can
+							be restored within 90 days.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -150,7 +160,11 @@ export function MaterialDetailToolbarActions() {
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Material"}
 						</Button>
 					</DialogFooter>

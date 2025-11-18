@@ -1,18 +1,32 @@
 "use client";
 
-import { ArrowUpRight, BriefcaseBusiness, CalendarDays, MapPin } from "lucide-react";
+import {
+	ArrowUpRight,
+	BriefcaseBusiness,
+	CalendarDays,
+	MapPin,
+} from "lucide-react";
 import Link from "next/link";
 import { useTransition } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EntityKanban } from "@/components/ui/entity-kanban";
-import type { KanbanItemBase, KanbanMoveEvent } from "@/components/ui/shadcn-io/kanban";
+import type {
+	KanbanItemBase,
+	KanbanMoveEvent,
+} from "@/components/ui/shadcn-io/kanban";
 import { useToast } from "@/hooks/use-toast";
 import type { Job } from "@/lib/db/schema";
 import { formatCurrency, formatDate, formatDateRange } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 
-type JobStatus = "quoted" | "scheduled" | "in_progress" | "on_hold" | "completed" | "cancelled";
+type JobStatus =
+	| "quoted"
+	| "scheduled"
+	| "in_progress"
+	| "on_hold"
+	| "completed"
+	| "cancelled";
 
 type RelatedCustomer = {
 	first_name?: string | null;
@@ -52,7 +66,9 @@ const JOB_STATUS_COLUMNS: Array<{
 	{ id: "cancelled", name: "Cancelled", accentColor: "#EF4444" },
 ];
 
-const COLUMN_LABEL = new Map(JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]));
+const COLUMN_LABEL = new Map(
+	JOB_STATUS_COLUMNS.map((column) => [column.id, column.name]),
+);
 const DEFAULT_STATUS: JobStatus = "quoted";
 
 function resolveStatus(status: Job["status"] | null | undefined): JobStatus {
@@ -106,7 +122,10 @@ function getPropertySummary(job: ExtendedJob) {
 }
 
 function PriorityBadge({ priority }: { priority: Job["priority"] }) {
-	const config: Record<NonNullable<Job["priority"]>, { label: string; className: string }> = {
+	const config: Record<
+		NonNullable<Job["priority"]>,
+		{ label: string; className: string }
+	> = {
 		low: {
 			label: "Low",
 			className:
@@ -152,6 +171,7 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 					<Link
 						className="text-muted-foreground hover:text-primary block text-xs font-semibold tracking-wide uppercase"
 						href={`/dashboard/work/${job.id}`}
+						prefetch={false}
 					>
 						{String(job.jobNumber ?? "—")}
 					</Link>
@@ -181,13 +201,17 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 			</div>
 
 			{job.description && (
-				<p className="text-muted-foreground line-clamp-3 text-xs">{job.description}</p>
+				<p className="text-muted-foreground line-clamp-3 text-xs">
+					{job.description}
+				</p>
 			)}
 
 			<div className="text-muted-foreground space-y-2 text-xs">
 				<div className="flex items-center gap-2">
 					<BriefcaseBusiness className="text-primary size-4" />
-					<span className="text-foreground font-medium">{getCustomerName(job)}</span>
+					<span className="text-foreground font-medium">
+						{getCustomerName(job)}
+					</span>
 				</div>
 
 				{propertySummary && (
@@ -213,8 +237,13 @@ function JobCardContent({ item }: { item: JobsKanbanItem }) {
 			</div>
 
 			<div className="flex items-center justify-end pt-1">
-				<Button asChild className="text-primary gap-1 text-xs" size="sm" variant="ghost">
-					<Link href={`/dashboard/work/${job.id}`}>
+				<Button
+					asChild
+					className="text-primary gap-1 text-xs"
+					size="sm"
+					variant="ghost"
+				>
+					<Link href={`/dashboard/work/${job.id}`} prefetch={false}>
 						View
 						<ArrowUpRight className="size-3.5" />
 					</Link>
@@ -250,7 +279,7 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 				}
 
 				toast.success(
-					`Job ${item.entity.jobNumber} moved to ${COLUMN_LABEL.get(toColumnId as JobStatus)}`
+					`Job ${item.entity.jobNumber} moved to ${COLUMN_LABEL.get(toColumnId as JobStatus)}`,
 				);
 			})();
 		});
@@ -260,7 +289,10 @@ export function JobsKanban({ jobs }: JobsKanbanProps) {
 		<EntityKanban<ExtendedJob, JobStatus>
 			calculateColumnMeta={(columnId, items) => {
 				const columnItems = items.filter((item) => item.columnId === columnId);
-				const total = columnItems.reduce((sum, item) => sum + (item.entity.totalAmount ?? 0), 0);
+				const total = columnItems.reduce(
+					(sum, item) => sum + (item.entity.totalAmount ?? 0),
+					0,
+				);
 				return { count: columnItems.length, total };
 			}}
 			columns={JOB_STATUS_COLUMNS}

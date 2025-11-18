@@ -27,11 +27,12 @@ import {
 	DollarSign,
 	Edit,
 	Eye,
-	Image,
+	Image as ImageIcon,
 	MoreHorizontal,
 	Package,
 	TrendingUp,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,9 +145,15 @@ export function PriceBookTable({
 			render: (item) => (
 				<div className="bg-muted flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border">
 					{item.imageUrl ? (
-						<img alt={item.name} className="h-full w-full object-cover" src={item.imageUrl} />
+						<Image
+							alt={item.name}
+							className="h-full w-full object-cover"
+							src={item.imageUrl}
+							width={40}
+							height={40}
+						/>
 					) : (
-						<Image className="text-muted-foreground h-4 w-4" />
+						<Package className="text-muted-foreground h-4 w-4" />
 					)}
 				</div>
 			),
@@ -207,7 +214,11 @@ export function PriceBookTable({
 				const displayText = item.subcategory
 					? `${item.category} › ${item.subcategory}`
 					: item.category;
-				return <div className="text-muted-foreground truncate text-sm">{displayText}</div>;
+				return (
+					<div className="text-muted-foreground truncate text-sm">
+						{displayText}
+					</div>
+				);
 			},
 		},
 		// Labor hours (for services only)
@@ -237,7 +248,9 @@ export function PriceBookTable({
 			align: "right",
 			hideOnMobile: true,
 			render: (item) => (
-				<div className="text-muted-foreground text-sm font-medium">{formatCurrency(item.cost)}</div>
+				<div className="text-muted-foreground text-sm font-medium">
+					{formatCurrency(item.cost)}
+				</div>
 			),
 		},
 		// Price (base selling price)
@@ -249,7 +262,9 @@ export function PriceBookTable({
 			align: "right",
 			render: (item) => (
 				<div>
-					<div className="text-foreground text-sm font-semibold">{formatCurrency(item.price)}</div>
+					<div className="text-foreground text-sm font-semibold">
+						{formatCurrency(item.price)}
+					</div>
 					{/* Show unit below price */}
 					<div className="text-muted-foreground text-xs">{item.unit}</div>
 				</div>
@@ -281,7 +296,7 @@ export function PriceBookTable({
 					<Badge
 						className={cn(
 							"text-xs font-medium",
-							"border-border/50 bg-background text-muted-foreground"
+							"border-border/50 bg-background text-muted-foreground",
 						)}
 						variant="outline"
 					>
@@ -383,7 +398,8 @@ export function PriceBookTable({
 			(item.subcategory?.toLowerCase() || "").includes(searchLower) ||
 			(item.description?.toLowerCase() || "").includes(searchLower) ||
 			(item.supplierName?.toLowerCase() || "").includes(searchLower) ||
-			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ?? false)
+			(item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ??
+				false)
 		);
 	};
 
@@ -405,7 +421,8 @@ export function PriceBookTable({
 							{filterSummary}
 						</Badge>
 						<span className="text-muted-foreground text-sm">
-							({filteredItems.length} {filteredItems.length === 1 ? "item" : "items"})
+							({filteredItems.length}{" "}
+							{filteredItems.length === 1 ? "item" : "items"})
 						</span>
 					</div>
 				</div>

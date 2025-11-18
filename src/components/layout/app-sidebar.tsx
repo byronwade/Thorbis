@@ -19,7 +19,12 @@ import { NavGrouped } from "@/components/layout/nav-grouped";
 import { NavMain } from "@/components/layout/nav-main";
 import { PriceBookTreeSidebar } from "@/components/pricebook/pricebook-tree-sidebar";
 import { ReportingSidebarNav } from "@/components/reporting/reporting-sidebar-nav";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarRail } from "@/components/ui/sidebar";
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarFooter,
+	SidebarRail,
+} from "@/components/ui/sidebar";
 import { JobDetailsNav } from "@/components/work/job-details/job-details-nav";
 import {
 	Archive,
@@ -2281,16 +2286,26 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 	pathname?: string;
 };
 
-export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarProps) {
+export function AppSidebar({
+	pathname: externalPathname,
+	...props
+}: AppSidebarProps) {
 	const clientPathname = usePathname();
 	const pathname = clientPathname || externalPathname || "/dashboard";
+	const hideSidebar = pathname.startsWith("/dashboard/communication/messages");
+
+	if (hideSidebar) {
+		return null;
+	}
+
 	const currentSection = getCurrentSection(pathname);
 	const navItems = navigationSections[currentSection];
 
 	const isAISection = currentSection === "ai";
 	const isReportingSection = currentSection === "reporting";
 	const isJobDetailsSection = currentSection === "jobDetails";
-	const isCommunicationDetail = pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
+	const isCommunicationDetail =
+		pathname?.match(COMMUNICATION_DETAIL_PATTERN) !== null;
 
 	// Use grouped navigation for settings, ai, work, communication, finance, marketing, shop, tools, pricebook, and jobDetails sections
 	const useGroupedNav =
@@ -2357,7 +2372,9 @@ export function AppSidebar({ pathname: externalPathname, ...props }: AppSidebarP
 						</div>
 						<div className="flex flex-col">
 							<span className="text-sm font-semibold">What's New</span>
-							<span className="text-muted-foreground text-xs">Version 2.1.0</span>
+							<span className="text-muted-foreground text-xs">
+								Version 2.1.0
+							</span>
 						</div>
 					</div>
 					<p className="text-muted-foreground relative z-10 text-xs leading-relaxed">

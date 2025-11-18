@@ -78,7 +78,9 @@ export function TeamChat({
 						<div>
 							<h2 className="text-lg font-semibold">{channelName}</h2>
 							{channelDescription && (
-								<p className="text-muted-foreground text-sm">{channelDescription}</p>
+								<p className="text-muted-foreground text-sm">
+									{channelDescription}
+								</p>
 							)}
 						</div>
 					</div>
@@ -106,10 +108,15 @@ export function TeamChat({
 							const showAvatar =
 								index === 0 ||
 								messages[index - 1]?.userId !== msg.userId ||
-								msg.timestamp.getTime() - messages[index - 1]?.timestamp.getTime() > 300_000;
+								msg.timestamp.getTime() -
+									messages[index - 1]?.timestamp.getTime() >
+									300_000;
 
 							return (
-								<div className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`} key={msg.id}>
+								<div
+									className={`flex gap-3 ${showAvatar ? "mt-4" : "mt-1"}`}
+									key={msg.id}
+								>
 									{showAvatar ? (
 										<Avatar className="h-8 w-8">
 											<AvatarFallback className="text-xs">
@@ -126,7 +133,9 @@ export function TeamChat({
 									<div className="min-w-0 flex-1">
 										{showAvatar && (
 											<div className="mb-1 flex items-center gap-2">
-												<span className="text-sm font-semibold">{msg.userName}</span>
+												<span className="text-sm font-semibold">
+													{msg.userName}
+												</span>
 												<span className="text-muted-foreground text-xs">
 													{formatTimestamp(msg.timestamp)}
 												</span>

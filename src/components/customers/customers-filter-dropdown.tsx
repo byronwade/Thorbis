@@ -94,7 +94,10 @@ export function CustomersFilterDropdown({
 					<Filter className="size-4" />
 					<span className="ml-2">Filters</span>
 					{activeFilterCount > 0 && (
-						<Badge className="ml-2 h-5 w-5 justify-center p-0 text-xs" variant="secondary">
+						<Badge
+							className="ml-2 h-5 w-5 justify-center p-0 text-xs"
+							variant="secondary"
+						>
 							{activeFilterCount}
 						</Badge>
 					)}
@@ -105,7 +108,12 @@ export function CustomersFilterDropdown({
 				<DropdownMenuLabel className="flex items-center justify-between">
 					<span>Filter Customers</span>
 					{activeFilterCount > 0 && (
-						<Button className="h-6 px-2 text-xs" onClick={handleClear} size="sm" variant="ghost">
+						<Button
+							className="h-6 px-2 text-xs"
+							onClick={handleClear}
+							size="sm"
+							variant="ghost"
+						>
 							Clear all
 						</Button>
 					)}
@@ -118,7 +126,10 @@ export function CustomersFilterDropdown({
 						<Label className="text-xs font-medium">Archive Status</Label>
 						<Select
 							onValueChange={(value) =>
-								handleLocalChange("archiveStatus", value as CustomersFilters["archiveStatus"])
+								handleLocalChange(
+									"archiveStatus",
+									value as CustomersFilters["archiveStatus"],
+								)
 							}
 							value={localFilters.archiveStatus}
 						>
@@ -133,7 +144,8 @@ export function CustomersFilterDropdown({
 									All Customers {totalCount !== undefined && `(${totalCount})`}
 								</SelectItem>
 								<SelectItem value="archived">
-									Archived Only {archivedCount !== undefined && `(${archivedCount})`}
+									Archived Only{" "}
+									{archivedCount !== undefined && `(${archivedCount})`}
 								</SelectItem>
 							</SelectContent>
 						</Select>
@@ -225,7 +237,12 @@ export function CustomersFilterDropdown({
 				<DropdownMenuSeparator />
 
 				<div className="flex gap-2 p-3">
-					<Button className="flex-1" onClick={() => setIsOpen(false)} size="sm" variant="outline">
+					<Button
+						className="flex-1"
+						onClick={() => setIsOpen(false)}
+						size="sm"
+						variant="outline"
+					>
 						Cancel
 					</Button>
 					<Button className="flex-1" onClick={handleApply} size="sm">

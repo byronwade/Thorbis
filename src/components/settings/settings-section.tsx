@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import type { SettingsOverviewSection } from "@/lib/settings/overview-data";
-import { describeHealthStatus, getStatusColorClasses } from "@/lib/settings/status-utils";
+import {
+	describeHealthStatus,
+	getStatusColorClasses,
+} from "@/lib/settings/status-utils";
 import { cn } from "@/lib/utils";
 
 type SettingsSectionProps = {
@@ -30,7 +33,9 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 						<section.icon className="text-primary size-5" />
 					</div>
 					<div>
-						<h2 className="text-2xl font-semibold tracking-tight">{section.title}</h2>
+						<h2 className="text-2xl font-semibold tracking-tight">
+							{section.title}
+						</h2>
 						<p className="text-muted-foreground">{section.description}</p>
 					</div>
 				</div>
@@ -51,14 +56,19 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 					<div className="min-w-[180px]">
 						<p className="text-muted-foreground text-sm">Completion</p>
 						<div className="flex items-center gap-3">
-							<span className="text-3xl font-semibold">{section.progress}%</span>
+							<span className="text-3xl font-semibold">
+								{section.progress}%
+							</span>
 							<Progress className="h-2 flex-1" value={section.progress} />
 						</div>
 					</div>
 				</CardHeader>
 				{section.quickActions.length > 0 && (
 					<CardFooter className="flex flex-wrap gap-2">
-						<SettingsQuickActions actions={section.quickActions} section={section.slug} />
+						<SettingsQuickActions
+							actions={section.quickActions}
+							section={section.slug}
+						/>
 					</CardFooter>
 				)}
 			</Card>
@@ -66,7 +76,10 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 			{section.metrics.length > 0 && (
 				<div className="grid gap-4 md:grid-cols-2">
 					{section.metrics.map((metric) => (
-						<SettingsMetricCard key={`${section.slug}-${metric.key}`} metric={metric} />
+						<SettingsMetricCard
+							key={`${section.slug}-${metric.key}`}
+							metric={metric}
+						/>
 					))}
 				</div>
 			)}
@@ -102,7 +115,11 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 												</span>
 											)}
 										</div>
-										{item.helper && <p className="text-muted-foreground text-sm">{item.helper}</p>}
+										{item.helper && (
+											<p className="text-muted-foreground text-sm">
+												{item.helper}
+											</p>
+										)}
 									</div>
 								</li>
 							))}
@@ -115,7 +132,9 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle className="text-base">Deep links</CardTitle>
-						<CardDescription>Jump directly into detailed settings pages</CardDescription>
+						<CardDescription>
+							Jump directly into detailed settings pages
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="grid gap-3 md:grid-cols-2">
 						{section.links.map((link) => (
@@ -126,7 +145,9 @@ export function SettingsSection({ section }: SettingsSectionProps) {
 							>
 								<div>
 									<p className="font-medium">{link.title}</p>
-									<p className="text-muted-foreground text-sm">{link.description}</p>
+									<p className="text-muted-foreground text-sm">
+										{link.description}
+									</p>
 								</div>
 								<ExternalLink className="text-muted-foreground group-hover:text-primary mt-1 size-4 transition" />
 							</Link>

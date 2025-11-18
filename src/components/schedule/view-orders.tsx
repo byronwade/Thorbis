@@ -35,14 +35,16 @@ export default function OrdersView({
 	assignments: Assignment[];
 }) {
 	const dayDates = React.useMemo(
-		() => Array.from({ length: days }).map((_, i) => addDays(startOfDay(date), i)),
-		[date, days]
+		() =>
+			Array.from({ length: days }).map((_, i) => addDays(startOfDay(date), i)),
+		[date, days],
 	);
 
 	// Build "Order" columns from assignments for each day
 	const ordersByDay = React.useMemo(() => {
 		const catOf = (id: string) => categories.find((c) => c.id === id);
-		const nameOf = (id: string) => members.find((m) => m.id === id)?.name ?? "Unassigned";
+		const nameOf = (id: string) =>
+			members.find((m) => m.id === id)?.name ?? "Unassigned";
 
 		const map = new Map<string, OrderCard[]>();
 		for (const d of dayDates) {
@@ -109,9 +111,14 @@ export default function OrdersView({
 			<div className="sticky top-0 z-10 border-b bg-white/80 px-4 py-2 backdrop-blur">
 				<div className="flex items-center gap-2 overflow-x-auto">
 					{dayDates.map((d) => (
-						<div className="shrink-0 rounded-full border px-3 py-1 text-xs" key={d.toISOString()}>
+						<div
+							className="shrink-0 rounded-full border px-3 py-1 text-xs"
+							key={d.toISOString()}
+						>
 							<span className="font-medium">{format(d, "EEE")}</span>
-							<span className="ml-2 text-neutral-500">{format(d, "MMM d")}</span>
+							<span className="ml-2 text-neutral-500">
+								{format(d, "MMM d")}
+							</span>
 						</div>
 					))}
 				</div>
@@ -138,7 +145,10 @@ export default function OrdersView({
 								)}
 
 								{orders.map((o) => (
-									<div className="mb-4 rounded-xl border bg-white shadow-sm" key={o.id}>
+									<div
+										className="mb-4 rounded-xl border bg-white shadow-sm"
+										key={o.id}
+									>
 										<div className="flex items-center justify-between rounded-t-xl border-b bg-white/70 px-3 py-2">
 											<div className="text-sm font-medium">{o.title}</div>
 											<Badge className="text-[10px]" variant="outline">
@@ -147,10 +157,15 @@ export default function OrdersView({
 										</div>
 										<div className="space-y-3 p-3">
 											{o.groups.map((g, gi) => (
-												<div className="rounded-lg border p-2" key={`${o.id}-g${gi}`}>
+												<div
+													className="rounded-lg border p-2"
+													key={`${o.id}-g${gi}`}
+												>
 													<div className="mb-2 flex items-center justify-between text-xs">
 														<div className="font-medium">{g.title}</div>
-														<div className="text-neutral-500">{g.items.length} items</div>
+														<div className="text-neutral-500">
+															{g.items.length} items
+														</div>
 													</div>
 													<div className="space-y-2">
 														{g.items.map((it) => (
@@ -158,8 +173,12 @@ export default function OrdersView({
 																className="rounded-md border px-2 py-2 text-xs shadow-sm"
 																key={it.id}
 																style={{
-																	borderColor: it.color ? `${it.color}70` : undefined,
-																	backgroundColor: it.color ? `${it.color}10` : undefined,
+																	borderColor: it.color
+																		? `${it.color}70`
+																		: undefined,
+																	backgroundColor: it.color
+																		? `${it.color}10`
+																		: undefined,
 																}}
 															>
 																<div className="flex items-center gap-2">
@@ -170,7 +189,9 @@ export default function OrdersView({
 																		}}
 																	/>
 																	<div className="min-w-0 flex-1">
-																		<div className="truncate font-medium">{it.label}</div>
+																		<div className="truncate font-medium">
+																			{it.label}
+																		</div>
 																		{it.meta && (
 																			<div className="truncate text-[11px] text-neutral-600">
 																				{it.meta}

@@ -3,7 +3,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { AnalyticsProvider } from "@/components/providers/analytics-provider";
-import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ZustandHydration } from "@/components/providers/zustand-hydration";
@@ -105,14 +104,12 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<body className="font-sans antialiased">
 				<ThemeProvider>
-					<QueryProvider>
-						<ZustandHydration />
-						<BotIdProvider />
-						<Suspense fallback={null}>
-							<AnalyticsProvider>{children}</AnalyticsProvider>
-						</Suspense>
-						<ToastProvider />
-					</QueryProvider>
+					<ZustandHydration />
+					<BotIdProvider />
+					<Suspense fallback={null}>
+						<AnalyticsProvider>{children}</AnalyticsProvider>
+					</Suspense>
+					<ToastProvider />
 				</ThemeProvider>
 				<Analytics />
 				<SpeedInsights />

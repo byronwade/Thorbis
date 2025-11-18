@@ -45,7 +45,9 @@ export function TeamSwitcher({
 							<activeTeam.logo className="size-4" />
 						</div>
 						<div className="grid flex-1 text-left leading-[1.2]">
-							<span className="truncate text-sm font-semibold">{activeTeam.name}</span>
+							<span className="truncate text-sm font-semibold">
+								{activeTeam.name}
+							</span>
 							<span className="truncate text-xs">{activeTeam.plan}</span>
 						</div>
 						<ChevronsUpDown className="ml-auto" />
@@ -68,7 +70,9 @@ export function TeamSwitcher({
 								<activeTeam.logo className="size-4" />
 							</div>
 							<div className="grid flex-1 text-left leading-[1.2]">
-								<span className="truncate text-sm font-semibold">{activeTeam.name}</span>
+								<span className="truncate text-sm font-semibold">
+									{activeTeam.name}
+								</span>
 								<span className="truncate text-xs">{activeTeam.plan}</span>
 							</div>
 							<ChevronsUpDown className="ml-auto" />
@@ -80,7 +84,9 @@ export function TeamSwitcher({
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="text-muted-foreground text-xs">Teams</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-muted-foreground text-xs">
+							Teams
+						</DropdownMenuLabel>
 						{teams.map((team, index) => (
 							<DropdownMenuItem
 								className="gap-2 p-2"

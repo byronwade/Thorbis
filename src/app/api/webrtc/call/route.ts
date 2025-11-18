@@ -7,9 +7,9 @@
  * @route POST /api/webrtc/call
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { getWebRTCService } from "@/services/webrtc";
+import { type NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getWebRTCService } from "@/services/webrtc";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -38,14 +38,20 @@ export async function POST(request: NextRequest) {
 		const service = getWebRTCService();
 
 		if (!service || service.getStatus() !== "ready") {
-			return NextResponse.json({ error: "WebRTC service not available" }, { status: 503 });
+			return NextResponse.json(
+				{ error: "WebRTC service not available" },
+				{ status: 503 },
+			);
 		}
 
 		// Handle different actions
 		switch (action) {
 			case "make": {
 				if (!phoneNumber) {
-					return NextResponse.json({ error: "Phone number required" }, { status: 400 });
+					return NextResponse.json(
+						{ error: "Phone number required" },
+						{ status: 400 },
+					);
 				}
 
 				await service.makeCall(phoneNumber);
@@ -63,7 +69,10 @@ export async function POST(request: NextRequest) {
 
 			case "end": {
 				if (!callId) {
-					return NextResponse.json({ error: "Call ID required" }, { status: 400 });
+					return NextResponse.json(
+						{ error: "Call ID required" },
+						{ status: 400 },
+					);
 				}
 
 				await service.endCall(callId);
@@ -76,7 +85,10 @@ export async function POST(request: NextRequest) {
 
 			case "answer": {
 				if (!callId) {
-					return NextResponse.json({ error: "Call ID required" }, { status: 400 });
+					return NextResponse.json(
+						{ error: "Call ID required" },
+						{ status: 400 },
+					);
 				}
 
 				await service.answerCall(callId);
@@ -99,7 +111,7 @@ export async function POST(request: NextRequest) {
 				success: false,
 				error: error instanceof Error ? error.message : "Call operation failed",
 			},
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

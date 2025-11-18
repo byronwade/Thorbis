@@ -17,17 +17,25 @@ import { PurchaseOrdersStats } from "@/components/work/purchase-orders/purchase-
 // ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
 export const revalidate = 60;
 
-export default function PurchaseOrdersPage() {
+export default async function PurchaseOrdersPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
+
 	return (
 		<>
 			{/* Stats - Streams in first */}
-			<Suspense fallback={<div className="bg-muted h-24 animate-pulse rounded" />}>
+			<Suspense
+				fallback={<div className="bg-muted h-24 animate-pulse rounded" />}
+			>
 				<PurchaseOrdersStats />
 			</Suspense>
 
 			{/* Table/Kanban - Streams in second */}
 			<Suspense fallback={<PurchaseOrdersSkeleton />}>
-				<PurchaseOrdersData />
+				<PurchaseOrdersData searchParams={params} />
 			</Suspense>
 		</>
 	);

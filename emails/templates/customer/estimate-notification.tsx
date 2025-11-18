@@ -39,8 +39,8 @@ export default function EstimateNotificationEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				We've prepared estimate <strong>#{estimateNumber}</strong> for you. Review the summary below
-				and click the button to see the full details.
+				We've prepared estimate <strong>#{estimateNumber}</strong> for you.
+				Review the summary below and click the button to see the full details.
 			</Text>
 
 			<Card style={summaryCard}>
@@ -50,12 +50,16 @@ export default function EstimateNotificationEmail({
 				</div>
 				<div style={summaryRow}>
 					<Text style={summaryLabel}>Estimate Date</Text>
-					<Text style={summaryValue}>{new Date(estimateDate).toLocaleDateString()}</Text>
+					<Text style={summaryValue}>
+						{new Date(estimateDate).toLocaleDateString()}
+					</Text>
 				</div>
 				{validUntil ? (
 					<div style={summaryRow}>
 						<Text style={summaryLabel}>Valid Until</Text>
-						<Text style={summaryValue}>{new Date(validUntil).toLocaleDateString()}</Text>
+						<Text style={summaryValue}>
+							{new Date(validUntil).toLocaleDateString()}
+						</Text>
 					</div>
 				) : null}
 				<div style={summaryRow}>
@@ -73,7 +77,9 @@ export default function EstimateNotificationEmail({
 								<Text style={itemDescription}>{item.description}</Text>
 								<Text style={itemQuantity}>Qty: {item.quantity}</Text>
 							</div>
-							<Text style={itemAmount}>{formatCurrency(item.amount, currency)}</Text>
+							<Text style={itemAmount}>
+								{formatCurrency(item.amount, currency)}
+							</Text>
 						</div>
 					))}
 				</Card>
@@ -93,8 +99,8 @@ export default function EstimateNotificationEmail({
 			<Card style={footerCard}>
 				<Heading level={3}>Need Assistance?</Heading>
 				<Text style={footerText}>
-					If you have any questions about this estimate, reply to this email or contact our support
-					team. We're happy to help!
+					If you have any questions about this estimate, reply to this email or
+					contact our support team. We're happy to help!
 				</Text>
 			</Card>
 		</BaseLayout>

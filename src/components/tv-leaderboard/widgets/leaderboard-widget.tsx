@@ -9,7 +9,11 @@
  */
 
 import { TrendingDown, TrendingUp, Trophy } from "lucide-react";
-import { formatCurrency, formatNumber, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatCurrency,
+	formatNumber,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveIcon,
@@ -96,7 +100,10 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 
 									{/* Name + Trend */}
 									<div className="min-w-0 flex-1">
-										<ResponsiveText className="truncate font-semibold" variant="body">
+										<ResponsiveText
+											className="truncate font-semibold"
+											variant="body"
+										>
 											{tech.name}
 										</ResponsiveText>
 										<span
@@ -113,8 +120,12 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 										<ResponsiveText className="font-bold" variant="body">
 											{formatCurrency(tech.stats.revenue, "comfortable")}
 										</ResponsiveText>
-										<ResponsiveText className="text-muted-foreground" variant="caption">
-											{formatNumber(tech.stats.jobsCompleted, "comfortable")} jobs
+										<ResponsiveText
+											className="text-muted-foreground"
+											variant="caption"
+										>
+											{formatNumber(tech.stats.jobsCompleted, "comfortable")}{" "}
+											jobs
 										</ResponsiveText>
 									</div>
 								</div>
@@ -146,7 +157,10 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 
 								{/* Name */}
 								<div className="min-w-0 flex-1">
-									<ResponsiveText className="truncate font-semibold" variant="caption">
+									<ResponsiveText
+										className="truncate font-semibold"
+										variant="caption"
+									>
 										{tech.name}
 									</ResponsiveText>
 								</div>
@@ -184,7 +198,10 @@ export function LeaderboardWidget({ data }: LeaderboardWidgetProps) {
 				<ShowAt stage="tiny">
 					{technicians[0] && (
 						<div className="flex h-full items-center justify-center">
-							<ResponsiveText className="text-warning font-bold" variant="display">
+							<ResponsiveText
+								className="text-warning font-bold"
+								variant="display"
+							>
 								{formatCurrency(technicians[0].stats.revenue, "tiny")}
 							</ResponsiveText>
 						</div>

@@ -58,7 +58,9 @@ export async function UnreadMessagesData() {
 				</div>
 
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Stay on Top of Messages</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Stay on Top of Messages
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Never miss an important customer communication
 					</p>

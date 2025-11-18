@@ -35,7 +35,9 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
 			<div className="flex min-h-screen items-center justify-center">
 				<div className="text-center">
 					<h1 className="mb-2 text-2xl font-bold">Database Not Configured</h1>
-					<p className="text-muted-foreground">Please configure your database to continue.</p>
+					<p className="text-muted-foreground">
+						Please configure your database to continue.
+					</p>
 				</div>
 			</div>
 		);
@@ -48,7 +50,7 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
 	const { data: teamMembers } = await supabase
 		.from("team_members")
 		.select(
-			"company_id, companies!inner(id, name, stripe_subscription_status, onboarding_progress, onboarding_completed_at)"
+			"company_id, companies!inner(id, name, stripe_subscription_status, onboarding_progress, onboarding_completed_at)",
 		)
 		.eq("user_id", user.id)
 		.eq("status", "active")
@@ -56,9 +58,12 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
 
 	// biome-ignore lint/suspicious/noExplicitAny: Supabase query result type
 	const hasActiveCompany = teamMembers?.some((tm: any) => {
-		const companies = Array.isArray(tm.companies) ? tm.companies[0] : tm.companies;
+		const companies = Array.isArray(tm.companies)
+			? tm.companies[0]
+			: tm.companies;
 		const status = companies?.stripe_subscription_status;
-		const onboardingProgress = (companies?.onboarding_progress as Record<string, unknown>) || null;
+		const onboardingProgress =
+			(companies?.onboarding_progress as Record<string, unknown>) || null;
 		const onboardingComplete = isOnboardingComplete({
 			progress: onboardingProgress,
 			completedAt: companies?.onboarding_completed_at ?? null,
@@ -84,10 +89,14 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
 
 		if (company) {
 			const subscriptionStatus = company.stripe_subscription_status;
-			const hasPayment = subscriptionStatus === "active" || subscriptionStatus === "trialing";
-			const onboardingProgress = (company.onboarding_progress as OnboardingProgress) || {};
+			const hasPayment =
+				subscriptionStatus === "active" || subscriptionStatus === "trialing";
+			const onboardingProgress =
+				(company.onboarding_progress as OnboardingProgress) || {};
 			const currentStep =
-				typeof onboardingProgress.currentStep === "number" ? onboardingProgress.currentStep : 1;
+				typeof onboardingProgress.currentStep === "number"
+					? onboardingProgress.currentStep
+					: 1;
 			const onboardingComplete = isOnboardingComplete({
 				progress: onboardingProgress,
 				completedAt: company.onboarding_completed_at ?? null,
@@ -96,7 +105,8 @@ export async function WelcomeData({ isCreatingNewCompany }: WelcomeDataProps) {
 			// Only return if onboarding is incomplete
 			if (!(hasPayment && onboardingComplete)) {
 				// Parse address
-				const addressParts = company.address?.split(",").map((s: string) => s.trim()) || [];
+				const addressParts =
+					company.address?.split(",").map((s: string) => s.trim()) || [];
 
 				incompleteCompany = {
 					id: company.id,

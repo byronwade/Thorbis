@@ -32,7 +32,7 @@ export function ResponsiveWidgetWrapper({
 			className={cn(
 				"bg-background relative h-full w-full rounded-lg border shadow-sm",
 				"@container", // Enable container queries
-				className
+				className,
 			)}
 			data-stage={stage}
 		>
@@ -61,7 +61,7 @@ export function ResponsiveContent({
 				"@[200px]:@[400px]:p-4", // Comfortable stage
 				"@[120px]:@[200px]:p-3", // Compact stage
 				"p-2", // Tiny stage (default)
-				className
+				className,
 			)}
 		>
 			{children}
@@ -89,7 +89,9 @@ export function ResponsiveText({
 		caption: "text-[clamp(0.625rem,2.5cqh,0.875rem)] text-muted-foreground",
 	};
 
-	return <div className={cn(variantClasses[variant], className)}>{children}</div>;
+	return (
+		<div className={cn(variantClasses[variant], className)}>{children}</div>
+	);
 }
 
 /**
@@ -108,7 +110,7 @@ export function ResponsiveIcon({
 				// Icon scales from 3cqh (tiny) to 8cqh (full)
 				"flex shrink-0 items-center justify-center",
 				"[&>svg]:size-[clamp(1rem,6cqh,2rem)]",
-				className
+				className,
 			)}
 		>
 			{children}
@@ -124,7 +126,13 @@ export function ShowAt({
 	stage,
 	children,
 }: {
-	stage: "full" | "comfortable" | "compact" | "tiny" | "full-comfortable" | "comfortable-compact";
+	stage:
+		| "full"
+		| "comfortable"
+		| "compact"
+		| "tiny"
+		| "full-comfortable"
+		| "comfortable-compact";
 	children: ReactNode;
 }) {
 	const stageClasses = {
@@ -160,7 +168,7 @@ export function ResponsiveGrid({
 				// Adaptive gap
 				"@[200px]:gap-3",
 				"@[400px]:gap-4",
-				className
+				className,
 			)}
 		>
 			{children}
@@ -185,7 +193,7 @@ export function ResponsiveFlex({
 				// Column on tiny, row on larger
 				"flex-col @[200px]:flex-row @[200px]:items-center",
 				"@[200px]:gap-3",
-				className
+				className,
 			)}
 		>
 			{children}

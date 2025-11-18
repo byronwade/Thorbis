@@ -23,7 +23,11 @@ type MaterialsTabProps = {
 	isEditMode: boolean;
 };
 
-export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) {
+export function MaterialsTab({
+	job,
+	materials,
+	isEditMode,
+}: MaterialsTabProps) {
 	const formatCurrency = (cents: number) =>
 		new Intl.NumberFormat("en-US", {
 			style: "currency",
@@ -32,7 +36,7 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
 
 	const totalCost = materials.reduce(
 		(sum, item) => sum + (item.quantity * item.unit_price || 0),
-		0
+		0,
 	);
 
 	return (
@@ -74,7 +78,9 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
 											<TableCell className="text-muted-foreground text-sm">
 												{item.description}
 											</TableCell>
-											<TableCell className="text-right">{item.quantity}</TableCell>
+											<TableCell className="text-right">
+												{item.quantity}
+											</TableCell>
 											<TableCell className="text-right">
 												{formatCurrency(item.unit_price || 0)}
 											</TableCell>
@@ -94,13 +100,19 @@ export function MaterialsTab({ job, materials, isEditMode }: MaterialsTabProps) 
 							</Table>
 							<div className="mt-4 flex justify-end border-t pt-4">
 								<div className="text-right">
-									<p className="text-muted-foreground text-sm">Total Materials</p>
-									<p className="text-2xl font-bold">{formatCurrency(totalCost)}</p>
+									<p className="text-muted-foreground text-sm">
+										Total Materials
+									</p>
+									<p className="text-2xl font-bold">
+										{formatCurrency(totalCost)}
+									</p>
 								</div>
 							</div>
 						</>
 					) : (
-						<div className="text-muted-foreground text-center text-sm">No line items added yet</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No line items added yet
+						</div>
 					)}
 				</CardContent>
 			</Card>

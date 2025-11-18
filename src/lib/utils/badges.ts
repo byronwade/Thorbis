@@ -16,7 +16,8 @@ export type BadgeConfig = {
 export function getJobStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		quoted: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Quoted",
 		},
 		scheduled: {
@@ -29,7 +30,8 @@ export function getJobStatusBadgeConfig(status: string): BadgeConfig {
 			label: "In Progress",
 		},
 		completed: {
-			className: "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+			className:
+				"border-green-500/50 bg-green-500 text-white hover:bg-green-600",
 			label: "Completed",
 		},
 		cancelled: {
@@ -52,7 +54,8 @@ export function getJobStatusBadgeConfig(status: string): BadgeConfig {
 export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		paid: {
-			className: "border-green-500/30 bg-green-500 text-white hover:bg-green-600 shadow-sm",
+			className:
+				"border-green-500/30 bg-green-500 text-white hover:bg-green-600 shadow-sm",
 			label: "Paid",
 		},
 		unpaid: {
@@ -66,7 +69,8 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 			label: "Overdue",
 		},
 		draft: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50 shadow-sm",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50 shadow-sm",
 			label: "Draft",
 		},
 		sent: {
@@ -83,7 +87,8 @@ export function getInvoiceStatusBadgeConfig(status: string): BadgeConfig {
 
 	return (
 		configs[status] || {
-			className: "border-border/50 bg-background text-muted-foreground shadow-sm",
+			className:
+				"border-border/50 bg-background text-muted-foreground shadow-sm",
 			label: status.replace(/_/g, " "),
 		}
 	);
@@ -99,11 +104,13 @@ export function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
 			label: "Accepted",
 		},
 		sent: {
-			className: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+			className:
+				"bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
 			label: "Sent",
 		},
 		draft: {
-			className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+			className:
+				"bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
 			label: "Draft",
 		},
 		declined: {
@@ -114,7 +121,8 @@ export function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
 
 	return (
 		configs[status] || {
-			className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+			className:
+				"bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
 			label: status.replace(/_/g, " "),
 		}
 	);
@@ -126,7 +134,8 @@ export function getEstimateStatusBadgeConfig(status: string): BadgeConfig {
 export function getContractStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		signed: {
-			className: "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+			className:
+				"border-green-500/50 bg-green-500 text-white hover:bg-green-600",
 			label: "Signed",
 		},
 		sent: {
@@ -140,7 +149,8 @@ export function getContractStatusBadgeConfig(status: string): BadgeConfig {
 			label: "Viewed",
 		},
 		draft: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Draft",
 		},
 		rejected: {
@@ -156,7 +166,8 @@ export function getContractStatusBadgeConfig(status: string): BadgeConfig {
 
 	return (
 		configs[status] || {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: status.replace(/_/g, " "),
 		}
 	);
@@ -168,26 +179,31 @@ export function getContractStatusBadgeConfig(status: string): BadgeConfig {
 export function getCustomerStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		active: {
-			className: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+			className:
+				"bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
 			label: "Active",
 		},
 		inactive: {
-			className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+			className:
+				"bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
 			label: "Inactive",
 		},
 		prospect: {
-			className: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+			className:
+				"bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
 			label: "Prospect",
 		},
 		lead: {
-			className: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+			className:
+				"bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
 			label: "Lead",
 		},
 	};
 
 	return (
 		configs[status] || {
-			className: "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
+			className:
+				"bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400",
 			label: status.replace(/_/g, " "),
 		}
 	);
@@ -234,7 +250,8 @@ export function getPriorityBadgeConfig(priority: string): BadgeConfig {
 export function getPurchaseOrderStatusBadgeConfig(status: string): BadgeConfig {
 	const configs: Record<string, BadgeConfig> = {
 		draft: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Draft",
 		},
 		pending: {
@@ -243,7 +260,8 @@ export function getPurchaseOrderStatusBadgeConfig(status: string): BadgeConfig {
 			label: "Pending",
 		},
 		approved: {
-			className: "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+			className:
+				"border-green-500/50 bg-green-500 text-white hover:bg-green-600",
 			label: "Approved",
 		},
 		partially_received: {
@@ -252,7 +270,8 @@ export function getPurchaseOrderStatusBadgeConfig(status: string): BadgeConfig {
 			label: "Partially Received",
 		},
 		received: {
-			className: "border-green-500/50 bg-green-500 text-white hover:bg-green-600",
+			className:
+				"border-green-500/50 bg-green-500 text-white hover:bg-green-600",
 			label: "Received",
 		},
 		cancelled: {
@@ -305,7 +324,7 @@ export function getContractTypeBadgeConfig(type: string): BadgeConfig {
  */
 export function getStatusBadgeConfig(
 	status: string,
-	type: "job" | "invoice" | "estimate" | "contract" | "customer"
+	type: "job" | "invoice" | "estimate" | "contract" | "customer",
 ): BadgeConfig {
 	switch (type) {
 		case "job":

@@ -23,7 +23,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Rental Rates</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Define hourly, daily, and weekly rental rates for equipment and specialized tools
+							Define hourly, daily, and weekly rental rates for equipment and
+							specialized tools
 						</p>
 					</div>
 
@@ -33,7 +34,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Usage Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track equipment usage hours and automatically calculate rental charges for jobs
+							Track equipment usage hours and automatically calculate rental
+							charges for jobs
 						</p>
 					</div>
 
@@ -43,7 +45,8 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Depreciation</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Calculate depreciation and track asset value over time for accounting purposes
+							Calculate depreciation and track asset value over time for
+							accounting purposes
 						</p>
 					</div>
 
@@ -53,13 +56,16 @@ export async function PricebookEquipmentData() {
 						</div>
 						<h3 className="text-lg font-semibold">Maintenance Costs</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track maintenance expenses and factor into equipment rental pricing
+							Track maintenance expenses and factor into equipment rental
+							pricing
 						</p>
 					</div>
 				</div>
 
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Track Equipment Profitability</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Track Equipment Profitability
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Ensure every asset contributes to your bottom line
 					</p>

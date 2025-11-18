@@ -14,7 +14,13 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -39,7 +45,9 @@ type DepartmentsClientProps = {
 	initialDepartments: Department[];
 };
 
-export function DepartmentsClient({ initialDepartments }: DepartmentsClientProps) {
+export function DepartmentsClient({
+	initialDepartments,
+}: DepartmentsClientProps) {
 	const [departments, setDepartments] = useState(initialDepartments);
 	const [isCreating, startCreate] = useTransition();
 	const [isDeleting, startDelete] = useTransition();
@@ -50,7 +58,10 @@ export function DepartmentsClient({ initialDepartments }: DepartmentsClientProps
 	});
 	const { toast } = useToast();
 
-	const totalMembers = departments.reduce((sum, dept) => sum + (dept.member_count ?? 0), 0);
+	const totalMembers = departments.reduce(
+		(sum, dept) => sum + (dept.member_count ?? 0),
+		0,
+	);
 
 	const handleCreateDepartment = () => {
 		startCreate(async () => {
@@ -114,7 +125,10 @@ export function DepartmentsClient({ initialDepartments }: DepartmentsClientProps
 							className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg"
 							style={{ backgroundColor: `${dept.color ?? "#E4E7EC"}33` }}
 						>
-							<Building2 className="h-6 w-6" style={{ color: dept.color ?? "var(--primary)" }} />
+							<Building2
+								className="h-6 w-6"
+								style={{ color: dept.color ?? "var(--primary)" }}
+							/>
 						</div>
 						<div className="min-w-0 flex-1">
 							<CardTitle className="text-base">{dept.name}</CardTitle>
@@ -249,7 +263,11 @@ export function DepartmentsClient({ initialDepartments }: DepartmentsClientProps
 									>
 										Cancel
 									</Button>
-									<Button disabled={isCreating} onClick={handleCreateDepartment} type="button">
+									<Button
+										disabled={isCreating}
+										onClick={handleCreateDepartment}
+										type="button"
+									>
 										{isCreating ? (
 											<>
 												<Loader2 className="mr-2 size-4 animate-spin" />
@@ -272,7 +290,8 @@ export function DepartmentsClient({ initialDepartments }: DepartmentsClientProps
 							<div>
 								<p className="font-semibold">No departments yet</p>
 								<p className="text-muted-foreground text-sm">
-									Create your first department to keep permissions and reporting organized.
+									Create your first department to keep permissions and reporting
+									organized.
 								</p>
 							</div>
 							<Button onClick={() => setShowForm(true)}>

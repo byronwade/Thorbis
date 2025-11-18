@@ -24,7 +24,12 @@ type EquipmentTabProps = {
 	isEditMode: boolean;
 };
 
-export function EquipmentTab({ job, equipment, property, isEditMode }: EquipmentTabProps) {
+export function EquipmentTab({
+	job,
+	equipment,
+	property,
+	isEditMode,
+}: EquipmentTabProps) {
 	const formatDate = (date: string | null) => {
 		if (!date) {
 			return "N/A";
@@ -117,7 +122,9 @@ export function EquipmentTab({ job, equipment, property, isEditMode }: Equipment
 							{job.equipment_serviced.map((item: any, index: number) => (
 								<div className="rounded-lg border p-3" key={index}>
 									<p className="font-medium">{item.name}</p>
-									<p className="text-muted-foreground text-sm">{item.service_performed}</p>
+									<p className="text-muted-foreground text-sm">
+										{item.service_performed}
+									</p>
 								</div>
 							))}
 						</div>

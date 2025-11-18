@@ -8,7 +8,7 @@ export async function getSupabaseClient() {
 	const supabase = await createClient();
 	if (!supabase) {
 		throw new Error(
-			"Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables."
+			"Supabase client not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.",
 		);
 	}
 	return supabase;

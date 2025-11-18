@@ -29,8 +29,9 @@ export default function ServiceReminderEmail({
 			<Text style={paragraph}>Hi {customerName},</Text>
 
 			<Text style={paragraph}>
-				We wanted to remind you that it's time for your scheduled {serviceName} service. Regular
-				maintenance helps prevent costly repairs and keeps everything running smoothly.
+				We wanted to remind you that it's time for your scheduled {serviceName}{" "}
+				service. Regular maintenance helps prevent costly repairs and keeps
+				everything running smoothly.
 			</Text>
 
 			<Card style={reminderCard}>
@@ -47,16 +48,19 @@ export default function ServiceReminderEmail({
 				<Heading level={3}>Why regular maintenance matters:</Heading>
 				<ul style={list}>
 					<li style={listItem}>
-						<strong>Prevent breakdowns:</strong> Catch small issues before they become big problems
+						<strong>Prevent breakdowns:</strong> Catch small issues before they
+						become big problems
 					</li>
 					<li style={listItem}>
-						<strong>Save money:</strong> Regular maintenance is cheaper than emergency repairs
+						<strong>Save money:</strong> Regular maintenance is cheaper than
+						emergency repairs
 					</li>
 					<li style={listItem}>
 						<strong>Extend lifespan:</strong> Keep your equipment running longer
 					</li>
 					<li style={listItem}>
-						<strong>Maintain warranty:</strong> Some warranties require regular service
+						<strong>Maintain warranty:</strong> Some warranties require regular
+						service
 					</li>
 				</ul>
 			</Card>
@@ -65,7 +69,8 @@ export default function ServiceReminderEmail({
 				<Text style={offerIcon}>🎁</Text>
 				<Heading level={3}>Valued Customer Benefit</Heading>
 				<Text style={offerText}>
-					As a returning customer, you'll receive priority scheduling and our best service rate.
+					As a returning customer, you'll receive priority scheduling and our
+					best service rate.
 				</Text>
 			</Card>
 

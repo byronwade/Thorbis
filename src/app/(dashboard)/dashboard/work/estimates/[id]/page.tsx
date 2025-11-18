@@ -15,7 +15,11 @@ import { Suspense } from "react";
 import { EstimateDetailData } from "@/components/work/estimates/estimate-detail-data";
 import { EstimateDetailSkeleton } from "@/components/work/estimates/estimate-detail-skeleton";
 
-export default async function EstimateDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EstimateDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: estimateId } = await params;
 
 	return (

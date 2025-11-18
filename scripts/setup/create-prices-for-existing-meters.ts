@@ -12,7 +12,8 @@ import Stripe from "stripe";
 // Load environment variables from .env.local
 config({ path: resolve(process.cwd(), ".env.local") });
 
-const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] = "2025-01-27.acacia";
+const STRIPE_API_VERSION: Stripe.StripeConfig["apiVersion"] =
+	"2025-01-27.acacia";
 const METER_LIST_LIMIT = 20;
 const PRODUCT_LIST_LIMIT = 20;
 const PRICE_LIST_LIMIT = 10;
@@ -61,7 +62,9 @@ async function createPricesForMeters() {
 		// Step 3: For each meter, find matching product and create price
 		for (const meter of meters.data) {
 			try {
-				console.log(`Processing meter: ${meter.display_name} (${meter.event_name})`);
+				console.log(
+					`Processing meter: ${meter.display_name} (${meter.event_name})`,
+				);
 
 				// Find matching product by name
 				const productName = meter.display_name.replace("Thorbis ", "");
@@ -86,14 +89,14 @@ async function createPricesForMeters() {
 				});
 
 				const meterPrice = existingPrices.data.find(
-					(priceItem) => priceItem.recurring?.meter === meter.id
+					(priceItem) => priceItem.recurring?.meter === meter.id,
 				);
 
 				if (meterPrice) {
 					console.log(`  ✓ Price already exists: ${meterPrice.id}`);
-					const formattedAmount = ((meterPrice.unit_amount || 0) / CENTS_IN_DOLLAR).toFixed(
-						PRICE_DECIMALS
-					);
+					const formattedAmount = (
+						(meterPrice.unit_amount || 0) / CENTS_IN_DOLLAR
+					).toFixed(PRICE_DECIMALS);
 					console.log(`    Amount: $${formattedAmount}`);
 					results.push({
 						event_name: meter.event_name,
@@ -125,7 +128,7 @@ async function createPricesForMeters() {
 
 				// Create price
 				console.log(
-					`  Creating price with amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}...`
+					`  Creating price with amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}...`,
 				);
 				const price = await stripe.prices.create({
 					product: product.id,
@@ -140,7 +143,9 @@ async function createPricesForMeters() {
 				});
 
 				console.log(`  ✅ Price created: ${price.id}`);
-				console.log(`    Amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}\n`);
+				console.log(
+					`    Amount: $${(unitAmount / CENTS_IN_DOLLAR).toFixed(PRICE_DECIMALS)}\n`,
+				);
 
 				results.push({
 					event_name: meter.event_name,
@@ -150,7 +155,10 @@ async function createPricesForMeters() {
 					amount: unitAmount,
 				});
 			} catch (error) {
-				console.error(`  ❌ Error processing ${meter.display_name}:`, getErrorMessage(error));
+				console.error(
+					`  ❌ Error processing ${meter.display_name}:`,
+					getErrorMessage(error),
+				);
 				console.log("");
 			}
 		}

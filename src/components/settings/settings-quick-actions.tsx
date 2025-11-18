@@ -11,7 +11,10 @@ type SettingsQuickActionsProps = {
 	section: string;
 };
 
-export function SettingsQuickActions({ actions, section }: SettingsQuickActionsProps) {
+export function SettingsQuickActions({
+	actions,
+	section,
+}: SettingsQuickActionsProps) {
 	if (!actions.length) {
 		return null;
 	}
@@ -25,7 +28,7 @@ export function SettingsQuickActions({ actions, section }: SettingsQuickActionsP
 							variant: action.variant ?? "default",
 							size: "sm",
 						}),
-						"group justify-between"
+						"group justify-between",
 					)}
 					href={action.href}
 					key={action.key}

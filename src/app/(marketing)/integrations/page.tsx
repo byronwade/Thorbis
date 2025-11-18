@@ -50,15 +50,17 @@ export default async function IntegrationsPage() {
 						Connect Thorbis to the tools that run your business
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Thorbis integrates with leading accounting, payments, marketing, and automation
-						platforms. Browse verified integrations and discover new ways to streamline back-office
-						work—all included in the $100/month base subscription with pay-as-you-go usage and no
-						lock-in.
+						Thorbis integrates with leading accounting, payments, marketing, and
+						automation platforms. Browse verified integrations and discover new
+						ways to streamline back-office work—all included in the $100/month
+						base subscription with pay-as-you-go usage and no lock-in.
 					</p>
 				</header>
 
 				<section className="mb-12 space-y-4 text-center">
-					<h2 className="text-lg font-semibold">Popular integration categories</h2>
+					<h2 className="text-lg font-semibold">
+						Popular integration categories
+					</h2>
 					<div className="flex flex-wrap justify-center gap-2">
 						{categories.map((category) => (
 							<Badge key={category} variant="outline">
@@ -68,10 +70,15 @@ export default async function IntegrationsPage() {
 					</div>
 				</section>
 
-				<Suspense fallback={<div className="text-center">Loading integrations…</div>}>
+				<Suspense
+					fallback={<div className="text-center">Loading integrations…</div>}
+				>
 					<section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 						{integrations.map((integration) => (
-							<IntegrationCard integration={integration} key={integration.slug} />
+							<IntegrationCard
+								integration={integration}
+								key={integration.slug}
+							/>
 						))}
 					</section>
 				</Suspense>

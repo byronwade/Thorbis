@@ -163,7 +163,9 @@ export function ArchiveDataTable({
 				<div>
 					<div className="font-medium">{item.displayName}</div>
 					{item.entityNumber && (
-						<div className="text-muted-foreground text-xs">{item.entityNumber}</div>
+						<div className="text-muted-foreground text-xs">
+							{item.entityNumber}
+						</div>
 					)}
 				</div>
 			),
@@ -223,7 +225,7 @@ export function ArchiveDataTable({
 			icon: <Trash2 className="h-4 w-4" />,
 			onClick: (_selectedIds: Set<string>) => {
 				toast.error(
-					"Permanent deletion not yet implemented. Items will auto-delete after 90 days."
+					"Permanent deletion not yet implemented. Items will auto-delete after 90 days.",
 				);
 			},
 			variant: "destructive",
@@ -309,10 +311,12 @@ export function ArchiveDataTable({
 			<AlertDialog onOpenChange={setShowRestoreDialog} open={showRestoreDialog}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
-						<AlertDialogTitle>Restore {selectedItems.size} Item(s)?</AlertDialogTitle>
+						<AlertDialogTitle>
+							Restore {selectedItems.size} Item(s)?
+						</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will restore the selected items to their active state. They will reappear in
-							their original locations.
+							This will restore the selected items to their active state. They
+							will reappear in their original locations.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

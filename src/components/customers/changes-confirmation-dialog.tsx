@@ -74,14 +74,17 @@ export function ChangesConfirmationDialog({
 						Confirm Changes
 					</DialogTitle>
 					<DialogDescription>
-						Review the changes below before saving. This helps prevent unwanted edits.
+						Review the changes below before saving. This helps prevent unwanted
+						edits.
 					</DialogDescription>
 				</DialogHeader>
 
 				<ScrollArea className="max-h-[400px] pr-4">
 					<div className="space-y-3">
 						{changes.length === 0 ? (
-							<p className="text-muted-foreground py-8 text-center text-sm">No changes detected</p>
+							<p className="text-muted-foreground py-8 text-center text-sm">
+								No changes detected
+							</p>
 						) : (
 							changes.map((change, index) => (
 								<div className="bg-muted/30 rounded-lg border p-4" key={index}>
@@ -90,7 +93,9 @@ export function ChangesConfirmationDialog({
 											<Badge className="text-xs" variant="outline">
 												{change.section}
 											</Badge>
-											<span className="text-sm font-medium">{change.field}</span>
+											<span className="text-sm font-medium">
+												{change.field}
+											</span>
 										</div>
 									</div>
 									<div className="flex items-center gap-2 text-sm">
@@ -103,7 +108,9 @@ export function ChangesConfirmationDialog({
 										<ArrowRight className="text-muted-foreground size-4 shrink-0" />
 										<div className="bg-success/10 flex-1 rounded px-3 py-2">
 											<p className="text-muted-foreground text-xs">New Value</p>
-											<p className="text-success mt-1 font-mono">{formatValue(change.newValue)}</p>
+											<p className="text-success mt-1 font-mono">
+												{formatValue(change.newValue)}
+											</p>
 										</div>
 									</div>
 								</div>
@@ -116,7 +123,10 @@ export function ChangesConfirmationDialog({
 					<Button disabled={isLoading} onClick={onCancel} variant="outline">
 						Cancel
 					</Button>
-					<Button disabled={isLoading || changes.length === 0} onClick={onConfirm}>
+					<Button
+						disabled={isLoading || changes.length === 0}
+						onClick={onConfirm}
+					>
 						{isLoading
 							? "Saving..."
 							: `Confirm & Save ${changes.length} Change${changes.length === 1 ? "" : "s"}`}

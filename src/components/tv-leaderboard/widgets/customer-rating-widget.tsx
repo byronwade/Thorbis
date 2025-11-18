@@ -46,7 +46,10 @@ export function CustomerRatingWidget({ data }: CustomerRatingWidgetProps) {
 				{/* COMFORTABLE Stage: Short title */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="text-muted-foreground font-medium" variant="body">
+						<ResponsiveText
+							className="text-muted-foreground font-medium"
+							variant="body"
+						>
 							Rating
 						</ResponsiveText>
 						<ResponsiveIcon>

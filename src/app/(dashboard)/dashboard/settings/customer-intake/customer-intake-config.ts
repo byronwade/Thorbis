@@ -31,7 +31,7 @@ export const DEFAULT_CUSTOMER_INTAKE_SETTINGS: CustomerIntakeSettingsState = {
 };
 
 export function mapCustomerIntakeSettings(
-	row: CustomerIntakeRow
+	row: CustomerIntakeRow,
 ): Partial<CustomerIntakeSettingsState> {
 	if (!row) {
 		return {};

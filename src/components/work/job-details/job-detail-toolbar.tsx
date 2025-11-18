@@ -44,7 +44,12 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { JobStatisticsSheet } from "./job-statistics-sheet";
 import { TagManagerDialog } from "./tags/tag-manager-dialog";
@@ -81,7 +86,8 @@ export function JobDetailToolbar({
 
 	// Calculate tag count
 	const customerTags = (customer?.tags as string[]) || [];
-	const jobTags = ((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
+	const jobTags =
+		((job?.metadata?.tags || job?.custom_fields?.tags) as string[]) || [];
 	const tagCount = customerTags.length + jobTags.length;
 
 	const handleArchive = async () => {
@@ -255,8 +261,9 @@ export function JobDetailToolbar({
 					<DialogHeader>
 						<DialogTitle>Archive Job</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to archive this job? Archived jobs can be restored within 90
-							days. Completed or invoiced jobs cannot be archived.
+							Are you sure you want to archive this job? Archived jobs can be
+							restored within 90 days. Completed or invoiced jobs cannot be
+							archived.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
@@ -267,7 +274,11 @@ export function JobDetailToolbar({
 						>
 							Cancel
 						</Button>
-						<Button disabled={isArchiving} onClick={handleArchive} variant="destructive">
+						<Button
+							disabled={isArchiving}
+							onClick={handleArchive}
+							variant="destructive"
+						>
 							{isArchiving ? "Archiving..." : "Archive Job"}
 						</Button>
 					</DialogFooter>

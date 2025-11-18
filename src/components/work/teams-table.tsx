@@ -16,9 +16,13 @@
 import { Archive, ArchiveRestore, Eye, Mail, Users, UserX } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { archiveTeamMember, restoreTeamMember, suspendTeamMember } from "@/actions/team";
+import {
+	archiveTeamMember,
+	restoreTeamMember,
+	suspendTeamMember,
+} from "@/actions/team";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -41,6 +45,7 @@ import {
 import { RowActionsDropdown } from "@/components/ui/row-actions-dropdown";
 import { useArchiveStore } from "@/lib/stores/archive-store";
 import {
+	type ArchiveFilter,
 	filterByArchiveStatus,
 	getArchivedRowClassName,
 	isItemArchived,
@@ -70,9 +75,22 @@ export type TeamMember = {
 type TeamsTableProps = {
 	teamMembers: TeamMember[];
 	itemsPerPage?: number;
+	totalCount?: number;
+	currentPage?: number;
+	initialSearchQuery?: string;
+	showRefresh?: boolean;
+	initialArchiveFilter?: ArchiveFilter;
 };
 
-export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) {
+export function TeamsTable({
+	teamMembers,
+	itemsPerPage = 50,
+	totalCount,
+	currentPage = 1,
+	initialSearchQuery = "",
+	showRefresh = false,
+	initialArchiveFilter = "active",
+}: TeamsTableProps) {
 	const router = useRouter();
 	const [_isLoading, setIsLoading] = useState(false);
 	const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
@@ -82,21 +100,52 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 
 	// Archive filter from store
 	const archiveFilter = useArchiveStore((state) => state.filters.team_members);
+	const setArchiveFilterStore = useArchiveStore((state) => state.setFilter);
+	const lastSyncedArchiveFilter = useRef<ArchiveFilter | null>(null);
+
+	useEffect(() => {
+		if (!initialArchiveFilter) {
+			return;
+		}
+		if (lastSyncedArchiveFilter.current === initialArchiveFilter) {
+			return;
+		}
+		lastSyncedArchiveFilter.current = initialArchiveFilter;
+		setArchiveFilterStore("team_members", initialArchiveFilter);
+	}, [initialArchiveFilter, setArchiveFilterStore]);
 
 	// Filter data based on archive status
 	const filteredTeamMembers = useMemo(
 		() => filterByArchiveStatus(teamMembers, archiveFilter),
-		[teamMembers, archiveFilter]
+		[teamMembers, archiveFilter],
+	);
+
+	const handleArchiveFilterChange = useCallback(
+		(newFilter: ArchiveFilter) => {
+			if (typeof window === "undefined") {
+				return;
+			}
+			const params = new URLSearchParams(window.location.search);
+			if (newFilter === "active") {
+				params.delete("filter");
+			} else {
+				params.set("filter", newFilter);
+			}
+			params.delete("page");
+			const queryString = params.toString();
+			router.push(queryString ? `?${queryString}` : "?", { scroll: false });
+		},
+		[router],
 	);
 
 	// Calculate counts for filter dropdown
 	const activeCount = useMemo(
 		() => teamMembers.filter((m) => !isItemArchived(m.archived_at)).length,
-		[teamMembers]
+		[teamMembers],
 	);
 	const archivedCount = useMemo(
 		() => teamMembers.filter((m) => isItemArchived(m.archived_at)).length,
-		[teamMembers]
+		[teamMembers],
 	);
 
 	// Helper functions
@@ -146,7 +195,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 		}
 	};
 
-	const getStatusBadgeVariant = (status: UserStatus): "default" | "secondary" | "outline" => {
+	const getStatusBadgeVariant = (
+		status: UserStatus,
+	): "default" | "secondary" | "outline" => {
 		switch (status) {
 			case "active":
 				return "default";
@@ -178,6 +229,7 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 				<Link
 					className="flex items-center gap-3"
 					href={`/dashboard/work/team/${member.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<Avatar className="size-8">
@@ -185,8 +237,12 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 						<AvatarFallback>{getInitials(member.name)}</AvatarFallback>
 					</Avatar>
 					<div>
-						<div className="text-sm leading-tight font-medium hover:underline">{member.name}</div>
-						<div className="text-muted-foreground text-xs leading-tight">{member.email}</div>
+						<div className="text-sm leading-tight font-medium hover:underline">
+							{member.name}
+						</div>
+						<div className="text-muted-foreground text-xs leading-tight">
+							{member.email}
+						</div>
 					</div>
 				</Link>
 			),
@@ -238,7 +294,8 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 			header: "Job Title",
 			sortable: true,
 			hideable: true,
-			render: (member) => member.jobTitle || <span className="text-muted-foreground">—</span>,
+			render: (member) =>
+				member.jobTitle || <span className="text-muted-foreground">—</span>,
 			width: "w-40",
 			hideOnMobile: true,
 		},
@@ -256,7 +313,10 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 							<Badge className="border-warning text-warning" variant="outline">
 								Archived
 							</Badge>
-							<Badge className="text-xs" variant={getStatusBadgeVariant(member.status)}>
+							<Badge
+								className="text-xs"
+								variant={getStatusBadgeVariant(member.status)}
+							>
 								{getStatusLabel(member.status)}
 							</Badge>
 						</div>
@@ -276,7 +336,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 			header: "Last Active",
 			hideable: true,
 			render: (member) => (
-				<span className="text-muted-foreground text-sm">{member.lastActive}</span>
+				<span className="text-muted-foreground text-sm">
+					{member.lastActive}
+				</span>
 			),
 			width: "w-32",
 			hideOnMobile: true,
@@ -354,7 +416,11 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 					icon: <ArchiveRestore className="size-4" />,
 					variant: "default",
 					onClick: async (selectedIds) => {
-						if (!confirm(`Are you sure you want to restore ${selectedIds.size} team member(s)?`)) {
+						if (
+							!confirm(
+								`Are you sure you want to restore ${selectedIds.size} team member(s)?`,
+							)
+						) {
 							return;
 						}
 
@@ -374,7 +440,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 						setIsLoading(false);
 
 						if (successCount > 0) {
-							toast.success(`${successCount} team member(s) restored successfully`);
+							toast.success(
+								`${successCount} team member(s) restored successfully`,
+							);
 						}
 						if (failCount > 0) {
 							toast.error(`Failed to restore ${failCount} team member(s)`);
@@ -393,7 +461,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 				icon: <Mail className="size-4" />,
 				variant: "default",
 				onClick: (selectedIds) => {
-					const selectedMembers = filteredTeamMembers.filter((m) => selectedIds.has(m.id));
+					const selectedMembers = filteredTeamMembers.filter((m) =>
+						selectedIds.has(m.id),
+					);
 					const emails = selectedMembers.map((m) => m.email).join(",");
 					window.location.href = `mailto:${emails}`;
 				},
@@ -403,7 +473,11 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 				icon: <UserX className="size-4" />,
 				variant: "destructive",
 				onClick: async (selectedIds) => {
-					if (!confirm(`Are you sure you want to suspend ${selectedIds.size} team member(s)?`)) {
+					if (
+						!confirm(
+							`Are you sure you want to suspend ${selectedIds.size} team member(s)?`,
+						)
+					) {
 						return;
 					}
 
@@ -423,7 +497,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 					setIsLoading(false);
 
 					if (successCount > 0) {
-						toast.success(`${successCount} team member(s) suspended successfully`);
+						toast.success(
+							`${successCount} team member(s) suspended successfully`,
+						);
 					}
 					if (failCount > 0) {
 						toast.error(`Failed to suspend ${failCount} team member(s)`);
@@ -437,7 +513,11 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 				icon: <Archive className="size-4" />,
 				variant: "destructive",
 				onClick: async (selectedIds) => {
-					if (!confirm(`Are you sure you want to archive ${selectedIds.size} team member(s)?`)) {
+					if (
+						!confirm(
+							`Are you sure you want to archive ${selectedIds.size} team member(s)?`,
+						)
+					) {
 						return;
 					}
 
@@ -457,7 +537,9 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 					setIsLoading(false);
 
 					if (successCount > 0) {
-						toast.success(`${successCount} team member(s) archived successfully`);
+						toast.success(
+							`${successCount} team member(s) archived successfully`,
+						);
 					}
 					if (failCount > 0) {
 						toast.error(`Failed to archive ${failCount} team member(s)`);
@@ -478,6 +560,7 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 			<FullWidthDataTable
 				bulkActions={bulkActions}
 				columns={columns}
+				currentPageFromServer={currentPage}
 				data={filteredTeamMembers}
 				emptyAction={
 					<Button onClick={handleInviteMember} size="sm">
@@ -486,42 +569,50 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 				}
 				emptyIcon={<Users className="text-muted-foreground size-8" />}
 				emptyMessage={
-					archiveFilter === "archived" ? "No archived team members" : "No team members yet"
+					archiveFilter === "archived"
+						? "No archived team members"
+						: "No team members yet"
 				}
 				enableSelection={true}
 				getItemId={(member) => member.id}
-				getRowClassName={(member) => getArchivedRowClassName(isItemArchived(member.archived_at))}
+				getRowClassName={(member) =>
+					getArchivedRowClassName(isItemArchived(member.archived_at))
+				}
+				initialSearchQuery={initialSearchQuery}
 				itemsPerPage={itemsPerPage}
-				searchFilter={(member, query) => {
-					const searchLower = query.toLowerCase();
-					const nameMatch = member.name?.toLowerCase().includes(searchLower) ?? false;
-					const emailMatch = member.email?.toLowerCase().includes(searchLower) ?? false;
-					const roleMatch = member.roleName?.toLowerCase().includes(searchLower) ?? false;
-					const departmentMatch =
-						member.departmentName?.toLowerCase().includes(searchLower) ?? false;
-					const jobTitleMatch = member.jobTitle?.toLowerCase().includes(searchLower) ?? false;
-
-					return nameMatch || emailMatch || roleMatch || departmentMatch || jobTitleMatch;
+				serverPagination
+				onRefresh={() => router.refresh()}
+				onRowClick={(member) => {
+					window.location.href = `/dashboard/work/team/${member.id}`;
 				}}
-				searchPlaceholder="Search by name or email..."
+				searchPlaceholder="Search by name, email, role, or department..."
+				serverSearch
+				searchParamKey="search"
+				showArchived={archiveFilter !== "active"}
+				showRefresh={showRefresh}
+				totalCount={totalCount ?? filteredTeamMembers.length}
 				toolbarActions={
 					<ArchiveFilterSelect
 						activeCount={activeCount}
 						archivedCount={archivedCount}
 						entity="team_members"
+						onFilterChange={handleArchiveFilterChange}
 						totalCount={teamMembers.length}
 					/>
 				}
 			/>
 
 			{/* Suspend Single Member Dialog */}
-			<AlertDialog onOpenChange={setIsSuspendDialogOpen} open={isSuspendDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsSuspendDialogOpen}
+				open={isSuspendDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Suspend Team Member?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This team member will be suspended and will not be able to access the system until
-							reactivated.
+							This team member will be suspended and will not be able to access
+							the system until reactivated.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -541,7 +632,10 @@ export function TeamsTable({ teamMembers, itemsPerPage = 50 }: TeamsTableProps) 
 			</AlertDialog>
 
 			{/* Archive Single Member Dialog */}
-			<AlertDialog onOpenChange={setIsArchiveDialogOpen} open={isArchiveDialogOpen}>
+			<AlertDialog
+				onOpenChange={setIsArchiveDialogOpen}
+				open={isArchiveDialogOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Team Member?</AlertDialogTitle>

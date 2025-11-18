@@ -24,7 +24,7 @@
 
 "use client";
 
-import { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import {
 	Accordion,
 	AccordionContent,
@@ -53,7 +53,9 @@ export function ProgressiveAccordion({
 	defaultValue,
 	className,
 }: ProgressiveAccordionProps) {
-	const [openItems, setOpenItems] = useState<string | string[] | undefined>(defaultValue);
+	const [openItems, setOpenItems] = useState<string | string[] | undefined>(
+		defaultValue,
+	);
 
 	return (
 		<Accordion
@@ -82,7 +84,11 @@ export function ProgressiveAccordionItem({
 				<div className="flex items-center gap-2">
 					{icon}
 					<span>{title}</span>
-					{badge && <span className="bg-muted rounded-full px-2 py-0.5 text-xs">{badge}</span>}
+					{badge && (
+						<span className="bg-muted rounded-full px-2 py-0.5 text-xs">
+							{badge}
+						</span>
+					)}
 				</div>
 			</AccordionTrigger>
 			<AccordionContent>

@@ -19,7 +19,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -45,12 +51,14 @@ export const metadata = generateSEOMetadata({
 export default function InvoicingPage() {
 	const serviceStructuredData = generateServiceStructuredData({
 		name: "Invoicing & Payments",
-		description: "Zero-fee payment processing with instant payouts for service businesses",
+		description:
+			"Zero-fee payment processing with instant payouts for service businesses",
 		offers: [
 			{
 				price: "100",
 				currency: "USD",
-				description: "Included in Thorbis platform starting at $100/month - 0% processing fees",
+				description:
+					"Included in Thorbis platform starting at $100/month - 0% processing fees",
 			},
 		],
 	});
@@ -67,7 +75,7 @@ export default function InvoicingPage() {
 								name: "Invoicing & Payments",
 								url: `${siteUrl}/features/invoicing`,
 							},
-						])
+						]),
 					),
 				}}
 				id="invoicing-breadcrumb-ld"
@@ -91,15 +99,18 @@ export default function InvoicingPage() {
 						{/* 0% Fees Badge */}
 						<div className="mb-8 inline-flex items-center gap-3 rounded-full border-2 border-green-500 bg-green-500/10 px-6 py-3">
 							<BadgePercent className="size-6 text-green-600" />
-							<span className="text-2xl font-bold text-green-600">0% Processing Fees</span>
+							<span className="text-2xl font-bold text-green-600">
+								0% Processing Fees
+							</span>
 						</div>
 
 						<h1 className="mb-6 text-5xl font-bold tracking-tight sm:text-6xl lg:text-7xl">
 							Keep every dollar you earn
 						</h1>
 						<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
-							Stop losing 3-4% on every transaction. Thorbis charges zero payment processing fees.
-							Create invoices, accept payments, and get paid instantly—all included.
+							Stop losing 3-4% on every transaction. Thorbis charges zero
+							payment processing fees. Create invoices, accept payments, and get
+							paid instantly—all included.
 						</p>
 
 						{/* Savings Calculator */}
@@ -108,23 +119,39 @@ export default function InvoicingPage() {
 								<div className="text-muted-foreground text-sm">
 									If you process $50K/month, you save:
 								</div>
-								<div className="mt-2 text-5xl font-bold text-green-600">$18,000</div>
-								<div className="text-muted-foreground text-sm">per year vs. 3% fees</div>
+								<div className="mt-2 text-5xl font-bold text-green-600">
+									$18,000
+								</div>
+								<div className="text-muted-foreground text-sm">
+									per year vs. 3% fees
+								</div>
 							</div>
 							<div className="grid grid-cols-2 gap-4 text-center">
 								<div className="bg-background/50 rounded-lg p-4">
-									<div className="text-muted-foreground mb-1 text-xs">Traditional Processor</div>
-									<div className="text-xl font-semibold text-red-600">-$1,500/mo</div>
+									<div className="text-muted-foreground mb-1 text-xs">
+										Traditional Processor
+									</div>
+									<div className="text-xl font-semibold text-red-600">
+										-$1,500/mo
+									</div>
 								</div>
 								<div className="bg-background/50 rounded-lg p-4">
-									<div className="text-muted-foreground mb-1 text-xs">Thorbis</div>
-									<div className="text-xl font-semibold text-green-600">$0/mo</div>
+									<div className="text-muted-foreground mb-1 text-xs">
+										Thorbis
+									</div>
+									<div className="text-xl font-semibold text-green-600">
+										$0/mo
+									</div>
 								</div>
 							</div>
 						</div>
 
 						<div className="flex flex-wrap items-center justify-center gap-4">
-							<Button asChild className="shadow-lg shadow-green-500/20" size="lg">
+							<Button
+								asChild
+								className="shadow-lg shadow-green-500/20"
+								size="lg"
+							>
 								<Link href="/register">
 									Start Saving Today
 									<Zap className="ml-2 size-4" />
@@ -145,17 +172,23 @@ export default function InvoicingPage() {
 									<div>
 										<div className="mb-2 flex items-center gap-3">
 											<div className="bg-primary flex size-12 items-center justify-center rounded-lg">
-												<span className="text-primary-foreground text-xl font-bold">T</span>
+												<span className="text-primary-foreground text-xl font-bold">
+													T
+												</span>
 											</div>
 											<div>
 												<div className="text-xl font-bold">Rodriguez HVAC</div>
-												<div className="text-muted-foreground text-sm">Invoice #INV-2024-0847</div>
+												<div className="text-muted-foreground text-sm">
+													Invoice #INV-2024-0847
+												</div>
 											</div>
 										</div>
 									</div>
 									<div className="text-right">
 										<Badge className="mb-2 bg-green-500">Paid</Badge>
-										<div className="text-muted-foreground text-sm">Due: Jan 15, 2024</div>
+										<div className="text-muted-foreground text-sm">
+											Due: Jan 15, 2024
+										</div>
 									</div>
 								</div>
 							</div>
@@ -164,18 +197,28 @@ export default function InvoicingPage() {
 							<div className="p-8">
 								<div className="mb-8 grid gap-6 md:grid-cols-2">
 									<div>
-										<div className="text-muted-foreground mb-1 text-sm font-semibold">Bill To</div>
+										<div className="text-muted-foreground mb-1 text-sm font-semibold">
+											Bill To
+										</div>
 										<div className="font-semibold">Sarah Johnson</div>
-										<div className="text-muted-foreground text-sm">123 Oak Street</div>
-										<div className="text-muted-foreground text-sm">Austin, TX 78701</div>
+										<div className="text-muted-foreground text-sm">
+											123 Oak Street
+										</div>
+										<div className="text-muted-foreground text-sm">
+											Austin, TX 78701
+										</div>
 									</div>
 									<div>
 										<div className="text-muted-foreground mb-1 text-sm font-semibold">
 											Service Details
 										</div>
 										<div className="text-sm">AC Repair & Maintenance</div>
-										<div className="text-muted-foreground text-sm">Completed: Jan 12, 2024</div>
-										<div className="text-muted-foreground text-sm">Tech: Mike Rodriguez</div>
+										<div className="text-muted-foreground text-sm">
+											Completed: Jan 12, 2024
+										</div>
+										<div className="text-muted-foreground text-sm">
+											Tech: Mike Rodriguez
+										</div>
 									</div>
 								</div>
 
@@ -184,27 +227,45 @@ export default function InvoicingPage() {
 									<table className="w-full">
 										<thead className="bg-muted/50">
 											<tr>
-												<th className="px-4 py-3 text-left text-sm font-semibold">Description</th>
-												<th className="px-4 py-3 text-right text-sm font-semibold">Qty</th>
-												<th className="px-4 py-3 text-right text-sm font-semibold">Price</th>
-												<th className="px-4 py-3 text-right text-sm font-semibold">Total</th>
+												<th className="px-4 py-3 text-left text-sm font-semibold">
+													Description
+												</th>
+												<th className="px-4 py-3 text-right text-sm font-semibold">
+													Qty
+												</th>
+												<th className="px-4 py-3 text-right text-sm font-semibold">
+													Price
+												</th>
+												<th className="px-4 py-3 text-right text-sm font-semibold">
+													Total
+												</th>
 											</tr>
 										</thead>
 										<tbody className="divide-y">
 											<tr>
-												<td className="px-4 py-3 text-sm">AC System Diagnostic</td>
+												<td className="px-4 py-3 text-sm">
+													AC System Diagnostic
+												</td>
 												<td className="px-4 py-3 text-right text-sm">1</td>
 												<td className="px-4 py-3 text-right text-sm">$89.00</td>
 												<td className="px-4 py-3 text-right text-sm">$89.00</td>
 											</tr>
 											<tr>
-												<td className="px-4 py-3 text-sm">Refrigerant Recharge (R-410A)</td>
+												<td className="px-4 py-3 text-sm">
+													Refrigerant Recharge (R-410A)
+												</td>
 												<td className="px-4 py-3 text-right text-sm">2</td>
-												<td className="px-4 py-3 text-right text-sm">$125.00</td>
-												<td className="px-4 py-3 text-right text-sm">$250.00</td>
+												<td className="px-4 py-3 text-right text-sm">
+													$125.00
+												</td>
+												<td className="px-4 py-3 text-right text-sm">
+													$250.00
+												</td>
 											</tr>
 											<tr>
-												<td className="px-4 py-3 text-sm">Air Filter Replacement</td>
+												<td className="px-4 py-3 text-sm">
+													Air Filter Replacement
+												</td>
 												<td className="px-4 py-3 text-right text-sm">1</td>
 												<td className="px-4 py-3 text-right text-sm">$45.00</td>
 												<td className="px-4 py-3 text-right text-sm">$45.00</td>
@@ -213,7 +274,9 @@ export default function InvoicingPage() {
 												<td className="px-4 py-3 text-sm">Labor (2 hours)</td>
 												<td className="px-4 py-3 text-right text-sm">2</td>
 												<td className="px-4 py-3 text-right text-sm">$95.00</td>
-												<td className="px-4 py-3 text-right text-sm">$190.00</td>
+												<td className="px-4 py-3 text-right text-sm">
+													$190.00
+												</td>
 											</tr>
 										</tbody>
 									</table>
@@ -236,9 +299,13 @@ export default function InvoicingPage() {
 									<div className="flex items-center justify-between rounded-lg bg-green-500/10 px-4 py-3">
 										<div className="flex items-center gap-2">
 											<CheckCircle2 className="size-5 text-green-600" />
-											<span className="text-sm font-semibold">Paid via Credit Card</span>
+											<span className="text-sm font-semibold">
+												Paid via Credit Card
+											</span>
 										</div>
-										<span className="font-semibold text-green-600">$621.36</span>
+										<span className="font-semibold text-green-600">
+											$621.36
+										</span>
 									</div>
 								</div>
 							</div>
@@ -276,8 +343,9 @@ export default function InvoicingPage() {
 							</div>
 							<p className="text-muted-foreground text-xs leading-relaxed">
 								Traditional processors would charge{" "}
-								<span className="font-semibold text-red-600">$18.64</span> on this transaction. With
-								Thorbis, you keep <span className="font-semibold text-green-600">100%</span>.
+								<span className="font-semibold text-red-600">$18.64</span> on
+								this transaction. With Thorbis, you keep{" "}
+								<span className="font-semibold text-green-600">100%</span>.
 							</p>
 						</div>
 					</div>
@@ -290,7 +358,9 @@ export default function InvoicingPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="mb-2 text-4xl font-bold text-green-600">0%</div>
-							<div className="text-muted-foreground text-sm font-medium">Processing Fees</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Processing Fees
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">24 hrs</div>
@@ -299,12 +369,18 @@ export default function InvoicingPage() {
 							</div>
 						</div>
 						<div className="text-center">
-							<div className="text-primary mb-2 text-4xl font-bold">Instant</div>
-							<div className="text-muted-foreground text-sm font-medium">Deposit to Bank</div>
+							<div className="text-primary mb-2 text-4xl font-bold">
+								Instant
+							</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Deposit to Bank
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">$18K</div>
-							<div className="text-muted-foreground text-sm font-medium">Avg. Annual Savings</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Avg. Annual Savings
+							</div>
 						</div>
 					</div>
 				</div>
@@ -326,37 +402,63 @@ export default function InvoicingPage() {
 						<table className="w-full">
 							<thead className="bg-muted/50">
 								<tr>
-									<th className="px-6 py-4 text-left font-semibold">Monthly Revenue</th>
-									<th className="px-6 py-4 text-center font-semibold">Traditional (3%)</th>
+									<th className="px-6 py-4 text-left font-semibold">
+										Monthly Revenue
+									</th>
+									<th className="px-6 py-4 text-center font-semibold">
+										Traditional (3%)
+									</th>
 									<th className="px-6 py-4 text-center font-semibold text-green-600">
 										Thorbis (0%)
 									</th>
-									<th className="px-6 py-4 text-center font-semibold">You Save</th>
+									<th className="px-6 py-4 text-center font-semibold">
+										You Save
+									</th>
 								</tr>
 							</thead>
 							<tbody className="divide-y">
 								<tr className="hover:bg-muted/20">
 									<td className="px-6 py-4 font-medium">$25,000</td>
 									<td className="px-6 py-4 text-center text-red-600">-$750</td>
-									<td className="px-6 py-4 text-center font-semibold text-green-600">$0</td>
-									<td className="px-6 py-4 text-center font-bold text-green-600">$750/mo</td>
+									<td className="px-6 py-4 text-center font-semibold text-green-600">
+										$0
+									</td>
+									<td className="px-6 py-4 text-center font-bold text-green-600">
+										$750/mo
+									</td>
 								</tr>
 								<tr className="hover:bg-muted/20">
 									<td className="px-6 py-4 font-medium">$50,000</td>
-									<td className="px-6 py-4 text-center text-red-600">-$1,500</td>
-									<td className="px-6 py-4 text-center font-semibold text-green-600">$0</td>
-									<td className="px-6 py-4 text-center font-bold text-green-600">$1,500/mo</td>
+									<td className="px-6 py-4 text-center text-red-600">
+										-$1,500
+									</td>
+									<td className="px-6 py-4 text-center font-semibold text-green-600">
+										$0
+									</td>
+									<td className="px-6 py-4 text-center font-bold text-green-600">
+										$1,500/mo
+									</td>
 								</tr>
 								<tr className="hover:bg-muted/20">
 									<td className="px-6 py-4 font-medium">$100,000</td>
-									<td className="px-6 py-4 text-center text-red-600">-$3,000</td>
-									<td className="px-6 py-4 text-center font-semibold text-green-600">$0</td>
-									<td className="px-6 py-4 text-center font-bold text-green-600">$3,000/mo</td>
+									<td className="px-6 py-4 text-center text-red-600">
+										-$3,000
+									</td>
+									<td className="px-6 py-4 text-center font-semibold text-green-600">
+										$0
+									</td>
+									<td className="px-6 py-4 text-center font-bold text-green-600">
+										$3,000/mo
+									</td>
 								</tr>
 								<tr className="bg-green-500/5 hover:bg-green-500/10">
 									<td className="px-6 py-4 font-bold">$250,000</td>
-									<td className="px-6 py-4 text-center font-bold text-red-600">-$7,500</td>
-									<td className="px-6 py-4 text-center font-bold text-green-600">$0</td>
+									<td className="px-6 py-4 text-center font-bold text-red-600">
+										-$7,500
+									</td>
+									<td className="px-6 py-4 text-center font-bold text-green-600">
+										$0
+									</td>
 									<td className="px-6 py-4 text-center text-xl font-bold text-green-600">
 										$7,500/mo
 									</td>
@@ -367,8 +469,8 @@ export default function InvoicingPage() {
 
 					<div className="mt-8 text-center">
 						<p className="text-muted-foreground text-sm">
-							* Traditional processors typically charge 2.9% + $0.30 per transaction. Calculations
-							based on 3% average.
+							* Traditional processors typically charge 2.9% + $0.30 per
+							transaction. Calculations based on 3% average.
 						</p>
 					</div>
 				</div>
@@ -425,7 +527,9 @@ export default function InvoicingPage() {
 									<FileText className="text-primary size-6" />
 								</div>
 								<CardTitle>Professional Invoices</CardTitle>
-								<CardDescription>Create beautiful, branded invoices in seconds</CardDescription>
+								<CardDescription>
+									Create beautiful, branded invoices in seconds
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -551,7 +655,9 @@ export default function InvoicingPage() {
 									<Mail className="text-primary size-6" />
 								</div>
 								<CardTitle>Smart Reminders</CardTitle>
-								<CardDescription>Automated payment reminders that actually work</CardDescription>
+								<CardDescription>
+									Automated payment reminders that actually work
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -581,7 +687,9 @@ export default function InvoicingPage() {
 									<Receipt className="text-primary size-6" />
 								</div>
 								<CardTitle>Digital Receipts</CardTitle>
-								<CardDescription>Instant, professional receipts for every payment</CardDescription>
+								<CardDescription>
+									Instant, professional receipts for every payment
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -611,7 +719,9 @@ export default function InvoicingPage() {
 									<Shield className="text-primary size-6" />
 								</div>
 								<CardTitle>Bank-Level Security</CardTitle>
-								<CardDescription>PCI-compliant payment processing you can trust</CardDescription>
+								<CardDescription>
+									PCI-compliant payment processing you can trust
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -641,7 +751,9 @@ export default function InvoicingPage() {
 									<TrendingUp className="text-primary size-6" />
 								</div>
 								<CardTitle>Payment Analytics</CardTitle>
-								<CardDescription>Track cash flow and payment trends in real-time</CardDescription>
+								<CardDescription>
+									Track cash flow and payment trends in real-time
+								</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<ul className="space-y-2 text-sm">
@@ -686,9 +798,10 @@ export default function InvoicingPage() {
 									</div>
 								</div>
 								<blockquote className="text-lg leading-relaxed">
-									"We were paying $2,400/month in credit card fees. With Thorbis, that's $28,800
-									back in our pocket every year. The invoicing is faster, customers pay quicker, and
-									we get the money instantly. It's a no-brainer."
+									"We were paying $2,400/month in credit card fees. With
+									Thorbis, that's $28,800 back in our pocket every year. The
+									invoicing is faster, customers pay quicker, and we get the
+									money instantly. It's a no-brainer."
 								</blockquote>
 								<div className="mt-6 flex items-center gap-4">
 									<Badge className="bg-green-500">$28.8K Saved/Year</Badge>
@@ -712,7 +825,8 @@ export default function InvoicingPage() {
 						Stop losing money on payment fees
 					</h2>
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-white/90">
-						Join thousands of service businesses keeping 100% of every payment with Thorbis.
+						Join thousands of service businesses keeping 100% of every payment
+						with Thorbis.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Button

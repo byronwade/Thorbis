@@ -90,7 +90,8 @@ const INITIAL_DATA: AIExtractedData = {
 
 export function useAIExtraction() {
 	const entries = useTranscriptStore((state) => state.entries);
-	const [extractedData, setExtractedData] = useState<AIExtractedData>(INITIAL_DATA);
+	const [extractedData, setExtractedData] =
+		useState<AIExtractedData>(INITIAL_DATA);
 	const [isExtracting, setIsExtracting] = useState(false);
 	const [lastExtractedLength, setLastExtractedLength] = useState(0);
 
@@ -158,7 +159,8 @@ export function useAIExtraction() {
 					parsed.jobDetails?.confidence || 0,
 					parsed.appointmentNeeds?.confidence || 0,
 				];
-				const overallConfidence = confidences.reduce((a, b) => a + b, 0) / confidences.length;
+				const overallConfidence =
+					confidences.reduce((a, b) => a + b, 0) / confidences.length;
 
 				setExtractedData({
 					customerInfo: {

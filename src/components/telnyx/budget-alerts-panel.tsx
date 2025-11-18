@@ -23,7 +23,10 @@ export function BudgetAlertsPanel({ budget }: { budget: Budget }) {
 	}
 
 	return (
-		<Alert className="border-2" variant={budget.isOverBudget ? "destructive" : "default"}>
+		<Alert
+			className="border-2"
+			variant={budget.isOverBudget ? "destructive" : "default"}
+		>
 			<div className="flex items-start gap-3">
 				{budget.isOverBudget ? (
 					<AlertCircle className="size-5" />
@@ -33,13 +36,16 @@ export function BudgetAlertsPanel({ budget }: { budget: Budget }) {
 				<div className="flex-1 space-y-3">
 					<div>
 						<AlertTitle className="text-lg font-bold">
-							{budget.isOverBudget ? "Budget Exceeded" : "Approaching Budget Limit"}
+							{budget.isOverBudget
+								? "Budget Exceeded"
+								: "Approaching Budget Limit"}
 						</AlertTitle>
 						<AlertDescription>
 							{budget.isOverBudget ? (
 								<span>
 									You have exceeded your monthly budget of{" "}
-									<span className="font-bold">${budget.limit.toFixed(2)}</span> by{" "}
+									<span className="font-bold">${budget.limit.toFixed(2)}</span>{" "}
+									by{" "}
 									<span className="text-destructive font-bold">
 										${(budget.used - budget.limit).toFixed(2)}
 									</span>
@@ -47,9 +53,11 @@ export function BudgetAlertsPanel({ budget }: { budget: Budget }) {
 								</span>
 							) : (
 								<span>
-									You have used <span className="font-bold">${budget.used.toFixed(2)}</span> of your{" "}
-									<span className="font-bold">${budget.limit.toFixed(2)}</span> monthly budget (
-									{budget.usedPercent.toFixed(1)}%).
+									You have used{" "}
+									<span className="font-bold">${budget.used.toFixed(2)}</span>{" "}
+									of your{" "}
+									<span className="font-bold">${budget.limit.toFixed(2)}</span>{" "}
+									monthly budget ({budget.usedPercent.toFixed(1)}%).
 								</span>
 							)}
 						</AlertDescription>
@@ -57,10 +65,15 @@ export function BudgetAlertsPanel({ budget }: { budget: Budget }) {
 
 					{/* Progress Bar */}
 					<div className="space-y-2">
-						<Progress className="h-3" value={Math.min(budget.usedPercent, 100)} />
+						<Progress
+							className="h-3"
+							value={Math.min(budget.usedPercent, 100)}
+						/>
 						<div className="text-muted-foreground flex justify-between text-xs">
 							<span>${budget.used.toFixed(2)} used</span>
-							<span>${Math.max(0, budget.limit - budget.used).toFixed(2)} remaining</span>
+							<span>
+								${Math.max(0, budget.limit - budget.used).toFixed(2)} remaining
+							</span>
 						</div>
 					</div>
 
@@ -79,7 +92,10 @@ export function BudgetAlertsPanel({ budget }: { budget: Budget }) {
 								<>
 									<li>• Monitor your daily usage to avoid overage</li>
 									<li>• Set up automated alerts at different thresholds</li>
-									<li>• Review cost breakdown to identify optimization opportunities</li>
+									<li>
+										• Review cost breakdown to identify optimization
+										opportunities
+									</li>
 								</>
 							)}
 						</ul>

@@ -20,7 +20,11 @@ type ChartSkeletonProps = {
 	className?: string;
 };
 
-export function ChartSkeleton({ height = 300, showLegend = true, className }: ChartSkeletonProps) {
+export function ChartSkeleton({
+	height = 300,
+	showLegend = true,
+	className,
+}: ChartSkeletonProps) {
 	const heightValue = typeof height === "number" ? `${height}px` : height;
 
 	return (
@@ -38,7 +42,10 @@ export function ChartSkeleton({ height = 300, showLegend = true, className }: Ch
 			</div>
 
 			{/* Chart area */}
-			<div className="bg-card animate-pulse rounded-lg border p-6" style={{ height: heightValue }}>
+			<div
+				className="bg-card animate-pulse rounded-lg border p-6"
+				style={{ height: heightValue }}
+			>
 				<div className="flex h-full items-end justify-between gap-2">
 					{/* Simulated bar chart bars */}
 					{[...new Array(12)].map((_, i) => (
@@ -81,10 +88,17 @@ export function LineChartSkeleton({
 			<div className="bg-muted h-6 w-48 animate-pulse rounded" />
 
 			{/* Chart area */}
-			<div className="bg-card animate-pulse rounded-lg border p-6" style={{ height: heightValue }}>
+			<div
+				className="bg-card animate-pulse rounded-lg border p-6"
+				style={{ height: heightValue }}
+			>
 				<div className="relative h-full">
 					{/* Simulated line chart path */}
-					<svg className="h-full w-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+					<svg
+						className="h-full w-full"
+						preserveAspectRatio="none"
+						viewBox="0 0 100 100"
+					>
 						<path
 							className="text-muted opacity-60"
 							d="M 0 80 Q 25 60, 50 70 T 100 40"
@@ -111,7 +125,13 @@ export function LineChartSkeleton({
  *
  * Displays skeleton for pie/donut charts.
  */
-export function PieChartSkeleton({ size = 200, className }: { size?: number; className?: string }) {
+export function PieChartSkeleton({
+	size = 200,
+	className,
+}: {
+	size?: number;
+	className?: string;
+}) {
 	return (
 		<div className={`space-y-4 ${className || ""}`}>
 			{/* Chart header */}

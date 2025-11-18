@@ -10,9 +10,16 @@
  * Uses Zustand store for edit mode state (no React Context)
  */
 
-import { ClipboardList, Edit3, Eye, LayoutGrid, Plus, RotateCcw } from "lucide-react";
+import {
+	ClipboardList,
+	Edit3,
+	Eye,
+	LayoutGrid,
+	Plus,
+	RotateCcw,
+} from "lucide-react";
 import { useState } from "react";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -33,7 +40,12 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { JobActivityTimeline } from "@/components/work/job-activity-timeline";
 import { ALL_PRESETS } from "@/lib/presets/job-layout-presets";
 import { useEditModeStore } from "@/lib/stores/edit-mode-store";
@@ -59,12 +71,14 @@ export function JobDetailsToolbarActions({
 	const widgets = useJobDetailsLayoutStore((state) => state.widgets);
 	const addWidget = useJobDetailsLayoutStore((state) => state.addWidget);
 	const loadPreset = useJobDetailsLayoutStore((state) => state.loadPreset);
-	const resetToDefault = useJobDetailsLayoutStore((state) => state.resetToDefault);
+	const resetToDefault = useJobDetailsLayoutStore(
+		(state) => state.resetToDefault,
+	);
 	const industry = useJobDetailsLayoutStore((state) => state.industry);
 
 	// Get available widgets (not already added)
 	const availableWidgets = Object.entries(WIDGET_METADATA).filter(
-		([widgetType]) => !widgets.some((w) => w.type === widgetType)
+		([widgetType]) => !widgets.some((w) => w.type === widgetType),
 	);
 
 	// Group by category
@@ -76,7 +90,7 @@ export function JobDetailsToolbarActions({
 			acc[metadata.category].push([widgetType, metadata]);
 			return acc;
 		},
-		{} as Record<string, [string, (typeof WIDGET_METADATA)[JobWidgetType]][]>
+		{} as Record<string, [string, (typeof WIDGET_METADATA)[JobWidgetType]][]>,
 	);
 
 	function handleLoadPreset(presetId: string) {
@@ -107,7 +121,9 @@ export function JobDetailsToolbarActions({
 				) : (
 					<Eye className="text-muted-foreground size-4" />
 				)}
-				<span className="text-sm font-medium">{isEditMode ? "Edit" : "View"}</span>
+				<span className="text-sm font-medium">
+					{isEditMode ? "Edit" : "View"}
+				</span>
 				<Switch checked={isEditMode} onCheckedChange={setIsEditMode} />
 			</div>
 
@@ -121,7 +137,11 @@ export function JobDetailsToolbarActions({
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<DialogTrigger asChild>
-									<Button className="hover:bg-background gap-2" size="sm" variant="ghost">
+									<Button
+										className="hover:bg-background gap-2"
+										size="sm"
+										variant="ghost"
+									>
 										<LayoutGrid className="size-4" />
 										<span className="hidden sm:inline">Presets</span>
 									</Button>
@@ -154,7 +174,9 @@ export function JobDetailsToolbarActions({
 											</div>
 										)}
 										<h3 className="mb-1 font-semibold">{preset.name}</h3>
-										<p className="text-muted-foreground text-sm">{preset.description}</p>
+										<p className="text-muted-foreground text-sm">
+											{preset.description}
+										</p>
 										<p className="text-muted-foreground mt-2 text-xs">
 											{preset.widgets.length} widgets
 										</p>
@@ -171,7 +193,11 @@ export function JobDetailsToolbarActions({
 						<Tooltip>
 							<TooltipTrigger asChild>
 								<SheetTrigger asChild>
-									<Button className="hover:bg-background gap-2" size="sm" variant="ghost">
+									<Button
+										className="hover:bg-background gap-2"
+										size="sm"
+										variant="ghost"
+									>
 										<Plus className="size-4" />
 										<span className="hidden sm:inline">Widget</span>
 									</Button>
@@ -185,33 +211,43 @@ export function JobDetailsToolbarActions({
 					<SheetContent className="w-full sm:max-w-xl">
 						<SheetHeader>
 							<SheetTitle>Add Widget</SheetTitle>
-							<SheetDescription>Add widgets to customize your view</SheetDescription>
+							<SheetDescription>
+								Add widgets to customize your view
+							</SheetDescription>
 						</SheetHeader>
 						<ScrollArea className="h-[calc(100vh-120px)] pr-4">
 							<div className="space-y-6 py-4">
-								{Object.entries(widgetsByCategory).map(([category, widgets]) => (
-									<div key={category}>
-										<h3 className="mb-3 text-sm font-semibold capitalize">{category}</h3>
-										<div className="space-y-2">
-											{widgets.map(([widgetType, metadata]) => (
-												<button
-													className="hover:border-primary flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all"
-													key={widgetType}
-													onClick={() => handleAddWidget(widgetType as JobWidgetType)}
-													type="button"
-												>
-													<div className="flex-1">
-														<div className="text-sm font-medium">{metadata.title}</div>
-														<div className="text-muted-foreground text-xs">
-															{metadata.description}
+								{Object.entries(widgetsByCategory).map(
+									([category, widgets]) => (
+										<div key={category}>
+											<h3 className="mb-3 text-sm font-semibold capitalize">
+												{category}
+											</h3>
+											<div className="space-y-2">
+												{widgets.map(([widgetType, metadata]) => (
+													<button
+														className="hover:border-primary flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-all"
+														key={widgetType}
+														onClick={() =>
+															handleAddWidget(widgetType as JobWidgetType)
+														}
+														type="button"
+													>
+														<div className="flex-1">
+															<div className="text-sm font-medium">
+																{metadata.title}
+															</div>
+															<div className="text-muted-foreground text-xs">
+																{metadata.description}
+															</div>
 														</div>
-													</div>
-													<Plus className="text-muted-foreground size-4" />
-												</button>
-											))}
+														<Plus className="text-muted-foreground size-4" />
+													</button>
+												))}
+											</div>
 										</div>
-									</div>
-								))}
+									),
+								)}
 							</div>
 						</ScrollArea>
 					</SheetContent>

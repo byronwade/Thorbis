@@ -58,8 +58,14 @@ export function FinancialsTab({
 	isEditMode,
 }: FinancialsTabProps) {
 	// Calculate totals
-	const totalInvoiced = invoices.reduce((sum, inv) => sum + (inv.total_amount || 0), 0);
-	const totalPaid = invoices.reduce((sum, inv) => sum + (inv.paid_amount || 0), 0);
+	const totalInvoiced = invoices.reduce(
+		(sum, inv) => sum + (inv.total_amount || 0),
+		0,
+	);
+	const totalPaid = invoices.reduce(
+		(sum, inv) => sum + (inv.paid_amount || 0),
+		0,
+	);
 	const totalOutstanding = totalInvoiced - totalPaid;
 
 	// Get invoice status badge color
@@ -180,7 +186,9 @@ export function FinancialsTab({
 							<TableBody>
 								{invoices.map((invoice) => (
 									<TableRow key={invoice.id}>
-										<TableCell className="font-medium">{invoice.invoice_number}</TableCell>
+										<TableCell className="font-medium">
+											{invoice.invoice_number}
+										</TableCell>
 										<TableCell className="text-sm">
 											{formatDate(invoice.created_at, "short")}
 										</TableCell>
@@ -197,14 +205,20 @@ export function FinancialsTab({
 										<TableCell
 											className={cn(
 												"font-medium",
-												(invoice.total_amount || 0) - (invoice.paid_amount || 0) > 0
+												(invoice.total_amount || 0) -
+													(invoice.paid_amount || 0) >
+													0
 													? "text-warning"
-													: "text-success"
+													: "text-success",
 											)}
 										>
-											{formatCurrency((invoice.total_amount || 0) - (invoice.paid_amount || 0), {
-												decimals: 2,
-											})}
+											{formatCurrency(
+												(invoice.total_amount || 0) -
+													(invoice.paid_amount || 0),
+												{
+													decimals: 2,
+												},
+											)}
 										</TableCell>
 										<TableCell>
 											<Badge variant={getStatusColor(invoice.status)}>
@@ -274,7 +288,9 @@ export function FinancialsTab({
 							<TableBody>
 								{estimates.map((estimate) => (
 									<TableRow key={estimate.id}>
-										<TableCell className="font-medium">{estimate.estimate_number}</TableCell>
+										<TableCell className="font-medium">
+											{estimate.estimate_number}
+										</TableCell>
 										<TableCell className="text-sm">
 											{formatDate(estimate.created_at, "short")}
 										</TableCell>
@@ -284,7 +300,9 @@ export function FinancialsTab({
 											})}
 										</TableCell>
 										<TableCell className="text-sm">
-											{estimate.valid_until ? formatDate(estimate.valid_until, "short") : "N/A"}
+											{estimate.valid_until
+												? formatDate(estimate.valid_until, "short")
+												: "N/A"}
 										</TableCell>
 										<TableCell>
 											<Badge variant={getStatusColor(estimate.status)}>
@@ -336,17 +354,27 @@ export function FinancialsTab({
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
 								<span className="text-muted-foreground text-sm">Revenue</span>
-								<span className="font-medium">{formatCurrency(metrics.totalAmount)}</span>
+								<span className="font-medium">
+									{formatCurrency(metrics.totalAmount)}
+								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">Materials Cost</span>
-								<span className="font-medium">{formatCurrency(metrics.materialsCost)}</span>
+								<span className="text-muted-foreground text-sm">
+									Materials Cost
+								</span>
+								<span className="font-medium">
+									{formatCurrency(metrics.materialsCost)}
+								</span>
 							</div>
 
 							<div className="flex items-center justify-between">
-								<span className="text-muted-foreground text-sm">Labor Hours</span>
-								<span className="font-medium">{metrics.totalLaborHours.toFixed(2)}h</span>
+								<span className="text-muted-foreground text-sm">
+									Labor Hours
+								</span>
+								<span className="font-medium">
+									{metrics.totalLaborHours.toFixed(2)}h
+								</span>
 							</div>
 
 							<Separator />
@@ -372,7 +400,13 @@ export function FinancialsTab({
 								<div>
 									<div className="mb-1 flex justify-between text-xs">
 										<span>Materials</span>
-										<span>{((metrics.materialsCost / metrics.totalAmount) * 100).toFixed(2)}%</span>
+										<span>
+											{(
+												(metrics.materialsCost / metrics.totalAmount) *
+												100
+											).toFixed(2)}
+											%
+										</span>
 									</div>
 									<div className="bg-muted h-2 overflow-hidden rounded-full">
 										<div
@@ -407,7 +441,9 @@ export function FinancialsTab({
 						{job.financial?.payment_terms && (
 							<div>
 								<p className="text-sm font-medium">Payment Terms</p>
-								<p className="text-muted-foreground text-sm">{job.financial.payment_terms}</p>
+								<p className="text-muted-foreground text-sm">
+									{job.financial.payment_terms}
+								</p>
 							</div>
 						)}
 

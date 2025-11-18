@@ -22,7 +22,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">KPI Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor key performance indicators and measure progress toward strategic goals
+							Monitor key performance indicators and measure progress toward
+							strategic goals
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Team Performance</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Evaluate technician performance, identify top performers, and areas for improvement
+							Evaluate technician performance, identify top performers, and
+							areas for improvement
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Growth Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track revenue growth, customer acquisition, and market share expansion
+							Track revenue growth, customer acquisition, and market share
+							expansion
 						</p>
 					</div>
 
@@ -52,7 +55,8 @@ export async function PerformanceReportsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Efficiency Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Measure operational efficiency, resource utilization, and productivity trends
+							Measure operational efficiency, resource utilization, and
+							productivity trends
 						</p>
 					</div>
 				</div>

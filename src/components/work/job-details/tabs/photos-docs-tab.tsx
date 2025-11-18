@@ -69,12 +69,16 @@ export function PhotosDocsTab({
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 md:grid-cols-4">
-						{Object.entries(photosByCategory).map(([category, categoryPhotos]) => (
-							<div className="rounded-lg border p-4" key={category}>
-								<p className="mb-2 text-sm font-medium capitalize">{category}</p>
-								<p className="text-2xl font-bold">{categoryPhotos.length}</p>
-							</div>
-						))}
+						{Object.entries(photosByCategory).map(
+							([category, categoryPhotos]) => (
+								<div className="rounded-lg border p-4" key={category}>
+									<p className="mb-2 text-sm font-medium capitalize">
+										{category}
+									</p>
+									<p className="text-2xl font-bold">{categoryPhotos.length}</p>
+								</div>
+							),
+						)}
 					</div>
 				</CardContent>
 			</Card>
@@ -89,7 +93,11 @@ export function PhotosDocsTab({
 							<Badge variant="secondary">{documents.length}</Badge>
 						</div>
 						{isEditMode && !showUploader && (
-							<Button onClick={() => setShowUploader(true)} size="sm" variant="outline">
+							<Button
+								onClick={() => setShowUploader(true)}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Upload
 							</Button>
@@ -112,7 +120,9 @@ export function PhotosDocsTab({
 							))}
 						</div>
 					) : (
-						<div className="text-muted-foreground text-center text-sm">No documents uploaded</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No documents uploaded
+						</div>
 					)}
 				</CardContent>
 			</Card>

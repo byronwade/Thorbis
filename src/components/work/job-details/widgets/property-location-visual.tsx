@@ -8,11 +8,23 @@
 
 "use client";
 
-import { Camera, Globe, MapPin, Maximize2, Navigation, Store } from "lucide-react";
+import {
+	Camera,
+	Globe,
+	MapPin,
+	Maximize2,
+	Navigation,
+	Store,
+} from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type PropertyLocationVisualProps = {
@@ -63,7 +75,9 @@ export function PropertyLocationVisual({
 
 	// Destination for URLs (prefer coordinates, fallback to address)
 	const destination =
-		property.lat && property.lon ? `${property.lat},${property.lon}` : encodedAddress;
+		property.lat && property.lon
+			? `${property.lat},${property.lon}`
+			: encodedAddress;
 
 	// Combined Map + Directions + Supply Houses URL
 	// This shows the destination with a route from current location AND nearby places
@@ -98,7 +112,12 @@ export function PropertyLocationVisual({
 						<div className="text-muted-foreground text-[10px] font-semibold tracking-wider uppercase">
 							Service Location
 						</div>
-						<Button asChild className="h-7 gap-1.5 px-2 text-xs" size="sm" variant="outline">
+						<Button
+							asChild
+							className="h-7 gap-1.5 px-2 text-xs"
+							size="sm"
+							variant="outline"
+						>
 							<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
 								<Navigation className="size-3" />
 								Open in Maps
@@ -117,7 +136,11 @@ export function PropertyLocationVisual({
 							<Navigation className="size-3.5" />
 							Map
 						</TabsTrigger>
-						<TabsTrigger className="gap-1.5 text-xs" disabled={!streetViewUrl} value="street">
+						<TabsTrigger
+							className="gap-1.5 text-xs"
+							disabled={!streetViewUrl}
+							value="street"
+						>
 							<Camera className="size-3.5" />
 							Street
 						</TabsTrigger>
@@ -153,7 +176,9 @@ export function PropertyLocationVisual({
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">Shows route from your current location</span>
+							<span className="text-muted-foreground">
+								Shows route from your current location
+							</span>
 							{nearbySuppliers.length > 0 && (
 								<Badge className="gap-1" variant="secondary">
 									<Store className="size-3" />
@@ -197,10 +222,12 @@ export function PropertyLocationVisual({
 						) : (
 							<div className="bg-muted/50 flex h-[200px] flex-col items-center justify-center rounded-lg border p-6 text-center">
 								<Camera className="text-muted-foreground mx-auto mb-3 size-10 opacity-30" />
-								<p className="text-foreground mb-1 text-sm font-medium">Street View Unavailable</p>
+								<p className="text-foreground mb-1 text-sm font-medium">
+									Street View Unavailable
+								</p>
 								<p className="text-muted-foreground max-w-xs text-xs">
-									Add GPS coordinates (latitude/longitude) to the property to enable street-level
-									imagery
+									Add GPS coordinates (latitude/longitude) to the property to
+									enable street-level imagery
 								</p>
 							</div>
 						)}
@@ -232,9 +259,20 @@ export function PropertyLocationVisual({
 							</div>
 						</div>
 						<div className="flex items-center justify-between text-xs">
-							<span className="text-muted-foreground">Satellite imagery view</span>
-							<Button asChild className="h-6 gap-1 px-2 text-xs" size="sm" variant="ghost">
-								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
+							<span className="text-muted-foreground">
+								Satellite imagery view
+							</span>
+							<Button
+								asChild
+								className="h-6 gap-1 px-2 text-xs"
+								size="sm"
+								variant="ghost"
+							>
+								<a
+									href={googleEarthWebUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Globe className="size-3" />
 									Open Google Earth
 								</a>
@@ -269,14 +307,22 @@ export function PropertyLocationVisual({
 						</div>
 					</DialogHeader>
 
-					<Tabs className="w-full" onValueChange={setActiveTab} value={activeTab}>
+					<Tabs
+						className="w-full"
+						onValueChange={setActiveTab}
+						value={activeTab}
+					>
 						<div className="border-b px-6">
 							<TabsList className="h-10">
 								<TabsTrigger className="gap-2" value="map">
 									<Navigation className="size-4" />
 									Map & Route
 								</TabsTrigger>
-								<TabsTrigger className="gap-2" disabled={!streetViewUrl} value="street">
+								<TabsTrigger
+									className="gap-2"
+									disabled={!streetViewUrl}
+									value="street"
+								>
 									<Camera className="size-4" />
 									Street View
 								</TabsTrigger>
@@ -319,8 +365,8 @@ export function PropertyLocationVisual({
 										Street View Unavailable
 									</p>
 									<p className="text-muted-foreground max-w-md text-sm">
-										Add GPS coordinates (latitude/longitude) to the property to enable street-level
-										imagery
+										Add GPS coordinates (latitude/longitude) to the property to
+										enable street-level imagery
 									</p>
 								</div>
 							)}
@@ -353,13 +399,21 @@ export function PropertyLocationVisual({
 						</div>
 						<div className="flex items-center gap-2">
 							<Button asChild className="gap-2" size="sm" variant="outline">
-								<a href={googleEarthWebUrl} rel="noopener noreferrer" target="_blank">
+								<a
+									href={googleEarthWebUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Globe className="size-4" />
 									Open in Google Earth
 								</a>
 							</Button>
 							<Button asChild className="gap-2" size="sm">
-								<a href={googleMapsUrl} rel="noopener noreferrer" target="_blank">
+								<a
+									href={googleMapsUrl}
+									rel="noopener noreferrer"
+									target="_blank"
+								>
 									<Navigation className="size-4" />
 									Open in Google Maps
 								</a>

@@ -15,10 +15,16 @@ import { MaintenancePlansSkeleton } from "@/components/work/maintenance-plans/ma
 // ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
 export const revalidate = 60;
 
-export default function MaintenancePlansPage() {
+export default async function MaintenancePlansPage({
+	searchParams,
+}: {
+	searchParams: Promise<{ page?: string }>;
+}) {
+	const params = await searchParams;
+
 	return (
 		<Suspense fallback={<MaintenancePlansSkeleton />}>
-			<MaintenancePlansData />
+			<MaintenancePlansData searchParams={params} />
 		</Suspense>
 	);
 }

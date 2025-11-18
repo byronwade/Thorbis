@@ -10,9 +10,14 @@ type ChatContainerProps = {
 	messages: UIMessage[];
 	input: string;
 	onInputChange: (
-		e: React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLInputElement>
+		e:
+			| React.ChangeEvent<HTMLTextAreaElement>
+			| React.ChangeEvent<HTMLInputElement>,
 	) => void;
-	onSubmit: (e: FormEvent<HTMLFormElement>, options?: { data?: Record<string, string> }) => void;
+	onSubmit: (
+		e: FormEvent<HTMLFormElement>,
+		options?: { data?: Record<string, string> },
+	) => void;
 	isLoading: boolean;
 	onStop: () => void;
 };
@@ -66,7 +71,11 @@ export function ChatContainer({
 					) : (
 						<>
 							{messages.map((message) => (
-								<ChatMessage isLoading={false} key={message.id} message={message} />
+								<ChatMessage
+									isLoading={false}
+									key={message.id}
+									message={message}
+								/>
 							))}
 							{isLoading && <ThinkingMessage />}
 						</>

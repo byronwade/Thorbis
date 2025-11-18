@@ -23,7 +23,7 @@
 
 "use client";
 
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -73,7 +73,7 @@ export function ProgressiveWidget({
 			{
 				rootMargin,
 				threshold: 0.1,
-			}
+			},
 		);
 
 		if (widgetRef.current) {
@@ -92,10 +92,14 @@ export function ProgressiveWidget({
 						<CardTitle className="text-lg">{title}</CardTitle>
 					</div>
 					{badge && (
-						<span className="bg-muted rounded-full px-2 py-0.5 text-xs font-medium">{badge}</span>
+						<span className="bg-muted rounded-full px-2 py-0.5 text-xs font-medium">
+							{badge}
+						</span>
 					)}
 				</div>
-				{description && <p className="text-muted-foreground text-sm">{description}</p>}
+				{description && (
+					<p className="text-muted-foreground text-sm">{description}</p>
+				)}
 			</CardHeader>
 			<CardContent>
 				{typeof children === "function" ? children({ isVisible }) : children}

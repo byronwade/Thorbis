@@ -56,7 +56,9 @@ export type ActionResult<T = void> =
  *   });
  * }
  */
-export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<ActionResult<T>> {
+export async function withErrorHandling<T>(
+	fn: () => Promise<T>,
+): Promise<ActionResult<T>> {
 	try {
 		const data = await fn();
 		return { success: true, data };
@@ -66,7 +68,8 @@ export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<Action
 			// Log authorization errors as warnings since they're expected in some cases
 			// (e.g., user not part of a company, insufficient permissions)
 			const isExpectedAuthError =
-				error.code === ERROR_CODES.AUTH_FORBIDDEN || error.code === ERROR_CODES.AUTH_UNAUTHORIZED;
+				error.code === ERROR_CODES.AUTH_FORBIDDEN ||
+				error.code === ERROR_CODES.AUTH_UNAUTHORIZED;
 
 			if (isExpectedAuthError) {
 				// Only log in development, or as a warning
@@ -104,7 +107,9 @@ export async function withErrorHandling<T>(fn: () => Promise<T>): Promise<Action
 			return {
 				success: false,
 				error:
-					process.env.NODE_ENV === "development" ? error.message : "An unexpected error occurred",
+					process.env.NODE_ENV === "development"
+						? error.message
+						: "An unexpected error occurred",
 				code: ERROR_CODES.INTERNAL_SERVER_ERROR,
 			};
 		}
@@ -137,7 +142,7 @@ export function successResult<T>(data: T, message?: string): ActionResult<T> {
 export function errorResult(
 	error: string,
 	code?: string,
-	details?: Record<string, any>
+	details?: Record<string, any>,
 ): ActionResult<never> {
 	return {
 		success: false,
@@ -152,9 +157,15 @@ export function errorResult(
  *
  * Helper to check if Supabase client exists and throw ActionError if not
  */
-export function assertSupabase<T>(supabase: T | null | undefined): asserts supabase is T {
+export function assertSupabase<T>(
+	supabase: T | null | undefined,
+): asserts supabase is T {
 	if (!supabase) {
-		throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR, 500);
+		throw new ActionError(
+			"Database connection failed",
+			ERROR_CODES.DB_CONNECTION_ERROR,
+			500,
+		);
 	}
 }
 
@@ -163,12 +174,14 @@ export function assertSupabase<T>(supabase: T | null | undefined): asserts supab
  *
  * Helper to check authentication and throw ActionError if not authenticated
  */
-export function assertAuthenticated(userId: string | undefined): asserts userId is string {
+export function assertAuthenticated(
+	userId: string | undefined,
+): asserts userId is string {
 	if (!userId) {
 		throw new ActionError(
 			"You must be logged in to perform this action",
 			ERROR_CODES.AUTH_UNAUTHORIZED,
-			401
+			401,
 		);
 	}
 }
@@ -180,10 +193,14 @@ export function assertAuthenticated(userId: string | undefined): asserts userId 
  */
 export function assertExists<T>(
 	resource: T | null | undefined,
-	resourceName: string
+	resourceName: string,
 ): asserts resource is T {
 	if (!resource) {
-		throw new ActionError(`${resourceName} not found`, ERROR_CODES.DB_RECORD_NOT_FOUND, 404);
+		throw new ActionError(
+			`${resourceName} not found`,
+			ERROR_CODES.DB_RECORD_NOT_FOUND,
+			404,
+		);
 	}
 }
 
@@ -194,13 +211,13 @@ export function assertExists<T>(
  */
 export function assertPermission(
 	hasPermission: boolean,
-	resourceName: string
+	resourceName: string,
 ): asserts hasPermission {
 	if (!hasPermission) {
 		throw new ActionError(
 			`You don't have permission to access this ${resourceName}`,
 			ERROR_CODES.AUTH_FORBIDDEN,
-			403
+			403,
 		);
 	}
 }

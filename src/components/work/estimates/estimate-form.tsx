@@ -88,12 +88,12 @@ export function EstimateForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(searchParams?.get("propertyId") || undefined);
 	const [lineItems, setLineItems] = useState<LineItem[]>([
 		{
 			id: crypto.randomUUID(),
@@ -157,7 +157,7 @@ export function EstimateForm({
 					return updated;
 				}
 				return item;
-			})
+			}),
 		);
 	};
 
@@ -294,7 +294,12 @@ export function EstimateForm({
 						<Label htmlFor="title">
 							Title <span className="text-destructive">*</span>
 						</Label>
-						<Input id="title" name="title" placeholder="e.g., HVAC System Installation" required />
+						<Input
+							id="title"
+							name="title"
+							placeholder="e.g., HVAC System Installation"
+							required
+						/>
 					</div>
 
 					<div className="space-y-2">
@@ -310,7 +315,13 @@ export function EstimateForm({
 					<div className="grid grid-cols-2 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="validDays">Valid For (Days)</Label>
-							<Input defaultValue="30" id="validDays" min="1" name="validDays" type="number" />
+							<Input
+								defaultValue="30"
+								id="validDays"
+								min="1"
+								name="validDays"
+								type="number"
+							/>
 						</div>
 					</div>
 				</CardContent>
@@ -330,7 +341,12 @@ export function EstimateForm({
 							>
 								Price Book
 							</Button>
-							<Button onClick={addLineItem} size="sm" type="button" variant="outline">
+							<Button
+								onClick={addLineItem}
+								size="sm"
+								type="button"
+								variant="outline"
+							>
 								<Plus className="mr-2 h-4 w-4" />
 								Add Item
 							</Button>
@@ -364,10 +380,14 @@ export function EstimateForm({
 											<div>
 												<p className="font-medium">{item.name}</p>
 												{item.description && (
-													<p className="text-muted-foreground text-sm">{item.description}</p>
+													<p className="text-muted-foreground text-sm">
+														{item.description}
+													</p>
 												)}
 											</div>
-											<p className="font-medium">${(item.unit_price / 100).toFixed(2)}</p>
+											<p className="font-medium">
+												${(item.unit_price / 100).toFixed(2)}
+											</p>
 										</div>
 									</button>
 								))}
@@ -378,10 +398,15 @@ export function EstimateForm({
 					{/* Line Items List */}
 					<div className="space-y-3">
 						{lineItems.map((item, _index) => (
-							<div className="grid grid-cols-12 gap-3 rounded-lg border p-3" key={item.id}>
+							<div
+								className="grid grid-cols-12 gap-3 rounded-lg border p-3"
+								key={item.id}
+							>
 								<div className="col-span-5">
 									<Input
-										onChange={(e) => updateLineItem(item.id, "description", e.target.value)}
+										onChange={(e) =>
+											updateLineItem(item.id, "description", e.target.value)
+										}
 										placeholder="Description"
 										value={item.description}
 									/>
@@ -390,7 +415,11 @@ export function EstimateForm({
 									<Input
 										min="0.01"
 										onChange={(e) =>
-											updateLineItem(item.id, "quantity", Number.parseFloat(e.target.value) || 0)
+											updateLineItem(
+												item.id,
+												"quantity",
+												Number.parseFloat(e.target.value) || 0,
+											)
 										}
 										placeholder="Qty"
 										step="0.01"
@@ -402,7 +431,11 @@ export function EstimateForm({
 									<Input
 										min="0"
 										onChange={(e) =>
-											updateLineItem(item.id, "unitPrice", Number.parseFloat(e.target.value) || 0)
+											updateLineItem(
+												item.id,
+												"unitPrice",
+												Number.parseFloat(e.target.value) || 0,
+											)
 										}
 										placeholder="Price"
 										step="0.01"
@@ -411,7 +444,11 @@ export function EstimateForm({
 									/>
 								</div>
 								<div className="col-span-2">
-									<Input className="bg-muted" disabled value={`$${item.total.toFixed(2)}`} />
+									<Input
+										className="bg-muted"
+										disabled
+										value={`$${item.total.toFixed(2)}`}
+									/>
 								</div>
 								<div className="col-span-1 flex items-center justify-center">
 									<Button
@@ -443,7 +480,9 @@ export function EstimateForm({
 								id="taxRate"
 								max="100"
 								min="0"
-								onChange={(e) => setTaxRate(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setTaxRate(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={taxRate}
@@ -454,7 +493,9 @@ export function EstimateForm({
 							<Input
 								id="discountAmount"
 								min="0"
-								onChange={(e) => setDiscountAmount(Number.parseFloat(e.target.value) || 0)}
+								onChange={(e) =>
+									setDiscountAmount(Number.parseFloat(e.target.value) || 0)
+								}
 								step="0.01"
 								type="number"
 								value={discountAmount}
@@ -515,7 +556,12 @@ export function EstimateForm({
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

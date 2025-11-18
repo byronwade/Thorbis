@@ -141,7 +141,9 @@ export async function isAuthenticated(): Promise<boolean> {
  * Returns user metadata from Supabase Auth.
  * Useful for accessing additional user properties stored in auth.users.
  */
-export async function getUserMetadata<T = Record<string, any>>(): Promise<T | null> {
+export async function getUserMetadata<
+	T = Record<string, any>,
+>(): Promise<T | null> {
 	const user = await getCurrentUser();
 
 	if (!user) {

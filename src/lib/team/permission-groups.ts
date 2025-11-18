@@ -176,7 +176,9 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
 		label: "Customer Management",
 		description: "View and manage customer records",
 		icon: "User",
-		permissions: PERMISSION_DEFINITIONS.filter((p) => p.category === "customers"),
+		permissions: PERMISSION_DEFINITIONS.filter(
+			(p) => p.category === "customers",
+		),
 	},
 	{
 		category: "jobs",
@@ -190,28 +192,36 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
 		label: "Schedule & Dispatch",
 		description: "Coordinate appointments and assignments",
 		icon: "Calendar",
-		permissions: PERMISSION_DEFINITIONS.filter((p) => p.category === "schedule"),
+		permissions: PERMISSION_DEFINITIONS.filter(
+			(p) => p.category === "schedule",
+		),
 	},
 	{
 		category: "financial",
 		label: "Financial & Reports",
 		description: "Access business insights and reports",
 		icon: "DollarSign",
-		permissions: PERMISSION_DEFINITIONS.filter((p) => p.category === "financial"),
+		permissions: PERMISSION_DEFINITIONS.filter(
+			(p) => p.category === "financial",
+		),
 	},
 	{
 		category: "communication",
 		label: "Communication",
 		description: "Customer communication and support",
 		icon: "MessageSquare",
-		permissions: PERMISSION_DEFINITIONS.filter((p) => p.category === "communication"),
+		permissions: PERMISSION_DEFINITIONS.filter(
+			(p) => p.category === "communication",
+		),
 	},
 ];
 
 /**
  * Get role preset permissions
  */
-export function getRolePreset(role: string): Record<Permission, boolean> | null {
+export function getRolePreset(
+	role: string,
+): Record<Permission, boolean> | null {
 	const presets: Record<string, Record<Permission, boolean>> = {
 		owner: {
 			manage_team: true,

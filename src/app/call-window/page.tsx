@@ -20,7 +20,10 @@ import type { Call as TelnyxCall } from "@telnyx/webrtc";
 import { AlertCircle, CalendarDays, MessageSquare } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useState } from "react";
-import { getCustomerCallData, getCustomerCallDataById } from "@/actions/call-customer-data";
+import {
+	getCustomerCallData,
+	getCustomerCallDataById,
+} from "@/actions/call-customer-data";
 import { CallToolbar } from "@/components/call-window/call-toolbar";
 import { CSRScheduleView } from "@/components/call-window/csr-schedule-view";
 import { CustomerSidebar } from "@/components/call-window/customer-sidebar";
@@ -43,7 +46,10 @@ function CallWindowContent() {
 	const searchParams = useSearchParams();
 	const callId = searchParams?.get("callId") || getCallIdFromUrl();
 	const customerId = searchParams?.get("customerId");
-	const direction = searchParams?.get("direction") as "inbound" | "outbound" | null;
+	const direction = searchParams?.get("direction") as
+		| "inbound"
+		| "outbound"
+		| null;
 
 	// Store hooks
 	const {
@@ -70,18 +76,23 @@ function CallWindowContent() {
 	});
 
 	// Real-time call quality monitoring
-	const { quality: connectionQuality, metrics: qualityMetrics } = useCallQuality({
-		call: webrtc.currentCall as TelnyxCall | null,
-		updateInterval: 2000, // Update every 2 seconds
-	});
+	const { quality: connectionQuality, metrics: qualityMetrics } =
+		useCallQuality({
+			call: webrtc.currentCall as TelnyxCall | null,
+			updateInterval: 2000, // Update every 2 seconds
+		});
 
 	// Local state
 	const [_isReady, setIsReady] = useState(false);
 	const [isLoadingCustomer, setIsLoadingCustomer] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
 	const [_showTransfer, setShowTransfer] = useState(false);
-	const [companyId, setCompanyId] = useState<string | null>(searchParams?.get("companyId") ?? null);
-	const [leftPanelView, setLeftPanelView] = useState<"transcript" | "schedule">("schedule");
+	const [companyId, setCompanyId] = useState<string | null>(
+		searchParams?.get("companyId") ?? null,
+	);
+	const [leftPanelView, setLeftPanelView] = useState<"transcript" | "schedule">(
+		"schedule",
+	);
 
 	// Format call duration
 	const formatDuration = (seconds: number) => {
@@ -126,7 +137,8 @@ function CallWindowContent() {
 
 			try {
 				// Resolve company ID from URL or cached state
-				let resolvedCompanyId = companyId ?? searchParams?.get("companyId") ?? null;
+				let resolvedCompanyId =
+					companyId ?? searchParams?.get("companyId") ?? null;
 
 				// Update state if we got it from URL params
 				if (resolvedCompanyId && !companyId) {
@@ -202,7 +214,14 @@ function CallWindowContent() {
 		};
 
 		fetchCustomerData();
-	}, [callId, customerId, call.caller?.number, searchParams, setCustomerData, companyId]);
+	}, [
+		callId,
+		customerId,
+		call.caller?.number,
+		searchParams,
+		setCustomerData,
+		companyId,
+	]);
 
 	// Update call timer
 	useEffect(() => {
@@ -330,7 +349,7 @@ function CallWindowContent() {
 			toggleRecording,
 			endCall,
 			clearTranscript,
-		]
+		],
 	);
 
 	const handleVideoToggle = useCallback(() => {
@@ -391,7 +410,8 @@ function CallWindowContent() {
 				: call.caller?.name || "Unknown Caller";
 
 	// Get caller number from customer data or call data
-	const callerNumber = customerData?.customer?.phone || call.caller?.number || "No number";
+	const callerNumber =
+		customerData?.customer?.phone || call.caller?.number || "No number";
 
 	return (
 		<div className="bg-background flex h-screen flex-col">
@@ -411,7 +431,9 @@ function CallWindowContent() {
 				onEndCall={() => handleCallAction("end")}
 				onHoldToggle={() => handleCallAction(call.isOnHold ? "unhold" : "hold")}
 				onMuteToggle={() => handleCallAction(call.isMuted ? "unmute" : "mute")}
-				onRecordToggle={() => handleCallAction(call.isRecording ? "record_stop" : "record_start")}
+				onRecordToggle={() =>
+					handleCallAction(call.isRecording ? "record_stop" : "record_start")
+				}
 				onTransfer={handleTransfer}
 				onVideoToggle={handleVideoToggle}
 				videoStatus={call.videoStatus}
@@ -455,7 +477,10 @@ function CallWindowContent() {
 
 				{/* Right: Customer Sidebar (65% - Full Height) */}
 				<div className="flex-1 overflow-hidden">
-					<CustomerSidebar customerData={customerData} isLoading={isLoadingCustomer} />
+					<CustomerSidebar
+						customerData={customerData}
+						isLoading={isLoadingCustomer}
+					/>
 				</div>
 			</div>
 		</div>

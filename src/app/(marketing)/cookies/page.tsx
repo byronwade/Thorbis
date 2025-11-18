@@ -11,7 +11,11 @@ export const metadata = generateSEOMetadata({
 		"Understand how Thorbis uses cookies and similar technologies on our websites and apps. Manage your preferences.",
 	path: "/cookies",
 	section: "Legal",
-	keywords: ["thorbis cookies", "thorbis cookie policy", "thorbis tracking technologies"],
+	keywords: [
+		"thorbis cookies",
+		"thorbis cookie policy",
+		"thorbis tracking technologies",
+	],
 });
 
 const SECTIONS = [
@@ -49,7 +53,7 @@ export default function CookiesPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Cookie Policy", url: `${siteUrl}/cookies` },
-						])
+						]),
 					),
 				}}
 				id="cookies-breadcrumb-ld"
@@ -57,10 +61,12 @@ export default function CookiesPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Thorbis Cookie Policy</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+						Thorbis Cookie Policy
+					</h1>
 					<p className="text-muted-foreground">
-						Effective date: January 1, 2025. We explain how cookies support security, analytics, and
-						personalization across Thorbis experiences.
+						Effective date: January 1, 2025. We explain how cookies support
+						security, analytics, and personalization across Thorbis experiences.
 					</p>
 				</header>
 				<article className="space-y-8">

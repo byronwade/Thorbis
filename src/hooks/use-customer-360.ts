@@ -33,7 +33,7 @@ export function useCustomerProperties(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -53,7 +53,7 @@ export function useCustomerJobs(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -72,7 +72,7 @@ export function useCustomerInvoices(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -92,7 +92,7 @@ export function useCustomerEstimates(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -105,27 +105,31 @@ export function useCustomerAppointments(customerId: string, enabled = true) {
 		async () => {
 			const supabase = createClient();
 			return await supabase
-				.from("schedules")
+				.from("appointments")
 				.select(
 					`
 					*,
 					job:jobs!job_id(id, job_number, title),
 					property:properties!property_id(id, name, address)
-				`
+				`,
 				)
 				.eq("customer_id", customerId)
 				.is("deleted_at", null)
 				.order("scheduled_start", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
 /**
  * Load customer's contracts
  */
-export function useCustomerContracts(customerId: string, companyId: string, enabled = true) {
+export function useCustomerContracts(
+	customerId: string,
+	companyId: string,
+	enabled = true,
+) {
 	return useProgressiveData(
 		["customer-contracts", customerId],
 		async () => {
@@ -138,14 +142,14 @@ export function useCustomerContracts(customerId: string, companyId: string, enab
 					job:jobs!job_id(id, job_number),
 					estimate:estimates!estimate_id(id, estimate_number),
 					invoice:invoices!invoice_id(id, invoice_number)
-				`
+				`,
 				)
 				.eq("company_id", companyId)
 				.is("deleted_at", null)
 				.order("created_at", { ascending: false })
 				.limit(50);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -165,14 +169,17 @@ export function useCustomerPayments(customerId: string, enabled = true) {
 				.order("processed_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
 /**
  * Load customer's maintenance plans
  */
-export function useCustomerMaintenancePlans(customerId: string, enabled = true) {
+export function useCustomerMaintenancePlans(
+	customerId: string,
+	enabled = true,
+) {
 	return useProgressiveData(
 		["customer-maintenance-plans", customerId],
 		async () => {
@@ -185,14 +192,17 @@ export function useCustomerMaintenancePlans(customerId: string, enabled = true) 
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
 /**
  * Load customer's service agreements
  */
-export function useCustomerServiceAgreements(customerId: string, enabled = true) {
+export function useCustomerServiceAgreements(
+	customerId: string,
+	enabled = true,
+) {
 	return useProgressiveData(
 		["customer-service-agreements", customerId],
 		async () => {
@@ -206,7 +216,7 @@ export function useCustomerServiceAgreements(customerId: string, enabled = true)
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -226,7 +236,7 @@ export function useCustomerEquipment(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -246,7 +256,7 @@ export function useCustomerPaymentMethods(customerId: string, enabled = true) {
 				.order("is_default", { ascending: false })
 				.limit(5);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -265,7 +275,7 @@ export function useCustomerActivities(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(20);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }
 
@@ -285,6 +295,6 @@ export function useCustomerAttachments(customerId: string, enabled = true) {
 				.order("created_at", { ascending: false })
 				.limit(10);
 		},
-		{ enabled }
+		{ enabled },
 	);
 }

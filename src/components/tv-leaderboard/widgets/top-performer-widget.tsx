@@ -68,7 +68,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 							<ResponsiveText className="truncate font-bold" variant="title">
 								{data.name}
 							</ResponsiveText>
-							<ResponsiveText className="text-muted-foreground" variant="caption">
+							<ResponsiveText
+								className="text-muted-foreground"
+								variant="caption"
+							>
 								Rank #1
 							</ResponsiveText>
 						</div>
@@ -77,7 +80,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						<div className="grid w-full grid-cols-3 gap-1.5 overflow-hidden">
 							{/* Revenue */}
 							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Revenue
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -94,7 +100,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 
 							{/* Jobs */}
 							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Jobs
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -104,7 +113,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 
 							{/* Rating */}
 							<div className="bg-background/50 min-h-0 overflow-hidden rounded-lg p-1.5">
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									Rating
 								</ResponsiveText>
 								<ResponsiveText className="truncate font-bold" variant="body">
@@ -127,7 +139,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 								<ResponsiveText className="truncate font-bold" variant="body">
 									{data.name}
 								</ResponsiveText>
-								<ResponsiveText className="text-muted-foreground" variant="caption">
+								<ResponsiveText
+									className="text-muted-foreground"
+									variant="caption"
+								>
 									#1
 								</ResponsiveText>
 							</div>
@@ -167,7 +182,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 						<div className="border-warning/30 text-warning flex size-8 items-center justify-center rounded-full border-2 bg-gradient-to-br from-yellow-500/20 to-orange-500/10 text-xs font-bold">
 							{data.avatar}
 						</div>
-						<ResponsiveText className="text-warning font-bold" variant="display">
+						<ResponsiveText
+							className="text-warning font-bold"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "compact")}
 						</ResponsiveText>
 					</div>
@@ -176,7 +194,10 @@ export function TopPerformerWidget({ data }: TopPerformerWidgetProps) {
 				{/* TINY Stage: Just the revenue number */}
 				<ShowAt stage="tiny">
 					<div className="flex h-full items-center justify-center">
-						<ResponsiveText className="text-warning font-bold" variant="display">
+						<ResponsiveText
+							className="text-warning font-bold"
+							variant="display"
+						>
 							{formatCurrency(data.revenue, "tiny")}
 						</ResponsiveText>
 					</div>

@@ -9,7 +9,12 @@ import Script from "next/script";
 import { getKBArticles, getKBCategories } from "@/actions/kb";
 import { KBArticleCard } from "@/components/kb/kb-article-card";
 import { KBSidebarWrapper } from "@/components/kb/kb-sidebar-wrapper";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { generateCategoryMetadata } from "@/lib/kb/metadata";
 import { SEO_URLS } from "@/lib/seo/config";
 import { createBreadcrumbSchema } from "@/lib/seo/structured-data";
@@ -46,7 +51,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		getKBArticles({ category: categorySlug }),
 	]);
 
-	const categories = categoriesResult.success ? categoriesResult.categories : [];
+	const categories = categoriesResult.success
+		? categoriesResult.categories
+		: [];
 	const category = (categories || [])
 		.flatMap((cat) => [cat, ...(cat.children || [])])
 		.find((cat) => cat.slug === categorySlug);
@@ -55,7 +62,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 		notFound();
 	}
 
-	const articles = articlesResult.success && articlesResult.articles ? articlesResult.articles : [];
+	const articles =
+		articlesResult.success && articlesResult.articles
+			? articlesResult.articles
+			: [];
 
 	return (
 		<>
@@ -73,7 +83,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 							name: String(category.title),
 							url: `${SEO_URLS.site}/kb/${category.slug}`,
 						},
-					])
+					]),
 				)}
 			</Script>
 			<KBSidebarWrapper currentCategory={String(category.slug)}>
@@ -81,11 +91,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 					{/* Category Header */}
 					<div className="mb-8">
 						{category.icon ? (
-							<span className="mb-4 block text-4xl">{String(category.icon)}</span>
+							<span className="mb-4 block text-4xl">
+								{String(category.icon)}
+							</span>
 						) : null}
-						<h1 className="mb-2 text-4xl font-bold tracking-tight">{String(category.title)}</h1>
+						<h1 className="mb-2 text-4xl font-bold tracking-tight">
+							{String(category.title)}
+						</h1>
 						{category.description ? (
-							<p className="text-muted-foreground text-lg">{String(category.description)}</p>
+							<p className="text-muted-foreground text-lg">
+								{String(category.description)}
+							</p>
 						) : null}
 					</div>
 

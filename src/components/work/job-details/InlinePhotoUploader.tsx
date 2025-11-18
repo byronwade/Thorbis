@@ -43,9 +43,13 @@ const ACCEPTED_FILE_TYPES = {
 	"image/tiff": [".tiff", ".tif"],
 	"application/pdf": [".pdf"],
 	"application/msword": [".doc"],
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+		".docx",
+	],
 	"application/vnd.ms-excel": [".xls"],
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+		".xlsx",
+	],
 	"text/plain": [".txt"],
 	"text/csv": [".csv"],
 };
@@ -64,7 +68,8 @@ export function InlinePhotoUploader({
 	const [uploadProgress, setUploadProgress] = useState(0);
 
 	const generateId = () => Math.random().toString(36).substring(2, 15);
-	const isImageFile = (mimeType: string): boolean => mimeType.startsWith("image/");
+	const isImageFile = (mimeType: string): boolean =>
+		mimeType.startsWith("image/");
 
 	const validateFile = (file: File): string | null => {
 		const fileType = file.type;
@@ -113,7 +118,7 @@ export function InlinePhotoUploader({
 
 			setFiles((prev) => [...prev, ...newFiles]);
 		},
-		[toast, generateId, isImageFile, validateFile]
+		[toast, generateId, isImageFile, validateFile],
 	);
 
 	const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,27 +194,32 @@ export function InlinePhotoUploader({
 						// Show specific error messages
 						if (errorMessage.includes("Access denied")) {
 							toast.error(
-								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`
+								`Access denied for ${photoFile.file.name}. Please verify you have permission to upload files to this job.`,
 							);
 						} else if (errorMessage.includes("Storage upload failed")) {
 							toast.error(
-								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`
+								`Storage error for ${photoFile.file.name}. The file may be too large or the storage service is unavailable.`,
 							);
 						} else {
-							toast.error(`Failed to upload ${photoFile.file.name}: ${errorMessage}`);
+							toast.error(
+								`Failed to upload ${photoFile.file.name}: ${errorMessage}`,
+							);
 						}
 					}
 				} catch (error) {
 					errorCount++;
-					const errorMessage = error instanceof Error ? error.message : String(error);
+					const errorMessage =
+						error instanceof Error ? error.message : String(error);
 
 					// Handle different error types
 					if (errorMessage.includes("unexpected response")) {
 						toast.error(
-							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`
+							`Server error uploading ${photoFile.file.name}. Please try again or contact support if the problem persists.`,
 						);
 					} else {
-						toast.error(`Error uploading ${photoFile.file.name}: ${errorMessage}`);
+						toast.error(
+							`Error uploading ${photoFile.file.name}: ${errorMessage}`,
+						);
 					}
 				}
 
@@ -218,12 +228,14 @@ export function InlinePhotoUploader({
 
 			if (successCount > 0) {
 				toast.success(
-					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`
+					`Successfully uploaded ${successCount} ${successCount === 1 ? "file" : "files"}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`,
 				);
 			}
 
 			if (errorCount > 0 && successCount === 0) {
-				toast.error("All uploads failed. Please check your permissions and try again.");
+				toast.error(
+					"All uploads failed. Please check your permissions and try again.",
+				);
 			}
 
 			// Clean up object URLs
@@ -242,7 +254,8 @@ export function InlinePhotoUploader({
 				setTimeout(() => onCancel(), 100);
 			}
 		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : "Failed to upload files";
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to upload files";
 			toast.error(errorMessage);
 		} finally {
 			setIsUploading(false);
@@ -283,7 +296,9 @@ export function InlinePhotoUploader({
 					</div>
 					<div className="flex-1">
 						<p className="text-sm font-medium">Click or drag files here</p>
-						<p className="text-muted-foreground text-xs">Images & documents up to 100MB</p>
+						<p className="text-muted-foreground text-xs">
+							Images & documents up to 100MB
+						</p>
 					</div>
 					<Upload className="text-muted-foreground size-5" />
 				</div>
@@ -330,7 +345,9 @@ export function InlinePhotoUploader({
 								{/* Details */}
 								<div className="flex min-w-0 flex-1 items-center gap-2">
 									<div className="min-w-0 flex-1">
-										<p className="truncate text-sm font-medium">{photoFile.file.name}</p>
+										<p className="truncate text-sm font-medium">
+											{photoFile.file.name}
+										</p>
 										<p className="text-muted-foreground text-xs">
 											{formatFileSize(photoFile.file.size)}
 										</p>
@@ -357,7 +374,9 @@ export function InlinePhotoUploader({
 									{/* Caption */}
 									<Input
 										className="h-7 w-32 text-xs"
-										onChange={(e) => updateFileCaption(photoFile.id, e.target.value)}
+										onChange={(e) =>
+											updateFileCaption(photoFile.id, e.target.value)
+										}
 										placeholder="Caption"
 										value={photoFile.caption}
 									/>
@@ -394,10 +413,19 @@ export function InlinePhotoUploader({
 
 					{/* Actions */}
 					<div className="flex justify-end gap-2">
-						<Button disabled={isUploading} onClick={onCancel} size="sm" variant="outline">
+						<Button
+							disabled={isUploading}
+							onClick={onCancel}
+							size="sm"
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={files.length === 0 || isUploading} onClick={handleUpload} size="sm">
+						<Button
+							disabled={files.length === 0 || isUploading}
+							onClick={handleUpload}
+							size="sm"
+						>
 							{isUploading ? (
 								<>Uploading...</>
 							) : (

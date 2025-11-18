@@ -14,7 +14,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -62,7 +68,7 @@ export default function MobileAppPage() {
 								name: "Mobile Field App",
 								url: `${siteUrl}/features/mobile-app`,
 							},
-						])
+						]),
 					),
 				}}
 				id="mobile-app-breadcrumb-ld"
@@ -89,11 +95,16 @@ export default function MobileAppPage() {
 								Your office in every technician's pocket
 							</h1>
 							<p className="text-muted-foreground mb-8 text-lg sm:text-xl">
-								Everything your field team needs to complete jobs, capture data, and get paid—even
-								without internet. Works offline, syncs automatically.
+								Everything your field team needs to complete jobs, capture data,
+								and get paid—even without internet. Works offline, syncs
+								automatically.
 							</p>
 							<div className="flex flex-wrap items-center gap-4">
-								<Button asChild className="shadow-primary/20 shadow-lg" size="lg">
+								<Button
+									asChild
+									className="shadow-primary/20 shadow-lg"
+									size="lg"
+								>
 									<Link href="/register">
 										Start 14-day Free Trial
 										<Zap className="ml-2 size-4" />
@@ -142,8 +153,13 @@ export default function MobileAppPage() {
 											<div className="bg-background mb-4 overflow-hidden rounded-2xl border shadow-lg">
 												<div className="bg-primary/5 border-b px-4 py-3">
 													<div className="mb-1 flex items-center justify-between">
-														<span className="text-sm font-semibold">AC Repair</span>
-														<Badge className="h-5 text-[10px]" variant="secondary">
+														<span className="text-sm font-semibold">
+															AC Repair
+														</span>
+														<Badge
+															className="h-5 text-[10px]"
+															variant="secondary"
+														>
 															In Progress
 														</Badge>
 													</div>
@@ -160,7 +176,9 @@ export default function MobileAppPage() {
 															<div className="flex size-5 items-center justify-center rounded-full bg-green-500">
 																<CheckCircle2 className="size-3 text-white" />
 															</div>
-															<span className="text-sm line-through opacity-60">Inspect unit</span>
+															<span className="text-sm line-through opacity-60">
+																Inspect unit
+															</span>
 														</div>
 														<div className="flex items-center gap-2">
 															<div className="flex size-5 items-center justify-center rounded-full bg-green-500">
@@ -172,7 +190,9 @@ export default function MobileAppPage() {
 														</div>
 														<div className="flex items-center gap-2">
 															<div className="border-border size-5 rounded-full border-2" />
-															<span className="text-sm font-medium">Replace filter</span>
+															<span className="text-sm font-medium">
+																Replace filter
+															</span>
 														</div>
 														<div className="flex items-center gap-2">
 															<div className="border-border size-5 rounded-full border-2" />
@@ -239,19 +259,27 @@ export default function MobileAppPage() {
 					<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">100%</div>
-							<div className="text-muted-foreground text-sm font-medium">Offline Capable</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Offline Capable
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">45 min</div>
-							<div className="text-muted-foreground text-sm font-medium">Faster Job Completion</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Faster Job Completion
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">95%</div>
-							<div className="text-muted-foreground text-sm font-medium">Tech Adoption Rate</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Tech Adoption Rate
+							</div>
 						</div>
 						<div className="text-center">
 							<div className="text-primary mb-2 text-4xl font-bold">Zero</div>
-							<div className="text-muted-foreground text-sm font-medium">Paperwork Delays</div>
+							<div className="text-muted-foreground text-sm font-medium">
+								Paperwork Delays
+							</div>
 						</div>
 					</div>
 				</div>
@@ -265,8 +293,8 @@ export default function MobileAppPage() {
 							Built for the field, not the office
 						</h2>
 						<p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-							Every feature designed for technicians working in basements, on rooftops, and
-							everywhere in between
+							Every feature designed for technicians working in basements, on
+							rooftops, and everywhere in between
 						</p>
 					</div>
 
@@ -278,7 +306,8 @@ export default function MobileAppPage() {
 								</div>
 								<CardTitle>True Offline Mode</CardTitle>
 								<CardDescription>
-									Complete jobs, capture data, and process payments without internet connectivity
+									Complete jobs, capture data, and process payments without
+									internet connectivity
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -306,7 +335,8 @@ export default function MobileAppPage() {
 								</div>
 								<CardTitle>Photo Documentation</CardTitle>
 								<CardDescription>
-									Capture before/after photos with automatic organization and cloud backup
+									Capture before/after photos with automatic organization and
+									cloud backup
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -334,7 +364,8 @@ export default function MobileAppPage() {
 								</div>
 								<CardTitle>Digital Signatures</CardTitle>
 								<CardDescription>
-									Get customer approval instantly with legally binding digital signatures
+									Get customer approval instantly with legally binding digital
+									signatures
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -362,7 +393,8 @@ export default function MobileAppPage() {
 								</div>
 								<CardTitle>Smart Checklists</CardTitle>
 								<CardDescription>
-									Customizable checklists that ensure nothing gets missed on every job
+									Customizable checklists that ensure nothing gets missed on
+									every job
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -418,7 +450,8 @@ export default function MobileAppPage() {
 								</div>
 								<CardTitle>Mobile Payments</CardTitle>
 								<CardDescription>
-									Accept credit cards, checks, and cash right from the mobile app
+									Accept credit cards, checks, and cash right from the mobile
+									app
 								</CardDescription>
 							</CardHeader>
 							<CardContent>
@@ -449,8 +482,8 @@ export default function MobileAppPage() {
 						Empower your field team today
 					</h2>
 					<p className="text-primary-foreground/90 mx-auto mb-8 max-w-2xl text-lg">
-						Give your technicians the tools they need to work faster, smarter, and more
-						professionally.
+						Give your technicians the tools they need to work faster, smarter,
+						and more professionally.
 					</p>
 					<div className="flex flex-wrap items-center justify-center gap-4">
 						<Button

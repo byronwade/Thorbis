@@ -47,7 +47,13 @@ export type PropertyData = {
 export type JobData = {
 	title: string;
 	description: string;
-	jobType?: "service" | "installation" | "repair" | "maintenance" | "inspection" | "consultation";
+	jobType?:
+		| "service"
+		| "installation"
+		| "repair"
+		| "maintenance"
+		| "inspection"
+		| "consultation";
 	priority: "low" | "medium" | "high" | "urgent";
 	scheduledStart?: string;
 	scheduledEnd?: string;
@@ -272,17 +278,20 @@ export const useJobCreationStore = create<JobCreationStore>()(
 				// PERFORMANCE: Skip hydration to prevent SSR mismatches
 				// Allows Next.js to generate static pages without Zustand errors
 				skipHydration: true,
-			}
+			},
 		),
-		{ name: "JobCreationStore" }
-	)
+		{ name: "JobCreationStore" },
+	),
 );
 
 // Selectors for better performance
-export const useCurrentStep = () => useJobCreationStore((state) => state.currentStep);
+export const useCurrentStep = () =>
+	useJobCreationStore((state) => state.currentStep);
 export const useCustomer = () => useJobCreationStore((state) => state.customer);
 export const useProperty = () => useJobCreationStore((state) => state.property);
 export const useJobData = () => useJobCreationStore((state) => state.job);
-export const useAISuggestions = () => useJobCreationStore((state) => state.aiSuggestions);
-export const useIsLoadingAI = () => useJobCreationStore((state) => state.isLoadingAI);
+export const useAISuggestions = () =>
+	useJobCreationStore((state) => state.aiSuggestions);
+export const useIsLoadingAI = () =>
+	useJobCreationStore((state) => state.isLoadingAI);
 export const useErrors = () => useJobCreationStore((state) => state.errors);

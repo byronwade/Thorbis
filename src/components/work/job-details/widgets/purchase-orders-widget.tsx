@@ -37,7 +37,13 @@ type PurchaseOrder = {
 	id: string;
 	poNumber: string;
 	vendor: string;
-	status: "draft" | "sent" | "confirmed" | "shipped" | "delivered" | "cancelled";
+	status:
+		| "draft"
+		| "sent"
+		| "confirmed"
+		| "shipped"
+		| "delivered"
+		| "cancelled";
 	orderDate: Date;
 	expectedDelivery?: Date;
 	actualDelivery?: Date;
@@ -133,10 +139,16 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 	};
 
 	// Calculate totals and progress
-	const totalAmount = purchaseOrders.reduce((sum, po) => sum + po.totalAmount, 0);
-	const deliveredOrders = purchaseOrders.filter((po) => po.status === "delivered").length;
+	const totalAmount = purchaseOrders.reduce(
+		(sum, po) => sum + po.totalAmount,
+		0,
+	);
+	const deliveredOrders = purchaseOrders.filter(
+		(po) => po.status === "delivered",
+	).length;
 	const totalOrders = purchaseOrders.length;
-	const progressPercentage = totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
+	const progressPercentage =
+		totalOrders > 0 ? (deliveredOrders / totalOrders) * 100 : 0;
 
 	function getDaysUntil(date?: Date): string {
 		if (!date) {
@@ -162,7 +174,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 			<div className="flex min-h-[200px] items-center justify-center text-center">
 				<div>
 					<Package className="text-muted-foreground mx-auto mb-2 size-8 opacity-50" />
-					<p className="text-muted-foreground mb-2 text-sm">No purchase orders yet</p>
+					<p className="text-muted-foreground mb-2 text-sm">
+						No purchase orders yet
+					</p>
 					<Button asChild size="sm" variant="outline">
 						<Link href={`/dashboard/work/purchase-orders?jobId=${job.id}`}>
 							<FileText className="mr-2 size-4" />
@@ -197,7 +211,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 			<div className="from-primary/5 to-primary/10 rounded-lg bg-gradient-to-br p-3">
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Total PO Amount</span>
-					<span className="text-lg font-bold">{formatCurrency(totalAmount)}</span>
+					<span className="text-lg font-bold">
+						{formatCurrency(totalAmount)}
+					</span>
 				</div>
 			</div>
 
@@ -222,7 +238,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 										<Icon className={`size-4 ${config.color}`} />
 									</div>
 									<div>
-										<h5 className="font-mono text-sm font-semibold">{po.poNumber}</h5>
+										<h5 className="font-mono text-sm font-semibold">
+											{po.poNumber}
+										</h5>
 										<p className="text-muted-foreground text-xs">{po.vendor}</p>
 									</div>
 								</div>
@@ -235,18 +253,27 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 							<div className="ml-10 space-y-1.5 text-xs">
 								<div className="flex justify-between">
 									<span className="text-muted-foreground">Order Date:</span>
-									<span className="font-medium">{formatDate(po.orderDate)}</span>
+									<span className="font-medium">
+										{formatDate(po.orderDate)}
+									</span>
 								</div>
 
 								{po.expectedDelivery && (
 									<div className="flex justify-between">
-										<span className="text-muted-foreground">Expected Delivery:</span>
+										<span className="text-muted-foreground">
+											Expected Delivery:
+										</span>
 										<div className="flex items-center gap-1.5">
-											<span className={`font-medium ${isOverdue ? "text-destructive" : ""}`}>
+											<span
+												className={`font-medium ${isOverdue ? "text-destructive" : ""}`}
+											>
 												{formatDate(po.expectedDelivery)}
 											</span>
 											{!po.actualDelivery && (
-												<Badge className="text-xs" variant={isOverdue ? "destructive" : "outline"}>
+												<Badge
+													className="text-xs"
+													variant={isOverdue ? "destructive" : "outline"}
+												>
 													{getDaysUntil(po.expectedDelivery)}
 												</Badge>
 											)}
@@ -270,7 +297,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 
 								<div className="flex justify-between border-t pt-1.5">
 									<span className="text-muted-foreground">Amount:</span>
-									<span className="font-semibold">{formatCurrency(po.totalAmount)}</span>
+									<span className="font-semibold">
+										{formatCurrency(po.totalAmount)}
+									</span>
 								</div>
 
 								{/* Tracking Number */}
@@ -294,7 +323,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 								{/* Notes */}
 								{po.notes && (
 									<div className="border-warning bg-warning dark:bg-warning/30 mt-2 rounded border-l-2 p-2">
-										<p className="text-warning dark:text-warning text-xs">{po.notes}</p>
+										<p className="text-warning dark:text-warning text-xs">
+											{po.notes}
+										</p>
 									</div>
 								)}
 
@@ -318,7 +349,7 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 				(po) =>
 					po.expectedDelivery &&
 					po.expectedDelivery.getTime() < Date.now() &&
-					po.status !== "delivered"
+					po.status !== "delivered",
 			) && (
 				<>
 					<Separator />
@@ -329,7 +360,8 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 								Overdue Orders
 							</p>
 							<p className="text-destructive dark:text-destructive text-xs">
-								Some purchase orders are overdue. Follow up with vendors to avoid job delays.
+								Some purchase orders are overdue. Follow up with vendors to
+								avoid job delays.
 							</p>
 						</div>
 					</div>
@@ -366,8 +398,9 @@ export function PurchaseOrdersWidget({ job }: PurchaseOrdersWidgetProps) {
 					<p className="text-muted-foreground">Pending</p>
 					<p className="font-semibold">
 						{
-							purchaseOrders.filter((po) => po.status === "sent" || po.status === "confirmed")
-								.length
+							purchaseOrders.filter(
+								(po) => po.status === "sent" || po.status === "confirmed",
+							).length
 						}
 					</p>
 				</div>

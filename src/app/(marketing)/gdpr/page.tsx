@@ -52,7 +52,7 @@ export default function GDPRPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "GDPR", url: `${siteUrl}/gdpr` },
-						])
+						]),
 					),
 				}}
 				id="gdpr-breadcrumb-ld"
@@ -60,10 +60,12 @@ export default function GDPRPage() {
 			/>
 			<div className="container mx-auto px-4 py-16 sm:px-6 lg:px-8">
 				<header className="mb-10 space-y-4">
-					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Thorbis & GDPR</h1>
+					<h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
+						Thorbis & GDPR
+					</h1>
 					<p className="text-muted-foreground">
-						Thorbis is committed to meeting GDPR requirements and empowering customers with
-						transparency and control over personal data.
+						Thorbis is committed to meeting GDPR requirements and empowering
+						customers with transparency and control over personal data.
 					</p>
 				</header>
 				<article className="space-y-8">

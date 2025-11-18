@@ -9,7 +9,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -30,7 +34,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -41,12 +49,16 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 // ============================================================================
 
 const accountingSettingsSchema = z.object({
-	provider: z.enum(["quickbooks", "xero", "sage", "freshbooks", "manual", "none"]).optional(),
+	provider: z
+		.enum(["quickbooks", "xero", "sage", "freshbooks", "manual", "none"])
+		.optional(),
 	providerEnabled: z.boolean().default(false),
 	apiKey: z.string().optional(),
 	apiSecret: z.string().optional(),
 	autoSyncEnabled: z.boolean().default(false),
-	syncFrequency: z.enum(["realtime", "hourly", "daily", "weekly", "manual"]).default("daily"),
+	syncFrequency: z
+		.enum(["realtime", "hourly", "daily", "weekly", "manual"])
+		.default("daily"),
 	incomeAccount: z.string().optional(),
 	expenseAccount: z.string().optional(),
 	assetAccount: z.string().optional(),
@@ -57,11 +69,16 @@ const accountingSettingsSchema = z.object({
 	syncCustomers: z.boolean().default(true),
 });
 
-export async function updateAccountingSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateAccountingSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -89,33 +106,37 @@ export async function updateAccountingSettings(formData: FormData): Promise<Acti
 		});
 
 		// Encrypt API credentials
-		const encryptedApiKey = data.apiKey ? Buffer.from(data.apiKey).toString("base64") : null;
+		const encryptedApiKey = data.apiKey
+			? Buffer.from(data.apiKey).toString("base64")
+			: null;
 		const encryptedApiSecret = data.apiSecret
 			? Buffer.from(data.apiSecret).toString("base64")
 			: null;
 
-		const { error } = await supabase.from("finance_accounting_settings").upsert({
-			company_id: companyId,
-			provider: data.provider,
-			provider_enabled: data.providerEnabled,
-			api_key_encrypted: encryptedApiKey,
-			api_secret_encrypted: encryptedApiSecret,
-			auto_sync_enabled: data.autoSyncEnabled,
-			sync_frequency: data.syncFrequency,
-			income_account: data.incomeAccount,
-			expense_account: data.expenseAccount,
-			asset_account: data.assetAccount,
-			liability_account: data.liabilityAccount,
-			sync_invoices: data.syncInvoices,
-			sync_payments: data.syncPayments,
-			sync_expenses: data.syncExpenses,
-			sync_customers: data.syncCustomers,
-		});
+		const { error } = await supabase
+			.from("finance_accounting_settings")
+			.upsert({
+				company_id: companyId,
+				provider: data.provider,
+				provider_enabled: data.providerEnabled,
+				api_key_encrypted: encryptedApiKey,
+				api_secret_encrypted: encryptedApiSecret,
+				auto_sync_enabled: data.autoSyncEnabled,
+				sync_frequency: data.syncFrequency,
+				income_account: data.incomeAccount,
+				expense_account: data.expenseAccount,
+				asset_account: data.assetAccount,
+				liability_account: data.liabilityAccount,
+				sync_invoices: data.syncInvoices,
+				sync_payments: data.syncPayments,
+				sync_expenses: data.syncExpenses,
+				sync_customers: data.syncCustomers,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update accounting settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -127,7 +148,10 @@ export async function getAccountingSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -146,7 +170,7 @@ export async function getAccountingSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch accounting settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -165,7 +189,9 @@ const bookkeepingSettingsSchema = z.object({
 	defaultIncomeCategory: z.string().default("Service Revenue"),
 	defaultExpenseCategory: z.string().default("Operating Expenses"),
 	defaultTaxCategory: z.string().default("Sales Tax"),
-	reportFrequency: z.enum(["weekly", "monthly", "quarterly", "yearly"]).default("monthly"),
+	reportFrequency: z
+		.enum(["weekly", "monthly", "quarterly", "yearly"])
+		.default("monthly"),
 	emailReports: z.boolean().default(false),
 	reportRecipients: z.string().optional(),
 	fiscalYearStartMonth: z.coerce.number().min(1).max(12).default(1),
@@ -174,11 +200,16 @@ const bookkeepingSettingsSchema = z.object({
 	allowManualJournalEntries: z.boolean().default(false),
 });
 
-export async function updateBookkeepingSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateBookkeepingSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -194,41 +225,48 @@ export async function updateBookkeepingSettings(formData: FormData): Promise<Act
 			: [];
 
 		const data = bookkeepingSettingsSchema.parse({
-			autoCategorizeTransactions: formData.get("autoCategorizeTransactions") !== "false",
+			autoCategorizeTransactions:
+				formData.get("autoCategorizeTransactions") !== "false",
 			autoReconcilePayments: formData.get("autoReconcilePayments") === "true",
 			autoGenerateReports: formData.get("autoGenerateReports") === "true",
-			defaultIncomeCategory: formData.get("defaultIncomeCategory") || "Service Revenue",
-			defaultExpenseCategory: formData.get("defaultExpenseCategory") || "Operating Expenses",
+			defaultIncomeCategory:
+				formData.get("defaultIncomeCategory") || "Service Revenue",
+			defaultExpenseCategory:
+				formData.get("defaultExpenseCategory") || "Operating Expenses",
 			defaultTaxCategory: formData.get("defaultTaxCategory") || "Sales Tax",
 			reportFrequency: formData.get("reportFrequency") || "monthly",
 			emailReports: formData.get("emailReports") === "true",
 			fiscalYearStartMonth: formData.get("fiscalYearStartMonth") || "1",
 			fiscalYearStartDay: formData.get("fiscalYearStartDay") || "1",
-			requireReceiptAttachment: formData.get("requireReceiptAttachment") === "true",
-			allowManualJournalEntries: formData.get("allowManualJournalEntries") === "true",
+			requireReceiptAttachment:
+				formData.get("requireReceiptAttachment") === "true",
+			allowManualJournalEntries:
+				formData.get("allowManualJournalEntries") === "true",
 		});
 
-		const { error } = await supabase.from("finance_bookkeeping_settings").upsert({
-			company_id: companyId,
-			auto_categorize_transactions: data.autoCategorizeTransactions,
-			auto_reconcile_payments: data.autoReconcilePayments,
-			auto_generate_reports: data.autoGenerateReports,
-			default_income_category: data.defaultIncomeCategory,
-			default_expense_category: data.defaultExpenseCategory,
-			default_tax_category: data.defaultTaxCategory,
-			report_frequency: data.reportFrequency,
-			email_reports: data.emailReports,
-			report_recipients: reportRecipients,
-			fiscal_year_start_month: data.fiscalYearStartMonth,
-			fiscal_year_start_day: data.fiscalYearStartDay,
-			require_receipt_attachment: data.requireReceiptAttachment,
-			allow_manual_journal_entries: data.allowManualJournalEntries,
-		});
+		const { error } = await supabase
+			.from("finance_bookkeeping_settings")
+			.upsert({
+				company_id: companyId,
+				auto_categorize_transactions: data.autoCategorizeTransactions,
+				auto_reconcile_payments: data.autoReconcilePayments,
+				auto_generate_reports: data.autoGenerateReports,
+				default_income_category: data.defaultIncomeCategory,
+				default_expense_category: data.defaultExpenseCategory,
+				default_tax_category: data.defaultTaxCategory,
+				report_frequency: data.reportFrequency,
+				email_reports: data.emailReports,
+				report_recipients: reportRecipients,
+				fiscal_year_start_month: data.fiscalYearStartMonth,
+				fiscal_year_start_day: data.fiscalYearStartDay,
+				require_receipt_attachment: data.requireReceiptAttachment,
+				allow_manual_journal_entries: data.allowManualJournalEntries,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update bookkeeping settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -240,7 +278,10 @@ export async function getBookkeepingSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -259,7 +300,7 @@ export async function getBookkeepingSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch bookkeeping settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -285,11 +326,16 @@ const bankAccountSchema = z.object({
 	isPrimary: z.boolean().default(false),
 });
 
-export async function createBankAccount(formData: FormData): Promise<ActionResult<void>> {
+export async function createBankAccount(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -327,7 +373,7 @@ export async function createBankAccount(formData: FormData): Promise<ActionResul
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create bank account"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -337,12 +383,15 @@ export async function createBankAccount(formData: FormData): Promise<ActionResul
 
 export async function updateBankAccount(
 	accountId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -383,7 +432,7 @@ export async function updateBankAccount(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update bank account"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -391,11 +440,16 @@ export async function updateBankAccount(
 	});
 }
 
-export async function deleteBankAccount(accountId: string): Promise<ActionResult<void>> {
+export async function deleteBankAccount(
+	accountId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -414,7 +468,7 @@ export async function deleteBankAccount(accountId: string): Promise<ActionResult
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete bank account"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -429,7 +483,10 @@ export async function getUserCompanyId(): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -446,7 +503,10 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -467,7 +527,7 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
           processor_type,
           status
         )
-      `
+      `,
 			)
 			.eq("company_id", companyId)
 			.order("is_primary", { ascending: false })
@@ -476,7 +536,7 @@ export async function getBankAccounts(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch bank accounts"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -491,7 +551,10 @@ export async function getPrimaryBankAccount(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -549,12 +612,15 @@ const businessFinancingSchema = z.object({
 });
 
 export async function updateBusinessFinancingSettings(
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -567,10 +633,12 @@ export async function updateBusinessFinancingSettings(
 		const data = businessFinancingSchema.parse({
 			enableBusinessLoans: formData.get("enableBusinessLoans") === "true",
 			enableLineOfCredit: formData.get("enableLineOfCredit") === "true",
-			enableEquipmentFinancing: formData.get("enableEquipmentFinancing") === "true",
+			enableEquipmentFinancing:
+				formData.get("enableEquipmentFinancing") === "true",
 			financingProvider: formData.get("financingProvider") || undefined,
 			providerApiKey: formData.get("providerApiKey") || undefined,
-			autoCalculateEligibility: formData.get("autoCalculateEligibility") === "true",
+			autoCalculateEligibility:
+				formData.get("autoCalculateEligibility") === "true",
 			showOffersInDashboard: formData.get("showOffersInDashboard") !== "false",
 			annualRevenue: formData.get("annualRevenue") || undefined,
 			yearsInBusiness: formData.get("yearsInBusiness") || undefined,
@@ -584,27 +652,29 @@ export async function updateBusinessFinancingSettings(
 			? Buffer.from(data.providerApiKey).toString("base64")
 			: null;
 
-		const { error } = await supabase.from("finance_business_financing_settings").upsert({
-			company_id: companyId,
-			enable_business_loans: data.enableBusinessLoans,
-			enable_line_of_credit: data.enableLineOfCredit,
-			enable_equipment_financing: data.enableEquipmentFinancing,
-			financing_provider: data.financingProvider,
-			provider_api_key_encrypted: encryptedApiKey,
-			auto_calculate_eligibility: data.autoCalculateEligibility,
-			show_offers_in_dashboard: data.showOffersInDashboard,
-			annual_revenue: data.annualRevenue,
-			years_in_business: data.yearsInBusiness,
-			business_credit_score: data.businessCreditScore,
-			preferred_loan_amount: data.preferredLoanAmount,
-			preferred_term_months: data.preferredTermMonths,
-			max_acceptable_apr: data.maxAcceptableApr,
-		});
+		const { error } = await supabase
+			.from("finance_business_financing_settings")
+			.upsert({
+				company_id: companyId,
+				enable_business_loans: data.enableBusinessLoans,
+				enable_line_of_credit: data.enableLineOfCredit,
+				enable_equipment_financing: data.enableEquipmentFinancing,
+				financing_provider: data.financingProvider,
+				provider_api_key_encrypted: encryptedApiKey,
+				auto_calculate_eligibility: data.autoCalculateEligibility,
+				show_offers_in_dashboard: data.showOffersInDashboard,
+				annual_revenue: data.annualRevenue,
+				years_in_business: data.yearsInBusiness,
+				business_credit_score: data.businessCreditScore,
+				preferred_loan_amount: data.preferredLoanAmount,
+				preferred_term_months: data.preferredTermMonths,
+				max_acceptable_apr: data.maxAcceptableApr,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update business financing settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -612,11 +682,16 @@ export async function updateBusinessFinancingSettings(
 	});
 }
 
-export async function getBusinessFinancingSettings(): Promise<ActionResult<any>> {
+export async function getBusinessFinancingSettings(): Promise<
+	ActionResult<any>
+> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -635,7 +710,7 @@ export async function getBusinessFinancingSettings(): Promise<ActionResult<any>>
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch business financing settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -649,7 +724,9 @@ export async function getBusinessFinancingSettings(): Promise<ActionResult<any>>
 
 const consumerFinancingSchema = z.object({
 	financingEnabled: z.boolean().default(false),
-	provider: z.enum(["affirm", "wisetack", "greensky", "servicefinance", "other"]).optional(),
+	provider: z
+		.enum(["affirm", "wisetack", "greensky", "servicefinance", "other"])
+		.optional(),
 	providerApiKey: z.string().optional(),
 	providerMerchantId: z.string().optional(),
 	minAmount: z.coerce.number().default(500),
@@ -662,16 +739,21 @@ const consumerFinancingSchema = z.object({
 	allowInstantApproval: z.boolean().default(true),
 	requireCreditCheck: z.boolean().default(true),
 	collectSsn: z.boolean().default(false),
-	marketingMessage: z.string().default("Finance your service with flexible payment plans"),
+	marketingMessage: z
+		.string()
+		.default("Finance your service with flexible payment plans"),
 });
 
 export async function updateConsumerFinancingSettings(
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -701,36 +783,39 @@ export async function updateConsumerFinancingSettings(
 			requireCreditCheck: formData.get("requireCreditCheck") !== "false",
 			collectSsn: formData.get("collectSsn") === "true",
 			marketingMessage:
-				formData.get("marketingMessage") || "Finance your service with flexible payment plans",
+				formData.get("marketingMessage") ||
+				"Finance your service with flexible payment plans",
 		});
 
 		const encryptedApiKey = data.providerApiKey
 			? Buffer.from(data.providerApiKey).toString("base64")
 			: null;
 
-		const { error } = await supabase.from("finance_consumer_financing_settings").upsert({
-			company_id: companyId,
-			financing_enabled: data.financingEnabled,
-			provider: data.provider,
-			provider_api_key_encrypted: encryptedApiKey,
-			provider_merchant_id: data.providerMerchantId,
-			min_amount: data.minAmount,
-			max_amount: data.maxAmount,
-			available_terms: availableTerms,
-			show_in_estimates: data.showInEstimates,
-			show_in_invoices: data.showInInvoices,
-			show_monthly_payment: data.showMonthlyPayment,
-			promote_financing: data.promoteFinancing,
-			allow_instant_approval: data.allowInstantApproval,
-			require_credit_check: data.requireCreditCheck,
-			collect_ssn: data.collectSsn,
-			marketing_message: data.marketingMessage,
-		});
+		const { error } = await supabase
+			.from("finance_consumer_financing_settings")
+			.upsert({
+				company_id: companyId,
+				financing_enabled: data.financingEnabled,
+				provider: data.provider,
+				provider_api_key_encrypted: encryptedApiKey,
+				provider_merchant_id: data.providerMerchantId,
+				min_amount: data.minAmount,
+				max_amount: data.maxAmount,
+				available_terms: availableTerms,
+				show_in_estimates: data.showInEstimates,
+				show_in_invoices: data.showInInvoices,
+				show_monthly_payment: data.showMonthlyPayment,
+				promote_financing: data.promoteFinancing,
+				allow_instant_approval: data.allowInstantApproval,
+				require_credit_check: data.requireCreditCheck,
+				collect_ssn: data.collectSsn,
+				marketing_message: data.marketingMessage,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update consumer financing settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -738,11 +823,16 @@ export async function updateConsumerFinancingSettings(
 	});
 }
 
-export async function getConsumerFinancingSettings(): Promise<ActionResult<any>> {
+export async function getConsumerFinancingSettings(): Promise<
+	ActionResult<any>
+> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -761,7 +851,7 @@ export async function getConsumerFinancingSettings(): Promise<ActionResult<any>>
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch consumer financing settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -777,7 +867,10 @@ export async function getDebitCards(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -796,7 +889,7 @@ export async function getDebitCards(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch debit cards"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -812,7 +905,10 @@ export async function getGasCards(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -831,7 +927,7 @@ export async function getGasCards(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch gas cards"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -865,11 +961,16 @@ const giftCardSettingsSchema = z.object({
 	trackRedemptionAnalytics: z.boolean().default(true),
 });
 
-export async function updateGiftCardSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateGiftCardSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -895,15 +996,19 @@ export async function updateGiftCardSettings(formData: FormData): Promise<Action
 			requireRecipientEmail: formData.get("requireRecipientEmail") === "true",
 			cardsExpire: formData.get("cardsExpire") === "true",
 			expirationMonths: formData.get("expirationMonths") || "24",
-			sendExpirationReminder: formData.get("sendExpirationReminder") !== "false",
+			sendExpirationReminder:
+				formData.get("sendExpirationReminder") !== "false",
 			reminderDaysBefore: formData.get("reminderDaysBefore") || "30",
-			allowPartialRedemption: formData.get("allowPartialRedemption") !== "false",
+			allowPartialRedemption:
+				formData.get("allowPartialRedemption") !== "false",
 			allowMultipleCardsPerTransaction:
 				formData.get("allowMultipleCardsPerTransaction") !== "false",
-			combineWithOtherDiscounts: formData.get("combineWithOtherDiscounts") === "true",
+			combineWithOtherDiscounts:
+				formData.get("combineWithOtherDiscounts") === "true",
 			allowCustomMessage: formData.get("allowCustomMessage") !== "false",
 			maxMessageLength: formData.get("maxMessageLength") || "200",
-			trackRedemptionAnalytics: formData.get("trackRedemptionAnalytics") !== "false",
+			trackRedemptionAnalytics:
+				formData.get("trackRedemptionAnalytics") !== "false",
 		});
 
 		const { error } = await supabase.from("finance_gift_card_settings").upsert({
@@ -922,7 +1027,8 @@ export async function updateGiftCardSettings(formData: FormData): Promise<Action
 			send_expiration_reminder: data.sendExpirationReminder,
 			reminder_days_before: data.reminderDaysBefore,
 			allow_partial_redemption: data.allowPartialRedemption,
-			allow_multiple_cards_per_transaction: data.allowMultipleCardsPerTransaction,
+			allow_multiple_cards_per_transaction:
+				data.allowMultipleCardsPerTransaction,
 			combine_with_other_discounts: data.combineWithOtherDiscounts,
 			allow_custom_message: data.allowCustomMessage,
 			max_message_length: data.maxMessageLength,
@@ -932,7 +1038,7 @@ export async function updateGiftCardSettings(formData: FormData): Promise<Action
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update gift card settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -944,7 +1050,10 @@ export async function getGiftCardSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -963,7 +1072,7 @@ export async function getGiftCardSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch gift card settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -978,7 +1087,9 @@ export async function getGiftCardSettings(): Promise<ActionResult<any>> {
 const virtualBucketSettingsSchema = z.object({
 	virtualBucketsEnabled: z.boolean().default(false),
 	autoAllocateFunds: z.boolean().default(false),
-	allocationFrequency: z.enum(["daily", "weekly", "biweekly", "monthly"]).default("weekly"),
+	allocationFrequency: z
+		.enum(["daily", "weekly", "biweekly", "monthly"])
+		.default("weekly"),
 	operatingExpensesPercentage: z.coerce.number().default(50),
 	taxReservePercentage: z.coerce.number().default(25),
 	profitPercentage: z.coerce.number().default(15),
@@ -990,11 +1101,16 @@ const virtualBucketSettingsSchema = z.object({
 	notifyBucketGoalsMet: z.boolean().default(true),
 });
 
-export async function updateVirtualBucketSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateVirtualBucketSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1008,7 +1124,8 @@ export async function updateVirtualBucketSettings(formData: FormData): Promise<A
 			virtualBucketsEnabled: formData.get("virtualBucketsEnabled") === "true",
 			autoAllocateFunds: formData.get("autoAllocateFunds") === "true",
 			allocationFrequency: formData.get("allocationFrequency") || "weekly",
-			operatingExpensesPercentage: formData.get("operatingExpensesPercentage") || "50",
+			operatingExpensesPercentage:
+				formData.get("operatingExpensesPercentage") || "50",
 			taxReservePercentage: formData.get("taxReservePercentage") || "25",
 			profitPercentage: formData.get("profitPercentage") || "15",
 			emergencyFundPercentage: formData.get("emergencyFundPercentage") || "10",
@@ -1019,26 +1136,28 @@ export async function updateVirtualBucketSettings(formData: FormData): Promise<A
 			notifyBucketGoalsMet: formData.get("notifyBucketGoalsMet") !== "false",
 		});
 
-		const { error } = await supabase.from("finance_virtual_bucket_settings").upsert({
-			company_id: companyId,
-			virtual_buckets_enabled: data.virtualBucketsEnabled,
-			auto_allocate_funds: data.autoAllocateFunds,
-			allocation_frequency: data.allocationFrequency,
-			operating_expenses_percentage: data.operatingExpensesPercentage,
-			tax_reserve_percentage: data.taxReservePercentage,
-			profit_percentage: data.profitPercentage,
-			emergency_fund_percentage: data.emergencyFundPercentage,
-			min_operating_balance: data.minOperatingBalance,
-			emergency_fund_target: data.emergencyFundTarget,
-			notify_low_balance: data.notifyLowBalance,
-			low_balance_threshold: data.lowBalanceThreshold,
-			notify_bucket_goals_met: data.notifyBucketGoalsMet,
-		});
+		const { error } = await supabase
+			.from("finance_virtual_bucket_settings")
+			.upsert({
+				company_id: companyId,
+				virtual_buckets_enabled: data.virtualBucketsEnabled,
+				auto_allocate_funds: data.autoAllocateFunds,
+				allocation_frequency: data.allocationFrequency,
+				operating_expenses_percentage: data.operatingExpensesPercentage,
+				tax_reserve_percentage: data.taxReservePercentage,
+				profit_percentage: data.profitPercentage,
+				emergency_fund_percentage: data.emergencyFundPercentage,
+				min_operating_balance: data.minOperatingBalance,
+				emergency_fund_target: data.emergencyFundTarget,
+				notify_low_balance: data.notifyLowBalance,
+				low_balance_threshold: data.lowBalanceThreshold,
+				notify_bucket_goals_met: data.notifyBucketGoalsMet,
+			});
 
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update virtual bucket settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -1050,7 +1169,10 @@ export async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1069,7 +1191,7 @@ export async function getVirtualBucketSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch virtual bucket settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -1081,7 +1203,10 @@ export async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -1100,7 +1225,7 @@ export async function getVirtualBuckets(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch virtual buckets"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

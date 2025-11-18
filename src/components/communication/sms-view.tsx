@@ -10,7 +10,10 @@ import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 import { useCommunicationStore } from "@/lib/stores/communication-store";
 
@@ -24,6 +27,8 @@ type SMSMessage = {
 	status: "unread" | "read" | "replied" | "archived";
 	direction: "inbound" | "outbound";
 	customerId?: string | null;
+	threadId?: string | null;
+	threadAddress?: string | null;
 };
 
 type SMSViewProps = {
@@ -33,27 +38,39 @@ type SMSViewProps = {
 export function SMSView({ messages }: SMSViewProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const setSelectedMessageId = useCommunicationStore((state) => state.setSelectedMessageId);
-	const setIsDetailView = useCommunicationStore((state) => state.setIsDetailView);
-	const openComposer = useCommunicationStore((state) => state.openComposer);
+	const setSelectedMessageId = useCommunicationStore(
+		(state) => state.setSelectedMessageId,
+	);
+	const setIsDetailView = useCommunicationStore(
+		(state) => state.setIsDetailView,
+	);
 
 	const handleOpenMessage = (message: SMSMessage) => {
 		setSelectedMessageId(message.id);
 		setIsDetailView(true);
+		const threadIdentifier =
+			message.threadId || message.fromPhone || message.toPhone;
+		if (threadIdentifier) {
+			const normalized = normalizePhone(threadIdentifier);
+			router.push(
+				`/dashboard/communication/messages?thread=${encodeURIComponent(normalized)}`,
+			);
+			return;
+		}
 		router.push(`/dashboard/communication/${message.id}`);
 	};
 
 	const handleReply = (event: React.MouseEvent, message: SMSMessage) => {
 		event.stopPropagation();
 		const phoneNumber =
-			message.direction === "inbound"
+			message.threadId ||
+			(message.direction === "inbound"
 				? message.fromPhone || message.from
-				: message.toPhone || message.from;
-		openComposer("sms", {
-			customerId: message.customerId || undefined,
-			phone: phoneNumber,
-			customerName: message.from,
-		});
+				: message.toPhone || message.from);
+		const normalized = normalizePhone(phoneNumber);
+		router.push(
+			`/dashboard/communication/messages?thread=${encodeURIComponent(normalized)}`,
+		);
 	};
 
 	const formatTimestamp = (date: Date) => {
@@ -100,7 +117,9 @@ export function SMSView({ messages }: SMSViewProps) {
 						</span>
 						{(message.fromPhone || message.toPhone) && (
 							<span className="text-muted-foreground text-xs">
-								{message.direction === "inbound" ? message.fromPhone : message.toPhone}
+								{message.direction === "inbound"
+									? message.fromPhone
+									: message.toPhone}
 							</span>
 						)}
 					</div>
@@ -112,7 +131,9 @@ export function SMSView({ messages }: SMSViewProps) {
 			header: "Message",
 			width: "flex-1",
 			render: (message) => (
-				<p className="text-muted-foreground line-clamp-1 text-xs">{message.preview}</p>
+				<p className="text-muted-foreground line-clamp-1 text-xs">
+					{message.preview}
+				</p>
 			),
 		},
 		{
@@ -133,7 +154,9 @@ export function SMSView({ messages }: SMSViewProps) {
 			header: "Status",
 			width: "w-24",
 			render: (message) => (
-				<span className="text-muted-foreground text-xs capitalize">{message.status}</span>
+				<span className="text-muted-foreground text-xs capitalize">
+					{message.status}
+				</span>
 			),
 		},
 		{
@@ -143,7 +166,9 @@ export function SMSView({ messages }: SMSViewProps) {
 			align: "right",
 			sortable: true,
 			render: (message) => (
-				<span className="text-muted-foreground text-xs">{formatTimestamp(message.timestamp)}</span>
+				<span className="text-muted-foreground text-xs">
+					{formatTimestamp(message.timestamp)}
+				</span>
 			),
 		},
 		{
@@ -173,7 +198,7 @@ export function SMSView({ messages }: SMSViewProps) {
 			const noun = selectedIds.size === 1 ? "conversation" : "conversations";
 			toast.success(`Archive queued for ${selectedIds.size} ${noun}.`);
 		},
-		[toast]
+		[toast],
 	);
 
 	const bulkActions = [
@@ -200,7 +225,9 @@ export function SMSView({ messages }: SMSViewProps) {
 			bulkActions={bulkActions}
 			columns={columns}
 			data={messages}
-			emptyIcon={<MessageSquareText className="text-muted-foreground size-10" />}
+			emptyIcon={
+				<MessageSquareText className="text-muted-foreground size-10" />
+			}
 			emptyMessage="No text messages"
 			enableSelection
 			entity="communications-sms"
@@ -213,4 +240,18 @@ export function SMSView({ messages }: SMSViewProps) {
 			showRefresh={false}
 		/>
 	);
+}
+
+function normalizePhone(raw?: string | null): string {
+	if (!raw) {
+		return "";
+	}
+	const digits = raw.replace(/[^0-9]/g, "");
+	if (digits.length === 11 && digits.startsWith("1")) {
+		return `+${digits}`;
+	}
+	if (digits.length === 10) {
+		return `+1${digits}`;
+	}
+	return raw.startsWith("+") ? raw : `+${raw}`;
 }

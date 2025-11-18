@@ -41,9 +41,12 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { createOrganizationCheckoutSession } from "@/actions/billing";
-import { archiveIncompleteCompany, saveOnboardingStepProgress } from "@/actions/onboarding";
+import {
+	archiveIncompleteCompany,
+	saveOnboardingStepProgress,
+} from "@/actions/onboarding";
 import { SmartAddressInput } from "@/components/customers/smart-address-input";
-import { PlaidLinkButton } from "@/components/finance/plaid-link-button";
+import { PlaidLinkButtonLazy as PlaidLinkButton } from "@/components/finance/plaid-link-button-lazy";
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header";
 import { TeamBulkUploadDialog } from "@/components/onboarding/team-bulk-upload-dialog";
 import { TeamMemberEditDialog } from "@/components/onboarding/team-member-edit-dialog";
@@ -60,7 +63,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Form,
 	FormControl,
@@ -170,20 +179,26 @@ export function WelcomePageClient({
 }: WelcomePageClientProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const [currentStep, setCurrentStep] = useState(incompleteCompany?.currentStep || 1);
+	const [currentStep, setCurrentStep] = useState(
+		incompleteCompany?.currentStep || 1,
+	);
 	const [isLoading, setIsLoading] = useState(false);
-	const [companyId, setCompanyId] = useState<string | null>(incompleteCompany?.id || null);
+	const [companyId, setCompanyId] = useState<string | null>(
+		incompleteCompany?.id || null,
+	);
 	const [savedAddress, setSavedAddress] = useState<any>(null);
 	const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
 
 	// Team members state
 	const [teamMembers, setTeamMembers] = useState<ExtendedTeamMember[]>([]);
-	const [editingMember, setEditingMember] = useState<ExtendedTeamMember | null>(null);
+	const [editingMember, setEditingMember] = useState<ExtendedTeamMember | null>(
+		null,
+	);
 	const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
 
 	// Bank account state
 	const [linkedBankAccounts, setLinkedBankAccounts] = useState(
-		incompleteCompany?.onboardingProgress?.step3?.bankAccounts || 0
+		incompleteCompany?.onboardingProgress?.step3?.bankAccounts || 0,
 	);
 
 	const form = useForm<FormValues>({
@@ -220,7 +235,9 @@ export function WelcomePageClient({
 
 			// Load bank account count from saved progress
 			if (incompleteCompany.onboardingProgress?.step3?.bankAccounts) {
-				setLinkedBankAccounts(incompleteCompany.onboardingProgress.step3.bankAccounts);
+				setLinkedBankAccounts(
+					incompleteCompany.onboardingProgress.step3.bankAccounts,
+				);
 			}
 		}
 	}, [incompleteCompany]);
@@ -247,7 +264,10 @@ export function WelcomePageClient({
 	}, [currentStep, teamMembers, user]);
 
 	// Save progress for current step
-	const saveStepProgress = async (step: number, data: Record<string, unknown>) => {
+	const saveStepProgress = async (
+		step: number,
+		data: Record<string, unknown>,
+	) => {
 		if (!companyId) {
 			return;
 		}
@@ -322,7 +342,9 @@ export function WelcomePageClient({
 
 				setCurrentStep(2);
 			} catch (err) {
-				toast.error(err instanceof Error ? err.message : "Failed to save company");
+				toast.error(
+					err instanceof Error ? err.message : "Failed to save company",
+				);
 			} finally {
 				setIsLoading(false);
 			}
@@ -376,12 +398,13 @@ export function WelcomePageClient({
 
 		setIsLoading(true);
 		try {
-			const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+			const siteUrl =
+				process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
 			const result = await createOrganizationCheckoutSession(
 				companyId,
 				`${siteUrl}/dashboard?onboarding=complete`,
 				`${siteUrl}/dashboard/welcome`,
-				undefined
+				undefined,
 			);
 
 			if (result.success && result.url) {
@@ -390,7 +413,9 @@ export function WelcomePageClient({
 				toast.error(result.error || "Failed to create payment session");
 			}
 		} catch (error) {
-			toast.error(error instanceof Error ? error.message : "Payment setup failed");
+			toast.error(
+				error instanceof Error ? error.message : "Payment setup failed",
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -433,8 +458,8 @@ export function WelcomePageClient({
 								<div className="flex-1">
 									<CardTitle className="mb-2">Welcome to Thorbis!</CardTitle>
 									<CardDescription className="text-base">
-										Let's get your business set up in just a few steps. This will only take a few
-										minutes.
+										Let's get your business set up in just a few steps. This
+										will only take a few minutes.
 									</CardDescription>
 								</div>
 							</div>
@@ -465,7 +490,7 @@ export function WelcomePageClient({
 											"relative z-10 flex size-14 items-center justify-center rounded-full border-2 transition-all duration-300",
 											currentStep >= step.id
 												? "border-primary bg-primary text-primary-foreground shadow-primary/30 scale-105 shadow-lg"
-												: "border-muted-foreground/30 bg-background text-muted-foreground"
+												: "border-muted-foreground/30 bg-background text-muted-foreground",
 										)}
 									>
 										{currentStep > step.id ? (
@@ -478,12 +503,16 @@ export function WelcomePageClient({
 										<span
 											className={cn(
 												"block text-sm font-medium",
-												currentStep >= step.id ? "text-foreground" : "text-muted-foreground"
+												currentStep >= step.id
+													? "text-foreground"
+													: "text-muted-foreground",
 											)}
 										>
 											{step.title}
 										</span>
-										<span className="text-muted-foreground block text-xs">{step.description}</span>
+										<span className="text-muted-foreground block text-xs">
+											{step.description}
+										</span>
 									</div>
 								</div>
 								{index < STEPS.length - 1 && (
@@ -491,7 +520,9 @@ export function WelcomePageClient({
 										<div
 											className={cn(
 												"h-1 rounded-full transition-colors duration-300",
-												currentStep > step.id ? "bg-primary" : "bg-muted-foreground/20"
+												currentStep > step.id
+													? "bg-primary"
+													: "bg-muted-foreground/20",
 											)}
 										/>
 									</div>
@@ -509,9 +540,12 @@ export function WelcomePageClient({
 							{currentStep === 1 && (
 								<div className="fade-in-50 animate-in space-y-6 duration-300">
 									<div>
-										<h2 className="text-2xl font-semibold">Company Information</h2>
+										<h2 className="text-2xl font-semibold">
+											Company Information
+										</h2>
 										<p className="text-muted-foreground mt-2">
-											Tell us about your business so we can tailor the experience for you.
+											Tell us about your business so we can tailor the
+											experience for you.
 										</p>
 									</div>
 
@@ -525,7 +559,11 @@ export function WelcomePageClient({
 												<FormItem className="sm:col-span-2">
 													<FormLabel>Company Name *</FormLabel>
 													<FormControl>
-														<Input className="h-11" placeholder="Acme HVAC Services" {...field} />
+														<Input
+															className="h-11"
+															placeholder="Acme HVAC Services"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -538,7 +576,10 @@ export function WelcomePageClient({
 											render={({ field }) => (
 												<FormItem>
 													<FormLabel>Industry *</FormLabel>
-													<Select onValueChange={field.onChange} value={field.value}>
+													<Select
+														onValueChange={field.onChange}
+														value={field.value}
+													>
 														<FormControl>
 															<SelectTrigger className="h-11">
 																<SelectValue placeholder="Select industry" />
@@ -546,7 +587,10 @@ export function WelcomePageClient({
 														</FormControl>
 														<SelectContent>
 															{INDUSTRIES.map((industry) => (
-																<SelectItem key={industry.value} value={industry.value}>
+																<SelectItem
+																	key={industry.value}
+																	value={industry.value}
+																>
 																	{industry.label}
 																</SelectItem>
 															))}
@@ -563,7 +607,10 @@ export function WelcomePageClient({
 											render={({ field }) => (
 												<FormItem>
 													<FormLabel>Company Size *</FormLabel>
-													<Select onValueChange={field.onChange} value={field.value}>
+													<Select
+														onValueChange={field.onChange}
+														value={field.value}
+													>
 														<FormControl>
 															<SelectTrigger className="h-11">
 																<SelectValue placeholder="Select size" />
@@ -589,7 +636,11 @@ export function WelcomePageClient({
 												<FormItem className="sm:col-span-2">
 													<FormLabel>Phone Number *</FormLabel>
 													<FormControl>
-														<Input className="h-11" placeholder="(555) 123-4567" {...field} />
+														<Input
+															className="h-11"
+															placeholder="(555) 123-4567"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -617,7 +668,11 @@ export function WelcomePageClient({
 												<FormItem>
 													<FormLabel>Website</FormLabel>
 													<FormControl>
-														<Input className="h-11" placeholder="https://example.com" {...field} />
+														<Input
+															className="h-11"
+															placeholder="https://example.com"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -631,7 +686,11 @@ export function WelcomePageClient({
 												<FormItem>
 													<FormLabel>Tax ID / EIN</FormLabel>
 													<FormControl>
-														<Input className="h-11" placeholder="12-3456789" {...field} />
+														<Input
+															className="h-11"
+															placeholder="12-3456789"
+															{...field}
+														/>
 													</FormControl>
 													<FormMessage />
 												</FormItem>
@@ -648,7 +707,8 @@ export function WelcomePageClient({
 										<div>
 											<h2 className="text-2xl font-semibold">Team Members</h2>
 											<p className="text-muted-foreground mt-2">
-												Add your team members. You're already included as the owner.
+												Add your team members. You're already included as the
+												owner.
 											</p>
 										</div>
 										<div className="flex gap-2">
@@ -691,9 +751,12 @@ export function WelcomePageClient({
 												<div className="bg-primary/10 mb-4 rounded-full p-4">
 													<Users className="text-primary size-12" />
 												</div>
-												<h3 className="mb-2 text-lg font-semibold">No Team Members Yet</h3>
+												<h3 className="mb-2 text-lg font-semibold">
+													No Team Members Yet
+												</h3>
 												<p className="text-muted-foreground mb-6 max-w-md">
-													Add your first team member to get started. You can always add more later.
+													Add your first team member to get started. You can
+													always add more later.
 												</p>
 												<Button
 													onClick={() => {
@@ -723,7 +786,9 @@ export function WelcomePageClient({
 														<TableHead>Name</TableHead>
 														<TableHead>Email</TableHead>
 														<TableHead>Role</TableHead>
-														<TableHead className="w-[100px] text-right">Actions</TableHead>
+														<TableHead className="w-[100px] text-right">
+															Actions
+														</TableHead>
 													</TableRow>
 												</TableHeader>
 												<TableBody>
@@ -739,7 +804,13 @@ export function WelcomePageClient({
 															</TableCell>
 															<TableCell>{member.email}</TableCell>
 															<TableCell>
-																<Badge variant={member.role === "owner" ? "default" : "secondary"}>
+																<Badge
+																	variant={
+																		member.role === "owner"
+																			? "default"
+																			: "secondary"
+																	}
+																>
 																	{member.role}
 																</Badge>
 															</TableCell>
@@ -753,20 +824,23 @@ export function WelcomePageClient({
 																	>
 																		<Edit className="size-4" />
 																	</Button>
-																	{member.role !== "owner" && !member.isCurrentUser && (
-																		<Button
-																			onClick={() => {
-																				setTeamMembers((prev) =>
-																					prev.filter((m) => m.id !== member.id)
-																				);
-																			}}
-																			size="icon"
-																			type="button"
-																			variant="ghost"
-																		>
-																			<Trash2 className="text-destructive size-4" />
-																		</Button>
-																	)}
+																	{member.role !== "owner" &&
+																		!member.isCurrentUser && (
+																			<Button
+																				onClick={() => {
+																					setTeamMembers((prev) =>
+																						prev.filter(
+																							(m) => m.id !== member.id,
+																						),
+																					);
+																				}}
+																				size="icon"
+																				type="button"
+																				variant="ghost"
+																			>
+																				<Trash2 className="text-destructive size-4" />
+																			</Button>
+																		)}
 																</div>
 															</TableCell>
 														</TableRow>
@@ -782,9 +856,12 @@ export function WelcomePageClient({
 							{currentStep === 3 && (
 								<div className="fade-in-50 animate-in space-y-6 duration-300">
 									<div>
-										<h2 className="text-2xl font-semibold">Connect Your Bank</h2>
+										<h2 className="text-2xl font-semibold">
+											Connect Your Bank
+										</h2>
 										<p className="text-muted-foreground mt-2">
-											Connect your business bank account to receive payments and manage finances.
+											Connect your business bank account to receive payments and
+											manage finances.
 										</p>
 									</div>
 
@@ -794,8 +871,8 @@ export function WelcomePageClient({
 										<Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
 											<CheckCircle className="size-5 text-green-600 dark:text-green-400" />
 											<AlertDescription className="text-green-900 dark:text-green-100">
-												<span className="font-semibold">Success!</span> {linkedBankAccounts} bank
-												account
+												<span className="font-semibold">Success!</span>{" "}
+												{linkedBankAccounts} bank account
 												{linkedBankAccounts > 1 ? "s" : ""} connected
 											</AlertDescription>
 										</Alert>
@@ -804,7 +881,7 @@ export function WelcomePageClient({
 									<Card
 										className={cn(
 											"border-2 transition-all",
-											linkedBankAccounts === 0 ? "border-dashed" : ""
+											linkedBankAccounts === 0 ? "border-dashed" : "",
 										)}
 									>
 										<CardContent className="flex flex-col items-center justify-center py-16 text-center">
@@ -812,22 +889,29 @@ export function WelcomePageClient({
 												<CreditCard className="text-primary size-12" />
 											</div>
 											<h3 className="mb-2 text-xl font-semibold">
-												{linkedBankAccounts > 0 ? "Add Another Account" : "Connect Your Bank"}
+												{linkedBankAccounts > 0
+													? "Add Another Account"
+													: "Connect Your Bank"}
 											</h3>
 											<p className="text-muted-foreground mb-8 max-w-md">
-												Securely link your business bank account with Plaid. Your credentials are
-												encrypted and never stored on our servers.
+												Securely link your business bank account with Plaid.
+												Your credentials are encrypted and never stored on our
+												servers.
 											</p>
 											{companyId && (
 												<PlaidLinkButton
 													companyId={companyId}
 													onSuccess={() => {
 														setLinkedBankAccounts((prev: number) => prev + 1);
-														toast.success("Your bank account has been connected successfully!");
+														toast.success(
+															"Your bank account has been connected successfully!",
+														);
 													}}
 													size="lg"
 												>
-													{linkedBankAccounts > 0 ? "Add Another Account" : "Connect Bank Account"}
+													{linkedBankAccounts > 0
+														? "Add Another Account"
+														: "Connect Bank Account"}
 												</PlaidLinkButton>
 											)}
 										</CardContent>
@@ -839,9 +923,10 @@ export function WelcomePageClient({
 											<div className="space-y-2">
 												<h4 className="font-semibold">Bank-Level Security</h4>
 												<p className="text-muted-foreground text-sm">
-													We use Plaid, the same technology trusted by companies like Venmo,
-													Robinhood, and Coinbase. Your data is encrypted with 256-bit encryption
-													and never stored on our servers.
+													We use Plaid, the same technology trusted by companies
+													like Venmo, Robinhood, and Coinbase. Your data is
+													encrypted with 256-bit encryption and never stored on
+													our servers.
 												</p>
 											</div>
 										</CardContent>
@@ -879,7 +964,10 @@ export function WelcomePageClient({
 									)}
 									<Button
 										className="min-w-[150px]"
-										disabled={isLoading || (currentStep === 3 && linkedBankAccounts === 0)}
+										disabled={
+											isLoading ||
+											(currentStep === 3 && linkedBankAccounts === 0)
+										}
 										onClick={handleNext}
 										size="lg"
 										type="button"
@@ -910,7 +998,10 @@ export function WelcomePageClient({
 				{/* Help Text */}
 				<p className="text-muted-foreground mt-8 text-center text-sm">
 					Need help? Contact us at{" "}
-					<a className="text-primary font-medium hover:underline" href="mailto:support@thorbis.com">
+					<a
+						className="text-primary font-medium hover:underline"
+						href="mailto:support@thorbis.com"
+					>
 						support@thorbis.com
 					</a>
 				</p>
@@ -927,7 +1018,9 @@ export function WelcomePageClient({
 					}}
 					onSave={(updatedMember) => {
 						setTeamMembers((prev) =>
-							prev.map((m) => (m.email === updatedMember.email ? updatedMember : m))
+							prev.map((m) =>
+								m.email === updatedMember.email ? updatedMember : m,
+							),
 						);
 						setEditingMember(null);
 					}}
@@ -953,8 +1046,8 @@ export function WelcomePageClient({
 					<AlertDialogHeader>
 						<AlertDialogTitle>Cancel Company Setup?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This will cancel your company setup. Your progress will be saved and you can resume
-							later from where you left off.
+							This will cancel your company setup. Your progress will be saved
+							and you can resume later from where you left off.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>

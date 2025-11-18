@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import { EstimatesKanban } from "@/components/work/estimates-kanban";
-import { type Estimate, EstimatesTable } from "@/components/work/estimates-table";
+import {
+	type Estimate,
+	EstimatesTable,
+} from "@/components/work/estimates-table";
 import { WorkDataView } from "@/components/work/work-data-view";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
-import { createClient } from "@/lib/supabase/server";
+import {
+	ESTIMATES_PAGE_SIZE,
+	getEstimatesPageData,
+} from "@/lib/queries/estimates";
 
 /**
  * EstimatesData - Async Server Component
@@ -11,54 +17,31 @@ import { createClient } from "@/lib/supabase/server";
  * Fetches and displays estimates data.
  * This streams in after the stats render.
  */
-export async function EstimatesData() {
-	const supabase = await createClient();
-
-	if (!supabase) {
-		return notFound();
-	}
-
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
-
-	if (!user) {
-		return notFound();
-	}
-
+export async function EstimatesData({
+	searchParams,
+}: {
+	searchParams?: { page?: string };
+}) {
 	const activeCompanyId = await getActiveCompanyId();
-
 	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Fetch estimates from database
-	const { data: estimatesRaw, error } = await supabase
-		.from("estimates")
-		.select(
-			`
-      id,
-      estimate_number,
-      title,
-      status,
-      total_amount,
-      created_at,
-      valid_until,
-      archived_at,
-      deleted_at,
-      customers!customer_id(display_name, first_name, last_name)
-    `
-		)
-		.eq("company_id", activeCompanyId)
-		.order("created_at", { ascending: false });
+	const currentPage = Number(searchParams?.page) || 1;
+	const { estimates: estimatesRaw, totalCount } = await getEstimatesPageData(
+		currentPage,
+		ESTIMATES_PAGE_SIZE,
+	);
 
-	if (error) {
-		// TODO: Handle error case
+	if (!estimatesRaw) {
+		return notFound();
 	}
 
 	// Transform data for table component
-	const estimates: Estimate[] = (estimatesRaw || []).map((est: any) => {
-		const customer = Array.isArray(est.customers) ? est.customers[0] : est.customers;
+	const estimates: Estimate[] = estimatesRaw.map((est: any) => {
+		const customer = Array.isArray(est.customers)
+			? est.customers[0]
+			: est.customers;
 
 		return {
 			id: est.id,
@@ -91,7 +74,14 @@ export async function EstimatesData() {
 		<WorkDataView
 			kanban={<EstimatesKanban estimates={estimates} />}
 			section="estimates"
-			table={<EstimatesTable estimates={estimates} itemsPerPage={50} />}
+			table={
+				<EstimatesTable
+					estimates={estimates}
+					itemsPerPage={ESTIMATES_PAGE_SIZE}
+					totalCount={totalCount}
+					currentPage={currentPage}
+				/>
+			}
 		/>
 	);
 }

@@ -9,7 +9,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -30,7 +34,11 @@ async function getCompanyId(supabase: any, userId: string): Promise<string> {
 		.single();
 
 	if (!teamMember?.company_id) {
-		throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+		throw new ActionError(
+			"You must be part of a company",
+			ERROR_CODES.AUTH_FORBIDDEN,
+			403,
+		);
 	}
 
 	return teamMember.company_id;
@@ -64,11 +72,16 @@ const overtimeSettingsSchema = z.object({
 	notifyManagersOnOvertime: z.boolean().default(true),
 });
 
-export async function updateOvertimeSettings(formData: FormData): Promise<ActionResult<void>> {
+export async function updateOvertimeSettings(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -84,7 +97,8 @@ export async function updateOvertimeSettings(formData: FormData): Promise<Action
 			weeklyThresholdHours: formData.get("weeklyThresholdHours") || "40",
 			consecutiveDaysThreshold: formData.get("consecutiveDaysThreshold") || "7",
 			dailyOvertimeMultiplier: formData.get("dailyOvertimeMultiplier") || "1.5",
-			weeklyOvertimeMultiplier: formData.get("weeklyOvertimeMultiplier") || "1.5",
+			weeklyOvertimeMultiplier:
+				formData.get("weeklyOvertimeMultiplier") || "1.5",
 			doubleTimeMultiplier: formData.get("doubleTimeMultiplier") || "2.0",
 			doubleTimeEnabled: formData.get("doubleTimeEnabled") === "true",
 			doubleTimeAfterHours: formData.get("doubleTimeAfterHours") || "12",
@@ -93,14 +107,17 @@ export async function updateOvertimeSettings(formData: FormData): Promise<Action
 			saturdayMultiplier: formData.get("saturdayMultiplier") || "1.5",
 			sundayMultiplier: formData.get("sundayMultiplier") || "2.0",
 			holidayMultiplier: formData.get("holidayMultiplier") || "2.5",
-			requireOvertimeApproval: formData.get("requireOvertimeApproval") !== "false",
+			requireOvertimeApproval:
+				formData.get("requireOvertimeApproval") !== "false",
 			autoCalculateOvertime: formData.get("autoCalculateOvertime") !== "false",
 			trackByJob: formData.get("trackByJob") !== "false",
 			trackByDay: formData.get("trackByDay") !== "false",
-			notifyApproachingOvertime: formData.get("notifyApproachingOvertime") !== "false",
+			notifyApproachingOvertime:
+				formData.get("notifyApproachingOvertime") !== "false",
 			overtimeThresholdNotificationHours:
 				formData.get("overtimeThresholdNotificationHours") || "7.5",
-			notifyManagersOnOvertime: formData.get("notifyManagersOnOvertime") !== "false",
+			notifyManagersOnOvertime:
+				formData.get("notifyManagersOnOvertime") !== "false",
 		});
 
 		const { error } = await supabase.from("payroll_overtime_settings").upsert({
@@ -124,7 +141,8 @@ export async function updateOvertimeSettings(formData: FormData): Promise<Action
 			track_by_job: data.trackByJob,
 			track_by_day: data.trackByDay,
 			notify_approaching_overtime: data.notifyApproachingOvertime,
-			overtime_threshold_notification_hours: data.overtimeThresholdNotificationHours,
+			overtime_threshold_notification_hours:
+				data.overtimeThresholdNotificationHours,
 			notify_managers_on_overtime: data.notifyManagersOnOvertime,
 			updated_by: user.id,
 		});
@@ -132,7 +150,7 @@ export async function updateOvertimeSettings(formData: FormData): Promise<Action
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update overtime settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -144,7 +162,10 @@ export async function getOvertimeSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -163,7 +184,7 @@ export async function getOvertimeSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch overtime settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -206,12 +227,15 @@ const commissionRuleSchema = z.object({
 });
 
 export async function createCommissionRule(
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<{ id: string }>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -235,7 +259,8 @@ export async function createCommissionRule(
 			payoutFrequency: formData.get("payoutFrequency") || "monthly",
 			payoutTiming: formData.get("payoutTiming") || "on_payment",
 			allowCommissionSplits: formData.get("allowCommissionSplits") !== "false",
-			primaryTechnicianPercentage: formData.get("primaryTechnicianPercentage") || "100",
+			primaryTechnicianPercentage:
+				formData.get("primaryTechnicianPercentage") || "100",
 			effectiveStartDate: formData.get("effectiveStartDate") || undefined,
 			effectiveEndDate: formData.get("effectiveEndDate") || undefined,
 		});
@@ -250,9 +275,15 @@ export async function createCommissionRule(
 				commission_basis: data.commissionBasis,
 				rate_type: data.rateType,
 				flat_percentage: data.flatPercentage,
-				eligible_roles: data.eligibleRoles ? JSON.parse(data.eligibleRoles) : [],
-				eligible_departments: data.eligibleDepartments ? JSON.parse(data.eligibleDepartments) : [],
-				eligible_job_types: data.eligibleJobTypes ? JSON.parse(data.eligibleJobTypes) : [],
+				eligible_roles: data.eligibleRoles
+					? JSON.parse(data.eligibleRoles)
+					: [],
+				eligible_departments: data.eligibleDepartments
+					? JSON.parse(data.eligibleDepartments)
+					: [],
+				eligible_job_types: data.eligibleJobTypes
+					? JSON.parse(data.eligibleJobTypes)
+					: [],
 				min_job_value: data.minJobValue,
 				payout_frequency: data.payoutFrequency,
 				payout_timing: data.payoutTiming,
@@ -268,7 +299,7 @@ export async function createCommissionRule(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create commission rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -279,12 +310,15 @@ export async function createCommissionRule(
 
 export async function updateCommissionRule(
 	ruleId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -308,7 +342,8 @@ export async function updateCommissionRule(
 			payoutFrequency: formData.get("payoutFrequency") || "monthly",
 			payoutTiming: formData.get("payoutTiming") || "on_payment",
 			allowCommissionSplits: formData.get("allowCommissionSplits") !== "false",
-			primaryTechnicianPercentage: formData.get("primaryTechnicianPercentage") || "100",
+			primaryTechnicianPercentage:
+				formData.get("primaryTechnicianPercentage") || "100",
 			effectiveStartDate: formData.get("effectiveStartDate") || undefined,
 			effectiveEndDate: formData.get("effectiveEndDate") || undefined,
 		});
@@ -322,9 +357,15 @@ export async function updateCommissionRule(
 				commission_basis: data.commissionBasis,
 				rate_type: data.rateType,
 				flat_percentage: data.flatPercentage,
-				eligible_roles: data.eligibleRoles ? JSON.parse(data.eligibleRoles) : [],
-				eligible_departments: data.eligibleDepartments ? JSON.parse(data.eligibleDepartments) : [],
-				eligible_job_types: data.eligibleJobTypes ? JSON.parse(data.eligibleJobTypes) : [],
+				eligible_roles: data.eligibleRoles
+					? JSON.parse(data.eligibleRoles)
+					: [],
+				eligible_departments: data.eligibleDepartments
+					? JSON.parse(data.eligibleDepartments)
+					: [],
+				eligible_job_types: data.eligibleJobTypes
+					? JSON.parse(data.eligibleJobTypes)
+					: [],
 				min_job_value: data.minJobValue,
 				payout_frequency: data.payoutFrequency,
 				payout_timing: data.payoutTiming,
@@ -340,7 +381,7 @@ export async function updateCommissionRule(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update commission rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -348,11 +389,16 @@ export async function updateCommissionRule(
 	});
 }
 
-export async function deleteCommissionRule(ruleId: string): Promise<ActionResult<void>> {
+export async function deleteCommissionRule(
+	ruleId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -371,7 +417,7 @@ export async function deleteCommissionRule(ruleId: string): Promise<ActionResult
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("delete commission rule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -383,7 +429,10 @@ export async function getCommissionRules(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -402,7 +451,7 @@ export async function getCommissionRules(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch commission rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -420,12 +469,15 @@ const commissionTierSchema = z.object({
 
 export async function createCommissionTier(
 	ruleId: string,
-	formData: FormData
+	formData: FormData,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -451,7 +503,7 @@ export async function createCommissionTier(
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("create commission tier"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -459,11 +511,16 @@ export async function createCommissionTier(
 	});
 }
 
-export async function getCommissionTiers(ruleId: string): Promise<ActionResult<any[]>> {
+export async function getCommissionTiers(
+	ruleId: string,
+): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -480,7 +537,7 @@ export async function getCommissionTiers(ruleId: string): Promise<ActionResult<a
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch commission tiers"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -496,7 +553,10 @@ export async function getBonusRules(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -515,7 +575,7 @@ export async function getBonusRules(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch bonus rules"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -531,7 +591,10 @@ export async function getCallbackSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -550,7 +613,7 @@ export async function getCallbackSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch callback settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -566,7 +629,10 @@ export async function getDeductionTypes(): Promise<ActionResult<any[]>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -585,7 +651,7 @@ export async function getDeductionTypes(): Promise<ActionResult<any[]>> {
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch deduction types"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -601,7 +667,10 @@ export async function getMaterialSettings(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -620,7 +689,7 @@ export async function getMaterialSettings(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch material settings"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -649,7 +718,9 @@ const payrollScheduleSchema = z.object({
 		.enum(["clock_in_out", "job_based", "manual_entry", "gps_verified"])
 		.default("clock_in_out"),
 	roundTimeToNearestMinutes: z.coerce.number().default(15),
-	overtimeCalculationPeriod: z.enum(["daily", "weekly", "pay_period"]).default("weekly"),
+	overtimeCalculationPeriod: z
+		.enum(["daily", "weekly", "pay_period"])
+		.default("weekly"),
 	paidHolidaysEnabled: z.boolean().default(true),
 	holidayPayRateMultiplier: z.coerce.number().default(1.0),
 	ptoAccrualEnabled: z.boolean().default(true),
@@ -660,11 +731,16 @@ const payrollScheduleSchema = z.object({
 	notifyOnPayrollProcessed: z.boolean().default(true),
 });
 
-export async function updatePayrollSchedule(formData: FormData): Promise<ActionResult<void>> {
+export async function updatePayrollSchedule(
+	formData: FormData,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -684,20 +760,29 @@ export async function updatePayrollSchedule(formData: FormData): Promise<ActionR
 			payPeriodEndDay: formData.get("payPeriodEndDay") || "sunday",
 			daysInArrears: formData.get("daysInArrears") || "0",
 			autoProcessPayroll: formData.get("autoProcessPayroll") === "true",
-			requireManagerApproval: formData.get("requireManagerApproval") !== "false",
-			requireFinanceApproval: formData.get("requireFinanceApproval") !== "false",
+			requireManagerApproval:
+				formData.get("requireManagerApproval") !== "false",
+			requireFinanceApproval:
+				formData.get("requireFinanceApproval") !== "false",
 			approvalDeadlineDays: formData.get("approvalDeadlineDays") || "2",
 			timeTrackingMethod: formData.get("timeTrackingMethod") || "clock_in_out",
-			roundTimeToNearestMinutes: formData.get("roundTimeToNearestMinutes") || "15",
-			overtimeCalculationPeriod: formData.get("overtimeCalculationPeriod") || "weekly",
+			roundTimeToNearestMinutes:
+				formData.get("roundTimeToNearestMinutes") || "15",
+			overtimeCalculationPeriod:
+				formData.get("overtimeCalculationPeriod") || "weekly",
 			paidHolidaysEnabled: formData.get("paidHolidaysEnabled") !== "false",
-			holidayPayRateMultiplier: formData.get("holidayPayRateMultiplier") || "1.0",
+			holidayPayRateMultiplier:
+				formData.get("holidayPayRateMultiplier") || "1.0",
 			ptoAccrualEnabled: formData.get("ptoAccrualEnabled") !== "false",
-			ptoAccrualRateHoursPerPayPeriod: formData.get("ptoAccrualRateHoursPerPayPeriod") || "3.08",
+			ptoAccrualRateHoursPerPayPeriod:
+				formData.get("ptoAccrualRateHoursPerPayPeriod") || "3.08",
 			ptoMaxAccrualHours: formData.get("ptoMaxAccrualHours") || "120",
-			notifyTeamBeforePayrollDays: formData.get("notifyTeamBeforePayrollDays") || "3",
-			notifyOnTimesheetApproval: formData.get("notifyOnTimesheetApproval") !== "false",
-			notifyOnPayrollProcessed: formData.get("notifyOnPayrollProcessed") !== "false",
+			notifyTeamBeforePayrollDays:
+				formData.get("notifyTeamBeforePayrollDays") || "3",
+			notifyOnTimesheetApproval:
+				formData.get("notifyOnTimesheetApproval") !== "false",
+			notifyOnPayrollProcessed:
+				formData.get("notifyOnPayrollProcessed") !== "false",
 		});
 
 		const { error } = await supabase.from("payroll_schedule_settings").upsert({
@@ -720,7 +805,8 @@ export async function updatePayrollSchedule(formData: FormData): Promise<ActionR
 			paid_holidays_enabled: data.paidHolidaysEnabled,
 			holiday_pay_rate_multiplier: data.holidayPayRateMultiplier,
 			pto_accrual_enabled: data.ptoAccrualEnabled,
-			pto_accrual_rate_hours_per_pay_period: data.ptoAccrualRateHoursPerPayPeriod,
+			pto_accrual_rate_hours_per_pay_period:
+				data.ptoAccrualRateHoursPerPayPeriod,
 			pto_max_accrual_hours: data.ptoMaxAccrualHours,
 			notify_team_before_payroll_days: data.notifyTeamBeforePayrollDays,
 			notify_on_timesheet_approval: data.notifyOnTimesheetApproval,
@@ -731,7 +817,7 @@ export async function updatePayrollSchedule(formData: FormData): Promise<ActionR
 		if (error) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("update payroll schedule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -743,7 +829,10 @@ export async function getPayrollSchedule(): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -762,7 +851,7 @@ export async function getPayrollSchedule(): Promise<ActionResult<any>> {
 		if (error && error.code !== "PGRST116") {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("fetch payroll schedule"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

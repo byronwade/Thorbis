@@ -7,8 +7,8 @@
 import { FileSignature } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerContracts } from "@/hooks/use-customer-360";
 import { formatDate } from "@/lib/formatters";
 
@@ -45,7 +45,9 @@ export function CustomerContractsWidget({
 					);
 				if (!contracts || contracts.length === 0)
 					return (
-						<div className="text-muted-foreground text-center text-sm">No contracts found</div>
+						<div className="text-muted-foreground text-center text-sm">
+							No contracts found
+						</div>
 					);
 
 				return (
@@ -59,16 +61,21 @@ export function CustomerContractsWidget({
 								<div className="space-y-1">
 									<div className="flex items-center gap-2">
 										<span className="text-sm font-medium">
-											{contract.contract_number || `Contract #${contract.id.slice(0, 8)}`}
+											{contract.contract_number ||
+												`Contract #${contract.id.slice(0, 8)}`}
 										</span>
 										<Badge variant="outline" className="text-xs">
 											{contract.status}
 										</Badge>
 									</div>
 									{contract.job && (
-										<p className="text-muted-foreground text-xs">Job: {contract.job.job_number}</p>
+										<p className="text-muted-foreground text-xs">
+											Job: {contract.job.job_number}
+										</p>
 									)}
-									<p className="text-muted-foreground text-xs">{formatDate(contract.created_at)}</p>
+									<p className="text-muted-foreground text-xs">
+										{formatDate(contract.created_at)}
+									</p>
 								</div>
 							</Link>
 						))}

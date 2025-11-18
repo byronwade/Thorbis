@@ -2,7 +2,13 @@ import Script from "next/script";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -15,7 +21,11 @@ export const metadata = generateSEOMetadata({
 		"Partner with Thorbis to deliver automation-driven success for service companies. Explore solution, integration, and referral partnerships.",
 	path: "/partners",
 	section: "Company",
-	keywords: ["thorbis partners", "thorbis integrations", "service software partner program"],
+	keywords: [
+		"thorbis partners",
+		"thorbis integrations",
+		"service software partner program",
+	],
 });
 
 const PARTNER_TYPES = [
@@ -54,7 +64,7 @@ export default function PartnersPage() {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Partners", url: `${siteUrl}/partners` },
-						])
+						]),
 					),
 				}}
 				id="partners-breadcrumb-ld"
@@ -69,13 +79,15 @@ export default function PartnersPage() {
 						Help service companies unlock AI-driven growth
 					</h1>
 					<p className="text-muted-foreground text-lg leading-relaxed">
-						Thorbis partners expand what’s possible for contractors. Join our ecosystem to deliver
-						AI-enabled workflows, seamless integrations, and consultative expertise that accelerate
-						customer outcomes.
+						Thorbis partners expand what’s possible for contractors. Join our
+						ecosystem to deliver AI-enabled workflows, seamless integrations,
+						and consultative expertise that accelerate customer outcomes.
 					</p>
 					<div className="flex flex-wrap gap-3">
 						<Button asChild>
-							<a href="mailto:partners@thorbis.com">Apply to become a partner</a>
+							<a href="mailto:partners@thorbis.com">
+								Apply to become a partner
+							</a>
 						</Button>
 						<Button asChild variant="outline">
 							<a href="/press">Access partner resources</a>
@@ -84,7 +96,9 @@ export default function PartnersPage() {
 				</section>
 
 				<section className="mt-16 space-y-6">
-					<h2 className="text-2xl font-semibold">Choose the partnership that fits</h2>
+					<h2 className="text-2xl font-semibold">
+						Choose the partnership that fits
+					</h2>
 					<div className="grid gap-6 md:grid-cols-3">
 						{PARTNER_TYPES.map((partner) => (
 							<Card key={partner.title}>
@@ -102,10 +116,12 @@ export default function PartnersPage() {
 				</section>
 
 				<section className="mt-16 space-y-4">
-					<h2 className="text-2xl font-semibold">Integrations our customers rely on</h2>
+					<h2 className="text-2xl font-semibold">
+						Integrations our customers rely on
+					</h2>
 					<p className="text-muted-foreground text-sm">
-						Thorbis integrates with the systems contractors depend on. Our open APIs and SDKs let
-						you build deep, reliable connections.
+						Thorbis integrates with the systems contractors depend on. Our open
+						APIs and SDKs let you build deep, reliable connections.
 					</p>
 					<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
 						{INTEGRATIONS.map((integration) => (
@@ -121,8 +137,8 @@ export default function PartnersPage() {
 
 				<section className="bg-primary/10 mt-16 rounded-3xl border p-10 text-center">
 					<p className="text-muted-foreground text-lg">
-						Interested in building on the Thorbis platform? Request access to our developer portal,
-						API documentation, and sandbox environment.
+						Interested in building on the Thorbis platform? Request access to
+						our developer portal, API documentation, and sandbox environment.
 					</p>
 					<Button asChild className="mt-6" variant="secondary">
 						<a href="mailto:partners@thorbis.com?subject=Thorbis%20Developer%20Access">

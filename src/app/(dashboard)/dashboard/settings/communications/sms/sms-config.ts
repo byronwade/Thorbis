@@ -1,6 +1,7 @@
 import type { Database } from "@/types/supabase";
 
-export type SmsSettingsRow = Database["public"]["Tables"]["communication_sms_settings"]["Row"];
+export type SmsSettingsRow =
+	Database["public"]["Tables"]["communication_sms_settings"]["Row"];
 
 export type SmsSettingsState = {
 	provider: "telnyx" | "twilio" | "other";
@@ -24,7 +25,9 @@ export const DEFAULT_SMS_SETTINGS: SmsSettingsState = {
 	consentRequired: true,
 };
 
-export function mapSmsSettings(row: SmsSettingsRow | null): Partial<SmsSettingsState> {
+export function mapSmsSettings(
+	row: SmsSettingsRow | null,
+): Partial<SmsSettingsState> {
 	if (!row) {
 		return {};
 	}

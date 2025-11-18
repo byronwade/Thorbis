@@ -12,10 +12,22 @@
 
 "use client";
 
+import {
+	Activity,
+	AlertCircle,
+	CheckCircle,
+	Loader2,
+	XCircle,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { Activity, AlertCircle, CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { WebRTCServiceStatus } from "@/services/webrtc";
 
 export function WebRTCHealthMonitor() {
@@ -148,7 +160,8 @@ export function WebRTCHealthMonitor() {
 							WebRTC Service Health
 						</CardTitle>
 						<CardDescription>
-							Isolated telephony service monitoring - failures won't affect the main app
+							Isolated telephony service monitoring - failures won't affect the
+							main app
 						</CardDescription>
 					</div>
 					{getStatusBadge()}
@@ -169,8 +182,9 @@ export function WebRTCHealthMonitor() {
 							Graceful Degradation Active
 						</p>
 						<p className="mt-1 text-xs text-amber-800 dark:text-amber-500">
-							Telephony features are currently unavailable, but all other application features
-							continue to work normally. The service will automatically attempt to restart.
+							Telephony features are currently unavailable, but all other
+							application features continue to work normally. The service will
+							automatically attempt to restart.
 						</p>
 					</div>
 				)}

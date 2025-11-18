@@ -31,14 +31,19 @@ const CACHE_TTL_MS = 1000 * 60 * 60 * 24 * 90; // 90 days
 // biome-ignore lint/suspicious/noConsole: Backend service logging is acceptable
 export class GoogleStreetViewService {
 	private readonly apiKey: string | undefined;
-	private readonly cache: Map<string, { data: StreetView; timestamp: number }> = new Map();
+	private readonly cache: Map<string, { data: StreetView; timestamp: number }> =
+		new Map();
 	private readonly cacheTTL = CACHE_TTL_MS;
 
 	constructor() {
 		this.apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 	}
 
-	async getStreetView(lat: number, lon: number, address?: string): Promise<StreetView | null> {
+	async getStreetView(
+		lat: number,
+		lon: number,
+		address?: string,
+	): Promise<StreetView | null> {
 		if (!this.apiKey) {
 			return null;
 		}
@@ -114,7 +119,12 @@ export class GoogleStreetViewService {
 	/**
 	 * Get direct Street View image URL (for embedding)
 	 */
-	getImageUrl(lat: number, lon: number, heading = 0, size = "600x400"): string | null {
+	getImageUrl(
+		lat: number,
+		lon: number,
+		heading = 0,
+		size = "600x400",
+	): string | null {
 		if (!this.apiKey) {
 			return null;
 		}

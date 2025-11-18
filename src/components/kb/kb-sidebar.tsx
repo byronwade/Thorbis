@@ -41,9 +41,13 @@ export async function KBSidebarContent({
 		getKBArticles({ featured: true, limit: 5 }),
 	]);
 
-	const categories = categoriesResult.success ? categoriesResult.categories || [] : [];
+	const categories = categoriesResult.success
+		? categoriesResult.categories || []
+		: [];
 	const popularArticles =
-		popularResult.success && popularResult.articles ? popularResult.articles : [];
+		popularResult.success && popularResult.articles
+			? popularResult.articles
+			: [];
 
 	return (
 		<SidebarContent>
@@ -69,9 +73,14 @@ export async function KBSidebarContent({
 					<SidebarMenu>
 						{categories.map((category) => (
 							<SidebarMenuItem key={category.id}>
-								<SidebarMenuButton asChild isActive={currentCategory === category.slug}>
+								<SidebarMenuButton
+									asChild
+									isActive={currentCategory === category.slug}
+								>
 									<Link href={`/kb/${category.slug}`}>
-										{category.icon && <span className="mr-2">{category.icon}</span>}
+										{category.icon && (
+											<span className="mr-2">{category.icon}</span>
+										)}
 										<span>{category.title}</span>
 									</Link>
 								</SidebarMenuButton>
@@ -96,7 +105,7 @@ export async function KBSidebarContent({
 														</Link>
 													</SidebarMenuButton>
 												</SidebarMenuItem>
-											)
+											),
 										)}
 									</SidebarMenu>
 								)}

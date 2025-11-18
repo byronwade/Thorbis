@@ -21,10 +21,19 @@ import {
 	Users,
 } from "lucide-react";
 import Link from "next/link";
-import { getNotificationPreferences, updateNotificationPreferences } from "@/actions/settings";
+import {
+	getNotificationPreferences,
+	updateNotificationPreferences,
+} from "@/actions/settings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Select,
 	SelectContent,
@@ -53,7 +62,9 @@ const DEFAULT_EMAIL_SETTINGS: EmailNotificationSettings = {
 	emailMessages: true,
 };
 
-const pickEmailSettings = (prefs: NotificationPreferencesState): EmailNotificationSettings => ({
+const pickEmailSettings = (
+	prefs: NotificationPreferencesState,
+): EmailNotificationSettings => ({
 	emailNewJobs: prefs.emailNewJobs,
 	emailJobUpdates: prefs.emailJobUpdates,
 	emailMentions: prefs.emailMentions,
@@ -90,33 +101,42 @@ type NotificationsEmailClientProps = {
 export default function NotificationsEmailClient({
 	initialPreferences,
 }: NotificationsEmailClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<EmailNotificationSettings>({
-			getter: getNotificationPreferences,
-			setter: updateNotificationPreferences,
-			initialState: DEFAULT_EMAIL_SETTINGS,
-			settingsName: "email notifications",
-			prefetchedData: pickEmailSettings(initialPreferences),
-			transformLoad: (data) =>
-				pickEmailSettings(mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES),
-			transformSave: (s) => {
-				const fd = new FormData();
-				fd.append("emailNewJobs", s.emailNewJobs.toString());
-				fd.append("emailJobUpdates", s.emailJobUpdates.toString());
-				fd.append("emailMentions", s.emailMentions.toString());
-				fd.append("emailMessages", s.emailMessages.toString());
-				fd.append("pushNewJobs", "true");
-				fd.append("pushJobUpdates", "true");
-				fd.append("pushMentions", "true");
-				fd.append("pushMessages", "true");
-				fd.append("smsUrgentJobs", "false");
-				fd.append("smsScheduleChanges", "false");
-				fd.append("inAppAll", "true");
-				fd.append("digestEnabled", "false");
-				fd.append("digestFrequency", "daily");
-				return fd;
-			},
-		});
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<EmailNotificationSettings>({
+		getter: getNotificationPreferences,
+		setter: updateNotificationPreferences,
+		initialState: DEFAULT_EMAIL_SETTINGS,
+		settingsName: "email notifications",
+		prefetchedData: pickEmailSettings(initialPreferences),
+		transformLoad: (data) =>
+			pickEmailSettings(
+				mapNotificationPreferences(data) ?? DEFAULT_NOTIFICATION_PREFERENCES,
+			),
+		transformSave: (s) => {
+			const fd = new FormData();
+			fd.append("emailNewJobs", s.emailNewJobs.toString());
+			fd.append("emailJobUpdates", s.emailJobUpdates.toString());
+			fd.append("emailMentions", s.emailMentions.toString());
+			fd.append("emailMessages", s.emailMessages.toString());
+			fd.append("pushNewJobs", "true");
+			fd.append("pushJobUpdates", "true");
+			fd.append("pushMentions", "true");
+			fd.append("pushMessages", "true");
+			fd.append("smsUrgentJobs", "false");
+			fd.append("smsScheduleChanges", "false");
+			fd.append("inAppAll", "true");
+			fd.append("digestEnabled", "false");
+			fd.append("digestFrequency", "daily");
+			return fd;
+		},
+	});
 
 	if (isLoading) {
 		return (
@@ -135,7 +155,9 @@ export default function NotificationsEmailClient({
 					</Link>
 				</Button>
 				<div>
-					<h1 className="text-4xl font-bold tracking-tight">Email Preferences</h1>
+					<h1 className="text-4xl font-bold tracking-tight">
+						Email Preferences
+					</h1>
 					<p className="text-muted-foreground">
 						Control how and when you receive email notifications
 					</p>
@@ -143,7 +165,10 @@ export default function NotificationsEmailClient({
 			</div>
 
 			<div className="flex flex-wrap items-center gap-3">
-				<Button disabled={!hasUnsavedChanges || isPending} onClick={() => saveSettings()}>
+				<Button
+					disabled={!hasUnsavedChanges || isPending}
+					onClick={() => saveSettings()}
+				>
 					{isPending ? "Saving..." : "Save Email Preferences"}
 				</Button>
 				<Button
@@ -161,7 +186,9 @@ export default function NotificationsEmailClient({
 			<Card>
 				<CardHeader>
 					<CardTitle>Key Email Alerts</CardTitle>
-					<CardDescription>Toggle the most common notification categories.</CardDescription>
+					<CardDescription>
+						Toggle the most common notification categories.
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{emailToggleConfig.map((option, index) => (
@@ -169,14 +196,20 @@ export default function NotificationsEmailClient({
 							<div className="flex items-center justify-between">
 								<div className="flex-1">
 									<p className="text-sm font-medium">{option.label}</p>
-									<p className="text-muted-foreground text-xs">{option.description}</p>
+									<p className="text-muted-foreground text-xs">
+										{option.description}
+									</p>
 								</div>
 								<Switch
 									checked={settings[option.key]}
-									onCheckedChange={(checked) => updateSetting(option.key, checked)}
+									onCheckedChange={(checked) =>
+										updateSetting(option.key, checked)
+									}
 								/>
 							</div>
-							{index < emailToggleConfig.length - 1 && <Separator className="my-4" />}
+							{index < emailToggleConfig.length - 1 && (
+								<Separator className="my-4" />
+							)}
 						</div>
 					))}
 				</CardContent>
@@ -225,7 +258,9 @@ export default function NotificationsEmailClient({
 						<Send className="h-5 w-5" />
 						Email Delivery
 					</CardTitle>
-					<CardDescription>Configure how emails are delivered to your inbox</CardDescription>
+					<CardDescription>
+						Configure how emails are delivered to your inbox
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="flex items-center justify-between">
@@ -352,7 +387,9 @@ export default function NotificationsEmailClient({
 							<Users className="text-success h-5 w-5" />
 							Customer Communication
 						</CardTitle>
-						<CardDescription>Emails from customers and client interactions</CardDescription>
+						<CardDescription>
+							Emails from customers and client interactions
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-3">
@@ -401,7 +438,9 @@ export default function NotificationsEmailClient({
 							<Shield className="text-destructive h-5 w-5" />
 							Security & System
 						</CardTitle>
-						<CardDescription>Security alerts and important system notifications</CardDescription>
+						<CardDescription>
+							Security alerts and important system notifications
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-3">
@@ -449,7 +488,9 @@ export default function NotificationsEmailClient({
 			<Card>
 				<CardHeader>
 					<CardTitle>Email Management</CardTitle>
-					<CardDescription>Manage your email subscriptions and preferences</CardDescription>
+					<CardDescription>
+						Manage your email subscriptions and preferences
+					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="flex items-center justify-between">
@@ -475,7 +516,9 @@ export default function NotificationsEmailClient({
 					<div className="flex items-center justify-between">
 						<div className="space-y-0.5">
 							<div className="font-medium">Tips & Tutorials</div>
-							<div className="text-muted-foreground text-sm">Helpful guides and best practices</div>
+							<div className="text-muted-foreground text-sm">
+								Helpful guides and best practices
+							</div>
 						</div>
 						<Switch />
 					</div>
@@ -514,7 +557,9 @@ export default function NotificationsEmailClient({
 			<Card>
 				<CardHeader>
 					<CardTitle>Email Template Preview</CardTitle>
-					<CardDescription>See how your emails will look in your inbox</CardDescription>
+					<CardDescription>
+						See how your emails will look in your inbox
+					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<div className="space-y-4">
@@ -530,10 +575,12 @@ export default function NotificationsEmailClient({
 											Job Update
 										</Badge>
 									</div>
-									<div className="mb-1 text-sm font-medium">New job assigned: Kitchen Repair</div>
+									<div className="mb-1 text-sm font-medium">
+										New job assigned: Kitchen Repair
+									</div>
 									<div className="text-muted-foreground mb-2 text-xs">
-										A new job has been assigned to you. Please review the details and confirm your
-										availability.
+										A new job has been assigned to you. Please review the
+										details and confirm your availability.
 									</div>
 									<div className="text-muted-foreground text-xs">
 										2 minutes ago • noreply@thorbis.com

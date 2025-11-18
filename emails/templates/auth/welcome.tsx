@@ -23,8 +23,8 @@ export default function WelcomeEmail({
 			<Heading level={1}>Welcome to Thorbis, {name}!</Heading>
 
 			<Text style={paragraph}>
-				We're excited to have you on board. Thorbis is your all-in-one platform for managing your
-				service business efficiently.
+				We're excited to have you on board. Thorbis is your all-in-one platform
+				for managing your service business efficiently.
 			</Text>
 
 			<Text style={paragraph}>Here's what you can do with Thorbis:</Text>

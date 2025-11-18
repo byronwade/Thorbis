@@ -7,11 +7,11 @@
 
 "use client";
 
-import { CreditCard, Check } from "lucide-react";
+import { Check, CreditCard } from "lucide-react";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { useInvoicePaymentMethods } from "@/hooks/use-invoice-360";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useInvoicePaymentMethods } from "@/hooks/use-invoice-360";
 
 type InvoicePaymentMethodsWidgetProps = {
 	customerId: string;
@@ -72,10 +72,14 @@ export function InvoicePaymentMethodsWidget({
 											)}
 										</div>
 										{method.last4 && (
-											<p className="text-muted-foreground text-sm">•••• {method.last4}</p>
+											<p className="text-muted-foreground text-sm">
+												•••• {method.last4}
+											</p>
 										)}
 										{method.brand && (
-											<p className="text-muted-foreground text-xs">{method.brand}</p>
+											<p className="text-muted-foreground text-xs">
+												{method.brand}
+											</p>
 										)}
 										{method.exp_month && method.exp_year && (
 											<p className="text-muted-foreground text-xs">

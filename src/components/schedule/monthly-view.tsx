@@ -62,8 +62,17 @@ import {
 } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PopoverContent, Popover as PopoverRoot, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	PopoverContent,
+	Popover as PopoverRoot,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSchedule } from "@/hooks/use-schedule";
 import { useScheduleViewStore } from "@/lib/stores/schedule-view-store";
 import { cn } from "@/lib/utils";
@@ -103,15 +112,27 @@ const getJobTypeColor = (job: Job) => {
 		return "border-red-400 dark:border-red-700";
 	}
 
-	if (title.includes("callback") || title.includes("follow-up") || title.includes("followup")) {
+	if (
+		title.includes("callback") ||
+		title.includes("follow-up") ||
+		title.includes("followup")
+	) {
 		return "border-orange-400 dark:border-orange-700";
 	}
 
-	if (title.includes("meeting") || title.includes("event") || title.includes("training")) {
+	if (
+		title.includes("meeting") ||
+		title.includes("event") ||
+		title.includes("training")
+	) {
 		return "border-purple-400 dark:border-purple-700";
 	}
 
-	if (title.includes("install") || title.includes("setup") || title.includes("new")) {
+	if (
+		title.includes("install") ||
+		title.includes("setup") ||
+		title.includes("new")
+	) {
 		return "border-green-400 dark:border-green-700";
 	}
 
@@ -139,17 +160,20 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 	const [isEditOpen, setIsEditOpen] = useState(false);
 	const [editStartTime, setEditStartTime] = useState("");
 	const [editEndTime, setEditEndTime] = useState("");
-	const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-		id: job.id,
-		data: { job },
-	});
+	const { attributes, listeners, setNodeRef, transform, isDragging } =
+		useDraggable({
+			id: job.id,
+			data: { job },
+		});
 
 	const style = {
 		transform: CSS.Translate.toString(transform),
 	};
 
-	const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-	const endTime = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+	const startTime =
+		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+	const endTime =
+		job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 
 	const handleOpenEdit = () => {
 		setEditStartTime(format(startTime, "HH:mm"));
@@ -168,7 +192,11 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 		newEndTime.setHours(endHours, endMinutes, 0, 0);
 
 		const toastId = toast.loading("Updating appointment times...");
-		const result = await updateAppointmentTimes(job.id, newStartTime, newEndTime);
+		const result = await updateAppointmentTimes(
+			job.id,
+			newStartTime,
+			newEndTime,
+		);
 
 		if (result.success) {
 			toast.success("Times updated", { id: toastId });
@@ -180,7 +208,7 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 
 	const handleAction = async (
 		action: string,
-		actionFn: (id: string) => Promise<{ success: boolean; error?: string }>
+		actionFn: (id: string) => Promise<{ success: boolean; error?: string }>,
 	) => {
 		const toastId = toast.loading(`${action}...`);
 		const result = await actionFn(job.id);
@@ -221,7 +249,7 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 				getJobTypeColor(job),
 				isDragging && !isDragOverlay && "opacity-30",
 				isDragOverlay && "ring-primary cursor-grabbing shadow-xl ring-2",
-				isSelected && "ring-primary ring-2 ring-offset-1"
+				isSelected && "ring-primary ring-2 ring-offset-1",
 			)}
 			onClick={(event) => {
 				if (event.shiftKey && onSelect) {
@@ -236,22 +264,36 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 		>
 			{/* Status Icon or Dot */}
 			{getStatusIcon() ? (
-				<div className={cn("shrink-0", getStatusColor(job.status))}>{getStatusIcon()}</div>
+				<div className={cn("shrink-0", getStatusColor(job.status))}>
+					{getStatusIcon()}
+				</div>
 			) : (
-				<div className={cn("size-1.5 shrink-0 rounded-full", getStatusColor(job.status))} />
+				<div
+					className={cn(
+						"size-1.5 shrink-0 rounded-full",
+						getStatusColor(job.status),
+					)}
+				/>
 			)}
 
 			{/* Time */}
-			<span className="shrink-0 text-[10px] font-medium">{format(startTime, "h:mm a")}</span>
+			<span className="shrink-0 text-[10px] font-medium">
+				{format(startTime, "h:mm a")}
+			</span>
 
 			{/* Customer Name */}
-			<span className="truncate text-[11px] font-semibold">{job.customer?.name || "Unknown"}</span>
+			<span className="truncate text-[11px] font-semibold">
+				{job.customer?.name || "Unknown"}
+			</span>
 
 			{/* Mini Technician Avatars */}
 			{job.assignments.length > 0 && (
 				<div className="ml-auto flex shrink-0 -space-x-1">
 					{job.assignments.slice(0, 2).map((tech, idx) => (
-						<Avatar className="border-background size-4 border" key={tech.technicianId || idx}>
+						<Avatar
+							className="border-background size-4 border"
+							key={tech.technicianId || idx}
+						>
 							<AvatarFallback className="text-[8px]">
 								{tech.displayName?.slice(0, 2).toUpperCase() || "?"}
 							</AvatarFallback>
@@ -270,17 +312,20 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 	const tooltipContent = (
 		<div className="space-y-2">
 			<div>
-				<p className="text-sm font-semibold">{job.customer?.name || "Unknown Customer"}</p>
+				<p className="text-sm font-semibold">
+					{job.customer?.name || "Unknown Customer"}
+				</p>
 				<p className="text-muted-foreground text-xs">{job.title}</p>
 			</div>
 			<div className="space-y-1 text-xs">
 				<p>
-					<span className="font-medium">Time:</span> {format(startTime, "h:mm a")} -{" "}
-					{format(endTime, "h:mm a")}
+					<span className="font-medium">Time:</span>{" "}
+					{format(startTime, "h:mm a")} - {format(endTime, "h:mm a")}
 				</p>
 				{job.location?.address?.street && (
 					<p>
-						<span className="font-medium">Location:</span> {job.location.address.street}
+						<span className="font-medium">Location:</span>{" "}
+						{job.location.address.street}
 					</p>
 				)}
 				{job.assignments.length > 0 && (
@@ -334,7 +379,9 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 
 							<ContextMenuItem
 								disabled={job.status === "arrived"}
-								onClick={() => handleAction("Marking arrived", arriveAppointment)}
+								onClick={() =>
+									handleAction("Marking arrived", arriveAppointment)
+								}
 							>
 								<MapPin className="mr-2 size-4" />
 								Mark Arrived
@@ -348,7 +395,9 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 								Mark Closed
 							</ContextMenuItem>
 
-							<ContextMenuItem onClick={() => handleAction("Completing", completeAppointment)}>
+							<ContextMenuItem
+								onClick={() => handleAction("Completing", completeAppointment)}
+							>
 								<CheckCircle2 className="mr-2 size-4" />
 								Mark Complete
 							</ContextMenuItem>
@@ -369,7 +418,9 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 
 							<ContextMenuItem
 								className="text-orange-600 dark:text-orange-400"
-								onClick={() => handleAction("Cancelling appointment", cancelAppointment)}
+								onClick={() =>
+									handleAction("Cancelling appointment", cancelAppointment)
+								}
 							>
 								<XCircle className="mr-2 size-4" />
 								Cancel Appointment Only
@@ -379,7 +430,7 @@ const MonthlyJobPill = memo(function MonthlyJobPill({
 								className="text-red-600 dark:text-red-400"
 								onClick={() =>
 									handleAction("Cancelling job & appointment", (scheduleId) =>
-										cancelJobAndAppointment(scheduleId, job.jobId ?? "")
+										cancelJobAndAppointment(scheduleId, job.jobId ?? ""),
 									)
 								}
 							>
@@ -486,11 +537,15 @@ const DayCell = memo(function DayCell({
 	const totalHours = useMemo(
 		() =>
 			jobs.reduce((sum, job) => {
-				const start = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-				const end = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+				const start =
+					job.startTime instanceof Date
+						? job.startTime
+						: new Date(job.startTime);
+				const end =
+					job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 				return sum + (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 			}, 0),
-		[jobs]
+		[jobs],
 	);
 
 	const isWeekend = date.getDay() === 0 || date.getDay() === 6;
@@ -501,11 +556,12 @@ const DayCell = memo(function DayCell({
 				"border-border/50 relative flex h-[140px] cursor-context-menu flex-col border p-3 transition-all duration-200",
 				!isCurrentMonth && "bg-muted/50 opacity-60",
 				isOver && "bg-primary/10 ring-primary ring-2 ring-inset",
-				isCurrentDay && "bg-blue-50 ring-2 ring-blue-500/30 dark:bg-blue-950/30",
+				isCurrentDay &&
+					"bg-blue-50 ring-2 ring-blue-500/30 dark:bg-blue-950/30",
 				isSelectedDate &&
 					!isCurrentDay &&
 					"bg-emerald-50 ring-2 ring-emerald-500/50 dark:bg-emerald-950/30",
-				isWeekend && !isCurrentDay && "bg-slate-100/80 dark:bg-slate-800/30"
+				isWeekend && !isCurrentDay && "bg-slate-100/80 dark:bg-slate-800/30",
 			)}
 			onContextMenu={handleContextMenu}
 			ref={setNodeRef}
@@ -519,9 +575,14 @@ const DayCell = memo(function DayCell({
 								className={cn(
 									"flex size-7 items-center justify-center rounded-full text-base font-bold transition-all",
 									isCurrentDay && "bg-blue-500 text-white shadow-md",
-									isSelectedDate && !isCurrentDay && "bg-emerald-500 text-white shadow-md",
-									!(isCurrentDay || isSelectedDate || isCurrentMonth) && "text-muted-foreground/60",
-									!(isCurrentDay || isSelectedDate) && isCurrentMonth && "text-foreground"
+									isSelectedDate &&
+										!isCurrentDay &&
+										"bg-emerald-500 text-white shadow-md",
+									!(isCurrentDay || isSelectedDate || isCurrentMonth) &&
+										"text-muted-foreground/60",
+									!(isCurrentDay || isSelectedDate) &&
+										isCurrentMonth &&
+										"text-foreground",
 								)}
 							>
 								{format(date, "d")}
@@ -531,17 +592,27 @@ const DayCell = memo(function DayCell({
 							<TooltipContent className="w-64" side="top">
 								<div className="space-y-2">
 									<div className="flex items-center justify-between border-b pb-2">
-										<p className="text-sm font-semibold">{format(date, "EEEE, MMM d")}</p>
+										<p className="text-sm font-semibold">
+											{format(date, "EEEE, MMM d")}
+										</p>
 										<Badge variant="secondary">{jobs.length} jobs</Badge>
 									</div>
 									<div className="space-y-1 text-xs">
 										<div className="flex justify-between">
-											<span className="text-muted-foreground">Total Hours:</span>
-											<span className="font-medium">{totalHours.toFixed(1)}h</span>
+											<span className="text-muted-foreground">
+												Total Hours:
+											</span>
+											<span className="font-medium">
+												{totalHours.toFixed(1)}h
+											</span>
 										</div>
 										<div className="flex justify-between">
-											<span className="text-muted-foreground">Avg Duration:</span>
-											<span className="font-medium">{(totalHours / jobs.length).toFixed(1)}h</span>
+											<span className="text-muted-foreground">
+												Avg Duration:
+											</span>
+											<span className="font-medium">
+												{(totalHours / jobs.length).toFixed(1)}h
+											</span>
 										</div>
 										<div className="mt-2 space-y-1 border-t pt-2">
 											<p className="text-xs font-medium">Status Breakdown:</p>
@@ -552,11 +623,13 @@ const DayCell = memo(function DayCell({
 															(acc[job.status || "scheduled"] || 0) + 1;
 														return acc;
 													},
-													{} as Record<string, number>
-												)
+													{} as Record<string, number>,
+												),
 											).map(([status, count]) => (
 												<div className="flex justify-between" key={status}>
-													<span className="text-muted-foreground capitalize">{status}:</span>
+													<span className="text-muted-foreground capitalize">
+														{status}:
+													</span>
 													<span className="font-medium">{count}</span>
 												</div>
 											))}
@@ -570,7 +643,10 @@ const DayCell = memo(function DayCell({
 
 				{/* Day Metrics Badge */}
 				{hasJobs && (
-					<Badge className="h-5 px-2 text-[10px] font-semibold" variant="secondary">
+					<Badge
+						className="h-5 px-2 text-[10px] font-semibold"
+						variant="secondary"
+					>
 						{jobs.length} jobs · {totalHours.toFixed(1)}h
 					</Badge>
 				)}
@@ -634,7 +710,16 @@ export function MonthlyView() {
 		setCommandMenuOpen(true);
 	}, []);
 
-	const { getAllJobs, moveJob, isLoading } = useSchedule();
+	const {
+		getAllJobs,
+		moveJob,
+		isLoading,
+		loadMoreUnassignedJobs,
+		unassignedHasMore,
+		unassignedSearch,
+		isLoadingUnassigned,
+		unassignedTotalCount,
+	} = useSchedule();
 
 	const sensors = useSensors(
 		useSensor(MouseSensor, {
@@ -642,12 +727,12 @@ export function MonthlyView() {
 		}),
 		useSensor(TouchSensor, {
 			activationConstraint: { delay: 200, tolerance: 6 },
-		})
+		}),
 	);
 
 	const dateObj = useMemo(
 		() => (currentDate instanceof Date ? currentDate : new Date(currentDate)),
-		[currentDate]
+		[currentDate],
 	);
 
 	// Generate calendar grid
@@ -681,7 +766,8 @@ export function MonthlyView() {
 				continue;
 			}
 
-			const startTime = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const startTime =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 			const dateKey = format(startTime, "yyyy-MM-dd");
 
 			if (!grouped.has(dateKey)) {
@@ -692,6 +778,10 @@ export function MonthlyView() {
 
 		return { jobsByDate: grouped, unassignedJobs: unassigned };
 	}, [getAllJobs]);
+	const showUnassignedPanel =
+		unassignedJobs.length > 0 ||
+		unassignedHasMore ||
+		unassignedSearch.length > 0;
 
 	const handleDragStart = useCallback((event: DragStartEvent) => {
 		setActiveJobId(event.active.id as string);
@@ -721,8 +811,10 @@ export function MonthlyView() {
 				return;
 			}
 
-			const oldStart = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
-			const oldEnd = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
+			const oldStart =
+				job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+			const oldEnd =
+				job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
 			const duration = oldEnd.getTime() - oldStart.getTime();
 
 			// Create new start time on the dropped date, keeping the same time of day
@@ -733,7 +825,9 @@ export function MonthlyView() {
 			// Optimistic update
 			moveJob(jobId, job.technicianId, newStart, newEnd);
 
-			const toastId = toast.loading(`Moving to ${format(dropData.date, "MMM d")}...`);
+			const toastId = toast.loading(
+				`Moving to ${format(dropData.date, "MMM d")}...`,
+			);
 
 			const result = await updateAppointmentTimes(jobId, newStart, newEnd);
 
@@ -747,7 +841,7 @@ export function MonthlyView() {
 				});
 			}
 		},
-		[getAllJobs, moveJob]
+		[getAllJobs, moveJob],
 	);
 
 	const activeJob = useMemo(() => {
@@ -756,6 +850,17 @@ export function MonthlyView() {
 		}
 		return getAllJobs().find((j) => j.id === activeJobId);
 	}, [activeJobId, getAllJobs]);
+
+	const handleUnassignedSearch = useCallback(
+		(value: string) => {
+			loadMoreUnassignedJobs({ reset: true, search: value });
+		},
+		[loadMoreUnassignedJobs],
+	);
+
+	const handleLoadMoreUnassigned = useCallback(() => {
+		loadMoreUnassignedJobs({ search: unassignedSearch });
+	}, [loadMoreUnassignedJobs, unassignedSearch]);
 
 	if (isLoading) {
 		return (
@@ -766,14 +871,24 @@ export function MonthlyView() {
 	}
 
 	return (
-		<DndContext onDragEnd={handleDragEnd} onDragStart={handleDragStart} sensors={sensors}>
+		<DndContext
+			onDragEnd={handleDragEnd}
+			onDragStart={handleDragStart}
+			sensors={sensors}
+		>
 			<div className="flex h-full overflow-hidden">
 				{/* Unscheduled Panel */}
-				{unassignedJobs.length > 0 && (
+				{showUnassignedPanel && (
 					<UnassignedPanel
 						activeJobId={activeJobId}
+						hasMore={unassignedHasMore}
+						isLoadingMore={isLoadingUnassigned}
 						isOpen={unassignedPanelOpen}
+						onLoadMore={handleLoadMoreUnassigned}
+						onSearchChange={handleUnassignedSearch}
 						onToggle={() => setUnassignedPanelOpen(!unassignedPanelOpen)}
+						searchQuery={unassignedSearch}
+						totalCount={unassignedTotalCount}
 						unassignedJobs={unassignedJobs}
 					/>
 				)}
@@ -787,7 +902,8 @@ export function MonthlyView() {
 								<div
 									className={cn(
 										"bg-muted/50 sticky top-0 z-30 border-r border-b-2 px-4 py-3 text-center text-sm font-bold tracking-wide uppercase shadow-sm backdrop-blur-sm",
-										(idx === 0 || idx === 6) && "bg-slate-200/80 dark:bg-slate-700/50"
+										(idx === 0 || idx === 6) &&
+											"bg-slate-200/80 dark:bg-slate-700/50",
 									)}
 									key={day}
 								>

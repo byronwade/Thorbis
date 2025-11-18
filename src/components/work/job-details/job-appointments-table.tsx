@@ -1,6 +1,13 @@
 "use client";
 
-import { Calendar, CheckCircle, Eye, MapPin, MoreHorizontal, X } from "lucide-react";
+import {
+	Calendar,
+	CheckCircle,
+	Eye,
+	MapPin,
+	MoreHorizontal,
+	X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { updateSchedule } from "@/actions/schedules";
@@ -14,7 +21,10 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { useToast } from "@/hooks/use-toast";
 
 type Appointment = {
@@ -50,10 +60,14 @@ type JobAppointmentsTableProps = {
 	appointments: Appointment[];
 };
 
-export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps) {
+export function JobAppointmentsTable({
+	appointments,
+}: JobAppointmentsTableProps) {
 	const router = useRouter();
 	const { toast } = useToast();
-	const [loadingAppointmentId, setLoadingAppointmentId] = useState<string | null>(null);
+	const [loadingAppointmentId, setLoadingAppointmentId] = useState<
+		string | null
+	>(null);
 
 	// Check if appointment is scheduled for today
 	const isToday = useCallback((dateString: string) => {
@@ -90,7 +104,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast]
+		[router, toast],
 	);
 
 	// Handle arrive
@@ -114,7 +128,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast]
+		[router, toast],
 	);
 
 	// Handle close
@@ -132,7 +146,9 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				// Calculate duration in minutes
 				let duration: number | null = null;
 				if (startTime) {
-					duration = Math.round((now.getTime() - startTime.getTime()) / (1000 * 60));
+					duration = Math.round(
+						(now.getTime() - startTime.getTime()) / (1000 * 60),
+					);
 				}
 
 				const result = await updateSchedule(appointment.id, {
@@ -152,7 +168,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				setLoadingAppointmentId(null);
 			}
 		},
-		[router, toast]
+		[router, toast],
 	);
 
 	const formatDate = useCallback((date: string | null) => {
@@ -205,7 +221,10 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 	}, []);
 
 	const getStatusBadge = useCallback((status: string) => {
-		const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
+		const variants: Record<
+			string,
+			"default" | "secondary" | "destructive" | "outline"
+		> = {
 			completed: "default",
 			confirmed: "secondary",
 			scheduled: "secondary",
@@ -231,9 +250,12 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				shrink: true,
 				render: (appointment) => (
 					<div className="space-y-1">
-						<div className="text-sm font-medium">{formatDate(appointment.start_time)}</div>
+						<div className="text-sm font-medium">
+							{formatDate(appointment.start_time)}
+						</div>
 						<div className="text-muted-foreground text-xs">
-							{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
+							{formatTime(appointment.start_time)} -{" "}
+							{formatTime(appointment.end_time)}
 						</div>
 					</div>
 				),
@@ -254,7 +276,9 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 								</div>
 							</div>
 						) : (
-							<span className="text-muted-foreground text-xs">Not dispatched</span>
+							<span className="text-muted-foreground text-xs">
+								Not dispatched
+							</span>
 						)}
 					</div>
 				),
@@ -327,7 +351,10 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 					return assignedUser ? (
 						<div className="flex items-center gap-2">
 							<Avatar className="h-6 w-6">
-								<AvatarImage alt={assignedUser.name || ""} src={assignedUser.avatar || undefined} />
+								<AvatarImage
+									alt={assignedUser.name || ""}
+									src={assignedUser.avatar || undefined}
+								/>
 								<AvatarFallback>
 									{(assignedUser.name || "U")
 										.split(" ")
@@ -337,7 +364,9 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 										.slice(0, 2)}
 								</AvatarFallback>
 							</Avatar>
-							<span className="text-sm">{assignedUser.name || "Unassigned"}</span>
+							<span className="text-sm">
+								{assignedUser.name || "Unassigned"}
+							</span>
 						</div>
 					) : (
 						<span className="text-muted-foreground text-sm">Unassigned</span>
@@ -349,7 +378,8 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 				header: "Status",
 				width: "w-28",
 				shrink: true,
-				render: (appointment) => getStatusBadge(appointment.status || "scheduled"),
+				render: (appointment) =>
+					getStatusBadge(appointment.status || "scheduled"),
 			},
 			{
 				key: "type",
@@ -374,9 +404,13 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 					const isLoading = loadingAppointmentId === appointment.id;
 					const canDispatch = appointmentIsToday && !appointment.dispatch_time;
 					const canArrive =
-						appointmentIsToday && appointment.dispatch_time && !appointment.actual_start_time;
+						appointmentIsToday &&
+						appointment.dispatch_time &&
+						!appointment.actual_start_time;
 					const canClose =
-						appointmentIsToday && appointment.actual_start_time && !appointment.actual_end_time;
+						appointmentIsToday &&
+						appointment.actual_start_time &&
+						!appointment.actual_end_time;
 
 					if (!appointmentIsToday) {
 						return (
@@ -471,7 +505,7 @@ export function JobAppointmentsTable({ appointments }: JobAppointmentsTableProps
 			handleDispatch,
 			handleArrive,
 			handleClose,
-		]
+		],
 	);
 
 	return (

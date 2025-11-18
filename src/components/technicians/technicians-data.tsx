@@ -22,7 +22,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="text-lg font-semibold">Smart Scheduling</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Optimize technician schedules based on skills, location, and availability
+							Optimize technician schedules based on skills, location, and
+							availability
 						</p>
 					</div>
 
@@ -32,7 +33,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="text-lg font-semibold">GPS Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Real-time location tracking for efficient dispatching and route optimization
+							Real-time location tracking for efficient dispatching and route
+							optimization
 						</p>
 					</div>
 
@@ -42,7 +44,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="text-lg font-semibold">Skills Management</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track certifications, specializations, and skill levels for better job matching
+							Track certifications, specializations, and skill levels for better
+							job matching
 						</p>
 					</div>
 
@@ -52,7 +55,8 @@ export async function TechniciansData() {
 						</div>
 						<h3 className="text-lg font-semibold">Performance Metrics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor productivity, customer satisfaction, and revenue per technician
+							Monitor productivity, customer satisfaction, and revenue per
+							technician
 						</p>
 					</div>
 				</div>

@@ -7,11 +7,11 @@
 
 "use client";
 
-import { DollarSign, CreditCard } from "lucide-react";
+import { CreditCard, DollarSign } from "lucide-react";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
+import { Button } from "@/components/ui/button";
 import { useInvoicePayments } from "@/hooks/use-invoice-360";
 import { formatCurrency, formatDate } from "@/lib/formatters";
-import { Button } from "@/components/ui/button";
 
 type InvoicePaymentsWidgetProps = {
 	invoiceId: string;
@@ -29,12 +29,18 @@ export function InvoicePaymentsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: payments, isLoading, error } = useInvoicePayments(invoiceId, isVisible);
+				const {
+					data: payments,
+					isLoading,
+					error,
+				} = useInvoicePayments(invoiceId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-muted-foreground text-center text-sm">Failed to load payments</div>
+						<div className="text-muted-foreground text-center text-sm">
+							Failed to load payments
+						</div>
 					);
 				if (!payments || payments.length === 0)
 					return (
@@ -78,7 +84,8 @@ export function InvoicePaymentsWidget({
 											{payment.payment_method && (
 												<p className="text-muted-foreground text-xs">
 													{payment.payment_method}
-													{payment.card_last4 && ` ending in ${payment.card_last4}`}
+													{payment.card_last4 &&
+														` ending in ${payment.card_last4}`}
 												</p>
 											)}
 											<p className="text-muted-foreground text-xs">

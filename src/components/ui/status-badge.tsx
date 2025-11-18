@@ -18,7 +18,13 @@ import {
 
 type StatusBadgeProps = {
 	status: string;
-	type?: "job" | "invoice" | "estimate" | "contract" | "customer" | "purchase_order";
+	type?:
+		| "job"
+		| "invoice"
+		| "estimate"
+		| "contract"
+		| "customer"
+		| "purchase_order";
 	priority?: string;
 	contractType?: string;
 	className?: string;
@@ -56,7 +62,7 @@ export function StatusBadge({
 			className={cn(
 				"px-2 py-0.5 text-[11px] font-medium transition-all duration-200",
 				config.className,
-				className
+				className,
 			)}
 			variant={variant}
 		>
@@ -68,48 +74,90 @@ export function StatusBadge({
 /**
  * JobStatusBadge - Convenience component for job statuses
  */
-export function JobStatusBadge({ status, className }: { status: string; className?: string }) {
+export function JobStatusBadge({
+	status,
+	className,
+}: {
+	status: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} status={status} type="job" />;
 }
 
 /**
  * InvoiceStatusBadge - Convenience component for invoice statuses
  */
-export function InvoiceStatusBadge({ status, className }: { status: string; className?: string }) {
+export function InvoiceStatusBadge({
+	status,
+	className,
+}: {
+	status: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} status={status} type="invoice" />;
 }
 
 /**
  * EstimateStatusBadge - Convenience component for estimate statuses
  */
-export function EstimateStatusBadge({ status, className }: { status: string; className?: string }) {
+export function EstimateStatusBadge({
+	status,
+	className,
+}: {
+	status: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} status={status} type="estimate" />;
 }
 
 /**
  * ContractStatusBadge - Convenience component for contract statuses
  */
-export function ContractStatusBadge({ status, className }: { status: string; className?: string }) {
+export function ContractStatusBadge({
+	status,
+	className,
+}: {
+	status: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} status={status} type="contract" />;
 }
 
 /**
  * CustomerStatusBadge - Convenience component for customer statuses
  */
-export function CustomerStatusBadge({ status, className }: { status: string; className?: string }) {
+export function CustomerStatusBadge({
+	status,
+	className,
+}: {
+	status: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} status={status} type="customer" />;
 }
 
 /**
  * PriorityBadge - Convenience component for priority badges
  */
-export function PriorityBadge({ priority, className }: { priority: string; className?: string }) {
+export function PriorityBadge({
+	priority,
+	className,
+}: {
+	priority: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} priority={priority} status="" />;
 }
 
 /**
  * ContractTypeBadge - Convenience component for contract type badges
  */
-export function ContractTypeBadge({ type, className }: { type: string; className?: string }) {
+export function ContractTypeBadge({
+	type,
+	className,
+}: {
+	type: string;
+	className?: string;
+}) {
 	return <StatusBadge className={className} contractType={type} status="" />;
 }

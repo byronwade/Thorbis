@@ -25,7 +25,12 @@ import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -109,12 +114,15 @@ export function CompanyFeed({
 	const [showComments, setShowComments] = useState<string | null>(null);
 
 	const filteredPosts = posts.filter((post) => {
-		const categoryMatch = selectedCategory === "All Posts" || post.category === selectedCategory;
+		const categoryMatch =
+			selectedCategory === "All Posts" || post.category === selectedCategory;
 		const searchMatch =
 			searchQuery === "" ||
 			post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			post.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			post.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+			post.tags?.some((tag) =>
+				tag.toLowerCase().includes(searchQuery.toLowerCase()),
+			);
 		return categoryMatch && searchMatch;
 	});
 
@@ -171,7 +179,10 @@ export function CompanyFeed({
 	};
 
 	const PostCard = ({ post }: { post: Post }) => {
-		const totalReactions = post.reactions.reduce((sum, reaction) => sum + reaction.count, 0);
+		const totalReactions = post.reactions.reduce(
+			(sum, reaction) => sum + reaction.count,
+			0,
+		);
 
 		return (
 			<Card>
@@ -190,7 +201,9 @@ export function CompanyFeed({
 							<div className="space-y-1">
 								<div className="flex items-center gap-2">
 									<p className="text-sm font-semibold">{post.author.name}</p>
-									{post.isPinned && <Pin className="text-primary h-3.5 w-3.5" />}
+									{post.isPinned && (
+										<Pin className="text-primary h-3.5 w-3.5" />
+									)}
 								</div>
 								<div className="text-muted-foreground flex items-center gap-2 text-xs">
 									<span>{post.author.role}</span>
@@ -244,15 +257,28 @@ export function CompanyFeed({
 					{post.attachments && post.attachments.length > 0 && (
 						<div className="space-y-2">
 							{post.attachments.map((attachment, index) => (
-								<div className="flex items-center gap-3 rounded-lg border p-3" key={index}>
+								<div
+									className="flex items-center gap-3 rounded-lg border p-3"
+									key={index}
+								>
 									<div className="bg-muted flex h-10 w-10 items-center justify-center rounded">
-										{attachment.type === "image" && <ImageIcon className="h-5 w-5" />}
-										{attachment.type === "video" && <Video className="h-5 w-5" />}
-										{attachment.type === "document" && <FileText className="h-5 w-5" />}
+										{attachment.type === "image" && (
+											<ImageIcon className="h-5 w-5" />
+										)}
+										{attachment.type === "video" && (
+											<Video className="h-5 w-5" />
+										)}
+										{attachment.type === "document" && (
+											<FileText className="h-5 w-5" />
+										)}
 									</div>
 									<div className="min-w-0 flex-1">
-										<p className="truncate text-sm font-medium">{attachment.name}</p>
-										<p className="text-muted-foreground text-xs">{attachment.type}</p>
+										<p className="truncate text-sm font-medium">
+											{attachment.name}
+										</p>
+										<p className="text-muted-foreground text-xs">
+											{attachment.type}
+										</p>
 									</div>
 									<Button size="sm" variant="ghost">
 										View
@@ -279,7 +305,10 @@ export function CompanyFeed({
 					<div className="text-muted-foreground flex w-full items-center justify-between text-sm">
 						<div className="flex items-center gap-4">
 							{totalReactions > 0 && (
-								<button className="hover:text-foreground flex items-center gap-1" type="button">
+								<button
+									className="hover:text-foreground flex items-center gap-1"
+									type="button"
+								>
 									<div className="flex -space-x-1">
 										{post.reactions.map((reaction, index) => (
 											<span
@@ -311,7 +340,9 @@ export function CompanyFeed({
 						</Button>
 						<Button
 							className="gap-2"
-							onClick={() => setShowComments(showComments === post.id ? null : post.id)}
+							onClick={() =>
+								setShowComments(showComments === post.id ? null : post.id)
+							}
 							size="sm"
 							variant="ghost"
 						>
@@ -377,7 +408,10 @@ export function CompanyFeed({
 							/>
 						</div>
 
-						<Select onValueChange={setSelectedCategory} value={selectedCategory}>
+						<Select
+							onValueChange={setSelectedCategory}
+							value={selectedCategory}
+						>
 							<SelectTrigger className="w-48">
 								<SelectValue />
 							</SelectTrigger>
@@ -468,14 +502,19 @@ export function CompanyFeed({
 								<Card>
 									<CardContent className="flex flex-col items-center justify-center p-12 text-center">
 										<MessageCircle className="text-muted-foreground mb-4 h-12 w-12" />
-										<h3 className="mb-2 text-lg font-semibold">No posts found</h3>
+										<h3 className="mb-2 text-lg font-semibold">
+											No posts found
+										</h3>
 										<p className="text-muted-foreground text-sm">
-											Try adjusting your filters or be the first to post something!
+											Try adjusting your filters or be the first to post
+											something!
 										</p>
 									</CardContent>
 								</Card>
 							) : (
-								regularPosts.map((post) => <PostCard key={post.id} post={post} />)
+								regularPosts.map((post) => (
+									<PostCard key={post.id} post={post} />
+								))
 							)}
 						</div>
 					</div>

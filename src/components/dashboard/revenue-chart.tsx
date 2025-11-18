@@ -9,8 +9,19 @@
  * - Tooltip interactions require browser APIs
  */
 
-import { Area, CartesianGrid, LazyAreaChart, XAxis } from "@/components/lazy/chart";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Area,
+	CartesianGrid,
+	LazyAreaChart,
+	XAxis,
+} from "@/components/lazy/chart";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -53,16 +64,25 @@ export function RevenueChart() {
 		<Card className="gap-0 py-0">
 			<CardHeader className="pt-4 pb-0">
 				<CardTitle className="text-base">Revenue Performance</CardTitle>
-				<CardDescription className="text-xs">Today vs Yesterday vs Weekly Average</CardDescription>
+				<CardDescription className="text-xs">
+					Today vs Yesterday vs Weekly Average
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="pt-4 pb-0">
-				<ChartContainer className="aspect-auto h-[340px] w-full" config={chartConfig}>
+				<ChartContainer
+					className="aspect-auto h-[340px] w-full"
+					config={chartConfig}
+				>
 					<LazyAreaChart
 						accessibilityLayer
 						data={chartData}
 						margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
 					>
-						<CartesianGrid opacity={0.3} strokeDasharray="3 3" vertical={false} />
+						<CartesianGrid
+							opacity={0.3}
+							strokeDasharray="3 3"
+							vertical={false}
+						/>
 						<XAxis
 							axisLine={false}
 							dataKey="hour"

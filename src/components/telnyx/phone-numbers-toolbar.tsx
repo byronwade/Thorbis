@@ -22,7 +22,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { NumberPortingWizard } from "./number-porting-wizard";
+import { NumberPortingWizardLazy as NumberPortingWizard } from "./number-porting-wizard-lazy";
 import { PhoneNumberSearchModal } from "./phone-number-search-modal";
 
 type PhoneNumbersToolbarProps = {
@@ -84,15 +84,18 @@ export function PhoneNumbersToolbar({ companyId }: PhoneNumbersToolbarProps) {
 				{/* Info Bar */}
 				<div className="text-muted-foreground mt-3 flex items-center gap-6 text-sm">
 					<div>
-						<span className="text-foreground font-medium">3</span> active numbers
+						<span className="text-foreground font-medium">3</span> active
+						numbers
 					</div>
 					<div className="bg-border h-4 w-px" />
 					<div>
-						<span className="text-foreground font-medium">$3.00</span>/month total cost
+						<span className="text-foreground font-medium">$3.00</span>/month
+						total cost
 					</div>
 					<div className="bg-border h-4 w-px" />
 					<div>
-						<span className="text-foreground font-medium">1,247</span> minutes this month
+						<span className="text-foreground font-medium">1,247</span> minutes
+						this month
 					</div>
 					<div className="bg-border h-4 w-px" />
 					<div>

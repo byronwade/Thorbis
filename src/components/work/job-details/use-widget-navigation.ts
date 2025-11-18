@@ -104,7 +104,7 @@ export function useWidgetNavigation(): NavGroup[] {
 	// Filter visible widgets in useMemo to maintain stable reference
 	const visibleWidgets = useMemo(
 		() => (isClient ? allWidgets.filter((w) => w.isVisible) : []),
-		[allWidgets, isClient]
+		[allWidgets, isClient],
 	);
 
 	// Generate navigation groups dynamically based on visible widgets

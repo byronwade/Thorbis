@@ -33,7 +33,9 @@ function sendMessage(message: WebRTCServiceMessage): void {
 /**
  * Send status update
  */
-function sendStatus(status: "idle" | "starting" | "ready" | "error" | "stopped"): void {
+function sendStatus(
+	status: "idle" | "starting" | "ready" | "error" | "stopped",
+): void {
 	sendMessage({ type: "status", status });
 }
 
@@ -64,7 +66,8 @@ async function initialize(): Promise<void> {
 
 		console.log("[WebRTC Worker] Initialized successfully");
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Initialization failed";
+		const errorMessage =
+			error instanceof Error ? error.message : "Initialization failed";
 		sendError(errorMessage);
 		sendStatus("error");
 		throw error;
@@ -74,7 +77,10 @@ async function initialize(): Promise<void> {
 /**
  * Generate WebRTC credentials
  */
-async function generateCredential(username: string, ttl = 86400): Promise<void> {
+async function generateCredential(
+	username: string,
+	ttl = 86400,
+): Promise<void> {
 	try {
 		// Sanitize username - Telnyx requires only letters and numbers
 		const sanitizedUsername = username.replace(/[^a-zA-Z0-9]/g, "");
@@ -86,19 +92,22 @@ async function generateCredential(username: string, ttl = 86400): Promise<void> 
 		const password = generateRandomPassword(32);
 
 		// Call Telnyx API to create credential
-		const response = await fetch("https://api.telnyx.com/v2/credential_connections", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${workerData.telnyxApiKey}`,
+		const response = await fetch(
+			"https://api.telnyx.com/v2/credential_connections",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${workerData.telnyxApiKey}`,
+				},
+				body: JSON.stringify({
+					connection_name: credentialName,
+					user_name: credentialName,
+					password,
+					ttl,
+				}),
 			},
-			body: JSON.stringify({
-				connection_name: credentialName,
-				user_name: credentialName,
-				password,
-				ttl,
-			}),
-		});
+		);
 
 		if (!response.ok) {
 			const errorText = await response.text();
@@ -134,7 +143,8 @@ async function generateCredential(username: string, ttl = 86400): Promise<void> 
 
 		sendMessage({ type: "credential_ready", credential });
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Failed to generate credential";
+		const errorMessage =
+			error instanceof Error ? error.message : "Failed to generate credential";
 		sendError(errorMessage);
 	}
 }
@@ -169,7 +179,8 @@ async function makeCall(phoneNumber: string): Promise<void> {
 			},
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Failed to make call";
+		const errorMessage =
+			error instanceof Error ? error.message : "Failed to make call";
 		sendError(errorMessage);
 	}
 }
@@ -197,7 +208,8 @@ async function endCall(callId: string): Promise<void> {
 			},
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Failed to end call";
+		const errorMessage =
+			error instanceof Error ? error.message : "Failed to end call";
 		sendError(errorMessage);
 	}
 }
@@ -226,7 +238,8 @@ async function answerCall(callId: string): Promise<void> {
 			},
 		});
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Failed to answer call";
+		const errorMessage =
+			error instanceof Error ? error.message : "Failed to answer call";
 		sendError(errorMessage);
 	}
 }
@@ -293,10 +306,13 @@ function handleCommand(command: WebRTCServiceCommand): void {
 				break;
 
 			default:
-				console.warn(`[WebRTC Worker] Unknown command: ${(command as any).type}`);
+				console.warn(
+					`[WebRTC Worker] Unknown command: ${(command as any).type}`,
+				);
 		}
 	} catch (error) {
-		const errorMessage = error instanceof Error ? error.message : "Command failed";
+		const errorMessage =
+			error instanceof Error ? error.message : "Command failed";
 		sendError(errorMessage);
 	}
 }
@@ -305,10 +321,13 @@ function handleCommand(command: WebRTCServiceCommand): void {
  * Generate random password
  */
 function generateRandomPassword(length = 32): string {
-	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+	const characters =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 	let password = "";
 	for (let i = 0; i < length; i++) {
-		password += characters.charAt(Math.floor(Math.random() * characters.length));
+		password += characters.charAt(
+			Math.floor(Math.random() * characters.length),
+		);
 	}
 	return password;
 }

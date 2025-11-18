@@ -21,7 +21,9 @@ type TeamMemberDetailDataProps = {
  *
  * Streams in after shell renders (100-400ms).
  */
-export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDataProps) {
+export async function TeamMemberDetailData({
+	teamMemberId,
+}: TeamMemberDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -66,7 +68,7 @@ export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDat
       *,
       user:users(*),
       company:companies(name)
-    `
+    `,
 		)
 		.eq("id", teamMemberId)
 		.eq("company_id", activeCompanyId)
@@ -93,7 +95,7 @@ export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDat
           *,
           customer:customers(first_name, last_name)
         )
-      `
+      `,
 			)
 			.eq("team_member_id", teamMemberId)
 			.eq("status", "assigned")
@@ -107,7 +109,7 @@ export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDat
 				`
         *,
         job:jobs(id, job_number, title)
-      `
+      `,
 			)
 			.eq("user_id", teamMember.user_id)
 			.order("clock_in", { ascending: false })
@@ -120,7 +122,9 @@ export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDat
 			.eq("team_member_id", teamMemberId)
 			.is("deleted_at", null)
 			.then((result) =>
-				result.error ? { data: [], error: null } : { data: result.data || [], error: null }
+				result.error
+					? { data: [], error: null }
+					: { data: result.data || [], error: null },
 			),
 
 		// Get activity log
@@ -134,12 +138,16 @@ export async function TeamMemberDetailData({ teamMemberId }: TeamMemberDetailDat
 	]);
 
 	// Extract user from team member
-	const memberUser = Array.isArray(teamMember.user) ? teamMember.user[0] : teamMember.user;
+	const memberUser = Array.isArray(teamMember.user)
+		? teamMember.user[0]
+		: teamMember.user;
 
 	// Calculate metrics
 	const _totalJobs = assignedJobs?.length || 0;
-	const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
-	const completedJobs = assignedJobs?.filter((j) => j.job?.status === "completed").length || 0;
+	const totalHours =
+		timeEntries?.reduce((sum, entry) => sum + (entry.total_hours || 0), 0) || 0;
+	const completedJobs =
+		assignedJobs?.filter((j) => j.job?.status === "completed").length || 0;
 	const revenueGenerated =
 		assignedJobs
 			?.filter((j) => j.job?.status === "completed")

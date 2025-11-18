@@ -10,9 +10,9 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { getJob } from "@/queries/jobs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
+import { getJob } from "@/queries/jobs";
 
 function JobDetailsSkeleton() {
 	return (
@@ -24,7 +24,11 @@ function JobDetailsSkeleton() {
 	);
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: _id } = await params;
 	return {
 		title: "Job Details",
@@ -41,10 +45,16 @@ async function JobData({ jobId }: { jobId: string }) {
 	const jobData = { job: result.data };
 	const metrics = {}; // TODO: Calculate metrics
 
-	return <JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />;
+	return (
+		<JobPageContent entityData={jobData} jobData={jobData} metrics={metrics} />
+	);
 }
 
-export default async function JobDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function JobDetailsPage({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}) {
 	const { id: jobId } = await params;
 
 	return (

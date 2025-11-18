@@ -22,7 +22,10 @@ type QuickCustomerAddProps = {
 	onCancel?: () => void;
 };
 
-export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerAddProps) {
+export function QuickCustomerAdd({
+	onCustomerCreated,
+	onCancel,
+}: QuickCustomerAddProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [firstName, setFirstName] = useState("");
@@ -242,7 +245,12 @@ export function QuickCustomerAdd({ onCustomerCreated, onCancel }: QuickCustomerA
 				</div>
 
 				<div className="flex gap-2 pt-2">
-					<Button className="flex-1" disabled={isLoading} size="sm" type="submit">
+					<Button
+						className="flex-1"
+						disabled={isLoading}
+						size="sm"
+						type="submit"
+					>
 						{isLoading ? "Creating..." : "Create & Select"}
 					</Button>
 					<Button

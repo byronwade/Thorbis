@@ -13,7 +13,11 @@ import { getActiveCompanyId } from "@/lib/auth/company-context";
 // Regex constants
 const PO_NUMBER_REGEX = /PO-(\d{4})-(\d+)/;
 
-import { ActionError, ERROR_CODES, ERROR_MESSAGES } from "@/lib/errors/action-error";
+import {
+	ActionError,
+	ERROR_CODES,
+	ERROR_MESSAGES,
+} from "@/lib/errors/action-error";
 import {
 	type ActionResult,
 	assertAuthenticated,
@@ -26,7 +30,10 @@ import { purchaseOrderInsertSchema } from "@/lib/validations/database-schemas";
 /**
  * Generate unique PO number
  */
-async function generatePONumber(supabase: any, companyId: string): Promise<string> {
+async function generatePONumber(
+	supabase: any,
+	companyId: string,
+): Promise<string> {
 	const { data: latestPO } = await supabase
 		.from("purchase_orders")
 		.select("po_number")
@@ -60,7 +67,7 @@ function calculateTotals(lineItems: any[]): {
 } {
 	const subtotal = lineItems.reduce(
 		(sum, item) => sum + (item.total || item.unit_price * item.quantity),
-		0
+		0,
 	);
 
 	// Tax and shipping would come from form data or be calculated
@@ -79,11 +86,16 @@ function calculateTotals(lineItems: any[]): {
 /**
  * Get a single purchase order by ID with relations
  */
-export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>> {
+export async function getPurchaseOrder(
+	poId: string,
+): Promise<ActionResult<any>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -95,7 +107,11 @@ export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>>
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Simplified query without vendors table (doesn't exist in current schema)
@@ -107,7 +123,10 @@ export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>>
 			.single();
 
 		if (error) {
-			throw new ActionError("Failed to fetch purchase order", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to fetch purchase order",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		assertExists(po, "Purchase order");
@@ -119,11 +138,16 @@ export async function getPurchaseOrder(poId: string): Promise<ActionResult<any>>
 /**
  * Create a new purchase order
  */
-export async function createPurchaseOrder(formData: FormData): Promise<ActionResult<string>> {
+export async function createPurchaseOrder(
+	formData: FormData,
+): Promise<ActionResult<string>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -135,7 +159,11 @@ export async function createPurchaseOrder(formData: FormData): Promise<ActionRes
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Parse line items from JSON
@@ -145,17 +173,24 @@ export async function createPurchaseOrder(formData: FormData): Promise<ActionRes
 			try {
 				lineItems = JSON.parse(lineItemsString);
 			} catch {
-				throw new ActionError("Invalid line items data", ERROR_CODES.VALIDATION_FAILED);
+				throw new ActionError(
+					"Invalid line items data",
+					ERROR_CODES.VALIDATION_FAILED,
+				);
 			}
 		}
 
 		if (lineItems.length === 0) {
-			throw new ActionError("At least one line item is required", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"At least one line item is required",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
 		// Generate PO number if not provided
 		const poNumber =
-			formData.get("po_number")?.toString() || (await generatePONumber(supabase, activeCompanyId));
+			formData.get("po_number")?.toString() ||
+			(await generatePONumber(supabase, activeCompanyId));
 
 		// Get vendor info if vendor_id is provided
 		let vendorName = formData.get("vendor") as string;
@@ -178,7 +213,10 @@ export async function createPurchaseOrder(formData: FormData): Promise<ActionRes
 		}
 
 		if (!vendorName) {
-			throw new ActionError("Vendor name is required", ERROR_CODES.VALIDATION_FAILED);
+			throw new ActionError(
+				"Vendor name is required",
+				ERROR_CODES.VALIDATION_FAILED,
+			);
 		}
 
 		// Calculate totals
@@ -252,7 +290,10 @@ export async function createPurchaseOrder(formData: FormData): Promise<ActionRes
 			.single();
 
 		if (error) {
-			throw new ActionError("Failed to create purchase order", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to create purchase order",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		assertExists(po, "Purchase order");
@@ -270,12 +311,15 @@ export async function createPurchaseOrder(formData: FormData): Promise<ActionRes
 export async function updatePurchaseOrderStatus(
 	poId: string,
 	status: string,
-	_notes?: string
+	_notes?: string,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -287,7 +331,11 @@ export async function updatePurchaseOrderStatus(
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify PO exists and belongs to company
@@ -303,7 +351,7 @@ export async function updatePurchaseOrderStatus(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403
+				403,
 			);
 		}
 
@@ -329,10 +377,16 @@ export async function updatePurchaseOrderStatus(
 		}
 
 		// Update purchase order
-		const { error } = await supabase.from("purchase_orders").update(updateData).eq("id", poId);
+		const { error } = await supabase
+			.from("purchase_orders")
+			.update(updateData)
+			.eq("id", poId);
 
 		if (error) {
-			throw new ActionError("Failed to update purchase order status", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to update purchase order status",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/purchase-orders");
@@ -348,12 +402,15 @@ export async function updatePurchaseOrderVendor(
 	vendorId: string | null,
 	vendorName: string,
 	vendorEmail?: string | null,
-	vendorPhone?: string | null
+	vendorPhone?: string | null,
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -364,7 +421,11 @@ export async function updatePurchaseOrderVendor(
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify PO exists and belongs to company
@@ -380,7 +441,7 @@ export async function updatePurchaseOrderVendor(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403
+				403,
 			);
 		}
 
@@ -416,7 +477,10 @@ export async function updatePurchaseOrderVendor(
 			.eq("id", poId);
 
 		if (error) {
-			throw new ActionError("Failed to update vendor", ERROR_CODES.DB_QUERY_ERROR);
+			throw new ActionError(
+				"Failed to update vendor",
+				ERROR_CODES.DB_QUERY_ERROR,
+			);
 		}
 
 		revalidatePath("/dashboard/work/purchase-orders");
@@ -427,7 +491,9 @@ export async function updatePurchaseOrderVendor(
 /**
  * Approve a purchase order
  */
-export async function approvePurchaseOrder(poId: string): Promise<ActionResult<void>> {
+export async function approvePurchaseOrder(
+	poId: string,
+): Promise<ActionResult<void>> {
 	return updatePurchaseOrderStatus(poId, "approved");
 }
 
@@ -436,12 +502,15 @@ export async function approvePurchaseOrder(poId: string): Promise<ActionResult<v
  */
 export async function updatePurchaseOrderLineItems(
 	poId: string,
-	lineItems: any[]
+	lineItems: any[],
 ): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -453,7 +522,11 @@ export async function updatePurchaseOrderLineItems(
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Verify PO exists and belongs to company
@@ -469,7 +542,7 @@ export async function updatePurchaseOrderLineItems(
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403
+				403,
 			);
 		}
 
@@ -490,7 +563,7 @@ export async function updatePurchaseOrderLineItems(
 		if (error) {
 			throw new ActionError(
 				"Failed to update purchase order line items",
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 
@@ -503,7 +576,7 @@ export async function updatePurchaseOrderLineItems(
  * Archive a purchase order (soft delete)
  */
 export async function archivePurchaseOrder(
-	poId: string
+	poId: string,
 ): Promise<{ success: boolean; error?: string }> {
 	try {
 		const supabase = await createClient();
@@ -544,11 +617,16 @@ export async function archivePurchaseOrder(
  * Removes the job association (sets job_id to NULL)
  * Bidirectional operation - updates both PO and job views
  */
-export async function unlinkPurchaseOrderFromJob(poId: string): Promise<ActionResult<void>> {
+export async function unlinkPurchaseOrderFromJob(
+	poId: string,
+): Promise<ActionResult<void>> {
 	return withErrorHandling(async () => {
 		const supabase = await createClient();
 		if (!supabase) {
-			throw new ActionError("Database connection failed", ERROR_CODES.DB_CONNECTION_ERROR);
+			throw new ActionError(
+				"Database connection failed",
+				ERROR_CODES.DB_CONNECTION_ERROR,
+			);
 		}
 
 		const {
@@ -559,7 +637,11 @@ export async function unlinkPurchaseOrderFromJob(poId: string): Promise<ActionRe
 		const activeCompanyId = await getActiveCompanyId();
 
 		if (!activeCompanyId) {
-			throw new ActionError("You must be part of a company", ERROR_CODES.AUTH_FORBIDDEN, 403);
+			throw new ActionError(
+				"You must be part of a company",
+				ERROR_CODES.AUTH_FORBIDDEN,
+				403,
+			);
 		}
 
 		// Get current PO to verify exists and get job_id for revalidation
@@ -570,14 +652,17 @@ export async function unlinkPurchaseOrderFromJob(poId: string): Promise<ActionRe
 			.single();
 
 		if (fetchError || !po) {
-			throw new ActionError("Purchase order not found", ERROR_CODES.DB_RECORD_NOT_FOUND);
+			throw new ActionError(
+				"Purchase order not found",
+				ERROR_CODES.DB_RECORD_NOT_FOUND,
+			);
 		}
 
 		if (po.company_id !== activeCompanyId) {
 			throw new ActionError(
 				ERROR_MESSAGES.forbidden("purchase order"),
 				ERROR_CODES.AUTH_FORBIDDEN,
-				403
+				403,
 			);
 		}
 
@@ -592,7 +677,7 @@ export async function unlinkPurchaseOrderFromJob(poId: string): Promise<ActionRe
 		if (unlinkError) {
 			throw new ActionError(
 				ERROR_MESSAGES.operationFailed("unlink purchase order from job"),
-				ERROR_CODES.DB_QUERY_ERROR
+				ERROR_CODES.DB_QUERY_ERROR,
 			);
 		}
 

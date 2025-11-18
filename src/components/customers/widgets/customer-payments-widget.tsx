@@ -7,8 +7,8 @@
 import { CreditCard } from "lucide-react";
 import Link from "next/link";
 import { ProgressiveWidget, WidgetSkeleton } from "@/components/progressive";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCustomerPayments } from "@/hooks/use-customer-360";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
@@ -28,15 +28,25 @@ export function CustomerPaymentsWidget({
 			loadImmediately={loadImmediately}
 		>
 			{({ isVisible }) => {
-				const { data: payments, isLoading, error } = useCustomerPayments(customerId, isVisible);
+				const {
+					data: payments,
+					isLoading,
+					error,
+				} = useCustomerPayments(customerId, isVisible);
 
 				if (isLoading) return <WidgetSkeleton rows={3} />;
 				if (error)
 					return (
-						<div className="text-muted-foreground text-center text-sm">Failed to load payments</div>
+						<div className="text-muted-foreground text-center text-sm">
+							Failed to load payments
+						</div>
 					);
 				if (!payments || payments.length === 0)
-					return <div className="text-muted-foreground text-center text-sm">No payments found</div>;
+					return (
+						<div className="text-muted-foreground text-center text-sm">
+							No payments found
+						</div>
+					);
 
 				return (
 					<div className="space-y-3">
@@ -56,7 +66,9 @@ export function CustomerPaymentsWidget({
 												{payment.payment_method || "Unknown"}
 											</Badge>
 										</div>
-										<p className="text-muted-foreground text-xs">{payment.status}</p>
+										<p className="text-muted-foreground text-xs">
+											{payment.status}
+										</p>
 										<p className="text-muted-foreground text-xs">
 											{formatDate(payment.processed_at || payment.created_at)}
 										</p>

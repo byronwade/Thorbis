@@ -20,7 +20,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -48,7 +54,9 @@ export function QuickActions() {
 		<Card>
 			<CardHeader>
 				<CardTitle>Quick Actions</CardTitle>
-				<CardDescription>Manage funds between accounts and buckets</CardDescription>
+				<CardDescription>
+					Manage funds between accounts and buckets
+				</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
@@ -59,7 +67,9 @@ export function QuickActions() {
 								<ArrowLeftRight className="h-5 w-5" />
 								<div className="text-center">
 									<div className="text-sm font-semibold">Transfer Funds</div>
-									<div className="text-muted-foreground text-xs">Between accounts</div>
+									<div className="text-muted-foreground text-xs">
+										Between accounts
+									</div>
 								</div>
 							</Button>
 						</DialogTrigger>
@@ -78,9 +88,15 @@ export function QuickActions() {
 											<SelectValue placeholder="Select account" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="checking">Business Checking (•••• 4521)</SelectItem>
-											<SelectItem value="savings">Business Savings (•••• 8832)</SelectItem>
-											<SelectItem value="operating">Operating Account (•••• 2341)</SelectItem>
+											<SelectItem value="checking">
+												Business Checking (•••• 4521)
+											</SelectItem>
+											<SelectItem value="savings">
+												Business Savings (•••• 8832)
+											</SelectItem>
+											<SelectItem value="operating">
+												Operating Account (•••• 2341)
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -92,9 +108,15 @@ export function QuickActions() {
 											<SelectValue placeholder="Select account" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="checking">Business Checking (•••• 4521)</SelectItem>
-											<SelectItem value="savings">Business Savings (•••• 8832)</SelectItem>
-											<SelectItem value="operating">Operating Account (•••• 2341)</SelectItem>
+											<SelectItem value="checking">
+												Business Checking (•••• 4521)
+											</SelectItem>
+											<SelectItem value="savings">
+												Business Savings (•••• 8832)
+											</SelectItem>
+											<SelectItem value="operating">
+												Operating Account (•••• 2341)
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -103,7 +125,12 @@ export function QuickActions() {
 									<Label htmlFor="amount">Amount</Label>
 									<div className="relative">
 										<DollarSign className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-										<Input className="pl-9" id="amount" placeholder="0.00" type="number" />
+										<Input
+											className="pl-9"
+											id="amount"
+											placeholder="0.00"
+											type="number"
+										/>
 									</div>
 								</div>
 
@@ -113,10 +140,15 @@ export function QuickActions() {
 								</div>
 							</div>
 							<DialogFooter>
-								<Button onClick={() => setTransferOpen(false)} variant="outline">
+								<Button
+									onClick={() => setTransferOpen(false)}
+									variant="outline"
+								>
 									Cancel
 								</Button>
-								<Button onClick={() => setTransferOpen(false)}>Transfer Funds</Button>
+								<Button onClick={() => setTransferOpen(false)}>
+									Transfer Funds
+								</Button>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
@@ -128,7 +160,9 @@ export function QuickActions() {
 								<Layers className="h-5 w-5" />
 								<div className="text-center">
 									<div className="text-sm font-semibold">Allocate Funds</div>
-									<div className="text-muted-foreground text-xs">To virtual bucket</div>
+									<div className="text-muted-foreground text-xs">
+										To virtual bucket
+									</div>
 								</div>
 							</Button>
 						</DialogTrigger>
@@ -147,9 +181,15 @@ export function QuickActions() {
 											<SelectValue placeholder="Select account" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="checking">Business Checking - $125,450</SelectItem>
-											<SelectItem value="savings">Business Savings - $75,000</SelectItem>
-											<SelectItem value="operating">Operating Account - $42,800</SelectItem>
+											<SelectItem value="checking">
+												Business Checking - $125,450
+											</SelectItem>
+											<SelectItem value="savings">
+												Business Savings - $75,000
+											</SelectItem>
+											<SelectItem value="operating">
+												Operating Account - $42,800
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -161,15 +201,21 @@ export function QuickActions() {
 											<SelectValue placeholder="Select bucket" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="payroll">Payroll Reserve - $85,000 / $120,000</SelectItem>
-											<SelectItem value="tax">Tax Reserve - $15,000 / $25,000</SelectItem>
+											<SelectItem value="payroll">
+												Payroll Reserve - $85,000 / $120,000
+											</SelectItem>
+											<SelectItem value="tax">
+												Tax Reserve - $15,000 / $25,000
+											</SelectItem>
 											<SelectItem value="marketing">
 												Marketing Budget - $12,500 / $20,000
 											</SelectItem>
 											<SelectItem value="equipment">
 												Equipment Reserve - $8,500 / $20,000
 											</SelectItem>
-											<SelectItem value="emergency">Emergency Fund - $45,000 / $75,000</SelectItem>
+											<SelectItem value="emergency">
+												Emergency Fund - $45,000 / $75,000
+											</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -178,15 +224,25 @@ export function QuickActions() {
 									<Label htmlFor="allocate-amount">Amount</Label>
 									<div className="relative">
 										<DollarSign className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-										<Input className="pl-9" id="allocate-amount" placeholder="0.00" type="number" />
+										<Input
+											className="pl-9"
+											id="allocate-amount"
+											placeholder="0.00"
+											type="number"
+										/>
 									</div>
 								</div>
 							</div>
 							<DialogFooter>
-								<Button onClick={() => setAllocateOpen(false)} variant="outline">
+								<Button
+									onClick={() => setAllocateOpen(false)}
+									variant="outline"
+								>
 									Cancel
 								</Button>
-								<Button onClick={() => setAllocateOpen(false)}>Allocate Funds</Button>
+								<Button onClick={() => setAllocateOpen(false)}>
+									Allocate Funds
+								</Button>
 							</DialogFooter>
 						</DialogContent>
 					</Dialog>
@@ -196,7 +252,9 @@ export function QuickActions() {
 						<RefreshCw className="h-5 w-5" />
 						<div className="text-center">
 							<div className="text-sm font-semibold">Sync Accounts</div>
-							<div className="text-muted-foreground text-xs">Update balances</div>
+							<div className="text-muted-foreground text-xs">
+								Update balances
+							</div>
 						</div>
 					</Button>
 
@@ -205,7 +263,9 @@ export function QuickActions() {
 						<Wallet className="h-5 w-5" />
 						<div className="text-center">
 							<div className="text-sm font-semibold">Split Payout</div>
-							<div className="text-muted-foreground text-xs">Checking & savings</div>
+							<div className="text-muted-foreground text-xs">
+								Checking & savings
+							</div>
 						</div>
 					</Button>
 				</div>

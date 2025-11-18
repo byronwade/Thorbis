@@ -41,7 +41,7 @@ export function SmartContactInput({
 			lastName: "",
 			email: "",
 			phone: "",
-		}
+		},
 	);
 	const [pasteText, setPasteText] = useState("");
 	const [showPasteHelper, setShowPasteHelper] = useState(false);
@@ -77,9 +77,14 @@ export function SmartContactInput({
 	};
 
 	// Extract name from text
-	const extractName = (text: string): { first: string; last: string } | null => {
+	const extractName = (
+		text: string,
+	): { first: string; last: string } | null => {
 		// Remove email and phone
-		let cleaned = text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, "");
+		let cleaned = text.replace(
+			/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g,
+			"",
+		);
 		cleaned = cleaned.replace(/[\d()\-\s.]+/g, " ");
 		cleaned = cleaned.trim();
 
@@ -191,8 +196,8 @@ export function SmartContactInput({
 					) : (
 						<div>
 							<p className="text-muted-foreground mb-3 text-sm">
-								Paste contact info from anywhere (email signature, business card, text message) and
-								we'll auto-fill the fields.
+								Paste contact info from anywhere (email signature, business
+								card, text message) and we'll auto-fill the fields.
 							</p>
 							<button
 								className="text-primary text-sm underline"

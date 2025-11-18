@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import type { MarketingIntegrationContent } from "@/lib/marketing/types";
 import { cn } from "@/lib/utils";
 import { getMarketingIcon } from "./marketing-icons";
@@ -10,7 +16,10 @@ type IntegrationCardProps = {
 	className?: string;
 };
 
-export function IntegrationCard({ integration, className }: IntegrationCardProps) {
+export function IntegrationCard({
+	integration,
+	className,
+}: IntegrationCardProps) {
 	const Icon = getMarketingIcon(integration.valueProps[0]?.icon ?? "sparkles");
 
 	return (
@@ -18,7 +27,7 @@ export function IntegrationCard({ integration, className }: IntegrationCardProps
 			<Card
 				className={cn(
 					"focus-visible:ring-ring/50 h-full transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:outline-none",
-					className
+					className,
 				)}
 			>
 				<CardHeader className="space-y-4">
@@ -28,7 +37,9 @@ export function IntegrationCard({ integration, className }: IntegrationCardProps
 						</span>
 						<div>
 							<CardTitle className="text-xl">{integration.name}</CardTitle>
-							<p className="text-muted-foreground text-sm">{integration.partner.name}</p>
+							<p className="text-muted-foreground text-sm">
+								{integration.partner.name}
+							</p>
 						</div>
 					</div>
 					<CardDescription>{integration.summary}</CardDescription>
@@ -41,7 +52,9 @@ export function IntegrationCard({ integration, className }: IntegrationCardProps
 							</Badge>
 						))}
 					</div>
-					<p className="text-primary text-sm font-medium">Explore integration →</p>
+					<p className="text-primary text-sm font-medium">
+						Explore integration →
+					</p>
 				</CardContent>
 			</Card>
 		</Link>

@@ -27,7 +27,11 @@ import {
 } from "@/components/ui/select";
 
 // React component that renders the block
-export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: any) {
+export function CustomerInfoBlockComponent({
+	node,
+	updateAttributes,
+	editor,
+}: any) {
 	const {
 		displayName,
 		firstName,
@@ -53,14 +57,19 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 				<div className="space-y-6">
 					{/* Profile Display Name - Full Width at Top */}
 					<div className="space-y-2">
-						<Label className="flex items-center gap-1" htmlFor={`displayName-${node.attrs.id}`}>
+						<Label
+							className="flex items-center gap-1"
+							htmlFor={`displayName-${node.attrs.id}`}
+						>
 							<User className="size-3" />
 							Profile Display Name
 						</Label>
 						<Input
 							className="text-lg font-medium"
 							id={`displayName-${node.attrs.id}`}
-							onChange={(e) => updateAttributes({ displayName: e.target.value })}
+							onChange={(e) =>
+								updateAttributes({ displayName: e.target.value })
+							}
 							placeholder="e.g., Mr. Wade, Ms. Johnson, The Smiths"
 							value={displayName || ""}
 						/>
@@ -75,7 +84,9 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 							<Label htmlFor={`firstName-${node.attrs.id}`}>First Name *</Label>
 							<Input
 								id={`firstName-${node.attrs.id}`}
-								onChange={(e) => updateAttributes({ firstName: e.target.value })}
+								onChange={(e) =>
+									updateAttributes({ firstName: e.target.value })
+								}
 								placeholder="John"
 								value={firstName || ""}
 							/>
@@ -94,7 +105,10 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 
 						{/* Email */}
 						<div className="space-y-2">
-							<Label className="flex items-center gap-1" htmlFor={`email-${node.attrs.id}`}>
+							<Label
+								className="flex items-center gap-1"
+								htmlFor={`email-${node.attrs.id}`}
+							>
 								<Mail className="size-3" />
 								Email *
 							</Label>
@@ -109,7 +123,10 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 
 						{/* Phone */}
 						<div className="space-y-2">
-							<Label className="flex items-center gap-1" htmlFor={`phone-${node.attrs.id}`}>
+							<Label
+								className="flex items-center gap-1"
+								htmlFor={`phone-${node.attrs.id}`}
+							>
 								<Phone className="size-3" />
 								Phone *
 							</Label>
@@ -133,7 +150,9 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 							</Label>
 							<Input
 								id={`secondaryPhone-${node.attrs.id}`}
-								onChange={(e) => updateAttributes({ secondaryPhone: e.target.value })}
+								onChange={(e) =>
+									updateAttributes({ secondaryPhone: e.target.value })
+								}
 								placeholder="(555) 987-6543"
 								type="tel"
 								value={secondaryPhone || ""}
@@ -142,13 +161,18 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 
 						{/* Billing Email */}
 						<div className="space-y-2">
-							<Label className="flex items-center gap-1" htmlFor={`billingEmail-${node.attrs.id}`}>
+							<Label
+								className="flex items-center gap-1"
+								htmlFor={`billingEmail-${node.attrs.id}`}
+							>
 								<Mail className="size-3" />
 								Billing Email
 							</Label>
 							<Input
 								id={`billingEmail-${node.attrs.id}`}
-								onChange={(e) => updateAttributes({ billingEmail: e.target.value })}
+								onChange={(e) =>
+									updateAttributes({ billingEmail: e.target.value })
+								}
 								placeholder="billing@example.com"
 								type="email"
 								value={billingEmail || ""}
@@ -157,13 +181,18 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 
 						{/* Company Name */}
 						<div className="space-y-2">
-							<Label className="flex items-center gap-1" htmlFor={`companyName-${node.attrs.id}`}>
+							<Label
+								className="flex items-center gap-1"
+								htmlFor={`companyName-${node.attrs.id}`}
+							>
 								<Building2 className="size-3" />
 								Company Name
 							</Label>
 							<Input
 								id={`companyName-${node.attrs.id}`}
-								onChange={(e) => updateAttributes({ companyName: e.target.value })}
+								onChange={(e) =>
+									updateAttributes({ companyName: e.target.value })
+								}
 								placeholder="Acme Corporation"
 								value={companyName || ""}
 							/>
@@ -171,9 +200,13 @@ export function CustomerInfoBlockComponent({ node, updateAttributes, editor }: a
 
 						{/* Customer Type */}
 						<div className="space-y-2">
-							<Label htmlFor={`customerType-${node.attrs.id}`}>Customer Type *</Label>
+							<Label htmlFor={`customerType-${node.attrs.id}`}>
+								Customer Type *
+							</Label>
 							<Select
-								onValueChange={(value) => updateAttributes({ customerType: value })}
+								onValueChange={(value) =>
+									updateAttributes({ customerType: value })
+								}
 								value={customerType || "residential"}
 							>
 								<SelectTrigger id={`customerType-${node.attrs.id}`}>
@@ -247,7 +280,11 @@ export const CustomerInfoBlock = Node.create({
 	},
 
 	renderHTML({ HTMLAttributes }) {
-		return ["div", mergeAttributes(HTMLAttributes, { "data-type": "customer-info-block" }), 0];
+		return [
+			"div",
+			mergeAttributes(HTMLAttributes, { "data-type": "customer-info-block" }),
+			0,
+		];
 	},
 
 	addNodeView() {

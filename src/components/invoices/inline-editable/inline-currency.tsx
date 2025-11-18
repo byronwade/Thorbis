@@ -62,7 +62,12 @@ export function InlineCurrency({
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
 		// Only allow numbers and decimal point
-		if (e.key.length === 1 && !/[0-9.]/.test(e.key) && !e.ctrlKey && !e.metaKey) {
+		if (
+			e.key.length === 1 &&
+			!/[0-9.]/.test(e.key) &&
+			!e.ctrlKey &&
+			!e.metaKey
+		) {
 			e.preventDefault();
 		}
 
@@ -96,7 +101,7 @@ export function InlineCurrency({
 						"px-1",
 						"-mx-1",
 					],
-				className
+				className,
 			)}
 			contentEditable={isEditable && !readOnly}
 			onBlur={handleBlur}

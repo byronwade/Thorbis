@@ -79,7 +79,11 @@ export function CategoryBreadcrumbs() {
 										<BreadcrumbPage>{segment.label}</BreadcrumbPage>
 									) : (
 										<BreadcrumbLink asChild>
-											<button className="hover:underline" onClick={segment.onClick} type="button">
+											<button
+												className="hover:underline"
+												onClick={segment.onClick}
+												type="button"
+											>
 												{index === 0 && <Home className="mr-1 inline size-3" />}
 												{segment.label}
 											</button>

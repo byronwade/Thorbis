@@ -1,6 +1,13 @@
 "use client";
 
-import { Archive, Calendar, Download, FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Archive,
+	Calendar,
+	Download,
+	FileText,
+	MoreHorizontal,
+	Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,11 +54,13 @@ const SERVICE_AGREEMENT_STATUS_CONFIG = {
 		label: "Pending",
 	},
 	expired: {
-		className: "bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
+		className:
+			"bg-destructive text-destructive dark:bg-destructive/20 dark:text-destructive",
 		label: "Expired",
 	},
 	cancelled: {
-		className: "bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
+		className:
+			"bg-muted text-foreground dark:bg-foreground/20 dark:text-muted-foreground",
 		label: "Cancelled",
 	},
 } as const;
@@ -59,12 +68,18 @@ const SERVICE_AGREEMENT_STATUS_CONFIG = {
 export function ServiceAgreementsTable({
 	agreements,
 	itemsPerPage = 50,
+	currentPage = 1,
+	totalCount,
 }: {
 	agreements: ServiceAgreement[];
 	itemsPerPage?: number;
+	currentPage?: number;
+	totalCount?: number;
 }) {
 	// Archive filter state
-	const archiveFilter = useArchiveStore((state) => state.filters.service_agreements);
+	const archiveFilter = useArchiveStore(
+		(state) => state.filters.service_agreements,
+	);
 
 	// Filter agreements based on archive status
 	const filteredAgreements = agreements.filter((agreement) => {
@@ -123,7 +138,9 @@ export function ServiceAgreementsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (agreement) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{agreement.startDate}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{agreement.startDate}
+				</span>
 			),
 		},
 		{
@@ -134,7 +151,9 @@ export function ServiceAgreementsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (agreement) => (
-				<span className="text-muted-foreground text-sm tabular-nums">{agreement.endDate}</span>
+				<span className="text-muted-foreground text-sm tabular-nums">
+					{agreement.endDate}
+				</span>
 			),
 		},
 		{
@@ -145,7 +164,9 @@ export function ServiceAgreementsTable({
 			align: "right",
 			hideable: true,
 			render: (agreement) => (
-				<span className="font-semibold tabular-nums">{formatCurrency(agreement.value)}</span>
+				<span className="font-semibold tabular-nums">
+					{formatCurrency(agreement.value)}
+				</span>
 			),
 		},
 		{
@@ -238,15 +259,21 @@ export function ServiceAgreementsTable({
 			bulkActions={bulkActions}
 			columns={columns}
 			data={filteredAgreements}
-			emptyIcon={<FileText className="text-muted-foreground mx-auto h-12 w-12" />}
+			emptyIcon={
+				<FileText className="text-muted-foreground mx-auto h-12 w-12" />
+			}
 			emptyMessage="No service agreements found"
 			enableSelection={true}
 			entity="service_agreements"
 			getHighlightClass={() => "bg-destructive/30 dark:bg-destructive/10"}
 			getItemId={(agreement) => agreement.id}
-			isArchived={(agreement) => Boolean(agreement.archived_at || agreement.deleted_at)}
+			isArchived={(agreement) =>
+				Boolean(agreement.archived_at || agreement.deleted_at)
+			}
 			isHighlighted={(agreement) => agreement.status === "expired"}
 			itemsPerPage={itemsPerPage}
+			currentPageFromServer={currentPage}
+			serverPagination
 			onRefresh={() => window.location.reload()}
 			onRowClick={(agreement) =>
 				(window.location.href = `/dashboard/work/service-agreements/${agreement.id}`)
@@ -255,6 +282,7 @@ export function ServiceAgreementsTable({
 			searchPlaceholder="Search agreements by number, customer, type, or status..."
 			showArchived={archiveFilter !== "active"}
 			showRefresh={false}
+			totalCount={totalCount ?? filteredAgreements.length}
 		/>
 	);
 }

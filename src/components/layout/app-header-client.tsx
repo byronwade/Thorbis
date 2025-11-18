@@ -232,7 +232,10 @@ export function AppHeaderClient({
 	// Close mobile menu when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+			if (
+				mobileMenuRef.current &&
+				!mobileMenuRef.current.contains(event.target as Node)
+			) {
 				closeMobileMenu();
 			}
 		};
@@ -260,7 +263,11 @@ export function AppHeaderClient({
 					onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
 					type="button"
 				>
-					{isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+					{isMobileMenuOpen ? (
+						<X className="size-4" />
+					) : (
+						<Menu className="size-4" />
+					)}
 					<span className="sr-only">Toggle Menu</span>
 				</button>
 
@@ -270,7 +277,13 @@ export function AppHeaderClient({
 					data-slot="button"
 					href="/"
 				>
-					<Image alt="Thorbis" className="size-5" height={20} src="/ThorbisLogo.webp" width={20} />
+					<Image
+						alt="Thorbis"
+						className="size-5"
+						height={20}
+						src="/ThorbisLogo.webp"
+						width={20}
+					/>
 					<span className="sr-only">Thorbis</span>
 				</Link>
 
@@ -336,7 +349,9 @@ export function AppHeaderClient({
 						{/* Sidebar Sheet */}
 						<div
 							className={`safe-top safe-bottom safe-left bg-background fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] shadow-2xl duration-300 lg:hidden ${
-								isClosing ? "slide-out-to-left animate-out" : "slide-in-from-left animate-in"
+								isClosing
+									? "slide-out-to-left animate-out"
+									: "slide-in-from-left animate-in"
 							}`}
 							ref={mobileMenuRef}
 						>
@@ -382,7 +397,9 @@ export function AppHeaderClient({
 															<div
 																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
 															>
-																<span className={`text-xs font-bold ${item.mobileIconColor}`}>
+																<span
+																	className={`text-xs font-bold ${item.mobileIconColor}`}
+																>
 																	{item.mobileIcon}
 																</span>
 															</div>
@@ -421,7 +438,9 @@ export function AppHeaderClient({
 															<div
 																className={`flex h-8 w-8 items-center justify-center rounded-md ${item.mobileIconBg}`}
 															>
-																<span className={`text-xs font-bold ${item.mobileIconColor}`}>
+																<span
+																	className={`text-xs font-bold ${item.mobileIconColor}`}
+																>
 																	{item.mobileIcon}
 																</span>
 															</div>
@@ -444,7 +463,10 @@ export function AppHeaderClient({
 					<QuickAddDropdown />
 
 					{/* Phone/Calls */}
-					<PhoneDropdown companyId={activeCompanyId || ""} companyPhones={companyPhones} />
+					<PhoneDropdown
+						companyId={activeCompanyId || ""}
+						companyPhones={companyPhones}
+					/>
 
 					{/* TV Display */}
 					<Link href="/dashboard/tv" title="TV Display">
@@ -479,8 +501,8 @@ export function AppHeaderClient({
 										onboardingComplete: company.onboardingComplete,
 										hasPayment: company.hasPayment,
 									},
-								])
-							).values()
+								]),
+							).values(),
 						)}
 						user={{
 							name: userProfile.name,

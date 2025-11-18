@@ -66,11 +66,15 @@ export function JobHeader({ job, onUpdate }: JobHeaderProps) {
 			<div className="grid gap-4 md:grid-cols-2">
 				<div>
 					<Label>Service Type</Label>
-					<p className="mt-2 text-sm">{job.service_type || job.job_type || "Not specified"}</p>
+					<p className="mt-2 text-sm">
+						{job.service_type || job.job_type || "Not specified"}
+					</p>
 				</div>
 				<div>
 					<Label>Job Number</Label>
-					<p className="mt-2 font-mono text-sm">{job.job_number || job.id.slice(0, 8)}</p>
+					<p className="mt-2 font-mono text-sm">
+						{job.job_number || job.id.slice(0, 8)}
+					</p>
 				</div>
 			</div>
 

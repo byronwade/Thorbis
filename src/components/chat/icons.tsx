@@ -88,7 +88,12 @@ export const StopIcon = ({
 		width={size}
 		{...props}
 	>
-		<path clipRule="evenodd" d="M3 3H13V13H3V3Z" fill="currentColor" fillRule="evenodd" />
+		<path
+			clipRule="evenodd"
+			d="M3 3H13V13H3V3Z"
+			fill="currentColor"
+			fillRule="evenodd"
+		/>
 	</svg>
 );
 
@@ -175,7 +180,12 @@ export const LoaderIcon = ({ size = 16 }: { size?: number }) => (
 	>
 		<g clipPath="url(#clip0_2393_1490)">
 			<path d="M8 0V4" stroke="currentColor" strokeWidth="1.5" />
-			<path d="M8 16V12" opacity="0.5" stroke="currentColor" strokeWidth="1.5" />
+			<path
+				d="M8 16V12"
+				opacity="0.5"
+				stroke="currentColor"
+				strokeWidth="1.5"
+			/>
 			<path
 				d="M3.29773 1.52783L5.64887 4.7639"
 				opacity="0.9"

@@ -38,8 +38,13 @@ import {
 	WifiOff,
 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { getWebRTCCredentials } from "@/actions/telnyx";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useTransition,
+} from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -58,7 +63,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -70,14 +79,25 @@ import { useDialerCustomers } from "@/hooks/use-dialer-customers";
 import { useTelnyxWebRTC } from "@/hooks/use-telnyx-webrtc";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/lib/stores/ui-store";
+import {
+	fetchWebRTCCredentialsOnce,
+	resetWebRTCCredentialsCache,
+} from "@/lib/telnyx/web-credentials-client";
 
 type Customer = {
 	id: string;
-	first_name: string;
-	last_name: string;
-	email: string;
-	phone: string;
-	company_name?: string;
+	first_name: string | null;
+	last_name: string | null;
+	display_name: string | null;
+	email: string | null;
+	phone: string | null;
+	secondary_phone?: string | null;
+	company_name?: string | null;
+	address?: string | null;
+	address2?: string | null;
+	city?: string | null;
+	state?: string | null;
+	zip_code?: string | null;
 };
 
 type CompanyPhone = {
@@ -91,6 +111,52 @@ type PhoneDropdownProps = {
 	companyPhones?: CompanyPhone[];
 	incomingCallsCount?: number;
 };
+
+const cleanValue = (value?: string | null) => (value ?? "").trim();
+
+const normalizeValue = (value?: string | null) =>
+	cleanValue(value).toLowerCase();
+
+const digitsOnly = (value?: string | null) =>
+	cleanValue(value).replace(/\D/g, "");
+
+const getCustomerFullName = (customer: Customer) => {
+	const displayName = cleanValue(customer.display_name);
+	if (displayName) {
+		return displayName;
+	}
+
+	const nameParts = [
+		cleanValue(customer.first_name),
+		cleanValue(customer.last_name),
+	].filter(Boolean);
+	return (
+		nameParts.join(" ") || cleanValue(customer.email) || "Unknown Customer"
+	);
+};
+
+const getCustomerAddressString = (customer: Customer) => {
+	const cityState = [cleanValue(customer.city), cleanValue(customer.state)]
+		.filter(Boolean)
+		.join(", ");
+	return [
+		cleanValue(customer.address),
+		cleanValue(customer.address2),
+		cityState,
+		cleanValue(customer.zip_code),
+	]
+		.filter(Boolean)
+		.join(", ");
+};
+
+const getCustomerContactLine = (customer: Customer) =>
+	[
+		cleanValue(customer.phone),
+		cleanValue(customer.secondary_phone),
+		cleanValue(customer.email),
+	]
+		.filter(Boolean)
+		.join(" | ");
 
 export function PhoneDropdown({
 	companyId,
@@ -109,15 +175,18 @@ export function PhoneDropdown({
 	// Dialer state
 	const [toNumber, setToNumber] = useState("");
 	const [fromNumber, setFromNumber] = useState(companyPhones[0]?.number || "");
-	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+	const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+		null,
+	);
 	const [customerSearchOpen, setCustomerSearchOpen] = useState(false);
+	const [customerSearchQuery, setCustomerSearchQuery] = useState("");
 
 	// WebRTC state for browser calling
 	const [webrtcCredentials, setWebrtcCredentials] = useState<{
 		username: string;
 		password: string;
 	} | null>(null);
-	const [isLoadingWebRTC, setIsLoadingWebRTC] = useState(true);
+	const [isLoadingWebRTC, setIsLoadingWebRTC] = useState(false);
 
 	// Get call state from UI store
 	const callStatus = useUIStore((state) => state.call.status);
@@ -127,36 +196,54 @@ export function PhoneDropdown({
 	const hasIncomingCall = callStatus === "incoming";
 	const displayCount = incomingCallsCount ?? (hasIncomingCall ? 1 : 0);
 
-	// Load WebRTC credentials for browser audio calling
+	// Lazily load WebRTC credentials when dialer opens
 	useEffect(() => {
-		async function loadWebRTCCredentials() {
-			try {
-				const result = await getWebRTCCredentials();
+		if (!open || webrtcCredentials || isLoadingWebRTC) {
+			return;
+		}
 
+		let cancelled = false;
+		setIsLoadingWebRTC(true);
+
+		fetchWebRTCCredentialsOnce()
+			.then((result) => {
+				if (cancelled) {
+					return;
+				}
 				if (result.success && result.credential) {
 					setWebrtcCredentials({
 						username: result.credential.username,
 						password: result.credential.password,
 					});
-				} else {
+				} else if (result.error) {
 					toast.error(`WebRTC setup failed: ${result.error}`);
 				}
-			} catch (_error) {
-				toast.error("Failed to initialize calling. Please refresh the page.");
-			} finally {
-				setIsLoadingWebRTC(false);
-			}
-		}
-		loadWebRTCCredentials();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [toast.error]); // Only run once on mount - toast is stable but causes re-renders if included
+			})
+			.catch(() => {
+				if (!cancelled) {
+					toast.error("Failed to initialize calling. Please refresh the page.");
+					resetWebRTCCredentialsCache();
+				}
+			})
+			.finally(() => {
+				if (!cancelled) {
+					setIsLoadingWebRTC(false);
+				}
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [open, webrtcCredentials, isLoadingWebRTC, toast]);
 
 	// PERFORMANCE: Initialize WebRTC ONLY when dropdown is opened
 	// Prevents creating connections on every page load (was hitting Telnyx 5-connection limit)
 	// This was causing 2-8 second timeouts on EVERY page!
 	const webrtc = useTelnyxWebRTC({
-		username: open && webrtcCredentials?.username ? webrtcCredentials.username : "",
-		password: open && webrtcCredentials?.password ? webrtcCredentials.password : "",
+		username:
+			open && webrtcCredentials?.username ? webrtcCredentials.username : "",
+		password:
+			open && webrtcCredentials?.password ? webrtcCredentials.password : "",
 		autoConnect: false,
 		disabled: !open, // Don't initialize WebRTC unless dropdown is open
 		debug: true,
@@ -166,11 +253,21 @@ export function PhoneDropdown({
 
 	// Manually connect when credentials become available AND dropdown is open
 	useEffect(() => {
-		if (open && webrtcCredentials && !webrtc.isConnected && !webrtc.isConnecting) {
+		if (
+			open &&
+			webrtcCredentials &&
+			!webrtc.isConnected &&
+			!webrtc.isConnecting
+		) {
 			webrtc.connect().catch((error) => {
 				// Handle 403 account limit errors gracefully
-				if (error?.message?.includes("403") || error?.message?.includes("limit")) {
-					console.warn("[WebRTC] Account connection limit reached. Close other connections.");
+				if (
+					error?.message?.includes("403") ||
+					error?.message?.includes("limit")
+				) {
+					console.warn(
+						"[WebRTC] Account connection limit reached. Close other connections.",
+					);
 				}
 			});
 		}
@@ -204,16 +301,75 @@ export function PhoneDropdown({
 	// Handle customer selection
 	const handleCustomerSelect = useCallback((customer: Customer | null) => {
 		setSelectedCustomer(customer);
-		if (customer?.phone) {
-			setToNumber(customer.phone);
+		if (customer) {
+			const preferredNumber = customer.phone || customer.secondary_phone || "";
+			if (preferredNumber) {
+				setToNumber(preferredNumber);
+			}
 		}
+		setCustomerSearchQuery("");
 		setCustomerSearchOpen(false);
 	}, []);
+
+	const filteredCustomers = useMemo(() => {
+		const rawQuery = customerSearchQuery.trim();
+		if (!rawQuery) {
+			return customers;
+		}
+
+		const normalizedQuery = rawQuery.toLowerCase();
+		const numericQuery = rawQuery.replace(/\D/g, "");
+
+		return customers.filter((customer) => {
+			const addressString = getCustomerAddressString(customer);
+			const searchableStrings = [
+				customer.first_name,
+				customer.last_name,
+				`${customer.first_name ?? ""} ${customer.last_name ?? ""}`,
+				customer.display_name,
+				customer.email,
+				customer.company_name,
+				customer.phone,
+				customer.secondary_phone,
+				customer.city,
+				customer.state,
+				customer.zip_code,
+				addressString,
+			].map(normalizeValue);
+
+			if (searchableStrings.some((value) => value.includes(normalizedQuery))) {
+				return true;
+			}
+
+			if (numericQuery) {
+				const numericFields = [customer.phone, customer.secondary_phone]
+					.map((value) => digitsOnly(value))
+					.filter(Boolean);
+
+				if (numericFields.some((value) => value.includes(numericQuery))) {
+					return true;
+				}
+			}
+
+			return false;
+		});
+	}, [customers, customerSearchQuery]);
+
+	const hasActiveCustomerSearch = customerSearchQuery.trim().length > 0;
+
+	const displayedCustomers = useMemo(() => {
+		if (hasActiveCustomerSearch) {
+			return filteredCustomers;
+		}
+		return filteredCustomers.slice(0, 50);
+	}, [filteredCustomers, hasActiveCustomerSearch]);
 
 	// Handle call initiation using WebRTC for browser audio
 	const handleStartCall = useCallback(async () => {
 		if (!companyId) {
-			toast.error("No company selected. Please select a company to make calls.");
+			toast.error(
+				"No company selected. Please select a company to make calls.",
+			);
 			return;
 		}
 
@@ -242,7 +398,7 @@ export function PhoneDropdown({
 				const call = await webrtc.makeCall(normalizedTo, fromNumber);
 
 				const callingMessage = selectedCustomer
-					? `Calling ${selectedCustomer.first_name} ${selectedCustomer.last_name}`
+					? `Calling ${getCustomerFullName(selectedCustomer)}`
 					: `Calling ${toNumber}`;
 				toast.success(callingMessage);
 
@@ -265,7 +421,9 @@ export function PhoneDropdown({
 				setSelectedCustomer(null);
 			} catch (error) {
 				if (error instanceof Error && error.message.includes("permission")) {
-					toast.error("Microphone access denied. Please allow microphone access to make calls.");
+					toast.error(
+						"Microphone access denied. Please allow microphone access to make calls.",
+					);
 				} else {
 					toast.error("Failed to initiate call. Please try again.");
 				}
@@ -273,7 +431,15 @@ export function PhoneDropdown({
 		} else {
 			toast.error("Your browser does not support audio calling.");
 		}
-	}, [toNumber, fromNumber, companyId, selectedCustomer, isPending, toast, webrtc]);
+	}, [
+		toNumber,
+		fromNumber,
+		companyId,
+		selectedCustomer,
+		isPending,
+		toast,
+		webrtc,
+	]);
 
 	// Calculate values needed for rendering (before any returns)
 	const hasIncomingCalls = displayCount > 0;
@@ -282,7 +448,7 @@ export function PhoneDropdown({
 			fromNumber &&
 			companyPhones.length > 0 &&
 			webrtc.isConnected &&
-			!isLoadingWebRTC
+			!isLoadingWebRTC,
 	);
 
 	// Debug button state - MUST be before any conditional returns
@@ -320,7 +486,11 @@ export function PhoneDropdown({
 					title={hasIncomingCalls ? "Incoming Call" : "Phone Dialer"}
 					type="button"
 				>
-					{hasIncomingCalls ? <PhoneIncoming className="size-4" /> : <Phone className="size-4" />}
+					{hasIncomingCalls ? (
+						<PhoneIncoming className="size-4" />
+					) : (
+						<Phone className="size-4" />
+					)}
 					<span className="sr-only">Phone Dialer</span>
 					{hasIncomingCalls && (
 						<Badge
@@ -340,7 +510,9 @@ export function PhoneDropdown({
 							<PhoneCall className="text-primary size-5" />
 							<div>
 								<h3 className="text-sm font-semibold">Make a Call</h3>
-								<p className="text-muted-foreground text-xs">Browser audio calling</p>
+								<p className="text-muted-foreground text-xs">
+									Browser audio calling
+								</p>
 							</div>
 						</div>
 						{/* WebRTC Status Indicator */}
@@ -389,7 +561,9 @@ export function PhoneDropdown({
 								<div className="flex items-center gap-2">
 									<PhoneIncoming className="text-destructive size-4 animate-pulse" />
 									<div className="flex-1">
-										<p className="text-destructive text-sm font-semibold">Incoming Call</p>
+										<p className="text-destructive text-sm font-semibold">
+											Incoming Call
+										</p>
 										<p className="text-destructive/80 text-xs">
 											{caller?.name || caller?.number || "Unknown"}
 										</p>
@@ -403,7 +577,10 @@ export function PhoneDropdown({
 					{/* Customer Search */}
 					<div className="space-y-2">
 						<Label className="text-xs">Customer (Optional)</Label>
-						<Popover onOpenChange={setCustomerSearchOpen} open={customerSearchOpen}>
+						<Popover
+							onOpenChange={setCustomerSearchOpen}
+							open={customerSearchOpen}
+						>
 							<PopoverTrigger asChild>
 								<Button
 									className="w-full justify-start text-left font-normal"
@@ -413,38 +590,62 @@ export function PhoneDropdown({
 									<User className="mr-2 size-4 shrink-0" />
 									<span className="truncate">
 										{selectedCustomer
-											? `${selectedCustomer.first_name} ${selectedCustomer.last_name}`
+											? getCustomerFullName(selectedCustomer)
 											: "Select customer..."}
 									</span>
 								</Button>
 							</PopoverTrigger>
 							<PopoverContent align="start" className="w-80 p-0">
-								<Command>
-									<CommandInput placeholder="Search customers..." />
+								<Command shouldFilter={false}>
+									<CommandInput
+										onValueChange={setCustomerSearchQuery}
+										placeholder="Search by name, email, phone, or property address..."
+										value={customerSearchQuery}
+									/>
 									<CommandList>
 										<CommandEmpty>No customers found.</CommandEmpty>
 										<CommandGroup>
-											{customers.slice(0, 50).map((customer) => (
-												<CommandItem
-													key={customer.id}
-													onSelect={() => handleCustomerSelect(customer)}
-													value={`${customer.first_name} ${customer.last_name} ${customer.email} ${customer.phone}`}
-												>
-													<div className="flex flex-1 flex-col">
-														<span className="text-sm font-medium">
-															{customer.first_name} {customer.last_name}
-														</span>
-														{customer.company_name && (
-															<span className="text-muted-foreground text-xs">
-																{customer.company_name}
+											{displayedCustomers.map((customer) => {
+												const contactLine = getCustomerContactLine(customer);
+												const addressLine = getCustomerAddressString(customer);
+												const itemValue = [
+													getCustomerFullName(customer),
+													contactLine,
+													addressLine,
+													cleanValue(customer.company_name),
+												]
+													.filter(Boolean)
+													.join(" ");
+
+												return (
+													<CommandItem
+														key={customer.id}
+														onSelect={() => handleCustomerSelect(customer)}
+														value={itemValue}
+													>
+														<div className="flex flex-1 flex-col">
+															<span className="text-sm font-medium">
+																{getCustomerFullName(customer)}
 															</span>
-														)}
-														<span className="text-muted-foreground text-xs">
-															{customer.phone || customer.email}
-														</span>
-													</div>
-												</CommandItem>
-											))}
+															{customer.company_name && (
+																<span className="text-muted-foreground text-xs">
+																	{customer.company_name}
+																</span>
+															)}
+															{contactLine && (
+																<span className="text-muted-foreground text-xs">
+																	{contactLine}
+																</span>
+															)}
+															{addressLine && (
+																<span className="text-muted-foreground text-xs">
+																	{addressLine}
+																</span>
+															)}
+														</div>
+													</CommandItem>
+												);
+											})}
 										</CommandGroup>
 									</CommandList>
 								</Command>
@@ -498,12 +699,18 @@ export function PhoneDropdown({
 							</SelectContent>
 						</Select>
 						{companyPhones.length === 0 && (
-							<p className="text-muted-foreground text-xs">No company phone numbers configured</p>
+							<p className="text-muted-foreground text-xs">
+								No company phone numbers configured
+							</p>
 						)}
 					</div>
 
 					{/* Call Button */}
-					<Button className="w-full" disabled={!canCall || isPending} onClick={handleStartCall}>
+					<Button
+						className="w-full"
+						disabled={!canCall || isPending}
+						onClick={handleStartCall}
+					>
 						{isPending ? (
 							<>
 								<Loader2 className="mr-2 size-4 animate-spin" />

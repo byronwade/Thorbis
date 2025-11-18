@@ -22,7 +22,13 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -62,7 +68,9 @@ export function PhoneNumbersList({ numbers }: PhoneNumbersListProps) {
 			{numbers.length === 0 ? (
 				<EmptyState />
 			) : (
-				numbers.map((number) => <PhoneNumberCard key={number.id} number={number} />)
+				numbers.map((number) => (
+					<PhoneNumberCard key={number.id} number={number} />
+				))
 			)}
 		</div>
 	);
@@ -75,11 +83,15 @@ function PhoneNumberCard({ number }: { number: PhoneNumberRecord }) {
 				<div className="flex items-start justify-between">
 					<div className="space-y-1">
 						<div className="flex items-center gap-3">
-							<CardTitle className="text-2xl font-semibold">{number.formattedNumber}</CardTitle>
+							<CardTitle className="text-2xl font-semibold">
+								{number.formattedNumber}
+							</CardTitle>
 							<Badge variant={getStatusVariant(number.status)}>
 								{getStatusLabel(number.status)}
 							</Badge>
-							{number.numberType === "toll-free" && <Badge variant="secondary">Toll-Free</Badge>}
+							{number.numberType === "toll-free" && (
+								<Badge variant="secondary">Toll-Free</Badge>
+							)}
 						</div>
 						<CardDescription>
 							{number.routingRule ?? "Routing not configured"}{" "}
@@ -227,7 +239,7 @@ function EmptyState() {
 }
 
 function getStatusVariant(
-	status: string | null
+	status: string | null,
 ): "default" | "secondary" | "destructive" | "outline" {
 	switch (status) {
 		case "active":

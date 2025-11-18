@@ -91,7 +91,9 @@ export function PaymentMethodCard({
 						disabled={disabled}
 						onClick={(e) => {
 							e.stopPropagation();
-							if (confirm(`Remove this ${type === "card" ? "card" : "account"}?`)) {
+							if (
+								confirm(`Remove this ${type === "card" ? "card" : "account"}?`)
+							) {
 								onRemove();
 							}
 						}}

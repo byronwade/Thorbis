@@ -90,15 +90,17 @@ export default function PaymentMethodsPage() {
 				<Card className="p-4">
 					<h3 className="font-semibold">Apple Pay & Google Pay</h3>
 					<p className="text-muted-foreground mt-2 text-sm">
-						When you use Apple Pay or Google Pay, your payment details are securely saved for future
-						purchases. You can manage these payment methods below.
+						When you use Apple Pay or Google Pay, your payment details are
+						securely saved for future purchases. You can manage these payment
+						methods below.
 					</p>
 				</Card>
 				<Card className="p-4">
 					<h3 className="font-semibold">Default Payment Methods</h3>
 					<p className="text-muted-foreground mt-2 text-sm">
-						Set a default payment method for one-time purchases and a separate default for
-						subscription payments. This makes checkout faster and more convenient.
+						Set a default payment method for one-time purchases and a separate
+						default for subscription payments. This makes checkout faster and
+						more convenient.
 					</p>
 				</Card>
 			</div>
@@ -113,20 +115,21 @@ export default function PaymentMethodsPage() {
 				<h3 className="font-semibold">How it works</h3>
 				<ul className="text-muted-foreground mt-2 space-y-2 text-sm">
 					<li>
-						• <strong>Apple Pay & Google Pay:</strong> When you complete a payment using Apple Pay
-						or Google Pay, the underlying card is securely saved to your account.
+						• <strong>Apple Pay & Google Pay:</strong> When you complete a
+						payment using Apple Pay or Google Pay, the underlying card is
+						securely saved to your account.
 					</li>
 					<li>
-						• <strong>Default Payment:</strong> Your default payment method is automatically
-						selected for one-time purchases to speed up checkout.
+						• <strong>Default Payment:</strong> Your default payment method is
+						automatically selected for one-time purchases to speed up checkout.
 					</li>
 					<li>
-						• <strong>Subscription Default:</strong> Set a separate default payment method for
-						recurring subscription charges.
+						• <strong>Subscription Default:</strong> Set a separate default
+						payment method for recurring subscription charges.
 					</li>
 					<li>
-						• <strong>Security:</strong> All payment information is securely stored with Stripe and
-						protected by bank-level encryption.
+						• <strong>Security:</strong> All payment information is securely
+						stored with Stripe and protected by bank-level encryption.
 					</li>
 				</ul>
 			</Card>

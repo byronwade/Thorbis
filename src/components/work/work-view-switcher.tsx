@@ -3,7 +3,12 @@
 import { KanbanSquare, List } from "lucide-react";
 import { useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
 	useSetWorkView,
 	useWorkView,
@@ -18,23 +23,32 @@ type WorkViewSwitcherProps = {
 	disabledModes?: Partial<Record<WorkViewMode, { reason: string }>>;
 };
 
-export function WorkViewSwitcher({ section, className, disabledModes }: WorkViewSwitcherProps) {
+export function WorkViewSwitcher({
+	section,
+	className,
+	disabledModes,
+}: WorkViewSwitcherProps) {
 	const viewMode = useWorkView(section);
 	const setView = useSetWorkView(section);
 
-	const handleSelect = useCallback((mode: WorkViewMode) => () => setView(mode), [setView]);
+	const handleSelect = useCallback(
+		(mode: WorkViewMode) => () => setView(mode),
+		[setView],
+	);
 
-	const isModeDisabled = (mode: WorkViewMode) => disabledModes?.[mode]?.reason !== undefined;
+	const isModeDisabled = (mode: WorkViewMode) =>
+		disabledModes?.[mode]?.reason !== undefined;
 
 	const tooltipFor = (mode: WorkViewMode) =>
-		disabledModes?.[mode]?.reason ?? (mode === "table" ? "Table view" : "Kanban board");
+		disabledModes?.[mode]?.reason ??
+		(mode === "table" ? "Table view" : "Kanban board");
 
 	return (
 		<TooltipProvider>
 			<div
 				className={cn(
 					"border-border/60 bg-background/80 flex h-7 items-center gap-0.5 rounded-md border p-0.5",
-					className
+					className,
 				)}
 			>
 				<Tooltip delayDuration={150}>
@@ -61,7 +75,7 @@ export function WorkViewSwitcher({ section, className, disabledModes }: WorkView
 							className={cn(
 								"h-6 w-7 p-0",
 								viewMode === "kanban" && "bg-accent",
-								isModeDisabled("kanban") && "opacity-60"
+								isModeDisabled("kanban") && "opacity-60",
 							)}
 							disabled={isModeDisabled("kanban")}
 							onClick={handleSelect("kanban")}

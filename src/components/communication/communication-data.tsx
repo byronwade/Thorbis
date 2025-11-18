@@ -4,7 +4,10 @@ import {
 	type CompanyPhone,
 } from "@/components/communication/communication-page-client";
 import { CompanyGate } from "@/components/company/company-gate";
-import { getActiveCompanyId, getUserCompanies } from "@/lib/auth/company-context";
+import {
+	getActiveCompanyId,
+	getUserCompanies,
+} from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/supabase";
 
@@ -29,7 +32,12 @@ export async function CommunicationData() {
 
 	if (!companyId) {
 		const companies = await getUserCompanies();
-		return <CompanyGate context="communications" hasCompanies={(companies ?? []).length > 0} />;
+		return (
+			<CompanyGate
+				context="communications"
+				hasCompanies={(companies ?? []).length > 0}
+			/>
+		);
 	}
 
 	const t2 = Date.now();
@@ -64,7 +72,7 @@ export async function CommunicationData() {
         telnyx_call_session_id,
         call_recording_url,
         provider_metadata
-      `
+      `,
 		)
 		.eq("company_id", companyId)
 		.is("deleted_at", null)

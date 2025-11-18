@@ -1,4 +1,9 @@
 import { notFound } from "next/navigation";
+import {
+	DEFAULT_PHONE_SETTINGS,
+	mapPhoneSettings,
+} from "@/app/(dashboard)/dashboard/settings/communications/phone/phone-config";
+import PhoneSettingsClient from "@/app/(dashboard)/dashboard/settings/communications/phone/phone-settings-client";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,7 +25,20 @@ export async function UphoneData() {
 		return notFound();
 	}
 
-	// TODO: Move data fetching logic from original page
+	const { data, error } = await supabase
+		.from("communication_phone_settings")
+		.select("*")
+		.eq("company_id", activeCompanyId)
+		.maybeSingle();
 
-	return <div>Data component for phone</div>;
+	if (error) {
+		console.error("Failed to load phone settings", error);
+	}
+
+	const initialSettings = {
+		...DEFAULT_PHONE_SETTINGS,
+		...mapPhoneSettings(data ?? null),
+	};
+
+	return <PhoneSettingsClient initialSettings={initialSettings} />;
 }

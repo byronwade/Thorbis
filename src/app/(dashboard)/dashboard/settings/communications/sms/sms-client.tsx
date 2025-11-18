@@ -1,6 +1,11 @@
 "use client";
 
-import { AlertTriangle, HelpCircle, Phone, Settings as SettingsIcon } from "lucide-react";
+import {
+	AlertTriangle,
+	HelpCircle,
+	Phone,
+	Settings as SettingsIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback } from "react";
 import { getSmsSettings, updateSmsSettings } from "@/actions/settings";
@@ -14,42 +19,64 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSettings } from "@/hooks/use-settings";
-import { DEFAULT_SMS_SETTINGS, mapSmsSettings, type SmsSettingsState } from "./sms-config";
+import {
+	DEFAULT_SMS_SETTINGS,
+	mapSmsSettings,
+	type SmsSettingsState,
+} from "./sms-config";
 
 type SmsSettingsClientProps = {
 	initialSettings: Partial<SmsSettingsState> | null;
 };
 
 export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
-	const { settings, isLoading, isPending, hasUnsavedChanges, updateSetting, saveSettings, reload } =
-		useSettings<SmsSettingsState>({
-			getter: getSmsSettings,
-			setter: updateSmsSettings,
-			initialState: DEFAULT_SMS_SETTINGS,
-			settingsName: "sms",
-			prefetchedData: initialSettings ?? undefined,
-			transformLoad: (data) => mapSmsSettings(data),
-			transformSave: (state) => {
-				const formData = new FormData();
-				formData.append("provider", state.provider);
-				formData.append("providerApiKey", state.providerApiKey);
-				formData.append("senderNumber", state.senderNumber);
-				formData.append("autoReplyEnabled", state.autoReplyEnabled.toString());
-				formData.append("autoReplyMessage", state.autoReplyMessage);
-				formData.append("optOutMessage", state.optOutMessage);
-				formData.append("includeOptOut", state.includeOptOut.toString());
-				formData.append("consentRequired", state.consentRequired.toString());
-				return formData;
-			},
-		});
+	const {
+		settings,
+		isLoading,
+		isPending,
+		hasUnsavedChanges,
+		updateSetting,
+		saveSettings,
+		reload,
+	} = useSettings<SmsSettingsState>({
+		getter: getSmsSettings,
+		setter: updateSmsSettings,
+		initialState: DEFAULT_SMS_SETTINGS,
+		settingsName: "sms",
+		prefetchedData: initialSettings ?? undefined,
+		transformLoad: (data) => mapSmsSettings(data),
+		transformSave: (state) => {
+			const formData = new FormData();
+			formData.append("provider", state.provider);
+			formData.append("providerApiKey", state.providerApiKey);
+			formData.append("senderNumber", state.senderNumber);
+			formData.append("autoReplyEnabled", state.autoReplyEnabled.toString());
+			formData.append("autoReplyMessage", state.autoReplyMessage);
+			formData.append("optOutMessage", state.optOutMessage);
+			formData.append("includeOptOut", state.includeOptOut.toString());
+			formData.append("consentRequired", state.consentRequired.toString());
+			return formData;
+		},
+	});
 
 	const handleSave = useCallback(() => {
 		void saveSettings();
@@ -83,7 +110,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							<BreadcrumbSeparator />
 							<BreadcrumbItem>
 								<BreadcrumbLink asChild>
-									<Link href="/dashboard/settings/communications">Communications</Link>
+									<Link href="/dashboard/settings/communications">
+										Communications
+									</Link>
 								</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbSeparator />
@@ -117,12 +146,16 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 										<TooltipTrigger asChild>
 											<HelpCircle className="text-muted-foreground size-3" />
 										</TooltipTrigger>
-										<TooltipContent>Provisioned number used to send all texts.</TooltipContent>
+										<TooltipContent>
+											Provisioned number used to send all texts.
+										</TooltipContent>
 									</Tooltip>
 								</Label>
 								<Input
 									className="mt-2"
-									onChange={(event) => updateSetting("senderNumber", event.target.value)}
+									onChange={(event) =>
+										updateSetting("senderNumber", event.target.value)
+									}
 									placeholder="(555) 123-4567"
 									type="tel"
 									value={settings.senderNumber}
@@ -132,11 +165,16 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 								</p>
 							</div>
 							<div>
-								<Label className="flex items-center gap-2 text-sm font-medium">Provider</Label>
+								<Label className="flex items-center gap-2 text-sm font-medium">
+									Provider
+								</Label>
 								<select
 									className="border-input bg-background mt-2 block w-full rounded-md border px-3 py-2 text-sm"
 									onChange={(event) =>
-										updateSetting("provider", event.target.value as SmsSettingsState["provider"])
+										updateSetting(
+											"provider",
+											event.target.value as SmsSettingsState["provider"],
+										)
 									}
 									value={settings.provider}
 								>
@@ -146,7 +184,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 								</select>
 								<Input
 									className="mt-3"
-									onChange={(event) => updateSetting("providerApiKey", event.target.value)}
+									onChange={(event) =>
+										updateSetting("providerApiKey", event.target.value)
+									}
 									placeholder="Provider API key"
 									type="password"
 									value={settings.providerApiKey}
@@ -162,7 +202,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Auto-response</CardTitle>
-						<CardDescription>Automatically reply when a customer texts you</CardDescription>
+						<CardDescription>
+							Automatically reply when a customer texts you
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between rounded-lg border p-3">
@@ -174,7 +216,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							</div>
 							<Switch
 								checked={settings.autoReplyEnabled}
-								onCheckedChange={(checked) => updateSetting("autoReplyEnabled", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("autoReplyEnabled", checked)
+								}
 							/>
 						</div>
 
@@ -182,10 +226,14 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							<>
 								<Separator />
 								<div>
-									<Label className="text-sm font-medium">Auto-response message</Label>
+									<Label className="text-sm font-medium">
+										Auto-response message
+									</Label>
 									<Textarea
 										className="mt-2 min-h-[120px] resize-none"
-										onChange={(event) => updateSetting("autoReplyMessage", event.target.value)}
+										onChange={(event) =>
+											updateSetting("autoReplyMessage", event.target.value)
+										}
 										placeholder="Thanks for texting! We’ll respond during business hours."
 										value={settings.autoReplyMessage}
 									/>
@@ -201,7 +249,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Compliance</CardTitle>
-						<CardDescription>Required messaging disclosures and consent tracking</CardDescription>
+						<CardDescription>
+							Required messaging disclosures and consent tracking
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="flex items-center justify-between">
@@ -223,7 +273,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							</div>
 							<Switch
 								checked={settings.includeOptOut}
-								onCheckedChange={(checked) => updateSetting("includeOptOut", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("includeOptOut", checked)
+								}
 							/>
 						</div>
 
@@ -233,11 +285,14 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							<Label className="text-sm font-medium">Opt-out message</Label>
 							<Textarea
 								className="mt-2 min-h-[80px] resize-none"
-								onChange={(event) => updateSetting("optOutMessage", event.target.value)}
+								onChange={(event) =>
+									updateSetting("optOutMessage", event.target.value)
+								}
 								value={settings.optOutMessage}
 							/>
 							<p className="text-muted-foreground mt-1 text-xs">
-								Displayed after any outgoing SMS when opt-out instructions are enabled.
+								Displayed after any outgoing SMS when opt-out instructions are
+								enabled.
 							</p>
 						</div>
 
@@ -252,7 +307,9 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 							</div>
 							<Switch
 								checked={settings.consentRequired}
-								onCheckedChange={(checked) => updateSetting("consentRequired", checked)}
+								onCheckedChange={(checked) =>
+									updateSetting("consentRequired", checked)
+								}
 							/>
 						</div>
 					</CardContent>
@@ -262,11 +319,14 @@ export function SmsSettingsClient({ initialSettings }: SmsSettingsClientProps) {
 					<CardContent className="flex items-start gap-3 pt-6">
 						<AlertTriangle className="text-warning size-5" />
 						<div className="space-y-1">
-							<p className="text-warning text-sm font-semibold">Compliance reminder</p>
+							<p className="text-warning text-sm font-semibold">
+								Compliance reminder
+							</p>
 							<p className="text-muted-foreground text-sm">
-								Follow TCPA/CTIA guidelines: honor STOP requests immediately, keep quiet hours, and
-								collect explicit consent before sending marketing texts. Configure opt-outs and
-								consent policies here so Thorbis can enforce them automatically.
+								Follow TCPA/CTIA guidelines: honor STOP requests immediately,
+								keep quiet hours, and collect explicit consent before sending
+								marketing texts. Configure opt-outs and consent policies here so
+								Thorbis can enforce them automatically.
 							</p>
 						</div>
 					</CardContent>

@@ -17,7 +17,9 @@ import {
 } from "@/lib/ai/extraction-prompts";
 
 // Initialize AI providers
-const groq = process.env.GROQ_API_KEY ? createGroq({ apiKey: process.env.GROQ_API_KEY }) : null;
+const groq = process.env.GROQ_API_KEY
+	? createGroq({ apiKey: process.env.GROQ_API_KEY })
+	: null;
 const anthropic = process.env.ANTHROPIC_API_KEY
 	? createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 	: null;
@@ -30,7 +32,9 @@ function getModel() {
 	if (anthropic) {
 		return anthropic("claude-3-5-haiku-20241022"); // Good balance
 	}
-	throw new Error("No AI provider configured. Please set GROQ_API_KEY or ANTHROPIC_API_KEY");
+	throw new Error(
+		"No AI provider configured. Please set GROQ_API_KEY or ANTHROPIC_API_KEY",
+	);
 }
 
 export async function POST(req: Request) {
@@ -39,7 +43,10 @@ export async function POST(req: Request) {
 		const { transcript, previousExtraction, mode = "full" } = body;
 
 		if (!(transcript && Array.isArray(transcript))) {
-			return NextResponse.json({ error: "Invalid transcript format" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Invalid transcript format" },
+				{ status: 400 },
+			);
 		}
 
 		// Format transcript
@@ -50,7 +57,7 @@ export async function POST(req: Request) {
 		if (mode === "update" && previousExtraction) {
 			prompt = UPDATE_PROMPT.replace(
 				"{previousExtraction}",
-				JSON.stringify(previousExtraction)
+				JSON.stringify(previousExtraction),
 			).replace("{newTranscript}", formattedTranscript);
 		} else {
 			prompt = EXTRACTION_PROMPT.replace("{transcript}", formattedTranscript);
@@ -72,7 +79,7 @@ export async function POST(req: Request) {
 				error: "Failed to extract data",
 				details: error instanceof Error ? error.message : "Unknown error",
 			},
-			{ status: 500 }
+			{ status: 500 },
 		);
 	}
 }

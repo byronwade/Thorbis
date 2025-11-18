@@ -2,7 +2,12 @@ import Link from "next/link";
 import Script from "next/script";
 import { BlogCard } from "@/components/content/blog-card";
 import { Button } from "@/components/ui/button";
-import { getBlogAuthors, getBlogCategories, getBlogPosts, getBlogTags } from "@/lib/content";
+import {
+	getBlogAuthors,
+	getBlogCategories,
+	getBlogPosts,
+	getBlogTags,
+} from "@/lib/content";
 import {
 	generateBreadcrumbStructuredData,
 	generateMetadata as generateSEOMetadata,
@@ -34,7 +39,15 @@ type BlogPageProps = {
 	};
 };
 
-function buildQuery({ category, tag, page }: { category?: string; tag?: string; page?: number }) {
+function buildQuery({
+	category,
+	tag,
+	page,
+}: {
+	category?: string;
+	tag?: string;
+	page?: number;
+}) {
 	const params = new URLSearchParams();
 	if (category) {
 		params.set("category", category);
@@ -52,26 +65,33 @@ function buildQuery({ category, tag, page }: { category?: string; tag?: string; 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
 	const categorySlug = searchParams?.category;
 	const tagSlug = searchParams?.tag;
-	const currentPage = Math.max(1, Number.parseInt(searchParams?.page ?? "1", 10) || 1);
+	const currentPage = Math.max(
+		1,
+		Number.parseInt(searchParams?.page ?? "1", 10) || 1,
+	);
 
-	const [featuredResult, postsResult, categories, tags, authors] = await Promise.all([
-		getBlogPosts({ featured: true, limit: 3 }),
-		getBlogPosts({
-			categorySlug,
-			tagSlug,
-			limit: PAGE_SIZE,
-			page: currentPage,
-		}),
-		getBlogCategories(),
-		getBlogTags(),
-		getBlogAuthors(),
-	]);
+	const [featuredResult, postsResult, categories, tags, authors] =
+		await Promise.all([
+			getBlogPosts({ featured: true, limit: 3 }),
+			getBlogPosts({
+				categorySlug,
+				tagSlug,
+				limit: PAGE_SIZE,
+				page: currentPage,
+			}),
+			getBlogCategories(),
+			getBlogTags(),
+			getBlogAuthors(),
+		]);
 
 	const featuredPosts = featuredResult.data;
 	const posts = postsResult.data.filter(
-		(post) => !featuredPosts.some((featured) => featured.id === post.id)
+		(post) => !featuredPosts.some((featured) => featured.id === post.id),
 	);
-	const totalPages = Math.max(1, Math.ceil(postsResult.total / Math.max(1, PAGE_SIZE)));
+	const totalPages = Math.max(
+		1,
+		Math.ceil(postsResult.total / Math.max(1, PAGE_SIZE)),
+	);
 	const hasFilters = Boolean(categorySlug || tagSlug);
 
 	return (
@@ -82,7 +102,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Blog", url: `${siteUrl}/blog` },
-						])
+						]),
 					),
 				}}
 				id="blog-breadcrumb-ld"
@@ -97,9 +117,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 						Field Service Growth Library
 					</h1>
 					<p className="text-muted-foreground text-lg">
-						Stay ahead with tactical playbooks, product updates, and stories from operators scaling
-						with Thorbis. Every article is written with hands-on insights from our customer success
-						and product teams.
+						Stay ahead with tactical playbooks, product updates, and stories
+						from operators scaling with Thorbis. Every article is written with
+						hands-on insights from our customer success and product teams.
 					</p>
 				</header>
 
@@ -113,7 +133,11 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 						) : null}
 					</div>
 					<div className="flex flex-wrap gap-3">
-						<Button asChild size="sm" variant={hasFilters ? "outline" : "secondary"}>
+						<Button
+							asChild
+							size="sm"
+							variant={hasFilters ? "outline" : "secondary"}
+						>
 							<Link href="/blog">All topics</Link>
 						</Button>
 						{categories.map((category) => {
@@ -125,7 +149,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 									size="sm"
 									variant={isActive ? "secondary" : "outline"}
 								>
-									<Link href={buildQuery({ category: category.slug, tag: tagSlug })}>
+									<Link
+										href={buildQuery({ category: category.slug, tag: tagSlug })}
+									>
 										{category.name}
 									</Link>
 								</Button>
@@ -134,7 +160,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 					</div>
 					{tags.length ? (
 						<div className="text-muted-foreground flex flex-wrap gap-2 text-sm">
-							<span className="text-foreground font-medium">Trending tags:</span>
+							<span className="text-foreground font-medium">
+								Trending tags:
+							</span>
 							{tags.slice(0, 6).map((tag) => {
 								const isActive = tagSlug === tag.slug;
 								return (
@@ -143,7 +171,7 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 											"inline-flex items-center rounded-full border px-3 py-1 transition-colors",
 											isActive
 												? "border-primary bg-primary/10 text-primary"
-												: "border-border hover:border-primary hover:text-primary"
+												: "border-border hover:border-primary hover:text-primary",
 										)}
 										href={buildQuery({ tag: tag.slug, category: categorySlug })}
 										key={tag.id}
@@ -183,8 +211,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 							{hasFilters ? "Articles filtered for you" : "Latest articles"}
 						</h2>
 						<span className="text-muted-foreground text-sm">
-							{postsResult.total} {postsResult.total === 1 ? "article" : "articles"} from{" "}
-							{authors.length} {authors.length === 1 ? "author" : "Thorbis experts"}
+							{postsResult.total}{" "}
+							{postsResult.total === 1 ? "article" : "articles"} from{" "}
+							{authors.length}{" "}
+							{authors.length === 1 ? "author" : "Thorbis experts"}
 						</span>
 					</div>
 
@@ -198,8 +228,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 						<div className="bg-muted/20 rounded-xl border border-dashed p-12 text-center">
 							<h3 className="mb-3 text-xl font-semibold">No articles yet</h3>
 							<p className="text-muted-foreground">
-								We&apos;re actively writing on this topic. Try a different filter or explore our
-								knowledge base.
+								We&apos;re actively writing on this topic. Try a different
+								filter or explore our knowledge base.
 							</p>
 							<div className="mt-6 flex justify-center gap-3">
 								<Button asChild>
@@ -214,7 +244,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
 					{totalPages > 1 ? (
 						<nav className="flex items-center justify-between gap-4 pt-4">
-							<Button asChild disabled={currentPage <= 1} size="sm" variant="outline">
+							<Button
+								asChild
+								disabled={currentPage <= 1}
+								size="sm"
+								variant="outline"
+							>
 								<Link
 									aria-disabled={currentPage <= 1}
 									href={
@@ -237,7 +272,12 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 							<p className="text-muted-foreground text-sm">
 								Page {currentPage} of {totalPages}
 							</p>
-							<Button asChild disabled={currentPage >= totalPages} size="sm" variant="outline">
+							<Button
+								asChild
+								disabled={currentPage >= totalPages}
+								size="sm"
+								variant="outline"
+							>
 								<Link
 									aria-disabled={currentPage >= totalPages}
 									href={

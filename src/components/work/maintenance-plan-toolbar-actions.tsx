@@ -24,8 +24,14 @@ const MAINTENANCE_PLANS_COLUMNS = [
 	{ key: "status", label: "Status" },
 ];
 
-export function MaintenancePlanToolbarActions({ totalCount = 0 }: { totalCount?: number }) {
-	const _archiveFilter = useArchiveStore((state) => state.filters.maintenance_plans);
+export function MaintenancePlanToolbarActions({
+	totalCount = 0,
+}: {
+	totalCount?: number;
+}) {
+	const _archiveFilter = useArchiveStore(
+		(state) => state.filters.maintenance_plans,
+	);
 
 	// Calculate counts (will be passed from page)
 	const activeCount = totalCount; // TODO: Get actual counts from page
@@ -41,7 +47,10 @@ export function MaintenancePlanToolbarActions({ totalCount = 0 }: { totalCount?:
 						entity="maintenance_plans"
 						totalCount={totalCount}
 					/>
-					<ColumnVisibilityMenu columns={MAINTENANCE_PLANS_COLUMNS} entity="maintenance_plans" />
+					<ColumnVisibilityMenu
+						columns={MAINTENANCE_PLANS_COLUMNS}
+						entity="maintenance_plans"
+					/>
 				</div>
 			}
 			importExportDataType="maintenance-plans"

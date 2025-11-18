@@ -206,7 +206,9 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				<div className="flex flex-col gap-4 p-4 sm:p-6">
 					<div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 						<div className="flex flex-col gap-4">
-							<div className="flex flex-wrap items-center gap-2">{headerBadges}</div>
+							<div className="flex flex-wrap items-center gap-2">
+								{headerBadges}
+							</div>
 							<div className="flex flex-col gap-2">
 								<h1 className="text-2xl font-semibold sm:text-3xl">
 									{invoice.title || `Invoice ${invoice.invoice_number || ""}`}
@@ -303,23 +305,36 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 		<div className="space-y-3">
 			{items.slice(0, 25).map((communication: any) => {
 				const contactName =
-					communication.customer?.first_name || communication.customer?.last_name
+					communication.customer?.first_name ||
+					communication.customer?.last_name
 						? `${communication.customer?.first_name ?? ""} ${communication.customer?.last_name ?? ""}`.trim()
 						: communication.direction === "inbound"
 							? communication.from_address
 							: communication.to_address;
 				const preview =
-					communication.subject || communication.body?.slice(0, 160) || "No additional details";
+					communication.subject ||
+					communication.body?.slice(0, 160) ||
+					"No additional details";
 				const timestamp = new Date(communication.created_at).toLocaleString();
 
 				return (
 					<div className="rounded-lg border p-3" key={communication.id}>
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant="outline">{communication.type?.toUpperCase()}</Badge>
-							<Badge variant={communication.direction === "inbound" ? "secondary" : "default"}>
+							<Badge variant="outline">
+								{communication.type?.toUpperCase()}
+							</Badge>
+							<Badge
+								variant={
+									communication.direction === "inbound"
+										? "secondary"
+										: "default"
+								}
+							>
 								{communication.direction === "inbound" ? "Inbound" : "Outbound"}
 							</Badge>
-							{communication.status && <Badge variant="outline">{communication.status}</Badge>}
+							{communication.status && (
+								<Badge variant="outline">{communication.status}</Badge>
+							)}
 							<span className="text-muted-foreground text-xs">{timestamp}</span>
 						</div>
 						<div className="mt-2">
@@ -354,17 +369,27 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					label: "Estimate Created",
 					status: estimate ? ("completed" as const) : ("pending" as const),
 					date: estimate?.created_at,
-					href: estimate?.id ? `/dashboard/work/estimates/${estimate.id}` : undefined,
-					description: estimate?.estimate_number ? `#${estimate.estimate_number}` : undefined,
+					href: estimate?.id
+						? `/dashboard/work/estimates/${estimate.id}`
+						: undefined,
+					description: estimate?.estimate_number
+						? `#${estimate.estimate_number}`
+						: undefined,
 				},
 				{
 					id: "contract",
 					label: "Contract Generated",
 					status: contract ? ("completed" as const) : ("pending" as const),
 					date: contract?.created_at,
-					href: contract?.id ? `/dashboard/work/contracts/${contract.id}` : undefined,
+					href: contract?.id
+						? `/dashboard/work/contracts/${contract.id}`
+						: undefined,
 					description:
-						contract?.status === "signed" ? "Signed" : contract ? "Pending signature" : undefined,
+						contract?.status === "signed"
+							? "Signed"
+							: contract
+								? "Pending signature"
+								: undefined,
 				},
 				{
 					id: "invoice",
@@ -474,7 +499,11 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				icon: <FileCheck className="size-4" />,
 				content: (
 					<UnifiedAccordionContent>
-						<InvoiceTerms notes={invoice.notes} onUpdate={updateField} terms={invoice.terms} />
+						<InvoiceTerms
+							notes={invoice.notes}
+							onUpdate={updateField}
+							terms={invoice.terms}
+						/>
 					</UnifiedAccordionContent>
 				),
 			});
@@ -588,9 +617,15 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 				title: job.title || `Job #${job.job_number}`,
 				subtitle: job.status,
 				href: `/dashboard/work/${job.id}`,
-				badge: job.status ? { label: job.status, variant: "outline" as const } : undefined,
+				badge: job.status
+					? { label: job.status, variant: "outline" as const }
+					: undefined,
 				actions: (
-					<Button onClick={() => setUnlinkJobId(job.id)} size="sm" variant="outline">
+					<Button
+						onClick={() => setUnlinkJobId(job.id)}
+						size="sm"
+						variant="outline"
+					>
 						<Link2Off className="mr-2 size-4" />
 						Unlink
 					</Button>
@@ -639,12 +674,13 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 					<DialogHeader>
 						<DialogTitle>Archive Invoice?</DialogTitle>
 						<DialogDescription>
-							This will archive invoice #{invoice.invoice_number}. You can restore it from the
-							archive within 90 days.
+							This will archive invoice #{invoice.invoice_number}. You can
+							restore it from the archive within 90 days.
 							{invoice.status === "paid" && (
 								<div className="mt-2 rounded-md bg-yellow-50 p-3 dark:bg-yellow-900/20">
 									<p className="text-sm text-yellow-800 dark:text-yellow-200">
-										Note: Paid invoices cannot be archived for compliance reasons.
+										Note: Paid invoices cannot be archived for compliance
+										reasons.
 									</p>
 								</div>
 							)}
@@ -670,20 +706,32 @@ export function InvoicePageContent({ entityData }: InvoicePageContentProps) {
 			</Dialog>
 
 			{/* Unlink Job Confirmation Dialog */}
-			<Dialog onOpenChange={(open) => !open && setUnlinkJobId(null)} open={unlinkJobId !== null}>
+			<Dialog
+				onOpenChange={(open) => !open && setUnlinkJobId(null)}
+				open={unlinkJobId !== null}
+			>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>Unlink Job from Invoice?</DialogTitle>
 						<DialogDescription>
-							This will remove the job association from this invoice. The invoice will remain in the
-							system but will no longer appear on the job's page.
+							This will remove the job association from this invoice. The
+							invoice will remain in the system but will no longer appear on the
+							job's page.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button disabled={isUnlinking} onClick={() => setUnlinkJobId(null)} variant="outline">
+						<Button
+							disabled={isUnlinking}
+							onClick={() => setUnlinkJobId(null)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button disabled={isUnlinking} onClick={handleUnlinkJob} variant="destructive">
+						<Button
+							disabled={isUnlinking}
+							onClick={handleUnlinkJob}
+							variant="destructive"
+						>
 							{isUnlinking ? "Unlinking..." : "Unlink Job"}
 						</Button>
 					</DialogFooter>

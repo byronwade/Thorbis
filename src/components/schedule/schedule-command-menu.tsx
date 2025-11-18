@@ -1,7 +1,16 @@
 "use client";
 
 import { format } from "date-fns";
-import { ArrowRight, Briefcase, Clock, MapPin, Plus, Search, Sparkles, User } from "lucide-react";
+import {
+	ArrowRight,
+	Briefcase,
+	Clock,
+	MapPin,
+	Plus,
+	Search,
+	Sparkles,
+	User,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +62,7 @@ export function ScheduleCommandMenu({
 			}
 			onClose();
 		},
-		[router, onClose]
+		[router, onClose],
 	);
 
 	// Filter unassigned jobs by search query
@@ -102,7 +111,9 @@ export function ScheduleCommandMenu({
 									</Badge>
 								)}
 							</div>
-							<span className="text-muted-foreground text-xs">Start a new job or appointment</span>
+							<span className="text-muted-foreground text-xs">
+								Start a new job or appointment
+							</span>
 						</div>
 						<ArrowRight className="text-muted-foreground ml-2 size-4 opacity-0 transition-opacity group-aria-selected:opacity-100" />
 					</CommandItem>
@@ -112,10 +123,14 @@ export function ScheduleCommandMenu({
 				{filteredJobs.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading={`Unscheduled Jobs · ${filteredJobs.length} total`}>
+						<CommandGroup
+							heading={`Unscheduled Jobs · ${filteredJobs.length} total`}
+						>
 							{filteredJobs.slice(0, 10).map((job) => {
 								const startTime =
-									job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+									job.startTime instanceof Date
+										? job.startTime
+										: new Date(job.startTime);
 
 								return (
 									<CommandItem
@@ -128,9 +143,13 @@ export function ScheduleCommandMenu({
 										</div>
 										<div className="flex flex-1 flex-col gap-1.5">
 											<div className="flex items-center gap-2">
-												<span className="text-sm font-semibold">{job.title}</span>
+												<span className="text-sm font-semibold">
+													{job.title}
+												</span>
 												{job.customer?.name && (
-													<span className="text-muted-foreground text-xs">{job.customer.name}</span>
+													<span className="text-muted-foreground text-xs">
+														{job.customer.name}
+													</span>
 												)}
 											</div>
 											<div className="flex flex-wrap items-center gap-x-3 gap-y-1">

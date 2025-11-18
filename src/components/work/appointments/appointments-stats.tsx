@@ -21,7 +21,7 @@ export async function AppointmentsStats() {
 	}
 
 	const scheduledCount = stats.scheduled;
-	const confirmedCount = 0; // TODO: Add confirmed status to stats
+	const confirmedCount = stats.confirmed;
 	const inProgressCount = stats.in_progress;
 	const completedCount = stats.completed;
 	const cancelledCount = stats.cancelled;

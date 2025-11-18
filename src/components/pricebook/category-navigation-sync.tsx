@@ -21,7 +21,9 @@ type CategoryNavigationSyncProps = {
 	categoryPath: string[];
 };
 
-export function CategoryNavigationSync({ categoryPath }: CategoryNavigationSyncProps) {
+export function CategoryNavigationSync({
+	categoryPath,
+}: CategoryNavigationSyncProps) {
 	const navigateToPath = usePriceBookStore((state) => state.navigateToPath);
 	const currentPath = usePriceBookStore((state) => state.navigationPath);
 

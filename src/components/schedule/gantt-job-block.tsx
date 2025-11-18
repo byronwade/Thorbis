@@ -7,7 +7,12 @@
 
 import { format } from "date-fns";
 import { AlertTriangle, Clock, Users } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { calculateDuration, formatDuration } from "@/lib/schedule-utils";
 import { cn } from "@/lib/utils";
 import type { Job } from "./schedule-types";
@@ -45,18 +50,24 @@ export function GanttJobBlock({
 	highlightUnassigned = false,
 }: GanttJobBlockProps) {
 	const duration = calculateDuration(job.startTime, job.endTime);
-	const start = job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
+	const start =
+		job.startTime instanceof Date ? job.startTime : new Date(job.startTime);
 	const end = job.endTime instanceof Date ? job.endTime : new Date(job.endTime);
-	const primaryAssignment = job.assignments.find((assignment) => assignment.role === "primary");
+	const primaryAssignment = job.assignments.find(
+		(assignment) => assignment.role === "primary",
+	);
 	const additionalAssignments = job.assignments.filter(
-		(assignment) => assignment.role !== "primary"
+		(assignment) => assignment.role !== "primary",
 	);
 	const assignmentLabel = job.isUnassigned
 		? "Unassigned"
 		: primaryAssignment?.displayName || "Assigned";
 	const showHighlight = highlightUnassigned && job.isUnassigned;
-	const assignmentTooltip = job.assignments.map((assignment) => assignment.displayName).join(", ");
-	const priorityColor = priorityBorderColors[job.priority] ?? priorityBorderColors.medium;
+	const assignmentTooltip = job.assignments
+		.map((assignment) => assignment.displayName)
+		.join(", ");
+	const priorityColor =
+		priorityBorderColors[job.priority] ?? priorityBorderColors.medium;
 
 	return (
 		<TooltipProvider>
@@ -71,23 +82,27 @@ export function GanttJobBlock({
 								"border-destructive/40 bg-destructive/30 text-destructive-foreground",
 							isSelected && "ring-primary ring-2 ring-offset-1",
 							showHighlight && "animate-pulse",
-							onClick && "hover:shadow-md"
+							onClick && "hover:shadow-md",
 						)}
 						onClick={onClick}
 						style={style}
 						title={`${job.title} • ${job.customer.name}${assignmentTooltip ? ` • ${assignmentTooltip}` : ""}`}
 					>
 						<div className="flex items-center justify-between gap-2">
-							<p className="line-clamp-1 text-xs leading-tight font-semibold">{job.title}</p>
+							<p className="line-clamp-1 text-xs leading-tight font-semibold">
+								{job.title}
+							</p>
 							<div
 								className={cn(
 									"absolute top-1 right-1 size-1.5 rounded-full",
-									priorityColor.replace("border-l-", "bg-")
+									priorityColor.replace("border-l-", "bg-"),
 								)}
 							/>
 						</div>
 
-						<p className="line-clamp-1 text-[10px] opacity-90">{job.customer.name}</p>
+						<p className="line-clamp-1 text-[10px] opacity-90">
+							{job.customer.name}
+						</p>
 
 						<div className="flex items-center gap-1 text-[10px] opacity-90">
 							{job.isUnassigned ? (
@@ -97,7 +112,9 @@ export function GanttJobBlock({
 							)}
 							<span className="font-medium">{assignmentLabel}</span>
 							{additionalAssignments.length > 0 && (
-								<span className="text-[10px] text-white/70">+{additionalAssignments.length}</span>
+								<span className="text-[10px] text-white/70">
+									+{additionalAssignments.length}
+								</span>
 							)}
 						</div>
 
@@ -138,7 +155,9 @@ export function GanttJobBlock({
 					</div>
 					<div className="space-y-1 text-[11px]">
 						<p className="text-muted-foreground">
-							{job.assignments.length > 0 ? "Assigned technicians" : "Waiting for assignment"}
+							{job.assignments.length > 0
+								? "Assigned technicians"
+								: "Waiting for assignment"}
 						</p>
 						{job.assignments.length > 0 ? (
 							job.assignments.map((assignment) => (
@@ -147,11 +166,15 @@ export function GanttJobBlock({
 									key={`tooltip-${assignment.technicianId ?? assignment.teamMemberId ?? assignment.displayName}`}
 								>
 									<span>{assignment.displayName}</span>
-									<span className="text-muted-foreground capitalize">{assignment.role}</span>
+									<span className="text-muted-foreground capitalize">
+										{assignment.role}
+									</span>
 								</div>
 							))
 						) : (
-							<span className="text-destructive font-medium">No technician assigned</span>
+							<span className="text-destructive font-medium">
+								No technician assigned
+							</span>
 						)}
 					</div>
 				</TooltipContent>

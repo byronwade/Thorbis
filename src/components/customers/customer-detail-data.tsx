@@ -17,7 +17,9 @@ type CustomerDetailDataProps = {
  *
  * Fetches 13 parallel queries for complete customer 360° view.
  */
-export async function CustomerDetailData({ customerId }: CustomerDetailDataProps) {
+export async function CustomerDetailData({
+	customerId,
+}: CustomerDetailDataProps) {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -103,8 +105,8 @@ export async function CustomerDetailData({ customerId }: CustomerDetailDataProps
 							This customer belongs to a different company.
 						</p>
 						<p className="text-muted-foreground mb-6 text-sm">
-							If you need to access this customer, please switch to the correct company using the
-							company selector in the header.
+							If you need to access this customer, please switch to the correct
+							company using the company selector in the header.
 						</p>
 						<a
 							className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium"
@@ -167,13 +169,13 @@ export async function CustomerDetailData({ customerId }: CustomerDetailDataProps
 			.order("created_at", { ascending: false })
 			.limit(10),
 		supabase
-			.from("schedules")
+			.from("appointments")
 			.select(
 				`
         *,
         job:jobs!job_id(id, job_number, title),
         property:properties!property_id(id, name, address)
-      `
+      `,
 			)
 			.eq("customer_id", customerId)
 			.is("deleted_at", null)
@@ -187,7 +189,7 @@ export async function CustomerDetailData({ customerId }: CustomerDetailDataProps
         job:jobs!job_id(id, job_number),
         estimate:estimates!estimate_id(id, estimate_number),
         invoice:invoices!invoice_id(id, invoice_number)
-      `
+      `,
 			)
 			.eq("company_id", teamMember.company_id)
 			.is("deleted_at", null)
@@ -247,7 +249,9 @@ export async function CustomerDetailData({ customerId }: CustomerDetailDataProps
 	// Filter contracts to only include those related to this customer
 	const customerContracts = (contracts || []).filter((contract) => {
 		const hasJob = jobs?.some((job) => job.id === contract.job_id);
-		const hasEstimate = estimates?.some((est) => est.id === contract.estimate_id);
+		const hasEstimate = estimates?.some(
+			(est) => est.id === contract.estimate_id,
+		);
 		const hasInvoice = invoices?.some((inv) => inv.id === contract.invoice_id);
 		return hasJob || hasEstimate || hasInvoice;
 	});

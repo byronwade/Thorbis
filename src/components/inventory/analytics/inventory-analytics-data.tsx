@@ -30,7 +30,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Turnover Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track inventory turnover rates to identify fast and slow-moving items
+							Track inventory turnover rates to identify fast and slow-moving
+							items
 						</p>
 					</div>
 
@@ -41,7 +42,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Profitability Insights</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze profit margins by category, vendor, and individual parts to maximize revenue
+							Analyze profit margins by category, vendor, and individual parts
+							to maximize revenue
 						</p>
 					</div>
 
@@ -52,8 +54,8 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Stock Optimization</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Get recommendations for optimal stock levels based on historical usage and seasonal
-							trends
+							Get recommendations for optimal stock levels based on historical
+							usage and seasonal trends
 						</p>
 					</div>
 
@@ -64,14 +66,17 @@ export async function InventoryAnalyticsData() {
 						</div>
 						<h3 className="text-lg font-semibold">Cost Analysis</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor carrying costs, shrinkage, and waste to reduce inventory expenses
+							Monitor carrying costs, shrinkage, and waste to reduce inventory
+							expenses
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Make Smarter Inventory Decisions</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Make Smarter Inventory Decisions
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Use data to optimize stock levels and maximize profitability
 					</p>

@@ -89,7 +89,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 		country: vendor?.country || "USA",
 		tax_id: vendor?.tax_id || "",
 		payment_terms: vendor?.payment_terms || "net_30",
-		credit_limit: vendor?.credit_limit ? (vendor.credit_limit / 100).toString() : "0",
+		credit_limit: vendor?.credit_limit
+			? (vendor.credit_limit / 100).toString()
+			: "0",
 		preferred_payment_method: vendor?.preferred_payment_method || "",
 		category: vendor?.category || "",
 		status: vendor?.status || "active",
@@ -162,7 +164,10 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 			serverFormData.append("credit_limit", formData.credit_limit);
 		}
 		if (formData.preferred_payment_method) {
-			serverFormData.append("preferred_payment_method", formData.preferred_payment_method);
+			serverFormData.append(
+				"preferred_payment_method",
+				formData.preferred_payment_method,
+			);
 		}
 		if (formData.category) {
 			serverFormData.append("category", formData.category);
@@ -237,7 +242,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						</Label>
 						<Input
 							id="display_name"
-							onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, display_name: e.target.value })
+							}
 							placeholder="Acme Supply Co."
 							required
 							value={formData.display_name}
@@ -248,7 +255,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Input
 							disabled={mode === "edit"}
 							id="vendor_number"
-							onChange={(e) => setFormData({ ...formData, vendor_number: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, vendor_number: e.target.value })
+							}
 							placeholder="Auto-generated if left blank"
 							value={formData.vendor_number}
 						/>
@@ -256,7 +265,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 					<div className="space-y-2">
 						<Label htmlFor="category">Category</Label>
 						<Select
-							onValueChange={(value) => setFormData({ ...formData, category: value })}
+							onValueChange={(value) =>
+								setFormData({ ...formData, category: value })
+							}
 							value={formData.category}
 						>
 							<SelectTrigger id="category">
@@ -266,7 +277,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 								<SelectItem value="supplier">Supplier</SelectItem>
 								<SelectItem value="distributor">Distributor</SelectItem>
 								<SelectItem value="manufacturer">Manufacturer</SelectItem>
-								<SelectItem value="service_provider">Service Provider</SelectItem>
+								<SelectItem value="service_provider">
+									Service Provider
+								</SelectItem>
 								<SelectItem value="other">Other</SelectItem>
 							</SelectContent>
 						</Select>
@@ -299,7 +312,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="email">Email</Label>
 						<Input
 							id="email"
-							onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, email: e.target.value })
+							}
 							placeholder="vendor@example.com"
 							type="email"
 							value={formData.email}
@@ -309,7 +324,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="phone">Phone</Label>
 						<Input
 							id="phone"
-							onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, phone: e.target.value })
+							}
 							placeholder="(555) 123-4567"
 							type="tel"
 							value={formData.phone}
@@ -319,7 +336,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="secondary_phone">Secondary Phone</Label>
 						<Input
 							id="secondary_phone"
-							onChange={(e) => setFormData({ ...formData, secondary_phone: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, secondary_phone: e.target.value })
+							}
 							placeholder="(555) 123-4567"
 							type="tel"
 							value={formData.secondary_phone}
@@ -329,7 +348,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="website">Website</Label>
 						<Input
 							id="website"
-							onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, website: e.target.value })
+							}
 							placeholder="https://example.com"
 							type="url"
 							value={formData.website}
@@ -346,7 +367,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="address">Street Address</Label>
 						<Input
 							id="address"
-							onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, address: e.target.value })
+							}
 							placeholder="123 Main St"
 							value={formData.address}
 						/>
@@ -355,7 +378,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="address2">Address Line 2</Label>
 						<Input
 							id="address2"
-							onChange={(e) => setFormData({ ...formData, address2: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, address2: e.target.value })
+							}
 							placeholder="Suite 100"
 							value={formData.address2}
 						/>
@@ -364,7 +389,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="city">City</Label>
 						<Input
 							id="city"
-							onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, city: e.target.value })
+							}
 							placeholder="Anytown"
 							value={formData.city}
 						/>
@@ -373,7 +400,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="state">State</Label>
 						<Input
 							id="state"
-							onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, state: e.target.value })
+							}
 							placeholder="ST"
 							value={formData.state}
 						/>
@@ -382,7 +411,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="zip_code">ZIP Code</Label>
 						<Input
 							id="zip_code"
-							onChange={(e) => setFormData({ ...formData, zip_code: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, zip_code: e.target.value })
+							}
 							placeholder="12345"
 							value={formData.zip_code}
 						/>
@@ -391,7 +422,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="country">Country</Label>
 						<Input
 							id="country"
-							onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, country: e.target.value })
+							}
 							value={formData.country}
 						/>
 					</div>
@@ -406,7 +439,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="tax_id">Tax ID</Label>
 						<Input
 							id="tax_id"
-							onChange={(e) => setFormData({ ...formData, tax_id: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, tax_id: e.target.value })
+							}
 							placeholder="12-3456789"
 							value={formData.tax_id}
 						/>
@@ -414,7 +449,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 					<div className="space-y-2">
 						<Label htmlFor="payment_terms">Payment Terms</Label>
 						<Select
-							onValueChange={(value) => setFormData({ ...formData, payment_terms: value })}
+							onValueChange={(value) =>
+								setFormData({ ...formData, payment_terms: value })
+							}
 							value={formData.payment_terms}
 						>
 							<SelectTrigger id="payment_terms">
@@ -433,14 +470,18 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="credit_limit">Credit Limit ($)</Label>
 						<Input
 							id="credit_limit"
-							onChange={(e) => setFormData({ ...formData, credit_limit: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, credit_limit: e.target.value })
+							}
 							placeholder="0"
 							type="number"
 							value={formData.credit_limit}
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="preferred_payment_method">Preferred Payment Method</Label>
+						<Label htmlFor="preferred_payment_method">
+							Preferred Payment Method
+						</Label>
 						<Select
 							onValueChange={(value) =>
 								setFormData({
@@ -472,7 +513,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="notes">Public Notes</Label>
 						<Textarea
 							id="notes"
-							onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, notes: e.target.value })
+							}
 							placeholder="Notes visible to team members..."
 							rows={4}
 							value={formData.notes}
@@ -482,7 +525,9 @@ export function VendorForm({ vendor, mode = "create" }: VendorFormProps) {
 						<Label htmlFor="internal_notes">Internal Notes</Label>
 						<Textarea
 							id="internal_notes"
-							onChange={(e) => setFormData({ ...formData, internal_notes: e.target.value })}
+							onChange={(e) =>
+								setFormData({ ...formData, internal_notes: e.target.value })
+							}
 							placeholder="Private notes only visible to admins..."
 							rows={4}
 							value={formData.internal_notes}

@@ -19,7 +19,8 @@ import { useNetworkStatus } from "@/lib/offline/network-status";
 import { cn } from "@/lib/utils";
 
 export function OfflineIndicator() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } =
+		useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -95,7 +96,8 @@ export function OfflineIndicator() {
  * Detailed sync status for settings/debug pages
  */
 export function SyncStatusDetail() {
-	const { isOnline, pendingOperations, isSyncing, lastSync } = useNetworkStatus();
+	const { isOnline, pendingOperations, isSyncing, lastSync } =
+		useNetworkStatus();
 	const [isMounted, setIsMounted] = useState(false);
 
 	// Wait for client-side mount to avoid hydration mismatch
@@ -135,7 +137,9 @@ export function SyncStatusDetail() {
 			</div>
 
 			<div className="flex items-center justify-between">
-				<span className="text-muted-foreground text-sm">Pending Operations</span>
+				<span className="text-muted-foreground text-sm">
+					Pending Operations
+				</span>
 				<span className="text-sm font-medium">
 					{pendingOperations === 0 ? "None" : `${pendingOperations}`}
 				</span>
@@ -154,7 +158,9 @@ export function SyncStatusDetail() {
 			{lastSync && (
 				<div className="flex items-center justify-between">
 					<span className="text-muted-foreground text-sm">Last Sync</span>
-					<span className="text-sm font-medium">{new Date(lastSync).toLocaleTimeString()}</span>
+					<span className="text-sm font-medium">
+						{new Date(lastSync).toLocaleTimeString()}
+					</span>
 				</div>
 			)}
 		</div>
@@ -186,10 +192,14 @@ export function OfflineBadge() {
 		<div
 			className={cn(
 				"flex size-6 items-center justify-center rounded-full text-xs font-bold",
-				isOnline ? "bg-warning text-white" : "bg-warning text-white"
+				isOnline ? "bg-warning text-white" : "bg-warning text-white",
 			)}
 		>
-			{pendingOperations > 0 ? pendingOperations : <WifiOff className="size-3" />}
+			{pendingOperations > 0 ? (
+				pendingOperations
+			) : (
+				<WifiOff className="size-3" />
+			)}
 		</div>
 	);
 }

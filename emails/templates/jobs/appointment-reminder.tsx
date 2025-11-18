@@ -57,13 +57,17 @@ export default function AppointmentReminderEmail({
 			<Card style={prepCard}>
 				<Heading level={3}>How to prepare</Heading>
 				<ul style={list}>
-					<li style={listItem}>Please ensure someone is present during the service window</li>
+					<li style={listItem}>
+						Please ensure someone is present during the service window
+					</li>
 					<li style={listItem}>Clear access to the work area if possible</li>
 					<li style={listItem}>Secure any pets for safety</li>
 				</ul>
 			</Card>
 
-			<Text style={paragraph}>We'll notify you when {technicianName} is on the way.</Text>
+			<Text style={paragraph}>
+				We'll notify you when {technicianName} is on the way.
+			</Text>
 
 			<div style={buttonContainer}>
 				<Button href={rescheduleUrl}>Need to Reschedule?</Button>
@@ -87,7 +91,8 @@ const paragraph = {
 };
 
 const highlightCard = {
-	background: "linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
+	background:
+		"linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(217 91% 50%) 100%)",
 	borderRadius: "12px",
 	padding: "32px",
 	margin: "24px 0",

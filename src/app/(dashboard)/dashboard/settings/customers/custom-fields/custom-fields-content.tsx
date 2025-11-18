@@ -19,7 +19,13 @@ import {
 } from "@/actions/settings/customers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -31,7 +37,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 
 type CustomField = {
@@ -39,7 +50,14 @@ type CustomField = {
 	company_id?: string;
 	field_name: string;
 	field_key: string;
-	field_type: "text" | "number" | "date" | "boolean" | "select" | "multi_select" | "textarea";
+	field_type:
+		| "text"
+		| "number"
+		| "date"
+		| "boolean"
+		| "select"
+		| "multi_select"
+		| "textarea";
 	field_options?: string[] | null;
 	is_required: boolean;
 	show_in_list: boolean;
@@ -57,7 +75,8 @@ export function CustomFieldsContent({ initialFields }: Props) {
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
 	const { toast } = useToast();
-	const [customFields, setCustomFields] = useState<CustomField[]>(initialFields);
+	const [customFields, setCustomFields] =
+		useState<CustomField[]>(initialFields);
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
 	const addCustomField = () => {
@@ -97,7 +116,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 	const updateField = (
 		id: string,
 		key: keyof CustomField,
-		value: string | boolean | string[] | number
+		value: string | boolean | string[] | number,
 	) => {
 		setCustomFields((prev) =>
 			prev.map((field) => {
@@ -113,7 +132,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 					return updated;
 				}
 				return field;
-			})
+			}),
 		);
 		setHasUnsavedChanges(true);
 	};
@@ -194,7 +213,12 @@ export function CustomFieldsContent({ initialFields }: Props) {
 									Create custom fields to capture business-specific information
 								</CardDescription>
 							</div>
-							<Button disabled={isPending} onClick={addCustomField} size="sm" variant="outline">
+							<Button
+								disabled={isPending}
+								onClick={addCustomField}
+								size="sm"
+								variant="outline"
+							>
 								<Plus className="mr-2 size-4" />
 								Add Field
 							</Button>
@@ -208,11 +232,19 @@ export function CustomFieldsContent({ initialFields }: Props) {
 										<div className="flex-1 space-y-4">
 											<div className="grid gap-4 sm:grid-cols-2">
 												<div>
-													<Label className="text-sm font-medium">Field Name</Label>
+													<Label className="text-sm font-medium">
+														Field Name
+													</Label>
 													<Input
 														className="mt-2"
 														disabled={isPending}
-														onChange={(e) => updateField(field.id, "field_name", e.target.value)}
+														onChange={(e) =>
+															updateField(
+																field.id,
+																"field_name",
+																e.target.value,
+															)
+														}
 														placeholder="e.g., Gate Code"
 														value={field.field_name}
 													/>
@@ -226,7 +258,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 																<HelpCircle className="text-muted-foreground h-3 w-3" />
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs">Type of input for this field</p>
+																<p className="max-w-xs">
+																	Type of input for this field
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</Label>
@@ -236,7 +270,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 															updateField(
 																field.id,
 																"field_type",
-																value as CustomField["field_type"]
+																value as CustomField["field_type"],
 															)
 														}
 														value={field.field_type}
@@ -250,14 +284,19 @@ export function CustomFieldsContent({ initialFields }: Props) {
 															<SelectItem value="date">Date</SelectItem>
 															<SelectItem value="boolean">Boolean</SelectItem>
 															<SelectItem value="select">Dropdown</SelectItem>
-															<SelectItem value="multi_select">Multi-Select</SelectItem>
-															<SelectItem value="textarea">Text Area</SelectItem>
+															<SelectItem value="multi_select">
+																Multi-Select
+															</SelectItem>
+															<SelectItem value="textarea">
+																Text Area
+															</SelectItem>
 														</SelectContent>
 													</Select>
 												</div>
 											</div>
 
-											{(field.field_type === "select" || field.field_type === "multi_select") && (
+											{(field.field_type === "select" ||
+												field.field_type === "multi_select") && (
 												<div>
 													<Label className="flex items-center gap-2 text-sm">
 														Options (comma-separated)
@@ -266,7 +305,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 																<HelpCircle className="text-muted-foreground h-3 w-3" />
 															</TooltipTrigger>
 															<TooltipContent>
-																<p className="max-w-xs">Separate options with commas</p>
+																<p className="max-w-xs">
+																	Separate options with commas
+																</p>
 															</TooltipContent>
 														</Tooltip>
 													</Label>
@@ -277,7 +318,7 @@ export function CustomFieldsContent({ initialFields }: Props) {
 															updateField(
 																field.id,
 																"field_options",
-																e.target.value.split(",").map((s) => s.trim())
+																e.target.value.split(",").map((s) => s.trim()),
 															)
 														}
 														placeholder="Option 1, Option 2, Option 3"
@@ -299,7 +340,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 												<div className="flex items-center justify-between">
 													<div className="flex-1">
 														<Label className="text-sm">Required</Label>
-														<p className="text-muted-foreground text-xs">Customer must fill</p>
+														<p className="text-muted-foreground text-xs">
+															Customer must fill
+														</p>
 													</div>
 													<Switch
 														checked={field.is_required}
@@ -313,7 +356,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 												<div className="flex items-center justify-between">
 													<div className="flex-1">
 														<Label className="text-sm">Show in List</Label>
-														<p className="text-muted-foreground text-xs">Display in tables</p>
+														<p className="text-muted-foreground text-xs">
+															Display in tables
+														</p>
 													</div>
 													<Switch
 														checked={field.show_in_list}
@@ -327,7 +372,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 												<div className="flex items-center justify-between">
 													<div className="flex-1">
 														<Label className="text-sm">Active</Label>
-														<p className="text-muted-foreground text-xs">Enable this field</p>
+														<p className="text-muted-foreground text-xs">
+															Enable this field
+														</p>
 													</div>
 													<Switch
 														checked={field.is_active}
@@ -352,7 +399,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 									</div>
 								</div>
 
-								{index < customFields.length - 1 && <Separator className="my-4" />}
+								{index < customFields.length - 1 && (
+									<Separator className="my-4" />
+								)}
 							</div>
 						))}
 
@@ -371,7 +420,9 @@ export function CustomFieldsContent({ initialFields }: Props) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Field Examples</CardTitle>
-						<CardDescription>Common custom fields for field service businesses</CardDescription>
+						<CardDescription>
+							Common custom fields for field service businesses
+						</CardDescription>
 					</CardHeader>
 					<CardContent>
 						<div className="grid gap-3 sm:grid-cols-2">
@@ -446,10 +497,11 @@ export function CustomFieldsContent({ initialFields }: Props) {
 								Custom Field Best Practices
 							</p>
 							<p className="text-muted-foreground text-sm">
-								Keep custom fields focused and relevant to avoid overwhelming customers during
-								booking. Use dropdown menus instead of text fields when possible for easier
-								reporting. Limit required fields to only essential information. Review and remove
-								unused custom fields quarterly to maintain a clean customer experience.
+								Keep custom fields focused and relevant to avoid overwhelming
+								customers during booking. Use dropdown menus instead of text
+								fields when possible for easier reporting. Limit required fields
+								to only essential information. Review and remove unused custom
+								fields quarterly to maintain a clean customer experience.
 							</p>
 						</div>
 					</CardContent>

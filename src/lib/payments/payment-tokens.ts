@@ -38,7 +38,7 @@ export type TokenValidation = {
 export async function generatePaymentToken(
 	invoiceId: string,
 	expiryHours = 72,
-	maxUses = 1
+	maxUses = 1,
 ): Promise<PaymentToken | null> {
 	try {
 		const supabase = await createClient();
@@ -48,11 +48,14 @@ export async function generatePaymentToken(
 		}
 
 		// Call database function to generate token
-		const { data, error } = await supabase.rpc("generate_invoice_payment_token", {
-			p_invoice_id: invoiceId,
-			p_expiry_hours: expiryHours,
-			p_max_uses: maxUses,
-		});
+		const { data, error } = await supabase.rpc(
+			"generate_invoice_payment_token",
+			{
+				p_invoice_id: invoiceId,
+				p_expiry_hours: expiryHours,
+				p_max_uses: maxUses,
+			},
+		);
 
 		if (error || !data || data.length === 0) {
 			return null;
@@ -80,7 +83,7 @@ export async function generatePaymentToken(
  */
 export async function validatePaymentToken(
 	token: string,
-	_ipAddress?: string
+	_ipAddress?: string,
 ): Promise<TokenValidation> {
 	try {
 		const supabase = await createClient();
@@ -128,7 +131,10 @@ export async function validatePaymentToken(
  * @param token - The payment token to mark as used
  * @param ipAddress - Optional IP address for security tracking
  */
-export async function markTokenAsUsed(token: string, ipAddress?: string): Promise<boolean> {
+export async function markTokenAsUsed(
+	token: string,
+	ipAddress?: string,
+): Promise<boolean> {
 	try {
 		const supabase = await createClient();
 
@@ -176,7 +182,9 @@ export async function markTokenAsUsed(token: string, ipAddress?: string): Promis
  * @param invoiceId - UUID of the invoice
  * @returns Array of active payment tokens
  */
-export async function getInvoicePaymentTokens(invoiceId: string): Promise<PaymentToken[]> {
+export async function getInvoicePaymentTokens(
+	invoiceId: string,
+): Promise<PaymentToken[]> {
 	try {
 		const supabase = await createClient();
 
@@ -220,7 +228,7 @@ export async function getInvoicePaymentTokens(invoiceId: string): Promise<Paymen
 export async function generatePaymentTokensBatch(
 	invoiceIds: string[],
 	expiryHours = 72,
-	maxUses = 1
+	maxUses = 1,
 ): Promise<Record<string, PaymentToken>> {
 	try {
 		const supabase = await createClient();
@@ -231,11 +239,14 @@ export async function generatePaymentTokensBatch(
 
 		// Generate all tokens in parallel (much faster than sequential)
 		const tokenPromises = invoiceIds.map(async (invoiceId) => {
-			const { data, error } = await supabase.rpc("generate_invoice_payment_token", {
-				p_invoice_id: invoiceId,
-				p_expiry_hours: expiryHours,
-				p_max_uses: maxUses,
-			});
+			const { data, error } = await supabase.rpc(
+				"generate_invoice_payment_token",
+				{
+					p_invoice_id: invoiceId,
+					p_expiry_hours: expiryHours,
+					p_max_uses: maxUses,
+				},
+			);
 
 			if (error || !data || data.length === 0) {
 				return { invoiceId, token: null };
@@ -264,7 +275,7 @@ export async function generatePaymentTokensBatch(
 				}
 				return acc;
 			},
-			{} as Record<string, PaymentToken>
+			{} as Record<string, PaymentToken>,
 		);
 	} catch (_error) {
 		return {};

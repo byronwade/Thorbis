@@ -9,7 +9,11 @@
  * - Apple Pay / Google Pay support via Express Checkout
  */
 
-import { Elements, ExpressCheckoutElement, useStripe } from "@stripe/react-stripe-js";
+import {
+	Elements,
+	ExpressCheckoutElement,
+	useStripe,
+} from "@stripe/react-stripe-js";
 import type { Stripe } from "@stripe/stripe-js";
 import { Apple, CheckCircle2, CreditCard, Smartphone } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -62,7 +66,9 @@ function PaymentMethodSelectorInner({
 			setIsLoading(true);
 			try {
 				// Call API to fetch payment methods
-				const response = await fetch(`/api/payments/methods?customerId=${customerId}`);
+				const response = await fetch(
+					`/api/payments/methods?customerId=${customerId}`,
+				);
 				if (response.ok) {
 					const data = await response.json();
 					setPaymentMethods(data.paymentMethods || []);
@@ -122,7 +128,10 @@ function PaymentMethodSelectorInner({
 		<div className="space-y-4">
 			{/* Always show dropdown with all payment options */}
 			<div className="space-y-2">
-				<Label className="text-foreground font-semibold" htmlFor="payment-method">
+				<Label
+					className="text-foreground font-semibold"
+					htmlFor="payment-method"
+				>
 					Select Payment Method
 				</Label>
 				<Select onValueChange={handleMethodSelect} value={selectedMethod}>
@@ -131,7 +140,9 @@ function PaymentMethodSelectorInner({
 						disabled={isLoading}
 						id="payment-method"
 					>
-						<SelectValue placeholder={isLoading ? "Loading..." : "Choose payment method"} />
+						<SelectValue
+							placeholder={isLoading ? "Loading..." : "Choose payment method"}
+						/>
 					</SelectTrigger>
 					<SelectContent>
 						{/* Existing payment methods from primary org */}
@@ -225,7 +236,12 @@ function PaymentMethodSelectorInner({
 				<div className="bg-muted/30 space-y-4 rounded-lg border p-4">
 					<div className="flex items-center justify-between">
 						<h4 className="text-sm font-medium">Apple Pay</h4>
-						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
+						<Button
+							onClick={() => setSelectedMethod("")}
+							size="sm"
+							type="button"
+							variant="ghost"
+						>
 							Cancel
 						</Button>
 					</div>
@@ -256,7 +272,12 @@ function PaymentMethodSelectorInner({
 				<div className="bg-muted/30 space-y-4 rounded-lg border p-4">
 					<div className="flex items-center justify-between">
 						<h4 className="text-sm font-medium">Google Pay</h4>
-						<Button onClick={() => setSelectedMethod("")} size="sm" type="button" variant="ghost">
+						<Button
+							onClick={() => setSelectedMethod("")}
+							size="sm"
+							type="button"
+							variant="ghost"
+						>
 							Cancel
 						</Button>
 					</div>
@@ -287,12 +308,14 @@ function PaymentMethodSelectorInner({
 
 // Wrapper component with Stripe Elements provider
 export function PaymentMethodSelector(
-	props: PaymentMethodSelectorProps & { stripe: Stripe | null }
+	props: PaymentMethodSelectorProps & { stripe: Stripe | null },
 ) {
 	if (!props.stripe) {
 		return (
 			<div className="border-warning bg-warning text-warning dark:border-warning dark:bg-warning dark:text-warning rounded-lg border p-4">
-				<p className="text-sm">Payment system is not configured. Please contact support.</p>
+				<p className="text-sm">
+					Payment system is not configured. Please contact support.
+				</p>
 			</div>
 		);
 	}

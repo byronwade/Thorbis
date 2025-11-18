@@ -21,25 +21,25 @@
 
 import { useState } from "react";
 import {
-	CustomerJobsWidget,
-	CustomerInvoicesWidget,
-	CustomerPropertiesWidget,
-	CustomerEstimatesWidget,
+	CustomerActivitiesWidget,
 	CustomerAppointmentsWidget,
 	CustomerContractsWidget,
-	CustomerPaymentsWidget,
-	CustomerMaintenancePlansWidget,
-	CustomerServiceAgreementsWidget,
 	CustomerEquipmentWidget,
-	CustomerActivitiesWidget,
+	CustomerEstimatesWidget,
+	CustomerInvoicesWidget,
+	CustomerJobsWidget,
+	CustomerMaintenancePlansWidget,
 	CustomerPaymentMethodsWidget,
+	CustomerPaymentsWidget,
+	CustomerPropertiesWidget,
+	CustomerServiceAgreementsWidget,
 } from "@/components/customers/widgets";
 import { DetailPageContentLayout } from "@/components/layout/detail-page-content-layout";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { CustomerStatusBadge } from "@/components/ui/status-badge";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { CustomerStatusBadge } from "@/components/ui/status-badge";
 import { Textarea } from "@/components/ui/textarea";
 
 type CustomerPageContentOptimizedProps = {
@@ -92,10 +92,14 @@ export function CustomerPageContentOptimized({
 
 						<div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
 							{localCustomer?.email && (
-								<span className="flex items-center gap-1">{localCustomer.email}</span>
+								<span className="flex items-center gap-1">
+									{localCustomer.email}
+								</span>
 							)}
 							{localCustomer?.phone && (
-								<span className="flex items-center gap-1">{localCustomer.phone}</span>
+								<span className="flex items-center gap-1">
+									{localCustomer.phone}
+								</span>
 							)}
 						</div>
 					</div>
@@ -111,7 +115,9 @@ export function CustomerPageContentOptimized({
 							id="email"
 							type="email"
 							value={localCustomer?.email || ""}
-							onChange={(e) => setLocalCustomer({ ...localCustomer, email: e.target.value })}
+							onChange={(e) =>
+								setLocalCustomer({ ...localCustomer, email: e.target.value })
+							}
 						/>
 					</div>
 
@@ -121,7 +127,9 @@ export function CustomerPageContentOptimized({
 							id="phone"
 							type="tel"
 							value={localCustomer?.phone || ""}
-							onChange={(e) => setLocalCustomer({ ...localCustomer, phone: e.target.value })}
+							onChange={(e) =>
+								setLocalCustomer({ ...localCustomer, phone: e.target.value })
+							}
 						/>
 					</div>
 
@@ -130,7 +138,9 @@ export function CustomerPageContentOptimized({
 						<Input
 							id="address"
 							value={localCustomer?.address || ""}
-							onChange={(e) => setLocalCustomer({ ...localCustomer, address: e.target.value })}
+							onChange={(e) =>
+								setLocalCustomer({ ...localCustomer, address: e.target.value })
+							}
 						/>
 					</div>
 
@@ -140,7 +150,9 @@ export function CustomerPageContentOptimized({
 							id="notes"
 							rows={3}
 							value={localCustomer?.notes || ""}
-							onChange={(e) => setLocalCustomer({ ...localCustomer, notes: e.target.value })}
+							onChange={(e) =>
+								setLocalCustomer({ ...localCustomer, notes: e.target.value })
+							}
 						/>
 					</div>
 				</div>
@@ -164,7 +176,10 @@ export function CustomerPageContentOptimized({
 						<CustomerPaymentsWidget customerId={customer.id} />
 
 						{/* Row 3 - Secondary (Load when scrolled into view) */}
-						<CustomerContractsWidget customerId={customer.id} companyId={companyId} />
+						<CustomerContractsWidget
+							customerId={customer.id}
+							companyId={companyId}
+						/>
 						<CustomerMaintenancePlansWidget customerId={customer.id} />
 						<CustomerServiceAgreementsWidget customerId={customer.id} />
 

@@ -20,7 +20,9 @@ export default function TechnicianManagementPage() {
 		<div className="space-y-6">
 			<div>
 				<h1 className="text-2xl font-semibold">Technician Management</h1>
-				<p className="text-muted-foreground">Manage technicians, skills, and performance</p>
+				<p className="text-muted-foreground">
+					Manage technicians, skills, and performance
+				</p>
 			</div>
 
 			<Suspense fallback={<StatsCardsSkeleton count={4} />}>

@@ -57,13 +57,16 @@ async function verifyApiKey() {
 
 	// Test API key by making a simple API call
 	try {
-		const response = await fetch("https://api.telnyx.com/v2/credential_connections", {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${apiKey}`,
+		const response = await fetch(
+			"https://api.telnyx.com/v2/credential_connections",
+			{
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${apiKey}`,
+				},
 			},
-		});
+		);
 
 		if (!response.ok) {
 			console.error(`   ❌ API Key validation failed: ${response.status}`);
@@ -92,19 +95,22 @@ async function testCredentialGeneration() {
 
 	try {
 		// Try primary endpoint (credential_connections)
-		const response = await fetch("https://api.telnyx.com/v2/credential_connections", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${apiKey}`,
+		const response = await fetch(
+			"https://api.telnyx.com/v2/credential_connections",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${apiKey}`,
+				},
+				body: JSON.stringify({
+					connection_name: testUsername,
+					user_name: testUsername,
+					password: testPassword,
+					ttl: 86_400,
+				}),
 			},
-			body: JSON.stringify({
-				connection_name: testUsername,
-				user_name: testUsername,
-				password: testPassword,
-				ttl: 86_400,
-			}),
-		});
+		);
 
 		if (response.ok) {
 			const data = await response.json();
@@ -117,12 +123,15 @@ async function testCredentialGeneration() {
 
 			// Clean up test credential
 			if (data.data?.id) {
-				await fetch(`https://api.telnyx.com/v2/credential_connections/${data.data.id}`, {
-					method: "DELETE",
-					headers: {
-						Authorization: `Bearer ${apiKey}`,
+				await fetch(
+					`https://api.telnyx.com/v2/credential_connections/${data.data.id}`,
+					{
+						method: "DELETE",
+						headers: {
+							Authorization: `Bearer ${apiKey}`,
+						},
 					},
-				});
+				);
 				console.log("   ✅ Test credential cleaned up\n");
 			}
 		} else {
@@ -131,18 +140,21 @@ async function testCredentialGeneration() {
 			console.log(`   Error: ${errorText}`);
 
 			// Try alternative endpoint (texml_credentials)
-			const altResponse = await fetch("https://api.telnyx.com/v2/texml_credentials", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${apiKey}`,
+			const altResponse = await fetch(
+				"https://api.telnyx.com/v2/texml_credentials",
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${apiKey}`,
+					},
+					body: JSON.stringify({
+						connection_name: testUsername,
+						user_name: testUsername,
+						password: testPassword,
+					}),
 				},
-				body: JSON.stringify({
-					connection_name: testUsername,
-					user_name: testUsername,
-					password: testPassword,
-				}),
-			});
+			);
 
 			if (altResponse.ok) {
 				const altData = await altResponse.json();
@@ -153,12 +165,15 @@ async function testCredentialGeneration() {
 
 				// Clean up test credential
 				if (altData.data?.id) {
-					await fetch(`https://api.telnyx.com/v2/texml_credentials/${altData.data.id}`, {
-						method: "DELETE",
-						headers: {
-							Authorization: `Bearer ${apiKey}`,
+					await fetch(
+						`https://api.telnyx.com/v2/texml_credentials/${altData.data.id}`,
+						{
+							method: "DELETE",
+							headers: {
+								Authorization: `Bearer ${apiKey}`,
+							},
 						},
-					});
+					);
 					console.log("   ✅ Test credential cleaned up\n");
 				}
 			} else {
@@ -194,11 +209,14 @@ function checkConnectionEndpoints() {
 }
 
 function generateRandomPassword(length = DEFAULT_PASSWORD_LENGTH): string {
-	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+	const characters =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
 	let password = "";
 
 	for (let i = 0; i < length; i++) {
-		password += characters.charAt(Math.floor(Math.random() * characters.length));
+		password += characters.charAt(
+			Math.floor(Math.random() * characters.length),
+		);
 	}
 
 	return password;

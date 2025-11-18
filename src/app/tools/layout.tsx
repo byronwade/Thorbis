@@ -11,7 +11,11 @@ import { MarketingHeader } from "@/components/hero/marketing-header";
 import { Footer } from "@/components/layout/footer";
 import { ToolsSidebar } from "@/components/tools/tools-sidebar";
 
-export default function ToolsLayout({ children }: { children: React.ReactNode }) {
+export default function ToolsLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
 	return (
 		<div className="bg-background flex min-h-screen flex-col">
 			{/* Marketing Header */}

@@ -9,11 +9,19 @@ import { Check, Plus, Tag } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { type TagWithColor, updateCustomerTags, updateJobTags } from "@/actions/job-tags";
+import {
+	type TagWithColor,
+	updateCustomerTags,
+	updateJobTags,
+} from "@/actions/job-tags";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -114,7 +122,9 @@ export function AddTagBadge({
 	const [isOpen, setIsOpen] = useState(false);
 	const [tagLabel, setTagLabel] = useState("");
 	const [tagColor, setTagColor] = useState("blue");
-	const [tagType, setTagType] = useState<"customer" | "job">(customerId ? "customer" : "job");
+	const [tagType, setTagType] = useState<"customer" | "job">(
+		customerId ? "customer" : "job",
+	);
 	const [isSaving, setIsSaving] = useState(false);
 
 	const handleSave = async () => {
@@ -205,7 +215,9 @@ export function AddTagBadge({
 								<SelectValue>
 									{selectedColor && (
 										<div className="flex items-center gap-2">
-											<div className={`h-4 w-4 rounded-full ${selectedColor.class}`} />
+											<div
+												className={`h-4 w-4 rounded-full ${selectedColor.class}`}
+											/>
 											<span>{selectedColor.name}</span>
 										</div>
 									)}
@@ -229,7 +241,9 @@ export function AddTagBadge({
 						<div className="space-y-2">
 							<Label htmlFor="tag-type">Apply To</Label>
 							<Select
-								onValueChange={(value) => setTagType(value as "customer" | "job")}
+								onValueChange={(value) =>
+									setTagType(value as "customer" | "job")
+								}
 								value={tagType}
 							>
 								<SelectTrigger id="tag-type">
@@ -258,10 +272,18 @@ export function AddTagBadge({
 
 					{/* Action Buttons */}
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => setIsOpen(false)} variant="outline">
+						<Button
+							className="flex-1"
+							onClick={() => setIsOpen(false)}
+							variant="outline"
+						>
 							Cancel
 						</Button>
-						<Button className="flex-1" disabled={isSaving || !tagLabel.trim()} onClick={handleSave}>
+						<Button
+							className="flex-1"
+							disabled={isSaving || !tagLabel.trim()}
+							onClick={handleSave}
+						>
 							{isSaving ? (
 								<>
 									<Check className="mr-2 size-4" />

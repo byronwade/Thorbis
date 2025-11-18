@@ -13,7 +13,9 @@ export function ToolbarClientActions({ pathname }: ToolbarClientActionsProps) {
 	useEffect(() => {
 		if (actions) {
 			document
-				.querySelector(`[data-toolbar-default-actions="${CSS.escape(pathname)}"]`)
+				.querySelector(
+					`[data-toolbar-default-actions="${CSS.escape(pathname)}"]`,
+				)
 				?.setAttribute("hidden", "true");
 		}
 	}, [pathname, actions]);

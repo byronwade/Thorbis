@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import { AppointmentsKanban } from "@/components/work/appointments-kanban";
 import { AppointmentsTable } from "@/components/work/appointments-table";
 import { WorkDataView } from "@/components/work/work-data-view";
-import { getAppointmentsWithRelations } from "@/lib/queries/appointments";
+import { getActiveCompanyId } from "@/lib/auth/company-context";
+import {
+	APPOINTMENTS_PAGE_SIZE,
+	getAppointmentsPageData,
+} from "@/lib/queries/appointments";
 
 /**
  * AppointmentsData - Async Server Component
@@ -15,28 +19,63 @@ import { getAppointmentsWithRelations } from "@/lib/queries/appointments";
  *
  * Expected render time: 200-500ms (was 1500-2500ms)
  */
-export async function AppointmentsData() {
-	const appointmentsRaw = await getAppointmentsWithRelations();
-
-	if (!appointmentsRaw) {
+export async function AppointmentsData({
+	searchParams,
+}: {
+	searchParams?: { page?: string; search?: string };
+}) {
+	const activeCompanyId = await getActiveCompanyId();
+	if (!activeCompanyId) {
 		return notFound();
 	}
 
-	// Transform dates (already filtered and joined)
-	const appointments = appointmentsRaw.map((apt) => ({
-		...apt,
-		start_time: new Date(apt.start_time),
-		end_time: apt.end_time ? new Date(apt.end_time) : new Date(apt.start_time),
-		created_at: new Date(apt.created_at),
-		updated_at: new Date(apt.updated_at),
-		status: apt.status || "scheduled",
-	}));
+	const currentPage = Number(searchParams?.page) || 1;
+	const searchQuery = searchParams?.search ?? "";
+
+	const { appointments: appointmentsRaw, totalCount } =
+		await getAppointmentsPageData(
+			currentPage,
+			APPOINTMENTS_PAGE_SIZE,
+			searchQuery,
+			activeCompanyId,
+		);
+
+	const appointments = appointmentsRaw.map((apt) => {
+		const customer = Array.isArray(apt.customer)
+			? apt.customer[0]
+			: apt.customer;
+		const assignedUser = Array.isArray(apt.assigned_user)
+			? apt.assigned_user[0]
+			: apt.assigned_user;
+
+		return {
+			id: apt.id,
+			title: apt.title || apt.id || "Untitled Appointment",
+			description: apt.description,
+			start_time: apt.start_time,
+			end_time: apt.end_time ?? apt.start_time,
+			status: apt.status || "scheduled",
+			customer: customer ?? null,
+			assigned_user: assignedUser ?? null,
+			job_id: apt.job_id,
+			archived_at: apt.archived_at ?? null,
+			deleted_at: apt.deleted_at ?? null,
+		};
+	});
 
 	return (
 		<WorkDataView
 			kanban={<AppointmentsKanban appointments={appointments} />}
 			section="appointments"
-			table={<AppointmentsTable appointments={appointments} itemsPerPage={50} />}
+			table={
+				<AppointmentsTable
+					appointments={appointments}
+					itemsPerPage={APPOINTMENTS_PAGE_SIZE}
+					totalCount={totalCount}
+					currentPage={currentPage}
+					initialSearchQuery={searchQuery}
+				/>
+			}
 		/>
 	);
 }

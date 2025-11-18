@@ -12,7 +12,14 @@
  * - Click to view appointment details
  */
 
-import { Archive, Calendar, Edit, Eye, MoreHorizontal, Plus } from "lucide-react";
+import {
+	Archive,
+	Calendar,
+	Edit,
+	Eye,
+	MoreHorizontal,
+	Plus,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import {
@@ -68,6 +75,9 @@ type AppointmentsTableProps = {
 	itemsPerPage?: number;
 	onAppointmentClick?: (appointment: Appointment) => void;
 	showRefresh?: boolean;
+	totalCount?: number;
+	currentPage?: number;
+	initialSearchQuery?: string;
 };
 
 function formatDate(date: Date | string | null): string {
@@ -122,7 +132,8 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		cancelled: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Cancelled",
 		},
 		no_show: {
@@ -137,7 +148,10 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge className={cn("text-xs font-medium", config.className)} variant="outline">
+		<Badge
+			className={cn("text-xs font-medium", config.className)}
+			variant="outline"
+		>
 			{config.label}
 		</Badge>
 	);
@@ -158,6 +172,9 @@ export function AppointmentsTable({
 	itemsPerPage = 50,
 	onAppointmentClick,
 	showRefresh = false,
+	totalCount,
+	currentPage = 1,
+	initialSearchQuery = "",
 }: AppointmentsTableProps) {
 	// Archive filter state
 	const archiveFilter = useArchiveStore((state) => state.filters.appointments);
@@ -166,9 +183,15 @@ export function AppointmentsTable({
 	const [isSingleArchiveOpen, setIsSingleArchiveOpen] = useState(false);
 	const [isBulkArchiveOpen, setIsBulkArchiveOpen] = useState(false);
 	const [_isPermanentDeleteOpen, _setIsPermanentDeleteOpen] = useState(false);
-	const [appointmentToArchive, setAppointmentToArchive] = useState<string | null>(null);
-	const [_appointmentToDelete, _setAppointmentToDelete] = useState<string | null>(null);
-	const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<Set<string>>(new Set());
+	const [appointmentToArchive, setAppointmentToArchive] = useState<
+		string | null
+	>(null);
+	const [_appointmentToDelete, _setAppointmentToDelete] = useState<
+		string | null
+	>(null);
+	const [selectedAppointmentIds, setSelectedAppointmentIds] = useState<
+		Set<string>
+	>(new Set());
 
 	// Filter appointments based on archive status
 	const filteredAppointments = appointments.filter((apt) => {
@@ -191,6 +214,7 @@ export function AppointmentsTable({
 				<Link
 					className="block min-w-0"
 					href={`/dashboard/work/appointments/${appointment.id}`}
+					prefetch={false}
 					onClick={(e) => e.stopPropagation()}
 				>
 					<div className="truncate text-sm leading-tight font-medium hover:underline">
@@ -212,7 +236,9 @@ export function AppointmentsTable({
 			hideOnMobile: true,
 			hideable: true,
 			render: (appointment) => (
-				<span className="text-muted-foreground text-sm">{getCustomerName(appointment)}</span>
+				<span className="text-muted-foreground text-sm">
+					{getCustomerName(appointment)}
+				</span>
 			),
 		},
 		{
@@ -223,9 +249,12 @@ export function AppointmentsTable({
 			hideable: false, // CRITICAL: Date/time essential for scheduling
 			render: (appointment) => (
 				<div className="text-muted-foreground text-xs tabular-nums">
-					<div className="leading-tight">{formatDate(appointment.start_time)}</div>
+					<div className="leading-tight">
+						{formatDate(appointment.start_time)}
+					</div>
 					<div className="text-xs leading-tight">
-						{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}
+						{formatTime(appointment.start_time)} -{" "}
+						{formatTime(appointment.end_time)}
 					</div>
 				</div>
 			),
@@ -269,13 +298,19 @@ export function AppointmentsTable({
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link href={`/dashboard/work/appointments/${appointment.id}`}>
+								<Link
+									href={`/dashboard/work/appointments/${appointment.id}`}
+									prefetch={false}
+								>
 									<Eye className="mr-2 size-4" />
 									View Details
 								</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
-								<Link href={`/dashboard/work/appointments/${appointment.id}/edit`}>
+								<Link
+									href={`/dashboard/work/appointments/${appointment.id}/edit`}
+									prefetch={false}
+								>
 									<Edit className="mr-2 size-4" />
 									Edit Appointment
 								</Link>
@@ -311,19 +346,6 @@ export function AppointmentsTable({
 		},
 	];
 
-	// Search filter function
-	const searchFilter = (appointment: Appointment, query: string) => {
-		const searchStr = query.toLowerCase();
-
-		return (
-			appointment.title.toLowerCase().includes(searchStr) ||
-			appointment.status.toLowerCase().includes(searchStr) ||
-			(appointment.description?.toLowerCase() || "").includes(searchStr) ||
-			getCustomerName(appointment).toLowerCase().includes(searchStr) ||
-			(appointment.assigned_user?.name?.toLowerCase() || "").includes(searchStr)
-		);
-	};
-
 	const handleRowClick = (appointment: Appointment) => {
 		if (onAppointmentClick) {
 			onAppointmentClick(appointment);
@@ -345,6 +367,7 @@ export function AppointmentsTable({
 			<FullWidthDataTable
 				bulkActions={bulkActions}
 				columns={columns}
+				currentPageFromServer={currentPage}
 				data={filteredAppointments}
 				emptyAction={
 					<Button onClick={handleAddAppointment} size="sm">
@@ -358,23 +381,30 @@ export function AppointmentsTable({
 				entity="appointments"
 				getItemId={(appointment) => appointment.id}
 				isArchived={(apt) => Boolean(apt.archived_at || apt.deleted_at)}
+				initialSearchQuery={initialSearchQuery}
 				itemsPerPage={itemsPerPage}
+				serverPagination
+				serverSearch
+				searchParamKey="search"
 				onRefresh={handleRefresh}
 				onRowClick={handleRowClick}
-				searchFilter={searchFilter}
-				searchPlaceholder="Search appointments by title, customer, or assigned user..."
+				totalCount={totalCount}
+				searchPlaceholder="Search appointments by title, description, or status..."
 				showArchived={archiveFilter !== "active"}
 				showRefresh={showRefresh}
 			/>
 
 			{/* Single Appointment Archive Dialog */}
-			<AlertDialog onOpenChange={setIsSingleArchiveOpen} open={isSingleArchiveOpen}>
+			<AlertDialog
+				onOpenChange={setIsSingleArchiveOpen}
+				open={isSingleArchiveOpen}
+			>
 				<AlertDialogContent>
 					<AlertDialogHeader>
 						<AlertDialogTitle>Archive Appointment?</AlertDialogTitle>
 						<AlertDialogDescription>
-							This appointment will be archived and can be restored within 90 days. After 90 days,
-							it will be permanently deleted.
+							This appointment will be archived and can be restored within 90
+							days. After 90 days, it will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -383,7 +413,9 @@ export function AppointmentsTable({
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
 								if (appointmentToArchive) {
-									const { archiveAppointment } = await import("@/actions/appointments");
+									const { archiveAppointment } = await import(
+										"@/actions/appointments"
+									);
 									await archiveAppointment(appointmentToArchive);
 									window.location.reload();
 								}
@@ -403,8 +435,8 @@ export function AppointmentsTable({
 							Archive {selectedAppointmentIds.size} Appointment(s)?
 						</AlertDialogTitle>
 						<AlertDialogDescription>
-							These appointments will be archived and can be restored within 90 days. After 90 days,
-							they will be permanently deleted.
+							These appointments will be archived and can be restored within 90
+							days. After 90 days, they will be permanently deleted.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -412,7 +444,9 @@ export function AppointmentsTable({
 						<AlertDialogAction
 							className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
 							onClick={async () => {
-								const { archiveAppointment } = await import("@/actions/appointments");
+								const { archiveAppointment } = await import(
+									"@/actions/appointments"
+								);
 								for (const appointmentId of selectedAppointmentIds) {
 									await archiveAppointment(appointmentId);
 								}

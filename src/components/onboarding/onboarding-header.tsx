@@ -46,11 +46,15 @@ export function OnboardingHeader() {
 				const profileData = await profileRes.json();
 				setUserProfile({
 					id: profileData.id || "",
-					name: `${profileData.firstName} ${profileData.lastName}`.trim() || profileData.email,
+					name:
+						`${profileData.firstName} ${profileData.lastName}`.trim() ||
+						profileData.email,
 					email: profileData.email,
 					avatar: "",
 					emailVerified: profileData.emailVerified,
-					createdAt: profileData.createdAt ? new Date(profileData.createdAt) : new Date(),
+					createdAt: profileData.createdAt
+						? new Date(profileData.createdAt)
+						: new Date(),
 				});
 			} else {
 			}
@@ -59,7 +63,7 @@ export function OnboardingHeader() {
 				const companiesData = await companiesRes.json();
 				// Deduplicate by ID just in case (defensive programming)
 				const uniqueCompanies = Array.from(
-					new Map(companiesData.map((c: any) => [c.id, c])).values()
+					new Map(companiesData.map((c: any) => [c.id, c])).values(),
 				) as Array<{
 					id: string;
 					name: string;
@@ -120,5 +124,7 @@ export function OnboardingHeader() {
 		);
 	}
 
-	return <OnboardingHeaderClient companies={companies} userProfile={userProfile} />;
+	return (
+		<OnboardingHeaderClient companies={companies} userProfile={userProfile} />
+	);
 }

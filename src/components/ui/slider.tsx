@@ -14,15 +14,20 @@ function Slider({
 	...props
 }: React.ComponentProps<typeof SliderPrimitive.Root>) {
 	const _values = React.useMemo(
-		() => (Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max]),
-		[value, defaultValue, min, max]
+		() =>
+			Array.isArray(value)
+				? value
+				: Array.isArray(defaultValue)
+					? defaultValue
+					: [min, max],
+		[value, defaultValue, min, max],
 	);
 
 	return (
 		<SliderPrimitive.Root
 			className={cn(
 				"relative flex w-full touch-none items-center select-none data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
-				className
+				className,
 			)}
 			data-slot="slider"
 			defaultValue={defaultValue}
@@ -33,13 +38,13 @@ function Slider({
 		>
 			<SliderPrimitive.Track
 				className={cn(
-					"bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5"
+					"bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5",
 				)}
 				data-slot="slider-track"
 			>
 				<SliderPrimitive.Range
 					className={cn(
-						"bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
+						"bg-primary absolute data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full",
 					)}
 					data-slot="slider-range"
 				/>

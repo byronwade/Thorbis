@@ -66,12 +66,16 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 								</TableCell>
 								<TableCell>{material.quantity || 0}</TableCell>
 								<TableCell>{material.unit || "ea"}</TableCell>
-								<TableCell>{formatCurrency(material.unit_cost || material.cost)}</TableCell>
+								<TableCell>
+									{formatCurrency(material.unit_cost || material.cost)}
+								</TableCell>
 								<TableCell className="max-w-[240px] align-top">
 									<EntityTags
 										entityId={material.id}
 										entityType="material"
-										onUpdateTags={(id, tags) => updateEntityTags("material", id, tags)}
+										onUpdateTags={(id, tags) =>
+											updateEntityTags("material", id, tags)
+										}
 										tags={
 											Array.isArray(material?.metadata?.tags)
 												? (material.metadata.tags as any[])
@@ -81,7 +85,8 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 								</TableCell>
 								<TableCell className="text-right font-medium">
 									{formatCurrency(
-										(material.quantity || 0) * (material.unit_cost || material.cost || 0)
+										(material.quantity || 0) *
+											(material.unit_cost || material.cost || 0),
 									)}
 								</TableCell>
 							</TableRow>
@@ -103,9 +108,10 @@ export function JobMaterials({ materials }: JobMaterialsProps) {
 						<p className="text-2xl font-bold">
 							{formatCurrency(
 								materials.reduce(
-									(sum, m) => sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0),
-									0
-								)
+									(sum, m) =>
+										sum + (m.quantity || 0) * (m.unit_cost || m.cost || 0),
+									0,
+								),
 							)}
 						</p>
 						<p className="text-muted-foreground text-xs">Total Cost</p>

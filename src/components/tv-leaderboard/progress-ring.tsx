@@ -18,7 +18,11 @@ type ProgressRingProps = {
 	className?: string;
 };
 
-export function ProgressRing({ progress, isPaused, className }: ProgressRingProps) {
+export function ProgressRing({
+	progress,
+	isPaused,
+	className,
+}: ProgressRingProps) {
 	const size = 32;
 	const strokeWidth = 3;
 	const radius = (size - strokeWidth) / 2;

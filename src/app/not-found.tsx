@@ -14,7 +14,9 @@ export default function NotFound() {
 
 				<div className="space-y-2">
 					<h1 className="text-foreground text-6xl font-bold">404</h1>
-					<h2 className="text-foreground text-2xl font-semibold">Page Not Found</h2>
+					<h2 className="text-foreground text-2xl font-semibold">
+						Page Not Found
+					</h2>
 				</div>
 
 				<div className="text-muted-foreground space-y-4">
@@ -22,8 +24,8 @@ export default function NotFound() {
 						Looks like this page went on a coffee break and never came back.
 					</p>
 					<p className="text-sm">
-						We searched high and low, but couldn't find what you're looking for. Maybe it's still in
-						the truck? 🚚
+						We searched high and low, but couldn't find what you're looking for.
+						Maybe it's still in the truck? 🚚
 					</p>
 				</div>
 

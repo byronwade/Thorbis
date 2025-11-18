@@ -29,8 +29,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="text-lg font-semibold">Real-Time Stock Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Monitor inventory levels in real-time with automatic updates from job completions and
-							purchases
+							Monitor inventory levels in real-time with automatic updates from
+							job completions and purchases
 						</p>
 					</div>
 
@@ -41,7 +41,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="text-lg font-semibold">Low Stock Alerts</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Get notified when items fall below minimum stock levels and automate reordering
+							Get notified when items fall below minimum stock levels and
+							automate reordering
 						</p>
 					</div>
 
@@ -52,7 +53,8 @@ export async function InventoryData() {
 						</div>
 						<h3 className="text-lg font-semibold">Usage Analytics</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Analyze inventory turnover, identify slow-moving items, and optimize stock levels
+							Analyze inventory turnover, identify slow-moving items, and
+							optimize stock levels
 						</p>
 					</div>
 
@@ -63,14 +65,17 @@ export async function InventoryData() {
 						</div>
 						<h3 className="text-lg font-semibold">Cost Tracking</h3>
 						<p className="text-muted-foreground text-sm leading-relaxed">
-							Track purchase costs, calculate profit margins, and manage inventory valuation
+							Track purchase costs, calculate profit margins, and manage
+							inventory valuation
 						</p>
 					</div>
 				</div>
 
 				{/* CTA section */}
 				<div className="border-primary/20 from-primary/5 to-primary/10 rounded-lg border bg-gradient-to-br p-8 text-center">
-					<h3 className="mb-3 text-xl font-semibold">Optimize Your Inventory</h3>
+					<h3 className="mb-3 text-xl font-semibold">
+						Optimize Your Inventory
+					</h3>
 					<p className="text-muted-foreground mb-6">
 						Never run out of parts and reduce carrying costs
 					</p>

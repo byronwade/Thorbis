@@ -3,7 +3,13 @@
 import { Check, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
@@ -27,7 +33,9 @@ export function SignaturePad({
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [isDrawing, setIsDrawing] = useState(false);
 	const [hasSignature, setHasSignature] = useState(false);
-	const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(null);
+	const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(
+		null,
+	);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -155,14 +163,16 @@ export function SignaturePad({
 		<Card className={className}>
 			<CardHeader>
 				<CardTitle>Sign Below</CardTitle>
-				<CardDescription>Draw your signature using your mouse, trackpad, or finger</CardDescription>
+				<CardDescription>
+					Draw your signature using your mouse, trackpad, or finger
+				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
 				<div className="relative">
 					<canvas
 						className={cn(
 							"bg-muted/30 h-48 w-full cursor-crosshair touch-none rounded-lg border-2 border-dashed",
-							disabled && "cursor-not-allowed opacity-50"
+							disabled && "cursor-not-allowed opacity-50",
 						)}
 						onMouseDown={startDrawing}
 						onMouseLeave={stopDrawing}
@@ -175,7 +185,9 @@ export function SignaturePad({
 					/>
 					{!hasSignature && (
 						<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-							<p className="text-muted-foreground text-sm">Click and drag to sign</p>
+							<p className="text-muted-foreground text-sm">
+								Click and drag to sign
+							</p>
 						</div>
 					)}
 				</div>

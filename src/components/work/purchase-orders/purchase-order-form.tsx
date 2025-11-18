@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPurchaseOrder } from "@/actions/purchase-orders";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Command,
 	CommandDialog,
@@ -118,7 +124,8 @@ export function PurchaseOrderForm({
 	const [title, setTitle] = useState("");
 	const [poNumber, _setPoNumber] = useState("");
 	const [status, _setStatus] = useState<(typeof PO_STATUSES)[number]>("draft");
-	const [priority, _setPriority] = useState<(typeof PRIORITIES)[number]>("normal");
+	const [priority, _setPriority] =
+		useState<(typeof PRIORITIES)[number]>("normal");
 	const [jobId, setJobId] = useState(defaults?.jobId || "");
 	const [estimateId, setEstimateId] = useState(defaults?.estimateId || "");
 	const [invoiceId, setInvoiceId] = useState(defaults?.invoiceId || "");
@@ -126,7 +133,9 @@ export function PurchaseOrderForm({
 	const [deliveryAddress, setDeliveryAddress] = useState("");
 	const [shippingAmount, setShippingAmount] = useState("0.00");
 	const [taxAmount, setTaxAmount] = useState("0.00");
-	const [lineItems, setLineItems] = useState<LineItem[]>([createEmptyLineItem()]);
+	const [lineItems, setLineItems] = useState<LineItem[]>([
+		createEmptyLineItem(),
+	]);
 	const [notes, setNotes] = useState("");
 	const [internalNotes, setInternalNotes] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -160,8 +169,9 @@ export function PurchaseOrderForm({
 	}, [router]);
 
 	const subtotal = useMemo(
-		() => lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0),
-		[lineItems]
+		() =>
+			lineItems.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0),
+		[lineItems],
 	);
 
 	const total =
@@ -169,17 +179,22 @@ export function PurchaseOrderForm({
 		(Number.parseFloat(shippingAmount || "0") || 0) +
 		(Number.parseFloat(taxAmount || "0") || 0);
 
-	const updateLineItem = (id: string, updates: Partial<Omit<LineItem, "id">>) => {
+	const updateLineItem = (
+		id: string,
+		updates: Partial<Omit<LineItem, "id">>,
+	) => {
 		setLineItems((prev) =>
 			prev.map((item) =>
 				item.id === id
 					? {
 							...item,
 							...updates,
-							total: (updates.quantity ?? item.quantity) * (updates.unitPrice ?? item.unitPrice),
+							total:
+								(updates.quantity ?? item.quantity) *
+								(updates.unitPrice ?? item.unitPrice),
 						}
-					: item
-			)
+					: item,
+			),
 		);
 	};
 
@@ -188,7 +203,9 @@ export function PurchaseOrderForm({
 	};
 
 	const removeLineItem = (id: string) => {
-		setLineItems((prev) => (prev.length > 1 ? prev.filter((item) => item.id !== id) : prev));
+		setLineItems((prev) =>
+			prev.length > 1 ? prev.filter((item) => item.id !== id) : prev,
+		);
 	};
 
 	const addLineFromCatalog = (item: PriceBookItemOption) => {
@@ -208,7 +225,8 @@ export function PurchaseOrderForm({
 		setIsCatalogOpen(false);
 	};
 
-	const toCents = (value: string | number) => Math.round((Number(value) || 0) * 100);
+	const toCents = (value: string | number) =>
+		Math.round((Number(value) || 0) * 100);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -287,7 +305,7 @@ export function PurchaseOrderForm({
 			setError(
 				err instanceof Error
 					? err.message
-					: "Something went wrong while creating the purchase order."
+					: "Something went wrong while creating the purchase order.",
 			);
 			setIsSubmitting(false);
 		}
@@ -295,12 +313,17 @@ export function PurchaseOrderForm({
 
 	return (
 		<>
-			<Command className="hidden" data-state={isCatalogOpen ? "open" : "closed"} />
+			<Command
+				className="hidden"
+				data-state={isCatalogOpen ? "open" : "closed"}
+			/>
 			<form className="space-y-6" onSubmit={handleSubmit} ref={formRef}>
 				<div className="bg-muted/30 flex flex-col gap-2 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
 					<div>
 						<p className="text-sm font-semibold">Keyboard Shortcuts</p>
-						<p className="text-muted-foreground text-xs">⌘/Ctrl + S to save • Esc to cancel</p>
+						<p className="text-muted-foreground text-xs">
+							⌘/Ctrl + S to save • Esc to cancel
+						</p>
 					</div>
 					<div className="flex gap-2">
 						<Button
@@ -313,7 +336,9 @@ export function PurchaseOrderForm({
 							Add from Price Book
 						</Button>
 						<Button asChild size="sm" variant="ghost">
-							<Link href="/dashboard/work/purchase-orders">Back to Purchase Orders</Link>
+							<Link href="/dashboard/work/purchase-orders">
+								Back to Purchase Orders
+							</Link>
 						</Button>
 					</div>
 				</div>
@@ -387,7 +412,9 @@ export function PurchaseOrderForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Links & Metadata</CardTitle>
-						<CardDescription>Associate this PO with jobs, estimates, and invoices</CardDescription>
+						<CardDescription>
+							Associate this PO with jobs, estimates, and invoices
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 sm:grid-cols-2">
@@ -415,7 +442,8 @@ export function PurchaseOrderForm({
 									<SelectContent className="max-h-[260px]">
 										{estimates.map((estimate) => (
 											<SelectItem key={estimate.id} value={estimate.id}>
-												{estimate.number} {estimate.title && `• ${estimate.title}`}
+												{estimate.number}{" "}
+												{estimate.title && `• ${estimate.title}`}
 											</SelectItem>
 										))}
 									</SelectContent>
@@ -455,7 +483,9 @@ export function PurchaseOrderForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Line Items</CardTitle>
-						<CardDescription>Cost lines that will appear on the purchase order</CardDescription>
+						<CardDescription>
+							Cost lines that will appear on the purchase order
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
 						{lineItems.map((item) => (
@@ -493,7 +523,10 @@ export function PurchaseOrderForm({
 											min="1"
 											onChange={(event) =>
 												updateLineItem(item.id, {
-													quantity: Number.parseInt(event.target.value || "1", 10),
+													quantity: Number.parseInt(
+														event.target.value || "1",
+														10,
+													),
 												})
 											}
 											type="number"
@@ -506,7 +539,8 @@ export function PurchaseOrderForm({
 											min="0"
 											onChange={(event) =>
 												updateLineItem(item.id, {
-													unitPrice: Number.parseFloat(event.target.value || "0") || 0,
+													unitPrice:
+														Number.parseFloat(event.target.value || "0") || 0,
 												})
 											}
 											step="0.01"
@@ -522,7 +556,12 @@ export function PurchaseOrderForm({
 							</div>
 						))}
 
-						<Button onClick={addLineItem} size="sm" type="button" variant="outline">
+						<Button
+							onClick={addLineItem}
+							size="sm"
+							type="button"
+							variant="outline"
+						>
 							<Plus className="mr-2 size-4" />
 							Add Line Item
 						</Button>
@@ -532,7 +571,9 @@ export function PurchaseOrderForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Totals & Delivery</CardTitle>
-						<CardDescription>Shipping, tax, expected delivery, and address</CardDescription>
+						<CardDescription>
+							Shipping, tax, expected delivery, and address
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="grid gap-4 sm:grid-cols-3">
@@ -595,7 +636,9 @@ export function PurchaseOrderForm({
 				<Card>
 					<CardHeader>
 						<CardTitle>Notes</CardTitle>
-						<CardDescription>Customer-facing notes and internal comments</CardDescription>
+						<CardDescription>
+							Customer-facing notes and internal comments
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
@@ -650,11 +693,15 @@ export function PurchaseOrderForm({
 					<CommandEmpty>No items found.</CommandEmpty>
 					<CommandGroup heading="Price Book">
 						{priceBookItems.map((item) => (
-							<CommandItem key={item.id} onSelect={() => addLineFromCatalog(item)}>
+							<CommandItem
+								key={item.id}
+								onSelect={() => addLineFromCatalog(item)}
+							>
 								<div className="flex flex-col">
 									<span className="text-sm font-medium">{item.name}</span>
 									<span className="text-muted-foreground text-xs">
-										{item.sku || "Uncoded"} • Unit ${((item.price || 0) / 100).toFixed(2)}
+										{item.sku || "Uncoded"} • Unit $
+										{((item.price || 0) / 100).toFixed(2)}
 									</span>
 								</div>
 							</CommandItem>

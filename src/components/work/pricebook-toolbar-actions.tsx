@@ -12,7 +12,7 @@
 
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { ImportExportDropdown } from "@/components/data/import-export-dropdown";
+import { ImportExportDropdownLazy as ImportExportDropdown } from "@/components/data/import-export-dropdown-lazy";
 import { Button } from "@/components/ui/button";
 import { LaborCalculatorModal } from "@/components/work/labor-calculator-modal";
 

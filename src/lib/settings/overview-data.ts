@@ -28,20 +28,30 @@ type CompanySettingsRow = Tables["company_settings"]["Row"] & {
 	po_system_last_enabled_at?: string | null;
 };
 type UserPreferencesRow = Tables["user_preferences"]["Row"];
-type UserNotificationPreferencesRow = Tables["user_notification_preferences"]["Row"];
-type CommunicationEmailSettingsRow = Tables["communication_email_settings"]["Row"];
+type UserNotificationPreferencesRow =
+	Tables["user_notification_preferences"]["Row"];
+type CommunicationEmailSettingsRow =
+	Tables["communication_email_settings"]["Row"];
 type CommunicationSmsSettingsRow = Tables["communication_sms_settings"]["Row"];
-type CommunicationPhoneSettingsRow = Tables["communication_phone_settings"]["Row"];
-type CommunicationNotificationSettingsRow = Tables["communication_notification_settings"]["Row"];
+type CommunicationPhoneSettingsRow =
+	Tables["communication_phone_settings"]["Row"];
+type CommunicationNotificationSettingsRow =
+	Tables["communication_notification_settings"]["Row"];
 type JobSettingsRow = Tables["job_settings"]["Row"];
-type ScheduleAvailabilitySettingsRow = Tables["schedule_availability_settings"]["Row"];
+type ScheduleAvailabilitySettingsRow =
+	Tables["schedule_availability_settings"]["Row"];
 type ScheduleCalendarSettingsRow = Tables["schedule_calendar_settings"]["Row"];
-type FinanceAccountingSettingsRow = Tables["finance_accounting_settings"]["Row"];
-type FinanceBookkeepingSettingsRow = Tables["finance_bookkeeping_settings"]["Row"];
+type FinanceAccountingSettingsRow =
+	Tables["finance_accounting_settings"]["Row"];
+type FinanceBookkeepingSettingsRow =
+	Tables["finance_bookkeeping_settings"]["Row"];
 type FinanceBankAccountRow = Tables["finance_bank_accounts"]["Row"];
-type FinanceVirtualBucketSettingsRow = Tables["finance_virtual_bucket_settings"]["Row"];
-type FinanceBusinessFinancingSettingsRow = Tables["finance_business_financing_settings"]["Row"];
-type FinanceConsumerFinancingSettingsRow = Tables["finance_consumer_financing_settings"]["Row"];
+type FinanceVirtualBucketSettingsRow =
+	Tables["finance_virtual_bucket_settings"]["Row"];
+type FinanceBusinessFinancingSettingsRow =
+	Tables["finance_business_financing_settings"]["Row"];
+type FinanceConsumerFinancingSettingsRow =
+	Tables["finance_consumer_financing_settings"]["Row"];
 type FinanceGiftCardSettingsRow = Tables["finance_gift_card_settings"]["Row"];
 type CustomerPortalSettingsRow = Tables["customer_portal_settings"]["Row"];
 type CustomerIntakeSettingsRow = Tables["customer_intake_settings"]["Row"];
@@ -215,23 +225,25 @@ const DEFAULT_RAW_DATA: RawSettingsData = {
 	webhookFailuresWeekCount: 0,
 };
 
-export const getSettingsOverviewData = cache(async (): Promise<SettingsOverviewData> => {
-	const supabase = (await createClient()) as TypedSupabaseClient | null;
-	if (!supabase) {
-		return buildFallbackOverview(DEFAULT_RAW_DATA);
-	}
+export const getSettingsOverviewData = cache(
+	async (): Promise<SettingsOverviewData> => {
+		const supabase = (await createClient()) as TypedSupabaseClient | null;
+		if (!supabase) {
+			return buildFallbackOverview(DEFAULT_RAW_DATA);
+		}
 
-	const user = await requireUser();
-	const companyId = await requireActiveCompany();
+		const user = await requireUser();
+		const companyId = await requireActiveCompany();
 
-	const rawData = await fetchRawSettingsData(supabase, companyId, user.id);
-	return buildOverviewPayload(rawData);
-});
+		const rawData = await fetchRawSettingsData(supabase, companyId, user.id);
+		return buildOverviewPayload(rawData);
+	},
+);
 
 async function fetchRawSettingsData(
 	supabase: TypedSupabaseClient,
 	companyId: string,
-	userId: string
+	userId: string,
 ): Promise<RawSettingsData> {
 	try {
 		const nowIso = new Date().toISOString();
@@ -293,14 +305,14 @@ async function fetchRawSettingsData(
 			supabase
 				.from("companies")
 				.select(
-					"id,name,logo,legal_name,phone,email,website,website_url,stripe_subscription_status,onboarding_step,onboarding_completed_at,subscription_cancel_at_period_end"
+					"id,name,logo,legal_name,phone,email,website,website_url,stripe_subscription_status,onboarding_step,onboarding_completed_at,subscription_cancel_at_period_end",
 				)
 				.eq("id", companyId)
 				.maybeSingle<CompanyRow>(),
 			supabase
 				.from("company_settings")
 				.select(
-					"company_id,company_feed_enabled,feed_visibility,service_area_type,po_system_enabled,po_system_last_enabled_at"
+					"company_id,company_feed_enabled,feed_visibility,service_area_type,po_system_enabled,po_system_last_enabled_at",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CompanySettingsRow>(),
@@ -312,77 +324,77 @@ async function fetchRawSettingsData(
 			supabase
 				.from("user_preferences")
 				.select(
-					"user_id,timezone,theme,language,date_format,time_format,default_dashboard_view,default_page_size"
+					"user_id,timezone,theme,language,date_format,time_format,default_dashboard_view,default_page_size",
 				)
 				.eq("user_id", userId)
 				.maybeSingle<UserPreferencesRow>(),
 			supabase
 				.from("user_notification_preferences")
 				.select(
-					"user_id,email_new_jobs,email_job_updates,email_mentions,email_messages,push_new_jobs,push_job_updates,push_mentions,push_messages,sms_schedule_changes,sms_urgent_jobs,digest_enabled,digest_frequency,in_app_all"
+					"user_id,email_new_jobs,email_job_updates,email_mentions,email_messages,push_new_jobs,push_job_updates,push_mentions,push_messages,sms_schedule_changes,sms_urgent_jobs,digest_enabled,digest_frequency,in_app_all",
 				)
 				.eq("user_id", userId)
 				.maybeSingle<UserNotificationPreferencesRow>(),
 			supabase
 				.from("communication_email_settings")
 				.select(
-					"company_id,smtp_enabled,smtp_host,smtp_from_email,auto_cc_enabled,default_signature,track_opens,track_clicks"
+					"company_id,smtp_enabled,smtp_host,smtp_from_email,auto_cc_enabled,default_signature,track_opens,track_clicks",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CommunicationEmailSettingsRow>(),
 			supabase
 				.from("communication_sms_settings")
 				.select(
-					"company_id,provider,sender_number,auto_reply_enabled,auto_reply_message,opt_out_message,consent_required"
+					"company_id,provider,sender_number,auto_reply_enabled,auto_reply_message,opt_out_message,consent_required",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CommunicationSmsSettingsRow>(),
 			supabase
 				.from("communication_phone_settings")
 				.select(
-					"company_id,routing_strategy,business_hours_only,fallback_number,voicemail_enabled,voicemail_email_notifications,recording_enabled,ivr_enabled"
+					"company_id,routing_strategy,business_hours_only,fallback_number,voicemail_enabled,voicemail_email_notifications,recording_enabled,ivr_enabled",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CommunicationPhoneSettingsRow>(),
 			supabase
 				.from("communication_notification_settings")
 				.select(
-					"company_id,email_notifications,sms_notifications,push_notifications,in_app_notifications,notify_new_jobs,notify_job_updates,notify_invoice_overdue"
+					"company_id,email_notifications,sms_notifications,push_notifications,in_app_notifications,notify_new_jobs,notify_job_updates,notify_invoice_overdue",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CommunicationNotificationSettingsRow>(),
 			supabase
 				.from("job_settings")
 				.select(
-					"company_id,default_job_status,auto_invoice_on_completion,require_customer_signature,require_completion_notes,track_technician_time,send_review_link_on_completion"
+					"company_id,default_job_status,auto_invoice_on_completion,require_customer_signature,require_completion_notes,track_technician_time,send_review_link_on_completion",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<JobSettingsRow>(),
 			supabase
 				.from("schedule_availability_settings")
 				.select(
-					"company_id,default_work_hours,default_appointment_duration_minutes,buffer_time_minutes,min_booking_notice_hours,max_booking_advance_days"
+					"company_id,default_work_hours,default_appointment_duration_minutes,buffer_time_minutes,min_booking_notice_hours,max_booking_advance_days",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<ScheduleAvailabilitySettingsRow>(),
 			supabase
 				.from("schedule_calendar_settings")
 				.select(
-					"company_id,default_view,start_day_of_week,time_slot_duration_minutes,show_technician_colors,sync_with_google_calendar,sync_with_outlook"
+					"company_id,default_view,start_day_of_week,time_slot_duration_minutes,show_technician_colors,sync_with_google_calendar,sync_with_outlook",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<ScheduleCalendarSettingsRow>(),
 			supabase
 				.from("finance_accounting_settings")
 				.select(
-					"company_id,provider,provider_enabled,auto_sync_enabled,last_sync_at,sync_frequency,sync_invoices,sync_payments,sync_expenses,sync_customers"
+					"company_id,provider,provider_enabled,auto_sync_enabled,last_sync_at,sync_frequency,sync_invoices,sync_payments,sync_expenses,sync_customers",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceAccountingSettingsRow>(),
 			supabase
 				.from("finance_bookkeeping_settings")
 				.select(
-					"company_id,auto_categorize_transactions,auto_reconcile_payments,report_frequency,email_reports,report_recipients"
+					"company_id,auto_categorize_transactions,auto_reconcile_payments,report_frequency,email_reports,report_recipients",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceBookkeepingSettingsRow>(),
@@ -394,124 +406,147 @@ async function fetchRawSettingsData(
 			supabase
 				.from("finance_virtual_bucket_settings")
 				.select(
-					"company_id,virtual_buckets_enabled,auto_allocate_funds,allocation_frequency,operating_expenses_percentage,tax_reserve_percentage,profit_percentage,emergency_fund_percentage"
+					"company_id,virtual_buckets_enabled,auto_allocate_funds,allocation_frequency,operating_expenses_percentage,tax_reserve_percentage,profit_percentage,emergency_fund_percentage",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceVirtualBucketSettingsRow>(),
 			supabase
 				.from("finance_business_financing_settings")
 				.select(
-					"company_id,enable_business_loans,enable_line_of_credit,enable_equipment_financing,financing_provider,auto_calculate_eligibility,show_offers_in_dashboard"
+					"company_id,enable_business_loans,enable_line_of_credit,enable_equipment_financing,financing_provider,auto_calculate_eligibility,show_offers_in_dashboard",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceBusinessFinancingSettingsRow>(),
 			supabase
 				.from("finance_consumer_financing_settings")
 				.select(
-					"company_id,financing_enabled,provider,min_amount,max_amount,available_terms,show_in_estimates,show_in_invoices,promote_financing"
+					"company_id,financing_enabled,provider,min_amount,max_amount,available_terms,show_in_estimates,show_in_invoices,promote_financing",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceConsumerFinancingSettingsRow>(),
 			supabase
 				.from("finance_gift_card_settings")
 				.select(
-					"company_id,gift_cards_enabled,program_name,fixed_denominations,available_amounts,allow_online_purchase,allow_in_person_purchase,cards_expire,expiration_months"
+					"company_id,gift_cards_enabled,program_name,fixed_denominations,available_amounts,allow_online_purchase,allow_in_person_purchase,cards_expire,expiration_months",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<FinanceGiftCardSettingsRow>(),
 			supabase
 				.from("customer_portal_settings")
 				.select(
-					"company_id,portal_enabled,allow_booking,allow_invoice_payment,allow_estimate_approval,show_service_history,welcome_message"
+					"company_id,portal_enabled,allow_booking,allow_invoice_payment,allow_estimate_approval,show_service_history,welcome_message",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CustomerPortalSettingsRow>(),
 			supabase
 				.from("customer_intake_settings")
 				.select(
-					"company_id,require_phone,require_email,require_address,require_property_type,track_lead_source,auto_assign_technician,auto_create_job"
+					"company_id,require_phone,require_email,require_address,require_property_type,track_lead_source,auto_assign_technician,auto_create_job",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CustomerIntakeSettingsRow>(),
 			supabase
 				.from("customer_loyalty_settings")
 				.select(
-					"company_id,loyalty_enabled,program_name,points_per_dollar_spent,auto_apply_rewards,notify_on_points_earned"
+					"company_id,loyalty_enabled,program_name,points_per_dollar_spent,auto_apply_rewards,notify_on_points_earned",
 				)
 				.eq("company_id", companyId)
 				.maybeSingle<CustomerLoyaltySettingsRow>(),
 			getExactCount(supabase, "team_members", (query) =>
-				query.eq("company_id", companyId).eq("status", "active")
+				query.eq("company_id", companyId).eq("status", "active"),
 			),
 			getExactCount(supabase, "team_invitations", (query) =>
-				query.eq("company_id", companyId).is("used_at", null).gt("expires_at", nowIso)
+				query
+					.eq("company_id", companyId)
+					.is("used_at", null)
+					.gt("expires_at", nowIso),
 			),
 			getExactCount(supabase, "custom_roles", (query) =>
-				query.eq("company_id", companyId).eq("is_active", true)
+				query.eq("company_id", companyId).eq("is_active", true),
 			),
 			getExactCount(supabase, "api_keys", (query) =>
-				query.eq("company_id", companyId).is("revoked_at", null)
+				query.eq("company_id", companyId).is("revoked_at", null),
 			),
 			getExactCount(supabase, "phone_numbers", (query) =>
-				query.eq("company_id", companyId).eq("status", "active")
+				query.eq("company_id", companyId).eq("status", "active"),
 			),
 			getExactCount(supabase, "finance_debit_cards", (query) =>
-				query.eq("company_id", companyId).eq("is_active", true)
+				query.eq("company_id", companyId).eq("is_active", true),
 			),
 			getExactCount(supabase, "finance_gift_cards", (query) =>
-				query.eq("company_id", companyId).eq("status", "active")
+				query.eq("company_id", companyId).eq("status", "active"),
 			),
 			getExactCount(supabase, "finance_virtual_buckets", (query) =>
-				query.eq("company_id", companyId)
+				query.eq("company_id", companyId),
 			),
 			getExactCount(supabase, "supplier_integrations", (query) =>
-				query.eq("company_id", companyId)
+				query.eq("company_id", companyId),
 			),
 			getExactCount(supabase, "schedule_dispatch_rules", (query) =>
-				query.eq("company_id", companyId)
+				query.eq("company_id", companyId),
 			),
-			getExactCount(supabase, "schedule_team_rules", (query) => query.eq("company_id", companyId)),
-			getExactCount(supabase, "jobs", (query) => query.eq("company_id", companyId)),
+			getExactCount(supabase, "schedule_team_rules", (query) =>
+				query.eq("company_id", companyId),
+			),
 			getExactCount(supabase, "jobs", (query) =>
-				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
+				query.eq("company_id", companyId),
 			),
-			getExactCount(supabase, "customers", (query) => query.eq("company_id", companyId)),
+			getExactCount(supabase, "jobs", (query) =>
+				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso),
+			),
+			getExactCount(supabase, "customers", (query) =>
+				query.eq("company_id", companyId),
+			),
 			getExactCount(supabase, "invoices", (query) =>
-				query.eq("company_id", companyId).in("status", ["open", "overdue"])
+				query.eq("company_id", companyId).in("status", ["open", "overdue"]),
 			),
 			getExactCount(supabase, "activities", (query) =>
-				query.eq("company_id", companyId).gte("occurred_at", sevenDaysAgoIso)
+				query.eq("company_id", companyId).gte("occurred_at", sevenDaysAgoIso),
 			),
 			getExactCount(supabase, "activities", (query) =>
 				query
 					.eq("company_id", companyId)
 					.eq("category", "automation")
-					.gte("occurred_at", sevenDaysAgoIso)
+					.gte("occurred_at", sevenDaysAgoIso),
 			),
 			getExactCount(supabase, "notifications", (query) =>
-				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
+				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso),
 			),
 			getExactCount(supabase, "call_logs", (query) =>
-				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso)
+				query.eq("company_id", companyId).gte("created_at", sevenDaysAgoIso),
 			),
 			supabase
 				.from("messaging_brands")
-				.select("id,company_id,status,telnyx_brand_id,legal_name,vertical,created_at,updated_at")
+				.select(
+					"id,company_id,status,telnyx_brand_id,legal_name,vertical,created_at,updated_at",
+				)
 				.eq("company_id", companyId)
 				.maybeSingle<MessagingBrandRow>(),
-			supabase.from("webhooks").select("id,active,created_at").eq("company_id", companyId),
+			supabase
+				.from("webhooks")
+				.select("id,active,created_at")
+				.eq("company_id", companyId),
 			getExactCount(supabase, "phone_porting_requests", (query) =>
-				query.eq("company_id", companyId).is("completed_at", null).is("cancelled_at", null)
+				query
+					.eq("company_id", companyId)
+					.is("completed_at", null)
+					.is("cancelled_at", null),
 			),
 			getExactCount(supabase, "notification_queue", (query) =>
-				query.eq("company_id", companyId).is("sent_at", null)
+				query.eq("company_id", companyId).is("sent_at", null),
 			),
 			getExactCount(supabase, "notification_queue", (query) =>
-				query.eq("company_id", companyId).eq("status", "failed")
+				query.eq("company_id", companyId).eq("status", "failed"),
 			),
-			getExactCount(supabase, "departments", (query) => query.eq("company_id", companyId)),
-			getExactCount(supabase, "lead_sources", (query) => query.eq("company_id", companyId)),
-			getExactCount(supabase, "tags", (query) => query.eq("company_id", companyId)),
+			getExactCount(supabase, "departments", (query) =>
+				query.eq("company_id", companyId),
+			),
+			getExactCount(supabase, "lead_sources", (query) =>
+				query.eq("company_id", companyId),
+			),
+			getExactCount(supabase, "tags", (query) =>
+				query.eq("company_id", companyId),
+			),
 		]);
 
 		const company = companyRes.data;
@@ -522,7 +557,8 @@ async function fetchRawSettingsData(
 		const communicationEmailSettings = communicationEmailSettingsRes.data;
 		const communicationSmsSettings = communicationSmsSettingsRes.data;
 		const communicationPhoneSettings = communicationPhoneSettingsRes.data;
-		const communicationNotificationSettings = communicationNotificationSettingsRes.data;
+		const communicationNotificationSettings =
+			communicationNotificationSettingsRes.data;
 		const jobSettings = jobSettingsRes.data;
 		const scheduleAvailabilitySettings = scheduleAvailabilitySettingsRes.data;
 		const scheduleCalendarSettings = scheduleCalendarSettingsRes.data;
@@ -542,7 +578,9 @@ async function fetchRawSettingsData(
 		if (messagingBrand?.id) {
 			const { data: latestCampaign } = await supabase
 				.from("messaging_campaigns")
-				.select("id,status,usecase,telnyx_campaign_id,messaging_brand_id,created_at,updated_at")
+				.select(
+					"id,status,usecase,telnyx_campaign_id,messaging_brand_id,created_at,updated_at",
+				)
 				.eq("messaging_brand_id", messagingBrand.id)
 				.order("created_at", { ascending: false })
 				.limit(1)
@@ -551,7 +589,9 @@ async function fetchRawSettingsData(
 		}
 
 		const webhooksData = webhooksRes.data ?? [];
-		const webhooksCount = webhooksData.filter((webhook) => webhook.active).length;
+		const webhooksCount = webhooksData.filter(
+			(webhook) => webhook.active,
+		).length;
 		let webhookFailuresWeekCount = 0;
 		if (webhooksData.length > 0) {
 			const webhookIds = webhooksData.map((webhook) => webhook.id);
@@ -574,7 +614,8 @@ async function fetchRawSettingsData(
 			communicationEmailSettings: communicationEmailSettings ?? null,
 			communicationSmsSettings: communicationSmsSettings ?? null,
 			communicationPhoneSettings: communicationPhoneSettings ?? null,
-			communicationNotificationSettings: communicationNotificationSettings ?? null,
+			communicationNotificationSettings:
+				communicationNotificationSettings ?? null,
 			jobSettings: jobSettings ?? null,
 			scheduleAvailabilitySettings: scheduleAvailabilitySettings ?? null,
 			scheduleCalendarSettings: scheduleCalendarSettings ?? null,
@@ -630,12 +671,14 @@ async function fetchRawSettingsData(
 
 function buildOverviewPayload(raw: RawSettingsData): SettingsOverviewData {
 	const sections = SETTINGS_INFORMATION_ARCHITECTURE.map((definition) =>
-		buildSection(definition, raw)
+		buildSection(definition, raw),
 	);
 
 	const alerts = sections
 		.filter((section) => section.status !== "ready")
-		.map((section) => `${describeHealthStatus(section.status)}: ${section.title}`);
+		.map(
+			(section) => `${describeHealthStatus(section.status)}: ${section.title}`,
+		);
 
 	return {
 		meta: {
@@ -644,7 +687,8 @@ function buildOverviewPayload(raw: RawSettingsData): SettingsOverviewData {
 			teamCount: raw.teamCounts.active,
 			alerts,
 			poSystemEnabled: Boolean(raw.companySettings?.po_system_enabled),
-			poSystemLastEnabledAt: raw.companySettings?.po_system_last_enabled_at ?? null,
+			poSystemLastEnabledAt:
+				raw.companySettings?.po_system_last_enabled_at ?? null,
 			generatedAt: raw.generatedAt,
 		},
 		sections,
@@ -657,7 +701,7 @@ function buildFallbackOverview(raw: RawSettingsData): SettingsOverviewData {
 
 function buildSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	switch (definition.slug) {
 		case "account":
@@ -679,7 +723,7 @@ function buildSection(
 
 function buildAccountSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const completedSteps = [
 		Boolean(raw.profile?.onboarding_completed),
@@ -687,7 +731,10 @@ function buildAccountSection(
 		Boolean(raw.userNotificationPreferences?.email_new_jobs),
 		Boolean(raw.userNotificationPreferences?.push_new_jobs),
 	];
-	const progress = progressFromSteps(completedSteps.filter(Boolean).length, completedSteps.length);
+	const progress = progressFromSteps(
+		completedSteps.filter(Boolean).length,
+		completedSteps.length,
+	);
 	const status = deriveHealthStatus(progress);
 	const summary =
 		raw.profile?.onboarding_completed && progress >= 85
@@ -775,12 +822,16 @@ function buildAccountSection(
 
 function buildWorkspaceSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
-	const companyProfileFields = [raw.company?.legal_name, raw.company?.phone, raw.company?.website];
+	const companyProfileFields = [
+		raw.company?.legal_name,
+		raw.company?.phone,
+		raw.company?.website,
+	];
 	const profileProgress = progressFromSteps(
 		companyProfileFields.filter(Boolean).length,
-		companyProfileFields.length
+		companyProfileFields.length,
 	);
 	const billingReady =
 		raw.company?.stripe_subscription_status === "active" ||
@@ -794,7 +845,10 @@ function buildWorkspaceSection(
 		hasDepartments,
 		taxonomyConfigured,
 	];
-	const progress = progressFromSteps(readinessSteps.filter(Boolean).length, readinessSteps.length);
+	const progress = progressFromSteps(
+		readinessSteps.filter(Boolean).length,
+		readinessSteps.length,
+	);
 	const status = deriveHealthStatus(progress);
 	const summary = billingReady
 		? taxonomyConfigured
@@ -814,7 +868,9 @@ function buildWorkspaceSection(
 			key: "roles",
 			label: "Custom roles",
 			value: raw.customRolesCount.toString(),
-			helper: raw.customRolesCount ? "Granular access in place" : "Using defaults",
+			helper: raw.customRolesCount
+				? "Granular access in place"
+				: "Using defaults",
 			status: raw.customRolesCount ? "ready" : "warning",
 		},
 		{
@@ -909,20 +965,25 @@ function buildWorkspaceSection(
 
 function buildCommunicationsSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const emailConfigured = Boolean(
-		raw.communicationEmailSettings?.smtp_enabled && raw.communicationEmailSettings?.smtp_from_email
+		raw.communicationEmailSettings?.smtp_enabled &&
+			raw.communicationEmailSettings?.smtp_from_email,
 	);
 	const smsConfigured = Boolean(
-		raw.communicationSmsSettings?.provider && raw.communicationSmsSettings?.sender_number
+		raw.communicationSmsSettings?.provider &&
+			raw.communicationSmsSettings?.sender_number,
 	);
 	const phoneConfigured = Boolean(
-		raw.communicationPhoneSettings?.routing_strategy && raw.phoneNumbersCount > 0
+		raw.communicationPhoneSettings?.routing_strategy &&
+			raw.phoneNumbersCount > 0,
 	);
 	const readyStatuses = ["approved", "active", "verified", "running"];
-	const normalizeStatusLabel = (value?: string | null, fallback = "Not configured") =>
-		value ? value.replace(/_/g, " ") : fallback;
+	const normalizeStatusLabel = (
+		value?: string | null,
+		fallback = "Not configured",
+	) => (value ? value.replace(/_/g, " ") : fallback);
 	const brandStatus = raw.messagingBrand?.status ?? "";
 	const campaignStatus = raw.messagingCampaign?.status ?? "";
 	const brandHealth = readyStatuses.includes(brandStatus.toLowerCase())
@@ -942,7 +1003,10 @@ function buildCommunicationsSection(
 		brandHealth === "ready",
 		campaignHealth === "ready",
 	];
-	const progress = progressFromSteps(readinessSteps.filter(Boolean).length, readinessSteps.length);
+	const progress = progressFromSteps(
+		readinessSteps.filter(Boolean).length,
+		readinessSteps.length,
+	);
 	const status = deriveHealthStatus(progress);
 	const summary =
 		brandHealth === "ready" && campaignHealth === "ready" && progress >= 85
@@ -1073,7 +1137,7 @@ function buildCommunicationsSection(
 
 function buildOperationsSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const bookingConfigured = Boolean(raw.scheduleAvailabilitySettings);
 	const dispatchConfigured = raw.scheduleDispatchRulesCount > 0;
@@ -1086,7 +1150,10 @@ function buildOperationsSection(
 		portalConfigured,
 		intakeConfigured,
 	];
-	const progress = progressFromSteps(readinessSteps.filter(Boolean).length, readinessSteps.length);
+	const progress = progressFromSteps(
+		readinessSteps.filter(Boolean).length,
+		readinessSteps.length,
+	);
 	const status = deriveHealthStatus(progress);
 	const summary =
 		progress >= 85
@@ -1113,14 +1180,18 @@ function buildOperationsSection(
 			key: "portal",
 			label: "Customer portal",
 			value: raw.portalSettings?.portal_enabled ? "Enabled" : "Disabled",
-			helper: raw.portalSettings?.welcome_message ? "Custom welcome" : "Default copy",
+			helper: raw.portalSettings?.welcome_message
+				? "Custom welcome"
+				: "Default copy",
 			status: raw.portalSettings?.portal_enabled ? "ready" : "warning",
 		},
 		{
 			key: "intake",
 			label: "Intake form",
 			value: intakeConfigured ? "Customized" : "Defaults",
-			helper: raw.intakeSettings?.auto_assign_technician ? "Auto-assign on" : "Manual triage",
+			helper: raw.intakeSettings?.auto_assign_technician
+				? "Auto-assign on"
+				: "Manual triage",
 			status: intakeConfigured ? "ready" : "warning",
 		},
 		{
@@ -1204,15 +1275,18 @@ function buildOperationsSection(
 
 function buildFinanceSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const accountingConnected =
-		Boolean(raw.accountingSettings?.provider_enabled) && Boolean(raw.accountingSettings?.provider);
+		Boolean(raw.accountingSettings?.provider_enabled) &&
+		Boolean(raw.accountingSettings?.provider);
 	const bankConnected = raw.bankAccounts.length > 0;
-	const collectionsHealthy = raw.invoicesOpenCount < Math.max(5, raw.jobsWeekCount);
+	const collectionsHealthy =
+		raw.invoicesOpenCount < Math.max(5, raw.jobsWeekCount);
 	const progress = progressFromSteps(
-		[accountingConnected, bankConnected, collectionsHealthy].filter(Boolean).length,
-		3
+		[accountingConnected, bankConnected, collectionsHealthy].filter(Boolean)
+			.length,
+		3,
 	);
 	const status = deriveHealthStatus(progress);
 	const summary =
@@ -1225,7 +1299,9 @@ function buildFinanceSection(
 			key: "bank-accounts",
 			label: "Connected accounts",
 			value: raw.bankAccounts.length.toString(),
-			helper: raw.bankAccounts.find((account) => account.is_primary)?.bank_name ?? "None primary",
+			helper:
+				raw.bankAccounts.find((account) => account.is_primary)?.bank_name ??
+				"None primary",
 			status: bankConnected ? "ready" : "danger",
 		},
 		{
@@ -1242,20 +1318,26 @@ function buildFinanceSection(
 			helper: raw.virtualBucketSettings?.virtual_buckets_enabled
 				? "Automation enabled"
 				: "Automation off",
-			status: raw.virtualBucketSettings?.virtual_buckets_enabled ? "ready" : "warning",
+			status: raw.virtualBucketSettings?.virtual_buckets_enabled
+				? "ready"
+				: "warning",
 		},
 		{
 			key: "debit-cards",
 			label: "Debit cards",
 			value: raw.debitCardsCount.toString(),
-			helper: raw.debitCardsCount ? "Spend controls enabled" : "No cards issued",
+			helper: raw.debitCardsCount
+				? "Spend controls enabled"
+				: "No cards issued",
 			status: raw.debitCardsCount ? "ready" : "warning",
 		},
 		{
 			key: "gift-cards",
 			label: "Gift cards",
 			value: raw.giftCardsActiveCount.toString(),
-			helper: raw.giftCardSettings?.gift_cards_enabled ? "Program live" : "Program disabled",
+			helper: raw.giftCardSettings?.gift_cards_enabled
+				? "Program live"
+				: "Program disabled",
 			status: raw.giftCardSettings?.gift_cards_enabled ? "ready" : "warning",
 		},
 	];
@@ -1323,7 +1405,7 @@ function buildFinanceSection(
 
 function buildIntegrationsSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const hasIntegrations =
 		raw.supplierIntegrationsCount > 0 ||
@@ -1351,7 +1433,9 @@ function buildIntegrationsSection(
 			key: "supplier-feeds",
 			label: "Supplier integrations",
 			value: raw.supplierIntegrationsCount.toString(),
-			helper: raw.supplierIntegrationsCount ? "Catalog sync enabled" : "No supplier feeds",
+			helper: raw.supplierIntegrationsCount
+				? "Catalog sync enabled"
+				: "No supplier feeds",
 			status: raw.supplierIntegrationsCount ? "ready" : "warning",
 		},
 		{
@@ -1442,14 +1526,16 @@ function buildIntegrationsSection(
 
 function buildAnalyticsSection(
 	definition: SettingsClusterDefinition,
-	raw: RawSettingsData
+	raw: RawSettingsData,
 ): SettingsOverviewSection {
 	const activityTrend =
 		raw.activitiesWeekCount && raw.jobsWeekCount
-			? normalizeProgress((raw.activitiesWeekCount / (raw.jobsWeekCount || 1)) * 100)
+			? normalizeProgress(
+					(raw.activitiesWeekCount / (raw.jobsWeekCount || 1)) * 100,
+				)
 			: 0;
 	const progress = normalizeProgress(
-		Math.round((activityTrend + (raw.notificationsWeekCount ? 100 : 40)) / 2)
+		Math.round((activityTrend + (raw.notificationsWeekCount ? 100 : 40)) / 2),
 	);
 	const status = deriveHealthStatus(progress);
 	const summary =
@@ -1470,7 +1556,9 @@ function buildAnalyticsSection(
 			label: "Automation runs",
 			value: raw.automationWeekCount.toString(),
 			helper: formatTrendDelta(
-				raw.activitiesWeekCount ? (raw.automationWeekCount / raw.activitiesWeekCount) * 100 - 50 : 0
+				raw.activitiesWeekCount
+					? (raw.automationWeekCount / raw.activitiesWeekCount) * 100 - 50
+					: 0,
 			),
 		},
 		{
@@ -1533,7 +1621,7 @@ function buildAnalyticsSection(
 async function getExactCount(
 	supabase: TypedSupabaseClient,
 	table: keyof Tables,
-	build?: (query: any) => any
+	build?: (query: any) => any,
 ): Promise<number> {
 	let query = supabase.from(table).select("id", { count: "exact", head: true });
 

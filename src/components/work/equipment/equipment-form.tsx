@@ -66,12 +66,12 @@ export function EquipmentForm({
 	// Form state
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [selectedCustomerId, setSelectedCustomerId] = useState<string | undefined>(
-		preselectedCustomerId || searchParams?.get("customerId") || undefined
-	);
-	const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(
-		preselectedPropertyId || searchParams?.get("propertyId") || undefined
-	);
+	const [selectedCustomerId, setSelectedCustomerId] = useState<
+		string | undefined
+	>(preselectedCustomerId || searchParams?.get("customerId") || undefined);
+	const [selectedPropertyId, setSelectedPropertyId] = useState<
+		string | undefined
+	>(preselectedPropertyId || searchParams?.get("propertyId") || undefined);
 	const [equipmentType, setEquipmentType] = useState("");
 	const [warrantyEndDate, setWarrantyEndDate] = useState("");
 
@@ -218,7 +218,12 @@ export function EquipmentForm({
 						<Label htmlFor="name">
 							Equipment Name <span className="text-destructive">*</span>
 						</Label>
-						<Input id="name" name="name" placeholder="e.g., Main HVAC Unit" required />
+						<Input
+							id="name"
+							name="name"
+							placeholder="e.g., Main HVAC Unit"
+							required
+						/>
 					</div>
 
 					<div className="grid grid-cols-2 gap-4">
@@ -226,7 +231,12 @@ export function EquipmentForm({
 							<Label htmlFor="type">
 								Type <span className="text-destructive">*</span>
 							</Label>
-							<Select name="type" onValueChange={setEquipmentType} required value={equipmentType}>
+							<Select
+								name="type"
+								onValueChange={setEquipmentType}
+								required
+								value={equipmentType}
+							>
 								<SelectTrigger id="type">
 									<SelectValue placeholder="Select type" />
 								</SelectTrigger>
@@ -260,7 +270,11 @@ export function EquipmentForm({
 					<div className="grid grid-cols-3 gap-4">
 						<div className="space-y-2">
 							<Label htmlFor="manufacturer">Manufacturer</Label>
-							<Input id="manufacturer" name="manufacturer" placeholder="e.g., Carrier" />
+							<Input
+								id="manufacturer"
+								name="manufacturer"
+								placeholder="e.g., Carrier"
+							/>
 						</div>
 
 						<div className="space-y-2">
@@ -270,13 +284,21 @@ export function EquipmentForm({
 
 						<div className="space-y-2">
 							<Label htmlFor="serialNumber">Serial Number</Label>
-							<Input id="serialNumber" name="serialNumber" placeholder="e.g., 1234567890" />
+							<Input
+								id="serialNumber"
+								name="serialNumber"
+								placeholder="e.g., 1234567890"
+							/>
 						</div>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="location">Location/Room</Label>
-						<Input id="location" name="location" placeholder="e.g., Basement, Attic, Main Floor" />
+						<Input
+							id="location"
+							name="location"
+							placeholder="e.g., Basement, Attic, Main Floor"
+						/>
 					</div>
 				</CardContent>
 			</Card>
@@ -336,7 +358,12 @@ export function EquipmentForm({
 
 			{/* Actions */}
 			<div className="flex justify-end gap-3">
-				<Button disabled={isLoading} onClick={() => router.back()} type="button" variant="outline">
+				<Button
+					disabled={isLoading}
+					onClick={() => router.back()}
+					type="button"
+					variant="outline"
+				>
 					Cancel (Esc)
 				</Button>
 				<Button disabled={isLoading} type="submit">

@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { mapResourceItem } from "./transformers";
-import type { ResourceCollection, ResourceItem, ResourceQuery, ResourceType } from "./types";
+import type {
+	ResourceCollection,
+	ResourceItem,
+	ResourceQuery,
+	ResourceType,
+} from "./types";
 
 const RESOURCE_ITEM_SELECT = `
   id,
@@ -58,11 +63,14 @@ const RESOURCE_BY_TAG_SELECT = `
 
 const DEFAULT_PAGE_SIZE = 12;
 
-const sanitizeSearch = (value: string): string => value.replace(/[&|!:*<>@()]/g, " ").trim();
+const sanitizeSearch = (value: string): string =>
+	value.replace(/[&|!:*<>@()]/g, " ").trim();
 
 const nowUtcIso = (): string => new Date().toISOString();
 
-export async function getResourceItems(options: ResourceQuery = {}): Promise<ResourceCollection> {
+export async function getResourceItems(
+	options: ResourceQuery = {},
+): Promise<ResourceCollection> {
 	const supabase = await createClient();
 
 	if (!supabase) {
@@ -83,7 +91,9 @@ export async function getResourceItems(options: ResourceQuery = {}): Promise<Res
 			.eq("tag.slug", options.tagSlug);
 
 		if (!includeUnpublished) {
-			query = query.eq("item.status", "published").lte("item.published_at", now);
+			query = query
+				.eq("item.status", "published")
+				.lte("item.published_at", now);
 		}
 
 		if (options.type) {
@@ -132,7 +142,9 @@ export async function getResourceItems(options: ResourceQuery = {}): Promise<Res
 		};
 	}
 
-	let query = supabase.from("resource_items").select(RESOURCE_ITEM_SELECT, { count: "exact" });
+	let query = supabase
+		.from("resource_items")
+		.select(RESOURCE_ITEM_SELECT, { count: "exact" });
 
 	if (!includeUnpublished) {
 		query = query.eq("status", "published").lte("published_at", now);
@@ -176,7 +188,7 @@ export async function getResourceItems(options: ResourceQuery = {}): Promise<Res
 
 export async function getResourceItemBySlug(
 	slug: string,
-	options: { includeUnpublished?: boolean } = {}
+	options: { includeUnpublished?: boolean } = {},
 ): Promise<ResourceItem | null> {
 	const supabase = await createClient();
 
@@ -211,7 +223,7 @@ export async function getResourceItemBySlug(
 
 export async function getResourceItemsByType(
 	type: ResourceType,
-	limit = 6
+	limit = 6,
 ): Promise<ResourceItem[]> {
 	const { data } = await getResourceItems({
 		type,

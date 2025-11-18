@@ -4,8 +4,17 @@ import { Briefcase, FileText, Plus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { type ColumnDef, FullWidthDataTable } from "@/components/ui/full-width-datatable";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import {
+	type ColumnDef,
+	FullWidthDataTable,
+} from "@/components/ui/full-width-datatable";
 import { formatCurrencyFromDollars, formatDate } from "@/lib/formatters";
 
 /**
@@ -42,7 +51,8 @@ function getStatusBadge(status: string) {
 		}
 	> = {
 		draft: {
-			className: "border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
+			className:
+				"border-border/50 bg-background text-muted-foreground hover:bg-muted/50",
 			label: "Draft",
 		},
 		scheduled: {
@@ -59,7 +69,8 @@ function getStatusBadge(status: string) {
 			label: "Completed",
 		},
 		cancelled: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Cancelled",
 		},
 		paid: {
@@ -72,7 +83,8 @@ function getStatusBadge(status: string) {
 			label: "Unpaid",
 		},
 		overdue: {
-			className: "border-destructive/50 bg-destructive text-white hover:bg-destructive",
+			className:
+				"border-destructive/50 bg-destructive text-white hover:bg-destructive",
 			label: "Overdue",
 		},
 	};
@@ -83,7 +95,10 @@ function getStatusBadge(status: string) {
 	};
 
 	return (
-		<Badge className={`text-xs font-medium ${config.className}`} variant="outline">
+		<Badge
+			className={`text-xs font-medium ${config.className}`}
+			variant="outline"
+		>
 			{config.label}
 		</Badge>
 	);
@@ -95,7 +110,11 @@ type CustomerDataTablesProps = {
 	invoices: Invoice[];
 };
 
-export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataTablesProps) {
+export function CustomerDataTables({
+	customerId,
+	jobs,
+	invoices,
+}: CustomerDataTablesProps) {
 	// Job columns for FullWidthDataTable
 	const jobColumns: ColumnDef<Job>[] = [
 		{
@@ -311,7 +330,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 							<CardDescription>All invoices for this customer</CardDescription>
 						</div>
 						<Button asChild size="sm" variant="outline">
-							<Link href={`/dashboard/work/invoices/new?customer=${customerId}`}>
+							<Link
+								href={`/dashboard/work/invoices/new?customer=${customerId}`}
+							>
 								<FileText className="mr-2 size-4" />
 								New Invoice
 							</Link>
@@ -324,7 +345,9 @@ export function CustomerDataTables({ customerId, jobs, invoices }: CustomerDataT
 						data={invoices}
 						emptyAction={
 							<Button asChild size="sm">
-								<Link href={`/dashboard/work/invoices/new?customer=${customerId}`}>
+								<Link
+									href={`/dashboard/work/invoices/new?customer=${customerId}`}
+								>
 									<Plus className="mr-2 size-4" />
 									Add Invoice
 								</Link>

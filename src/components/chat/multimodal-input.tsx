@@ -12,6 +12,9 @@ type MultimodalInputProps = {
 	isLoading?: boolean;
 	placeholder?: string;
 	disabled?: boolean;
+	allowAttachments?: boolean;
+	attachmentAccept?: string;
+	onAttachmentsSelected?: (files: FileList | null) => void;
 };
 
 export function MultimodalInput({
@@ -22,13 +25,18 @@ export function MultimodalInput({
 	isLoading = false,
 	placeholder = "Send a message...",
 	disabled = false,
+	allowAttachments = false,
+	attachmentAccept,
+	onAttachmentsSelected,
 }: MultimodalInputProps) {
 	const [internalInput, setInternalInput] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	// Use controlled value if provided, otherwise use internal state
 	const input = controlledValue !== undefined ? controlledValue : internalInput;
-	const setInput = controlledValue !== undefined && onChange ? onChange : setInternalInput;
+	const setInput =
+		controlledValue !== undefined && onChange ? onChange : setInternalInput;
 
 	const handleSubmit = () => {
 		if (!input.trim() || disabled) {
@@ -76,7 +84,7 @@ export function MultimodalInput({
 						className={cn(
 							"placeholder:text-muted-foreground flex min-h-[80px] w-full resize-none rounded-none border-none bg-transparent p-2 text-sm ring-0 outline-none",
 							"focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none",
-							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+							"[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
 						)}
 						data-testid="multimodal-input"
 						disabled={disabled}
@@ -136,12 +144,36 @@ export function MultimodalInput({
 						<button
 							className="hover:bg-accent hover:text-accent-foreground inline-flex aspect-square h-8 items-center justify-center rounded-lg p-1 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50"
 							data-testid="attachments-button"
-							disabled={disabled}
-							title="Attach files (coming soon)"
+							disabled={
+								disabled || (!allowAttachments && !onAttachmentsSelected)
+							}
+							onClick={() => {
+								if (!allowAttachments) {
+									return;
+								}
+								fileInputRef.current?.click();
+							}}
+							title={
+								allowAttachments ? "Attach files" : "Attachments coming soon"
+							}
 							type="button"
 						>
 							<PaperclipIcon size={14} />
 						</button>
+
+						{allowAttachments && (
+							<input
+								accept={attachmentAccept}
+								className="hidden"
+								multiple
+								onChange={(event) => {
+									onAttachmentsSelected?.(event.target.files);
+									event.target.value = "";
+								}}
+								ref={fileInputRef}
+								type="file"
+							/>
+						)}
 					</div>
 
 					{/* Submit/Stop button */}

@@ -15,14 +15,20 @@ export const metadata = generateSEOMetadata({
 	description:
 		"Join Thorbis product strategists and operators for live sessions on modern scheduling, automation, and growth tactics for service businesses.",
 	path: "/webinars",
-	keywords: ["field service webinar", "service business events", "thorbis live training"],
+	keywords: [
+		"field service webinar",
+		"service business events",
+		"thorbis live training",
+	],
 });
 
 type WebinarsPageProps = {
 	searchParams?: { tag?: string };
 };
 
-export default async function WebinarsPage({ searchParams }: WebinarsPageProps) {
+export default async function WebinarsPage({
+	searchParams,
+}: WebinarsPageProps) {
 	const activeTag = searchParams?.tag;
 	const resourcesResult = await getResourceItems({
 		type: "webinar",
@@ -32,18 +38,32 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 
 	const now = Date.now();
 	const upcoming = resourcesResult.data
-		.filter((item) => item.eventStartAt && new Date(item.eventStartAt).getTime() >= now)
+		.filter(
+			(item) =>
+				item.eventStartAt && new Date(item.eventStartAt).getTime() >= now,
+		)
 		.sort(
-			(a, b) => new Date(a.eventStartAt ?? 0).getTime() - new Date(b.eventStartAt ?? 0).getTime()
+			(a, b) =>
+				new Date(a.eventStartAt ?? 0).getTime() -
+				new Date(b.eventStartAt ?? 0).getTime(),
 		);
 	const onDemand = resourcesResult.data
-		.filter((item) => !item.eventStartAt || new Date(item.eventStartAt).getTime() < now)
+		.filter(
+			(item) =>
+				!item.eventStartAt || new Date(item.eventStartAt).getTime() < now,
+		)
 		.sort(
-			(a, b) => new Date(b.publishedAt ?? 0).getTime() - new Date(a.publishedAt ?? 0).getTime()
+			(a, b) =>
+				new Date(b.publishedAt ?? 0).getTime() -
+				new Date(a.publishedAt ?? 0).getTime(),
 		);
 
 	const tags = Array.from(
-		new Map(resourcesResult.data.flatMap((item) => item.tags).map((tag) => [tag.id, tag])).values()
+		new Map(
+			resourcesResult.data
+				.flatMap((item) => item.tags)
+				.map((tag) => [tag.id, tag]),
+		).values(),
 	).sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
@@ -54,7 +74,7 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 						generateBreadcrumbStructuredData([
 							{ name: "Home", url: siteUrl },
 							{ name: "Webinars", url: `${siteUrl}/webinars` },
-						])
+						]),
 					),
 				}}
 				id="webinars-breadcrumb-ld"
@@ -69,21 +89,31 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 						Webinars, Workshops, and Product Sessions
 					</h1>
 					<p className="text-muted-foreground text-lg">
-						Learn proven playbooks from Thorbis strategists and operators. Save your seat for
-						upcoming sessions or catch up with the on-demand library. All sessions are included with
-						the $100/month base subscription and pay-as-you-go usage—no lock-in required.
+						Learn proven playbooks from Thorbis strategists and operators. Save
+						your seat for upcoming sessions or catch up with the on-demand
+						library. All sessions are included with the $100/month base
+						subscription and pay-as-you-go usage—no lock-in required.
 					</p>
 				</header>
 
 				{tags.length ? (
 					<div className="mb-10 flex flex-wrap items-center justify-center gap-3">
-						<Button asChild size="sm" variant={activeTag ? "outline" : "secondary"}>
+						<Button
+							asChild
+							size="sm"
+							variant={activeTag ? "outline" : "secondary"}
+						>
 							<Link href="/webinars">All topics</Link>
 						</Button>
 						{tags.map((tag) => {
 							const isActive = tag.slug === activeTag;
 							return (
-								<Button asChild key={tag.id} size="sm" variant={isActive ? "secondary" : "outline"}>
+								<Button
+									asChild
+									key={tag.id}
+									size="sm"
+									variant={isActive ? "secondary" : "outline"}
+								>
 									<Link href={`/webinars?tag=${tag.slug}`}>#{tag.name}</Link>
 								</Button>
 							);
@@ -106,9 +136,12 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 						</div>
 					) : (
 						<div className="bg-muted/20 rounded-xl border border-dashed p-8 text-center">
-							<h3 className="mb-3 text-lg font-semibold">New live sessions are being scheduled</h3>
+							<h3 className="mb-3 text-lg font-semibold">
+								New live sessions are being scheduled
+							</h3>
 							<p className="text-muted-foreground">
-								Subscribe to updates and we&apos;ll let you know when the next webinar drops.
+								Subscribe to updates and we&apos;ll let you know when the next
+								webinar drops.
 							</p>
 							<div className="mt-4 flex justify-center gap-3">
 								<Button asChild>
@@ -126,7 +159,8 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 					<div className="flex flex-wrap items-center justify-between gap-4">
 						<h2 className="text-2xl font-semibold">On-demand library</h2>
 						<span className="text-muted-foreground text-sm">
-							{onDemand.length} {onDemand.length === 1 ? "session" : "sessions"} available
+							{onDemand.length} {onDemand.length === 1 ? "session" : "sessions"}{" "}
+							available
 						</span>
 					</div>
 					{onDemand.length ? (
@@ -137,7 +171,8 @@ export default async function WebinarsPage({ searchParams }: WebinarsPageProps) 
 						</div>
 					) : (
 						<p className="bg-muted/20 text-muted-foreground rounded-xl border border-dashed p-6 text-center">
-							No on-demand sessions yet. Our team is preparing replays from the latest events.
+							No on-demand sessions yet. Our team is preparing replays from the
+							latest events.
 						</p>
 					)}
 				</section>

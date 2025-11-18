@@ -9,7 +9,11 @@
  */
 
 import { Briefcase, TrendingDown, TrendingUp } from "lucide-react";
-import { formatNumber, formatPercentage, getTrendClass } from "@/lib/utils/responsive-utils";
+import {
+	formatNumber,
+	formatPercentage,
+	getTrendClass,
+} from "@/lib/utils/responsive-utils";
 import {
 	ResponsiveContent,
 	ResponsiveFlex,
@@ -46,7 +50,10 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 				{/* COMFORTABLE Stage: Title + icon inline, more compact */}
 				<ShowAt stage="comfortable">
 					<ResponsiveFlex className="justify-between">
-						<ResponsiveText className="text-muted-foreground font-medium" variant="body">
+						<ResponsiveText
+							className="text-muted-foreground font-medium"
+							variant="body"
+						>
 							Jobs
 						</ResponsiveText>
 						<ResponsiveIcon>
@@ -72,7 +79,9 @@ export function JobsCompletedWidget({ data }: JobsCompletedWidgetProps) {
 						<span className="hidden @[120px]:inline">
 							{formatNumber(data.total, "comfortable")}
 						</span>
-						<span className="@[120px]:hidden">{formatNumber(data.total, "tiny")}</span>
+						<span className="@[120px]:hidden">
+							{formatNumber(data.total, "tiny")}
+						</span>
 					</ResponsiveText>
 
 					{/* Trend - adaptive visibility and format */}

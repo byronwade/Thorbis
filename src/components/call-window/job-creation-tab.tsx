@@ -34,7 +34,8 @@ export function JobCreationTab() {
 	} = useAutoFill("job");
 
 	const aiFilledCount =
-		getFieldsByState("ai-filled").length + getFieldsByState("ai-suggested").length;
+		getFieldsByState("ai-filled").length +
+		getFieldsByState("ai-suggested").length;
 
 	return (
 		<div className="h-full overflow-y-auto">
@@ -55,15 +56,26 @@ export function JobCreationTab() {
 						<div className="flex items-center gap-2">
 							<Sparkles className="text-primary h-4 w-4" />
 							<span className="text-sm">
-								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled by AI
+								{aiFilledCount} field{aiFilledCount > 1 ? "s" : ""} auto-filled
+								by AI
 							</span>
 						</div>
 						<div className="flex gap-2">
-							<Button className="gap-1" onClick={approveAll} size="sm" variant="outline">
+							<Button
+								className="gap-1"
+								onClick={approveAll}
+								size="sm"
+								variant="outline"
+							>
 								<Check className="h-3 w-3" />
 								Accept All
 							</Button>
-							<Button className="gap-1" onClick={rejectAll} size="sm" variant="outline">
+							<Button
+								className="gap-1"
+								onClick={rejectAll}
+								size="sm"
+								variant="outline"
+							>
 								<X className="h-3 w-3" />
 								Reject All
 							</Button>
@@ -105,7 +117,7 @@ export function JobCreationTab() {
 								<SelectTrigger
 									className={cn(
 										getField("priority").state === "ai-filled" &&
-											"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30"
+											"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
 									)}
 								>
 									<SelectValue placeholder="Select priority" />
@@ -173,7 +185,8 @@ function AIField({
 	rejectField: (name: string) => void;
 }) {
 	const field = getField(name);
-	const isAIFilled = field.state === "ai-filled" || field.state === "ai-suggested";
+	const isAIFilled =
+		field.state === "ai-filled" || field.state === "ai-suggested";
 
 	return (
 		<div className="space-y-2">
@@ -190,10 +203,11 @@ function AIField({
 				<Input
 					className={cn(
 						"transition-colors",
-						field.state === "ai-filled" && "border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+						field.state === "ai-filled" &&
+							"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
 						field.state === "ai-suggested" &&
 							"border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
-						field.state === "user-entered" && "border-green-500"
+						field.state === "user-entered" && "border-green-500",
 					)}
 					id={name}
 					onChange={(e) => updateField(name, e.target.value)}
@@ -245,7 +259,8 @@ function AITextarea({
 	rejectField: (name: string) => void;
 }) {
 	const field = getField(name);
-	const isAIFilled = field.state === "ai-filled" || field.state === "ai-suggested";
+	const isAIFilled =
+		field.state === "ai-filled" || field.state === "ai-suggested";
 
 	return (
 		<div className="space-y-2">
@@ -262,10 +277,11 @@ function AITextarea({
 				<Textarea
 					className={cn(
 						"min-h-[120px] transition-colors",
-						field.state === "ai-filled" && "border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
+						field.state === "ai-filled" &&
+							"border-blue-500 bg-blue-50/50 dark:bg-blue-950/30",
 						field.state === "ai-suggested" &&
 							"border-yellow-500 bg-yellow-50/50 dark:bg-yellow-950/30",
-						field.state === "user-entered" && "border-green-500"
+						field.state === "user-entered" && "border-green-500",
 					)}
 					id={name}
 					onChange={(e) => updateField(name, e.target.value)}
