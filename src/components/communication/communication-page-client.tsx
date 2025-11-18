@@ -49,8 +49,12 @@ export type CommunicationRecord = {
 	} | null;
 	telnyx_call_control_id?: string | null;
 	telnyx_call_session_id?: string | null;
+	telnyx_message_id?: string | null;
 	call_recording_url?: string | null;
 	provider_metadata?: Record<string, unknown> | null;
+	sent_at?: string | null;
+	delivered_at?: string | null;
+	failed_at?: string | null;
 };
 
 type UnifiedMessage = {
@@ -70,10 +74,14 @@ type UnifiedMessage = {
 	callDuration?: number;
 	callType?: "incoming" | "outgoing" | "missed" | "voicemail";
 	telnyxCallControlId?: string;
+	telnyxMessageId?: string;
 	callRecordingUrl?: string;
 	customerId?: string;
 	threadId?: string | null;
 	threadAddress?: string | null;
+	sentAt?: string | null;
+	deliveredAt?: string | null;
+	failedAt?: string | null;
 };
 
 type CommunicationPageClientProps = {
@@ -302,10 +310,14 @@ function convertCommunicationToMessage(
 		callDuration: record.call_duration ?? undefined,
 		callType,
 		telnyxCallControlId: record.telnyx_call_control_id ?? undefined,
+		telnyxMessageId: record.telnyx_message_id ?? undefined,
 		callRecordingUrl: record.call_recording_url ?? undefined,
 		customerId: record.customer?.id ?? record.customer_id ?? undefined,
 		threadId: record.thread_id ?? null,
 		threadAddress: primaryAddress ?? secondaryAddress ?? null,
+		sentAt: record.sent_at ?? null,
+		deliveredAt: record.delivered_at ?? null,
+		failedAt: record.failed_at ?? null,
 	};
 }
 

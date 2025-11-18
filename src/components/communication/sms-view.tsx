@@ -8,6 +8,7 @@
 import { Archive, MessageCircle, MessageSquareText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { MessageDeliveryStatusBadge } from "@/components/communication/message-delivery-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,10 @@ type SMSMessage = {
 	customerId?: string | null;
 	threadId?: string | null;
 	threadAddress?: string | null;
+	telnyxMessageId?: string;
+	sentAt?: string | null;
+	deliveredAt?: string | null;
+	failedAt?: string | null;
 };
 
 type SMSViewProps = {
@@ -150,13 +155,18 @@ export function SMSView({ messages }: SMSViewProps) {
 			),
 		},
 		{
-			key: "status",
-			header: "Status",
-			width: "w-24",
+			key: "deliveryStatus",
+			header: "Delivery",
+			width: "w-32",
 			render: (message) => (
-				<span className="text-muted-foreground text-xs capitalize">
-					{message.status}
-				</span>
+				<MessageDeliveryStatusBadge
+					messageId={message.telnyxMessageId}
+					direction={message.direction}
+					initialStatus={message.status}
+					sentAt={message.sentAt}
+					deliveredAt={message.deliveredAt}
+					failedAt={message.failedAt}
+				/>
 			),
 		},
 		{

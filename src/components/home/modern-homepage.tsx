@@ -39,15 +39,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export function ModernHomepage() {
-	const tradeBadges = [
-		"HVAC",
-		"Plumbing",
-		"Electrical",
-		"Roofing",
-		"Garage Door",
-		"Renovation",
-	] as const;
-
 	const heroStats = [
 		{
 			label: "Call pickup",
@@ -73,18 +64,6 @@ export function ModernHomepage() {
 			change: "same-day payouts",
 			detail: "0% processing fees",
 		},
-	] as const;
-
-	const heroCallouts = [
-		{ label: "Owner time freed daily", value: "53 minutes" },
-		{ label: "Customer rating", value: "4.9 ★" },
-	] as const;
-
-	const trustSignals = [
-		"Done-for-you onboarding from veteran trade operators",
-		"Unlimited crew logins included in the flat $100 base",
-		"AI receptionist answers every after-hours call",
-		"Data always belongs to you—export anytime",
 	] as const;
 
 	const persuasionDrivers = [
@@ -412,177 +391,100 @@ export function ModernHomepage() {
 
 	return (
 		<div className="relative overflow-hidden">
-			<section className="relative min-h-screen overflow-hidden">
-				<div className="absolute inset-0 -z-10">
-					<Image
-						alt="Technician calibrating HVAC unit on a rooftop"
-						className="object-cover opacity-20"
-						fill
-						priority
-						sizes="100vw"
-						src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1800&q=80"
-					/>
-					<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.45),_transparent_55%)]" />
-					<div className="from-background via-background/80 to-background absolute inset-0 bg-gradient-to-br" />
-					<div className="bg-primary/25 pointer-events-none absolute top-0 left-1/4 size-[600px] animate-pulse rounded-full opacity-50 blur-3xl" />
-					<div className="bg-primary/20 pointer-events-none absolute right-1/4 bottom-0 size-[600px] animate-pulse rounded-full opacity-40 blur-3xl delay-1000" />
-				</div>
+			{/* Hero Section - Minimal & Bold (Apple-style) */}
+			<section className="relative bg-gradient-to-b from-background via-background to-muted/20">
+				<div className="container mx-auto px-4 pt-20 pb-16 sm:px-6 lg:px-8">
+					<div className="mx-auto max-w-4xl text-center">
+						<h1 className="mb-6 text-6xl leading-[1.1] font-bold tracking-tight md:text-7xl lg:text-8xl">
+							Own The Day.
+							<br />
+							<span className="text-muted-foreground">Grow Without Chaos.</span>
+						</h1>
+						<p className="text-foreground/70 mx-auto mb-12 max-w-2xl text-xl leading-relaxed md:text-2xl">
+							The business management platform built for service companies.
+						</p>
 
-				<div className="relative container mx-auto px-4 py-20 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="mb-8 flex justify-center">
-							<Badge
-								className="border-primary/20 bg-primary/5 gap-2 px-4 py-2 text-sm backdrop-blur-sm"
-								variant="secondary"
-							>
-								<Sparkles className="text-primary size-4" />
-								<span className="font-medium">
-									Built with trade operators for HVAC, plumbing, electrical &
-									more
-								</span>
-							</Badge>
-						</div>
-
-						<div className="mb-8 text-center">
-							<h1 className="mb-6 text-5xl leading-tight font-extrabold tracking-tight md:text-6xl lg:text-7xl">
-								<span className="block">Own The Day.</span>
-								<span className="from-primary to-primary block bg-gradient-to-r via-blue-500 bg-clip-text text-transparent">
-									Grow Without Chaos.
-								</span>
-							</h1>
-							<p className="text-foreground/80 mx-auto mb-3 max-w-3xl text-xl leading-relaxed md:text-2xl">
-								Thorbis runs dispatch, quoting, payments, and after-hours calls
-								from one control tower, so owners who still wear the tool belt
-								can scale like a franchise.
-							</p>
-							<p className="text-muted-foreground mx-auto max-w-2xl text-base">
-								$100/month base plus pay-as-you-go usage. Unlimited users,
-								AI-powered office staff, and data you own. No contracts, no
-								per-seat fees.
-							</p>
-							<div className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm">
-								{tradeBadges.map((trade) => (
-									<span
-										className="border-border/60 bg-background/70 text-foreground/80 rounded-full border px-4 py-2 font-medium shadow-sm"
-										key={trade}
-									>
-										{trade}
-									</span>
-								))}
-							</div>
-						</div>
-
-						<div className="mb-10 flex flex-col items-center justify-center gap-6 sm:flex-row">
-							<div className="flex items-center gap-2">
-								<div className="flex -space-x-2">
-									{[1, 2, 3, 4, 5].map((i) => (
-										<div
-											className="border-background from-primary/40 to-primary/20 size-10 rounded-full border-2 bg-gradient-to-br"
-											key={i}
-										/>
-									))}
-								</div>
-								<div className="ml-2">
-									<div className="flex items-center gap-1">
-										{[1, 2, 3, 4, 5].map((i) => (
-											<Star
-												className="text-warning size-4 fill-yellow-500"
-												key={i}
-											/>
-										))}
-										<span className="ml-2 font-bold">4.9/5</span>
-									</div>
-									<p className="text-muted-foreground text-xs">
-										from 1,247+ trades reviews
-									</p>
-								</div>
-							</div>
-						</div>
-
-						<div className="mb-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+						<div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
 							<Button
 								asChild
-								className="group shadow-primary/20 h-14 px-8 text-lg shadow-lg"
+								className="group h-14 px-8 text-lg"
 								size="lg"
 							>
 								<Link href="/register">
-									Start 14-day Free Trial
+									Start Free Trial
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
 							<Button
 								asChild
-								className="h-14 border-2 px-8 text-lg"
+								className="h-14 px-8 text-lg"
 								size="lg"
 								variant="outline"
 							>
-								<Link href="/pricing">See trade pricing</Link>
+								<Link href="/pricing">View Pricing</Link>
 							</Button>
 						</div>
 
-						<div className="text-muted-foreground flex flex-wrap items-center justify-center gap-6 text-sm">
-							{trustSignals.map((signal) => (
-								<div className="flex items-center gap-2" key={signal}>
-									<CheckCircle2 className="text-success size-4" />
-									<span>{signal}</span>
-								</div>
-							))}
-						</div>
-
-						<div className="mt-16 grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-							<div className="grid gap-4 sm:grid-cols-2">
-								{heroStats.map((stat) => (
-									<div
-										className="border-border/50 bg-background/80 rounded-2xl border p-5 shadow-sm backdrop-blur"
-										key={stat.label}
-									>
-										<p className="text-muted-foreground text-xs">
-											{stat.label}
-										</p>
-										<p className="text-3xl font-bold">{stat.value}</p>
-										<p className="text-success dark:text-success text-xs">
-											{stat.change}
-										</p>
-										<p className="text-muted-foreground text-xs">
-											{stat.detail}
-										</p>
-									</div>
+						<div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+							<div className="flex items-center gap-1">
+								{[1, 2, 3, 4, 5].map((i) => (
+									<Star
+										className="size-4 fill-yellow-500 text-yellow-500"
+										key={i}
+									/>
 								))}
 							</div>
-							<div className="relative">
-								<div className="from-primary/40 to-primary/10 absolute inset-0 rounded-[2rem] bg-gradient-to-br blur-3xl" />
-								<div className="border-border/60 bg-background/90 relative overflow-hidden rounded-[2rem] border shadow-2xl">
-									<Image
-										alt="Thorbis dispatch board showing six HVAC routes"
-										className="border-border/40 h-auto w-full rounded-[inherit] border object-cover"
-										height={900}
-										priority
-										src="/hero.png"
-										width={1400}
-									/>
-									<div className="border-border/50 bg-background/90 absolute inset-x-6 bottom-6 grid gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur">
-										<div className="text-primary text-xs font-semibold tracking-wider uppercase">
-											Control tower insights
-										</div>
-										<div className="grid gap-3 sm:grid-cols-2">
-											{heroCallouts.map((callout) => (
-												<div key={callout.label}>
-													<p className="text-muted-foreground text-xs">
-														{callout.label}
-													</p>
-													<p className="text-lg font-semibold">
-														{callout.value}
-													</p>
-												</div>
-											))}
-										</div>
-									</div>
-								</div>
-							</div>
+							<span className="font-medium">4.9/5</span>
+							<span>·</span>
+							<span>1,247+ reviews</span>
+						</div>
+					</div>
+				</div>
+
+				{/* Full-width Product Screenshot */}
+				<div className="container mx-auto px-4 pb-20 sm:px-6 lg:px-8">
+					<div className="relative mx-auto max-w-7xl">
+						<div className="relative overflow-hidden rounded-2xl border border-border/60 bg-background shadow-2xl">
+							<Image
+								alt="Thorbis platform dashboard showing dispatch board, jobs, and analytics"
+								className="h-auto w-full object-cover"
+								height={900}
+								priority
+								src="/hero.png"
+								width={1400}
+							/>
 						</div>
 					</div>
 				</div>
 			</section>
+
+			{/* Stats Section - Moved from hero */}
+			<section className="border-border/50 bg-background border-y py-16">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="mx-auto max-w-6xl">
+						<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+							{heroStats.map((stat) => (
+								<div
+									className="text-center"
+									key={stat.label}
+								>
+									<p className="text-muted-foreground mb-2 text-sm">
+										{stat.label}
+									</p>
+									<p className="mb-1 text-4xl font-bold">{stat.value}</p>
+									<p className="text-success text-sm">
+										{stat.change}
+									</p>
+									<p className="text-muted-foreground text-xs">
+										{stat.detail}
+									</p>
+								</div>
+							))}
+						</div>
+					</div>
+				</div>
+			</section>
+
 			<section className="border-border/50 bg-muted/20 border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-5xl text-center">

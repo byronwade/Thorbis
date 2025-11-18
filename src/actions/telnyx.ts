@@ -994,7 +994,52 @@ export async function sendTextMessage(params: {
 
 		if (!result.success) {
 			console.error("❌ Telnyx API failed:", result.error);
-			return result;
+
+			// Check if error is 10DLC registration required
+			if (result.error && (
+				result.error.includes("10DLC") ||
+				result.error.includes("Not 10DLC registered") ||
+				result.error.includes("A2P")
+			)) {
+				console.log("🔄 Detected 10DLC registration required, attempting auto-registration...");
+
+				// Import 10DLC registration function
+				const { registerCompanyFor10DLC } = await import("@/actions/ten-dlc-registration");
+
+				const registrationResult = await registerCompanyFor10DLC(params.companyId);
+
+				if (registrationResult.success) {
+					console.log("✅ 10DLC registration successful, retrying SMS send...");
+
+					// Retry the SMS send now that 10DLC is registered
+					const retryResult = await sendSMS({
+						to: toAddress,
+						from: fromAddress,
+						text: params.text,
+						webhookUrl,
+						messagingProfileId,
+					});
+
+					if (!retryResult.success) {
+						return {
+							success: false,
+							error: `10DLC registration completed but SMS still failed: ${retryResult.error}. The campaign may need additional approval time.`,
+						};
+					}
+
+					// Update result with retry success
+					result.success = true;
+					result.messageId = retryResult.messageId;
+					console.log("✅ SMS retry successful after 10DLC registration");
+				} else {
+					return {
+						success: false,
+						error: `10DLC registration failed: ${registrationResult.error}. Original error: ${result.error}`,
+					};
+				}
+			} else {
+				return result;
+			}
 		}
 		console.log("✅ Telnyx API success:", result.messageId);
 

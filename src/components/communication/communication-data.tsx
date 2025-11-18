@@ -65,8 +65,12 @@ export async function CommunicationData() {
         customer:customers(id, first_name, last_name),
         telnyx_call_control_id,
         telnyx_call_session_id,
+        telnyx_message_id,
         call_recording_url,
-        provider_metadata
+        provider_metadata,
+        sent_at,
+        delivered_at,
+        failed_at
       `,
 		)
 		.eq("company_id", companyId)
