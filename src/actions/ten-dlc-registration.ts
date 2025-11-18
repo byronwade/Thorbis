@@ -515,10 +515,10 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 
 		// 2. Get company phone numbers
 		const { data: phoneNumbers, error: phoneError } = await supabase
-			.from("company_phone_numbers")
+			.from("phone_numbers")
 			.select("phone_number, is_toll_free")
 			.eq("company_id", companyId)
-			.is("deleted_at", null);
+			.neq("status", "deleted");
 
 		if (phoneError || !phoneNumbers || phoneNumbers.length === 0) {
 			return {
