@@ -125,27 +125,23 @@ export async function registerCompanyFor10DLC(
 		// 3. Create 10DLC Brand
 		log.push("Creating 10DLC brand with Telnyx...");
 		const brandPayload: TenDlcBrandPayload = {
-			customer_reference: companyId,
-			brand_name: company.name || "Unknown Company",
+			entityType: "PRIVATE_PROFIT", // Default - could be made configurable
+			displayName: company.name || "Unknown Company",
+			companyName: company.name || "Unknown Company",
+			firstName: "Business", // No separate first/last name fields in companies table
+			lastName: "Owner",
 			ein: company.ein,
-			ein_issuing_country: "US",
-			vertical: determineVertical(company.industry),
+			phone: contactPhone,
+			street: company.address || "",
+			city: company.city || "",
+			state: company.state || "",
+			postalCode: company.zip_code || "",
+			country: "US",
+			email: contactEmail,
 			website: company.website,
-			company_type: "PRIVATE_PROFIT", // Default - could be made configurable
-			address: {
-				line1: company.address || "",
-				city: company.city || "",
-				state: company.state || "",
-				postal_code: company.zip_code || "",
-				country: "US",
-			},
-			contact: {
-				first_name: "Business", // No separate first/last name fields in companies table
-				last_name: "Owner",
-				email: contactEmail,
-				phone: contactPhone,
-				job_position: "Owner",
-			},
+			vertical: determineVertical(company.industry),
+			businessContactEmail: contactEmail,
+			isReseller: false,
 		};
 
 		const brandResult = await createTenDlcBrand(brandPayload);
@@ -190,39 +186,39 @@ export async function registerCompanyFor10DLC(
 		// 5. Create 10DLC Campaign
 		log.push("Creating 10DLC campaign...");
 		const campaignPayload: TenDlcCampaignPayload = {
-			brand_id: brandId,
-			campaign_alias: `${company.name} - Mixed Messaging`,
+			brandId: brandId,
 			usecase: "MIXED", // Mixed use case covers most business needs
 			description: `Business messaging for ${company.name}`,
-			sample_messages: [
-				"Your appointment is confirmed for tomorrow at 2 PM.",
-				"Thank you for your payment. Receipt: #12345",
-				"Reminder: Service scheduled for next week.",
-			],
-			message_flow:
+			messageFlow:
 				"Customers opt-in when providing phone number. Messages sent for appointments, invoices, and general updates.",
-			terms_and_conditions: company.website
-				? `${company.website}/terms`
-				: "https://stratos.thorbis.com/terms",
-			help_message: "Reply HELP for assistance or call us.",
-			help_phone_number: contactPhone,
-			help_email: contactEmail,
-			auto_renewal: true,
-			opt_in_keywords: ["START", "YES", "SUBSCRIBE"],
-			opt_out_keywords: ["STOP", "END", "UNSUBSCRIBE", "CANCEL", "QUIT"],
-			opt_in_message:
+			helpMessage: "Reply HELP for assistance or call us.",
+			helpKeywords: "HELP",
+			optinKeywords: "START YES SUBSCRIBE",
+			optinMessage:
 				"You are now subscribed to messages from " +
 				company.name +
 				". Reply STOP to unsubscribe.",
-			opt_out_message:
+			optoutKeywords: "STOP END UNSUBSCRIBE CANCEL QUIT",
+			optoutMessage:
 				"You have been unsubscribed from " +
 				company.name +
 				" messages. Reply START to resubscribe.",
+			sample1: "Your appointment is confirmed for tomorrow at 2 PM.",
+			sample2: "Thank you for your payment. Receipt: #12345",
+			sample3: "Reminder: Service scheduled for next week.",
+			autoRenewal: true,
+			termsAndConditions: true,
+			termsAndConditionsLink: company.website
+				? `${company.website}/terms`
+				: "https://stratos.thorbis.com/terms",
+			subscriberHelp: true,
+			subscriberOptin: true,
+			subscriberOptout: true,
 		};
 
 		const campaignResult = await createTenDlcCampaign(campaignPayload);
 
-		if (!campaignResult.success || !campaignResult.data?.id) {
+		if (!campaignResult.success || !campaignResult.data?.campaignId) {
 			return {
 				success: false,
 				error: `Failed to create 10DLC campaign: ${campaignResult.error}`,
@@ -231,7 +227,7 @@ export async function registerCompanyFor10DLC(
 			};
 		}
 
-		const campaignId = campaignResult.data.id;
+		const campaignId = campaignResult.data.campaignId;
 		log.push(`Campaign created: ${campaignId}`);
 
 		// 6. Poll campaign status

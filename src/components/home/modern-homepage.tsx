@@ -150,14 +150,13 @@ export function ModernHomepage() {
 						{/* Product Screenshot with Video Overlay */}
 						<Card className="group relative overflow-hidden border-border">
 							<CardContent className="p-1">
-								<div className="relative">
+								<div className="relative aspect-video">
 									<Image
 										alt="Thorbis platform dashboard showing dispatch board, job scheduling, and real-time metrics"
-										className="h-auto w-full rounded-lg"
-										height={900}
+										className="h-full w-full rounded-lg object-cover"
+										fill
 										priority
 										src="/hero.png"
-										width={1400}
 										itemProp="screenshot"
 									/>
 									{/* Video Play Button Overlay */}
@@ -328,9 +327,8 @@ export function ModernHomepage() {
 										<Image
 											alt="Product demo video thumbnail"
 											className="h-full w-full rounded-lg object-cover"
-											height={600}
+											fill
 											src="/hero.png"
-											width={800}
 										/>
 										<div className="absolute inset-0 flex items-center justify-center">
 											<Button size="lg" className="h-16 w-16 rounded-full p-0">
@@ -405,13 +403,14 @@ export function ModernHomepage() {
 										</div>
 										<Card className="overflow-hidden">
 											<CardContent className="p-1">
-												<Image
-													alt={feature.solution}
-													className="h-auto w-full rounded-lg"
-													height={600}
-													src={feature.screenshot}
-													width={800}
-												/>
+												<div className="relative aspect-video">
+													<Image
+														alt={feature.solution}
+														className="h-full w-full rounded-lg object-cover"
+														fill
+														src={feature.screenshot}
+													/>
+												</div>
 											</CardContent>
 										</Card>
 									</>
@@ -419,13 +418,14 @@ export function ModernHomepage() {
 									<>
 										<Card className="overflow-hidden lg:order-1">
 											<CardContent className="p-1">
-												<Image
-													alt={feature.solution}
-													className="h-auto w-full rounded-lg"
-													height={600}
-													src={feature.screenshot}
-													width={800}
-												/>
+												<div className="relative aspect-video">
+													<Image
+														alt={feature.solution}
+														className="h-full w-full rounded-lg object-cover"
+														fill
+														src={feature.screenshot}
+													/>
+												</div>
 											</CardContent>
 										</Card>
 										<div className="lg:order-2">

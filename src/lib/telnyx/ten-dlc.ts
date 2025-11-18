@@ -44,34 +44,34 @@ async function telnyxRequest<TResponse>(
 }
 
 export type TenDlcBrandPayload = {
-	customer_reference: string;
-	brand_name: string;
+	entityType: "PRIVATE_PROFIT" | "PUBLIC_PROFIT" | "NON_PROFIT";
+	displayName: string;
+	companyName: string;
+	firstName: string;
+	lastName: string;
 	ein: string;
-	ein_issuing_country?: string;
+	phone: string;
+	street: string;
+	city: string;
+	state: string;
+	postalCode: string;
+	country: string;
+	email: string;
+	website?: string;
 	vertical: string;
-	website: string | null;
-	stock_symbol?: string | null;
-	company_type?: "PRIVATE_PROFIT" | "PUBLIC_PROFIT" | "NON_PROFIT";
-	address: {
-		line1: string;
-		line2?: string | null;
-		city: string;
-		state: string;
-		postal_code: string;
-		country: string;
-	};
-	contact: {
-		first_name: string;
-		last_name: string;
-		email: string;
-		phone: string;
-		job_position?: string | null;
-	};
-	optional_attributes?: Record<string, unknown>;
+	isReseller?: boolean;
+	mock?: boolean;
+	mobilePhone?: string;
+	businessContactEmail?: string;
+	stockSymbol?: string;
+	stockExchange?: string;
+	ipAddress?: string;
+	webhookURL?: string;
+	webhookFailoverURL?: string;
 };
 
 export async function createTenDlcBrand(payload: TenDlcBrandPayload) {
-	return telnyxRequest<{ id: string }>("/10dlc/brands", {
+	return telnyxRequest<{ id: string }>("/10dlc/brand", {
 		method: "POST",
 		body: payload,
 	});
@@ -79,33 +79,47 @@ export async function createTenDlcBrand(payload: TenDlcBrandPayload) {
 
 export async function getTenDlcBrand(brandId: string) {
 	return telnyxRequest<{ id: string; status: string }>(
-		`/10dlc/brands/${brandId}`,
+		`/10dlc/brand/${brandId}`,
 	);
 }
 
 export type TenDlcCampaignPayload = {
-	brand_id: string;
-	campaign_alias: string;
+	brandId: string;
 	usecase: string;
 	description: string;
-	sample_messages: string[];
-	message_flow: string;
-	terms_and_conditions: string;
-	help_message: string;
-	help_phone_number: string;
-	help_email: string;
-	auto_renewal: boolean;
-	message_fee_credits?: number;
-	usecase_details?: Record<string, unknown>;
-	sub_usecases?: string[];
-	opt_in_keywords?: string[];
-	opt_out_keywords?: string[];
-	opt_in_message?: string;
-	opt_out_message?: string;
+	messageFlow: string;
+	helpMessage: string;
+	helpKeywords?: string;
+	optinKeywords?: string;
+	optinMessage?: string;
+	optoutKeywords?: string;
+	optoutMessage?: string;
+	sample1: string;
+	sample2?: string;
+	sample3?: string;
+	sample4?: string;
+	sample5?: string;
+	autoRenewal: boolean;
+	subUsecases?: string[];
+	termsAndConditions?: boolean;
+	privacyPolicyLink?: string;
+	termsAndConditionsLink?: string;
+	affiliateMarketing?: boolean;
+	ageGated?: boolean;
+	directLending?: boolean;
+	embeddedLink?: boolean;
+	embeddedPhone?: boolean;
+	numberPool?: boolean;
+	subscriberHelp?: boolean;
+	subscriberOptin?: boolean;
+	subscriberOptout?: boolean;
+	referenceId?: string;
+	mnoIds?: number[];
+	tag?: string[];
 };
 
 export async function createTenDlcCampaign(payload: TenDlcCampaignPayload) {
-	return telnyxRequest<{ id: string }>("/10dlc/campaigns", {
+	return telnyxRequest<{ campaignId: string }>("/10dlc/campaignBuilder", {
 		method: "POST",
 		body: payload,
 	});
@@ -113,7 +127,7 @@ export async function createTenDlcCampaign(payload: TenDlcCampaignPayload) {
 
 export async function getTenDlcCampaign(campaignId: string) {
 	return telnyxRequest<{ id: string; status: string; usecase: string }>(
-		`/10dlc/campaigns/${campaignId}`,
+		`/10dlc/campaign/${campaignId}`,
 	);
 }
 
