@@ -2,7 +2,7 @@
 
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { useState } from "react";
-import { registerCompanyFor10DLC } from "@/actions/ten-dlc-registration";
+import { submitAutomatedVerification } from "@/actions/ten-dlc-registration";
 
 const TEST_COMPANY_ID = "2b88a305-0ecd-4bff-9898-b166cc7937c4";
 
@@ -150,31 +150,32 @@ export default function TestTelnyxSetup() {
 				),
 			});
 
-			// Steps 4-6: 10DLC Registration (combined)
+			// Steps 4-6: Automated Verification (ServiceTitan-style)
 			updateStep("10dlc-brand", { status: "running" });
 			updateStep("10dlc-campaign", { status: "running" });
 			updateStep("attach-numbers", { status: "running" });
 
-			const registrationResult = await registerCompanyFor10DLC(TEST_COMPANY_ID);
+			const registrationResult = await submitAutomatedVerification(TEST_COMPANY_ID);
 
 			if (!registrationResult.success) {
 				updateStep("10dlc-brand", {
 					status: "error",
-					message: registrationResult.error || "Registration failed",
-					details: registrationResult.log,
+					message: registrationResult.error || "Verification failed",
+					details: [
+						"This uses the new ServiceTitan-style automated verification",
+						"Toll-free numbers: Submit verification request (5-7 days)",
+						"Regular (10DLC) numbers: Instant approval",
+					],
 				});
 				updateStep("10dlc-campaign", { status: "error" });
 				updateStep("attach-numbers", { status: "error" });
 
-				// Check if it's just pending approval
-				if (
-					registrationResult.error?.includes("pending") ||
-					registrationResult.error?.includes("approval")
-				) {
+				// Check if toll-free was submitted (which requires 5-7 days)
+				if (registrationResult.tollFreeRequestId) {
 					setFinalResult({
 						success: false,
 						message:
-							"10DLC registration submitted but awaiting approval. This typically takes 1-5 minutes. Please run setup again in a few minutes.",
+							"Toll-free verification submitted but requires 5-7 business days for approval. 10DLC numbers (if any) are ready immediately!",
 					});
 				} else {
 					throw new Error(
@@ -182,22 +183,32 @@ export default function TestTelnyxSetup() {
 					);
 				}
 			} else {
+				const details = [];
+
+				if (registrationResult.brandId) {
+					details.push(`10DLC Brand ID: ${registrationResult.brandId}`);
+					details.push("✅ 10DLC ready immediately!");
+				}
+
+				if (registrationResult.tollFreeRequestId) {
+					details.push(`Toll-Free Request ID: ${registrationResult.tollFreeRequestId}`);
+					details.push("⏰ Toll-Free approval in 5-7 business days");
+				}
+
 				updateStep("10dlc-brand", {
 					status: "success",
-					message: "Brand registered and approved",
-					details: [`Brand ID: ${registrationResult.brandId}`],
+					message: "Automated verification submitted",
+					details: details,
 				});
 				updateStep("10dlc-campaign", {
 					status: "success",
-					message: "Campaign created and approved",
-					details: [`Campaign ID: ${registrationResult.campaignId}`],
+					message: registrationResult.campaignId ? "Campaign created (10DLC)" : "Verification request submitted",
+					details: registrationResult.campaignId ? [`Campaign ID: ${registrationResult.campaignId}`] : ["Toll-free verification in progress"],
 				});
 				updateStep("attach-numbers", {
 					status: "success",
-					message: "Phone numbers attached to campaign",
-					details: registrationResult.log.filter((log) =>
-						log.includes("Attached"),
-					),
+					message: "Phone numbers registered",
+					details: [registrationResult.message || "Verification submitted successfully"],
 				});
 
 				// Step 7: Send Test SMS
@@ -266,7 +277,7 @@ export default function TestTelnyxSetup() {
 
 				<div className="bg-muted/50 p-6 rounded-lg border border-border mb-8">
 					<h2 className="font-semibold mb-3 text-foreground text-lg">
-						What This Does
+						What This Does (ServiceTitan-Style Automated Verification)
 					</h2>
 					<ul className="space-y-2 text-sm text-muted-foreground">
 						<li className="flex items-start gap-2">
@@ -283,19 +294,19 @@ export default function TestTelnyxSetup() {
 						</li>
 						<li className="flex items-start gap-2">
 							<span className="text-primary">4.</span>
-							<span>Registers your brand with The Campaign Registry (10DLC)</span>
+							<span>Submits toll-free verification (5-7 day approval) for toll-free numbers</span>
 						</li>
 						<li className="flex items-start gap-2">
 							<span className="text-primary">5.</span>
-							<span>Creates and approves messaging campaign</span>
+							<span>Registers 10DLC brand and campaign (instant approval) for regular numbers</span>
 						</li>
 						<li className="flex items-start gap-2">
 							<span className="text-primary">6.</span>
-							<span>Attaches all phone numbers to the campaign</span>
+							<span>Sends a test SMS to verify 10DLC numbers work</span>
 						</li>
 						<li className="flex items-start gap-2">
 							<span className="text-primary">7.</span>
-							<span>Sends a test SMS to verify everything works</span>
+							<span>Sends notification email when setup complete</span>
 						</li>
 					</ul>
 				</div>

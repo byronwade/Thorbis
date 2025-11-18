@@ -448,9 +448,27 @@ ten_dlc_campaign_status TEXT
    - Update database when approved
    - Enable SMS automatically
 
+### Email Notifications
+
+✅ **Implemented**: Automated email notifications during onboarding
+
+**Email 1: Verification Submitted** - Sent immediately after user submits verification
+- Confirms submission received
+- Explains timeline for toll-free (5-7 days) vs 10DLC (instant)
+- Provides support contact info
+- Non-blocking - doesn't fail verification if email fails
+
+**Email 2: Verification Complete** - Template ready, webhook needed for automation
+- Celebrates approval
+- Provides quick start guide
+- Links to messaging dashboard
+- Requires webhook implementation to automatically send when approved
+
+**See `/EMAIL_NOTIFICATIONS.md` for complete documentation.**
+
 ### Future Enhancements
 
-- [ ] Add webhook to receive verification approval notifications
+- [ ] Add webhook to receive verification approval notifications (for Email 2)
 - [ ] Add status checking page (`/dashboard/settings/messaging`)
 - [ ] Add ability to re-submit if rejected
 - [ ] Add verification status to company dashboard

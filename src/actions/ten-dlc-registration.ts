@@ -19,6 +19,7 @@ import {
 	type TenDlcCampaignPayload,
 	type TollFreeVerificationPayload,
 } from "@/lib/telnyx/ten-dlc";
+import { sendVerificationSubmittedEmail } from "@/lib/email/verification-emails";
 
 type RegistrationResult = {
 	success: boolean;
@@ -599,6 +600,26 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 
 			brandId = registrationResult.brandId;
 			campaignId = registrationResult.campaignId;
+		}
+
+		// 5. Send verification submitted email
+		// Note: Don't block the response if email fails - verification was successful
+		if (company.email) {
+			try {
+				await sendVerificationSubmittedEmail(
+					companyId,
+					company.email,
+					{
+						hasTollFreeNumbers: tollFreeNumbers.length > 0,
+						has10DLCNumbers: dlcNumbers.length > 0,
+						tollFreeCount: tollFreeNumbers.length,
+						dlcCount: dlcNumbers.length,
+					}
+				);
+			} catch (emailError) {
+				// Log but don't fail - email is non-critical
+				console.error("Failed to send verification email:", emailError);
+			}
 		}
 
 		return {
