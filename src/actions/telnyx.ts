@@ -997,6 +997,7 @@ export async function sendTextMessage(params: {
 			data,
 		};
 	} catch (error) {
+		console.error("SMS send error:", error);
 		return {
 			success: false,
 			error: error instanceof Error ? error.message : "Failed to send SMS",
