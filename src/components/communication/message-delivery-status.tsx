@@ -14,6 +14,8 @@ type MessageDeliveryStatusBadgeProps = {
 	sentAt?: string | null;
 	deliveredAt?: string | null;
 	failedAt?: string | null;
+	compact?: boolean; // If true, show minimal text-only version
+	showText?: boolean; // If true, show text instead of badge
 };
 
 export function MessageDeliveryStatusBadge({
@@ -23,6 +25,8 @@ export function MessageDeliveryStatusBadge({
 	sentAt,
 	deliveredAt,
 	failedAt,
+	compact = false,
+	showText = false,
 }: MessageDeliveryStatusBadgeProps) {
 	// Only poll for outbound messages with a Telnyx message ID
 	const shouldPoll = direction === "outbound" && !!messageId;
@@ -34,6 +38,13 @@ export function MessageDeliveryStatusBadge({
 
 	// For inbound messages, just show received
 	if (direction === "inbound") {
+		if (showText) {
+			return (
+				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+					Received
+				</span>
+			);
+		}
 		return (
 			<Badge variant="secondary" className="gap-1">
 				<Check className="size-3" />
@@ -44,6 +55,13 @@ export function MessageDeliveryStatusBadge({
 
 	// For outbound messages without message ID, show basic status
 	if (!messageId) {
+		if (showText) {
+			return (
+				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+					{initialStatus || "Unknown"}
+				</span>
+			);
+		}
 		return (
 			<Badge variant="outline" className="gap-1 text-muted-foreground">
 				<Clock className="size-3" />
@@ -62,11 +80,67 @@ export function MessageDeliveryStatusBadge({
 		finalStatus = "sent";
 	}
 
+	if (showText) {
+		return getStatusText(finalStatus, isPolling);
+	}
+
 	return (
 		<div className="flex items-center gap-2">
 			{getStatusBadge(finalStatus, isPolling)}
 		</div>
 	);
+}
+
+function getStatusText(
+	status: MessageDeliveryStatus,
+	isPolling: boolean,
+): JSX.Element {
+	switch (status) {
+		case "queued":
+			return (
+				<span className="flex items-center gap-1 text-[10px] text-gray-500">
+					Sending...
+					{isPolling && <Loader2 className="size-2.5 animate-spin" />}
+				</span>
+			);
+
+		case "sending":
+		case "sent":
+			return (
+				<span className="flex items-center gap-1 text-[10px] text-blue-500">
+					Sent
+					{isPolling && <Loader2 className="ml-0.5 size-2.5 animate-spin" />}
+				</span>
+			);
+
+		case "delivered":
+			return (
+				<span className="flex items-center gap-1 text-[10px] text-green-600">
+					Delivered
+				</span>
+			);
+
+		case "read":
+			return (
+				<span className="flex items-center gap-1 text-[10px] text-green-700">
+					Read
+				</span>
+			);
+
+		case "failed":
+			return (
+				<span className="flex items-center gap-1 text-[10px] text-red-500">
+					Not Delivered
+				</span>
+			);
+
+		default:
+			return (
+				<span className="text-muted-foreground flex items-center gap-1 text-[10px]">
+					Unknown
+				</span>
+			);
+	}
 }
 
 function getStatusBadge(
@@ -101,6 +175,17 @@ function getStatusBadge(
 				>
 					<CheckCheck className="size-3" />
 					Delivered
+				</Badge>
+			);
+
+		case "read":
+			return (
+				<Badge
+					variant="outline"
+					className="gap-1 border-green-700 text-green-700"
+				>
+					<CheckCheck className="size-3" />
+					Read
 				</Badge>
 			);
 

@@ -2,13 +2,22 @@
 
 import { createClient } from "@/lib/supabase/server";
 import {
+	checkAccountVerificationStatus,
+	getNextSteps,
+	getVerificationRequirements,
+	type VerificationStatus,
+} from "@/lib/telnyx/account-verification";
+import {
 	attachNumberToCampaign,
 	createTenDlcBrand,
 	createTenDlcCampaign,
 	getTenDlcBrand,
 	getTenDlcCampaign,
+	submitTollFreeVerification,
+	getTollFreeVerificationStatus,
 	type TenDlcBrandPayload,
 	type TenDlcCampaignPayload,
+	type TollFreeVerificationPayload,
 } from "@/lib/telnyx/ten-dlc";
 
 type RegistrationResult = {
@@ -368,4 +377,244 @@ function determineVertical(businessType?: string | null): string {
 
 	// Default for plumbing, HVAC, electrical, etc.
 	return "PROFESSIONAL_SERVICES";
+}
+
+/**
+ * Check Telnyx account verification status
+ *
+ * Returns the current verification level and what's required to proceed
+ */
+export async function checkTelnyxVerificationStatus(): Promise<{
+	success: boolean;
+	data?: VerificationStatus & {
+		nextSteps: Array<{ step: string; action: string; url?: string }>;
+		requirements: {
+			level1: { required: boolean; items: string[] };
+			level2: { required: boolean; items: string[] };
+		};
+	};
+	error?: string;
+}> {
+	try {
+		const statusResult = await checkAccountVerificationStatus();
+
+		if (!statusResult.success) {
+			return {
+				success: false,
+				error: statusResult.error || "Failed to check verification status",
+			};
+		}
+
+		const status = statusResult.data!;
+		const nextSteps = getNextSteps(status);
+		const requirements = getVerificationRequirements(status.currentLevel);
+
+		return {
+			success: true,
+			data: {
+				...status,
+				nextSteps,
+				requirements,
+			},
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to check verification status",
+		};
+	}
+}
+
+/**
+ * Automatically submit toll-free and 10DLC verification during onboarding
+ *
+ * This function is called when a company completes Step 4 of onboarding.
+ * It automatically submits verification to Telnyx using the company data
+ * collected during Step 1 (Company Information).
+ *
+ * ServiceTitan-style flow: Users never leave the platform or visit Telnyx Portal
+ */
+export async function submitAutomatedVerification(companyId: string): Promise<{
+	success: boolean;
+	tollFreeRequestId?: string;
+	brandId?: string;
+	campaignId?: string;
+	error?: string;
+	message?: string;
+}> {
+	const supabase = await createClient();
+
+	if (!supabase) {
+		return {
+			success: false,
+			error: "Failed to create Supabase client",
+		};
+	}
+
+	try {
+		// 1. Fetch company data
+		const { data: company, error: companyError } = await supabase
+			.from("companies")
+			.select(`
+				id,
+				name,
+				ein,
+				website,
+				industry,
+				address,
+				city,
+				state,
+				zip_code,
+				phone,
+				email,
+				support_email,
+				support_phone
+			`)
+			.eq("id", companyId)
+			.single();
+
+		if (companyError || !company) {
+			return {
+				success: false,
+				error: `Company not found: ${companyError?.message}`,
+			};
+		}
+
+		// Validate required fields
+		if (!company.ein) {
+			return {
+				success: false,
+				error:
+					"Company EIN is required for messaging verification. Please add your Tax ID in Step 1.",
+			};
+		}
+
+		if (
+			!company.address ||
+			!company.city ||
+			!company.state ||
+			!company.zip_code
+		) {
+			return {
+				success: false,
+				error:
+					"Company address is incomplete. Please complete all address fields in Step 1.",
+			};
+		}
+
+		if (!company.phone) {
+			return {
+				success: false,
+				error: "Company phone number is required for verification.",
+			};
+		}
+
+		// 2. Get company phone numbers
+		const { data: phoneNumbers, error: phoneError } = await supabase
+			.from("company_phone_numbers")
+			.select("phone_number, is_toll_free")
+			.eq("company_id", companyId)
+			.is("deleted_at", null);
+
+		if (phoneError || !phoneNumbers || phoneNumbers.length === 0) {
+			return {
+				success: false,
+				error:
+					"No phone numbers found. Please add a phone number before enabling messaging.",
+			};
+		}
+
+		// Separate toll-free and 10DLC numbers
+		const tollFreeNumbers = phoneNumbers.filter((p) => p.is_toll_free);
+		const dlcNumbers = phoneNumbers.filter((p) => !p.is_toll_free);
+
+		// 3. Submit toll-free verification if we have toll-free numbers
+		let tollFreeRequestId: string | undefined;
+		if (tollFreeNumbers.length > 0) {
+			const tollFreePayload: TollFreeVerificationPayload = {
+				businessName: company.name,
+				corporateWebsite: company.website || `https://${company.name.toLowerCase().replace(/\s/g, "")}.com`,
+				businessAddr1: company.address,
+				businessCity: company.city,
+				businessState: company.state,
+				businessZip: company.zip_code,
+				businessContactFirstName: "Admin", // TODO: Get from user profile
+				businessContactLastName: "User",
+				businessContactEmail: company.email || company.support_email || "",
+				businessContactPhone: company.phone,
+				phoneNumbers: tollFreeNumbers.map((p) => ({
+					phoneNumber: p.phone_number,
+				})),
+				useCase: "Customer Support",
+				useCaseSummary: `${company.industry} business communications including appointment reminders, service notifications, and customer support`,
+				productionMessageContent: `Hi! This is ${company.name}. Your appointment is scheduled for tomorrow at 10 AM. Reply STOP to opt out.`,
+				messageVolume: "10000",
+				optInWorkflow:
+					"Customers opt-in during service booking and account creation",
+				businessRegistrationNumber: company.ein,
+				businessRegistrationType: "EIN",
+				businessRegistrationCountry: "US",
+				entityType: "PRIVATE_PROFIT",
+			};
+
+			const tollFreeResult = await submitTollFreeVerification(tollFreePayload);
+
+			if (!tollFreeResult.success || !tollFreeResult.data) {
+				return {
+					success: false,
+					error: `Toll-free verification failed: ${tollFreeResult.error}`,
+				};
+			}
+
+			tollFreeRequestId = tollFreeResult.data.id;
+
+			// Save toll-free request ID to database
+			await supabase
+				.from("company_telnyx_settings")
+				.upsert({
+					company_id: companyId,
+					toll_free_verification_request_id: tollFreeRequestId,
+					toll_free_verification_status: "pending",
+					toll_free_verification_submitted_at: new Date().toISOString(),
+				});
+		}
+
+		// 4. Submit 10DLC registration if we have regular numbers
+		let brandId: string | undefined;
+		let campaignId: string | undefined;
+		if (dlcNumbers.length > 0) {
+			const registrationResult =
+				await registerCompanyFor10DLC(companyId);
+
+			if (!registrationResult.success) {
+				return {
+					success: false,
+					error: `10DLC registration failed: ${registrationResult.error}`,
+					tollFreeRequestId,
+				};
+			}
+
+			brandId = registrationResult.brandId;
+			campaignId = registrationResult.campaignId;
+		}
+
+		return {
+			success: true,
+			tollFreeRequestId,
+			brandId,
+			campaignId,
+			message: `Verification submitted successfully! ${tollFreeNumbers.length > 0 ? "Toll-free verification typically takes 5 business days." : ""} ${dlcNumbers.length > 0 ? "10DLC registration completed." : ""}`,
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error:
+				error instanceof Error
+					? error.message
+					: "Failed to submit verification",
+		};
+	}
 }

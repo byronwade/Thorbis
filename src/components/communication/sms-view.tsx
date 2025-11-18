@@ -136,9 +136,21 @@ export function SMSView({ messages }: SMSViewProps) {
 			header: "Message",
 			width: "flex-1",
 			render: (message) => (
-				<p className="text-muted-foreground line-clamp-1 text-xs">
-					{message.preview}
-				</p>
+				<div className="flex flex-col gap-1">
+					<p className="text-muted-foreground line-clamp-1 text-xs">
+						{message.preview}
+					</p>
+					<MessageDeliveryStatusBadge
+						messageId={message.telnyxMessageId}
+						direction={message.direction}
+						initialStatus={message.status}
+						sentAt={message.sentAt}
+						deliveredAt={message.deliveredAt}
+						failedAt={message.failedAt}
+						compact
+						showText
+					/>
+				</div>
 			),
 		},
 		{
@@ -152,21 +164,6 @@ export function SMSView({ messages }: SMSViewProps) {
 				>
 					{message.direction}
 				</Badge>
-			),
-		},
-		{
-			key: "deliveryStatus",
-			header: "Delivery",
-			width: "w-32",
-			render: (message) => (
-				<MessageDeliveryStatusBadge
-					messageId={message.telnyxMessageId}
-					direction={message.direction}
-					initialStatus={message.status}
-					sentAt={message.sentAt}
-					deliveredAt={message.deliveredAt}
-					failedAt={message.failedAt}
-				/>
 			),
 		},
 		{

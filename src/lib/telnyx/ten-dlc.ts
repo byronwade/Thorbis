@@ -1,47 +1,5 @@
 import "server-only";
-
-const TELNYX_BASE_URL = "https://api.telnyx.com/v2";
-
-type TelnyxRequestOptions = {
-	method?: "GET" | "POST";
-	body?: Record<string, unknown>;
-};
-
-async function telnyxRequest<TResponse>(
-	path: string,
-	{ method = "GET", body }: TelnyxRequestOptions = {},
-): Promise<{ success: boolean; data?: TResponse; error?: string }> {
-	const apiKey = process.env.TELNYX_API_KEY;
-	if (!apiKey) {
-		return { success: false, error: "TELNYX_API_KEY is not configured" };
-	}
-
-	const response = await fetch(`${TELNYX_BASE_URL}${path}`, {
-		method,
-		headers: {
-			Authorization: `Bearer ${apiKey}`,
-			"Content-Type": "application/json",
-		},
-		body: body ? JSON.stringify(body) : undefined,
-	});
-
-	const payload = (await response.json().catch(() => {})) as
-		| { data?: TResponse; errors?: Array<{ detail?: string }> }
-		| undefined;
-
-	if (!response.ok) {
-		const message =
-			payload?.errors?.[0]?.detail ||
-			payload?.errors?.[0] ||
-			response.statusText;
-		return {
-			success: false,
-			error: `Telnyx ${response.status}: ${message}`,
-		};
-	}
-
-	return { success: true, data: payload?.data };
-}
+import { telnyxRequest } from "./api";
 
 export type TenDlcBrandPayload = {
 	entityType: "PRIVATE_PROFIT" | "PUBLIC_PROFIT" | "NON_PROFIT";
@@ -144,4 +102,77 @@ export async function attachNumberToCampaign(
 			},
 		},
 	);
+}
+
+/**
+ * Toll-Free Verification Payload
+ * Required fields as of January 1, 2026
+ */
+export type TollFreeVerificationPayload = {
+	// Business Information
+	businessName: string;
+	corporateWebsite: string;
+	businessAddr1: string;
+	businessCity: string;
+	businessState: string;
+	businessZip: string;
+
+	// Contact Information
+	businessContactFirstName: string;
+	businessContactLastName: string;
+	businessContactEmail: string;
+	businessContactPhone: string;
+
+	// Phone Numbers to Verify
+	phoneNumbers: Array<{ phoneNumber: string }>;
+
+	// Use Case Information
+	useCase: string; // e.g., "Account Notifications", "Customer Support", etc.
+	useCaseSummary: string;
+	productionMessageContent: string;
+	messageVolume: string; // e.g., "10000", "100000"
+
+	// Opt-in/Opt-out Workflow
+	optInWorkflow: string;
+	optInWorkflowImageURLs?: Array<{ url: string }>;
+
+	// Business Registration (Required as of Jan 1, 2026)
+	businessRegistrationNumber: string; // e.g., EIN number
+	businessRegistrationType: string; // e.g., "EIN", "VAT", "ABN"
+	businessRegistrationCountry: string; // ISO 3166-1 alpha-2 (e.g., "US")
+
+	// Entity Type
+	entityType: "PRIVATE_PROFIT" | "PUBLIC_PROFIT" | "NON_PROFIT";
+
+	// Additional optional fields
+	additionalInformation?: string;
+};
+
+/**
+ * Submit toll-free verification request to Telnyx
+ * This allows customers to send SMS from toll-free numbers
+ * Approval typically takes 5 business days or less
+ */
+export async function submitTollFreeVerification(
+	payload: TollFreeVerificationPayload,
+) {
+	return telnyxRequest<{
+		id: string;
+		status: string;
+		createdAt: string;
+	}>("/public/api/v2/requests", {
+		method: "POST",
+		body: payload,
+	});
+}
+
+/**
+ * Check the status of a toll-free verification request
+ */
+export async function getTollFreeVerificationStatus(requestId: string) {
+	return telnyxRequest<{
+		id: string;
+		status: string;
+		phoneNumbers: Array<{ phoneNumber: string; status: string }>;
+	}>(`/public/api/v2/requests/${requestId}`);
 }

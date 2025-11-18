@@ -7,6 +7,7 @@ export type MessageDeliveryStatus =
 	| "sending"
 	| "sent"
 	| "delivered"
+	| "read"
 	| "failed"
 	| "unknown";
 
@@ -61,7 +62,11 @@ export function useMessageStatus(
 			setStatus(newStatus);
 
 			// Stop polling if message is in terminal state
-			if (newStatus === "delivered" || newStatus === "failed") {
+			if (
+				newStatus === "delivered" ||
+				newStatus === "read" ||
+				newStatus === "failed"
+			) {
 				setIsPolling(false);
 				if (intervalRef.current) {
 					clearInterval(intervalRef.current);
@@ -78,7 +83,12 @@ export function useMessageStatus(
 
 	useEffect(() => {
 		// Only poll for outbound SMS messages with a Telnyx message ID
-		if (!messageId || status === "delivered" || status === "failed") {
+		if (
+			!messageId ||
+			status === "delivered" ||
+			status === "read" ||
+			status === "failed"
+		) {
 			return;
 		}
 
@@ -119,6 +129,7 @@ function mapStatus(status: string | null | undefined): MessageDeliveryStatus {
 	if (normalized === "queued") return "queued";
 	if (normalized === "sending" || normalized === "sent") return "sent";
 	if (normalized === "delivered") return "delivered";
+	if (normalized === "read") return "read";
 	if (normalized === "failed") return "failed";
 
 	return "unknown";

@@ -29,6 +29,7 @@ import {
 	Edit,
 	FileSpreadsheet,
 	Loader2,
+	MessageSquare,
 	Shield,
 	Sparkles,
 	Trash2,
@@ -50,6 +51,7 @@ import { PlaidLinkButtonLazy as PlaidLinkButton } from "@/components/finance/pla
 import { OnboardingHeader } from "@/components/onboarding/onboarding-header";
 import { TeamBulkUploadDialog } from "@/components/onboarding/team-bulk-upload-dialog";
 import { TeamMemberEditDialog } from "@/components/onboarding/team-member-edit-dialog";
+import { TelnyxVerificationStep } from "@/components/onboarding/telnyx-verification-step";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
 	AlertDialog,
@@ -153,6 +155,12 @@ const STEPS = [
 	},
 	{ id: 2, title: "Team", icon: Users, description: "Add members" },
 	{ id: 3, title: "Banking", icon: CreditCard, description: "Connect account" },
+	{
+		id: 4,
+		title: "Messaging",
+		icon: MessageSquare,
+		description: "Enable SMS/calls",
+	},
 ];
 
 type ExtendedTeamMember = TeamMemberRow & {
@@ -374,9 +382,31 @@ export function WelcomePageClient({
 
 			setIsLoading(true);
 			try {
-				// Save step 3 progress (marks onboarding as ready for payment)
+				// Save step 3 progress
 				await saveStepProgress(3, {
 					bankAccounts: linkedBankAccounts,
+					completed: true,
+					completedAt: new Date().toISOString(),
+				});
+
+				toast.success("Banking information saved successfully");
+
+				// Move to step 4 (Telnyx Verification)
+				setCurrentStep(4);
+			} catch {
+				toast.error("Failed to save banking information");
+			} finally {
+				setIsLoading(false);
+			}
+		} else if (currentStep === 4) {
+			// Step 4: Complete onboarding
+			// Telnyx verification is optional - can be completed later
+			// Just proceed to payment
+			setIsLoading(true);
+			try {
+				// Save step 4 progress
+				await saveStepProgress(4, {
+					telnyxVerification: "skipped", // User can complete later
 					completed: true,
 					completedAt: new Date().toISOString(),
 				});
@@ -384,7 +414,7 @@ export function WelcomePageClient({
 				// Proceed to payment
 				await handlePayment();
 			} catch {
-				toast.error("Failed to save banking information");
+				toast.error("Failed to complete onboarding");
 				setIsLoading(false);
 			}
 		}
@@ -934,6 +964,33 @@ export function WelcomePageClient({
 								</div>
 							)}
 
+							{/* Step 4: Telnyx Verification */}
+							{currentStep === 4 && companyId && (
+								<div className="fade-in-50 animate-in space-y-6 duration-300">
+									<div>
+										<h2 className="text-2xl font-semibold">
+											Enable Business Messaging
+										</h2>
+										<p className="text-muted-foreground mt-2">
+											Complete Telnyx verification to enable SMS, MMS, and phone calls.
+										</p>
+									</div>
+
+									<TelnyxVerificationStep
+										companyId={companyId}
+										onSkip={() => {
+											// Allow user to skip and complete later
+											router.push("/dashboard");
+										}}
+										onComplete={() => {
+											// Auto-advance when verification is complete
+											// This will be called automatically by the component
+											handleNext();
+										}}
+									/>
+								</div>
+							)}
+
 							{/* Navigation */}
 							<div className="mt-10 flex items-center justify-between gap-4 border-t pt-8">
 								<div>
@@ -977,7 +1034,7 @@ export function WelcomePageClient({
 												<Loader2 className="mr-2 size-4 animate-spin" />
 												Processing...
 											</>
-										) : currentStep === 3 ? (
+										) : currentStep === 4 ? (
 											<>
 												Complete Setup
 												<CheckCircle className="ml-2 size-4" />

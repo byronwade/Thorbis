@@ -204,6 +204,25 @@ export interface PortalInvitationProps extends BaseEmailProps {
 	supportPhone?: string;
 }
 
+// Verification Email Props
+export interface VerificationSubmittedProps extends BaseEmailProps {
+	companyName: string;
+	contactName: string;
+	hasTollFreeNumbers: boolean;
+	has10DLCNumbers: boolean;
+	tollFreeCount?: number;
+	dlcCount?: number;
+	dashboardUrl: string;
+}
+
+export interface VerificationCompleteProps extends BaseEmailProps {
+	companyName: string;
+	contactName: string;
+	verificationTypes: string[]; // ["toll-free", "10dlc"]
+	dashboardUrl: string;
+	messagingUrl: string;
+}
+
 // Validation Schemas
 export const emailAddressSchema = z
 	.string()
@@ -247,6 +266,10 @@ export enum EmailTemplate {
 
 	// Team
 	TEAM_INVITATION = "team-invitation",
+
+	// Onboarding & Verification
+	VERIFICATION_SUBMITTED = "verification-submitted",
+	VERIFICATION_COMPLETE = "verification-complete",
 
 	// Generic
 	GENERIC = "generic",

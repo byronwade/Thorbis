@@ -87,7 +87,7 @@ export async function CommunicationData() {
 		.order("created_at", { ascending: false });
 
 	const normalizedCommunications: CommunicationRecord[] = (
-		communications as CommunicationQueryResult[]
+		communications || []
 	).map((communication) => {
 		const customer = Array.isArray(communication.customer)
 			? (communication.customer[0] ?? null)

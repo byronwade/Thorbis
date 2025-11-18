@@ -416,6 +416,19 @@ async function handleMessageEvent(payload: WebhookPayload, eventType: string) {
 			break;
 		}
 
+		case "message.read": {
+			const messageData = payload.data.payload as any;
+
+			// Update communication record with read receipt (RCS only)
+			await supabase
+				.from("communications")
+				.update({
+					read_at: new Date().toISOString(),
+				})
+				.eq("telnyx_message_id", messageData.id);
+			break;
+		}
+
 		default:
 	}
 }

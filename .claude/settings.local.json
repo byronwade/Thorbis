@@ -197,7 +197,9 @@
       "Bash(if grep -q \"searchParams\" /Users/byronwade/Stratos/src/app/(dashboard)/dashboard/customers/page.tsx)",
       "Bash(timeout 300 pnpm build:*)",
       "Bash(mcp__shadcn__search_items_in_registries '{\"\"registries\"\": [\"\"@shadcn\"\"], \"\"query\"\": \"\"hero\"\"}')",
-      "WebFetch(domain:developers.telnyx.com)"
+      "WebFetch(domain:developers.telnyx.com)",
+      "WebFetch(domain:support.telnyx.com)",
+      "mcp__stripe__search_stripe_documentation"
     ],
     "deny": [],
     "ask": []
