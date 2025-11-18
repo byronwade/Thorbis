@@ -268,7 +268,7 @@ export async function sendSingleTeamInvitation(
 		}
 
 		// Send invitation email
-	const siteUrl = requireSiteUrl();
+		const siteUrl = requireSiteUrl();
 		const magicLink = `${siteUrl}/accept-invitation?token=${token}`;
 
 		const companies = Array.isArray(teamMember.companies)

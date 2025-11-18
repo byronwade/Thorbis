@@ -12,9 +12,6 @@
 
 "use server";
 
-import type { SupabaseClient } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import {
 	answerCall,
@@ -25,7 +22,10 @@ import {
 	stopRecording,
 } from "@/lib/telnyx/calls";
 import { TELNYX_CONFIG } from "@/lib/telnyx/client";
+import { validateCallConfig, validateSmsConfig } from "@/lib/telnyx/config-validator";
+import { verifyConnection } from "@/lib/telnyx/connection-setup";
 import { formatPhoneNumber, sendMMS, sendSMS } from "@/lib/telnyx/messaging";
+import { verifyMessagingProfile } from "@/lib/telnyx/messaging-profile-setup";
 import {
 	type NumberFeature,
 	type NumberType,
@@ -33,7 +33,14 @@ import {
 	releaseNumber,
 	searchAvailableNumbers,
 } from "@/lib/telnyx/numbers";
+import {
+	verifySmsCapability,
+	verifyVoiceCapability,
+} from "@/lib/telnyx/phone-number-setup";
 import type { Database, Json } from "@/types/supabase";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { ensureMessagingCampaign } from "./messaging-branding";
 
 type TypedSupabaseClient = SupabaseClient<Database>;
@@ -110,7 +117,7 @@ function shouldUseUrl(url: string): boolean {
 	return true;
 }
 
-function getBaseAppUrl(): string | undefined {
+async function getBaseAppUrl(): Promise<string | undefined> {
 	const candidates = [
 		process.env.NEXT_PUBLIC_SITE_URL,
 		process.env.SITE_URL,
@@ -131,7 +138,7 @@ function getBaseAppUrl(): string | undefined {
 	}
 
 	try {
-		const hdrs = headers();
+		const hdrs = await headers();
 		const origin = hdrs.get("origin");
 		if (origin && shouldUseUrl(origin)) {
 			return normalizeBaseUrl(origin);
@@ -148,8 +155,8 @@ function getBaseAppUrl(): string | undefined {
 	return undefined;
 }
 
-function buildAbsoluteUrl(path: string): string | undefined {
-	const base = getBaseAppUrl();
+async function buildAbsoluteUrl(path: string): Promise<string | undefined> {
+	const base = await getBaseAppUrl();
 	if (!base) {
 		return undefined;
 	}
@@ -157,7 +164,7 @@ function buildAbsoluteUrl(path: string): string | undefined {
 	return `${base}${normalizedPath}`;
 }
 
-function getTelnyxWebhookUrl(): string | undefined {
+async function getTelnyxWebhookUrl(): Promise<string | undefined> {
 	return buildAbsoluteUrl("/api/webhooks/telnyx");
 }
 
@@ -245,6 +252,16 @@ export async function purchasePhoneNumber(params: {
 	billingGroupId?: string;
 }) {
 	try {
+		// Validate configuration
+		const smsConfig = validateSmsConfig();
+		const callConfig = validateCallConfig();
+		if (!smsConfig.valid || !callConfig.valid) {
+			return {
+				success: false,
+				error: "Telnyx configuration is incomplete. Please configure all required environment variables.",
+			};
+		}
+
 		const supabase = await createClient();
 		if (!supabase) {
 			return { success: false, error: "Service unavailable" };
@@ -468,6 +485,24 @@ export async function makeCall(params: {
 	estimateId?: string;
 }) {
 	try {
+		// Validate call configuration
+		const callConfig = validateCallConfig();
+		if (!callConfig.valid) {
+			return {
+				success: false,
+				error: callConfig.error || "Call configuration is invalid",
+			};
+		}
+
+		// Verify connection
+		const connectionStatus = await verifyConnection();
+		if (connectionStatus.needsFix) {
+			return {
+				success: false,
+				error: `Connection configuration issue: ${connectionStatus.issues.join(", ")}. Run fixConnection() to auto-fix.`,
+			};
+		}
+
 		const supabase = await createClient();
 		if (!supabase) {
 			return { success: false, error: "Service unavailable" };
@@ -476,8 +511,17 @@ export async function makeCall(params: {
 		const fromAddress = normalizePhoneNumber(params.from);
 		const toAddress = normalizePhoneNumber(params.to);
 
+		// Verify phone number has voice capability
+		const voiceCapability = await verifyVoiceCapability(fromAddress);
+		if (!voiceCapability.hasVoice) {
+			return {
+				success: false,
+				error: voiceCapability.error || "Phone number does not support voice calls",
+			};
+		}
+
 		// Initiate call via Telnyx
-		const telnyxWebhookUrl = getTelnyxWebhookUrl();
+		const telnyxWebhookUrl = await getTelnyxWebhookUrl();
 		if (!telnyxWebhookUrl) {
 			return {
 				success: false,
@@ -549,7 +593,7 @@ export async function makeCall(params: {
  */
 export async function acceptCall(callControlId: string) {
 	try {
-		const telnyxWebhookUrl = getTelnyxWebhookUrl();
+		const telnyxWebhookUrl = await getTelnyxWebhookUrl();
 		if (!telnyxWebhookUrl) {
 			return {
 				success: false,
@@ -690,7 +734,7 @@ export async function transcribeCallRecording(params: {
 			return { success: false, error: "Service unavailable" };
 		}
 
-		const webhookUrl = buildAbsoluteUrl("/api/webhooks/assemblyai");
+		const webhookUrl = await buildAbsoluteUrl("/api/webhooks/assemblyai");
 		if (!webhookUrl) {
 			return {
 				success: false,
@@ -754,6 +798,24 @@ export async function sendTextMessage(params: {
 	estimateId?: string;
 }) {
 	try {
+		// Validate SMS configuration
+		const smsConfig = validateSmsConfig();
+		if (!smsConfig.valid) {
+			return {
+				success: false,
+				error: smsConfig.error || "SMS configuration is invalid",
+			};
+		}
+
+		// Verify messaging profile
+		const messagingProfileStatus = await verifyMessagingProfile();
+		if (messagingProfileStatus.needsFix) {
+			return {
+				success: false,
+				error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() to auto-fix.`,
+			};
+		}
+
 		const supabase = await createClient();
 		if (!supabase) {
 			return { success: false, error: "Service unavailable" };
@@ -762,7 +824,16 @@ export async function sendTextMessage(params: {
 		const fromAddress = normalizePhoneNumber(params.from);
 		const toAddress = normalizePhoneNumber(params.to);
 
-		const webhookUrl = getTelnyxWebhookUrl();
+		// Verify phone number has SMS capability
+		const smsCapability = await verifySmsCapability(fromAddress);
+		if (!smsCapability.hasSms) {
+			return {
+				success: false,
+				error: smsCapability.error || "Phone number does not support SMS",
+			};
+		}
+
+		const webhookUrl = await getTelnyxWebhookUrl();
 		if (!webhookUrl) {
 			return {
 				success: false,
@@ -855,12 +926,39 @@ export async function sendMMSMessage(params: {
 		const fromAddress = normalizePhoneNumber(params.from);
 		const toAddress = normalizePhoneNumber(params.to);
 
-		const webhookUrl = getTelnyxWebhookUrl();
+		const webhookUrl = await getTelnyxWebhookUrl();
 		if (!webhookUrl) {
 			return {
 				success: false,
 				error:
 					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
+			};
+		}
+
+		// Validate SMS configuration (MMS uses same config)
+		const smsConfig = validateSmsConfig();
+		if (!smsConfig.valid) {
+			return {
+				success: false,
+				error: smsConfig.error || "SMS configuration is invalid",
+			};
+		}
+
+		// Verify messaging profile
+		const messagingProfileStatus = await verifyMessagingProfile();
+		if (messagingProfileStatus.needsFix) {
+			return {
+				success: false,
+				error: `Messaging profile configuration issue: ${messagingProfileStatus.issues.join(", ")}. Run fixMessagingProfile() to auto-fix.`,
+			};
+		}
+
+		// Verify phone number has SMS capability (MMS requires SMS)
+		const smsCapability = await verifySmsCapability(fromAddress);
+		if (!smsCapability.hasSms) {
+			return {
+				success: false,
+				error: smsCapability.error || "Phone number does not support SMS/MMS",
 			};
 		}
 

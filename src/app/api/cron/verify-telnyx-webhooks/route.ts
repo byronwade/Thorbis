@@ -21,6 +21,9 @@ import {
 } from "@/actions/messaging-branding";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import { TELNYX_CONFIG, telnyxClient } from "@/lib/telnyx/client";
+import { fixConnection } from "@/lib/telnyx/connection-setup";
+import { fixMessagingProfile } from "@/lib/telnyx/messaging-profile-setup";
+import { fixPhoneNumber } from "@/lib/telnyx/phone-number-setup";
 
 function getWebhookUrl() {
 	const base =
@@ -55,57 +58,67 @@ export async function GET(request: Request) {
 			messagingProfileUpdated: false,
 			numbersChecked: 0,
 			numbersLinked: 0,
+			numbersFixed: 0,
+			connectionFixed: false,
+			messagingProfileFixed: false,
+			errors: [] as string[],
 		};
 
+		// Auto-fix connection webhook configuration
 		if (TELNYX_CONFIG.connectionId) {
 			try {
-				const connection = await telnyxClient.callControlApplications.retrieve(
-					TELNYX_CONFIG.connectionId,
-				);
-				const currentUrl = connection.data?.webhook_event_url;
-				const currentFailover = connection.data?.webhook_event_failover_url;
-				const applicationName =
-					connection.data?.application_name || "Thorbis Voice Control";
+				const fixResult = await fixConnection(TELNYX_CONFIG.connectionId, {
+					webhookUrl,
+					webhookFailoverUrl: failoverUrl || undefined,
+				});
 
-				if (currentUrl !== webhookUrl || currentFailover !== failoverUrl) {
-					await telnyxClient.callControlApplications.update(
-						TELNYX_CONFIG.connectionId,
-						{
-							application_name: applicationName,
-							webhook_event_url: webhookUrl,
-							webhook_event_failover_url: failoverUrl,
-							webhook_api_version: "2",
-						},
-					);
+				if (fixResult.success && fixResult.fixed) {
+					summary.connectionFixed = true;
 					summary.voiceWebhookUpdated = true;
+				} else if (fixResult.error) {
+					(summary.errors as string[]).push(
+						`Connection fix failed: ${fixResult.error}`,
+					);
 				}
-			} catch (_error) {}
+			} catch (error) {
+				(summary.errors as string[]).push(
+					`Connection verification error: ${error instanceof Error ? error.message : "Unknown error"}`,
+				);
+			}
 		} else {
+			(summary.errors as string[]).push(
+				"Connection ID is not configured",
+			);
 		}
 
+		// Auto-fix messaging profile webhook configuration
 		if (TELNYX_CONFIG.messagingProfileId) {
 			try {
-				const profile = await telnyxClient.messagingProfiles.retrieve(
+				const fixResult = await fixMessagingProfile(
 					TELNYX_CONFIG.messagingProfileId,
+					{
+						webhookUrl,
+						webhookFailoverUrl: failoverUrl || undefined,
+					},
 				);
-				const currentUrl = profile.data?.webhook_url;
-				const currentFailover = profile.data?.webhook_failover_url;
-				const profileName = profile.data?.name || "Thorbis Messaging";
 
-				if (currentUrl !== webhookUrl || currentFailover !== failoverUrl) {
-					await telnyxClient.messagingProfiles.update(
-						TELNYX_CONFIG.messagingProfileId,
-						{
-							name: profileName,
-							webhook_url: webhookUrl,
-							webhook_failover_url: failoverUrl,
-							webhook_api_version: "2",
-						},
-					);
+				if (fixResult.success && fixResult.fixed) {
+					summary.messagingProfileFixed = true;
 					summary.messagingProfileUpdated = true;
+				} else if (fixResult.error) {
+					(summary.errors as string[]).push(
+						`Messaging profile fix failed: ${fixResult.error}`,
+					);
 				}
-			} catch (_error) {}
+			} catch (error) {
+				(summary.errors as string[]).push(
+					`Messaging profile verification error: ${error instanceof Error ? error.message : "Unknown error"}`,
+				);
+			}
 		} else {
+			(summary.errors as string[]).push(
+				"Messaging profile ID is not configured",
+			);
 		}
 
 		const serviceSupabase = await createServiceSupabaseClient();
@@ -140,6 +153,13 @@ export async function GET(request: Request) {
 
 			for (const phone of phoneNumbers) {
 				try {
+					// First, try to auto-fix phone number configuration
+					const fixResult = await fixPhoneNumber(phone.phone_number);
+					if (fixResult.success && fixResult.fixed) {
+						summary.numbersFixed = (summary.numbersFixed as number) + 1;
+					}
+
+					// Then ensure messaging campaign is linked
 					const result = await ensureMessagingCampaign(
 						phone.company_id,
 						{
@@ -152,7 +172,11 @@ export async function GET(request: Request) {
 					if (result.success) {
 						summary.numbersLinked = (summary.numbersLinked as number) + 1;
 					}
-				} catch (_error) {}
+				} catch (error) {
+					(summary.errors as string[]).push(
+						`Phone number ${phone.phone_number} processing error: ${error instanceof Error ? error.message : "Unknown error"}`,
+					);
+				}
 			}
 		}
 
