@@ -103,7 +103,7 @@ export function validateTelnyxConfig(): ValidationResult {
 		TELNYX_CONFIG.messagingProfileId.trim() === ""
 	) {
 		errors.push(
-			"TELNYX_DEFAULT_MESSAGING_PROFILE_ID or NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID is not set. This is required for SMS/MMS. Get it from Telnyx Portal → Messaging → Profiles.",
+			"TELNYX_DEFAULT_MESSAGING_PROFILE_ID or NEXT_PUBLIC_TELNYX_MESSAGING_PROFILE_ID is not set. This is required for SMS/MMS. Run getDefaultMessagingProfile() to fetch it automatically from Telnyx.",
 		);
 	} else {
 		config.messagingProfileId = true;
@@ -161,10 +161,11 @@ export function validateTelnyxConfig(): ValidationResult {
 /**
  * Validate configuration for SMS operations
  */
-export function validateSmsConfig(): {
+export async function validateSmsConfig(): Promise<{
 	valid: boolean;
 	error?: string;
-} {
+	suggestedProfileId?: string;
+}> {
 	const validation = validateTelnyxConfig();
 
 	if (!validation.config.apiKey) {
@@ -175,10 +176,29 @@ export function validateSmsConfig(): {
 	}
 
 	if (!validation.config.messagingProfileId) {
+		// Try to fetch messaging profile automatically
+		try {
+			const { getDefaultMessagingProfile } = await import(
+				"./messaging-profile-fetcher"
+			);
+			const profileResult = await getDefaultMessagingProfile();
+
+			if (profileResult.success && profileResult.profile) {
+				return {
+					valid: false,
+					error:
+						"TELNYX_DEFAULT_MESSAGING_PROFILE_ID is required for SMS operations.",
+					suggestedProfileId: profileResult.profile.id,
+				};
+			}
+		} catch {
+			// If fetch fails, return generic error
+		}
+
 		return {
 			valid: false,
 			error:
-				"TELNYX_DEFAULT_MESSAGING_PROFILE_ID is required for SMS operations. Get it from Telnyx Portal → Messaging → Profiles.",
+				"TELNYX_DEFAULT_MESSAGING_PROFILE_ID is required for SMS operations. Run getDefaultMessagingProfile() to fetch it automatically from Telnyx.",
 		};
 	}
 

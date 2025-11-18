@@ -253,12 +253,19 @@ export async function purchasePhoneNumber(params: {
 }) {
 	try {
 		// Validate configuration
-		const smsConfig = validateSmsConfig();
+		const smsConfig = await validateSmsConfig();
 		const callConfig = validateCallConfig();
 		if (!smsConfig.valid || !callConfig.valid) {
+			let errorMessage = "Telnyx configuration is incomplete. Please configure all required environment variables.";
+			
+			// If we have a suggested profile ID, include it in the error
+			if (smsConfig.suggestedProfileId) {
+				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
+			}
+			
 			return {
 				success: false,
-				error: "Telnyx configuration is incomplete. Please configure all required environment variables.",
+				error: errorMessage,
 			};
 		}
 
@@ -799,11 +806,18 @@ export async function sendTextMessage(params: {
 }) {
 	try {
 		// Validate SMS configuration
-		const smsConfig = validateSmsConfig();
+		const smsConfig = await validateSmsConfig();
 		if (!smsConfig.valid) {
+			let errorMessage = smsConfig.error || "SMS configuration is invalid";
+			
+			// If we have a suggested profile ID, include it in the error
+			if (smsConfig.suggestedProfileId) {
+				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
+			}
+			
 			return {
 				success: false,
-				error: smsConfig.error || "SMS configuration is invalid",
+				error: errorMessage,
 			};
 		}
 
@@ -936,11 +950,18 @@ export async function sendMMSMessage(params: {
 		}
 
 		// Validate SMS configuration (MMS uses same config)
-		const smsConfig = validateSmsConfig();
+		const smsConfig = await validateSmsConfig();
 		if (!smsConfig.valid) {
+			let errorMessage = smsConfig.error || "SMS configuration is invalid";
+			
+			// If we have a suggested profile ID, include it in the error
+			if (smsConfig.suggestedProfileId) {
+				errorMessage += ` Found messaging profile "${smsConfig.suggestedProfileId}" in your Telnyx account. Set TELNYX_DEFAULT_MESSAGING_PROFILE_ID=${smsConfig.suggestedProfileId} to use it.`;
+			}
+			
 			return {
 				success: false,
-				error: smsConfig.error || "SMS configuration is invalid",
+				error: errorMessage,
 			};
 		}
 
