@@ -59,6 +59,14 @@ type OwnerMembership = {
 	} | null;
 };
 
+function requireSiteUrl(): string {
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+	if (!siteUrl) {
+		throw new Error("NEXT_PUBLIC_SITE_URL is not configured");
+	}
+	return siteUrl.replace(/\/$/, "");
+}
+
 /**
  * Create Checkout Session for New Organization
  *
@@ -132,7 +140,7 @@ export async function createOrganizationCheckoutSession(
 		const isAdditionalOrg = activeOrgsCount > 0;
 
 		// Create checkout session
-		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+		const siteUrl = requireSiteUrl();
 		const checkoutUrl = await createCheckoutSession({
 			customerId,
 			companyId,
@@ -195,7 +203,7 @@ export async function createBillingPortal(
 		}
 
 		// Create billing portal session
-		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+		const siteUrl = requireSiteUrl();
 		const returnUrl = companyId
 			? `${siteUrl}/dashboard/settings/billing?company=${companyId}`
 			: `${siteUrl}/dashboard/settings/billing`;

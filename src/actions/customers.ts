@@ -54,6 +54,17 @@ const CUSTOMER_COUNTRY_MAX_LENGTH = 50;
 const CUSTOMER_TAX_EXEMPT_NUMBER_MAX_LENGTH = 50;
 const CENTS_PER_DOLLAR = 100;
 
+function requireSiteUrl(): string {
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+	if (!siteUrl) {
+		throw new ActionError(
+			"NEXT_PUBLIC_SITE_URL is not configured",
+			ERROR_CODES.INTERNAL_SERVER_ERROR,
+		);
+	}
+	return siteUrl.replace(/\/$/, "");
+}
+
 const customerSchema = z.object({
 	type: z
 		.enum(["residential", "commercial", "industrial"])
@@ -1007,7 +1018,7 @@ export async function inviteToPortal(
 		}
 
 		// Send invitation email
-		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+		const siteUrl = requireSiteUrl();
 		const portalUrl = `${siteUrl}/portal/setup?token=${inviteToken}`;
 
 		const emailResult = await sendEmail({

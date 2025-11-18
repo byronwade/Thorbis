@@ -10,6 +10,11 @@
 
 import { Resend } from "resend";
 
+const requiredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+if (!requiredSiteUrl) {
+	throw new Error("NEXT_PUBLIC_SITE_URL is not configured");
+}
+
 // Initialize Resend client
 export const resend = process.env.RESEND_API_KEY
 	? new Resend(process.env.RESEND_API_KEY)
@@ -22,11 +27,8 @@ export const emailConfig = {
 	isDevelopment:
 		!process.env.RESEND_API_KEY ||
 		(process.env.NODE_ENV === "development" && !process.env.RESEND_API_KEY),
-	siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-	appUrl:
-		process.env.NEXT_PUBLIC_APP_URL ||
-		process.env.NEXT_PUBLIC_SITE_URL ||
-		"http://localhost:3000",
+	siteUrl: requiredSiteUrl,
+	appUrl: process.env.NEXT_PUBLIC_APP_URL || requiredSiteUrl,
 };
 
 // Check if Resend is properly configured

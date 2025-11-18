@@ -14,6 +14,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import {
 	answerCall,
@@ -66,6 +67,98 @@ function formatDisplayPhoneNumber(phoneNumber: string): string {
 		return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
 	}
 	return phoneNumber;
+}
+
+function normalizeBaseUrl(url: string): string {
+	const trimmed = url.trim().replace(/\/+$/, "");
+	if (/^https?:\/\//i.test(trimmed)) {
+		if (/^http:\/\//i.test(trimmed) && !isLocalUrl(trimmed)) {
+			return trimmed.replace(/^http:\/\//i, "https://");
+		}
+		return trimmed;
+	}
+	return `https://${trimmed}`;
+}
+
+function isLocalUrl(url: string): boolean {
+	const lowered = url.toLowerCase();
+	return (
+		lowered.includes("localhost") ||
+		lowered.includes("127.0.0.1") ||
+		lowered.includes("0.0.0.0") ||
+		lowered.endsWith(".local") ||
+		lowered.includes("://local")
+	);
+}
+
+function shouldUseUrl(url: string): boolean {
+	if (!url) {
+		return false;
+	}
+	const trimmed = url.trim();
+	if (!trimmed) {
+		return false;
+	}
+	const isHostedProduction =
+		(process.env.VERCEL === "1" && process.env.VERCEL_ENV === "production") ||
+		process.env.DEPLOYMENT_ENV === "production";
+
+	if (isHostedProduction && isLocalUrl(trimmed)) {
+		return false;
+	}
+
+	return true;
+}
+
+function getBaseAppUrl(): string | undefined {
+	const candidates = [
+		process.env.NEXT_PUBLIC_SITE_URL,
+		process.env.SITE_URL,
+		process.env.NEXT_PUBLIC_APP_URL,
+		process.env.APP_URL,
+	];
+	for (const candidate of candidates) {
+		if (candidate && shouldUseUrl(candidate)) {
+			return normalizeBaseUrl(candidate);
+		}
+	}
+
+	const vercelUrl = process.env.VERCEL_URL;
+	if (vercelUrl && shouldUseUrl(vercelUrl)) {
+		return normalizeBaseUrl(
+			vercelUrl.startsWith("http") ? vercelUrl : `https://${vercelUrl}`,
+		);
+	}
+
+	try {
+		const hdrs = headers();
+		const origin = hdrs.get("origin");
+		if (origin && shouldUseUrl(origin)) {
+			return normalizeBaseUrl(origin);
+		}
+		const host = hdrs.get("host");
+		if (host && shouldUseUrl(host)) {
+			const protocol = host.includes("localhost") ? "http" : "https";
+			return normalizeBaseUrl(`${protocol}://${host}`);
+		}
+	} catch {
+		// headers() not available outside of a request context
+	}
+
+	return undefined;
+}
+
+function buildAbsoluteUrl(path: string): string | undefined {
+	const base = getBaseAppUrl();
+	if (!base) {
+		return undefined;
+	}
+	const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+	return `${base}${normalizedPath}`;
+}
+
+function getTelnyxWebhookUrl(): string | undefined {
+	return buildAbsoluteUrl("/api/webhooks/telnyx");
 }
 
 async function getPhoneNumberId(
@@ -384,11 +477,19 @@ export async function makeCall(params: {
 		const toAddress = normalizePhoneNumber(params.to);
 
 		// Initiate call via Telnyx
+		const telnyxWebhookUrl = getTelnyxWebhookUrl();
+		if (!telnyxWebhookUrl) {
+			return {
+				success: false,
+				error:
+					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
+			};
+		}
 		const result = await initiateCall({
 			to: toAddress,
 			from: fromAddress,
 			connectionId: TELNYX_CONFIG.connectionId,
-			webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
+			webhookUrl: telnyxWebhookUrl,
 			answeringMachineDetection: "premium",
 		});
 
@@ -448,9 +549,17 @@ export async function makeCall(params: {
  */
 export async function acceptCall(callControlId: string) {
 	try {
+		const telnyxWebhookUrl = getTelnyxWebhookUrl();
+		if (!telnyxWebhookUrl) {
+			return {
+				success: false,
+				error:
+					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
+			};
+		}
 		const result = await answerCall({
 			callControlId,
-			webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
+			webhookUrl: telnyxWebhookUrl,
 		});
 
 		return result;
@@ -581,13 +690,14 @@ export async function transcribeCallRecording(params: {
 			return { success: false, error: "Service unavailable" };
 		}
 
-		// Get base URL for webhook
-		const baseUrl =
-			process.env.NEXT_PUBLIC_SITE_URL ||
-			process.env.VERCEL_URL ||
-			"http://localhost:3000";
-
-		const webhookUrl = `${baseUrl}/api/webhooks/assemblyai`;
+		const webhookUrl = buildAbsoluteUrl("/api/webhooks/assemblyai");
+		if (!webhookUrl) {
+			return {
+				success: false,
+				error:
+					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL.",
+			};
+		}
 
 		// Submit to AssemblyAI
 		const result = await submitTranscription({
@@ -652,12 +762,21 @@ export async function sendTextMessage(params: {
 		const fromAddress = normalizePhoneNumber(params.from);
 		const toAddress = normalizePhoneNumber(params.to);
 
+		const webhookUrl = getTelnyxWebhookUrl();
+		if (!webhookUrl) {
+			return {
+				success: false,
+				error:
+					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
+			};
+		}
+
 		// Send SMS via Telnyx
 		const result = await sendSMS({
 			to: toAddress,
 			from: fromAddress,
 			text: params.text,
-			webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
+			webhookUrl,
 		});
 
 		if (!result.success) {
@@ -736,13 +855,22 @@ export async function sendMMSMessage(params: {
 		const fromAddress = normalizePhoneNumber(params.from);
 		const toAddress = normalizePhoneNumber(params.to);
 
+		const webhookUrl = getTelnyxWebhookUrl();
+		if (!webhookUrl) {
+			return {
+				success: false,
+				error:
+					"Site URL is not configured. Set NEXT_PUBLIC_SITE_URL or SITE_URL to a public https domain.",
+			};
+		}
+
 		// Send MMS via Telnyx
 		const result = await sendMMS({
 			to: toAddress,
 			from: fromAddress,
 			text: params.text,
 			mediaUrls: params.mediaUrls,
-			webhookUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/webhooks/telnyx`,
+			webhookUrl,
 		});
 
 		if (!result.success) {

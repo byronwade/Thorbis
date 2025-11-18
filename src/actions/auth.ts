@@ -1054,11 +1054,16 @@ export async function signInWithOAuth(
 			};
 		}
 
+		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+		if (!siteUrl) {
+			throw new Error("NEXT_PUBLIC_SITE_URL is not configured");
+		}
+
 		const { data, error: oauthError } = await withSupabaseRateLimitRetry(() =>
 			supabase.auth.signInWithOAuth({
 				provider,
 				options: {
-					redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/auth/callback`,
+					redirectTo: `${siteUrl}/auth/callback`,
 				},
 			}),
 		);

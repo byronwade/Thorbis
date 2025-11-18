@@ -26,6 +26,17 @@ import TeamInvitationEmail from "../../emails/templates/team/invitation";
 
 const INVITATION_EXPIRY_DAYS = 7;
 
+function requireSiteUrl(): string {
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+	if (!siteUrl) {
+		throw new ActionError(
+			"NEXT_PUBLIC_SITE_URL is not configured",
+			ERROR_CODES.INTERNAL_SERVER_ERROR,
+		);
+	}
+	return siteUrl.replace(/\/$/, "");
+}
+
 /**
  * Send team member invitations after onboarding payment
  */
@@ -79,7 +90,7 @@ export async function sendTeamMemberInvitations(
 		let sentCount = 0;
 		let failedCount = 0;
 
-		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+		const siteUrl = requireSiteUrl();
 
 		// Process each team member
 		for (const member of teamMembers) {
@@ -257,7 +268,7 @@ export async function sendSingleTeamInvitation(
 		}
 
 		// Send invitation email
-		const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+	const siteUrl = requireSiteUrl();
 		const magicLink = `${siteUrl}/accept-invitation?token=${token}`;
 
 		const companies = Array.isArray(teamMember.companies)
