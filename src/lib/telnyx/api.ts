@@ -1,6 +1,7 @@
 import "server-only";
 
 const TELNYX_BASE_URL = "https://api.telnyx.com/v2";
+const TELNYX_PUBLIC_BASE_URL = "https://api.telnyx.com";
 
 type TelnyxRequestOptions = {
 	method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
@@ -24,7 +25,17 @@ export async function telnyxRequest<TResponse>(
 	}
 
 	try {
-		const response = await fetch(`${TELNYX_BASE_URL}${path}`, {
+		const hasProtocol = /^https?:\/\//i.test(path);
+		const normalizedPath =
+			hasProtocol || path.startsWith("/") ? path : `/${path}`;
+		// Toll-free verification endpoints live under /public instead of /v2
+		const requestUrl = hasProtocol
+			? normalizedPath
+			: normalizedPath.startsWith("/public/")
+				? `${TELNYX_PUBLIC_BASE_URL}${normalizedPath}`
+				: `${TELNYX_BASE_URL}${normalizedPath}`;
+
+		const response = await fetch(requestUrl, {
 			method,
 			headers: {
 				Authorization: `Bearer ${apiKey}`,
