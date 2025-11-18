@@ -28,8 +28,10 @@ export default function NotificationTestingPage() {
   return (
     <>
       <AppToolbar
-        title="Notification Testing"
-        description="Test, preview, and monitor all notification types across all channels"
+        config={{
+          title: "Notification Testing",
+          subtitle: "Test, preview, and monitor all notification types across all channels",
+        }}
       />
 
       <div className="container mx-auto p-6 space-y-6">
