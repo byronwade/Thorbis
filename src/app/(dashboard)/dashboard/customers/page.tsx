@@ -1,10 +1,11 @@
 /**
- * Customers Page - PPR Enabled
+ * Customers Page - Cache Components Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
  * - Stats stream in first (100-200ms)
  * - Table streams in second (200-500ms)
+ * - Cached for 15 minutes (default cacheLife profile)
  *
  * Performance: 8-20x faster than traditional SSR
  */
@@ -14,19 +15,12 @@ import { CustomersData } from "@/components/customers/customers-data";
 import { CustomersSkeleton } from "@/components/customers/customers-skeleton";
 import { CustomersStats } from "@/components/customers/customers-stats";
 
-// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
-export const revalidate = 60;
-
-// Enable Partial Prerendering for this page (Next.js 16+)
-// PPR is now enabled globally via cacheComponents in next.config.ts
-// This export is no longer needed but kept for documentation
-// export const experimental_ppr = true;
-
 export default async function CustomersPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
+
 	const params = await searchParams;
 	return (
 		<>

@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -104,61 +103,61 @@ export type ContractsPageResult = {
 	totalCount: number;
 };
 
-export const getContractsPageData = cache(
-	async (
-		page: number,
-		pageSize: number = CONTRACTS_PAGE_SIZE,
-		companyIdOverride?: string,
-	): Promise<ContractsPageResult> => {
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return { contracts: [], totalCount: 0 };
-		}
+export async function getContractsPageData(
+	page: number,
+	pageSize: number = CONTRACTS_PAGE_SIZE,
+	companyIdOverride?: string,
+): Promise<ContractsPageResult> {
+	"use cache";
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return { contracts: [], totalCount: 0 };
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const start = (Math.max(page, 1) - 1) * pageSize;
-		const end = start + pageSize - 1;
+	const supabase = await createServiceSupabaseClient();
+	const start = (Math.max(page, 1) - 1) * pageSize;
+	const end = start + pageSize - 1;
 
-		const { data, error, count } = await supabase
-			.from("contracts")
-			.select(CONTRACTS_SELECT, { count: "exact" })
-			.eq("company_id", companyId)
-			.order("created_at", { ascending: false })
-			.range(start, end);
+	const { data, error, count } = await supabase
+		.from("contracts")
+		.select(CONTRACTS_SELECT, { count: "exact" })
+		.eq("company_id", companyId)
+		.order("created_at", { ascending: false })
+		.range(start, end);
 
-		if (error) {
-			throw new Error(`Failed to fetch contracts: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to fetch contracts: ${error.message}`);
+	}
 
-		return {
-			contracts: (data ?? []) as ContractQueryResult[],
-			totalCount: count ?? 0,
-		};
-	},
-);
+	return {
+		contracts: (data ?? []) as ContractQueryResult[],
+		totalCount: count ?? 0,
+	};
+}
 
 type ContractStatusRow = Pick<
 	Database["public"]["Tables"]["contracts"]["Row"],
 	"status" | "archived_at" | "deleted_at"
 >;
 
-export const getContractsStatusSummary = cache(
-	async (companyIdOverride?: string): Promise<ContractStatusRow[]> => {
-		const companyId = companyIdOverride ?? (await getActiveCompanyId());
-		if (!companyId) {
-			return [];
-		}
+export async function getContractsStatusSummary(
+	companyIdOverride?: string,
+): Promise<ContractStatusRow[]> {
+	"use cache";
+	const companyId = companyIdOverride ?? (await getActiveCompanyId());
+	if (!companyId) {
+		return [];
+	}
 
-		const supabase = await createServiceSupabaseClient();
-		const { data, error } = await supabase
-			.from("contracts")
-			.select("status, archived_at, deleted_at")
-			.eq("company_id", companyId);
+	const supabase = await createServiceSupabaseClient();
+	const { data, error } = await supabase
+		.from("contracts")
+		.select("status, archived_at, deleted_at")
+		.eq("company_id", companyId);
 
-		if (error) {
-			throw new Error(`Failed to fetch contract stats: ${error.message}`);
-		}
+	if (error) {
+		throw new Error(`Failed to fetch contract stats: ${error.message}`);
+	}
 
-		return (data ?? []) as ContractStatusRow[];
-	},
-);
+	return (data ?? []) as ContractStatusRow[];
+}

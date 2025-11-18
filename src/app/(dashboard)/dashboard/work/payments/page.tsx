@@ -1,7 +1,7 @@
 /**
  * Upayments Page - PPR Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
  * - Stats stream in first (100-200ms)
  * - Data streams in second (200-500ms)
@@ -14,14 +14,13 @@ import { UpaymentsData } from "@/components/work/payments/payments-data";
 import PaymentsSkeleton from "@/components/work/payments/payments-skeleton";
 import { UpaymentsStats } from "@/components/work/payments/payments-stats";
 
-// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
-export const revalidate = 60;
 
 export default async function UpaymentsPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
+
 	const params = await searchParams;
 	return (
 		<>

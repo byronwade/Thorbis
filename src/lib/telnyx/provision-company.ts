@@ -221,6 +221,35 @@ async function purchaseNumbers(
 		throw new Error("Failed to purchase any phone numbers");
 	}
 
+	// Enable messaging on all purchased numbers
+	for (const number of purchased) {
+		if (number.telnyxPhoneNumberId) {
+			try {
+				const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
+				if (!TELNYX_API_KEY) {
+					throw new Error("TELNYX_API_KEY not configured");
+				}
+
+				await fetch(
+					`https://api.telnyx.com/v2/phone_numbers/${number.telnyxPhoneNumberId}/messaging`,
+					{
+						method: "PATCH",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${TELNYX_API_KEY}`,
+						},
+						body: JSON.stringify({
+							messaging_profile_id: options.messagingProfileId,
+						}),
+					}
+				);
+			} catch (error) {
+				// Log but don't fail - messaging can be enabled later
+				console.warn(`Failed to enable messaging on ${number.phoneNumber}:`, error);
+			}
+		}
+	}
+
 	return purchased;
 }
 

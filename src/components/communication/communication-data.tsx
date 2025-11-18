@@ -26,9 +26,7 @@ const COMMUNICATION_LIMIT = 200;
  * Streams in after shell renders.
  */
 export async function CommunicationData() {
-	const t1 = Date.now();
 	const companyId = await getActiveCompanyId();
-	console.log(`[PERF] getActiveCompanyId: ${Date.now() - t1}ms`);
 
 	if (!companyId) {
 		const companies = await getUserCompanies();
@@ -40,15 +38,12 @@ export async function CommunicationData() {
 		);
 	}
 
-	const t2 = Date.now();
 	const supabase = await createClient();
-	console.log(`[PERF] createClient: ${Date.now() - t2}ms`);
 
 	if (!supabase) {
 		return <CompanyGate context="communications" hasCompanies={true} />;
 	}
 
-	const t3 = Date.now();
 	const { data: communications = [] } = await supabase
 		.from("communications")
 		.select(
@@ -78,18 +73,14 @@ export async function CommunicationData() {
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false })
 		.limit(COMMUNICATION_LIMIT);
-	console.log(`[PERF] communications query: ${Date.now() - t3}ms`);
 
-	const t4 = Date.now();
 	const { data: phoneNumbers = [] } = await supabase
 		.from("phone_numbers")
 		.select("id, phone_number, formatted_number, status")
 		.eq("company_id", companyId)
 		.is("deleted_at", null)
 		.order("created_at", { ascending: false });
-	console.log(`[PERF] phoneNumbers query: ${Date.now() - t4}ms`);
 
-	const t5 = Date.now();
 	const normalizedCommunications: CommunicationRecord[] = (
 		communications as CommunicationQueryResult[]
 	).map((communication) => {
@@ -111,8 +102,6 @@ export async function CommunicationData() {
 			label: phone.formatted_number || phone.phone_number,
 			status: phone.status ?? "unknown",
 		}));
-	console.log(`[PERF] data transformation: ${Date.now() - t5}ms`);
-	console.log(`[PERF] TOTAL CommunicationData: ${Date.now() - t1}ms`);
 
 	return (
 		<CommunicationPageClient

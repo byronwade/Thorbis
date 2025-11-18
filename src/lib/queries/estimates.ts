@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -50,11 +49,11 @@ export type EstimatesPageResult = {
 	totalCount: number;
 };
 
-export const getEstimatesPageData = cache(
-	async (
+export async function getEstimatesPageData(
 		page: number,
 		pageSize: number = ESTIMATES_PAGE_SIZE,
-	): Promise<EstimatesPageResult> => {
+	) : Promise<EstimatesPageResult> {
+	"use cache";
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
 			return { estimates: [], totalCount: 0 };
@@ -79,5 +78,4 @@ export const getEstimatesPageData = cache(
 			estimates: data ?? [],
 			totalCount: count ?? 0,
 		};
-	},
-);
+}

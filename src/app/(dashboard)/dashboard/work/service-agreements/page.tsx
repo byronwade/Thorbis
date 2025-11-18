@@ -1,7 +1,7 @@
 /**
  * Service Agreements Page - PPR Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
  * - Data streams in (200-500ms)
  *
@@ -12,14 +12,13 @@ import { Suspense } from "react";
 import { ServiceAgreementsData } from "@/components/work/service-agreements/service-agreements-data";
 import { ServiceAgreementsSkeleton } from "@/components/work/service-agreements/service-agreements-skeleton";
 
-// ISR: Revalidate every 60 seconds (reduces render time from 3-10s to instant on repeat visits)
-export const revalidate = 60;
 
 export default async function ServiceAgreementsPage({
 	searchParams,
 }: {
 	searchParams: Promise<{ page?: string }>;
 }) {
+
 	const params = await searchParams;
 
 	return (

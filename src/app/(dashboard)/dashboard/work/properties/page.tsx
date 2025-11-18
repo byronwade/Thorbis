@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { UpropertiesData } from "@/components/work/properties/properties-data";
 import { UpropertiesSkeleton } from "@/components/work/properties/properties-skeleton";
 
-export default function UpropertiesPage() {
+export default async function UpropertiesPage() {
 	return (
 		<Suspense fallback={<UpropertiesSkeleton />}>
 			<UpropertiesData />

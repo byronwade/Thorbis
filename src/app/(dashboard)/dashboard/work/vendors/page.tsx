@@ -1,7 +1,7 @@
 /**
  * Vendors Page - PPR Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Suspense for streaming:
  * - Static shell renders instantly (5-20ms)
  * - Stats stream in first (100-200ms)
  * - Data streams in second (200-500ms)
@@ -14,7 +14,7 @@ import { VendorsData } from "@/components/work/vendors/vendors-data";
 import { VendorsSkeleton } from "@/components/work/vendors/vendors-skeleton";
 import { VendorsStats } from "@/components/work/vendors/vendors-stats";
 
-export default function WorkVendorsPage() {
+export default async function WorkVendorsPage() {
 	return (
 		<>
 			{/* Stats - Streams in first */}

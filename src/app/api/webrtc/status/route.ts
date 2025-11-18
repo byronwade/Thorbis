@@ -10,8 +10,6 @@
 import { NextResponse } from "next/server";
 import { getWebRTCService } from "@/services/webrtc";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export async function GET() {
 	try {

@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -29,12 +28,12 @@ export type PurchaseOrdersPageResult = {
 	totalCount: number;
 };
 
-export const getPurchaseOrdersPageData = cache(
-	async (
+export async function getPurchaseOrdersPageData(
 		page: number,
 		pageSize: number = PURCHASE_ORDERS_PAGE_SIZE,
 		companyIdOverride?: string,
-	): Promise<PurchaseOrdersPageResult> => {
+	) : Promise<PurchaseOrdersPageResult> {
+	"use cache";
 		const companyId = companyIdOverride ?? (await getActiveCompanyId());
 		if (!companyId) {
 			return { purchaseOrders: [], totalCount: 0 };
@@ -59,5 +58,4 @@ export const getPurchaseOrdersPageData = cache(
 			purchaseOrders: (data ?? []) as PurchaseOrderRecord[],
 			totalCount: count ?? 0,
 		};
-	},
-);
+}

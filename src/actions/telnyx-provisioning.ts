@@ -132,4 +132,67 @@ export async function fixCompanyTelnyxWebhooks(companyId: string) {
 	}
 }
 
+/**
+ * Enable SMS/MMS on a company's phone number
+ * Updates the phone number messaging settings using the correct Telnyx API
+ */
+export async function enablePhoneNumberMessaging(companyId: string) {
+	const supabase = await createClient();
+	if (!supabase) {
+		return { success: false, error: "Service unavailable" };
+	}
+
+	try {
+		const settings = await fetchCompanyTelnyxSettings(supabase, companyId);
+		if (!settings || !settings.default_outbound_phone_number_id || !settings.messaging_profile_id) {
+			return {
+				success: false,
+				error: "Company Telnyx settings incomplete. Run provisioning first.",
+			};
+		}
+
+		// Use the messaging settings endpoint to enable messaging
+		const TELNYX_API_KEY = process.env.TELNYX_API_KEY;
+		if (!TELNYX_API_KEY) {
+			return { success: false, error: "TELNYX_API_KEY not configured" };
+		}
+
+		const response = await fetch(
+			`https://api.telnyx.com/v2/phone_numbers/${settings.default_outbound_phone_number_id}/messaging`,
+			{
+				method: "PATCH",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${TELNYX_API_KEY}`,
+				},
+				body: JSON.stringify({
+					messaging_profile_id: settings.messaging_profile_id,
+				}),
+			}
+		);
+
+		const data = await response.json();
+
+		if (!response.ok) {
+			return {
+				success: false,
+				error: `${response.status} ${JSON.stringify(data)}`,
+			};
+		}
+
+		revalidatePath(`/dashboard/communication`);
+
+		return {
+			success: true,
+			data: data.data,
+			message: `Phone number ${settings.default_outbound_number} enabled for SMS/MMS`,
+		};
+	} catch (error: any) {
+		return {
+			success: false,
+			error: error?.message || "Failed to enable messaging on phone number",
+		};
+	}
+}
+
 export type { CompanyTelnyxSettingsRow };

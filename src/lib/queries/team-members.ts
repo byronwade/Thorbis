@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { ArchiveFilter } from "@/lib/utils/archive";
@@ -59,14 +58,14 @@ export type TeamMembersPageResult = {
 	totalCount: number;
 };
 
-export const getTeamMembersPageData = cache(
-	async (
+export async function getTeamMembersPageData(
 		page: number,
 		pageSize: number = TEAM_MEMBERS_PAGE_SIZE,
 		searchQuery = "",
 		companyIdOverride?: string,
 		archiveFilter: ArchiveFilter = "active",
-	): Promise<TeamMembersPageResult> => {
+	) : Promise<TeamMembersPageResult> {
+	"use cache";
 		const companyId = companyIdOverride ?? (await getActiveCompanyId());
 		if (!companyId) {
 			return { teamMembers: [], totalCount: 0 };
@@ -151,5 +150,4 @@ export const getTeamMembersPageData = cache(
 			teamMembers: enrichedMembers,
 			totalCount: count ?? 0,
 		};
-	},
-);
+}

@@ -191,7 +191,11 @@
       "Bash(/tmp/delete-vercel-envs.sh)",
       "Bash(/Users/byronwade/Stratos/src/types/supabase-new.ts)",
       "Bash(npx tsx:*)",
-      "Bash(source .env.local)"
+      "Bash(source .env.local)",
+      "mcp__next-devtools__nextjs_docs",
+      "Bash(do if grep -q '\"\"\"\"use cache\"\"\"\"' \"$file\")",
+      "Bash(if grep -q \"searchParams\" /Users/byronwade/Stratos/src/app/(dashboard)/dashboard/customers/page.tsx)",
+      "Bash(timeout 300 pnpm build:*)"
     ],
     "deny": [],
     "ask": []

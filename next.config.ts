@@ -39,13 +39,38 @@ const nextConfig: NextConfig = {
 		ignoreBuildErrors: true, // Enabled to allow build completion - fix type errors separately
 	},
 
-	// DISABLED: Partial Prerendering via cacheComponents (Next.js 16+)
-	// PPR was causing severe performance degradation:
-	// - Render times: 2s → 11s (degrading over time)
-	// - Continuous POST request loops
-	// - Memory leaks and connection pool exhaustion
-	// Will re-enable after Next.js 16.1+ stabilizes PPR
-	cacheComponents: false,
+	// ENABLED: Cache Components (Next.js 16+)
+	// Required for "use cache" directive
+	// This is different from PPR - it's for explicit caching only
+	cacheComponents: true,
+
+	// Configure cache lifetimes for different data types
+	cacheLife: {
+		// Static data - rarely changes (product catalog, settings)
+		static: {
+			stale: THIRTY_DAYS_IN_SECONDS,
+			revalidate: THIRTY_DAYS_IN_SECONDS,
+			expire: THIRTY_DAYS_IN_SECONDS,
+		},
+		// Default - business data (contracts, jobs, invoices)
+		default: {
+			stale: 15 * 60, // 15 minutes (Next.js default)
+			revalidate: 15 * 60,
+			expire: 30 * 60, // 30 minutes max
+		},
+		// Short-lived - frequently changing (notifications, real-time stats)
+		minutes: {
+			stale: 60, // 1 minute
+			revalidate: 60,
+			expire: 5 * 60, // 5 minutes max
+		},
+		// Real-time - very short cache for live data
+		seconds: {
+			stale: 10, // 10 seconds
+			revalidate: 10,
+			expire: 60, // 1 minute max
+		},
+	},
 
 	// Enable experimental features for better performance
 	experimental: {

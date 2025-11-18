@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 
@@ -51,11 +50,11 @@ export type CustomersPageResult = {
  * Fetch a single page of customers using the service role for maximum performance.
  * Server-side pagination keeps payloads to ~50 rows (10-20x smaller than previous implementation).
  */
-export const getCustomersPageData = cache(
-	async (
+export async function getCustomersPageData(
 		page: number,
 		pageSize: number = CUSTOMERS_PAGE_SIZE,
-	): Promise<CustomersPageResult> => {
+	) : Promise<CustomersPageResult> {
+	"use cache";
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
 			return { customers: [], totalCount: 0 };
@@ -81,8 +80,7 @@ export const getCustomersPageData = cache(
 			customers: data ?? [],
 			totalCount: count ?? 0,
 		};
-	},
-);
+}
 
 export type CustomerSummaryStats = {
 	total: number;
@@ -96,8 +94,8 @@ export type CustomerSummaryStats = {
  * Aggregated customer metrics used by dashboard stats cards.
  * Backed by a Postgres RPC (customer_dashboard_metrics) so the database does the heavy lifting.
  */
-export const getCustomerStats = cache(
-	async (): Promise<CustomerSummaryStats | null> => {
+export async function getCustomerStats() : Promise<CustomerSummaryStats | null> {
+	"use cache";
 		const companyId = await getActiveCompanyId();
 		if (!companyId) {
 			return null;
@@ -126,5 +124,4 @@ export const getCustomerStats = cache(
 			prospect,
 			totalRevenueCents,
 		};
-	},
-);
+}

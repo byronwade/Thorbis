@@ -1,7 +1,9 @@
+"use cache";
+
 /**
  * Job Details Page - PPR Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
  * - Job data streams in (100-500ms)
  *
@@ -10,6 +12,7 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { cacheLife } from "next/cache";
 import { Skeleton } from "@/components/ui/skeleton";
 import { JobPageContent } from "@/components/work/job-details/job-page-content";
 import { getJob } from "@/queries/jobs";
@@ -55,6 +58,8 @@ export default async function JobDetailsPage({
 }: {
 	params: Promise<{ id: string }>;
 }) {
+	cacheLife("default"); // 15 minutes
+
 	const { id: jobId } = await params;
 
 	return (

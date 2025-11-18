@@ -1,7 +1,7 @@
 /**
  * Uteam Page - PPR Enabled
  *
- * Uses Partial Prerendering for instant page loads:
+ * Uses Next.js 16 "use cache" directive for optimal caching:
  * - Static shell renders instantly (5-20ms)
  * - Stats stream in first (100-200ms)
  * - Data streams in second (200-500ms)
@@ -19,6 +19,7 @@ export default async function UteamPage({
 }: {
 	searchParams: Promise<{ page?: string; search?: string }>;
 }) {
+
 	const params = await searchParams;
 	return (
 		<>

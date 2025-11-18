@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { getActiveCompanyId } from "@/lib/auth/company-context";
 import { createServiceSupabaseClient } from "@/lib/supabase/service-client";
 import type { Database } from "@/types/supabase";
@@ -46,13 +45,13 @@ export type AppointmentsPageResult = {
 	totalCount: number;
 };
 
-export const getAppointmentsPageData = cache(
-	async (
+export async function getAppointmentsPageData(
 		page: number,
 		pageSize: number = APPOINTMENTS_PAGE_SIZE,
 		searchQuery = "",
 		companyIdOverride?: string,
-	): Promise<AppointmentsPageResult> => {
+	) : Promise<AppointmentsPageResult> {
+	"use cache";
 		const companyId = companyIdOverride ?? (await getActiveCompanyId());
 		if (!companyId) {
 			return { appointments: [], totalCount: 0 };
@@ -90,10 +89,10 @@ export const getAppointmentsPageData = cache(
 			appointments: (data ?? []) as AppointmentListRecord[],
 			totalCount: count ?? 0,
 		};
-	},
-);
+}
 
-export const getAppointmentStats = cache(async (companyIdOverride?: string) => {
+export async function getAppointmentStats(companyIdOverride?: string) {
+	"use cache";
 	const companyId = companyIdOverride ?? (await getActiveCompanyId());
 	if (!companyId) {
 		return null;
@@ -129,4 +128,4 @@ export const getAppointmentStats = cache(async (companyIdOverride?: string) => {
 		completed: countByStatus("completed"),
 		cancelled: countByStatus("cancelled"),
 	};
-});
+}
