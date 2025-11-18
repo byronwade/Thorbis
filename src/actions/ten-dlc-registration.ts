@@ -516,9 +516,9 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 		// 2. Get company phone numbers
 		const { data: phoneNumbers, error: phoneError } = await supabase
 			.from("phone_numbers")
-			.select("phone_number, is_toll_free")
+			.select("phone_number, number_type")
 			.eq("company_id", companyId)
-			.neq("status", "deleted");
+			.eq("status", "active");
 
 		if (phoneError || !phoneNumbers || phoneNumbers.length === 0) {
 			return {
@@ -529,8 +529,8 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 		}
 
 		// Separate toll-free and 10DLC numbers
-		const tollFreeNumbers = phoneNumbers.filter((p) => p.is_toll_free);
-		const dlcNumbers = phoneNumbers.filter((p) => !p.is_toll_free);
+		const tollFreeNumbers = phoneNumbers.filter((p) => p.number_type === "toll-free");
+		const dlcNumbers = phoneNumbers.filter((p) => p.number_type === "local");
 
 		// 3. Submit toll-free verification if we have toll-free numbers
 		let tollFreeRequestId: string | undefined;
