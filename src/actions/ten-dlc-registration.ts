@@ -532,6 +532,11 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 		const tollFreeNumbers = phoneNumbers.filter((p) => p.number_type === "toll-free");
 		const dlcNumbers = phoneNumbers.filter((p) => p.number_type === "local");
 
+		// If no toll-free numbers, recommend using toll-free for immediate setup
+		if (tollFreeNumbers.length === 0 && dlcNumbers.length > 0) {
+			console.log("Note: Only local numbers found. Toll-free verification works immediately without Level 2. Consider adding toll-free numbers for faster setup.");
+		}
+
 		// 3. Submit toll-free verification if we have toll-free numbers
 		let tollFreeRequestId: string | undefined;
 		if (tollFreeNumbers.length > 0) {
@@ -583,23 +588,52 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 				});
 		}
 
-		// 4. Submit 10DLC registration if we have regular numbers
+		// 4. Submit 10DLC registration if we have regular numbers (OPTIONAL - won't block toll-free)
 		let brandId: string | undefined;
 		let campaignId: string | undefined;
+		let dlcError: string | undefined;
+
 		if (dlcNumbers.length > 0) {
 			const registrationResult =
 				await registerCompanyFor10DLC(companyId);
 
 			if (!registrationResult.success) {
-				return {
-					success: false,
-					error: `10DLC registration failed: ${registrationResult.error}`,
-					tollFreeRequestId,
-				};
-			}
+				// Check if this is a 403 error (account verification required)
+				const is403Error = registrationResult.error?.includes("403") ||
+				                   registrationResult.error?.includes("verifications required");
 
-			brandId = registrationResult.brandId;
-			campaignId = registrationResult.campaignId;
+				if (is403Error) {
+					// Platform account needs Level 2 verification
+					// Don't fail - just log the error and continue with toll-free
+					dlcError = "10DLC requires Level 2 verification (see /TELNYX_PLATFORM_SETUP.md). Toll-free verification will proceed.";
+					console.warn(dlcError);
+
+					// If we have toll-free numbers, continue (toll-free works without Level 2)
+					// If we ONLY have local numbers and no toll-free, then fail
+					if (tollFreeNumbers.length === 0) {
+						return {
+							success: false,
+							error: "Platform setup required: Your Telnyx account needs Level 2 verification to enable 10DLC registration for local numbers. Alternative: Add toll-free numbers which work immediately without Level 2 verification. See /TELNYX_PLATFORM_SETUP.md for details.",
+							requiresPlatformSetup: true,
+						};
+					}
+				} else {
+					// Other error - log but don't fail if we have toll-free
+					dlcError = `10DLC registration failed: ${registrationResult.error}`;
+					console.error(dlcError);
+
+					if (tollFreeNumbers.length === 0) {
+						// No toll-free backup - fail
+						return {
+							success: false,
+							error: dlcError,
+						};
+					}
+				}
+			} else {
+				brandId = registrationResult.brandId;
+				campaignId = registrationResult.campaignId;
+			}
 		}
 
 		// 5. Send verification submitted email
@@ -622,12 +656,24 @@ export async function submitAutomatedVerification(companyId: string): Promise<{
 			}
 		}
 
+		// Build success message
+		const messages: string[] = [];
+		if (tollFreeRequestId) {
+			messages.push(`✅ Toll-free verification submitted (${tollFreeNumbers.length} number${tollFreeNumbers.length > 1 ? "s" : ""}) - Approval in 5-7 business days`);
+		}
+		if (brandId && campaignId) {
+			messages.push(`✅ 10DLC registration completed (${dlcNumbers.length} number${dlcNumbers.length > 1 ? "s" : ""}) - Active immediately`);
+		}
+		if (dlcError) {
+			messages.push(`⚠️ ${dlcError}`);
+		}
+
 		return {
 			success: true,
 			tollFreeRequestId,
 			brandId,
 			campaignId,
-			message: `Verification submitted successfully! ${tollFreeNumbers.length > 0 ? "Toll-free verification typically takes 5 business days." : ""} ${dlcNumbers.length > 0 ? "10DLC registration completed." : ""}`,
+			message: messages.join(". "),
 		};
 	} catch (error) {
 		return {

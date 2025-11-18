@@ -311,6 +311,40 @@ export default function TestTelnyxSetup() {
 					</ul>
 				</div>
 
+				<div className="bg-amber-500/10 p-6 rounded-lg border border-amber-500/20 mb-8">
+					<h2 className="font-semibold mb-3 text-foreground text-lg flex items-center gap-2">
+						<span className="text-amber-500">⚠️</span>
+						Platform Setup Required (One-Time)
+					</h2>
+					<div className="space-y-2 text-sm text-muted-foreground">
+						<p>
+							If you see a 403 error during 10DLC registration, your platform&apos;s Telnyx account needs <strong>Level 2 verification</strong>.
+							This is a <strong>one-time manual step</strong> that ServiceTitan and similar platforms also had to complete.
+						</p>
+						<p className="text-foreground font-medium mt-4">
+							See <code className="bg-muted px-2 py-1 rounded">/TELNYX_PLATFORM_SETUP.md</code> for complete instructions.
+						</p>
+						<ul className="mt-4 space-y-2 pl-4">
+							<li className="flex items-start gap-2">
+								<span className="text-primary">•</span>
+								<span><strong>Timeline:</strong> Up to 48 hours for approval</span>
+							</li>
+							<li className="flex items-start gap-2">
+								<span className="text-primary">•</span>
+								<span><strong>Who:</strong> Platform owner only (do this once for entire platform)</span>
+							</li>
+							<li className="flex items-start gap-2">
+								<span className="text-primary">•</span>
+								<span><strong>What works now:</strong> Toll-free verification (no Level 2 required)</span>
+							</li>
+							<li className="flex items-start gap-2">
+								<span className="text-primary">•</span>
+								<span><strong>What needs Level 2:</strong> 10DLC brand creation via API</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+
 				<button
 					onClick={runFullSetup}
 					disabled={isRunning}

@@ -4,6 +4,33 @@
 
 ---
 
+## 🚀 Quick Start: Toll-Free Messaging (Recommended)
+
+**Get text messaging working in 5-7 days with ZERO platform setup required!**
+
+✅ **Use toll-free numbers** - Works immediately via API
+✅ **No Level 2 verification needed** - Launch today
+✅ **5-7 day approval** - Automated via API
+✅ **Professional** - Customers recognize toll-free numbers
+
+**See `/TOLL_FREE_QUICK_START.md` for complete toll-free guide.**
+
+---
+
+## ⚠️ Optional: 10DLC Setup (Requires Platform Verification)
+
+**If you want to add 10DLC (local numbers)**, your platform's Telnyx account needs **Level 2 verification**. This is optional - toll-free works without it.
+
+**See `/TELNYX_PLATFORM_SETUP.md` for 10DLC setup instructions.**
+
+**Quick Summary**:
+- ✅ **Toll-free verification** - Works immediately (RECOMMENDED)
+- ⏳ **10DLC brand creation** - Requires Level 2 verification (OPTIONAL)
+- ⏰ **Timeline**: Toll-free 5-7 days, 10DLC instant (after Level 2)
+- 💡 **Recommendation**: Start with toll-free, add 10DLC later
+
+---
+
 ## Overview
 
 The automated verification system submits toll-free and 10DLC verification to Telnyx programmatically using the company data collected during onboarding. **Users never visit the Telnyx Portal** - everything happens through your platform, just like ServiceTitan.

@@ -74,32 +74,38 @@ export function NotificationTestDialog({
     setResult(null);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // TODO: Implement actual notification sending
-      // const response = await fetch("/api/notifications/test", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     notificationId: notification.id,
-      //     channel,
-      //     recipient,
-      //     testData: notification.testData,
-      //   }),
-      // });
-
-      setResult({
-        success: true,
-        message: `Test ${channel} notification sent successfully to ${recipient}`,
+      // Call the test API endpoint
+      const response = await fetch("/api/notifications/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          notificationId: notification.id,
+          channel,
+          recipient,
+          testData: notification.testData,
+        }),
       });
 
-      // Reset form after success
-      setTimeout(() => {
-        setRecipient("");
-        setResult(null);
-        onOpenChange(false);
-      }, 2000);
+      const data = await response.json();
+
+      if (data.success) {
+        setResult({
+          success: true,
+          message: data.message || `Test ${channel} notification sent successfully to ${recipient}`,
+        });
+
+        // Reset form after success
+        setTimeout(() => {
+          setRecipient("");
+          setResult(null);
+          onOpenChange(false);
+        }, 2000);
+      } else {
+        setResult({
+          success: false,
+          message: data.error || "Failed to send test notification",
+        });
+      }
     } catch (error) {
       setResult({
         success: false,
