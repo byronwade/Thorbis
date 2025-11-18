@@ -55,17 +55,15 @@ export async function registerCompanyFor10DLC(
 				name,
 				ein,
 				website,
-				business_type,
-				street_address,
+				industry,
+				address,
 				city,
 				state,
 				zip_code,
-				country,
-				primary_contact_first_name,
-				primary_contact_last_name,
-				primary_contact_email,
-				primary_contact_phone,
-				primary_contact_job_title
+				phone,
+				email,
+				support_email,
+				support_phone
 			`)
 			.eq("id", companyId)
 			.single();
@@ -82,7 +80,26 @@ export async function registerCompanyFor10DLC(
 		if (!company.ein) {
 			return {
 				success: false,
-				error: "Company EIN is required for 10DLC registration",
+				error: "Company EIN is required for 10DLC registration. Please add the company's Tax ID.",
+				log,
+			};
+		}
+
+		if (!company.address || !company.city || !company.state || !company.zip_code) {
+			return {
+				success: false,
+				error: "Company address is incomplete. Please add full address, city, state, and ZIP code.",
+				log,
+			};
+		}
+
+		const contactEmail = company.email || company.support_email;
+		const contactPhone = company.phone || company.support_phone;
+
+		if (!contactEmail || !contactPhone) {
+			return {
+				success: false,
+				error: "Company contact email and phone are required for 10DLC registration.",
 				log,
 			};
 		}
@@ -111,23 +128,23 @@ export async function registerCompanyFor10DLC(
 			customer_reference: companyId,
 			brand_name: company.name || "Unknown Company",
 			ein: company.ein,
-			ein_issuing_country: company.country || "US",
-			vertical: determineVertical(company.business_type),
+			ein_issuing_country: "US",
+			vertical: determineVertical(company.industry),
 			website: company.website,
 			company_type: "PRIVATE_PROFIT", // Default - could be made configurable
 			address: {
-				line1: company.street_address || "",
+				line1: company.address || "",
 				city: company.city || "",
 				state: company.state || "",
 				postal_code: company.zip_code || "",
-				country: company.country || "US",
+				country: "US",
 			},
 			contact: {
-				first_name: company.primary_contact_first_name || "",
-				last_name: company.primary_contact_last_name || "",
-				email: company.primary_contact_email || "",
-				phone: company.primary_contact_phone || "",
-				job_position: company.primary_contact_job_title || "Owner",
+				first_name: "Business", // No separate first/last name fields in companies table
+				last_name: "Owner",
+				email: contactEmail,
+				phone: contactPhone,
+				job_position: "Owner",
 			},
 		};
 
@@ -188,8 +205,8 @@ export async function registerCompanyFor10DLC(
 				? `${company.website}/terms`
 				: "https://stratos.thorbis.com/terms",
 			help_message: "Reply HELP for assistance or call us.",
-			help_phone_number: company.primary_contact_phone || "",
-			help_email: company.primary_contact_email || "",
+			help_phone_number: contactPhone,
+			help_email: contactEmail,
 			auto_renewal: true,
 			opt_in_keywords: ["START", "YES", "SUBSCRIBE"],
 			opt_out_keywords: ["STOP", "END", "UNSUBSCRIBE", "CANCEL", "QUIT"],

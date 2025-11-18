@@ -3,6 +3,7 @@ import {
 	type CommunicationRecord,
 	type CompanyPhone,
 } from "@/components/communication/communication-page-client";
+import { CommunicationVerificationGate } from "@/components/communication/communication-verification-gate";
 import { CompanyGate } from "@/components/company/company-gate";
 import {
 	getActiveCompanyId,
@@ -108,10 +109,12 @@ export async function CommunicationData() {
 		}));
 
 	return (
-		<CommunicationPageClient
-			communications={normalizedCommunications}
-			companyId={companyId}
-			companyPhones={companyPhones}
-		/>
+		<CommunicationVerificationGate companyId={companyId}>
+			<CommunicationPageClient
+				communications={normalizedCommunications}
+				companyId={companyId}
+				companyPhones={companyPhones}
+			/>
+		</CommunicationVerificationGate>
 	);
 }

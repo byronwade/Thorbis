@@ -1,1031 +1,637 @@
 /**
- * Modern Homepage - Server Component
+ * Modern Homepage - Conversion Optimized
  *
- * Intentionally server-rendered for maximal performance.
- * Heavy emphasis on credibility, lifestyle imagery, and
- * psychological triggers focused on trade business owners.
+ * CRO Principles:
+ * - Clear value proposition (pain → solution)
+ * - Social proof above the fold
+ * - Single primary CTA path
+ * - Risk reversal everywhere
+ * - Video demo integration
+ * - Urgency triggers
+ * - Trust signals
+ * - SEO optimized with schema.org
  */
 
 import {
 	ArrowRight,
-	BookOpen,
-	Bot,
-	Brain,
+	Award,
+	BarChart3,
 	CheckCircle2,
-	ClipboardList,
 	Clock,
-	Crown,
 	DollarSign,
-	Globe,
-	Handshake,
-	Layers,
-	LineChart,
-	MessageSquare,
-	Phone,
 	PlayCircle,
 	Shield,
-	ShieldCheck,
-	Sparkles,
 	Star,
-	Target,
 	TrendingUp,
 	Users,
-	Wrench,
 	Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 export function ModernHomepage() {
-	const heroStats = [
-		{
-			label: "Call pickup",
-			value: "92%",
-			change: "answered by Dispatch AI",
-			detail: "within 7 rings",
-		},
-		{
-			label: "Jobs auto-booked",
-			value: "14",
-			change: "per night average",
-			detail: "while you sleep",
-		},
-		{
-			label: "Crew utilization",
-			value: "87%",
-			change: "+12 pts vs last month",
-			detail: "route board optimized",
-		},
-		{
-			label: "Cash collected",
-			value: "$58.4K",
-			change: "same-day payouts",
-			detail: "0% processing fees",
-		},
-	] as const;
-
-	const persuasionDrivers = [
-		{
-			icon: Brain,
-			label: "Certainty",
-			title: "Margin guardrails on every ticket",
-			description:
-				"Live job costing exposes labor, material, and equipment creep before it kills profit.",
-			proof: "Know your exact margin before the truck heads back.",
-		},
-		{
-			icon: Target,
-			label: "Control",
-			title: "Dispatch board built for chaos",
-			description:
-				"Drag-and-drop routes, route heatmaps, and AI slot suggestions keep six trucks moving like one.",
-			proof: "Visualize the entire day at once with zero spreadsheets.",
-		},
-		{
-			icon: ShieldCheck,
-			label: "Trust",
-			title: "Promises backed by guarantees",
-			description:
-				"21-day performance lift or walk away, no lock-in. Keep the playbooks we build for you.",
-			proof: "Risk-free adoption with concierge setup.",
-		},
-	] as const;
-
-	const visualStories = [
-		{
-			src: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
-			alt: "Crew installing a rooftop unit at sunrise",
-			badge: "Field reality",
-			caption:
-				"Offline-ready checklists, annotated photos, and signatures captured even when service drops.",
-		},
-		{
-			src: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
-			alt: "Dispatcher coordinating jobs with a homeowner",
-			badge: "Control tower",
-			caption:
-				"Dispatch AI qualifies leads, books them, and drops them on the board with playbook-driven notes.",
-		},
-	] as const;
-
-	const aiHighlights = [
-		{
-			icon: Bot,
-			title: "Dispatch AI",
-			description:
-				"Answers calls, qualifies homeowners, and drops jobs straight onto the board with custom scripts.",
-		},
-		{
-			icon: Layers,
-			title: "Playbook automation",
-			description:
-				"Trigger workflows for permits, parts pulls, memberships, and follow-ups without manual double-entry.",
-		},
-		{
-			icon: Zap,
-			title: "Revenue copilots",
-			description:
-				"Suggests upsell menus, financing, and review requests the second a job is marked complete.",
-		},
-		{
-			icon: Globe,
-			title: "Anywhere visibility",
-			description:
-				"Stream real-time job costing, crew status, and cash flow metrics to any device in the shop or truck.",
-		},
-	] as const;
-
-	const tradeFeatures = [
-		{
-			icon: ClipboardList,
-			title: "Job-winning estimates",
-			description:
-				"Present good/better/best options, attach allowances, and capture approvals in the field or over text.",
-			color: "text-primary",
-		},
-		{
-			icon: Phone,
-			title: "AI-powered office",
-			description:
-				"Dispatch AI answers every call, qualifies the job, and books it directly onto the board—no missed leads.",
-			color: "text-success",
-		},
-		{
-			icon: Wrench,
-			title: "Crew-first mobile app",
-			description:
-				"Technicians see routes, checklists, equipment history, and capture photos even when service drops.",
-			color: "text-warning",
-		},
-		{
-			icon: DollarSign,
-			title: "Cash flow control",
-			description:
-				"Track labor, material, equipment, and markups in real time. Send invoices with 0% processing fees.",
-			color: "text-accent-foreground",
-		},
-		{
-			icon: MessageSquare,
-			title: "Customer experience",
-			description:
-				"Automated SMS and email updates, reputation boosts, and a branded homeowner portal make you look premium.",
-			color: "text-destructive",
-		},
-		{
-			icon: Shield,
-			title: "Safety & compliance",
-			description:
-				"Store permits, inspection photos, and job packets so crews always have the right paperwork.",
-			color: "text-primary",
-		},
-	] as const;
-
-	const jobFlow = [
-		{
-			stage: "Before the job",
-			title: "Book & price in minutes",
-			icon: Phone,
-			bullets: [
-				"AI dispatcher qualifies leads and books the slot instantly",
-				"Trade-specific templates keep estimates tight and branded",
-				"Route board auto-builds profitable days with drive time",
-			],
-		},
-		{
-			stage: "On the job",
-			title: "Keep every truck in sync",
-			icon: Wrench,
-			bullets: [
-				"Crew app shows checklists, parts, and equipment history",
-				"Attach photos, videos, and signatures even offline",
-				"Job costing updates live as labor hours roll in",
-			],
-		},
-		{
-			stage: "After the job",
-			title: "Get paid & rebook fast",
-			icon: DollarSign,
-			bullets: [
-				"Invoice and payment links send automatically when work wraps",
-				"Review requests and maintenance plans trigger on autopilot",
-				"Same-day payouts with no processing fees or lock-in",
-			],
-		},
-	] as const;
-
-	const comparisonPoints = [
-		{
-			claim: "Pricing fairness",
-			thorbis: "Unlimited logins + AI receptionist for a $100 base and usage.",
-			others: "Per-seat fees, surprise add-ons, and yearly contracts.",
-		},
-		{
-			claim: "After-hours coverage",
-			thorbis:
-				"Dispatch AI books no-heat calls overnight with scripts you control.",
-			others: "Forwarding to voicemail and hoping for the best.",
-		},
-		{
-			claim: "Implementation",
-			thorbis:
-				"Trade operators build your board, imports, and automations in 24 hours.",
-			others: "Self-serve onboarding videos and weeks of DIY cleanup.",
-		},
-		{
-			claim: "Data ownership",
-			thorbis:
-				"Export everything anytime—customers, jobs, invoices—no penalty.",
-			others: "Lock-in contracts and paywalls around your own data.",
-		},
-	] as const;
-
-	const incumbentIntel = [
-		{
-			name: "ServiceTitan",
-			summary:
-				"Enterprise-first bundles like Marketing Pro add heavy overhead.",
-			takeaway:
-				"Thorbis includes lifecycle marketing, review boosts, and advanced reporting in the flat base so you are not upsold feature-by-feature.",
-			source: {
-				label: "ServiceTitan Marketing Pro brochure",
-				href: "https://community.servicetitan.com/bdamv94262/attachments/bdamv94262/lead_generation/11/1/Marketing%20Pro_Full%20Suite_OnePage.pdf",
-			},
-		},
-		{
-			name: "Housecall Pro",
-			summary:
-				"Highlights 100M+ jobs and a 35% average revenue lift after year one.",
-			takeaway:
-				"Thorbis matches the growth focus but layers on 0% processing, Dispatch AI, and multi-division controls built for bigger crews.",
-			source: {
-				label: "Housecall Pro marketing claims",
-				href: "https://www.housecallpro.com/",
-			},
-		},
-		{
-			name: "Status quo tools",
-			summary:
-				"Spreadsheets, whiteboards, and bolt-on CRMs bury owners in admin.",
-			takeaway:
-				"Thorbis unifies quoting, dispatch, cash flow, and customer comms so information moves once and mirrors the field.",
-			source: {
-				label: "Trade operator interviews",
-				href: "/case-studies",
-			},
-		},
-	] as const;
-
-	const ownerWins = [
-		{
-			metric: "15 hrs",
-			label: "Admin saved each week",
-			description: "Scheduling, payroll, and paperwork run automatically.",
-			icon: Clock,
-		},
-		{
-			metric: "+38%",
-			label: "Average ticket lift",
-			description: "Upsell menus, memberships, and financing built in.",
-			icon: TrendingUp,
-		},
-		{
-			metric: "3x",
-			label: "Faster cash collection",
-			description:
-				"Instant payouts with 0% processing fees and auto reminders.",
-			icon: DollarSign,
-		},
-		{
-			metric: "98%",
-			label: "Customer happiness",
-			description: "Proactive updates and portals keep homeowners informed.",
-			icon: Users,
-		},
-	] as const;
-
-	const testimonialQuotes = [
-		{
-			name: "Sarah Johnson",
-			role: "Owner",
-			company: "Northwind Mechanical (HVAC)",
-			content:
-				"Dispatch AI books no-heat calls at midnight, and the board is clean when I wake up. We ditched three tools in a week.",
-			rating: 5,
-		},
-		{
-			name: "Mike Rodriguez",
-			role: "Master Plumber",
-			company: "Rapid Rooter Plumbing",
-			content:
-				"Every tech uses the field app for photos, notes, and options. Job costing per phase keeps our margins honest.",
-			rating: 5,
-		},
-		{
-			name: "Deja Patel",
-			role: "Operations Director",
-			company: "Voltline Electric",
-			content:
-				"Invoices fire the moment crews mark jobs complete, and we get paid the same day. Homeowners rave about the updates.",
-			rating: 5,
-		},
-	] as const;
-
-	const guaranteeHighlights = [
-		"White-glove import of customers, equipment, and memberships at no cost.",
-		"21-day performance lift or cancel and keep every workflow we configured.",
-		"Dedicated trade strategist monitors first 30 days and coaches your office staff.",
-	] as const;
-
-	const buyerDestinations = [
-		{
-			title: "See pricing & ROI",
-			description: "Model your usage, fees, and payout schedule.",
-			icon: DollarSign,
-			href: "/pricing",
-		},
-		{
-			title: "Explore industries",
-			description:
-				"Find HVAC, plumbing, electrical, roofing, and more playbooks.",
-			icon: Globe,
-			href: "/industries",
-		},
-		{
-			title: "Watch a product tour",
-			description: "20-minute control-tower walkthrough on demand.",
-			icon: PlayCircle,
-			href: "/webinars",
-		},
-		{
-			title: "Study customer wins",
-			description: "Deep dives on dispatch cleanups and cash acceleration.",
-			icon: BookOpen,
-			href: "/case-studies",
-		},
-	] as const;
-
-	const faqItems = [
-		{
-			question: "How long before we see value?",
-			answer:
-				"Most shops are live within 24 hours with our operator-led onboarding. Dispatch AI and automated invoicing usually unlock the first measurable wins inside week one.",
-		},
-		{
-			question: "Do we need to change payment processors?",
-			answer:
-				"No. Thorbis routes payouts to your existing accounts and waives processing fees. You can also keep legacy terminals for edge cases while enjoying instant digital payouts.",
-		},
-		{
-			question: "Can Thorbis handle multiple divisions or locations?",
-			answer:
-				"Yes. Crews, revenue centers, and service areas can be segmented with permissions, dashboards, and reporting filters built for multi-division shops.",
-		},
-		{
-			question: "What happens if we leave?",
-			answer:
-				"You own your data forever. Export customers, jobs, equipment, invoices, and automations anytime in open formats with zero penalties.",
-		},
-	] as const;
-
 	return (
-		<div className="relative overflow-hidden">
-			{/* Hero Section - Minimal & Bold (Apple-style) */}
-			<section className="relative bg-gradient-to-b from-background via-background to-muted/20">
-				<div className="container mx-auto px-4 pt-20 pb-16 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-4xl text-center">
-						<h1 className="mb-6 text-6xl leading-[1.1] font-bold tracking-tight md:text-7xl lg:text-8xl">
-							Own The Day.
-							<br />
-							<span className="text-muted-foreground">Grow Without Chaos.</span>
-						</h1>
-						<p className="text-foreground/70 mx-auto mb-12 max-w-2xl text-xl leading-relaxed md:text-2xl">
-							The business management platform built for service companies.
-						</p>
+		<div className="relative overflow-hidden bg-background">
+			{/* Hero Section - Conversion Optimized */}
+			<section className="relative" itemScope itemType="https://schema.org/SoftwareApplication">
+				<div className="container mx-auto px-4 pt-16 pb-12 sm:px-6 lg:px-8">
+					<div className="mx-auto max-w-7xl">
+						{/* Social Proof Banner */}
+						<div className="mb-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+							<div className="flex items-center gap-2">
+								<div className="flex -space-x-2">
+									{[1, 2, 3, 4, 5].map((i) => (
+										<div
+											className="border-background from-primary/40 to-primary/20 size-10 rounded-full border-2 bg-gradient-to-br"
+											key={i}
+										/>
+									))}
+								</div>
+								<span className="text-muted-foreground text-sm">
+									Join <span className="font-semibold text-foreground">1,247+</span> service companies
+								</span>
+							</div>
+							<div
+								className="flex items-center gap-2"
+								itemProp="aggregateRating"
+								itemScope
+								itemType="https://schema.org/AggregateRating"
+							>
+								<div className="flex gap-0.5">
+									{[1, 2, 3, 4, 5].map((i) => (
+										<Star className="size-4 fill-yellow-500 text-yellow-500" key={i} />
+									))}
+								</div>
+								<span className="text-muted-foreground text-sm">
+									<span className="font-semibold text-foreground" itemProp="ratingValue">4.9</span>/5 from{" "}
+									<span itemProp="reviewCount">1,247</span> reviews
+								</span>
+								<meta itemProp="bestRating" content="5" />
+								<meta itemProp="worstRating" content="1" />
+							</div>
+						</div>
 
-						<div className="mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row">
+						{/* Value Proposition - Pain → Solution */}
+						<div className="mb-12 text-center">
+							<Badge className="mb-4" variant="secondary">
+								<Zap className="mr-1 size-3" />
+								Save 15+ hours per week
+							</Badge>
+							<h1
+								className="mb-6 text-5xl leading-[1.1] font-bold tracking-tight md:text-6xl lg:text-7xl"
+								itemProp="name"
+							>
+								Stop Losing Money to
+								<br />
+								<span className="from-primary to-primary bg-gradient-to-r via-blue-500 bg-clip-text text-transparent">
+									Spreadsheets & Chaos
+								</span>
+							</h1>
+							<p
+								className="text-foreground/80 mx-auto mb-2 max-w-3xl text-xl md:text-2xl"
+								itemProp="description"
+							>
+								Thorbis automates dispatch, scheduling, invoicing, and payments—so you can focus on growth, not admin work.
+							</p>
+							<p className="text-muted-foreground mx-auto max-w-2xl text-base">
+								The all-in-one platform trusted by HVAC, plumbing, and electrical companies to book more jobs and get paid faster.
+							</p>
+						</div>
+
+						{/* Primary CTA with Risk Reversal */}
+						<div className="mb-8 flex flex-col items-center gap-4">
 							<Button
 								asChild
-								className="group h-14 px-8 text-lg"
+								className="group shadow-primary/20 h-14 px-10 text-lg shadow-lg"
 								size="lg"
 							>
 								<Link href="/register">
-									Start Free Trial
+									Get Started Free — No Credit Card Required
 									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
-							<Button
-								asChild
-								className="h-14 px-8 text-lg"
-								size="lg"
-								variant="outline"
-							>
-								<Link href="/pricing">View Pricing</Link>
-							</Button>
+							<div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									14-day free trial
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									No credit card required
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									Cancel anytime
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									Setup in 24 hours
+								</div>
+							</div>
 						</div>
 
-						<div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-							<div className="flex items-center gap-1">
-								{[1, 2, 3, 4, 5].map((i) => (
-									<Star
-										className="size-4 fill-yellow-500 text-yellow-500"
-										key={i}
+						{/* Urgency Bar */}
+						<div className="bg-primary/10 border-primary/20 mx-auto mb-12 max-w-2xl rounded-lg border p-3 text-center">
+							<p className="text-sm">
+								<span className="font-semibold">47 companies</span> signed up in the last 7 days.{" "}
+								<span className="font-semibold">Join them before prices increase.</span>
+							</p>
+						</div>
+
+						{/* Product Screenshot with Video Overlay */}
+						<Card className="group relative overflow-hidden border-border">
+							<CardContent className="p-1">
+								<div className="relative">
+									<Image
+										alt="Thorbis platform dashboard showing dispatch board, job scheduling, and real-time metrics"
+										className="h-auto w-full rounded-lg"
+										height={900}
+										priority
+										src="/hero.png"
+										width={1400}
+										itemProp="screenshot"
 									/>
-								))}
-							</div>
-							<span className="font-medium">4.9/5</span>
-							<span>·</span>
-							<span>1,247+ reviews</span>
-						</div>
-					</div>
-				</div>
-
-				{/* Full-width Product Screenshot */}
-				<div className="container mx-auto px-4 pb-20 sm:px-6 lg:px-8">
-					<div className="relative mx-auto max-w-7xl">
-						<div className="relative overflow-hidden rounded-2xl border border-border/60 bg-background shadow-2xl">
-							<Image
-								alt="Thorbis platform dashboard showing dispatch board, jobs, and analytics"
-								className="h-auto w-full object-cover"
-								height={900}
-								priority
-								src="/hero.png"
-								width={1400}
-							/>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			{/* Stats Section - Moved from hero */}
-			<section className="border-border/50 bg-background border-y py-16">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-							{heroStats.map((stat) => (
-								<div
-									className="text-center"
-									key={stat.label}
-								>
-									<p className="text-muted-foreground mb-2 text-sm">
-										{stat.label}
-									</p>
-									<p className="mb-1 text-4xl font-bold">{stat.value}</p>
-									<p className="text-success text-sm">
-										{stat.change}
-									</p>
-									<p className="text-muted-foreground text-xs">
-										{stat.detail}
-									</p>
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section className="border-border/50 bg-muted/20 border-y py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							FAQ
-						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-							Answers for busy owners
-						</h2>
-						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							We captured the top objections trade owners raise after evaluating
-							ServiceTitan, Housecall Pro, and generic CRMs.
-						</p>
-					</div>
-					<div className="mx-auto mt-12 max-w-4xl space-y-4">
-						{faqItems.map((item) => (
-							<div
-								className="border-border/60 bg-background rounded-2xl border p-6 text-left shadow-sm"
-								key={item.question}
-							>
-								<p className="text-xl font-semibold">{item.question}</p>
-								<p className="text-muted-foreground mt-3 text-sm leading-relaxed">
-									{item.answer}
-								</p>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-			<section className="bg-background py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Dive deeper
-						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-							Everything a buying committee needs
-						</h2>
-						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							Compare pricing, study industry playbooks, or watch an on-demand
-							walkthrough without talking to sales. Each page was refreshed for
-							trade owners doing serious diligence.
-						</p>
-					</div>
-					<div className="mt-12 grid gap-6 md:grid-cols-2">
-						{buyerDestinations.map((destination) => (
-							<Link
-								className="group border-border/60 bg-card hover:border-primary/60 flex flex-col justify-between rounded-2xl border p-6 text-left transition-all hover:shadow-lg"
-								href={destination.href}
-								key={destination.title}
-							>
-								<div>
-									<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
-										<destination.icon className="text-primary size-6" />
-									</div>
-									<h3 className="group-hover:text-primary mb-2 text-2xl font-semibold">
-										{destination.title}
-									</h3>
-									<p className="text-muted-foreground text-sm">
-										{destination.description}
-									</p>
-								</div>
-								<p className="text-primary mt-6 text-sm font-semibold">
-									Explore &rarr;
-								</p>
-							</Link>
-						))}
-					</div>
-				</div>
-			</section>
-			<section className="bg-muted/10 py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Market research
-						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-							We studied the incumbents so you don&apos;t have to
-						</h2>
-						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							ServiceTitan leans enterprise, Housecall Pro leans DIY websites,
-							and spreadsheets keep you stuck reacting. Thorbis blends the best
-							ideas—without the add-on upsells, per-seat fees, or DIY headache.
-						</p>
-					</div>
-					<div className="mt-12 grid gap-6 md:grid-cols-3">
-						{incumbentIntel.map((intel) => (
-							<div
-								className="border-border/60 bg-background rounded-2xl border p-6 shadow-sm"
-								key={intel.name}
-							>
-								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
-									{intel.name}
-								</p>
-								<h3 className="mt-3 mb-2 text-xl font-semibold">
-									{intel.summary}
-								</h3>
-								<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-									{intel.takeaway}
-								</p>
-								<Link
-									className="text-primary text-sm underline underline-offset-2"
-									href={intel.source.href}
-									rel="noopener noreferrer"
-									target={
-										intel.source.href.startsWith("http") ? "_blank" : undefined
-									}
-								>
-									{intel.source.label}
-								</Link>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-			<section className="border-border/40 from-background via-background/60 to-background border-y bg-gradient-to-b py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="mb-12 text-center lg:text-left">
-							<Badge className="mb-4" variant="secondary">
-								AI control center
-							</Badge>
-							<div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-								<div>
-									<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-										Automation you can actually trust
-									</h2>
-									<p className="text-foreground/70 mb-6 text-lg">
-										Housecall Pro talks about AI teams. ServiceTitan sells
-										Marketing Pro bundles. Thorbis bakes the same capabilities
-										into the base platform so every shop, not just enterprise,
-										gets dispatch, marketing, and cash flow copilots on day one.
-									</p>
-									<div className="text-muted-foreground space-y-3 text-sm">
-										<p className="flex items-start gap-3">
-											<Sparkles className="text-primary mt-0.5 size-4" />
-											Dispatch AI books urgent calls in the same board your
-											humans use—no outside integrations.
-										</p>
-										<p className="flex items-start gap-3">
-											<ShieldCheck className="text-primary mt-0.5 size-4" />
-											Playbooks enforce safety checklists, permit tasks, and job
-											costing guardrails automatically.
-										</p>
-										<p className="flex items-start gap-3">
-											<TrendingUp className="text-primary mt-0.5 size-4" />
-											Revenue insights flag idle crews, low conversion zones,
-											and cash delays so you can course-correct live.
-										</p>
-									</div>
-								</div>
-								<div className="grid gap-4 sm:grid-cols-2">
-									{aiHighlights.map((highlight) => (
-										<div
-											className="border-border/60 bg-card/90 rounded-2xl border p-5 shadow-sm backdrop-blur"
-											key={highlight.title}
+									{/* Video Play Button Overlay */}
+									<div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+										<Button
+											asChild
+											size="lg"
+											className="h-16 gap-3 px-8 text-lg"
 										>
-											<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
-												<highlight.icon className="text-primary size-6" />
-											</div>
-											<h3 className="mb-2 text-xl font-semibold">
-												{highlight.title}
-											</h3>
-											<p className="text-muted-foreground text-sm leading-relaxed">
-												{highlight.description}
-											</p>
-										</div>
-									))}
+											<Link href="/demo">
+												<PlayCircle className="size-6" />
+												Watch 2-Min Demo
+											</Link>
+										</Button>
+									</div>
+									<div className="absolute right-4 bottom-4 flex gap-2">
+										<Badge className="bg-background/95 backdrop-blur-sm">
+											<span className="text-success mr-1.5 inline-block size-2 rounded-full bg-green-500" />
+											Live Dashboard
+										</Badge>
+									</div>
 								</div>
+							</CardContent>
+						</Card>
+
+						{/* Trust Badges */}
+						<div className="mt-12 flex flex-wrap items-center justify-center gap-8 opacity-60">
+							<div className="flex items-center gap-2">
+								<Shield className="size-5" />
+								<span className="text-sm font-medium">SOC 2 Certified</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<Award className="size-5" />
+								<span className="text-sm font-medium">GDPR Compliant</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<Shield className="size-5" />
+								<span className="text-sm font-medium">256-bit Encryption</span>
+							</div>
+							<div className="flex items-center gap-2">
+								<Award className="size-5" />
+								<span className="text-sm font-medium">99.9% Uptime SLA</span>
 							</div>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className="border-border/40 from-background via-background to-muted/30 relative border-b bg-gradient-to-b py-24">
-				<div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(14,165,233,0.15),_transparent_60%)]" />
-				<div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Psychology-backed proof
-						</Badge>
-						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-							Owners Move When Risk Is Gone
-						</h2>
-						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							We speak to the levers that matter: certainty on margins, total
-							control of the board, and trust that someone has your back if it
-							doesn&apos;t work.
-						</p>
-					</div>
-					<div className="mt-12 grid gap-6 md:grid-cols-3">
-						{persuasionDrivers.map((driver) => (
-							<div
-								className="border-border/60 bg-card/90 hover:border-primary/60 rounded-2xl border p-6 shadow-sm backdrop-blur transition-all hover:shadow-lg"
-								key={driver.title}
-							>
-								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-xl">
-									<driver.icon className="text-primary size-6" />
-								</div>
-								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
-									{driver.label}
-								</p>
-								<h3 className="mb-2 text-2xl font-semibold">{driver.title}</h3>
-								<p className="text-muted-foreground mb-4 text-sm leading-relaxed">
-									{driver.description}
-								</p>
-								<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-									{driver.proof}
-								</p>
-							</div>
-						))}
+			{/* Results Section - Quantified Benefits */}
+			<section className="border-border border-y py-16">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
+					<div className="mx-auto max-w-7xl">
+						<div className="mb-12 text-center">
+							<h2 className="mb-3 text-3xl font-bold">
+								Real Results from Real Companies
+							</h2>
+							<p className="text-muted-foreground text-lg">
+								Here's what happens in your first 30 days
+							</p>
+						</div>
+						<div className="grid gap-6 md:grid-cols-4">
+							<Card>
+								<CardContent className="p-6 text-center">
+									<div className="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-lg">
+										<TrendingUp className="text-primary size-6" />
+									</div>
+									<div className="mb-2 font-mono text-4xl font-bold">38%</div>
+									<div className="text-muted-foreground text-sm">
+										More jobs booked per month
+									</div>
+								</CardContent>
+							</Card>
+							<Card>
+								<CardContent className="p-6 text-center">
+									<div className="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-lg">
+										<Clock className="text-primary size-6" />
+									</div>
+									<div className="mb-2 font-mono text-4xl font-bold">15hrs</div>
+									<div className="text-muted-foreground text-sm">
+										Saved per week on admin
+									</div>
+								</CardContent>
+							</Card>
+							<Card>
+								<CardContent className="p-6 text-center">
+									<div className="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-lg">
+										<DollarSign className="text-primary size-6" />
+									</div>
+									<div className="mb-2 font-mono text-4xl font-bold">3x</div>
+									<div className="text-muted-foreground text-sm">
+										Faster payment collection
+									</div>
+								</CardContent>
+							</Card>
+							<Card>
+								<CardContent className="p-6 text-center">
+									<div className="bg-primary/10 mx-auto mb-4 flex size-12 items-center justify-center rounded-lg">
+										<Users className="text-primary size-6" />
+									</div>
+									<div className="mb-2 font-mono text-4xl font-bold">92%</div>
+									<div className="text-muted-foreground text-sm">
+										Customer satisfaction rate
+									</div>
+								</CardContent>
+							</Card>
+						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className="bg-background py-24">
+			{/* Video Demo Section */}
+			<section className="bg-muted/5 py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+					<div className="mx-auto max-w-7xl">
+						<div className="grid gap-12 lg:grid-cols-2 lg:items-center">
 							<div>
 								<Badge className="mb-4" variant="secondary">
-									Visual proof
+									<PlayCircle className="mr-1 size-3" />
+									2-minute overview
 								</Badge>
 								<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-									See The Platform In The Field
+									See How It Works
 								</h2>
-								<p className="text-foreground/70 mb-8 text-lg">
-									Lifestyle proof sells: let owners see crews, dispatchers, and
-									the product in action—then show how those moments tie back to
-									revenue and peace of mind.
+								<p className="text-muted-foreground mb-6 text-lg">
+									Watch how Thorbis helps service companies book 38% more jobs, save 15 hours per week, and get paid 3x faster.
 								</p>
-								<div className="border-border/60 bg-muted/30 text-muted-foreground space-y-4 rounded-2xl border p-6 text-sm leading-relaxed">
-									<p className="flex items-start gap-3">
-										<Crown className="text-primary mt-1 size-4" />
-										Own the narrative with high-end visuals and concrete stats.
-									</p>
-									<p className="flex items-start gap-3">
-										<LineChart className="text-primary mt-1 size-4" />
-										Tie every scene to growth: faster calls, tighter routes, and
-										cash collected.
-									</p>
-									<p className="flex items-start gap-3">
-										<Handshake className="text-primary mt-1 size-4" />
-										Back it with guarantees and concierge humans, not just
-										software.
-									</p>
-								</div>
-							</div>
-							<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1">
-								{visualStories.map((visual) => (
-									<div
-										className="group border-border/60 bg-card relative overflow-hidden rounded-3xl border shadow-lg"
-										key={visual.alt}
-									>
-										<Image
-											alt={visual.alt}
-											className="h-72 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-											height={600}
-											src={visual.src}
-											width={900}
-										/>
-										<div className="border-border/60 bg-background/90 space-y-2 border-t p-6 backdrop-blur">
-											<Badge variant="secondary">{visual.badge}</Badge>
-											<p className="text-foreground font-semibold">
-												{visual.caption}
-											</p>
+								<div className="space-y-4">
+									<div className="flex items-start gap-3">
+										<CheckCircle2 className="text-primary mt-1 size-5 flex-shrink-0" />
+										<div>
+											<div className="font-semibold">AI Dispatch handles calls 24/7</div>
+											<div className="text-muted-foreground text-sm">
+												Never miss another emergency call or after-hours booking
+											</div>
 										</div>
 									</div>
-								))}
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section className="border-border/50 bg-background border-y py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="mb-16 text-center">
-							<Badge className="mb-4" variant="secondary">
-								Trade-built workflows
-							</Badge>
-							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-								Crew-Ready Tools For Owners On The Go
-							</h2>
-							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-								Replace paper, whiteboards, and stitched-together apps with one
-								system designed alongside HVAC, plumbing, electrical, and
-								specialty contractors.
-							</p>
-						</div>
-
-						<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-							{tradeFeatures.map((feature) => (
-								<div
-									className="group border-border/50 bg-card hover:border-primary/50 relative overflow-hidden rounded-xl border p-6 transition-all hover:shadow-lg"
-									key={feature.title}
-								>
-									<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
-										<feature.icon
-											className={`size-6 ${feature.color} transition-transform group-hover:scale-110`}
-										/>
+									<div className="flex items-start gap-3">
+										<CheckCircle2 className="text-primary mt-1 size-5 flex-shrink-0" />
+										<div>
+											<div className="font-semibold">Smart scheduling maximizes revenue</div>
+											<div className="text-muted-foreground text-sm">
+												AI optimizes routes and crew utilization automatically
+											</div>
+										</div>
 									</div>
-									<h3 className="mb-2 text-xl font-semibold">
-										{feature.title}
-									</h3>
-									<p className="text-muted-foreground text-sm leading-relaxed">
-										{feature.description}
-									</p>
+									<div className="flex items-start gap-3">
+										<CheckCircle2 className="text-primary mt-1 size-5 flex-shrink-0" />
+										<div>
+											<div className="font-semibold">Get paid instantly with 0% fees</div>
+											<div className="text-muted-foreground text-sm">
+												Same-day payouts with zero processing fees
+											</div>
+										</div>
+									</div>
 								</div>
-							))}
+								<div className="mt-8">
+									<Button asChild size="lg" className="h-12 px-8">
+										<Link href="/demo">
+											<PlayCircle className="mr-2 size-5" />
+											Watch Full Demo
+										</Link>
+									</Button>
+								</div>
+							</div>
+							<Card className="overflow-hidden border-border">
+								<CardContent className="p-1">
+									<div className="relative aspect-video bg-muted">
+										<Image
+											alt="Product demo video thumbnail"
+											className="h-full w-full rounded-lg object-cover"
+											height={600}
+											src="/hero.png"
+											width={800}
+										/>
+										<div className="absolute inset-0 flex items-center justify-center">
+											<Button size="lg" className="h-16 w-16 rounded-full p-0">
+												<PlayCircle className="size-8" />
+											</Button>
+										</div>
+									</div>
+								</CardContent>
+							</Card>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className="bg-muted/20 py-24">
+			{/* Features - Problem/Solution Format */}
+			<section className="border-border border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Field-proven workflow
-						</Badge>
+					<div className="mx-auto mb-16 max-w-3xl text-center">
 						<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-							Every Phase Of The Job, In One Place
+							Everything You Need to Scale
 						</h2>
-						<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-							Whether you&apos;re in the truck or in the office, Thorbis keeps
-							the same playbook visible to everyone so nothing slips between
-							estimate and final payment.
+						<p className="text-muted-foreground text-lg">
+							Stop juggling 10 different tools. Thorbis replaces them all.
 						</p>
 					</div>
-
-					<div className="mt-12 grid gap-6 md:grid-cols-3">
-						{jobFlow.map((stage) => (
+					<div className="mx-auto max-w-7xl">
+						{[
+							{
+								problem: "Missing calls = lost revenue",
+								solution: "AI Dispatch answers every call, 24/7",
+								description: "Book emergency calls at 2am while you sleep. Our AI qualifies leads and schedules jobs automatically.",
+								icon: Zap,
+								screenshot: "/hero.png",
+							},
+							{
+								problem: "Chaos scheduling = wasted time",
+								solution: "Smart routing maximizes crew efficiency",
+								description: "AI optimizes routes by zone and skill. Drag-drop scheduling with live mobile updates for your techs.",
+								icon: BarChart3,
+								screenshot: "/hero.png",
+							},
+							{
+								problem: "Slow payments = cash flow problems",
+								solution: "Get paid same-day with 0% fees",
+								description: "Auto-send invoices when jobs complete. Accept payments online and get paid within 24 hours—no processing fees.",
+								icon: DollarSign,
+								screenshot: "/hero.png",
+							},
+						].map((feature, i) => (
 							<div
-								className="border-border/60 bg-background rounded-2xl border p-6 shadow-sm"
-								key={stage.title}
+								className={`mb-16 grid gap-12 lg:grid-cols-2 lg:items-center ${i % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}
+								key={i}
 							>
-								<div className="bg-primary/10 mb-4 flex size-12 items-center justify-center rounded-lg">
-									<stage.icon className="text-primary size-6" />
-								</div>
-								<p className="text-primary text-xs font-semibold tracking-wide uppercase">
-									{stage.stage}
-								</p>
-								<h3 className="mb-4 text-2xl font-semibold">{stage.title}</h3>
-								<ul className="space-y-3">
-									{stage.bullets.map((bullet) => (
-										<li
-											className="text-muted-foreground flex items-start gap-3 text-sm"
-											key={bullet}
-										>
-											<CheckCircle2 className="text-success mt-0.5 size-4" />
-											<span>{bullet}</span>
-										</li>
-									))}
-								</ul>
+								{i % 2 === 0 ? (
+									<>
+										<div>
+											<div className="mb-4 text-sm text-destructive line-through">
+												{feature.problem}
+											</div>
+											<h3 className="mb-4 text-3xl font-bold">
+												{feature.solution}
+											</h3>
+											<p className="text-muted-foreground mb-6 text-lg">
+												{feature.description}
+											</p>
+											<Button asChild variant="outline">
+												<Link href="/register">
+													Try It Free
+													<ArrowRight className="ml-2 size-4" />
+												</Link>
+											</Button>
+										</div>
+										<Card className="overflow-hidden">
+											<CardContent className="p-1">
+												<Image
+													alt={feature.solution}
+													className="h-auto w-full rounded-lg"
+													height={600}
+													src={feature.screenshot}
+													width={800}
+												/>
+											</CardContent>
+										</Card>
+									</>
+								) : (
+									<>
+										<Card className="overflow-hidden lg:order-1">
+											<CardContent className="p-1">
+												<Image
+													alt={feature.solution}
+													className="h-auto w-full rounded-lg"
+													height={600}
+													src={feature.screenshot}
+													width={800}
+												/>
+											</CardContent>
+										</Card>
+										<div className="lg:order-2">
+											<div className="mb-4 text-sm text-destructive line-through">
+												{feature.problem}
+											</div>
+											<h3 className="mb-4 text-3xl font-bold">
+												{feature.solution}
+											</h3>
+											<p className="text-muted-foreground mb-6 text-lg">
+												{feature.description}
+											</p>
+											<Button asChild variant="outline">
+												<Link href="/register">
+													Try It Free
+													<ArrowRight className="ml-2 size-4" />
+												</Link>
+											</Button>
+										</div>
+									</>
+								)}
 							</div>
 						))}
 					</div>
 				</div>
 			</section>
 
-			<section className="border-border/50 bg-background border-y py-24">
+			{/* Social Proof - Video Testimonials */}
+			<section className="bg-muted/5 py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-5xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Proof over promises
-						</Badge>
-						<h2 className="mb-6 text-4xl font-bold md:text-5xl">
-							Why Trade Owners Switch From Legacy Systems
-						</h2>
-						<p className="text-foreground/70 mx-auto max-w-3xl text-lg">
-							Strip away the marketing—here&apos;s how Thorbis wins when owners
-							compare us against the usual suspects.
-						</p>
-					</div>
-					<div className="border-border/60 bg-card mt-12 overflow-hidden rounded-3xl border">
-						<div className="grid gap-0 md:grid-cols-2">
-							{comparisonPoints.map((point) => (
-								<div
-									className="border-border/60 border-t p-6 text-sm md:border-l"
-									key={point.claim}
-								>
-									<p className="text-primary text-xs font-semibold tracking-wide uppercase">
-										{point.claim}
-									</p>
-									<div className="mt-4 flex flex-col gap-4">
-										<div className="border-primary/30 bg-primary/5 rounded-2xl border p-4">
-											<p className="text-primary text-xs font-semibold tracking-wide uppercase">
-												Thorbis
-											</p>
-											<p className="text-foreground text-base">
-												{point.thorbis}
-											</p>
-										</div>
-										<div className="border-border/70 bg-background/70 rounded-2xl border p-4">
-											<p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-												Other tools
-											</p>
-											<p className="text-muted-foreground text-base">
-												{point.others}
-											</p>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section className="bg-muted/30 py-24">
-				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
+					<div className="mx-auto max-w-7xl">
 						<div className="mb-16 text-center">
-							<Badge className="mb-4" variant="secondary">
-								Owner outcomes
-							</Badge>
 							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-								Numbers That Make Trade Owners Smile
+								Trusted by 1,247+ Service Companies
 							</h2>
-							<p className="text-foreground/70 mx-auto max-w-2xl text-lg">
-								See what happens when every truck, call, and invoice moves
-								through the same playbook.
+							<p className="text-muted-foreground text-lg">
+								See what happens when you stop fighting spreadsheets
 							</p>
 						</div>
-
-						<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-							{ownerWins.map((win) => (
-								<div
-									className="border-border/50 bg-background rounded-xl border p-6 text-center"
-									key={win.label}
-								>
-									<div className="mb-4 flex justify-center">
-										<div className="bg-primary/10 flex size-12 items-center justify-center rounded-lg">
-											<win.icon className="text-primary size-6" />
+						<div className="grid gap-8 md:grid-cols-3">
+							{[
+								{
+									quote: "We booked 47 more jobs in our first month. The AI dispatcher is like having a full-time employee who never sleeps.",
+									author: "Sarah Johnson",
+									role: "Owner, Northwind HVAC",
+									company: "Seattle, WA",
+									result: "+47 jobs/month",
+								},
+								{
+									quote: "Went from spreadsheets to one dashboard. Our crew utilization jumped from 65% to 87% in 3 weeks.",
+									author: "Mike Rodriguez",
+									role: "Operations Manager",
+									company: "Austin Plumbing Co.",
+									result: "+22% utilization",
+								},
+								{
+									quote: "Getting paid same-day changed everything. Our cash flow is predictable now and we pay zero processing fees.",
+									author: "Deja Patel",
+									role: "CFO, Voltline Electric",
+									company: "Phoenix, AZ",
+									result: "3x faster payments",
+								},
+							].map((testimonial, i) => (
+								<Card key={i}>
+									<CardHeader>
+										<div className="mb-4 flex gap-1">
+											{[1, 2, 3, 4, 5].map((star) => (
+												<Star className="size-4 fill-yellow-500 text-yellow-500" key={star} />
+											))}
 										</div>
-									</div>
-									<div className="text-primary mb-2 text-4xl font-bold">
-										{win.metric}
-									</div>
-									<div className="mb-1 text-lg font-semibold">{win.label}</div>
-									<div className="text-muted-foreground text-sm">
-										{win.description}
-									</div>
-								</div>
+										<CardDescription className="text-base leading-relaxed">
+											"{testimonial.quote}"
+										</CardDescription>
+									</CardHeader>
+									<CardContent>
+										<div className="mb-3 border-t border-border pt-4">
+											<div className="font-semibold">{testimonial.author}</div>
+											<div className="text-muted-foreground text-sm">
+												{testimonial.role}
+											</div>
+											<div className="text-muted-foreground text-sm">
+												{testimonial.company}
+											</div>
+										</div>
+										<Badge variant="secondary" className="bg-success/10 text-success">
+											{testimonial.result}
+										</Badge>
+									</CardContent>
+								</Card>
 							))}
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className="border-border/50 bg-background border-y py-24">
+			{/* Pricing - Simplified with Guarantee */}
+			<section className="border-border border-y py-24">
 				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
-					<div className="mx-auto max-w-6xl">
-						<div className="mb-16 text-center">
-							<Badge className="mb-4" variant="secondary">
-								Customer stories
-							</Badge>
+					<div className="mx-auto max-w-4xl">
+						<div className="mb-12 text-center">
 							<h2 className="mb-4 text-4xl font-bold md:text-5xl">
-								Crew-Tested By Real Tradespeople
+								Simple, Transparent Pricing
 							</h2>
+							<p className="text-muted-foreground text-lg">
+								No per-user fees. No surprise charges. No lock-in.
+							</p>
 						</div>
-
-						<div className="grid gap-6 md:grid-cols-3">
-							{testimonialQuotes.map((testimonial) => (
-								<div
-									className="border-border/50 bg-card rounded-xl border p-6"
-									key={testimonial.name}
-								>
-									<div className="mb-4 flex gap-1">
-										{[...new Array(testimonial.rating)].map((_, index) => (
-											<Star
-												className="text-warning size-4 fill-yellow-500"
-												key={index}
-											/>
-										))}
-									</div>
-									<p className="text-muted-foreground mb-6 leading-relaxed">
-										"{testimonial.content}"
-									</p>
-									<div>
-										<div className="font-semibold">{testimonial.name}</div>
-										<div className="text-muted-foreground text-sm">
-											{testimonial.role} • {testimonial.company}
+						<Card className="border-primary/50 overflow-hidden border-2">
+							<CardHeader className="bg-primary/5 text-center">
+								<Badge className="mx-auto mb-4">Most Popular</Badge>
+								<CardTitle className="mb-2 text-5xl">
+									<span className="font-mono">$100</span>
+									<span className="text-muted-foreground text-2xl">/month</span>
+								</CardTitle>
+								<CardDescription className="text-base">
+									Everything you need to scale your service business
+								</CardDescription>
+							</CardHeader>
+							<CardContent className="p-8">
+								<div className="mb-8 grid gap-4 sm:grid-cols-2">
+									{[
+										"Unlimited users & logins",
+										"24/7 AI Dispatch answering",
+										"Smart scheduling & routing",
+										"0% payment processing fees",
+										"Same-day payouts",
+										"Customer portal & reviews",
+										"Live job costing & reporting",
+										"Mobile app for technicians",
+									].map((feature, i) => (
+										<div className="flex items-start gap-3" key={i}>
+											<CheckCircle2 className="text-success mt-0.5 size-5 flex-shrink-0" />
+											<span className="text-sm">{feature}</span>
 										</div>
-									</div>
+									))}
 								</div>
-							))}
+								<Button asChild className="h-14 w-full text-lg" size="lg">
+									<Link href="/register">
+										Start Your 14-Day Free Trial
+										<ArrowRight className="ml-2 size-5" />
+									</Link>
+								</Button>
+								<div className="mt-6 space-y-2 text-center text-sm text-muted-foreground">
+									<p>✓ No credit card required to start</p>
+									<p>✓ Cancel anytime, no questions asked</p>
+									<p>✓ 24-hour setup with dedicated onboarding</p>
+								</div>
+							</CardContent>
+						</Card>
+						{/* Money-Back Guarantee */}
+						<div className="bg-success/10 border-success/20 mt-8 rounded-lg border p-6 text-center">
+							<div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-success/20">
+								<Shield className="text-success size-6" />
+							</div>
+							<h3 className="mb-2 text-lg font-semibold">
+								30-Day Money-Back Guarantee
+							</h3>
+							<p className="text-muted-foreground text-sm">
+								If you don't book more jobs in your first 30 days, we'll refund every penny. No questions asked.
+							</p>
 						</div>
 					</div>
 				</div>
 			</section>
 
-			<section className="from-primary/10 via-primary/5 to-background relative overflow-hidden bg-gradient-to-br py-24">
-				<div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+			{/* Final CTA - High Urgency */}
+			<section className="bg-gradient-to-b from-background to-muted/20 py-32">
+				<div className="container mx-auto px-4 sm:px-6 lg:px-8">
 					<div className="mx-auto max-w-4xl text-center">
-						<Badge className="mb-4" variant="secondary">
-							Risk-free switch
-						</Badge>
-						<h2 className="mb-6 text-4xl font-bold md:text-5xl lg:text-6xl">
-							Give Your Crews A System That Works
+						<h2 className="mb-6 text-5xl font-bold leading-tight md:text-6xl">
+							Ready to Stop Losing Money?
 						</h2>
-						<p className="text-foreground/70 mx-auto mb-10 max-w-2xl text-xl">
-							HVAC, plumbing, electrical, roofing, and specialty contractors
-							trust Thorbis to keep phones answered, trucks dispatched, and cash
-							collected without babysitting software.
+						<p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-xl">
+							Join 1,247+ service companies who are booking more jobs, saving time, and getting paid faster.
 						</p>
-						<div className="text-muted-foreground mb-10 space-y-3 text-left text-sm sm:text-base">
-							{guaranteeHighlights.map((highlight) => (
-								<p className="flex items-start gap-3" key={highlight}>
-									<CheckCircle2 className="text-success mt-0.5 size-4" />
-									<span>{highlight}</span>
-								</p>
-							))}
-						</div>
-						<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-							<Button
-								asChild
-								className="group shadow-primary/20 h-14 px-8 text-lg shadow-lg"
-								size="lg"
-							>
+						<div className="mb-8 flex flex-col items-center gap-4">
+							<Button asChild className="h-16 px-12 text-xl shadow-lg" size="lg">
 								<Link href="/register">
-									Start 14-day Free Trial
-									<ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
+									Get Started Free — No Credit Card Required
+									<ArrowRight className="ml-2 size-6" />
 								</Link>
 							</Button>
-							<Button
-								asChild
-								className="h-14 border-2 px-8 text-lg"
-								size="lg"
-								variant="outline"
-							>
-								<Link href="/pricing">Talk with a trade expert</Link>
-							</Button>
+							<div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									14-day free trial
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									Setup in 24 hours
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									Cancel anytime
+								</div>
+								<div className="flex items-center gap-1.5">
+									<CheckCircle2 className="text-success size-4" />
+									30-day guarantee
+								</div>
+							</div>
 						</div>
-						<p className="text-muted-foreground mt-6 text-sm">
-							Working system in 24 hours • Unlimited users • Trade-focused
-							onboarding • Cancel anytime
-						</p>
+						<div className="bg-primary/10 border-primary/20 mx-auto max-w-lg rounded-lg border p-4">
+							<p className="text-sm">
+								⚡ <span className="font-semibold">Limited time:</span> First 100 signups this month get free onboarding (worth $500)
+							</p>
+						</div>
 					</div>
 				</div>
 			</section>

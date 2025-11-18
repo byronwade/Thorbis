@@ -22,17 +22,15 @@ export async function GET(request: NextRequest) {
 			name,
 			ein,
 			website,
-			business_type,
-			street_address,
+			industry,
+			address,
 			city,
 			state,
 			zip_code,
-			country,
-			primary_contact_first_name,
-			primary_contact_last_name,
-			primary_contact_email,
-			primary_contact_phone,
-			primary_contact_job_title
+			phone,
+			email,
+			support_email,
+			support_phone
 		`,
 		)
 		.eq("id", companyId)
@@ -42,7 +40,8 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json(
 			{
 				valid: false,
-				error: "Company not found",
+				error: `Company not found: ${error?.message || "Unknown error"}`,
+				details: error,
 			},
 			{ status: 404 },
 		);
@@ -52,17 +51,13 @@ export async function GET(request: NextRequest) {
 	const missing: string[] = [];
 
 	if (!company.name) missing.push("Company name");
-	if (!company.ein) missing.push("EIN");
-	if (!company.street_address) missing.push("Street address");
+	if (!company.ein) missing.push("EIN (Tax ID)");
+	if (!company.address) missing.push("Address");
 	if (!company.city) missing.push("City");
 	if (!company.state) missing.push("State");
 	if (!company.zip_code) missing.push("ZIP code");
-	if (!company.primary_contact_first_name)
-		missing.push("Primary contact first name");
-	if (!company.primary_contact_last_name)
-		missing.push("Primary contact last name");
-	if (!company.primary_contact_email) missing.push("Primary contact email");
-	if (!company.primary_contact_phone) missing.push("Primary contact phone");
+	if (!company.email && !company.support_email) missing.push("Email");
+	if (!company.phone && !company.support_phone) missing.push("Phone");
 
 	if (missing.length > 0) {
 		return NextResponse.json({
